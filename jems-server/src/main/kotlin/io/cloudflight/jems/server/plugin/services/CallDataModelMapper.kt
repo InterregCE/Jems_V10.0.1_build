@@ -86,6 +86,7 @@ abstract class PluginCallDataMapper {
         Mapping(source = "callDetail.endDateStep1", target = "endDateTimeStep1"),
         Mapping(source = "callDetail.endDate", target = "endDateTime"),
         Mapping(source = "callDetail.additionalFundAllowed", target = "isAdditionalFundAllowed"),
+        Mapping(source = "callDetail.directContributionsAllowed", target = "isDirectContributionsAllowed")
     )
     abstract fun map(callDetail: CallDetail, inputLanguages: Set<SystemLanguageData>): CallDetailData
     abstract fun map(programmeStrategy: SortedSet<ProgrammeStrategy>): SortedSet<ProgrammeStrategyData>

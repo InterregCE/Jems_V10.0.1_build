@@ -29,7 +29,7 @@ export class StartControlReportComponent {
   @Output()
   onError = new EventEmitter<APIError>();
 
-  pendingAction = new BehaviorSubject<boolean>(false);
+  pendingAction$ = new BehaviorSubject(false);
   data$: Observable<{
     partnerId: string | number | null;
     isController: boolean;
@@ -60,7 +60,7 @@ export class StartControlReportComponent {
     );
   }
 
-  redirectToControl(reportId: number, isController: boolean = false) {
+  redirectToControl(reportId: number, isController: boolean) {
     const tab = (isController || this.reportStatus === ProjectPartnerReportDTO.StatusEnum.Certified) ? 'identificationTab' : 'document';
     this.router.navigate([`../${reportId}/controlReport/${tab}`], {
       relativeTo: this.activatedRoute,
@@ -73,7 +73,7 @@ export class StartControlReportComponent {
       return;
     }
 
-    this.pendingAction.next(true);
+    this.pendingAction$.next(true);
     Forms.confirm(
       this.dialog,
       {
@@ -87,7 +87,7 @@ export class StartControlReportComponent {
         if (answer) {
           this.changeStatusOfReport(partnerId, reportId);
         } else {
-          this.pendingAction.next(false);
+          this.pendingAction$.next(false);
         }
       })).subscribe();
   }
@@ -100,12 +100,12 @@ export class StartControlReportComponent {
     this.partnerReportDetailStore.startControlOnPartnerReport(Number(partnerId), reportId)
       .pipe(
         take(1),
-        tap(() => this.redirectToControl(reportId)),
+        tap(() => this.redirectToControl(reportId, true)),
         catchError((error) => {
           this.onError.emit(error.error);
           return of(null);
         }),
-        finalize(() => this.pendingAction.next(false))
+        finalize(() => this.pendingAction$.next(false))
       ).subscribe();
   }
 

@@ -18,10 +18,12 @@ data class ProjectCallSettingsDTO(
     val endDateStep1: ZonedDateTime?,
     val lengthOfPeriod: Int,
     val additionalFundAllowed: Boolean,
+    val directContributionsAllowed: Boolean,
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumDTO>,
     val unitCosts: List<ProgrammeUnitCostDTO>,
     val stateAids: List<ProgrammeStateAidDTO>,
     var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>,
     val costOption: CallCostOptionDTO,
-)
+    val jsNotifiable: Boolean,
+    )

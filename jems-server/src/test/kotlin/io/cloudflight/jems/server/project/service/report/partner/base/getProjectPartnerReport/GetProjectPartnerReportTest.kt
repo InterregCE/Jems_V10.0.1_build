@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -30,6 +31,12 @@ internal class GetProjectPartnerReportTest : UnitTest() {
 
         private fun report(id: Long, status: ReportStatus) = ProjectPartnerReportSummary(
             id = id,
+            projectId = 101L,
+            partnerId = PARTNER_ID,
+            projectCustomIdentifier = "dummy",
+            partnerRole = ProjectPartnerRole.PARTNER,
+            partnerNumber = 1,
+            partnerAbbreviation = "partner A",
             reportNumber = id.toInt(),
             status = status,
             version = "V4.4",
@@ -74,7 +81,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
         every { lastReport.id } returns if (isDeletable) 10L else 9457L
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns lastReport
 
-        every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
+        every { reportPersistence.listPartnerReports(setOf(PARTNER_ID), ReportStatus.values().toSet(), Pageable.unpaged()) } returns
             PageImpl(ReportStatus.values().map { report(10L + it.ordinal, it) })
 
         assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
@@ -97,7 +104,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
         every { lastReport.id } returns 20L
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns lastReport
 
-        every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
+        every { reportPersistence.listPartnerReports(setOf(PARTNER_ID), ReportStatus.values().toSet(), Pageable.unpaged()) } returns
             PageImpl(
                 listOf(report(20L, status))
                     .plus(ReportStatus.values().map { report(21L + it.ordinal, it) }) // should not affect test
@@ -131,5 +138,6 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(29L, ReportStatus.ReOpenCertified),
         )
     }
+
 
 }

@@ -1,28 +1,19 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown
 
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Staff
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Office
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Travel
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.External
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Equipment
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Infrastructure
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.LumpSum
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.UnitCost
 import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterSubmission
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostWithCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakdown(
     staff = ExpenditureCostCategoryBreakdownLine(
@@ -166,27 +157,18 @@ fun ExpenditureCostCategoryBreakdown.fillInOverviewFields() = apply {
     total.fillInOverviewFields()
 }
 
-private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
-    return when (this) {
-        ReportBudgetCategory.StaffCosts -> Staff
-        ReportBudgetCategory.OfficeAndAdministrationCosts -> Office
-        ReportBudgetCategory.TravelAndAccommodationCosts -> Travel
-        ReportBudgetCategory.ExternalCosts -> External
-        ReportBudgetCategory.EquipmentCosts -> Equipment
-        ReportBudgetCategory.InfrastructureCosts -> Infrastructure
-        ReportBudgetCategory.Multiple -> UnitCost
-    }
-}
+fun Collection<ExpenditureCostAfterSubmission>.calculateCurrent(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull =
+    calculateCostCategoriesFor(options) { it.declaredAmountAfterSubmission }
 
-fun ExpenditureCost.getCategory(): BudgetCostCategory =
-    when {
-        lumpSumId != null -> LumpSum
-        else -> costCategory.translateCostCategory()
-    }
+fun <T: ExpenditureCostWithCategory> Collection<T>.calculateCostCategoriesFor(
+    options: ProjectPartnerBudgetOptions,
+    valueResolver: (T) -> BigDecimal?,
+): BudgetCostsCalculationResultFull {
+    val sums = groupBy { cost -> cost.getCategory() }
+        .mapValues { (_, expendituresOfCategory) ->
+            expendituresOfCategory.sumOf { valueResolver.invoke(it) ?: BigDecimal.ZERO }
+        }
 
-fun Collection<ExpenditureCost>.calculateCurrent(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull {
-    val sums = groupBy { it.getCategory() }
-        .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO } }
     return calculateBudget(options, sums)
 }
 

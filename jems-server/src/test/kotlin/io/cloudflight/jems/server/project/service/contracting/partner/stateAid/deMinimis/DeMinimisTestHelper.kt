@@ -120,10 +120,9 @@ val expectedMemberStates = setOf(
 val expectedEmptyDeMinimisSectionModel = ContractingPartnerStateAidDeMinimisSection(
     partnerId = PARTNER_ID,
     dateOfGrantingAid = expectedDateOfGrantingAid,
-    totalEligibleBudget = BigDecimal.TEN,
+    amountGrantingAid = BigDecimal.TEN,
     selfDeclarationSubmissionDate = null,
     baseForGranting = null,
-    aidGrantedByCountryCode = null,
     aidGrantedByCountry = null,
     memberStatesGranting = expectedMemberStatesForNoData,
     comment = null
@@ -132,10 +131,9 @@ val expectedEmptyDeMinimisSectionModel = ContractingPartnerStateAidDeMinimisSect
 val expectedDeMinimisSection = ContractingPartnerStateAidDeMinimisSection(
     partnerId = PARTNER_ID,
     dateOfGrantingAid = expectedDateOfGrantingAid,
-    totalEligibleBudget = BigDecimal.TEN,
+    amountGrantingAid = BigDecimal.TEN,
     selfDeclarationSubmissionDate = zonedTimeNow,
     baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
-    aidGrantedByCountryCode = COUNTRY_AT_CODE,
     aidGrantedByCountry = COUNTRY_AT,
     memberStatesGranting = expectedMemberStates,
     comment = "Test comment"
@@ -145,18 +143,18 @@ val deMinimisModel = ContractingPartnerStateAidDeMinimis(
     selfDeclarationSubmissionDate = zonedTimeNow,
     baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
     aidGrantedByCountry = COUNTRY_AT,
-    aidGrantedByCountryCode = COUNTRY_AT_CODE,
     memberStatesGranting = memberStates,
-    comment = "Test comment"
+    comment = "Test comment",
+    amountGrantingAid = BigDecimal.TEN
 )
 
 val emptyDeMinimisModel = ContractingPartnerStateAidDeMinimis(
     selfDeclarationSubmissionDate = null,
     baseForGranting = null,
     aidGrantedByCountry = null,
-    aidGrantedByCountryCode = null,
     memberStatesGranting = emptySet(),
-    comment = null
+    comment = null,
+    amountGrantingAid = null
 )
 
 
@@ -166,9 +164,9 @@ val deMinimisEntity = ProjectContractingPartnerStateAidMinimisEntity(
     selfDeclarationSubmissionDate = zonedTimeNow,
     baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
     aidGrantedByCountry = COUNTRY_AT,
-    aidGrantedByCountryCode = COUNTRY_AT_CODE,
     memberStatesGranting = memberStatesEntities,
-    comment = "Test comment"
+    comment = "Test comment",
+    amountGrantingAid = BigDecimal.TEN
 )
 
 fun getContractMonitoring(): ProjectContractingMonitoring {
@@ -245,7 +243,11 @@ val partnerFunds = listOf(
     ProjectPartnerBudgetPerFund(
         partner = partnerSummary,
         totalEligibleBudget = BigDecimal.TEN,
-        budgetPerFund = getPartnerFunds()
+        budgetPerFund = getPartnerFunds(),
+        publicContribution = BigDecimal.ZERO,
+        autoPublicContribution = BigDecimal.ZERO,
+        privateContribution = BigDecimal.ZERO,
+        totalPartnerContribution = BigDecimal.ZERO,
     ),
 )
 

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.controller.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
+import io.cloudflight.jems.api.programme.dto.costoption.PaymentClaimDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Implementation
@@ -10,6 +11,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.CreateLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.deleteLumpSum.DeleteLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_lump_sum.GetLumpSumInteractor
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.update_lump_sum.UpdateLumpSumInteractor
 import io.mockk.MockKAnnotations
@@ -34,7 +36,8 @@ class ProgrammeLumpSumControllerTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val expectedLumpSumDTO = ProgrammeLumpSumDTO(
@@ -45,7 +48,8 @@ class ProgrammeLumpSumControllerTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
         )
 
         private val expectedLumpSumListDTO = ProgrammeLumpSumListDTO(

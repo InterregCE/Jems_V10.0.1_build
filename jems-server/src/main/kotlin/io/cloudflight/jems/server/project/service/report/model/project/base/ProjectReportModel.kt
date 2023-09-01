@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.model.project.base
 
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -27,5 +28,12 @@ data class ProjectReportModel(
 
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
-    val verificationDate: ZonedDateTime?,
+    val verificationDate: LocalDate?,
+
+    val verificationEndDate: ZonedDateTime?,
+    val amountRequested: BigDecimal?,
+    val totalEligibleAfterVerification: BigDecimal?,
+
+    val riskBasedVerification: Boolean,
+    val riskBasedVerificationDescription: String?
 )

@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostT
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslId
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import org.springframework.stereotype.Repository
@@ -84,6 +85,7 @@ class ProjectUnitCostPersistenceProvider(
                     )
                 },
                 categories = rows.mapTo(HashSet()) { ProgrammeUnitCostBudgetCategoryEntity(0L, unitCostId, it.category) },
+                paymentClaim = PaymentClaim.IncurredByBeneficiaries
             )
         }
 

@@ -5,18 +5,22 @@ import {
   CallService,
   ExpenditureCoFinancingBreakdownDTO,
   ExpenditureCostCategoryBreakdownDTO,
+  ExpenditureInvestmentBreakdownDTO,
   ExpenditureLumpSumBreakdownDTO,
   ExpenditureUnitCostBreakdownDTO,
-  ExpenditureInvestmentBreakdownDTO,
   ProjectPartnerReportExpenditureCostsService,
   ProjectPartnerReportFinancialOverviewService,
   ProjectPartnerReportUnitCostDTO,
 } from '@cat/api';
 
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 
 @Injectable({providedIn: 'root'})
@@ -113,7 +117,7 @@ export class PartnerReportFinancialOverviewStoreService {
 
   private callFunds(): Observable<CallFundRateDTO[]> {
     return combineLatest([
-      this.projectStore.projectCall$,
+      this.projectStore.projectCallSettings$,
     ])
       .pipe(
         map(([call]) => call.callId),
@@ -125,7 +129,7 @@ export class PartnerReportFinancialOverviewStoreService {
 
   private allowedCostCategories(): Observable<Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>> {
     return combineLatest([
-      this.projectStore.projectCall$,
+      this.projectStore.projectCallSettings$,
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
     ])
@@ -164,7 +168,7 @@ export class PartnerReportFinancialOverviewStoreService {
       );
   }
 
-  private anySingleCostCategory(unitCosts: Array<ProjectPartnerReportUnitCostDTO>, costCategory: CategoryEnum): boolean {
+  private anySingleCostCategory(unitCosts: ProjectPartnerReportUnitCostDTO[], costCategory: CategoryEnum): boolean {
     return unitCosts.some(unitCost => unitCost.category === costCategory);
   }
 }

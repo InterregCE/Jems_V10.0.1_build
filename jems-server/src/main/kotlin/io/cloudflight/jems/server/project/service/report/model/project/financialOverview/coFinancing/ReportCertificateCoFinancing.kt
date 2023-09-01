@@ -4,5 +4,9 @@ data class ReportCertificateCoFinancing(
     val totalsFromAF: ReportCertificateCoFinancingColumn,
     val currentlyReported: ReportCertificateCoFinancingColumn,
     val previouslyReported: ReportCertificateCoFinancingColumn,
+
+    val currentVerified: ReportCertificateCoFinancingColumn,
+    val previouslyVerified: ReportCertificateCoFinancingColumn,
+
     val previouslyPaid: ReportCertificateCoFinancingColumn,
 )

@@ -171,14 +171,18 @@ import {
 import {
   PartnerReportAnnexesTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
-import {ProjectManagementComponent} from '@project/project-application/contracting/project-management/project-management.component';
+import {
+  ProjectManagementComponent
+} from '@project/project-application/contracting/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
-import {ContractReportingComponent} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
+import {
+  ContractReportingComponent
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
 import {
   PartnerControlReportComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report.component';
@@ -206,7 +210,9 @@ import {
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
-import {ContractPartnerComponent} from '@project/project-application/contracting/contract-partner/contract-partner.component';
+import {
+  ContractPartnerComponent
+} from '@project/project-application/contracting/contract-partner/contract-partner.component';
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
@@ -258,6 +264,30 @@ import {SharedFolderPageComponent} from '@project/project-application/shared-fol
 import {
   ProjectReportExportsTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
+import {
+  ProjectVerificationReportComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report.component';
+import {
+  ProjectVerificationReportDocumentTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
+import {
+  ProjectVerificationReportFinalizeTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-tab.component';
+import {
+  ProjectVerificationReportVerificationChecklistsTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklists-tab.component';
+import {
+  ProjectVerificationReportVerificationChecklistPageComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklist-page/project-verification-report-verification-checklist-page.component';
+import {
+  ProjectVerificationReportExpenditureTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure-tab.component';
+import {
+  ProjectVerificationReportOverviewTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/project-verification-report-overview-tab.component';
+import {
+  ReportAdvancePaymentsOverviewComponent
+} from '@project/project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
 
 export const routes: Routes = [
   {
@@ -268,7 +298,10 @@ export const routes: Routes = [
         path: '',
         component: ProjectApplicationComponent,
         canActivate: [PermissionGuard],
-        data: {permissionsOnly: [PermissionsEnum.ProjectRetrieve]},
+        data: {
+          breadcrumb: 'project.list.header',
+          permissionsOnly: [PermissionsEnum.ProjectRetrieve]
+        },
       },
       {
         path: 'applyTo/:callId',
@@ -391,6 +424,19 @@ export const routes: Routes = [
             ]
           },
           {
+            path: 'advancePayments',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview'
+            },
+            children: [
+              {
+                path: '',
+                component: ReportAdvancePaymentsOverviewComponent,
+                data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
+              }
+            ]
+          },
+          {
             path: 'projectReports',
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.project.reports',
@@ -451,6 +497,43 @@ export const routes: Routes = [
                         component: ProjectReportSubmitTabComponent,
                       }
                     ],
+                  },
+                  {
+                    path: 'verificationReport',
+                    children: [
+                      {
+                        path: '',
+                        component: ProjectVerificationReportComponent,
+                        data: {breadcrumb: 'project.application.project.verification.work.breadcrumb.title'},
+                        children: [
+                          {
+                            path: 'document',
+                            component: ProjectVerificationReportDocumentTabComponent,
+                          },
+                          {
+                            path: 'verificationChecklistsTab',
+                            component: ProjectVerificationReportVerificationChecklistsTabComponent,
+                          },
+                          {
+                            path: 'verificationChecklistsTab/checklist/:checklistId',
+                            component: ProjectVerificationReportVerificationChecklistPageComponent,
+                            data: {breadcrumb: 'checklists.instance.title'},
+                          },
+                          {
+                            path: 'overview',
+                            component: ProjectVerificationReportOverviewTabComponent,
+                          },
+                          {
+                            path: 'finalise',
+                            component: ProjectVerificationReportFinalizeTabComponent,
+                          },
+                          {
+                            path: 'expenditure',
+                            component: ProjectVerificationReportExpenditureTabComponent,
+                          }
+                        ],
+                      }
+                    ]
                   }
                 ]
               }

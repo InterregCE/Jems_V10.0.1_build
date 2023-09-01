@@ -7,7 +7,7 @@ export class AdvancePaymentsDetailPageConstants {
     projectId: 'projectId',
     projectIdSearch: 'projectIdSearch',
     advancePayment: 'advancePayment',
-    settlements: 'settlements',
+    settlements: 'paymentSettlements',
 
     projectCustomIdentifier: 'projectCustomIdentifier',
     projectCustomIdentifierSearch: 'projectCustomIdentifierSearch',
@@ -33,10 +33,10 @@ export class AdvancePaymentsDetailPageConstants {
     paymentConfirmedUserId: 'paymentConfirmedUserId',
     paymentConfirmedDate: 'paymentConfirmedDate',
 
-    settlementNr: 'settlementNr',
+    settlementNr: 'number',
     amountSettled: 'amountSettled',
     settlementDate: 'settlementDate',
-    settlementComment: 'settlementComment'
+    settlementComment: 'comment'
   };
 
   public static inputErrorMessages = {

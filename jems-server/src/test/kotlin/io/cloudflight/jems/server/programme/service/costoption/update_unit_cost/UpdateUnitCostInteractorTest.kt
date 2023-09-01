@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.info.hasProjectsInStatus.HasProjectsInStatusInteractor
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
@@ -45,6 +46,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         costPerUnit = BigDecimal.ONE,
         isOneCostCategory = false,
         categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 
     @MockK
@@ -85,6 +87,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             costPerUnit = null,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<AppInputValidationException> { updateUnitCost.updateUnitCost(wrongUnitCost) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -106,13 +109,24 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        every { isProgrammeSetupLocked.isLocked() } returns true
+        every { hasProjectsInStatus.programmeHasProjectsInStatus(ApplicationStatusDTO.CONTRACTED) } returns true
+
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[EN=UC1]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1]' has been changed: name changed from [\n" +
+                "  EN= \n" +
+                "] to [\n" +
+                "  EN=UC1\n" +
+                "],\n" +
+                "type changed from [] to [\n" +
+                "  EN=test type 1\n" +
+                "]"
         ))
     }
 
@@ -123,6 +137,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
@@ -139,6 +154,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { persistence.updateUnitCost(any()) } throws ResourceNotFoundException("programmeUnitCost")
 
@@ -161,13 +177,23 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal(1),
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed: name changed from [\n" +
+                "  EN= \n" +
+                "] to [\n" +
+                "  EN=UC1 changed\n" +
+                "],\n" +
+                "description changed from [\n" +
+                "  EN=test unit cost 1\n" +
+                "] to [\n" +
+                "  EN=test unit cost 1 changed\n" +
+                "]"
         ))
     }
 

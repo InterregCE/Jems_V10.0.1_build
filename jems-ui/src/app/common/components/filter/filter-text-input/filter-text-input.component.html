@@ -9,7 +9,7 @@
         <input (keyup.enter)="changeValue($event.target.value)"
                *ngIf="type === 'number' && !value"
                [matChipInputFor]="filterChip" [options]="{allowZero:true, thousands:'', nullable: true}"
-               currencyMask matInput
+               currencyMask matInput type="integer"
                aria-label="filter input">
         <input (keyup.enter)="changeValue($event.target.value)"
                *ngIf="type === 'text' && !value"

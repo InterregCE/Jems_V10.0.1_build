@@ -91,8 +91,8 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
       this.fileSizeOverLimitError$,
       this.paymentAttachmentsStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.paymentAttachmentsStore.uploadPaymentFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.paymentAttachmentsStore.uploadPaymentFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {

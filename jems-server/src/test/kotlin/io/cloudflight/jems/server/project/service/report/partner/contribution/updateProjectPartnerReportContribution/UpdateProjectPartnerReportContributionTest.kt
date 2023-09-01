@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.service.report.partner.contribution.u
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
@@ -21,6 +23,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -34,6 +37,7 @@ import java.util.UUID
 internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
     companion object {
+        private const val PROJECT_ID = 123L
         private const val PARTNER_ID = 489L
 
         private val OLD_VALUE = 1L.toBigDecimal()
@@ -245,6 +249,12 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var callPersistence: CallPersistence
+
+    @RelaxedMockK
+    lateinit var partnerPersistence: PartnerPersistence
+
     @InjectMockKs
     lateinit var updateContribution: UpdateProjectPartnerReportContribution
 
@@ -258,6 +268,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
     @Test
     fun update() {
+
         every { reportContributionPersistence.getPartnerReportContribution(partnerId = PARTNER_ID, reportId = 8L) } returnsMany listOf(
             listOf(oldContribution, toBeDeletedUnsuccessfully, toBeDeleted, oldContributionFromThisReport),
             listOf(newContribution, toBeDeletedUnsuccessfully, createdContribution, oldContributionFromThisReportUpdated),
@@ -269,6 +280,8 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         every { reportContributionPersistence.deleteByIds(capture(slotToDelete)) } answers { }
         every { reportContributionPersistence.updateExisting(capture(slotToUpdate)) } answers { }
         every { reportContributionPersistence.addNew(8L, capture(slotToCreate)) } answers { }
+        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
+        every { callPersistence.getCallByProjectId(PROJECT_ID) } returns mockk { every { isDirectContributionsAllowed } returns true }
 
         val changes = UpdateProjectPartnerReportContributionWrapper(
             toBeUpdated = setOf(toUpdateModelFromAf, toUpdateModelFromPreviousReport),
@@ -352,6 +365,8 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         val ids = 1..25
         every { reportContributionPersistence.getPartnerReportContribution(partnerId = PARTNER_ID, reportId = 14L) } returns
             ids.map { oldContribution.copy(id = it.toLong()) }
+        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
+        every { callPersistence.getCallByProjectId(PROJECT_ID) } returns mockk { every { isDirectContributionsAllowed } returns true }
 
         val toAdd = UpdateProjectPartnerReportContributionCustom(
             sourceOfContribution = "",

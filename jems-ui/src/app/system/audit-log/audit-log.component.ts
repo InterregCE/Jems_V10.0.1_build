@@ -102,6 +102,7 @@ export class AuditLogComponent implements OnInit {
         {
           displayedColumn: 'audit.table.description',
           customCellTemplate: this.descriptionCell,
+          columnWidth: ColumnWidth.WideColumn
         }
       ]
     });

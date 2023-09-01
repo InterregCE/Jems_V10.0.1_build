@@ -19,6 +19,7 @@ data class CallDetailDTO(
     val endDateTimeStep1: ZonedDateTime?,
     val endDateTime: ZonedDateTime,
     val additionalFundAllowed: Boolean,
+    val directContributionsAllowed: Boolean,
     val lengthOfPeriod: Int?,
     val description: Set<InputTranslation> = emptySet(),
     val objectives: List<ProgrammePriorityDTO> = emptyList(),

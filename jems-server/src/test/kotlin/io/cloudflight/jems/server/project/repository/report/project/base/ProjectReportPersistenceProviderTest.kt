@@ -1,31 +1,38 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import com.querydsl.core.QueryResults
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.EntityPath
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.stream.Stream
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
 
@@ -58,6 +65,48 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+
+            verificationConclusionJs = null,
+            verificationConclusionMa = null,
+            verificationFollowup = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
+        )
+
+        private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
+            val mocked = mockk<ReportProjectCertificateCoFinancingEntity>()
+            every { mocked.sumCurrent } returns BigDecimal.ONE
+            every { mocked.sumCurrentVerified } returns BigDecimal.ONE
+            return mocked
+        }
+
+        private fun reportForListing(id: Long, projectId: Long) = ProjectReportModel(
+            id = id,
+            reportNumber = 1,
+            status = ProjectReportStatus.Draft,
+            linkedFormVersion = "3.0",
+            startDate = YESTERDAY,
+            endDate = MONTH_AGO,
+
+            type = ContractingDeadlineType.Both,
+            deadlineId = null,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+            projectId = projectId,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
+            leadPartnerNameInEnglish = "nameInEnglish",
+
+            createdAt = LAST_WEEK,
+            firstSubmission = LAST_YEAR,
+            verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ONE,
+            totalEligibleAfterVerification = BigDecimal.ONE,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
 
         private fun report(id: Long, projectId: Long) = ProjectReportModel(
@@ -81,9 +130,14 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = null,
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
 
-        fun report(id: Long, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
+        fun report(id: Long, status: ProjectReportStatus, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
             val report = mockk<ProjectReportEntity>()
             every { report.id } returns id
             if (deadlineType == null) {
@@ -93,9 +147,22 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 every { deadline.type } returns deadlineType
                 every { report.deadline } returns deadline
             }
+            every { report.status } returns status
             every { report.type } returns reportType
             return report
         }
+
+        private fun draftReportSubmissionEntity(id: Long, projectId: Long) = ProjectReportSubmissionSummary(
+            id = id,
+            reportNumber = 1,
+            status = ProjectReportStatus.Draft,
+            version = "3.0",
+            firstSubmission = LAST_YEAR,
+            createdAt = LAST_WEEK,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            projectId = projectId
+        )
     }
 
     @MockK
@@ -110,6 +177,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
 
+    @MockK
+    private lateinit var jpaQueryFactory: JPAQueryFactory
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
 
@@ -120,15 +190,36 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             contractingDeadlineRepository,
             partnerReportRepository,
             projectReportSpendingProfileRepository,
+            jpaQueryFactory
         )
     }
 
     @Test
     fun listReports() {
         val projectId = 95L
-        val report = reportEntity(42L, projectId)
-        every { projectReportRepository.findAllByProjectId(projectId, Pageable.unpaged()) } returns PageImpl(listOf(report))
-        assertThat(persistence.listReports(projectId, Pageable.unpaged())).containsExactly(report(42L, projectId))
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any()) } returns query
+        every { query.from(any()) } returns query
+        every { query.leftJoin(any<EntityPath<Any>>()) } returns query
+        every { query.on(any()) } returns query
+        every { query.where(any()) } returns query
+        every { query.groupBy(any()) } returns query
+        every { query.having(any()) } returns query
+        every { query.offset(any()) } returns query
+        every { query.limit(any()) } returns query
+        every { query.orderBy(any()) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, ProjectReportEntity::class.java) } returns reportEntity(42L, projectId)
+        every { tuple.get(1, ReportProjectCertificateCoFinancingEntity::class.java) } returns reportProjectCertificateCoFinancingEntity()
+
+        val result = mockk<QueryResults<Tuple>>()
+        every { result.total } returns 1
+        every { result.results } returns listOf(tuple)
+        every { query.  fetchResults() } returns result
+
+        assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
     }
 
     @Test
@@ -238,25 +329,41 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun submitReport() {
+        val projectId = 8L
+        val report = reportEntity(id = 49L, projectId)
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        every { projectReportRepository.getByIdAndProjectId(49L, projectId) } returns report
+
+        assertThat(persistence.submitReport(projectId, 49L, YESTERDAY)).isEqualTo(
+            draftReportSubmissionEntity(49L, projectId).copy(
+                status = ProjectReportStatus.Submitted,
+                firstSubmission = YESTERDAY
+            )
+        )
+    }
+
+    @Test
     fun getSubmittedProjectReportIds() {
         val projectId = 1L
         every {
             projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(
                 projectId, setOf(
                     ProjectReportStatus.Submitted,
-                    ProjectReportStatus.Verified,
-                    ProjectReportStatus.Paid
+                    ProjectReportStatus.InVerification,
+                    ProjectReportStatus.Finalized,
                 )
             )
         } returns listOf(
-            report(id = 45L, deadlineType = null, reportType = ContractingDeadlineType.Content),
-            report(id = 46L, deadlineType = ContractingDeadlineType.Both, reportType = ContractingDeadlineType.Content),
-            report(id = 47L, deadlineType = ContractingDeadlineType.Finance, reportType = null),
+            report(id = 45L, ProjectReportStatus.Draft, deadlineType = null, reportType = ContractingDeadlineType.Content),
+            report(id = 46L, ProjectReportStatus.Submitted, deadlineType = ContractingDeadlineType.Both, reportType = ContractingDeadlineType.Content),
+            report(id = 47L, ProjectReportStatus.InVerification, deadlineType = ContractingDeadlineType.Finance, reportType = null),
         )
-        assertThat(persistence.getSubmittedProjectReportIds(projectId)).containsExactly(
-            Pair(45L, ContractingDeadlineType.Content),
-            Pair(46L, ContractingDeadlineType.Both),
-            Pair(47L, ContractingDeadlineType.Finance),
+        assertThat(persistence.getSubmittedProjectReports(projectId)).containsExactly(
+            ProjectReportStatusAndType(45L, ProjectReportStatus.Draft, ContractingDeadlineType.Content),
+            ProjectReportStatusAndType(46L, ProjectReportStatus.Submitted, ContractingDeadlineType.Both),
+            ProjectReportStatusAndType(47L, ProjectReportStatus.InVerification, ContractingDeadlineType.Finance),
         )
     }
 
@@ -294,4 +401,35 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         assertThat(reports.map { it.number }).containsExactly(5, 6, 7)
     }
 
+    @Test
+    fun startVerificationOnReportById() {
+        val projectId = 3L
+
+        val report = reportEntity(id = 47L, projectId)
+        every { projectReportRepository.getByIdAndProjectId(47L, projectId) } returns report
+
+        val inVerificationReport = persistence.startVerificationOnReportById(projectId, 47L)
+
+        assertThat(inVerificationReport).isEqualTo(
+            draftReportSubmissionEntity(id = 47L, projectId).copy(
+                status = ProjectReportStatus.InVerification,
+            )
+        )
+    }
+
+    @Test
+    fun finalizeVerificationOnReportById() {
+        val projectId = 3L
+        val reportId = 48L
+        val report = reportEntity(id = reportId, projectId)
+        every { projectReportRepository.getByIdAndProjectId(reportId, projectId) } returns report
+        assertThat(report.verificationEndDate).isNull()
+
+        assertThat(persistence.finalizeVerificationOnReportById(projectId, reportId, LAST_WEEK)).isEqualTo(
+            draftReportSubmissionEntity(reportId, projectId).copy(
+                status = ProjectReportStatus.Finalized
+            )
+        )
+        assertThat(report.verificationEndDate).isEqualTo(LAST_WEEK)
+    }
 }

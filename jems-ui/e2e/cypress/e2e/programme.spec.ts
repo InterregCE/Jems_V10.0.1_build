@@ -40,6 +40,7 @@ context('Programme management tests', () => {
         cy.contains('div', 'Commission decision date').find('input').type(testData.commissionDecisionDate);
         cy.contains('div', 'Programme amending decision number').find('input').type(testData.programmeAmendingDecisionNumber);
         cy.contains('div', 'Programme amending decision entry').find('input').type(testData.programmeAmendingDecisionDate);
+        cy.contains('div', 'Technical assistance flat rate').find('input').type(testData.technicalAssistanceFlatRate);
 
         cy.contains('Save').click();
         cy.contains('Confirm').should('be.visible').click();
@@ -280,6 +281,33 @@ context('Programme management tests', () => {
         cy.contains('Confirm').should('be.visible').click();
 
         cy.get('jems-alert p').should('contain.text', 'Programme strategies successfully updated');
+      });
+    });
+
+    it('TB-1086 Programme Typology of error can be added', () => {
+      cy.visit('/app/programme/typologyErrors', {failOnStatusCode: false});
+
+      cy.contains('button', 'Edit').click();
+      cy.contains('mat-icon', 'add').click();
+      cy.get('input').last().type('Typology of error test');
+      cy.contains('button', 'Save changes').click();
+
+      cy.get('input').last().should('have.value', 'Typology of error test');
+      cy.get('jems-alert').should('contain.text', 'Typology of errors saved successfully');
+    });
+
+    it("TB-1087 Programme Typology of error can be deleted", () => {
+      cy.fixture('programme/TB-1087.json').then((typology) => {
+        cy.createTypologyOfErrors(typology);
+
+        cy.visit('/app/programme/typologyErrors', {failOnStatusCode: false});
+
+        cy.contains('Edit').click();
+        cy.get('mat-form-field').last().parent().find('div button').click();
+        cy.contains('button', 'Save changes').click();
+
+        cy.get('input').last().should('not.have.value',  typology['description']);
+        cy.get('jems-alert').should('contain.text', 'Typology of errors saved successfully');
       });
     });
 

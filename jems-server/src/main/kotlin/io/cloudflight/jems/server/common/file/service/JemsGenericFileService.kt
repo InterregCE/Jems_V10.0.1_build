@@ -6,10 +6,9 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
-import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.repository.NoRepositoryBean
 import org.springframework.transaction.annotation.Transactional
@@ -29,7 +28,7 @@ open class JemsGenericFileService(
     open fun persistFileAndPerformAction(
         file: JemsFileCreate,
         additionalStep: (JemsFileMetadataEntity) -> Unit,
-    ): JemsFileMetadata {
+    ): JemsFile {
         val bucket = file.type.getBucket()
         val locationForMinio = file.getDefaultMinioFullPath()
 
@@ -47,7 +46,7 @@ open class JemsGenericFileService(
                 userResolver = { userRepository.getById(it) },
                 uploaded = ZonedDateTime.now(),
             )
-        ).also { additionalStep.invoke(it) }.toModel()
+        ).also { additionalStep.invoke(it) }.toFullModel()
     }
 
     @Transactional

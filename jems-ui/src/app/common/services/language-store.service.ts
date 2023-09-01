@@ -65,6 +65,7 @@ export class LanguageStore {
   setSystemLanguageAndUpdateProfile(newLanguage: string): void {
     this.updateUserProfileLanguage(newLanguage);
     this.setSystemLanguage(newLanguage);
+    this.changeHtmlLanguageAttribute(newLanguage);
   }
 
   updateUserProfileLanguage(newLanguage: string) {
@@ -159,10 +160,18 @@ export class LanguageStore {
   private determineLanguageToUse(systemLanguages: string[]): string {
     const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
     if (storedLanguage) {
+      this.changeHtmlLanguageAttribute(storedLanguage);
       return storedLanguage;
     } else if (systemLanguages.includes(this.userAgentLanguage)) {
+      this.changeHtmlLanguageAttribute(this.userAgentLanguage);
       return this.userAgentLanguage;
     }
-    return systemLanguages[0] ? systemLanguages[0] : DEFAULT_FALLBACK_LANGUAGE;
+    const lang = systemLanguages[0] ? systemLanguages[0] : DEFAULT_FALLBACK_LANGUAGE;
+    this.changeHtmlLanguageAttribute(lang);
+    return lang;
+  }
+
+  private changeHtmlLanguageAttribute(lang: string) {
+    document.querySelector('html')?.setAttribute('lang', lang);
   }
 }

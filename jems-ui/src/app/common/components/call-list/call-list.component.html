@@ -5,6 +5,8 @@
                [rows]="data.page.content"
                [totalElements]="data.page?.totalElements"
                [pageIndex]="listStore.newPageIndex$ | async"
+               [currentPageSize]="currentPageSize"
+               [disableTopPaginator]="disableTopPaginator"
                (newPageIndex)="listStore.newPageIndex$.next($event)"
                (newPageSize)="listStore.newPageSize$.next($event)"
                (sortRows)="listStore.newSort$.next($event)">

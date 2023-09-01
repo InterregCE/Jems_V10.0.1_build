@@ -23,6 +23,7 @@ export class PartnerReportContributionStore {
   partnerId$: Observable<number>;
   partnerContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
   currentReport$: Observable<ProjectPartnerReportDTO>;
+  directContributionsAllowed$: Observable<boolean>;
 
   refreshContributions$ = new BehaviorSubject<void>(undefined);
   private savedContribution$ = new Subject<ProjectPartnerReportContributionWrapperDTO>();
@@ -38,6 +39,7 @@ export class PartnerReportContributionStore {
     this.partnerId$ = this.partnerReportPageStore.partnerId$.pipe(map(partnerId => Number(partnerId)));
     this.partnerContribution$ = this.getContribution();
     this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
+    this.directContributionsAllowed$ = this.directContributionsAllowed();
   }
 
   public getContribution(): Observable<ProjectPartnerReportContributionWrapperDTO> {
@@ -82,6 +84,10 @@ export class PartnerReportContributionStore {
         .uploadFileToContributionForm(file, contributionId, partnerId, reportId)
       ),
     );
+  }
+
+  private directContributionsAllowed() {
+    return this.projectStore.projectCallSettings$.pipe(map(settings => settings.directContributionsAllowed));
   }
 
 }

@@ -66,6 +66,7 @@ internal class CreateProjectTest : UnitTest() {
             endDateStep1 = endDateStep1,
             endDate = endDate,
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 12,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
@@ -87,6 +88,7 @@ internal class CreateProjectTest : UnitTest() {
             endDate = call.endDate,
             lengthOfPeriod = call.lengthOfPeriod!!,
             isAdditionalFundAllowed = call.isAdditionalFundAllowed,
+            isDirectContributionsAllowed = call.isDirectContributionsAllowed,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
@@ -95,6 +97,7 @@ internal class CreateProjectTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         private val userEntity = UserEntity(
@@ -139,17 +142,18 @@ internal class CreateProjectTest : UnitTest() {
 
         private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) =
             ProgrammeDataDTO(
-                "cci",
-                "title",
-                "version",
-                2020,
-                2024,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                cci ="cci",
+                title ="title",
+                version ="version",
+                firstYear =2020,
+                lastYear =2024,
+                eligibleFrom = null,
+                eligibleUntil = null,
+                commissionDecisionNumber = null,
+                commissionDecisionDate = null,
+                programmeAmendingDecisionNumber = null,
+                programmeAmendingDecisionDate = null,
+                technicalAssistanceFlatRate = null,
                 projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
                 projectIdUseCallId = projectIdUseCallId,
                 emptyList(),

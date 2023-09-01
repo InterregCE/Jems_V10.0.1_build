@@ -294,6 +294,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 70L,
                         reportOfOriginNumber = 5,
+                        reportProjectOfOriginId = null,
                         originalExpenditureNumber = 3
                     )
                 )

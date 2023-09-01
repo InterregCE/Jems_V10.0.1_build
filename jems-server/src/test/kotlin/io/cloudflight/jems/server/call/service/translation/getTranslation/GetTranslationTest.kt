@@ -40,7 +40,7 @@ class GetTranslationTest : UnitTest() {
     fun get() {
         val translationNO = JemsFile(id = 502L, name = "call-id-7-Application_no.properties",
             type = JemsFileType.CallTranslation, uploaded = yesterday, author = mockk(),
-            size = 222L, description = SystemLanguage.NO.name)
+            size = 222L, description = SystemLanguage.NO.name, indexedPath = "")
 
         every { filePersistence.listAttachments(Pageable.ofSize(34), "CallTranslation/000412/",
             setOf(JemsFileType.CallTranslation), emptySet()) } returns PageImpl(listOf(translationNO))

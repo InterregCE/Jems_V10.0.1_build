@@ -11,37 +11,15 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateUnitCostEntity
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
-import java.math.BigDecimal
-
-
-fun ProjectReportEntity.toModelSummary(
-    periodResolver: (Int) -> ProjectPeriod?,
-) = ProjectReportSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    linkedFormVersion = applicationFormVersion,
-    startDate = startDate,
-    endDate = endDate,
-
-    type = deadline?.type ?: type,
-    periodDetail = (deadline?.periodNumber ?: periodNumber)?.let { periodResolver.invoke(it) },
-    reportingDate = deadline?.deadline ?: reportingDate,
-
-    createdAt = createdAt,
-    firstSubmission = firstSubmission,
-    verificationDate = verificationDate,
-    deletable = false,
-)
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
+import java.math.BigDecimal.ZERO
 
 fun ProjectReportEntity.toModel() = ProjectReportModel(
     id = id,
@@ -65,6 +43,40 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
+    verificationEndDate = verificationEndDate,
+    amountRequested = null,
+    totalEligibleAfterVerification = null,
+    riskBasedVerification = riskBasedVerification,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
+)
+
+fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
+    id = first.id,
+    reportNumber = first.number,
+    status = first.status,
+    linkedFormVersion = first.applicationFormVersion,
+    startDate = first.startDate,
+    endDate = first.endDate,
+
+    deadlineId = first.deadline?.id,
+    type = first.deadline?.type ?: first.type,
+    periodNumber = first.deadline?.periodNumber ?: first.periodNumber,
+    reportingDate = first.deadline?.deadline ?: first.reportingDate,
+
+    projectId = first.projectId,
+    projectIdentifier = first.projectIdentifier,
+    projectAcronym = first.projectAcronym,
+    leadPartnerNameInOriginalLanguage = first.leadPartnerNameInOriginalLanguage,
+    leadPartnerNameInEnglish = first.leadPartnerNameInEnglish,
+
+    createdAt = first.createdAt,
+    firstSubmission = first.firstSubmission,
+    verificationDate = first.verificationDate,
+    verificationEndDate = first.verificationEndDate,
+    amountRequested = second?.sumCurrent,
+    totalEligibleAfterVerification = second?.sumCurrentVerified,
+    riskBasedVerification = first.riskBasedVerification,
+    riskBasedVerificationDescription = first.riskBasedVerificationDescription
 )
 
 fun ProjectReportModel.toEntity(
@@ -90,6 +102,13 @@ fun ProjectReportModel.toEntity(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
+    verificationEndDate = null,
+
+    verificationConclusionJs = null,
+    verificationConclusionMa = null,
+    verificationFollowup = null,
+    riskBasedVerification = riskBasedVerification,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =
@@ -117,20 +136,31 @@ fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(
         privateContributionTotal = totalPrivate,
         sumTotal = totalSum,
 
-        partnerContributionCurrent = BigDecimal.ZERO,
-        publicContributionCurrent = BigDecimal.ZERO,
-        automaticPublicContributionCurrent = BigDecimal.ZERO,
-        privateContributionCurrent = BigDecimal.ZERO,
-        sumCurrent = BigDecimal.ZERO,
+        partnerContributionCurrent = ZERO,
+        publicContributionCurrent = ZERO,
+        automaticPublicContributionCurrent = ZERO,
+        privateContributionCurrent = ZERO,
+        sumCurrent = ZERO,
 
         partnerContributionPreviouslyReported = previouslyReportedPartner,
         publicContributionPreviouslyReported = previouslyReportedPublic,
         automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
         privateContributionPreviouslyReported = previouslyReportedPrivate,
         sumPreviouslyReported = previouslyReportedSum,
+
+        partnerContributionCurrentVerified = ZERO,
+        publicContributionCurrentVerified = ZERO,
+        automaticPublicContributionCurrentVerified = ZERO,
+        privateContributionCurrentVerified = ZERO,
+        sumCurrentVerified = ZERO,
+
+        partnerContributionPreviouslyVerified = previouslyVerifiedPartner,
+        publicContributionPreviouslyVerified = previouslyVerifiedPublic,
+        automaticPublicContributionPreviouslyVerified = previouslyVerifiedAutoPublic,
+        privateContributionPreviouslyVerified = previouslyVerifiedPrivate,
+        sumPreviouslyVerified = previouslyVerifiedSum,
     )
 }
-
 
 fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
     reportEntity: ProjectReportEntity,
@@ -140,10 +170,11 @@ fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
         ProjectReportCoFinancingEntity(
             id = ProjectReportCoFinancingIdEntity(reportEntity, index.plus(1)),
             programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
-            percentage = fund.percentage,
             total = fund.total,
-            current = BigDecimal.ZERO,
+            current = ZERO,
             previouslyReported = fund.previouslyReported,
+            currentVerified = ZERO,
+            previouslyVerified = fund.previouslyVerified,
             previouslyPaid = fund.previouslyPaid,
         )
     }
@@ -164,16 +195,16 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         unitCostTotal = totalsFromAF.unitCost,
         sumTotal = totalsFromAF.sum,
 
-        staffCurrent = BigDecimal.ZERO,
-        officeCurrent = BigDecimal.ZERO,
-        travelCurrent = BigDecimal.ZERO,
-        externalCurrent = BigDecimal.ZERO,
-        equipmentCurrent = BigDecimal.ZERO,
-        infrastructureCurrent = BigDecimal.ZERO,
-        otherCurrent = BigDecimal.ZERO,
-        lumpSumCurrent = BigDecimal.ZERO,
-        unitCostCurrent = BigDecimal.ZERO,
-        sumCurrent = BigDecimal.ZERO,
+        staffCurrent = ZERO,
+        officeCurrent = ZERO,
+        travelCurrent = ZERO,
+        externalCurrent = ZERO,
+        equipmentCurrent = ZERO,
+        infrastructureCurrent = ZERO,
+        otherCurrent = ZERO,
+        lumpSumCurrent = ZERO,
+        unitCostCurrent = ZERO,
+        sumCurrent = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
         officePreviouslyReported = previouslyReported.office,
@@ -197,7 +228,7 @@ fun ProjectReportLumpSum.toEntity(
     orderNr = orderNr,
     periodNumber = period,
     total = total,
-    current = BigDecimal.ZERO,
+    current = ZERO,
     previouslyReported = previouslyReported,
     previouslyPaid = previouslyPaid,
 )
@@ -209,6 +240,13 @@ fun ProjectReportUnitCostBase.toEntity(
     reportEntity = report,
     programmeUnitCost = unitCostResolver.invoke(unitCostId),
     total = totalCost,
-    current = BigDecimal.ZERO,
+    current = ZERO,
     previouslyReported = previouslyReported,
+)
+
+fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationConclusion(
+    startDate = verificationDate,
+    conclusionJS = verificationConclusionJs,
+    conclusionMA = verificationConclusionMa,
+    verificationFollowUp = verificationFollowup
 )

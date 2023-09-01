@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -36,6 +37,7 @@ class UpdateCallUnitCostsTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 7,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
@@ -65,8 +67,8 @@ class UpdateCallUnitCostsTest {
         every { persistence.existsAllProgrammeUnitCostsByIds(setOf(4, 5)) } returns true
         every { persistence.updateProjectCallUnitCost(ID, setOf(4, 5)) } returns call.copy(
             unitCosts = listOf(
-                ProgrammeUnitCost(id = 4, projectId = null, isOneCostCategory = true),
-                ProgrammeUnitCost(id = 5, projectId = null, isOneCostCategory = false),
+                ProgrammeUnitCost(id = 4, projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
+                ProgrammeUnitCost(id = 5, projectId = null, isOneCostCategory = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             )
         )
         every { persistence.getCallById(ID) } returns call
@@ -104,8 +106,8 @@ class UpdateCallUnitCostsTest {
         every { persistence.existsAllProgrammeUnitCostsByIds(setOf(5)) } returns true
         every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             unitCosts = listOf(
-                ProgrammeUnitCost(id = 4, projectId = null, isOneCostCategory = true),
-                ProgrammeUnitCost(id = 5, projectId = null, isOneCostCategory = false),
+                ProgrammeUnitCost(id = 4, projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
+                ProgrammeUnitCost(id = 5, projectId = null, isOneCostCategory = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             )
         )
         assertThrows<UnitCostsRemovedAfterCallPublished> { updateCallUnitCosts.updateUnitCosts(ID, setOf(5)) }

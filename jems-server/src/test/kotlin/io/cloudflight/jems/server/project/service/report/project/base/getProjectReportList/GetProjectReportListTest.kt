@@ -3,9 +3,11 @@ package io.cloudflight.jems.server.project.service.report.project.base.getProjec
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.expectedReportSummary
-import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.period
+import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.period7
+import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.period8
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.report
 import io.mockk.clearMocks
 import io.mockk.every
@@ -13,15 +15,17 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 
 internal class GetProjectReportListTest : UnitTest() {
 
     @MockK
     private lateinit var reportPersistence: ProjectReportPersistence
+    @MockK
+    private lateinit var certificateCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
 
@@ -30,37 +34,44 @@ internal class GetProjectReportListTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence)
-        every { projectPersistence.getProjectPeriods(any(), "v4") } returns listOf(period)
+        clearMocks(reportPersistence, certificateCoFinancingPersistence, projectPersistence)
+        every { projectPersistence.getProjectPeriods(any(), "v4") } returns listOf(period7)
+        every { projectPersistence.getProjectPeriods(any(), "v5") } returns listOf(period8)
+        every { certificateCoFinancingPersistence.getTotalsForProjectReports(any())} returns mapOf(
+            Pair(7L, BigDecimal.ONE),
+        )
     }
 
-    @ParameterizedTest(name = "findAll, when last report in {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"])
-    fun `findAll, when last report draft`(status: ProjectReportStatus) {
-        val projectId = 91L + status.ordinal
+    @Test
+    fun findAll() {
+        val projectId = 91L
         every { reportPersistence.listReports(projectId, Pageable.unpaged()) } returns PageImpl(
             listOf(
-                report.copy(id = 7L, projectId = projectId, periodNumber = 7),
-                report.copy(id = 8L, projectId = projectId, periodNumber = 8),
+                report.copy(id = 6L, periodNumber = 6, totalEligibleAfterVerification = null),
+                report.copy(id = 7L, periodNumber = 7),
+                report.copy(id = 8L, periodNumber = 8, status = ProjectReportStatus.InVerification,
+                    linkedFormVersion = "v5", totalEligibleAfterVerification = BigDecimal.ZERO),
+                report.copy(id = 9L, periodNumber = 9, status = ProjectReportStatus.Finalized,
+                    amountRequested = BigDecimal.ZERO, totalEligibleAfterVerification = BigDecimal.ZERO),
+                report.copy(id = 10L, periodNumber = 10, status = ProjectReportStatus.Submitted,
+                    totalEligibleAfterVerification = BigDecimal.valueOf(54),
+                    amountRequested = BigDecimal.valueOf(58),
+                ),
             )
         )
 
         assertThat(interactor.findAll(projectId, Pageable.unpaged())).containsExactly(
-            expectedReportSummary.copy(id = 7L, deletable = true),
-            expectedReportSummary.copy(id = 8L, deletable = true, periodDetail = null),
+            expectedReportSummary.copy(id = 6L, deletable = true, totalEligibleAfterVerification = null, periodDetail = null),
+            expectedReportSummary.copy(id = 7L, deletable = true, amountRequested = BigDecimal.ONE, periodDetail = period7),
+            expectedReportSummary.copy(id = 8L, status = ProjectReportStatus.InVerification,
+                totalEligibleAfterVerification = null, linkedFormVersion = "v5", periodDetail = period8),
+            expectedReportSummary.copy(id = 9L, status = ProjectReportStatus.Finalized, periodDetail = null,
+                totalEligibleAfterVerification = null, amountRequested = null),
+            expectedReportSummary.copy(id = 10L, status = ProjectReportStatus.Submitted, periodDetail = null,
+                totalEligibleAfterVerification = BigDecimal.valueOf(54),
+                amountRequested = BigDecimal.valueOf(58),
+            ),
         )
-    }
-
-    @ParameterizedTest(name = "findAll, when last report not draft but {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
-    fun `findAll, when last report not draft but`(status: ProjectReportStatus) {
-        val projectId = 191L + status.ordinal
-        every { reportPersistence.listReports(projectId, Pageable.unpaged()) } returns PageImpl(
-            listOf(report.copy(id = 7L, projectId = projectId, periodNumber = 7))
-        )
-
-        assertThat(interactor.findAll(projectId, Pageable.unpaged()))
-            .containsExactly(expectedReportSummary.copy(id = 7L, deletable = true))
     }
 
 }

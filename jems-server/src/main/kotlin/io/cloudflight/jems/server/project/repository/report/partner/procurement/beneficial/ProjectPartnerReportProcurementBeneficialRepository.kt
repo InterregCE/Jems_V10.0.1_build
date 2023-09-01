@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository
 interface ProjectPartnerReportProcurementBeneficialRepository :
     JpaRepository<ProjectPartnerReportProcurementBeneficialEntity, Long> {
 
-    fun findTop10ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
+    fun findTop30ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
         procurementId: Long,
         reportId: Long,
     ): List<ProjectPartnerReportProcurementBeneficialEntity>
 
-    fun findTop10ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(
+    fun findTop30ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(
         procurement: ProjectPartnerReportProcurementEntity,
         reportId: Long,
     ): List<ProjectPartnerReportProcurementBeneficialEntity>

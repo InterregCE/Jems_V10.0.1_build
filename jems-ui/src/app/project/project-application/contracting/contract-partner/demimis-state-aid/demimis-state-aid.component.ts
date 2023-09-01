@@ -131,22 +131,6 @@ export class DemimisStateAidComponent implements OnInit {
     });
   }
 
-  countryChanged(countryTitle: string): void {
-    this.selectedCountry = this.findByName(countryTitle, this.nuts);
-    this.deMinimisForm.controls.countryCode.patchValue(this.selectedCountry?.code);
-  }
-
-  countryUnfocused(event: FocusEvent): void {
-    if (DemimisStateAidComponent.selectOptionClicked(event)) {
-      return;
-    }
-    const selected = this.findByName(this.deMinimisForm.controls.country.value, this.nuts);
-    if (!selected) {
-      this.deMinimisForm.controls.country.patchValue('');
-      this.deMinimisForm.controls.countryCode.patchValue(null);
-    }
-  }
-
   initializeFilters(): void {
     this.selectedCountry = this.findByName(this.deMinimisForm.controls.country.value, this.nuts);
     this.filteredCountry = this.deMinimisForm.controls.country.valueChanges
@@ -161,14 +145,12 @@ export class DemimisStateAidComponent implements OnInit {
     this.addMemberStates(this.deMinimis.memberStatesGranting);
     this.tableData = [...this.memberStates.controls];
     this.deMinimisForm.controls.dateOfGrantingAid.setValue(this.deMinimis.dateOfGrantingAid);
-    this.deMinimisForm.controls.amountGrantedAid.setValue(this.deMinimis.totalEligibleBudget);
+    this.deMinimisForm.controls.amountGrantingAid.setValue(this.deMinimis.amountGrantingAid);
     this.deMinimisForm.controls.selfDeclarationSubmissionDate.setValue(this.deMinimis.selfDeclarationSubmissionDate);
     this.deMinimisForm.controls.aidGrantedOnBasis.setValue(this.deMinimis.baseForGranting);
     this.deMinimisForm.controls.country.setValue(this.deMinimis.aidGrantedByCountry);
-    this.deMinimisForm.controls.countryCode.setValue(this.deMinimis.aidGrantedByCountryCode);
     this.deMinimisForm.controls.comment.setValue(this.deMinimis.comment);
     this.deMinimisForm.controls.dateOfGrantingAid.disable();
-    this.deMinimisForm.controls.amountGrantedAid.disable();
     this.memberStates.controls.forEach((memberState: any) => memberState.controls.memberCountry.disable());
     if (!canEdit || isPartnerLocked) {
       this.memberStates.disable();
@@ -186,9 +168,9 @@ export class DemimisStateAidComponent implements OnInit {
       selfDeclarationSubmissionDate: this.deMinimisForm.controls.selfDeclarationSubmissionDate.value,
       baseForGranting: this.deMinimisForm.controls.aidGrantedOnBasis.value,
       aidGrantedByCountry: this.deMinimisForm.controls.country.value,
-      aidGrantedByCountryCode: this.deMinimisForm.controls.countryCode.value,
       comment: this.deMinimisForm.controls.comment.value,
-      memberStatesGranting: this.buildMemberStatesSaveData()
+      memberStatesGranting: this.buildMemberStatesSaveData(),
+      amountGrantingAid: this.deMinimisForm.controls.amountGrantingAid.value
     } as ContractingPartnerStateAidDeMinimisDTO;
   }
 
@@ -210,21 +192,23 @@ export class DemimisStateAidComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
+  getTooltipWithLength(content: string, maxLength: number): string {
+    return `${content} (${ content.length}/${maxLength})`;
+  }
+
   private initForm(data: any): void {
     this.deMinimisForm = this.formBuilder.group({
       dateOfGrantingAid: [''],
-      amountGrantedAid: [''],
+      amountGrantingAid: [''],
       selfDeclarationSubmissionDate: [''],
       aidGrantedOnBasis: [''],
-      country: [''],
-      countryCode: [''],
+      country: ['', Validators.maxLength(250)],
       comment: ['', Validators.maxLength(2000)],
       memberStates: this.formBuilder.array([]),
     });
     this.addMemberStates(this.deMinimis.memberStatesGranting);
     this.formService.init(this.deMinimisForm, new Observable<boolean>().pipe(startWith(data.canEdit && !data.isPartnerLocked)));
     this.deMinimisForm.controls.dateOfGrantingAid.disable();
-    this.deMinimisForm.controls.amountGrantedAid.disable();
     this.memberStates.controls.forEach((memberState: any) => memberState.controls.memberCountry.disable());
   }
 

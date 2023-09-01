@@ -5,6 +5,7 @@ import java.math.BigDecimal
 
 data class IndicatorOverviewLineDTO(
     val outputIndicatorId: Long?,
+    val outputIndicatorCode: String?,
     val outputIndicatorIdentifier: String?,
     val outputIndicatorName: Set<InputTranslation>?,
     val outputIndicatorMeasurementUnit: Set<InputTranslation>?,
@@ -15,6 +16,7 @@ data class IndicatorOverviewLineDTO(
     val projectOutputTargetValue: BigDecimal?,
 
     val resultIndicatorId: Long?,
+    val resultIndicatorCode: String?,
     val resultIndicatorIdentifier: String?,
     val resultIndicatorName: Set<InputTranslation>?,
     val resultIndicatorMeasurementUnit: Set<InputTranslation>?,

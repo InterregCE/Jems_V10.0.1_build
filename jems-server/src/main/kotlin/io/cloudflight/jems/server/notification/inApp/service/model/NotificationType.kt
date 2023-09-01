@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.notification.inApp.service.model
 
-
 enum class NotificationType {
     // Project
     ProjectSubmittedStep1,
@@ -31,12 +30,23 @@ enum class NotificationType {
     PartnerReportReOpenCertified,
 
     // Project Report
-    ProjectReportSubmitted;
+    ProjectReportSubmitted,
+    ProjectReportVerificationOngoing,
+    ProjectReportVerificationDoneNotificationSent,
+    ProjectReportVerificationFinalized,
+
+    // Project File
+    SharedFolderFileUpload,
+    SharedFolderFileDelete,
+    ControlCommunicationFileUpload,
+    ControlCommunicationFileDelete,
+    ProjectReportVerificationFileUpload,
+    ProjectReportVerificationFileDelete;
 
 
     companion object {
 
-        val projectNotifications = sortedSetOf(
+        val projectNotifications = setOf(
             ProjectSubmittedStep1,
             ProjectSubmitted,
             ProjectApprovedStep1,
@@ -55,32 +65,41 @@ enum class NotificationType {
             ProjectInModification,
             ProjectModificationSubmitted,
             ProjectModificationApproved,
-            ProjectModificationRejected
+            ProjectModificationRejected,
         )
 
-        val partnerReportNotifications = sortedSetOf(
+        val partnerReportNotifications  = setOf(
             PartnerReportSubmitted,
             PartnerReportReOpen,
             PartnerReportControlOngoing,
             PartnerReportCertified,
-            PartnerReportReOpenCertified
+            PartnerReportReOpenCertified,
         )
 
-        val projectReportNotifications = sortedSetOf(
+        val projectReportNotifications = setOf(
             ProjectReportSubmitted,
+            ProjectReportVerificationOngoing,
+            ProjectReportVerificationDoneNotificationSent,
+            ProjectReportVerificationFinalized
         )
+
+        val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
+        val partnerReportFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
+
+        val projectFileVerificationCommunicationNotifications = setOf(ProjectReportVerificationFileUpload, ProjectReportVerificationFileDelete)
     }
 
     fun isProjectNotification() = this in projectNotifications
 
-    fun isNotProjectNotification() = !isProjectNotification()
-
     fun isPartnerReportNotification() = this in partnerReportNotifications
-
-    fun isNotPartnerReportNotification() = !isPartnerReportNotification()
 
     fun isProjectReportNotification() = this in projectReportNotifications
 
-    fun isNotProjectReportNotification() = !isProjectReportNotification()
+
+    fun isProjectFileNotification() = this in projectFileSharedFolderNotifications
+
+    fun isPartnerReportFileNotification() = this in partnerReportFileControlCommunicationNotifications
+
+    fun isProjectReportFileNotification() = this in projectFileVerificationCommunicationNotifications
 
 }

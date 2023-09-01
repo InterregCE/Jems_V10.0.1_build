@@ -1,11 +1,4 @@
-import {
-  AfterViewChecked,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild,} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -14,6 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
   CurrencyDTO,
+  ExpenditureParkingMetadataDTO,
   IdNamePairDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerControlReportExpenditureVerificationDTO,
@@ -25,16 +19,10 @@ import {
   TypologyErrorsDTO,
   UserRoleDTO
 } from '@cat/api';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
@@ -49,12 +37,12 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTable} from '@angular/material/table';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+  ExpenditureItemParkedByChipComponent,
+  ExpenditureParkedByEnum,
+} from '../../partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -76,6 +64,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
   isFormEditable: boolean;
+  lastControlReportCertified: Date;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -148,6 +137,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       untilDestroyed(this)
     ).subscribe();
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies => this.currencies = currencies);
+    this.reportControlStore.partnerControlReport$.pipe(tap(partnerControlReport => this.lastControlReportCertified = partnerControlReport.reportControlEnd));
 
     this.dataAsObservable();
   }
@@ -185,10 +175,10 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[], controlReport: ProjectPartnerControlReportDTO): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[], controlReport: ProjectPartnerControlReportDTO, unparkable: number[]): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
-    partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
+    partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex, unparkable.includes(partnerReportExpenditure.id)));
     this.tableData = [...this.items.controls];
     this.formService.setEditable(this.isFormEditable);
 
@@ -232,6 +222,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.costCategories$,
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
+      this.pageStore.unparkable$,
       this.reportCosts$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
       this.partnerReportPageStore.userCanViewGdpr$,
@@ -239,12 +230,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.partnerReportDetailPageStore.partnerId$,
       this.reportControlStore.partnerControlReport$
     ]).pipe(
-      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId, controlReport]: any) => ({
+      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, unparkable, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId, controlReport]: any) => ({
           typologyOfErrors,
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
+          unparkable,
           isMonitorUser,
           isGdprCompliant,
           projectId,
@@ -253,7 +245,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           controlReport
           })
       ),
-      tap(data => this.resetForm(data.expendituresCosts, data.controlReport)),
+      tap(data => this.resetForm(data.expendituresCosts, data.controlReport, data.unparkable)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
     );
@@ -265,6 +257,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     const columnsToDisplayFirstPart = [
       'costItemID',
       'costGDPR',
+      'parkedBy',
       'costCategory',
     ];
 
@@ -291,13 +284,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     columnsToDisplay = columnsToDisplayFirstPart.concat(this.collapsedColumns);
 
     if (investments.length > 0) {
-      columnsToDisplay.splice(3, 0, 'investmentId');
+      columnsToDisplay.splice(4, 0, 'investmentId');
     }
 
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(2, 0, 'costOptions');
-      columnsToDisplay.splice(12, 0, 'numberOfUnits');
-      columnsToDisplay.splice(13, 0, 'pricePerUnit');
+      columnsToDisplay.splice(3, 0, 'costOptions');
+      columnsToDisplay.splice(13, 0, 'numberOfUnits');
+      columnsToDisplay.splice(14, 0, 'pricePerUnit');
     }
 
     columnsToDisplay = columnsToDisplay.concat(columnsToDisplayLastPart);
@@ -316,6 +309,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.columnsWidthsToDisplay = [{minInRem: 2.5, maxInRem: 2.5}];
 
     this.columnsWidthsToDisplay.push({minInRem: 1, maxInRem: 1}); // cost GDPR
+    this.columnsWidthsToDisplay.push({minInRem: 6, maxInRem: 6}); // parked by
 
     if (isCostOptionsAvailable) {
       this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost options
@@ -374,7 +368,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     return reportExpenditureCost.lumpSumId ? 'lumpSum' : 'unitCost';
   }
 
-  private addExpenditure(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO, expenditureIndex: number): void {
+  private addExpenditure(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO, expenditureIndex: number, unparkable: boolean): void {
     const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureControl);
     this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureControl), costOption));
     this.items.push(this.formBuilder.group(
@@ -384,6 +378,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           ? reportExpenditureControl.parkingMetadata.originalExpenditureNumber
           : reportExpenditureControl.number
         ),
+        parkingMetadata: this.formBuilder.control(reportExpenditureControl.parkingMetadata),
         reportOfOriginNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.reportOfOriginNumber),
         originalExpenditureNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.originalExpenditureNumber),
         costOptions: this.formBuilder.control(costOption),
@@ -399,6 +394,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         typologyOfErrorId: this.formBuilder.control(reportExpenditureControl.typologyOfErrorId || null),
         parked: this.formBuilder.control(reportExpenditureControl.parked),
         parkedOn: this.formBuilder.control(reportExpenditureControl.parkedOn != null ? reportExpenditureControl.parkedOn : null),
+        unparkable: this.formBuilder.control(unparkable || !reportExpenditureControl.parked),
         verificationComment: this.formBuilder.control(reportExpenditureControl.verificationComment, [Validators.maxLength(1000)]),
       })
     );
@@ -414,6 +410,14 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   private getDeductedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
     return reportExpenditureControl.parked ? 0 : reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
+  }
+
+  private isParkedBeforeReopen(parkedOn: Date, lastControlReopenCertified: Date) {
+      return parkedOn ? parkedOn < lastControlReopenCertified : false;
+  }
+
+  unparkLocked(parkedOn: Date, lastControlReopenCertified: Date, unparkable: Boolean) {
+      return this.isParkedBeforeReopen(parkedOn, lastControlReopenCertified) || !unparkable;
   }
 
   private formToReportExpenditures(): ProjectPartnerControlReportExpenditureVerificationUpdateDTO[] {
@@ -516,5 +520,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors(null);
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
+  }
+
+  getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO): ExpenditureParkedByEnum {
+    return ExpenditureItemParkedByChipComponent.getParkedBy(parkingMetadata);
   }
 }

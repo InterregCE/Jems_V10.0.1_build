@@ -41,7 +41,7 @@ class GetContractingPartnerStateAidGberService(
                 partnerId = partnerData.id,
                 dateOfGrantingAid =  projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
                 partnerFunds =  fundsSelectedByPartner,
-                totalEligibleBudget = partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO,
+                amountGrantingAid = gberData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 naceGroupLevel = partnerData.nace,
                 aidIntensity = gberData?.aidIntensity ?: BigDecimal.ZERO,
                 locationInAssistedArea = gberData?.locationInAssistedArea,

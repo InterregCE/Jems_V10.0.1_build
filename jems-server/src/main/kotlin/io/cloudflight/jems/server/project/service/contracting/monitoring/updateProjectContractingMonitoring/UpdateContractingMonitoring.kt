@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -40,7 +40,7 @@ class UpdateContractingMonitoring(
     private val getProjectBudget: GetProjectBudget,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
-    private val paymentPersistence: PaymentRegularPersistence,
+    private val paymentPersistence: PaymentPersistence,
 ) : UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted
@@ -60,11 +60,11 @@ class UpdateContractingMonitoring(
                 .fillLumpSumsList(resolveLumpSums = {
                     projectLumpSumPersistence.getLumpSums(projectId = projectId, version)
                 })
+            val project = projectPersistence.getProject(projectId = projectId, version)
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
                 contractMonitoring.copy(projectId = projectId)
-            ).fillEndDateWithDuration(resolveDuration = {
-                projectPersistence.getProject(projectId = projectId, version).duration
-            }).apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
+            ).fillEndDateWithDuration(resolveDuration = { project.duration })
+                .apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
 
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
@@ -78,7 +78,8 @@ class UpdateContractingMonitoring(
                 orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted
             )
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted,
+                projectCustomIdentifier = project.customIdentifier, projectAcronym = project.acronym)
             updateApprovedAmountContributions(
                 projectId = projectId,
                 lumpSumsToUpdate = lumpSums.filter { it.orderNr in lumpSumsOrderNrTobeAdded },
@@ -144,6 +145,8 @@ class UpdateContractingMonitoring(
         project: ProjectSummary,
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: Set<Int>,
+        projectCustomIdentifier: String,
+        projectAcronym: String,
     ) {
         val projectId = project.id
         if (orderNrsToBeDeleted.isNotEmpty()) {
@@ -163,14 +166,17 @@ class UpdateContractingMonitoring(
                         partnerPayments.map { o ->
                             PaymentPartnerToCreate(
                                 o.partnerId,
+                                null,
                                 o.amountApprovedPerPartner
                             )
                         },
-                        partnerPayments.sumOf { it.amountApprovedPerPartner }
+                        partnerPayments.sumOf { it.amountApprovedPerPartner },
+                        projectCustomIdentifier = projectCustomIdentifier,
+                        projectAcronym = projectAcronym,
                     )
                 }
 
-            this.paymentPersistence.savePaymentToProjects(projectId, paymentsToUpdate)
+            this.paymentPersistence.saveFTLSPayments(projectId, paymentsToUpdate)
             orderNrsToBeAdded.forEach { orderNr ->
                 auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, true))
             }

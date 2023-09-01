@@ -31,7 +31,7 @@ internal class GetLegalStatusTest : UnitTest() {
 
     @Test
     fun getLegalStatuses() {
-        every { persistence.getMax20Statuses() } returns listOf(legalStatus)
+        every { persistence.getMax50Statuses() } returns listOf(legalStatus)
         assertThat(getLegalStatus.getLegalStatuses()).containsExactly(legalStatus)
     }
 

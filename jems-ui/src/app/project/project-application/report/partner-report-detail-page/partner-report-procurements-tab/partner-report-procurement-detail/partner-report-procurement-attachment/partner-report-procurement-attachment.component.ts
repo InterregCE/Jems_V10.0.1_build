@@ -91,8 +91,8 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
       this.fileSizeOverLimitError$,
       this.procurementStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.procurementStore.uploadProcurementFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.procurementStore.uploadProcurementFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {

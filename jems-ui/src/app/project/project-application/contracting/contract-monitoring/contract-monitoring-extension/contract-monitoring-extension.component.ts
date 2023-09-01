@@ -10,17 +10,17 @@ import {
   ContractingDimensionCodeDTO,
   InputTranslation,
   ProgrammeChecklistDetailDTO,
+  ProgrammeLumpSumDTO,
   ProgrammeSpecificObjectiveDTO,
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
   ProjectPartnerSummaryDTO,
-   ProjectPeriodForMonitoringDTO,
+  ProjectPeriodForMonitoringDTO,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {TranslateService} from '@ngx-translate/core';
 import {
@@ -32,7 +32,9 @@ import {
 import {
   ProjectPartnerStore
 } from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ContractReportingStore} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
+import {
+  ContractReportingStore
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -58,13 +60,13 @@ export class ContractMonitoringExtensionComponent {
     entryIntoForceComment: ['', Validators.maxLength(200)],
     additionalEntryIntoForceItems: this.formBuilder.array([], Validators.maxLength(25)),
     typologyProv94: [],
-    typologyProv94Comment: [Validators.maxLength(1000)],
+    typologyProv94Comment: ['', Validators.maxLength(1000)],
     typologyProv95: [],
-    typologyProv95Comment: [Validators.maxLength(1000)],
+    typologyProv95Comment: ['', Validators.maxLength(1000)],
     typologyStrategic: [],
-    typologyStrategicComment: [Validators.maxLength(1000)],
+    typologyStrategicComment: ['', Validators.maxLength(1000)],
     typologyPartnership: [],
-    typologyPartnershipComment: [Validators.maxLength(1000)],
+    typologyPartnershipComment: ['', Validators.maxLength(1000)],
     lumpSums: this.formBuilder.array([]),
     dimensionCodesItems: this.formBuilder.array([], Validators.maxLength(25))
   });
@@ -78,7 +80,7 @@ export class ContractMonitoringExtensionComponent {
     projectContractingMonitoring: ProjectContractingMonitoringDTO;
     contractMonitoringViewable: boolean;
     contractMonitoringEditable: boolean;
-    projectCallLumpSums: ProgrammeLumpSum[];
+    projectCallLumpSums: ProgrammeLumpSumDTO[];
     periods: ProjectPeriodForMonitoringDTO[];
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
@@ -182,6 +184,8 @@ export class ContractMonitoringExtensionComponent {
     this.dimensionCodesFormItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
     this.decisionForm.controls.endDate.setValue(projectContractingMonitoring.endDate);
+    this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.entryIntoForceDate);
+    this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.entryIntoForceComment);
     this.decisionForm.controls.typologyProv94.setValue(projectContractingMonitoring.typologyProv94);
     this.decisionForm.controls.typologyProv94Comment.setValue(projectContractingMonitoring.typologyProv94Comment);
     this.decisionForm.controls.typologyProv95.setValue(projectContractingMonitoring.typologyProv95);
@@ -310,7 +314,7 @@ export class ContractMonitoringExtensionComponent {
     return this.lumpSumsForm.controls.filter(lumpSum => lumpSum.value.fastTrack);
   }
 
-  getLumpSum(id: number, lumpSums: ProgrammeLumpSum[]): InputTranslation[] | null {
+  getLumpSum(id: number, lumpSums: ProgrammeLumpSumDTO[]): InputTranslation[] | null {
     const lumpSum = lumpSums.find(it => it.id === id);
     return lumpSum ? lumpSum.name : null;
   }

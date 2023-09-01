@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.file
 
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 
@@ -39,6 +40,6 @@ interface ProjectPartnerReportFilePersistence {
         file: JemsFileCreate
     ): JemsFileMetadata
 
-    fun addAttachmentToPartnerReport(file: JemsFileCreate): JemsFileMetadata
+    fun addAttachmentToPartnerReport(file: JemsFileCreate): JemsFile
 
 }

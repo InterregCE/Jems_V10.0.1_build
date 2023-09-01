@@ -138,7 +138,7 @@
     "declaredAmountInEur": 1234.8
   },
   {
-    "cypressReferenceUnit": "projectProposedTravel",
+    "cypressReferenceUnit": "shouldHaveUnitCost",
     "costCategory": "TravelAndAccommodationCosts",
     "internalReferenceNumber": null,
     "invoiceNumber": null,
@@ -161,7 +161,7 @@
     "declaredAmountInEur": 4321.99,
     "attachment": null,
     "lumpSumId": null,
-    "unitCostId": null,
+    "unitCostId": 2,
     "gdpr": ""
   },
   {

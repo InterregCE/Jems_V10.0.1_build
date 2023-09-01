@@ -45,6 +45,7 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
         cy.wrap(fileName);
       })
     } else if (fileExtension === 'xlsx') {
+      cy.wait(1000);
       cy.readFile('./cypress/downloads/' + fileName, null).parseXLSX().then(content => {
         const file = {fileName: fileName, content: content};
         cy.wrap(file);

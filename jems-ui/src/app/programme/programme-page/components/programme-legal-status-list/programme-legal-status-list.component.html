@@ -43,7 +43,7 @@
                     </ng-container>
                 </ng-container>
             </div>
-            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+            <div *ngIf="(changeFormState$ | async) === FormState.EDIT && this.legalStatusesForm.length < 50">
                 <div>
                     <button mat-icon-button
                             type="button"

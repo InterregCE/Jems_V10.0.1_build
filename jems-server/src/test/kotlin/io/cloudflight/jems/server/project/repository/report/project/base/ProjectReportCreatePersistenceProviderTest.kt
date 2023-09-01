@@ -118,6 +118,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = null,
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         private fun workPackages() = listOf(
@@ -223,9 +228,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 fundsSorted = listOf(
                     PreviouslyProjectReportedFund(
                         fundId = 410L,
-                        percentage = BigDecimal.valueOf(40),
                         total = BigDecimal.valueOf(1500),
                         previouslyReported = BigDecimal.valueOf(256),
+                        previouslyVerified = BigDecimal.valueOf(248),
                         previouslyPaid = BigDecimal.valueOf(512),
                     ),
                 ),
@@ -239,6 +244,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 previouslyReportedAutoPublic = BigDecimal.valueOf(35),
                 previouslyReportedPrivate = BigDecimal.valueOf(36),
                 previouslyReportedSum = BigDecimal.valueOf(37),
+                previouslyVerifiedPartner = BigDecimal.valueOf(43),
+                previouslyVerifiedPublic = BigDecimal.valueOf(44),
+                previouslyVerifiedAutoPublic = BigDecimal.valueOf(45),
+                previouslyVerifiedPrivate = BigDecimal.valueOf(46),
+                previouslyVerifiedSum = BigDecimal.valueOf(47),
             ),
             costCategorySetup = ReportCertificateCostCategory(
                 totalsFromAF = BudgetCostsCalculationResultFull(
@@ -627,9 +637,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
         assertThat(slotCoFinancing.captured).hasSize(1)
         assertThat(slotCoFinancing.captured.first().programmeFund).isEqualTo(fund410)
-        assertThat(slotCoFinancing.captured.first().percentage).isEqualTo(BigDecimal.valueOf(40))
         assertThat(slotCoFinancing.captured.first().total).isEqualTo(BigDecimal.valueOf(1500))
         assertThat(slotCoFinancing.captured.first().previouslyReported).isEqualTo(BigDecimal.valueOf(256))
+        assertThat(slotCoFinancing.captured.first().previouslyVerified).isEqualTo(BigDecimal.valueOf(248))
         assertThat(slotCoFinancing.captured.first().previouslyPaid).isEqualTo(BigDecimal.valueOf(512))
 
         assertThat(slotCertificateCoFinancing.captured.reportEntity).isEqualTo(saveSlot.captured)
@@ -650,6 +660,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(slotCertificateCoFinancing.captured.automaticPublicContributionPreviouslyReported).isEqualTo(BigDecimal.valueOf(35))
         assertThat(slotCertificateCoFinancing.captured.privateContributionPreviouslyReported).isEqualTo(BigDecimal.valueOf(36))
         assertThat(slotCertificateCoFinancing.captured.sumPreviouslyReported).isEqualTo(BigDecimal.valueOf(37))
+
+        assertThat(slotCertificateCoFinancing.captured.partnerContributionPreviouslyVerified).isEqualTo(BigDecimal.valueOf(43))
+        assertThat(slotCertificateCoFinancing.captured.publicContributionPreviouslyVerified).isEqualTo(BigDecimal.valueOf(44))
+        assertThat(slotCertificateCoFinancing.captured.automaticPublicContributionPreviouslyVerified).isEqualTo(BigDecimal.valueOf(45))
+        assertThat(slotCertificateCoFinancing.captured.privateContributionPreviouslyVerified).isEqualTo(BigDecimal.valueOf(46))
+        assertThat(slotCertificateCoFinancing.captured.sumPreviouslyVerified).isEqualTo(BigDecimal.valueOf(47))
 
         assertThat(slotCostCategory.captured.reportEntity).isEqualTo(saveSlot.captured)
         assertThat(slotCostCategory.captured.staffTotal).isEqualTo(BigDecimal.valueOf(105))

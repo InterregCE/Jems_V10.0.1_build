@@ -33,6 +33,7 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.partner.financialOverview.ExpenditureUnitCostBreakdownLineData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProgrammeLegalStatusData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProgrammeLegalStatusTypeData
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupData
@@ -41,7 +42,6 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.identification.
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportFileFormatData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportStatusData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportTypeData
-import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementBeneficialOwnerData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementSubcontractData
@@ -121,7 +121,7 @@ import org.springframework.data.domain.PageRequest
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 
 internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
@@ -359,6 +359,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 4,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 3
             ),
         )
@@ -385,7 +386,9 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(0.84),
             declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
             attachment = JemsFileMetadataData(47L, "file.xlsx", DATE_TIME_1),
-            parkingMetadata = ExpenditureParkingMetadataDTO(75L, 4, 3)
+            parkingMetadata = ExpenditureParkingMetadataDTO(75L, 4, 3),
+            number = 1,
+            gdpr = false
         )
 
         private val dummyLineCoFin = ExpenditureCoFinancingBreakdownLine(

@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {PreConditionCheckResultDTO, ProjectReportDTO, ProjectReportService, ProjectReportSummaryDTO, ProjectReportUpdateDTO} from '@cat/api';
+import {
+  PreConditionCheckResultDTO,
+  ProjectReportDTO,
+  ProjectReportService,
+  ProjectReportSummaryDTO,
+  ProjectReportUpdateDTO, ProjectReportVerificationNotificationAPIService, ProjectReportVerificationNotificationDTO
+} from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -7,31 +13,41 @@ import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
   public static REPORT_DETAIL_PATH = '/projectReports/';
 
   projectReport$: Observable<ProjectReportDTO>;
+  projectReportVerificationNotification$: Observable<ProjectReportVerificationNotificationDTO>;
   projectReportId$: Observable<number>;
   reportStatus$: Observable<ProjectReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
   reportVersion$ = new ReplaySubject<string | undefined>(1);
+  canUserAccessCall$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   updatedReportStatus$ = new Subject<ProjectReportSummaryDTO.StatusEnum>();
+  updatedNotificationData$ = new Subject<ProjectReportVerificationNotificationDTO>();
 
   private updatedReport$ = new Subject<ProjectReportDTO>();
 
   constructor(private routingService: RoutingService,
-              public projectReportPageStore: ProjectReportPageStore,
+              private projectReportPageStore: ProjectReportPageStore,
               private projectReportService: ProjectReportService,
-              private projectStore: ProjectStore) {
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              private projectReportVerificationNotificationService: ProjectReportVerificationNotificationAPIService,
+              public projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();
     this.projectReport$ = this.projectReport();
+    this.projectReportVerificationNotification$ = this.projectReportVerificationNotification();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
+    this.canUserAccessCall$ = partnerReportDetailPageStore.canUserAccessCall$;
   }
 
   private projectReportId(): Observable<any> {
@@ -59,6 +75,28 @@ export class ProjectReportDetailPageStore {
     );
 
     return merge(initialReport$, this.updatedReport$);
+  }
+
+  private projectReportVerificationNotification(): Observable<ProjectReportVerificationNotificationDTO> {
+    const initialReportNotification$ = combineLatest([
+      this.projectStore.projectId$,
+      this.projectReportId$,
+      this.updatedReportStatus$.pipe(startWith(null))
+    ]).pipe(
+      switchMap(([projectId, reportId]) => !!projectId && !!reportId
+        ? this.projectReportVerificationNotificationService.getLastProjectReportVerificationNotification(Number(projectId), Number(reportId))
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reports']);
+              return of({} as ProjectReportVerificationNotificationDTO);
+            })
+          )
+        : of({} as ProjectReportVerificationNotificationDTO)
+      ),
+      tap(reportVerificationNotification => Log.info('Fetched the project report verification notificatioon:', this, reportVerificationNotification)),
+    );
+
+    return merge(initialReportNotification$, this.updatedNotificationData$);
   }
   public saveIdentification(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
     return combineLatest([
@@ -102,6 +140,32 @@ export class ProjectReportDetailPageStore {
         map(status => status as ProjectReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),
         tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  startVerificationWork(projectId: number, reportId: number) {
+    return this.projectReportService.startVerificationOnProjectReport(projectId, reportId)
+      .pipe(
+        map(status => status as ProjectReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  finalizeReport(projectId: number, reportId: number): Observable<ProjectReportSummaryDTO.StatusEnum> {
+    return this.projectReportService.finalizeVerificationOnProjectReport(projectId, reportId)
+      .pipe(
+        map(status => status as ProjectReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  sendNotification(projectId: number, reportId: number): Observable<ProjectReportVerificationNotificationDTO> {
+    return this.projectReportVerificationNotificationService.sendVerificationDoneByJsNotification(projectId, reportId)
+      .pipe(
+        tap(notificationData => this.updatedNotificationData$.next(notificationData)),
+        tap(notificationData => Log.info('Verification done by JS, notification was sent', reportId, notificationData))
       );
   }
 }

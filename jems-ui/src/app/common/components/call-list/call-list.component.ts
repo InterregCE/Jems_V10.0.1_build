@@ -24,6 +24,10 @@ export class CallListComponent implements OnInit {
 
   @Input()
   publishedCallsOnly: boolean;
+  @Input()
+  currentPageSize = 25;
+  @Input()
+  disableTopPaginator = false;
 
   data$: Observable<{
     page: PageCallDTO;
@@ -32,6 +36,7 @@ export class CallListComponent implements OnInit {
 
   constructor(private router: Router,
               public listStore: CallListStore) {
+    this.listStore.newPageSize$.next(this.currentPageSize);
   }
 
   ngOnInit(): void {

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportVerificationClarificationEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateInvestmentTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
@@ -17,9 +18,8 @@ import io.cloudflight.jems.server.project.entity.report.project.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.workpackage.toAddressEntity
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationClarification
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
@@ -228,7 +228,24 @@ fun ProjectReportInvestment.toEntity(
     )
 }
 
-fun combineInvestmentTranslatedValues(
+fun ProjectReportVerificationClarificationEntity.toModel() = ProjectReportVerificationClarification(
+    id = id,
+    number = number,
+    requestDate = requestDate,
+    answerDate = answerDate,
+    comment = comment
+)
+
+fun ProjectReportVerificationClarification.toEntity(projectReport: ProjectReportEntity) = ProjectReportVerificationClarificationEntity(
+    id = id,
+    number = number,
+    projectReport = projectReport,
+    requestDate = requestDate,
+    answerDate = answerDate,
+    comment = comment
+)
+
+private fun combineInvestmentTranslatedValues(
     sourceEntity: ReportProjectCertificateInvestmentEntity,
     title: Set<InputTranslation>,
 ): MutableSet<ReportProjectCertificateInvestmentTranslEntity> {
@@ -242,4 +259,3 @@ fun combineInvestmentTranslatedValues(
         )
     }
 }
-

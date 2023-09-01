@@ -1,17 +1,17 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
   ProjectPartnerReportWorkPackageDTO,
   ProjectPartnerReportWorkPackageOutputDTO,
 } from '@cat/api';
-import {catchError, finalize, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
@@ -37,18 +37,17 @@ import {v4 as uuid} from 'uuid';
 export class PartnerReportWorkPlanProgressTabComponent {
 
   constants = PartnerReportWorkplanConstants;
-  savedWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
-  isReportEditable$: Observable<boolean>;
+  data$: Observable<{
+    workPackages: ProjectPartnerReportWorkPackageDTO[];
+    isReportEditable: boolean;
+  }>;
   isUploadDone = false;
 
   workPlanForm: FormGroup = this.formBuilder.group({
-    workPackages: this.formBuilder.array([ this.formBuilder.group({
-      id: this.formBuilder.control(''),
-      description: this.formBuilder.control([], this.constants.WORK_PACKAGE_DESCRIPTION.validators),
-      activities: this.formBuilder.array([]),
-      outputs: this.formBuilder.array([]),
-    })])
+    workPackages: this.formBuilder.array([])
   });
+
+  toggleStatesOfWorkPackages: boolean[] = [];
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
@@ -56,30 +55,52 @@ export class PartnerReportWorkPlanProgressTabComponent {
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private pageStore: PartnerReportWorkPlanPageStore,
               private partnerFileManagementStore: PartnerFileManagementStore,
-              private routingService: RoutingService) {
-
-    this.savedWorkPackages$ = this.pageStore.partnerWorkPackages$
-      .pipe(
-        tap(workPackages => this.resetForm(workPackages))
-      );
-    this.isReportEditable$ = this.partnerReportDetailPageStore.reportEditable$;
+              private routingService: RoutingService,
+              public changeDetectorRef: ChangeDetectorRef,
+              public applicationRef: ApplicationRef) {
     this.formService.init(this.workPlanForm, this.partnerReportDetailPageStore.reportEditable$);
+    this.data$ = combineLatest([
+      this.pageStore.partnerWorkPackages$,
+      this.partnerReportDetailPageStore.reportEditable$,
+    ]).pipe(
+      map(([workPackages, isReportEditable]) => ({
+        workPackages,
+        isReportEditable,
+      })),
+      tap(data => this.resetForm(data.workPackages))
+    );
   }
 
   get workPackages(): FormArray {
     return this.workPlanForm.get(this.constants.WORK_PACKAGES.name) as FormArray;
   }
 
+  workPackageItem(item: AbstractControl, control: string) {
+    return item?.get(control)?.value;
+  }
+
   activities(workPackageIndex: number): FormArray {
     return this.workPackages.at(workPackageIndex).get(this.constants.ACTIVITIES.name) as FormArray;
+  }
+
+  activityItem(item: AbstractControl, control: string) {
+    return item?.get(control)?.value;
   }
 
   deliverables(workPackageIndex: number, activityIndex: number): FormArray {
     return this.activities(workPackageIndex).at(activityIndex).get(this.constants.DELIVERABLES.name) as FormArray;
   }
 
+  deliverableItem(item: AbstractControl, control: string) {
+    return item?.get(control)?.value;
+  }
+
   outputs(workPackageIndex: number): FormArray {
     return this.workPackages.at(workPackageIndex).get(this.constants.OUTPUTS.name) as FormArray;
+  }
+
+  outputItem(item: AbstractControl, control: string) {
+    return item?.get(control)?.value;
   }
 
   activityFileMetadata(workPackageIndex: number, activityIndex: number): FormControl {
@@ -106,9 +127,11 @@ export class PartnerReportWorkPlanProgressTabComponent {
     this.workPackages.push(
       this.formBuilder.group({
         id: this.formBuilder.control(workPackage.id),
+        number: this.formBuilder.control(workPackage.number),
         description: this.formBuilder.control(workPackage.description, this.constants.WORK_PACKAGE_DESCRIPTION.validators),
         activities: this.formBuilder.array([]),
         outputs: this.formBuilder.array([]),
+        deactivated: this.formBuilder.control(workPackage.deactivated),
       })
     );
 
@@ -120,7 +143,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
     workPackage.outputs.forEach(output => this.addOutput(workPackageIndex, output));
   }
 
-  onUploadDeliverable(target: any, activityId: number, deliverableId: number,  activityIndex: number,
+  onUploadDeliverable(target: any, activityId: number, deliverableId: number, activityIndex: number,
                       workPackageIndex: number, deliverableIndex: number, workPackageId: number): void {
     if (!target) {
       return;
@@ -201,6 +224,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
     this.activities(workPackageIndex).push(this.formBuilder.group(
       {
         id: existing?.id,
+        number: this.formBuilder.control(existing?.number),
         title: this.formBuilder.control(existing?.title || []),
         progress: this.formBuilder.control(existing?.progress || [], this.constants.ACTIVITY_PROGRESS.validators),
         deliverables: this.formBuilder.array([]),
@@ -213,6 +237,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
   private addDeliverable(workPackageIndex: number, activityIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDeliverableDTO): void {
     this.deliverables(workPackageIndex, activityIndex).push(this.formBuilder.group({
       id: existing?.id,
+      number: this.formBuilder.control(existing?.number),
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
       fileMetadata: this.formBuilder.control(existing?.attachment || ''),
@@ -223,9 +248,12 @@ export class PartnerReportWorkPlanProgressTabComponent {
   private addOutput(workPackageIndex: number, existing?: ProjectPartnerReportWorkPackageOutputDTO): void {
     this.outputs(workPackageIndex).push(this.formBuilder.group({
       id: existing?.id,
+      number: this.formBuilder.control(existing?.number),
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
-      fileMetadata: this.formBuilder.control(existing?.attachment || '')
+      evidence: this.formBuilder.control(existing?.evidence),
+      fileMetadata: this.formBuilder.control(existing?.attachment || ''),
+      deactivated: this.formBuilder.control(existing?.deactivated),
     }));
   }
 
@@ -236,5 +264,13 @@ export class PartnerReportWorkPlanProgressTabComponent {
         tap(() => this.formService.setSuccess('project.work.package.tab.activities.saved')),
         catchError(err => this.formService.setError(err))
       ).subscribe();
+  }
+
+  toggleWorkPackageRowAtIndex(index: number): void {
+      this.toggleStatesOfWorkPackages[index] = !this.toggleStatesOfWorkPackages[index];
+  }
+
+  getWorkPackageRowToggleStateAtIndex(index: number): boolean {
+      return this.toggleStatesOfWorkPackages[index];
   }
 }

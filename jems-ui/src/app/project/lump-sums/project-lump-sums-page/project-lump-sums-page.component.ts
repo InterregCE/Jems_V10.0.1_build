@@ -21,13 +21,13 @@ import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {ProjectPartner} from '../../model/ProjectPartner';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProgrammeLumpSum} from '../../model/lump-sums/programmeLumpSum';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ProgrammeLumpSumDTO} from '@cat/api';
 
 @UntilDestroy()
 @Component({
@@ -64,7 +64,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
     partners: ProjectPartner[];
-    lumpSums: ProgrammeLumpSum[];
+    lumpSums: ProgrammeLumpSumDTO[];
     periods: ProjectPeriod[];
     showAddButton: boolean;
     showGapExistsWarning: boolean;
@@ -298,7 +298,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   private resetForm(
     projectLumpSums: ProjectLumpSum[],
-    projectCallLumpSums: ProgrammeLumpSum[],
+    projectCallLumpSums: ProgrammeLumpSumDTO[],
     partners: ProjectPartner[],
     periods: ProjectPeriod[]
   ): void {
@@ -390,7 +390,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.getAmountControl(control)?.setErrors(null);
     });
 
-    if (lumpSumsFormControl?.value && !lumpSumsFormControl.value.isSplittingAllowed) {
+    if (lumpSumsFormControl?.value && !lumpSumsFormControl.value.splittingAllowed) {
       const amounts = partnersContributionFormArray?.controls?.map(control => this.getAmountControl(control)?.value) || [];
       const positiveAmountIndexes = amounts.map((amount, index) => amount > 0 ? index : -1).filter(index => index !== -1);
       if (positiveAmountIndexes.length > 1) {
@@ -438,5 +438,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   get items(): FormArray {
     return this.lumpSumsForm.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+  }
+
+  compareLumpSums(l1: ProgrammeLumpSumDTO, l2: ProgrammeLumpSumDTO) {
+    return l1.id === l2.id;
   }
 }

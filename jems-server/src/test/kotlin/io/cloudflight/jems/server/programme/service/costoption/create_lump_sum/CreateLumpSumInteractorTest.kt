@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.mockk.clearMocks
 import io.mockk.every
@@ -63,7 +64,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<LumpSumIsInvalid> { createLumpSum.createLumpSum(wrongLumpSum) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -83,7 +85,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         assertThrows<MaxAllowedLumpSumsReached> { createLumpSum.createLumpSum(lumpSum) }
     }
@@ -100,7 +103,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -121,7 +125,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<IdHasToBeNull>("when creating id cannot be filled in") {
@@ -136,7 +141,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val name = setOf(InputTranslation(SystemLanguage.SK, getStringOfLength(51)))
         every {
@@ -156,7 +162,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(256)))
         every {
@@ -177,7 +184,8 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val phase = null
         every {

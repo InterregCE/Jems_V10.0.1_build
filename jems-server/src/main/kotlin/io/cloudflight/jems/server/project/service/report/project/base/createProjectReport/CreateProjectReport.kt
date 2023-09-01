@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditProjectReportNotSpecific
+import io.cloudflight.jems.server.project.authorization.CanCreateProjectReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -56,12 +56,12 @@ class CreateProjectReport(
 ) : CreateProjectReportInteractor {
 
     companion object {
-        private const val MAX_REPORTS = 25
+        private const val MAX_REPORTS = 100
 
         private val emptyPrinciples = ProjectHorizontalPrinciples(null, null, null)
     }
 
-    @CanEditProjectReportNotSpecific
+    @CanCreateProjectReport
     @Transactional
     @ExceptionWrapper(CreateProjectReportException::class)
     override fun createReportFor(projectId: Long, data: ProjectReportUpdate): ProjectReport {
@@ -82,8 +82,8 @@ class CreateProjectReport(
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
         val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version).toSet()
         val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
-        val submittedReports = reportPersistence.getSubmittedProjectReportIds(projectId)
-        val submittedReportIds = submittedReports.mapTo(HashSet()) { it.first }
+        val submittedReports = reportPersistence.getSubmittedProjectReports(projectId)
+        val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
 
         val workPackages = projectWorkPackagePersistence
             .getWorkPackagesWithAllDataByProjectId(projectId = project.id!!, version = version)
@@ -96,13 +96,14 @@ class CreateProjectReport(
             .toCreateModel(previouslyReportedByNumber = projectReportResultPersistence.getResultCumulative(submittedReportIds))
         val projectManagement = projectDescriptionPersistence.getProjectManagement(projectId = projectId, version = version)
 
-        val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.second.hasContent() }?.first
+        val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.type.hasContent() }?.id
         val reportToCreate = ProjectReportCreateModel(
             reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
             reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
                 projectId = projectId,
                 version = version,
-                investments = workPackages.extractInvestments()
+                investments = workPackages.extractInvestments(),
+                submittedReports = submittedReports,
             ),
             workPackages = workPackages.toCreateEntity(
                 previouslyReportedDeliverables = workPlanPersistence.getDeliverableCumulative(submittedReportIds),
@@ -170,6 +171,11 @@ class CreateProjectReport(
         createdAt = ZonedDateTime.now(),
         firstSubmission = null,
         verificationDate = null,
+        verificationEndDate = null,
+        amountRequested = BigDecimal.ZERO,
+        totalEligibleAfterVerification = BigDecimal.ZERO,
+        riskBasedVerification = false,
+        riskBasedVerificationDescription = null
     )
 
     private fun List<ProjectResult>.toCreateModel(

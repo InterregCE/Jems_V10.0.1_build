@@ -5,7 +5,7 @@
         subTitleKey="project.application.form.section.part.c">
     <h3>{{'project.application.form.section.part.c.subsection.four' | translate}}</h3>
 
-    <button jemsText *ngIf="projectEditable$ | async"
+    <button jemsText *ngIf="(projectEditable$ | async) && data.workPackages.length < 20"
             mat-stroked-button class="mb-3"
             (click)="createWorkPackage()">
         + {{'project.application.form.add.workpackage' | translate}}

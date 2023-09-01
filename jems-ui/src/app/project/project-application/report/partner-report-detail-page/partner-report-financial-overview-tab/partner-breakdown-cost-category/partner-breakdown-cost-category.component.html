@@ -8,7 +8,7 @@
         <mat-footer-cell *matFooterCellDef>{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
     </ng-container>
 
-    <ng-container matColumnDef="flatRate" sticky>
+    <ng-container class="remove-gap" matColumnDef="flatRate" sticky>
         <mat-header-cell *matHeaderCellDef class="justify-center border-cell-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.flat.rate' | translate }}</span>
         </mat-header-cell>

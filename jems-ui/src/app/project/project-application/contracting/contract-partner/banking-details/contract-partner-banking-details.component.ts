@@ -120,7 +120,7 @@ export class ContractPartnerBankingDetailsComponent {
 
     region2Changed(region2Title: string): void {
         this.selectedRegion2 = this.findByName(region2Title, this.getRegion2Areas());
-        this.partnerBankingDetailsForm.controls.nutsTwoRegion.patchValue(this.selectedRegion2?.code);
+        this.partnerBankingDetailsForm.controls.nutsTwoRegionCode.patchValue(this.selectedRegion2?.code);
         this.partnerBankingDetailsForm.controls.nutsThreeRegion.patchValue('');
         this.partnerBankingDetailsForm.controls.nutsThreeRegionCode.patchValue(null);
     }

@@ -256,6 +256,184 @@ context('Control report tests', () => {
     });
   });
 
+  it("TB-1083 Control report checklist instantiation after control work is finalized", () => {
+    cy.fixture('project/application-form/control-reports/TB-1083.json').then(testData => {
+      cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+        const partnerId = this[application.partners[0].details.abbreviation];
+
+        // create controller role/user + assignment
+        cy.loginByRequest(user.admin.email);
+        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerUser1.email = faker.internet.email();
+        cy.createRole(testData.controllerRole).then(roleId => {
+          testData.controllerUser1.userRoleId = roleId;
+          cy.createUser(testData.controllerUser1);
+          testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+          testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+          cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+            cy.assignInstitution(testData.controllerAssignment);
+          });
+        });
+        cy.loginByRequest(user.applicantUser.email);
+        cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+        cy.addPartnerReport(partnerId).then(reportId => {
+          cy.wrap(reportId).as('reportId');
+          cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+          cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+          cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+          cy.submitPartnerReport(partnerId, reportId);
+
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.startControlWork(partnerId, reportId);
+
+          cy.startControlChecklist(partnerId, reportId, testData.checklist[0]);
+          cy.startControlChecklist(partnerId, reportId, testData.checklist[1]).then(checklistId => {
+            cy.finishControlChecklist(partnerId, reportId, checklistId);
+          });
+
+          cy.finalizeControl(partnerId, reportId);
+
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
+
+          cy.contains('button', 'Open controller work').click();
+          cy.contains('a span', 'Control checklists').click();
+
+          cy.contains('Select checklist template').parent().parent().click();
+          cy.getProgrammeChecklists().then(response => {
+            let checklists = response.body.map(e => e['name']);
+            console.log(checklists);
+            cy.get('mat-option span span').each(checklist => expect(checklist.text()).be.oneOf(checklists));
+          });
+          cy.contains('mat-option span', 'HIT - Accounting').click();
+
+          cy.contains('button', 'start new checklist').click();
+
+          cy.get('mat-button-toggle-group button').click({multiple: true});
+          cy.get('textarea').should('exist').each(e => cy.wrap(e).type(faker.random.word()));
+
+          cy.contains('button', 'Save changes').click();
+          cy.contains('button', 'Finish checklist').click();
+          cy.contains('button', 'Confirm').click();
+
+          for (let i = 1; i < 3; i++) {
+            cy.get('mat-row').eq(i).click();
+
+            cy.contains('button', 'Return to checklist initiator').should('not.exist');
+            cy.get('mat-button-toggle-group button').should('be.disabled').should('exist');
+            cy.get('textarea').should('be.disabled').should('exist');
+
+            cy.contains('a span', 'Control checklists').click();
+          }
+        });
+      });
+    });
+  });
+
+  it("TB-815 Control documents", function() {
+    cy.fixture("controller/TB-815.json").then(testData => {
+
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+        const partnerId = this[application.partners[0].details.abbreviation];
+
+        // create controller role/user + assignment
+        cy.loginByRequest(user.admin.email);
+        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerUser1.email = faker.internet.email();
+        cy.createRole(testData.controllerRole).then(roleId => {
+          testData.controllerUser1.userRoleId = roleId;
+          cy.createUser(testData.controllerUser1);
+          testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+          testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+          cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+            cy.assignInstitution(testData.controllerAssignment);
+          });
+        });
+        cy.loginByRequest(user.applicantUser.email);
+        cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+        cy.addPartnerReport(partnerId).then(reportId => {
+          cy.wrap(reportId).as('reportId');
+          cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+          cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+          cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+          cy.submitPartnerReport(partnerId, reportId);
+
+          // start control work
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.startControlWork(partnerId, reportId);
+
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/document`, {failOnStatusCode: false});
+
+          cy.get('input[type="file"]')
+            .scrollIntoView()
+            .invoke('show')
+            .selectFile('cypress/fixtures/controller/fileToUpload.txt')
+            .invoke('hide');
+
+          cy.contains('fileToUpload.txt').should('be.visible');
+
+          cy.contains('mat-icon', 'edit').scrollIntoView().click();
+          cy.contains('div.mat-form-field-flex', 'Description').scrollIntoView().within(() => {
+            cy.get('textarea').type(faker.random.words(10));
+          })
+          cy.contains('button', 'Save').click();
+          cy.contains('File description for \'fileToUpload.txt\' has been updated.').should('be.visible');
+
+          cy.contains('mat-icon', 'delete').click();
+          cy.contains('span', 'Confirm').click();
+          cy.contains('File \'fileToUpload.txt\' has been deleted successfully.').should('be.visible');
+
+          cy.get('input[type="file"]')
+            .scrollIntoView()
+            .invoke('show')
+            .selectFile('cypress/fixtures/controller/fileToUpload.txt')
+            .invoke('hide');
+
+          cy.contains('fileToUpload.txt').should('be.visible');
+
+
+          cy.loginByRequest(user.applicantUser.email);
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/document`, {failOnStatusCode: false});
+
+          cy.contains('fileToUpload.txt').should('be.visible');
+
+          cy.contains('mat-icon', 'delete').should('not.exist');
+          cy.contains('mat-icon', 'edit').should('not.exist');
+
+          cy.get('input[type="file"]')
+            .scrollIntoView()
+            .invoke('show')
+            .selectFile('cypress/fixtures/controller/fileToUpload2.txt')
+            .invoke('hide');
+
+          cy.contains('fileToUpload.txt').should('be.visible');
+
+          cy.contains('mat-icon', 'edit').scrollIntoView().click();
+          cy.contains('div.mat-form-field-flex', 'Description').scrollIntoView().within(() => {
+            cy.get('textarea').type(faker.random.words(10));
+          })
+          cy.contains('button', 'Save').click();
+          cy.contains('File description for \'fileToUpload2.txt\' has been updated.').should('be.visible');
+
+          cy.contains('mat-icon', 'delete').click();
+          cy.contains('span', 'Confirm').click();
+          cy.contains('File \'fileToUpload2.txt\' has been deleted successfully.').should('be.visible');
+
+          cy.wait(500);
+          cy.contains('mat-icon', 'file_download').clickToDownload(`/api/project/report/partner/control/byPartnerId/${partnerId}/byReportId/${reportId}/byFileId/*?`, 'txt').then(returnValue => {
+            cy.wrap(returnValue.fileName === 'fileToUpload.txt').as('assertion');
+            cy.get('@assertion').should('eq', true);
+          });
+        });
+      });
+    });
+  });
+
   it('TB-933 Controller identification - Controller selection', function () {
     cy.fixture('controller/TB-933.json').then(testData => {
 
@@ -342,7 +520,7 @@ context('Control report tests', () => {
           cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
           cy.contains('button', 'Finalize control').click();
           cy.contains('Confirm').should('be.visible').click();
-          cy.contains('Certified').should('be.visible');
+          cy.get('mat-chip > mat-icon').next().contains('Certified');
 
           cy.loginByRequest(user.admin.email);
           cy.visit(`app/system/user`, {failOnStatusCode: false});
@@ -367,6 +545,91 @@ context('Control report tests', () => {
           cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('have.value', userInfoUpdated);
           cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('be.disabled')
           cy.contains(userInfoInitial).should('not.exist');
+        });
+      });
+    });
+  });
+
+  it('TB-934 Controller identification - Control institution name change', function () {
+    cy.fixture('controller/TB-934.json').then(testData => {
+
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+        const partnerId = this[application.partners[0].details.abbreviation];
+
+        // create controller role/user + assignment
+        cy.loginByRequest(user.admin.email);
+        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerUser1.email = faker.internet.email();
+        cy.createRole(testData.controllerRole).then(roleId => {
+          testData.controllerUser1.userRoleId = roleId;
+          cy.createUser(testData.controllerUser1);
+          testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+          testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+          cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+            cy.assignInstitution(testData.controllerAssignment);
+          });
+        });
+        cy.loginByRequest(user.applicantUser.email);
+        cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+
+        cy.addPartnerReport(partnerId).then(reportId => {
+          cy.wrap(reportId).as('reportId');
+          cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+          cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+          cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+          cy.submitPartnerReport(partnerId, reportId);
+
+          // start control work
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.startControlWork(partnerId, reportId);
+
+          // RTM Group 1
+          // check if institution is displayed correctly
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('be.disabled', 'have.value', testData.controllerInstitution.name);
+          cy.get('#control-project-partner-controller').scrollIntoView().contains('div', 'Controller name').click();
+          cy.contains('mat-option', testData.controllerUser1.email).click();
+          cy.contains('button', 'Save changes').click();
+
+          // RTM Group 2
+          // change name of institution
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`/app/controller/`, {failOnStatusCode: false});
+          cy.contains('div', testData.controllerInstitution.name).click();
+          testData.controllerInstitution.updatedName = `${faker.word.adjective()} ${faker.word.noun()}`;
+          cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.updatedName);
+          cy.contains('button', 'Save changes').click();
+
+          // RTM Group 3
+          // check if institution was updated
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('have.value', testData.controllerInstitution.updatedName);
+
+          // RTM Group 4
+          // submit control report
+          cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
+          cy.contains('Run pre-submission check').scrollIntoView();
+          cy.contains('Run pre-submission check').click();
+          cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+          cy.contains('button', 'Finalize control').click();
+          cy.contains('Confirm').should('be.visible').click();
+          cy.get('mat-chip > mat-icon').next().contains('Certified');
+
+          //change name of institution again to the original
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`/app/controller/`, {failOnStatusCode: false});
+          cy.contains('div', testData.controllerInstitution.updatedName).click();
+          cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.name);
+          cy.contains('button', 'Save changes').click();
+
+          //check if institution was not updated
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('have.value', testData.controllerInstitution.updatedName);
         });
       });
     });

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
-import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentRow
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying

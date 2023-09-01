@@ -1,20 +1,21 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {PartnerReportDetailPageStore} from '../partner-report-detail-page-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
+  ProjectCallSettingsDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
   ProjectPartnerReportIdentificationTargetGroupDTO,
   ProjectPartnerReportPeriodDTO,
-  ProjectPartnerSummaryDTO, ProjectPeriodDTO,
+  ProjectPartnerSummaryDTO, ProjectPeriodDTO
 } from '@cat/api';
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {NumberService} from '@common/services/number.service';
+import {CallStore} from '../../../../../call/services/call-store.service';
 
 @Component({
   selector: 'jems-partner-report-identification-tab',
@@ -26,6 +27,8 @@ import {NumberService} from '@common/services/number.service';
 export class PartnerReportIdentificationTabComponent {
   displayedColumns = ['partnerNumber', 'periodBudget', 'currentReport', 'periodBudgetCumulative', 'totalReportedSoFar', 'differenceFromPlan', 'differenceFromPlanPercentage', 'nextReportForecast'];
   APPLICATION_FORM = APPLICATION_FORM;
+  CALL_PATH = CallStore.CALL_DETAIL_PATH;
+  canUserAccessCall$: Observable<boolean>;
 
   dateNameArgs = {
     startDate: 'start date',
@@ -37,6 +40,8 @@ export class PartnerReportIdentificationTabComponent {
     periods: ProjectPeriodDTO[];
     identification: ProjectPartnerReportIdentificationDTO;
     partnerSummary: ProjectPartnerSummaryDTO;
+    relatedCall: ProjectCallSettingsDTO;
+    canUserAccessCall: boolean;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -68,23 +73,26 @@ export class PartnerReportIdentificationTabComponent {
   constructor(public pageStore: PartnerReportDetailPageStore,
               public formService: FormService,
               private formBuilder: FormBuilder,
-              private projectStore: ProjectStore,
-              private projectSidenavService: ProjectApplicationFormSidenavService) {
+              private projectStore: ProjectStore) {
     this.data$ = combineLatest([
       pageStore.partnerReport$,
-      this.projectStore.projectId$,
+      projectStore.projectId$,
       pageStore.availablePeriods$,
       pageStore.partnerIdentification$,
-      pageStore.partnerSummary$
+      pageStore.partnerSummary$,
+      projectStore.projectCallSettings$,
+      pageStore.canUserAccessCall$
     ]).pipe(
-      tap(([partnerReport, projectId, availablePeriods, identification, partnerSummary]) =>
+      tap(([partnerReport, projectId, availablePeriods, identification, partnerSummary]: any) =>
         this.availablePeriods = availablePeriods
       ),
-      map(([partnerReport, projectId, availablePeriods, identification, partnerSummary]) => ({
+      map(([partnerReport, projectId, availablePeriods, identification, partnerSummary, relatedCall, canUserAccessCall]: any) => ({
         partnerReport,
-        periods: availablePeriods.map(p => ({...p, projectId} as ProjectPeriodDTO)),
+        periods: availablePeriods.map((p: ProjectPeriodDTO) => ({...p, projectId} as ProjectPeriodDTO)),
         identification,
-        partnerSummary
+        partnerSummary,
+        relatedCall,
+        canUserAccessCall
       })),
       tap((data) => this.resetForm(data.identification)),
     );

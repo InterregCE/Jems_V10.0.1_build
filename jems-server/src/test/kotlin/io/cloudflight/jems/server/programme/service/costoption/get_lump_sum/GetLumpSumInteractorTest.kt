@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -31,7 +32,8 @@ class GetLumpSumInteractorTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
     }

@@ -106,7 +106,7 @@
         </mat-table>
 
         <button type="button" mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
-                [disabled]="beneficials.length >= 10" (click)="addBeneficial()"
+                [disabled]="beneficials.length >= 30" (click)="addBeneficial()"
                 aria-label="add">
             <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.beneficial.add' | translate }}
         </button>

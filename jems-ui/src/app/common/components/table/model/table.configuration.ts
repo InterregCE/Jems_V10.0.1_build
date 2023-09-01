@@ -9,6 +9,8 @@ export class TableConfiguration {
   // If the table row has a click action, this link is used by the router to determine what page should be shown.
   routerLink?: string;
 
+  extraPathParamFields?: string [];
+
   public constructor(config?: Partial<TableConfiguration>) {
     Object.assign(this, config);
   }

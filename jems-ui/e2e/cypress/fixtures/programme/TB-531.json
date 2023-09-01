@@ -32,7 +32,8 @@
         "External expertise and services",
         "Equipment",
         "Infrastructure and works"
-      ]
+      ],
+      "paymentClaim": "IncurredByBeneficiaries"
     },
     {
       "name": [
@@ -66,7 +67,8 @@
         "External expertise and services",
         "Equipment",
         "Infrastructure and works"
-      ]
+      ],
+      "paymentClaim": "IncurredByBeneficiaries"
     },
     {
       "name": [
@@ -96,7 +98,8 @@
       "categories": [
         "Staff Costs",
         "Office and administrative costs"
-      ]
+      ],
+      "paymentClaim": "IncurredByBeneficiaries"
     }
   ]
 }

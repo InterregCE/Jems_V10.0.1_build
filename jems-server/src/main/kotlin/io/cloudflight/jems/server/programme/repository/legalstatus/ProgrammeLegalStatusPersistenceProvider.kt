@@ -12,8 +12,8 @@ class ProgrammeLegalStatusPersistenceProvider(
 ) : ProgrammeLegalStatusPersistence {
 
     @Transactional(readOnly = true)
-    override fun getMax20Statuses(): List<ProgrammeLegalStatus> =
-        repository.findTop20ByOrderById().toModel()
+    override fun getMax50Statuses(): List<ProgrammeLegalStatus> =
+        repository.findTop50ByOrderById().toModel()
 
     @Transactional
     override fun updateLegalStatuses(
@@ -22,7 +22,7 @@ class ProgrammeLegalStatusPersistenceProvider(
     ): List<ProgrammeLegalStatus> {
         repository.deleteAllByIdInBatch(toDeleteIds)
         repository.saveAll(toPersist.toEntity()).toModel()
-        return repository.findTop20ByOrderById().toModel()
+        return repository.findTop50ByOrderById().toModel()
     }
 
     @Transactional(readOnly = true)

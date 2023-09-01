@@ -28,14 +28,14 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectSubmittedStep1
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Submitted
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.InControl
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Certified
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.InControl
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenCertified
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLast
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLast
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLimited
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLimited
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLast
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLimited
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Submitted
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 
 fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType? = when {
@@ -85,8 +85,9 @@ fun NotificationType?.enforceIsPartnerReportNotification() = if (this != null &&
 
 fun ProjectReportStatus.toNotificationType(): NotificationType? = when(this) {
     ProjectReportStatus.Submitted -> ProjectReportSubmitted
+    ProjectReportStatus.InVerification -> NotificationType.ProjectReportVerificationOngoing
+    ProjectReportStatus.Finalized -> NotificationType.ProjectReportVerificationFinalized
     else -> null
 }.enforceIsProjectReportNotification()
 
 fun NotificationType?.enforceIsProjectReportNotification() = if (this != null && isProjectReportNotification()) this else null
-

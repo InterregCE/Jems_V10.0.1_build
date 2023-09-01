@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, Subject} from 'rxjs';
-import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
 import {ProgrammeDataService, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
@@ -10,7 +10,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 export class ProgrammeEditableStateStore {
   isProgrammeEditableDependingOnCall$: Observable<boolean>;
   isFastTrackEditableDependingOnReports$: Observable<boolean>;
-  hasOnlyViewPermission$: Observable<boolean>;
+  hasViewPermission$: Observable<boolean>;
   hasEditPermission$: Observable<boolean>;
   hasContractedProjects$: Observable<boolean>;
 
@@ -23,7 +23,7 @@ export class ProgrammeEditableStateStore {
     private permissionService: PermissionService,
   ) {
     this.isProgrammeEditableDependingOnCall$ = this.isProgrammeEditable();
-    this.hasOnlyViewPermission$ = this.hasUserOnlyViewPermission();
+    this.hasViewPermission$ = this.hasUserViewPermission();
     this.hasEditPermission$ = this.hasUserEditPermission();
     this.hasContractedProjects$ = this.programmeHasContractedProjects();
   }
@@ -53,11 +53,10 @@ export class ProgrammeEditableStateStore {
       );
   }
 
-  private hasUserOnlyViewPermission(): Observable<boolean> {
-    return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupUpdate)
+  private hasUserViewPermission(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupRetrieve)
       .pipe(
-        map(hasUpdate => !hasUpdate),
-        shareReplay(1),
+        shareReplay(1)
       );
   }
 
@@ -68,12 +67,12 @@ export class ProgrammeEditableStateStore {
       );
   }
 
-  private programmeHasContractedProjects(): Observable<boolean>{
-      return this.firstContractedProject$.pipe(
-        startWith(null),
-        switchMap(() => this.programmeDataService.hasProjectsInStatus(ProjectStatusDTO.StatusEnum.CONTRACTED)),
-        tap(flag => Log.info('Fetched programme has contracted projects: ', flag)),
-      );
+  private programmeHasContractedProjects(): Observable<boolean> {
+    return this.firstContractedProject$.pipe(
+      startWith(null),
+      switchMap(() => this.programmeDataService.hasProjectsInStatus(ProjectStatusDTO.StatusEnum.CONTRACTED)),
+      tap(flag => Log.info('Fetched programme has contracted projects: ', flag)),
+    );
   }
 
- }
+}

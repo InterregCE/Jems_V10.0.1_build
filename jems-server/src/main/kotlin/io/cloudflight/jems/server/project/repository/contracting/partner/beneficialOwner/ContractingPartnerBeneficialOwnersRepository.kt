@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ContractingPartnerBeneficialOwnersRepository: JpaRepository<ProjectContractingPartnerBeneficialOwnerEntity, Long> {
 
-    fun findTop10ByProjectPartnerId(projectPartnerId: Long): MutableList<ProjectContractingPartnerBeneficialOwnerEntity>
+    fun findTop30ByProjectPartnerId(projectPartnerId: Long): MutableList<ProjectContractingPartnerBeneficialOwnerEntity>
 }

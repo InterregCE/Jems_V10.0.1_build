@@ -98,6 +98,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 14L,
             reportOfOriginNumber = 2,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 9
         ),
         partOfSampleLocked = false
@@ -113,8 +114,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithoutParking = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
-        deductedAmount = BigDecimal.ONE,
+        certifiedAmount = BigDecimal.ONE,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -133,7 +134,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithDeduction = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(-199),
+        certifiedAmount = BigDecimal.valueOf(500),
         deductedAmount = BigDecimal.valueOf(200),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
@@ -143,18 +144,17 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithoutSampled = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(50),
+        certifiedAmount = BigDecimal.valueOf(1),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
         parked = false,
-        deductedAmount = BigDecimal.valueOf(-49),
+        deductedAmount = BigDecimal.valueOf(0),
     )
-
 
     private val expenditureUpdateValidWithoutParking = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -163,7 +163,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateValidWithParking = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = null,
         verificationComment = "parked expenditure",
         parked = true
@@ -172,7 +172,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateValidWithDeduction = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(-199),
+        deductedAmount = BigDecimal.valueOf(200),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
         parked = false
@@ -181,7 +181,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateInvalid = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 1L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(5, 1),
+        deductedAmount = BigDecimal.ONE, // required to result an invalid TypologyError
         typologyOfErrorId = null,
         verificationComment = null,
         parked = false
@@ -190,9 +190,27 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateWithoutSampled = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = false,
-        certifiedAmount = BigDecimal.valueOf(50),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
+        parked = false
+    )
+
+    private val expenditureUpdateUnparkInvalidAlreadyCertified = ProjectPartnerReportExpenditureVerificationUpdate(
+        id = 19L,
+        partOfSample = false,
+        deductedAmount = BigDecimal.ZERO,
+        typologyOfErrorId = null,
+        verificationComment = null,
+        parked = false
+    )
+
+    private val expenditureUpdateUnparkInvalidReincluded = ProjectPartnerReportExpenditureVerificationUpdate(
+        id = 20L,
+        partOfSample = false,
+        deductedAmount = BigDecimal.ZERO,
+        typologyOfErrorId = null,
+        verificationComment = null,
         parked = false
     )
 
@@ -237,6 +255,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     fun `updatePartnerReportExpenditureVerification - without parking`() {
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
             listOf(verification.copy())
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(55L)} returns setOf(14L)
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
 
         val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
@@ -249,6 +268,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
         val partnerReport = mockk<ProjectPartnerReport>()
         every { reportPersistence.getPartnerReportById(partnerId = 17L , reportId = 55L) } returns partnerReport
+        every { partnerReport.id } returns 55L
         every { partnerReport.status } returns ReportStatus.InControl
         every { partnerReport.lastControlReopening } returns null
 
@@ -263,7 +283,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     @Test
     fun `updatePartnerReportExpenditureVerification - with deduction`() {
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
-                listOf(verification.copy())
+                listOf(verification.copy(declaredAmountAfterSubmission = BigDecimal.valueOf(700)))
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(55L)} returns setOf(14L)
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
 
         val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
@@ -275,6 +296,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
         val partnerReport = mockk<ProjectPartnerReport>()
         every { reportPersistence.getPartnerReportById(partnerId = 17L , reportId = 55L) } returns partnerReport
+        every { partnerReport.id } returns 55L
         every { partnerReport.status } returns ReportStatus.InControl
         every { partnerReport.lastControlReopening } returns null
 
@@ -291,6 +313,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     fun `updatePartnerReportExpenditureVerification - with parking`() {
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
             listOf(verification)
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(55L)} returns setOf(14L)
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
         every { reportPersistence.getPartnerReportById(17L, 55L) } returns projectPartnerReport
         every { partnerPersistence.getProjectIdForPartnerId(17L, "v1.0") } returns 40L
@@ -317,7 +340,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
         val parkedOn = parkedItems.captured.toList().get(0).parkedOn
         assertThat(parkedItems.captured).containsExactly(
-            ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalNumber=9, parkedOn = parkedOn)
+            ParkExpenditureData(expenditureId=14L, originalReportId=14L, parkedInProjectReportId = null, originalNumber=9, parkedOn = parkedOn)
         )
         assertThat(unParkedIds.captured).isEmpty()
     }
@@ -330,9 +353,11 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 54L,
                     reportOfOriginNumber = 4,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 1
                 ),
             ))
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(54L)} returns setOf(14L)
         every { typologyPersistence.getAllTypologyErrors() } returns emptyList()
         every { reportPersistence.getPartnerReportById(19L, 54L) } returns projectPartnerReport.copy(id = 54L)
         every { partnerPersistence.getProjectIdForPartnerId(19L, "v1.0") } returns 40L
@@ -353,7 +378,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         assertThat(updatePartnerReportExpenditureVerification.updatePartnerReportExpenditureVerification(
             partnerId = 19L,
             reportId = 54L,
-            listOf(expenditureUpdateValidWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE)),
+            listOf(expenditureUpdateValidWithParking.copy(parked = false, deductedAmount = BigDecimal.ZERO)),
         )).containsExactly(verificationUnParked)
         assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE))
         assertTrue(slotToUpdate.captured.first().partOfSample)
@@ -364,9 +389,21 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
     @Test
     fun `updatePartnerReportExpenditureVerification - topology error`() {
+        val partnerReport = mockk<ProjectPartnerReport>()
+        every { reportPersistence.getPartnerReportById(partnerId = 11L , reportId = 4L) } returns partnerReport
+        every { partnerReport.status } returns ReportStatus.InControl
+        every { partnerReport.lastControlReopening } returns null
+
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 11L, reportId = 4L) } returns
             listOf(verification.copy(id = 1L))
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(4L)} returns setOf(1L)
         every { typologyPersistence.getAllTypologyErrors() } returns emptyList()
+        every { reportParkedExpenditurePersistence.parkExpenditures(emptyList()) } answers { }
+        every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
+
+        val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
+        every { reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 11L, reportId = 4L, capture(slotToUpdate)) } returns
+                emptyList()
 
         assertThrows<TypologyOfErrorMissing> {
             updatePartnerReportExpenditureVerification
@@ -378,22 +415,80 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     fun `updatePartnerReportExpenditureVerification - with sampling locks`() {
         val partnerReport = mockk<ProjectPartnerReport>()
         every { reportPersistence.getPartnerReportById(partnerId = 17L , reportId = 55L) } returns partnerReport
+        every { partnerReport.id } returns 55L
         every { partnerReport.status } returns ReportStatus.InControl
         every { partnerReport.lastControlReopening } returns null
 
         val verificationToBeUpdated = verification.copy(partOfSampleLocked = true, partOfSample = true, typologyOfErrorId = existingError.id, parked = false)
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
             listOf(verificationToBeUpdated)
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(55L)} returns setOf()
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
         every { reportParkedExpenditurePersistence.parkExpenditures(emptyList()) } answers { }
         every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
 
-        every {
-            reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expectedUpdateWithoutSampled))
-        } returns listOf(verificationToBeUpdated)
+        val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
+        every { reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, capture(slotToUpdate)) } returns
+                listOf(verificationToBeUpdated)
 
         assertTrue(updatePartnerReportExpenditureVerification
             .updatePartnerReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expenditureUpdateWithoutSampled))
             .first().partOfSample)
+
+        assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithoutSampled)
+    }
+
+    @Test
+    fun `updatePartnerReportExpenditureVerification - unparking errors`() {
+        every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 23L, reportId = 54L) } returns
+                listOf(
+                    verification.copy(
+                        id = 19,
+                        parked = true,
+                        parkedOn = ZonedDateTime.now().minusDays(3),
+                        certifiedAmount = BigDecimal.ZERO,
+                    ),
+                    verification.copy(
+                        id = 20,
+                        parked = true,
+                        parkedOn = null,
+                        certifiedAmount = BigDecimal.ZERO,
+                    )
+                )
+        every { typologyPersistence.getAllTypologyErrors() } returns emptyList()
+
+        every {
+            reportPersistence.getPartnerReportById(23L, 54L)
+        } returns projectPartnerReport.copy(
+            id = 54L,
+            status = ReportStatus.ReOpenCertified,
+            lastControlReopening = ZonedDateTime.now().minusDays(2)
+        )
+        every { partnerPersistence.getProjectIdForPartnerId(23L, "v1.0") } returns 40L
+        every { projectPartnerReport.identification.projectIdentifier } returns "identifier"
+        every { projectPartnerReport.identification.projectAcronym } returns "acronym"
+        every { projectPartnerReport.identification.partnerRole } returns ProjectPartnerRole.PARTNER
+
+        every { reportParkedExpenditurePersistence.getParkedExpenditureIds(54L)} returns setOf(19L)
+
+        every {
+            reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 23L, reportId = 54L, any())
+        } returns listOf(verificationUnParked.copy(id = 19, parkedOn = ZonedDateTime.now().minusDays(3)))
+        assertThrows<UnParkNotAllowedForPreviouslyCertifiedExpendituresException> {
+            updatePartnerReportExpenditureVerification.updatePartnerReportExpenditureVerification(
+                partnerId = 23L,
+                reportId = 54L,
+                listOf(expenditureUpdateUnparkInvalidAlreadyCertified))
+        }
+
+        every {
+            reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 23L, reportId = 54L, any())
+        } returns listOf(verificationUnParked.copy(id = 20, parkedOn = null))
+        assertThrows<UnParkNotAllowedForPreviouslyReincludedExpendituresException> {
+            updatePartnerReportExpenditureVerification.updatePartnerReportExpenditureVerification(
+                partnerId = 23L,
+                reportId = 54L,
+                listOf(expenditureUpdateUnparkInvalidReincluded))
+        }
     }
 }

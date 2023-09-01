@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerificationInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportParkedExpenditureIds.GetProjectPartnerControlReportParkedExpendituresInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.updateProjectPartnerReportExpenditureVerification.UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -62,6 +63,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -101,6 +103,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 72L,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -140,6 +143,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -179,6 +183,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 72L,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -187,7 +192,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val toUpdateDto = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(
         id = 754,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(1),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false
@@ -196,7 +201,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val toUpdate = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 754,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(1),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false
@@ -204,6 +209,9 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
 
     @MockK
     private lateinit var getReportExpenditureVerification: GetProjectPartnerControlReportExpenditureVerificationInteractor
+
+    @MockK
+    private lateinit var getControlReportParkedIds: GetProjectPartnerControlReportParkedExpendituresInteractor
 
     @MockK
     private lateinit var updateReportExpenditureVerification: UpdateProjectPartnerControlReportExpenditureVerificationInteractor
@@ -240,5 +248,24 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         ).containsExactly(reportExpenditureVerificationDtoUpdated)
 
         Assertions.assertThat(slotData.captured).containsExactly(toUpdate)
+    }
+
+    @Test
+    fun getParkedExpenditureIds() {
+        val reportParkedIdsVerification = listOf(1L, 3L, 4L, 5L, 8L)
+
+        every {
+            getControlReportParkedIds.getParkedExpenditureIds(
+                partnerId = PARTNER_ID,
+                reportId = 17L
+            )
+        } returns reportParkedIdsVerification
+
+        Assertions.assertThat(
+            controller.getParkedExpenditureIds(
+                partnerId = PARTNER_ID,
+                reportId = 17L
+            )
+        ).isEqualTo(reportParkedIdsVerification)
     }
 }

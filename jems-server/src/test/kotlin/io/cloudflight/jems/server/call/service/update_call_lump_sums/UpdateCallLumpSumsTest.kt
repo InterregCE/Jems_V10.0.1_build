@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -36,6 +37,7 @@ class UpdateCallLumpSumsTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 7,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
@@ -68,12 +70,14 @@ class UpdateCallLumpSumsTest {
                 ProgrammeLumpSum(
                     id = 2,
                     splittingAllowed = true,
-                    fastTrack = false
+                    fastTrack = false,
+                    paymentClaim = PaymentClaim.IncurredByBeneficiaries
                 ),
                 ProgrammeLumpSum(
                     id = 3,
                     splittingAllowed = true,
-                    fastTrack = false
+                    fastTrack = false,
+                    paymentClaim = PaymentClaim.IncurredByBeneficiaries
                 )))
         every { persistence.getCallById(ID) } returns call
         updateCallLumpSums.updateLumpSums(ID, setOf(2, 3))
@@ -110,8 +114,8 @@ class UpdateCallLumpSumsTest {
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(3)) } returns true
         every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             lumpSums = listOf(
-                ProgrammeLumpSum(id = 2, splittingAllowed = true, fastTrack = false),
-                ProgrammeLumpSum(id = 3, splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(id = 2, splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
+                ProgrammeLumpSum(id = 3, splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             )
         )
         assertThrows<LumpSumsRemovedAfterCallPublished> { updateCallLumpSums.updateLumpSums(ID, setOf(3)) }

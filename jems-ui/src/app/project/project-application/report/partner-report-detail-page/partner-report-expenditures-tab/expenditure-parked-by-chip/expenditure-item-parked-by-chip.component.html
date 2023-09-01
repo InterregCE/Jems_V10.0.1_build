@@ -1,0 +1,6 @@
+<ng-container *ngIf="parkedByValues[parkedBy]; let chip">
+    <mat-chip [class]="chip.class">
+        <mat-icon>{{chip.icon}}</mat-icon>
+        {{chip.label | translate}}
+    </mat-chip>
+</ng-container>

@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.model.Report
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
@@ -59,6 +60,12 @@ fun ReportSummary.toModelSummary() =
         totalEligibleAfterControl = totalEligibleAfterControl,
         totalAfterSubmitted = totalAfterSubmitted,
         deletable = false,
+        projectId = projectId,
+        projectCustomIdentifier = projectCustomIdentifier,
+        partnerId = partnerId,
+        partnerAbbreviation = partnerAbbreviation,
+        partnerNumber = partnerNumber,
+        partnerRole = partnerRole
     )
 
 fun CertificateSummary.toModel() =
@@ -94,6 +101,12 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         totalEligibleAfterControl = null,
         totalAfterSubmitted = null,
         deletable = false,
+        partnerId = partnerId,
+        partnerAbbreviation = identification.partnerAbbreviation,
+        partnerRole = identification.partnerRole,
+        partnerNumber = identification.partnerNumber,
+        projectCustomIdentifier = identification.projectAcronym,
+        projectId = 0,
     )
 
 fun ProjectPartnerReportEntity.toSubmissionSummary() =
@@ -226,7 +239,8 @@ fun List<PreviouslyReportedFund>.toEntity(
         previouslyPaid = fund.previouslyPaid,
         currentParked = ZERO,
         currentReIncluded = ZERO,
-        previouslyReportedParked = fund.previouslyReportedParked
+        previouslyReportedParked = fund.previouslyReportedParked,
+        disabled = fund.disabled,
     )
 }
 
@@ -445,3 +459,9 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         sumPreviouslyReportedParked = previouslyReportedParked.sum,
 
     )
+
+fun ProjectPartnerReportEntity.toStatusAndVersion() = ProjectPartnerReportStatusAndVersion(
+    reportId = id,
+    status = status,
+    version = applicationFormVersion,
+)

@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -61,6 +62,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val unitCostNew = ProgrammeUnitCost(
@@ -72,6 +74,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         val oldStaffCost = BudgetStaffCostEntry(
@@ -210,12 +213,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             unitCostId = 17L,
         )
 
-        private val auditProject = AuditProject(
-            id = "22",
-            customIdentifier = "CUST_ID",
-            name = "PROJ_ACR",
-        )
-
         private val categories = BudgetCategoryDTO.values().filter { it != BudgetCategoryDTO.OfficeAndAdministrationCosts }
 
     }
@@ -226,8 +223,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
     lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
     @MockK
     lateinit var projectPersistence: ProjectPersistence
-    @MockK
-    lateinit var auditPublisher: ApplicationEventPublisher
     @MockK
     lateinit var generalValidator: GeneralValidatorService
     @MockK
@@ -242,7 +237,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(programmeUnitCostPersistence, projectUnitCostPersistence, projectPersistence, auditPublisher,
+        clearMocks(programmeUnitCostPersistence, projectUnitCostPersistence, projectPersistence,
             generalValidator, partnerPersistence, projectPartnerBudgetCostsPersistence, projectPartnerBudgetCostsUpdatePersistence)
 
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
@@ -266,17 +261,10 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
-        val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
-
         assertThat(interactor.updateProjectUnitCost(PROJECT_ID, unitCostNew.copy(projectId = null))).isEqualTo(unitCostNew)
         verify(exactly = 1) { programmeUnitCostPersistence.updateUnitCost(unitCostNew) }
 
         verifyBudgetUpdates(partnerId)
-
-        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
-        assertThat(auditSlot.captured.auditCandidate.project).isEqualTo(auditProject)
 
         assertThat(deleteSlots[BudgetCategoryDTO.StaffCosts]!!.captured).containsExactly(97645L)
         assertThat(deleteSlots[BudgetCategoryDTO.EquipmentCosts]!!.captured).containsExactly(98245L)
@@ -373,7 +361,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
-        every { auditPublisher.publishEvent(any()) } answers { }
 
         val unitCostToBeSaved = unitCostNew.copy(
             projectId = null,
@@ -390,7 +377,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         verify(exactly = 1) { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetTravelAndAccommodationCosts(PROJECT_ID, partnerId, listOf(/* empty */))
         }
-        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
 
         assertThat(deleteSlots[BudgetCategoryDTO.StaffCosts]!!.captured).containsExactly(97645L)
         assertThat(deleteSlots[BudgetCategoryDTO.EquipmentCosts]!!.captured).containsExactly(98245L)
@@ -414,8 +400,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-
-        every { auditPublisher.publishEvent(any()) } answers { }
 
         val unitCostToBeSaved = unitCostNew.copy(
             projectId = null,
@@ -442,7 +426,6 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         verify(exactly = 1) { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetUnitCosts(PROJECT_ID, partnerId, listOf(/* empty */))
         }
-        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }
 
     @Test
@@ -457,14 +440,10 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
-        every { auditPublisher.publishEvent(any()) } answers { }
-
         assertThat(interactor.updateProjectUnitCost(PROJECT_ID, oldUnitCost.copy(projectId = null))).isEqualTo(oldUnitCost.copy())
         verify(exactly = 1) { programmeUnitCostPersistence.updateUnitCost(oldUnitCost) }
 
         verify(exactly = 0) { partnerPersistence.findTop50ByProjectId(any()) }
-
-        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }
 
 }

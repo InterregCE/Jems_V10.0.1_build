@@ -46,7 +46,8 @@ class PaymentAttachmentControllerTest : UnitTest() {
             uploaded = YEARS_AGO_10,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
-            description = "desc $id"
+            description = "desc $id",
+            indexedPath = ""
         )
 
         private fun expectedAttachment(id: Long) = JemsFileDTO(

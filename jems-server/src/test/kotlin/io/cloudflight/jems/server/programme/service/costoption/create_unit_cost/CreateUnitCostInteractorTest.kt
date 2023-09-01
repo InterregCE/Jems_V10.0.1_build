@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.clearMocks
 import io.mockk.every
@@ -63,6 +64,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = null,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -83,6 +85,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = null,
             isOneCostCategory = true,
             categories = setOf(StaffCosts, TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -103,6 +106,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(OfficeAndAdministrationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -122,6 +126,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(unitCost) }
         assertThat(ex.i18nKey).isEqualTo("programme.unitCost.max.allowed.reached")
@@ -140,6 +145,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -164,6 +170,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -184,7 +191,8 @@ class CreateUnitCostInteractorTest : UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "UC1 type")),
             costPerUnit = BigDecimal.ONE,
-            isOneCostCategory = false
+            isOneCostCategory = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<I18nValidationException>("when creating id cannot be filled in") {
@@ -202,6 +210,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(256)))
         every {
@@ -224,6 +233,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val name = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51)))
         every {
@@ -246,6 +256,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val type = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51)))
         every {

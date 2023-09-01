@@ -40,6 +40,10 @@ export class TableComponent implements OnInit, OnChanges {
   confirmPageChange = false;
   @Input()
   isMultiLanguage = false;
+  @Input()
+  currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+  @Input()
+  disableTopPaginator = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
@@ -51,7 +55,7 @@ export class TableComponent implements OnInit, OnChanges {
   @ViewChild(MatSort) matSort: MatSort;
 
   columnsToDisplay: string[] = [];
-  currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+
   selectedVersion: ProjectVersionDTO | undefined;
 
   constructor(private moneyPipe: MoneyPipe,
@@ -154,7 +158,14 @@ export class TableComponent implements OnInit, OnChanges {
       queryParams = {queryParams: {version: this.selectedVersion?.version}};
     }
 
-    this.routingService.navigate([this.configuration.routerLink, row.id ], {...queryParams, relativeTo: this.activatedRoute});
+    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0) {
+      this.configuration.extraPathParamFields.forEach((element) => {
+        this.configuration.routerLink = this.configuration.routerLink?.replace(`{${element}}`, row[element]);
+      });
+      this.routingService.navigate([this.configuration.routerLink], {...queryParams, relativeTo: this.activatedRoute});
+    } else {
+      this.routingService.navigate([this.configuration.routerLink, row.id], {...queryParams, relativeTo: this.activatedRoute});
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

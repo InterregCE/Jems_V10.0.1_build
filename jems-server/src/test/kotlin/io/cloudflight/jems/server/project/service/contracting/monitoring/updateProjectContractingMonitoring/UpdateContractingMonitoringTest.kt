@@ -9,10 +9,10 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -35,10 +35,15 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -193,7 +198,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var paymentPersistence: PaymentRegularPersistence
+    lateinit var paymentPersistence: PaymentPersistence
 
     @InjectMockKs
     lateinit var updateContractingMonitoring: UpdateContractingMonitoring
@@ -278,7 +283,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         val payments = slot<Map<PaymentGroupingId, PaymentToCreate>>()
-        every { paymentPersistence.savePaymentToProjects(projectId, capture(payments)) } answers { }
+        every { paymentPersistence.saveFTLSPayments(projectId, capture(payments)) } answers { }
         every { getProjectBudget.getBudget(projectId, version) } returns listOf(
             partnerBudget(partnerId = 52L, BigDecimal.valueOf(150L)),
             partnerBudget(partnerId = 53L, BigDecimal.valueOf(2112L, 2)),
@@ -356,7 +361,14 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
             mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                    PaymentToCreate(2L, listOf(PaymentPartnerToCreate(1L, BigDecimal.ONE)), BigDecimal.ONE))
+                    PaymentToCreate(
+                        2L,
+                        listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
+                        BigDecimal.ONE,
+                        "identifier",
+                        "acronym"
+                    )
+            )
         )
         assertThat(payContribs.captured).containsExactly(
             ContributionMeta(

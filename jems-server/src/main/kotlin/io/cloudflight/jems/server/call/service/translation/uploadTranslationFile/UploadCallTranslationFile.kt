@@ -67,7 +67,7 @@ class UploadCallTranslationFile(
         val storedFile = processedLines.ifContentOrNull()?.toModel(callId, language, fileName)
             ?.let { fileToStore -> fileService.persistFile(fileToStore) }
 
-        return CallTranslationFile(language, storedFile, null).also {
+        return CallTranslationFile(language, storedFile?.toSimple(), null).also {
             copyFileAndAutoRefresh(callId, language, content)
         }
     }

@@ -1,13 +1,17 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Forms } from '@common/utils/forms';
-import { MatDialog } from '@angular/material/dialog';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
-import { ProjectPartnerReportParkedExpenditureDTO } from '@cat/api';
-import { Observable } from 'rxjs';
-import { filter, switchMap, take } from 'rxjs/operators';
+import {ExpenditureParkingMetadataDTO, ProjectPartnerReportParkedExpenditureDTO} from '@cat/api';
+import {Observable} from 'rxjs';
+import {filter, switchMap, take} from 'rxjs/operators';
+import {
+  ExpenditureItemParkedByChipComponent,
+  ExpenditureParkedByEnum
+} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
 
 @UntilDestroy()
 @Component({
@@ -38,7 +42,7 @@ export class PartnerReportExpendituresParkedComponent {
       this.dialog,
       'project.application.partner.report.expenditures.re.include',
       'project.application.partner.report.expenditures.re.include.notif',
-      { reportNumber: parked.expenditure.parkingMetadata.reportOfOriginNumber },
+      {reportNumber: parked.expenditure.parkingMetadata.reportOfOriginNumber},
     ).pipe(
       take(1),
       filter(yes => !!yes),
@@ -52,13 +56,17 @@ export class PartnerReportExpendituresParkedComponent {
       this.dialog,
       'common.delete.entry',
       'project.application.partner.report.expenditures.parked.delete.notif',
-      { reportNumber: parked.expenditure.parkingMetadata.reportOfOriginNumber },
+      {reportNumber: parked.expenditure.parkingMetadata.reportOfOriginNumber},
     ).pipe(
       take(1),
       filter(yes => !!yes),
       switchMap(() => this.pageStore.deleteParkedExpenditure(parked.expenditure.id)),
       untilDestroyed(this),
     ).subscribe();
+  }
+
+  getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO): ExpenditureParkedByEnum {
+    return ExpenditureItemParkedByChipComponent.getParkedBy(parkingMetadata);
   }
 
 }

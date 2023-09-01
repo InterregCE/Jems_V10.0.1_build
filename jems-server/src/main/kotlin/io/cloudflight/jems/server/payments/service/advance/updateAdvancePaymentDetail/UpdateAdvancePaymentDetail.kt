@@ -2,14 +2,17 @@ package io.cloudflight.jems.server.payments.service.advance.updateAdvancePayment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdateAdvancePayments
-import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
-import io.cloudflight.jems.server.payments.service.advancePaymentAuthorized
-import io.cloudflight.jems.server.payments.service.advancePaymentConfirmed
-import io.cloudflight.jems.server.payments.service.advancePaymentCreated
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.service.advancePaymentAuthorized
+import io.cloudflight.jems.server.payments.service.advancePaymentCreated
+import io.cloudflight.jems.server.payments.service.advancePaymentConfirmed
+import io.cloudflight.jems.server.payments.service.advancePaymentSettlementCreated
+import io.cloudflight.jems.server.payments.service.advancePaymentSettlementDeleted
+import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
+import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,6 +42,7 @@ class UpdateAdvancePaymentDetail(
         val currentUser = securityService.getUserIdOrThrow()
         paymentDetail.fillInCurrentAuthorizedUser(currentUser, existing)
         paymentDetail.fillInCurrentConfirmedUser(currentUser, existing)
+        paymentDetail.reNumberSettlements()
 
         val newlyAuthorized = (paymentDetail.paymentAuthorizedDate != null) && (paymentDetail.paymentAuthorizedDate != existing?.paymentAuthorizedDate)
         val newlyConfirmed = (paymentDetail.paymentConfirmedDate != null) && paymentDetail.paymentConfirmedDate != existing?.paymentConfirmedDate
@@ -53,6 +57,11 @@ class UpdateAdvancePaymentDetail(
             if (newlyConfirmed) {
                 auditPublisher.publishEvent(advancePaymentConfirmed(context = this, paymentDetail = it))
             }
+
+            auditSettlements(
+                it,
+                newSettlements = paymentDetail.getNewSettlements(),
+                deletedSettlements = paymentDetail.getDeletedSettlements(existing?.paymentSettlements))
         }
     }
 
@@ -87,5 +96,42 @@ class UpdateAdvancePaymentDetail(
             }
         } // else: unselected - leave null for update
     }
+
+    private fun AdvancePaymentUpdate.reNumberSettlements(): AdvancePaymentUpdate {
+        this.paymentSettlements.forEachIndexed { index, settlement ->
+            settlement.number = index.plus(1)
+        }
+        return this
+    }
+
+    private fun auditSettlements(
+        paymentDetails: AdvancePaymentDetail,
+        newSettlements: List<AdvancePaymentSettlement>,
+        deletedSettlements: List<AdvancePaymentSettlement>
+    ) {
+
+        newSettlements.forEach { settlement ->
+            auditPublisher.publishEvent(
+                advancePaymentSettlementCreated(
+                    this, settlement, paymentDetails
+                )
+            )
+        }
+
+        deletedSettlements.forEach { settlement ->
+            auditPublisher.publishEvent(
+                advancePaymentSettlementDeleted(
+                    this, settlement, paymentDetails
+                )
+            )
+        }
+    }
+
+    private fun AdvancePaymentUpdate.getDeletedSettlements(existing: List<AdvancePaymentSettlement>?): List<AdvancePaymentSettlement>  {
+        val updatedSettlementsIds = this.paymentSettlements.map { it.id }
+        return existing?.filter { existing -> existing.id !in updatedSettlementsIds } ?: emptyList()
+    }
+
+    private fun AdvancePaymentUpdate.getNewSettlements() = this.paymentSettlements.filter { it.id == 0L }
 
 }

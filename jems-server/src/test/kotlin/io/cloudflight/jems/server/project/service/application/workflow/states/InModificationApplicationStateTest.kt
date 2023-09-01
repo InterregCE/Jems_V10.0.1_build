@@ -42,6 +42,7 @@ class InModificationApplicationStateTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 0,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
@@ -50,6 +51,7 @@ class InModificationApplicationStateTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
 
@@ -113,7 +115,7 @@ class InModificationApplicationStateTest : UnitTest() {
 
     @Test
     fun `submit from CONTRACTED - successful`() {
-        every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings
         every { projectWorkflowPersistence.getApplicationPreviousStatus(any()) } returns projectStatusContracted
         every {
             projectWorkflowPersistence.updateProjectLastResubmission(
@@ -137,7 +139,7 @@ class InModificationApplicationStateTest : UnitTest() {
 
     @Test
     fun `submit from MODIFICATION_SUBMITTED - successful`() {
-        every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings
         every { projectWorkflowPersistence.getApplicationPreviousStatus(any()) } returns projectStatusModificationSubmitted
         every {
             projectWorkflowPersistence.updateProjectLastResubmission(

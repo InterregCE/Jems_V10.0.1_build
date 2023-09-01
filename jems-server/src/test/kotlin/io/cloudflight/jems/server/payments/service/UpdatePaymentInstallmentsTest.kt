@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.PaymentInstallmentsValidator
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallments
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsException
@@ -100,7 +100,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
-                    id = 1L,
+                    id = 6L,
                     projectId = projectId,
                     orderNr = 1,
                     programmeLumpSumId = 4L,
@@ -110,7 +110,9 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApprovedPerPartner = BigDecimal.ONE,
-                    installments = listOf(installmentToUpdateTo)
+                    installments = listOf(installmentToUpdateTo),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
         )
@@ -124,7 +126,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
-                    id = 1L,
+                    id = 6L,
                     projectId = projectId,
                     orderNr = 1,
                     programmeLumpSumId = 4L,
@@ -134,7 +136,9 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApprovedPerPartner = BigDecimal.ONE,
-                    installments = listOf(installmentToUpdateTo, installmentNew)
+                    installments = listOf(installmentToUpdateTo, installmentNew),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
         )
@@ -222,13 +226,15 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
-                    id = 1L,
+                    id = 6L,
                     partnerId = partnerId,
                     partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApproved = BigDecimal.ONE,
-                    installments = listOf(installmentDTO)
+                    installments = listOf(installmentDTO),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
         )
@@ -242,20 +248,22 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
-                    id = 1L,
+                    id = 6L,
                     partnerId = partnerId,
                     partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApproved = BigDecimal.ONE,
-                    installments = listOf(installmentDTO, installmentNewDTO)
+                    installments = listOf(installmentDTO, installmentNewDTO),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
         )
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentRegularPersistence
+    lateinit var paymentPersistence: PaymentPersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -276,7 +284,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
     @Test
     fun `update installments for a payment partner`() {
-        every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
+        every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every { securityService.getUserIdOrThrow() } returns currentUserId
         every { validator.validateInstallments(any(), any(), any(), any()) } returns Unit
@@ -309,7 +317,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
     @Test
     fun `update installments for a payment partner - multiple installments`() {
-        every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
+        every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every {
             paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId)
         } returns listOf(installment, installmentToDelete)
@@ -371,7 +379,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 action = AuditAction.PAYMENT_INSTALLMENT_CONFIRMED,
                 project = AuditProject(projectId.toString(), paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym),
                 entityRelatedId =null,
-                description = "Payment details for payment 1, installment 1 of partner LP1 are confirmed"
+                description = "Amount 10 EUR was confirmed for payment 1, installment 1 of partner LP1"
             )
         )
         assertThat(slotAudit[2].auditCandidate).isEqualTo(
@@ -379,14 +387,14 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 action = AuditAction.PAYMENT_INSTALLMENT_AUTHORISED,
                 project = AuditProject(projectId.toString(), paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym),
                 entityRelatedId =null,
-                description = "Payment details for payment 1, installment 2 of partner LP1 are authorised"
+                description = "Amount 1 EUR was authorised for payment 1, installment 2 of partner LP1"
             )
         )
     }
 
     @Test
     fun `update installments for a payment partner - error`() {
-        every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
+        every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every { securityService.getUserIdOrThrow() } returns currentUserId
         every { validator.validateInstallments(any(), any(), any(), any()) } returns Unit
@@ -406,7 +414,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
     @Test
     fun `update installments for a payment partner - invalid`() {
-        every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
+        every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every {
             validator.validateInstallments(any(), any(), any(), any())

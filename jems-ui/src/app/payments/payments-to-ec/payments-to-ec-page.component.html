@@ -1,0 +1,47 @@
+<jems-main-page-template [needsCard]="true">
+    <ng-container *ngIf="data$ | async as data">
+    <div *ngIf="data.userCanView">
+        <h2>{{'payments.to.ec.header' | translate}}</h2>
+        <p>{{'payments.to.ec.sub.header' | translate}}</p>
+
+        <div class="add-payment-to-ec-button" hidden="true"><!--Will be enabled in V9: MP2-3852-->
+            <button *ngIf="userCanEdit$ | async"
+                    mat-stroked-button color="primary"
+                    [routerLink]="'/app/payments/paymentApplicationsToEc/create'">
+                + {{'payments.to.ec.payment.add.button' | translate}}
+            </button>
+        </div>
+        <ng-container>
+            <jems-table id="paymentsToEcTable"
+                        [configuration]="tableConfiguration"
+                        [rows]="data.page.content"
+                        [totalElements]="data.page?.totalElements"
+                        [pageIndex]="paymentsToEcPageStore.newPageIndex$ | async"
+                        (newPageIndex)="paymentsToEcPageStore.newPageIndex$.next($event)"
+                        (newPageSize)="paymentsToEcPageStore.newPageSize$.next($event)"
+                        (sortRows)="paymentsToEcPageStore.newSort$.next($event)">
+            </jems-table>
+        </ng-container>
+    </div>
+</ng-container>
+</jems-main-page-template>
+
+<ng-template #fundCell let-payment>
+    <span>{{payment.programmeFund.abbreviation | translateBySystemLanguage | async}}</span>
+</ng-template>
+
+<ng-template #accountingYearCell let-payment>
+    <span>{{ ('accounting.year.' + payment.accountingYear.year) | translate }}:
+        {{ payment.accountingYear.startDate | localeDate }} - {{ payment.accountingYear.endDate | localeDate }}</span>
+</ng-template>
+<ng-template #deleteButtonCell let-payment>
+    <button *ngIf="userCanEdit$ | async"
+            (click)="$event.stopPropagation(); removeItem(payment.id);"
+            class="delete-button"
+            color="accent" mat-icon-button
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+            type="button"
+            aria-label="delete">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

@@ -3,8 +3,10 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
+import io.cloudflight.jems.server.call.repository.notifications.project.ProjectNotificationConfigurationRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -51,6 +53,7 @@ class ProjectPersistenceProvider(
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
     private val programmePriorityRepository: ProgrammePriorityRepository,
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val notificationConfigurationRepository: ProjectNotificationConfigurationRepository,
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -70,6 +73,7 @@ class ProjectPersistenceProvider(
             preFundingDecision = project.decisionPreFundingStep2,
             fundingDecision = project.decisionFundingStep2,
         )
+        val jsNotifiable = isJsNotifiable(project.call.id)
 
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
@@ -77,12 +81,13 @@ class ProjectPersistenceProvider(
                     assessmentStep1 = assessmentStep1,
                     assessmentStep2 = assessmentStep2,
                     stateAidRepository.findAllByIdCallId(project.call.id),
-                    applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
+                    applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id),
+                    jsNotifiable,
                 )
             },
             // grouped this will be only one result
             previousVersionFetcher = { timestamp ->
-                getProjectHistoricalData(projectId, timestamp, project, assessmentStep1, assessmentStep2)
+                getProjectHistoricalData(projectId, timestamp, project, assessmentStep1, assessmentStep2, jsNotifiable)
             }
         ) ?: throw ApplicationVersionNotFoundException()
     }
@@ -119,7 +124,8 @@ class ProjectPersistenceProvider(
         getProjectOrThrow(projectId).let {
             it.call.toSettingsModel(
                 stateAidRepository.findAllByIdCallId(it.call.id),
-                applicationFormFieldConfigurationRepository.findAllByCallId(it.call.id)
+                applicationFormFieldConfigurationRepository.findAllByCallId(it.call.id),
+                jsNotifiable = isJsNotifiable(it.call.id),
             )
         }
 
@@ -184,7 +190,8 @@ class ProjectPersistenceProvider(
             assessmentStep1 = null,
             assessmentStep2 = null,
             stateAidRepository.findAllByIdCallId(callId),
-            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+            jsNotifiable = isJsNotifiable(callId),
         )
     }
 
@@ -207,20 +214,25 @@ class ProjectPersistenceProvider(
         project: ProjectEntity,
         assessmentStep1: ProjectAssessmentEntity,
         assessmentStep2: ProjectAssessmentEntity,
+        jsNotifiable: Boolean,
     ): ProjectFull {
         val periods =
             projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
         val projectRows = projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
         return projectRows.toProjectEntryWithDetailData(
-                project,
-                periods,
-                assessmentStep1,
-                assessmentStep2,
-                stateAidRepository.findAllByIdCallId(project.call.id),
-                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id),
-                priority = getPriority(priorityId = projectRows.firstOrNull()?.programmePriorityId)
-            )
+            project,
+            periods,
+            assessmentStep1,
+            assessmentStep2,
+            stateAidRepository.findAllByIdCallId(project.call.id),
+            applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id),
+            priority = getPriority(priorityId = projectRows.firstOrNull()?.programmePriorityId),
+            jsNotifiable,
+        )
     }
+
+    private fun isJsNotifiable(callId: Long) = notificationConfigurationRepository
+        .findByActiveTrueAndIdCallEntityIdAndIdId(callId, NotificationType.ProjectReportVerificationDoneNotificationSent) != null
 
     private fun getPriority(priorityId: Long?): ProgrammePriorityEntity? =
         priorityId?.let { programmePriorityRepository.findById(it).orElse(null) }

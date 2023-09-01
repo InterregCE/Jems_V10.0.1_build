@@ -3,23 +3,31 @@ package io.cloudflight.jems.server.payments.service
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.programme.controller.fund.toDto
+import org.mapstruct.Mapper
+import org.mapstruct.factory.Mappers
 
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     id = id,
@@ -33,6 +41,7 @@ fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     fundName = fundName,
     amountApprovedPerFund = amountApprovedPerFund,
     amountPaidPerFund = amountPaidPerFund,
+    amountAuthorizedPerFund = amountAuthorizedPerFund,
     dateOfLastPayment = dateOfLastPayment,
     lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
 )
@@ -55,6 +64,8 @@ fun PartnerPayment.toDTO() = PaymentPartnerDTO(
     partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
     partnerNumber = partnerNumber,
     partnerAbbreviation = partnerAbbreviation,
+    partnerReportId = partnerReportId,
+    partnerReportNumber = partnerReportNumber,
     amountApproved = amountApprovedPerPartner,
     installments = installments.map { it.toDTO() }
 )
@@ -112,7 +123,9 @@ fun AdvancePaymentDetail.toDTO() = AdvancePaymentDetailDTO(
     paymentAuthorizedDate = paymentAuthorizedDate,
     paymentConfirmed = paymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    paymentSettlements = paymentSettlements.map { it.toDto() }
+
 )
 
 private fun idNamePairDtoOrNull(idName: IdNamePair?): IdNamePairDTO? {
@@ -132,7 +145,8 @@ fun AdvancePaymentUpdateDTO.toModel() = AdvancePaymentUpdate(
     paymentDate = paymentDate,
     comment = comment,
     paymentAuthorized = paymentAuthorized,
-    paymentConfirmed = paymentConfirmed
+    paymentConfirmed = paymentConfirmed,
+    paymentSettlements = paymentSettlements.map { it.toModel() }
 )
 
 fun AdvancePayment.toDTO() = AdvancePaymentDTO(
@@ -140,7 +154,7 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
     partnerType = ProjectPartnerRoleDTO.valueOf(partnerType.name),
-    partnerNumber = partnerNumber,
+    partnerSortNumber = partnerSortNumber,
     partnerAbbreviation = partnerAbbreviation,
     programmeFund = programmeFund?.toDto(),
     partnerContribution = idNamePairDtoOrNull(partnerContribution),
@@ -150,3 +164,30 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     paymentDate = paymentDate,
     amountSettled = amountSettled
 )
+
+fun AdvancePaymentSettlement.toDto() = AdvancePaymentSettlementDTO(
+    id = id,
+    number = number,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
+)
+
+fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
+    id = id,
+    number = number,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
+)
+
+private val mapper = Mappers.getMapper(PaymentMapper::class.java)
+
+fun AdvancePaymentSearchRequestDTO.toModel(): AdvancePaymentSearchRequest = mapper.map(this)
+fun PaymentSearchRequestDTO.toModel(): PaymentSearchRequest = mapper.map(this)
+
+@Mapper
+interface PaymentMapper {
+    fun map(dto: AdvancePaymentSearchRequestDTO): AdvancePaymentSearchRequest
+    fun map(dto: PaymentSearchRequestDTO): PaymentSearchRequest
+}

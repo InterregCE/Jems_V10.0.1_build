@@ -21,6 +21,8 @@ enum class NotificationTypeDTO {
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
+    SharedFolderFileUpload,
+    SharedFolderFileDelete,
 
     // Partner Report
     PartnerReportSubmitted,
@@ -28,7 +30,15 @@ enum class NotificationTypeDTO {
     PartnerReportControlOngoing,
     PartnerReportCertified,
     PartnerReportReOpenCertified,
+    ControlCommunicationFileUpload,
+    ControlCommunicationFileDelete,
+
 
     // Project Report
-    ProjectReportSubmitted;
+    ProjectReportSubmitted,
+    ProjectReportVerificationOngoing,
+    ProjectReportVerificationDoneNotificationSent,
+    ProjectReportVerificationFinalized,
+    ProjectReportVerificationFileUpload,
+    ProjectReportVerificationFileDelete;
 }

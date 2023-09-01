@@ -46,11 +46,11 @@
                                         placeholder="{{'project.application.partner.report.contribution.legal.status' | translate}}"
                                         (selectionChange)="totalsChanged()">
                                 <mat-option
-                                        [value]="PartnerContributionStatus.Public">{{PartnerContributionStatus.Public}}</mat-option>
+                                        [value]="PartnerContributionStatus.Public">{{ 'project.partner.coFinancing.contribution.legal.status.Public' | translate }}</mat-option>
                                 <mat-option
-                                        [value]="PartnerContributionStatus.Private">{{PartnerContributionStatus.Private}}</mat-option>
+                                        [value]="PartnerContributionStatus.Private">{{ 'project.partner.coFinancing.contribution.legal.status.Private' | translate }}</mat-option>
                                 <mat-option
-                                        [value]="PartnerContributionStatus.AutomaticPublic">{{PartnerContributionStatus.AutomaticPublic}}</mat-option>
+                                        [value]="PartnerContributionStatus.AutomaticPublic">{{ 'project.partner.coFinancing.contribution.legal.status.AutomaticPublic' | translate }}</mat-option>
                             </mat-select>
                             <mat-error>
                                 <jems-form-field-errors
@@ -60,7 +60,7 @@
                         </mat-form-field>
 
                         <mat-form-field *ngIf="!control.value.createdInThisReport" jemsFormFieldWidth="full">
-                            <input disabled name="legalStatus" matInput [value]="control.value.legalStatus">
+                            <input disabled name="legalStatus" matInput [value]="'project.partner.coFinancing.contribution.legal.status.' + control.value.legalStatus | translate">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -149,7 +149,7 @@
 
             </mat-table>
 
-            <button *ngIf="contributionForm.enabled && contributions.length <= 24"
+            <button *ngIf="(contributionForm.enabled && contributions.length <= 24) && isDirectContributionsAllowed"
                     jemsText mat-stroked-button
                     color="primary"
                     [disabled]="isReportReopenedLimited"

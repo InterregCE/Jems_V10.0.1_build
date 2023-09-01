@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.canCreateP
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getMyProjectPartnerReports.GetMyProjectPartnerReportsInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.reOpenControlPartnerReport.ReOpenControlPartnerReportInteractor
@@ -63,7 +64,8 @@ class ProjectPartnerReportController(
     private val setDescriptionToControlReportFile: SetDescriptionToControlReportFileInteractor,
     private val listPartnerControlReportFile: ListControlReportFileInteractor,
     private val uploadPartnerControlReportFile: UploadFileToControlReportInteractor,
-    private val deleteProjectPartnerReport: DeleteProjectPartnerReportInteractor
+    private val deleteProjectPartnerReport: DeleteProjectPartnerReportInteractor,
+    private val getMyProjectPartnerReports: GetMyProjectPartnerReportsInteractor
 ) : ProjectPartnerReportApi {
 
     override fun getProjectPartnersForReporting(projectId: Long, sort: Sort, version: String?) =
@@ -74,6 +76,9 @@ class ProjectPartnerReportController(
         pageable: Pageable,
     ): Page<ProjectPartnerReportSummaryDTO> =
         getPartnerReport.findAll(partnerId = partnerId, pageable = pageable).toDto()
+
+    override fun getMyProjectPartnerReports(pageable: Pageable): Page<ProjectPartnerReportSummaryDTO> =
+        getMyProjectPartnerReports.findAllOfMine(pageable).toDto()
 
     override fun getProjectPartnerReport(partnerId: Long, reportId: Long) =
         getPartnerReport.findById(partnerId = partnerId, reportId = reportId).toDto()

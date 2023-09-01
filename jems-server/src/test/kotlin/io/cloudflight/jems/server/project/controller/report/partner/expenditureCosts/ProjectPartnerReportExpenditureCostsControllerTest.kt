@@ -41,9 +41,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -52,6 +49,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.web.multipart.MultipartFile
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
@@ -86,6 +86,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 14L,
             reportOfOriginNumber = 2,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 9
         ),
     )
@@ -129,6 +130,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         parkingMetadata = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 14L,
             reportOfOriginNumber = 2,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 9
         ),
     )

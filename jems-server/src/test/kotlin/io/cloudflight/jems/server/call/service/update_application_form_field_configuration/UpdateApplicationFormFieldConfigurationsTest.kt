@@ -57,6 +57,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         isAdditionalFundAllowed = true,
+        isDirectContributionsAllowed = true,
         lengthOfPeriod = 8,
         description = setOf(),
         objectives = listOf(),

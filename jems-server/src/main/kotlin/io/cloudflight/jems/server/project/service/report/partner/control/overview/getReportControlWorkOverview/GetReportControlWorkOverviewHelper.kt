@@ -1,18 +1,26 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview
 
-import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterControl
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.getCategory
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCostCategoriesFor
+import java.math.BigDecimal
 
-fun Collection<ProjectPartnerReportExpenditureVerification>.calculateCertified(
+fun Collection<ExpenditureCostAfterControl>.calculateCertified(
     options: ProjectPartnerBudgetOptions
-): BudgetCostsCalculationResultFull {
-    val sums = groupBy { it.getCategory() }
-        .mapValues { it.value.sumOf { it.certifiedAmount } }
-    return calculateBudget(options, sums)
-}
+): BudgetCostsCalculationResultFull =
+    calculateCostCategoriesFor(options) { it.certifiedAmount }
 
 fun Collection<ProjectPartnerReportExpenditureVerification>.onlyParkedOnes() =
     filter { it.parked }
+
+fun BudgetCostsCalculationResultFull.extractFlatRatesSum(options: ProjectPartnerBudgetOptions): BigDecimal =
+    with(options) {
+        listOf(
+            if (hasFlatRateOffice()) office else BigDecimal.ZERO,
+            if (hasFlatRateTravel()) travel else BigDecimal.ZERO,
+            if (hasFlatRateStaff()) staff else BigDecimal.ZERO,
+            if (hasFlatRateOther()) other else BigDecimal.ZERO,
+        ).sumOf { it }
+    }

@@ -16,7 +16,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -118,6 +117,24 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         assertThat(reportAuthorization.canViewReport(projectId)).isFalse()
     }
 
+    @ParameterizedTest(name = "canCreate - monitor {0} - creator {1}")
+    @CsvSource(value = ["true,false", "false,true"])
+    fun `canCreateReport - all true`(isMonitor: Boolean, isCreator: Boolean) {
+        val projectId = 217L
+        val userId = 763L
+
+        mockEdit(projectId, userId, isMonitor, isCreator)
+
+        assertThat(reportAuthorization.canEditReportNotSpecific(projectId)).isTrue()
+    }
+    @Test
+    fun `canCreateReport - monitor false - creator false`() {
+        val projectId = 42L
+        val userId = 79L
+        mockEdit(projectId, userId, isMonitor = false, isCreator = false)
+        assertThat(reportAuthorization.canCreateProjectReport(projectId)).isFalse()
+    }
+
     private fun mockEdit(projectId: Long, userId: Long, isMonitor: Boolean, isCreator: Boolean) {
         every { currentUser.hasPermission(ProjectReportingProjectEdit) } returns isMonitor
         every { currentUser.user.assignedProjects } returns if (isMonitor) setOf(projectId) else emptySet()
@@ -137,5 +154,4 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { project.getUserIdsWithViewLevel() } returns if (isCreator) setOf(userId) else emptySet()
         every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
     }
-
 }

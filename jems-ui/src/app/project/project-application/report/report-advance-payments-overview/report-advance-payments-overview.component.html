@@ -1,0 +1,37 @@
+<jems-project-page-template *ngIf="data$ | async as data"
+                            [needsCard]="true"
+                            titleKey="project.breadcrumb.applicationForm.reporting.overview"
+                            subTitleKey="project.breadcrumb.applicationForm.reporting.overview.advance.payments"
+                            [isVersionedData]="false">
+  <h3>{{"project.application.form.reporting.overview.advanced.payments.title" | translate}}</h3>
+  <h4>{{"project.application.form.reporting.overview.advanced.payments.subtitle" | translate}}</h4>
+  <jems-table id="advancedPaymentsToProjectsTable"
+              [configuration]="tableConfiguration"
+              [rows]="data.page.content"
+              [totalElements]="data.page?.totalElements"
+              [pageIndex]="advancePaymentsStore.newPageIndex$ | async"
+              (newPageIndex)="advancePaymentsStore.newPageIndex$.next($event)"
+              (newPageSize)="advancePaymentsStore.newPageSize$.next($event)"
+              (sortRows)="advancePaymentsStore.newSort$.next($event)">
+  </jems-table>
+</jems-project-page-template>
+
+<ng-template #partnerRoleCell let-payment>
+  {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerSortNumber }}
+</ng-template>
+
+<ng-template #sourceForAdvanceCell let-payment>
+  <span *ngIf="getSourceType(payment) === SOURCE_TYPE.fund">{{getFundName(payment) | translateBySystemLanguage | async}}</span>
+  <span *ngIf="getSourceType(payment) === SOURCE_TYPE.contribution">{{getContributionName(payment)}}</span>
+</ng-template>
+
+<ng-template #advanceAmountPaidCell let-payment>
+  {{payment.amountPaid | asMoney}}
+</ng-template>
+
+<ng-template #advanceAmountSettledCell let-payment>
+  {{(payment.amountSettled) | asMoney}}
+</ng-template>
+<ng-template #remainingToBeSettledCell let-payment>
+  {{(payment.amountPaid - payment.amountSettled) | asMoney}}
+</ng-template>

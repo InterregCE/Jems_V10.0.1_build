@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfiguration
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
@@ -13,8 +14,9 @@ class UpdateProjectNotificationConfigurationsException(cause: Throwable) : Appli
     cause = cause
 )
 
-class InvalidNotificationTypeException : ApplicationUnprocessableException(
+class InvalidNotificationTypeException(invalid: List<ProjectNotificationConfiguration>) : ApplicationUnprocessableException(
     code = "$UPDATE_PROJECT_NOTIFICATION_CONFIGURATIONS_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_PROJECT_NOTIFICATION_CONFIGURATIONS_ERROR_KEY_PREFIX.invalid.project.notification.type"),
+    message = invalid.joinToString(", ") { it.id.name }
 )
 

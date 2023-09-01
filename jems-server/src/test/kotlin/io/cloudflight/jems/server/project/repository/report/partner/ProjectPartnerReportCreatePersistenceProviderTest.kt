@@ -338,13 +338,15 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             fundId = programmeFundEntity.id, percentage = TEN,
                             total = valueOf(100L), previouslyReported = valueOf(25),
                             previouslyPaid = valueOf(35), previouslyValidated = valueOf(16),
-                            previouslyReportedParked = valueOf(100)
+                            previouslyReportedParked = valueOf(100),
+                            disabled = true,
                         ),
                         PreviouslyReportedFund(
                             fundId = null, percentage = valueOf(90),
                             total = valueOf(900L), previouslyReported = valueOf(400),
                             previouslyPaid = valueOf(410), previouslyValidated = valueOf(19),
-                            previouslyReportedParked = valueOf(100)
+                            previouslyReportedParked = valueOf(100),
+                            disabled = true,
                         ),
                     ),
                     totalPartner = valueOf(900L),

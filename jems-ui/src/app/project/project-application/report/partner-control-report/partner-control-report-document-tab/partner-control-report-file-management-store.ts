@@ -1,7 +1,17 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {JemsFileDTO, JemsFileMetadataDTO, ProjectPartnerReportDTO, ProjectPartnerReportService, SettingsService} from '@cat/api';
-import {catchError, distinctUntilChanged, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  finalize,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+  tap
+} from 'rxjs/operators';
 import {DownloadService} from '@common/services/download.service';
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
@@ -41,7 +51,7 @@ export class PartnerControlReportFileManagementStore {
   }
 
   getMaximumAllowedFileSize(): Observable<number> {
-    return this.settingsService.getMaximumAllowedFileSize();
+    return this.fileManagementStore.maxFileSize$.asObservable();
   }
 
   private fileList(): Observable<JemsFileDTO[]> {
@@ -78,7 +88,7 @@ export class PartnerControlReportFileManagementStore {
       ),
       tap(() => this.filesChanged$.next()),
       tap(() => this.error$.next(null)),
-      tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
         return of({} as JemsFileMetadataDTO);

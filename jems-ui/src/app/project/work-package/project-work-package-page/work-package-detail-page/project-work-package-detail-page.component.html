@@ -1,6 +1,6 @@
 <jems-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async}"
-                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
+                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}} {{workPackage.number}}">
 
     <jems-alert [type]="Alert.WARNING"
                 [show]="workPackage.deactivated"

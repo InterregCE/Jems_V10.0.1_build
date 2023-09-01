@@ -105,8 +105,8 @@ export class PartnerReportProcurementGdprAttachmentComponent implements OnChange
       this.fileSizeOverLimitError$,
       this.procurementStore.gdprError$,
       this.maximumAllowedFileSizeInMB,
-      file => this.procurementStore.uploadProcurementGdprFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.procurementStore.uploadProcurementGdprFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {

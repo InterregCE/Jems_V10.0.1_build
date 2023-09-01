@@ -33,7 +33,7 @@ export class JemsRegionsComponent extends ViewEditFormComponent implements OnIni
   isSavedByParent = false;
 
   @Input()
-  isEditable$: Observable<boolean>;
+  isLocked$: Observable<boolean>;
 
   @Input()
   cancelEditFormParent: Observable<boolean> = of(false);

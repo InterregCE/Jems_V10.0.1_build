@@ -481,6 +481,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 number = 1,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 388L,
+                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 2,
                     originalExpenditureNumber = 2
                 )
@@ -494,6 +495,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 number = 1,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 388L,
+                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 2,
                     originalExpenditureNumber = 2
                 )

@@ -17,3 +17,11 @@ annotation class CanRetrieveAdvancePayments
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('AdvancePaymentsUpdate')")
 annotation class CanUpdateAdvancePayments
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('PaymentsToEcRetrieve')")
+annotation class CanRetrievePaymentApplicationsToEc
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("false")//Will be reverted in V9: MP2-3852
+annotation class CanUpdatePaymentApplicationsToEc

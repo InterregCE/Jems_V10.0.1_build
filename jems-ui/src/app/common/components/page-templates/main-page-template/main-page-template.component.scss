@@ -56,10 +56,11 @@
     }
 
     #scroll-button {
+      z-index: 100;
       position: fixed;
       bottom: 1rem;
       right: 1.25rem;
-      background-color: var(--light-blue-gray);
+      background-color: var(--blue-gray);
       width: 2.5rem;
       height: 2.5rem;
     }

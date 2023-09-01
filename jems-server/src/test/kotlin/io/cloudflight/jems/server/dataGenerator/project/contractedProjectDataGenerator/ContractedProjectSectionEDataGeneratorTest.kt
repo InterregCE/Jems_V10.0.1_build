@@ -29,7 +29,7 @@ class ContractedProjectSectionEDataGeneratorTest(@LocalServerPort private val po
         FeignTestClientFactory.createClientApi(ProjectLumpSumApi::class.java, port, config)
 
     @Test
-    @ExpectSelect(27)
+    @ExpectSelect(28)
     @ExpectInsert(3)
     @ExpectUpdate(0)
     @ExpectDelete(1)

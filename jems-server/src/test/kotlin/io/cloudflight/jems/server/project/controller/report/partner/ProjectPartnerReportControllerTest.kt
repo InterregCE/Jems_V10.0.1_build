@@ -53,6 +53,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.canCreateP
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getMyProjectPartnerReports.GetMyProjectPartnerReportsInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.reOpenControlPartnerReport.ReOpenControlPartnerReportInteractor
@@ -120,6 +121,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             totalEligibleAfterControl = BigDecimal.TEN,
             totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
+            partnerNumber = 1,
+            partnerAbbreviation = "sample partner",
+            projectId = 10L,
+            partnerId = 99L,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            projectCustomIdentifier = "project"
         )
 
         private val reportSummaryDTO = ProjectPartnerReportSummaryDTO(
@@ -145,6 +152,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             totalEligibleAfterControl = BigDecimal.TEN,
             totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
+            partnerAbbreviation = reportSummary.partnerAbbreviation,
+            projectCustomIdentifier = reportSummary.projectCustomIdentifier,
+            partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            partnerId = reportSummary.partnerId,
+            projectId = reportSummary.projectId,
+            partnerNumber = reportSummary.partnerNumber
         )
 
         private val report = ProjectPartnerReport(
@@ -235,7 +248,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "desc"
+            description = "desc",
+            indexedPath = ""
         )
 
         private val reportFileDto = JemsFileDTO(
@@ -340,6 +354,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     @MockK
     lateinit var deleteProjectPartnerReportInteractor: DeleteProjectPartnerReportInteractor
 
+    @MockK
+    lateinit var getMyProjectPartnerReports: GetMyProjectPartnerReportsInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
 
@@ -360,6 +377,16 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 Pageable.unpaged()
             ).content
         ).containsExactly(reportSummaryDTO.copy(firstSubmission = YESTERDAY, lastReSubmission = TODAY))
+    }
+
+    @Test
+    fun getMyProjectPartnerReports() {
+        every { getMyProjectPartnerReports.findAllOfMine(Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
+        assertThat(
+            controller.getMyProjectPartnerReports(
+                Pageable.unpaged()
+            ).content
+        ).containsExactly(reportSummaryDTO)
     }
 
     @Test

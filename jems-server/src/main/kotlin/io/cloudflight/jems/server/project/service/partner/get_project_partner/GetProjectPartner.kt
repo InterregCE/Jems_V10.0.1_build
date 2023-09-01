@@ -30,7 +30,7 @@ class GetProjectPartner(
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary>  {
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary> {
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
         val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version)
 
@@ -71,9 +71,7 @@ class GetProjectPartner(
     }
 
     private fun List<ProjectPartnerSummary>.fillInInstitutions(institutions: Map<Long, ControllerInstitutionList>) =
-        this.apply {
-            this.forEach { it.institutionName = institutions[it.id!!]?.name }
-        }
+        onEach { it.institutionName = institutions[it.id!!]?.name }
 
     @CanRetrieveAdvancePayments
     @Transactional(readOnly = true)

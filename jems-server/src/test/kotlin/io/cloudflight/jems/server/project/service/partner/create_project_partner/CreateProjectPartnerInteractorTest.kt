@@ -60,10 +60,12 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
                 unitCosts = emptyList(),
                 stateAids = emptyList(),
                 isAdditionalFundAllowed = false,
+                isDirectContributionsAllowed = true,
                 applicationFormFieldConfigurations = mutableSetOf(),
                 preSubmissionCheckPluginKey = null,
                 firstStepPreSubmissionCheckPluginKey = null,
                 costOption = mockk(),
+                jsNotifiable = false
             )
     }
 

@@ -17,7 +17,9 @@ class GetPartnerReportNotificationConfigurations(
     override fun get(callId: Long): List<ProjectNotificationConfiguration> {
         val savedNotifications = persistence.getProjectNotificationConfigurations(callId).associateBy { it.id }
 
-        return NotificationType.partnerReportNotifications.map {
+        val notificationTypes = NotificationType.partnerReportNotifications union NotificationType.partnerReportFileControlCommunicationNotifications
+
+        return notificationTypes.map {
             savedNotifications.getOrDefault(it, getDefaultProjectNotificationConfiguration(it))
         }
     }

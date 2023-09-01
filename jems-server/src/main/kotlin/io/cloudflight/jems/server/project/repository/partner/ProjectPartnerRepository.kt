@@ -593,4 +593,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     """, nativeQuery = true
     )
     fun findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerWithContributionsRow>
+
+    @Query("SELECT pp.id FROM #{#entityName} pp WHERE pp.project.id IN :projectIds")
+    fun getPartnerIdsByProjectIds(projectIds: Set<Long>): Set<Long>
+
 }

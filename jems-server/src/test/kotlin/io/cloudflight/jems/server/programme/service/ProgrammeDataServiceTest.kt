@@ -48,6 +48,7 @@ internal class ProgrammeDataServiceTest {
             null,
             null,
             null,
+            10.0,
             "SK-AT",
             false
         )
@@ -82,7 +83,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            ProgrammeDataDTO("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false, emptyList(),)
+            ProgrammeDataDTO("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, 10.0, "SK-AT", false, emptyList(),)
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -93,11 +94,11 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            ProgrammeDataUpdateRequestDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false)
+            ProgrammeDataUpdateRequestDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, 10.0, "SK-AT", false)
         val programmeDataUpdated =
-            ProgrammeDataEntity(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"SK-AT", false)
+            ProgrammeDataEntity(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, 10.0,"SK-AT", false)
         val programmeDataExpectedOutput =
-            ProgrammeDataDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "SK-AT", false, emptyList())
+            ProgrammeDataDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, 10.0, "SK-AT", false, emptyList())
 
         every { programmeDataRepository.save(any<ProgrammeDataEntity>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
@@ -121,7 +122,7 @@ internal class ProgrammeDataServiceTest {
             ProgrammeDataUpdateRequestDTO("cci-updated", "title-updated", "version-updated", 2021, 2025,
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
-                "d2", LocalDate.of(2022, 4, 4), "CZ-DE", true)
+                "d2", LocalDate.of(2022, 4, 4), 10.0, "CZ-DE", true)
         val programmeDataUpdated = programmeDataInput.toEntity(emptySet(), null)
         val programmeDataExpectedOutput = programmeDataUpdated.toProgrammeDataDTO()
 

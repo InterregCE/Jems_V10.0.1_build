@@ -13,11 +13,12 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class GetProjectReportTest : UnitTest() {
 
@@ -47,10 +48,16 @@ internal class GetProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "LP english",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
+            verificationEndDate = NEXT_MONTH,
+            amountRequested = BigDecimal.valueOf(15L),
+            totalEligibleAfterVerification = BigDecimal.valueOf(19L),
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
-        val period = ProjectPeriod(7, 13, 14)
+        val period7 = ProjectPeriod(7, 13, 14)
+        val period8 = ProjectPeriod(8, 15, 16)
 
         val expectedReport = ProjectReport(
             id = 14L,
@@ -61,7 +68,7 @@ internal class GetProjectReportTest : UnitTest() {
             endDate = TOMORROW,
             deadlineId = 14L,
             type = ContractingDeadlineType.Content,
-            periodDetail = period,
+            periodDetail = period7,
             reportingDate = MONTH_AGO,
             projectId = 114L,
             projectIdentifier = "proj identifier",
@@ -70,7 +77,8 @@ internal class GetProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "LP english",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
+            verificationEndDate = NEXT_MONTH
         )
 
         val expectedReportSummary = ProjectReportSummary(
@@ -81,12 +89,18 @@ internal class GetProjectReportTest : UnitTest() {
             startDate = YESTERDAY,
             endDate = TOMORROW,
             type = ContractingDeadlineType.Content,
-            periodDetail = period,
+            periodDetail = period7,
             reportingDate = MONTH_AGO,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
             deletable = false,
+            verificationEndDate = NEXT_MONTH,
+            amountRequested = BigDecimal.valueOf(15L),
+            totalEligibleAfterVerification = BigDecimal.valueOf(19L),
+            verificationConclusionJS = null,
+            verificationConclusionMA = null,
+            verificationFollowup = null,
         )
 
     }
@@ -108,7 +122,7 @@ internal class GetProjectReportTest : UnitTest() {
     fun findById() {
         val projectId = 114L
         every { reportPersistence.getReportById(projectId, reportId = 14L) } returns report
-        every { projectPersistence.getProjectPeriods(projectId, "v4") } returns listOf(period)
+        every { projectPersistence.getProjectPeriods(projectId, "v4") } returns listOf(period7)
         assertThat(interactor.findById(projectId, reportId = 14L)).isEqualTo(expectedReport)
     }
 

@@ -86,7 +86,7 @@ internal class UpdateChecklistTest : UnitTest() {
 
     @Test
     fun `update - max amount of components`() {
-        val checkList = getChecklist(false, ArrayList(Collections.nCopies(101, mockk<ProgrammeChecklistComponent>())))
+        val checkList = getChecklist(false, ArrayList(Collections.nCopies(201, mockk<ProgrammeChecklistComponent>())))
 
         every { persistence.createOrUpdate(checkList) } returns checkList
         assertThrows<AppInputValidationException> { updateProgrammeChecklist.update(checkList) }

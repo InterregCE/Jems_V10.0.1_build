@@ -6,9 +6,13 @@ declare global {
     interface Chainable {
       createChecklist(checklist);
 
+      getProgrammeChecklists();
+
       addProgrammeFund(fund);
 
       createLumpSum(lumpSum);
+
+      createTypologyOfErrors(description);
     }
   }
 }
@@ -22,6 +26,10 @@ Cypress.Commands.add('createChecklist', (checklist) => {
   }).then(response => {
     cy.wrap(response.body.id).as('checklistId');
   });
+});
+
+Cypress.Commands.add('getProgrammeChecklists', () => {
+    getProgrammeChecklists()
 });
 
 Cypress.Commands.add('addProgrammeFund', (fund) => {
@@ -55,6 +63,16 @@ Cypress.Commands.add('createLumpSum', (lumpSum) => {
   });
 });
 
+Cypress.Commands.add('createTypologyOfErrors', (typology) => {
+  cy.request({
+    method: 'PUT',
+    url: 'api/programmeTypologyErrors',
+    body: typology
+  }).then(response => {
+    cy.wrap(response.body.id).as('typologyOfErrorId');
+  });
+});
+
 function getExistingFunds() {
   return cy.request({
     method: 'GET',
@@ -62,6 +80,13 @@ function getExistingFunds() {
   }).then(response => {
     return response.body;
   });
+}
+
+function getProgrammeChecklists() {
+    return cy.request({
+        method: 'GET',
+        url: 'api/programme/checklist/byType/CONTROL'
+    });
 }
 
 export {}

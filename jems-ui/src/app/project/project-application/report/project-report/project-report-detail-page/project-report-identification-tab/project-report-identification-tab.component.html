@@ -10,6 +10,18 @@
             <span class="p-1">{{data.projectReport?.projectIdentifier}} - {{data.projectReport?.projectAcronym}}</span>
         </div>
         <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.project.report.table.project.version' | translate}}</span>
+            <span class="p-1">{{data.projectReport?.linkedFormVersion}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'Related call'}}</span>
+            <span class="p-1">
+                <a [routerLink]="data.canUserAccessCall ? [CALL_PATH, data.relatedCall.callId] : null">
+                    {{data.relatedCall.callId + ' - '  + data.relatedCall.callName}}
+                </a>
+            </span>
+        </div>
+        <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.project.report.id' | translate}}</span>
             <span class="p-1">PR.{{data.projectReport.reportNumber}}</span>
         </div>
@@ -24,10 +36,6 @@
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.organization.english.name.label' | translate}}</span>
             <span class="p-1">{{data.projectReport?.leadPartnerNameInEnglish}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.project.report.table.project.version' | translate}}</span>
-            <span class="p-1">{{data.projectReport?.linkedFormVersion}}</span>
         </div>
     </div>
 

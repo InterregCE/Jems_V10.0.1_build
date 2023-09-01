@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.controller
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -12,6 +13,7 @@ import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
@@ -29,18 +31,23 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class PaymentsControllerTest : UnitTest() {
 
     companion object {
         private val currentTime = ZonedDateTime.now()
-        private const val paymentId = 1L
+        private val currentDate = LocalDate.now()
+        private const val ftlsPaymentId = 1L
+        private const val regularPaymentId = 11L
+        private const val projectReportNumber = 5
         private const val projectId = 2L
         private const val partnerId = 3L
         private const val lumpSumId = 4L
@@ -69,8 +76,8 @@ class PaymentsControllerTest : UnitTest() {
             selected = true,
             type = ProgrammeFundType.OTHER
         )
-        private val paymentToProject = PaymentToProject(
-            id = paymentId,
+        private val ftlsPaymentToProject = PaymentToProject(
+            id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
@@ -79,6 +86,24 @@ class PaymentsControllerTest : UnitTest() {
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,
+            amountAuthorizedPerFund = BigDecimal.ZERO,
+            paymentApprovalDate = currentTime,
+            paymentClaimSubmissionDate = null,
+            totalEligibleAmount = BigDecimal.TEN,
+            lastApprovedVersionBeforeReadyForPayment = "v1.0"
+        )
+
+        private val regularPaymentToProject = PaymentToProject(
+            id = regularPaymentId,
+            paymentType = PaymentType.REGULAR,
+            projectCustomIdentifier = project.customIdentifier,
+            projectAcronym = project.acronym,
+            paymentClaimNo = projectReportNumber,
+            fundId = 5L,
+            fundName = fund.type.name,
+            amountApprovedPerFund = BigDecimal.TEN,
+            amountPaidPerFund = BigDecimal.ZERO,
+            amountAuthorizedPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
@@ -113,8 +138,8 @@ class PaymentsControllerTest : UnitTest() {
             paymentConfirmedDate = installmentFirstDTO.paymentConfirmedDate
         )
 
-        private val paymentDetail = PaymentDetail(
-            id = paymentId,
+        private val ftlsPaymentDetail = PaymentDetail(
+            id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
             fundName = fund.type.name,
             projectId = projectId,
@@ -134,13 +159,15 @@ class PaymentsControllerTest : UnitTest() {
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApprovedPerPartner = BigDecimal.ONE,
-                    installments = listOf(installmentFirst)
+                    installments = listOf(installmentFirst),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
         )
 
-        private val paymentDetailDTO = PaymentDetailDTO(
-            id = paymentId,
+        private val ftlsPaymentDetailDTO = PaymentDetailDTO(
+            id = ftlsPaymentId,
             paymentType = PaymentTypeDTO.FTLS,
             fundName = fund.type.name,
             projectId = projectId,
@@ -156,9 +183,91 @@ class PaymentsControllerTest : UnitTest() {
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
                     amountApproved = BigDecimal.ONE,
-                    installments = listOf(installmentFirstDTO)
+                    installments = listOf(installmentFirstDTO),
+                    partnerReportId = null,
+                    partnerReportNumber = null
                 )
             )
+        )
+
+        private val regularPaymentDetail = PaymentDetail(
+            id = regularPaymentId,
+            paymentType = PaymentType.REGULAR,
+            fundName = fund.type.name,
+            projectId = projectId,
+            projectCustomIdentifier = project.customIdentifier,
+            projectAcronym = project.acronym,
+            amountApprovedPerFund = BigDecimal.TEN,
+            dateOfLastPayment = null,
+            partnerPayments = listOf(
+                PartnerPayment(
+                    id = 8L,
+                    projectId = projectId,
+                    orderNr = null,
+                    programmeLumpSumId = null,
+                    programmeFundId = fund.id,
+                    partnerId = partnerId,
+                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                    partnerNumber = 1,
+                    partnerAbbreviation = "partner",
+                    amountApprovedPerPartner = BigDecimal.ONE,
+                    installments = listOf(),
+                    partnerReportId = 10L,
+                    partnerReportNumber = 5
+                )
+            )
+        )
+
+        private val regularPaymentDetailDTO = PaymentDetailDTO(
+            id = regularPaymentId,
+            paymentType = PaymentTypeDTO.REGULAR,
+            fundName = fund.type.name,
+            projectId = projectId,
+            projectCustomIdentifier = project.customIdentifier,
+            projectAcronym = project.acronym,
+            amountApprovedPerFund = BigDecimal.TEN,
+            dateOfLastPayment = null,
+            partnerPayments = listOf(
+                PaymentPartnerDTO(
+                    id = 8L,
+                    partnerId = partnerId,
+                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerNumber = 1,
+                    partnerAbbreviation = "partner",
+                    amountApproved = BigDecimal.ONE,
+                    installments = listOf(),
+                    partnerReportId = 10L,
+                    partnerReportNumber = 5
+                )
+            )
+        )
+
+        private val dummyFilterDto = PaymentSearchRequestDTO(
+            paymentId = 855L,
+            paymentType = null,
+            projectIdentifiers = setOf("472", "INT00473", ""),
+            projectAcronym = "acr-filter",
+            claimSubmissionDateFrom = currentDate.minusDays(2),
+            claimSubmissionDateTo = currentDate.minusDays(2),
+            approvalDateFrom = currentDate.minusDays(3),
+            approvalDateTo = currentDate.minusDays(3),
+            fundIds = setOf(511L, 512L),
+            lastPaymentDateFrom = currentDate.minusDays(1),
+            lastPaymentDateTo = currentDate.minusDays(1),
+        )
+
+        private val dummyFilter = PaymentSearchRequest(
+            paymentId = 855L,
+            paymentType = null,
+            projectIdentifiers = setOf("472", "INT00473", ""),
+            projectAcronym = "acr-filter",
+            claimSubmissionDateFrom = currentDate.minusDays(2),
+            claimSubmissionDateTo = currentDate.minusDays(2),
+            approvalDateFrom = currentDate.minusDays(3),
+            approvalDateTo = currentDate.minusDays(3),
+            fundIds = setOf(511L, 512L),
+            lastPaymentDateFrom = currentDate.minusDays(1),
+            lastPaymentDateTo = currentDate.minusDays(1),
         )
     }
 
@@ -176,34 +285,75 @@ class PaymentsControllerTest : UnitTest() {
 
     @Test
     fun getPaymentsToProjects() {
-        every { getPayments.getPayments(any()) } returns PageImpl(listOf(paymentToProject))
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { getPayments.getPayments(any(), capture(slotFilter)) } returns PageImpl(listOf(
+            ftlsPaymentToProject, regularPaymentToProject))
 
-        assertThat(controller.getPaymentsToProjects(Pageable.unpaged())).containsExactly(
+        assertThat(controller.getPaymentsToProjects(Pageable.unpaged(), dummyFilterDto)).containsExactly(
             PaymentToProjectDTO(
-                id = paymentId,
+                id = ftlsPaymentId,
                 paymentType = PaymentTypeDTO.FTLS,
-                projectCustomIdentifier = paymentToProject.projectCustomIdentifier,
-                projectAcronym = paymentToProject.projectAcronym,
-                paymentClaimNo = paymentToProject.paymentClaimNo,
-                paymentClaimSubmissionDate = paymentToProject.paymentClaimSubmissionDate,
-                paymentApprovalDate = paymentToProject.paymentApprovalDate,
-                totalEligibleAmount = paymentToProject.totalEligibleAmount,
-                fundName = paymentToProject.fundName,
-                amountApprovedPerFund = paymentToProject.amountApprovedPerFund,
-                amountPaidPerFund = paymentToProject.amountPaidPerFund,
+                projectCustomIdentifier = ftlsPaymentToProject.projectCustomIdentifier,
+                projectAcronym = ftlsPaymentToProject.projectAcronym,
+                paymentClaimNo = ftlsPaymentToProject.paymentClaimNo,
+                paymentClaimSubmissionDate = ftlsPaymentToProject.paymentClaimSubmissionDate,
+                paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
+                totalEligibleAmount = ftlsPaymentToProject.totalEligibleAmount,
+                fundName = ftlsPaymentToProject.fundName,
+                amountApprovedPerFund = ftlsPaymentToProject.amountApprovedPerFund,
+                amountPaidPerFund = ftlsPaymentToProject.amountPaidPerFund,
+                amountAuthorizedPerFund = ftlsPaymentToProject.amountAuthorizedPerFund,
                 dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = paymentToProject.lastApprovedVersionBeforeReadyForPayment
-            )
+                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+            ),
+            PaymentToProjectDTO(
+                id = regularPaymentId,
+                paymentType = PaymentTypeDTO.REGULAR,
+                projectCustomIdentifier = regularPaymentToProject.projectCustomIdentifier,
+                projectAcronym = regularPaymentToProject.projectAcronym,
+                paymentClaimNo = regularPaymentToProject.paymentClaimNo,
+                paymentClaimSubmissionDate = regularPaymentToProject.paymentClaimSubmissionDate,
+                paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,
+                totalEligibleAmount = regularPaymentToProject.totalEligibleAmount,
+                fundName = regularPaymentToProject.fundName,
+                amountApprovedPerFund = regularPaymentToProject.amountApprovedPerFund,
+                amountPaidPerFund = regularPaymentToProject.amountPaidPerFund,
+                amountAuthorizedPerFund = regularPaymentToProject.amountAuthorizedPerFund,
+                dateOfLastPayment = null,
+                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+            ),
         )
+        assertThat(slotFilter.captured).isEqualTo(dummyFilter)
     }
 
     @Test
-    fun getPaymentDetail() {
-        every { getPaymentDetail.getPaymentDetail(paymentId) } returns paymentDetail
+    fun `getPaymentsToProjects - emptyFilter`() {
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { getPayments.getPayments(any(), capture(slotFilter)) } returns PageImpl(emptyList())
 
-        assertThat(controller.getPaymentDetail(paymentId)).isEqualTo(
+        assertThat(controller.getPaymentsToProjects(Pageable.unpaged(), null)).isEmpty()
+        assertThat(slotFilter.captured).isEqualTo(PaymentSearchRequest(
+            paymentId = null,
+            paymentType = null,
+            projectIdentifiers = emptySet(),
+            projectAcronym = null,
+            claimSubmissionDateFrom = null,
+            claimSubmissionDateTo = null,
+            approvalDateFrom = null,
+            approvalDateTo = null,
+            fundIds = emptySet(),
+            lastPaymentDateFrom = null,
+            lastPaymentDateTo = null,
+        ))
+    }
+
+    @Test
+    fun getFtlsPaymentDetail() {
+        every { getPaymentDetail.getPaymentDetail(ftlsPaymentId) } returns ftlsPaymentDetail
+
+        assertThat(controller.getPaymentDetail(ftlsPaymentId)).isEqualTo(
             PaymentDetailDTO(
-                id = paymentId,
+                id = ftlsPaymentId,
                 paymentType = PaymentTypeDTO.FTLS,
                 projectId = project.id,
                 projectCustomIdentifier = project.customIdentifier,
@@ -219,7 +369,9 @@ class PaymentsControllerTest : UnitTest() {
                         partnerNumber = 1,
                         partnerAbbreviation = "partner",
                         amountApproved = BigDecimal.ONE,
-                        installments = listOf(installmentFirstDTO)
+                        installments = listOf(installmentFirstDTO),
+                        partnerReportId = null,
+                        partnerReportNumber = null
                     )
                 )
             )
@@ -227,13 +379,22 @@ class PaymentsControllerTest : UnitTest() {
     }
 
     @Test
+    fun getRegularPaymentDetail() {
+        every { getPaymentDetail.getPaymentDetail(regularPaymentId) } returns regularPaymentDetail
+
+        assertThat(controller.getPaymentDetail(regularPaymentId)).isEqualTo(
+            regularPaymentDetailDTO
+        )
+    }
+
+    @Test
     fun updatePaymentPartnerInstallments() {
         every {
-            updatePaymentInstallments.updatePaymentInstallments(paymentId, any())
-        } returns paymentDetail
+            updatePaymentInstallments.updatePaymentInstallments(ftlsPaymentId, any())
+        } returns ftlsPaymentDetail
 
         assertThat(
-            controller.updatePaymentInstallments(paymentId, paymentDetailDTO)
-        ).isEqualTo(paymentDetailDTO)
+            controller.updatePaymentInstallments(ftlsPaymentId, ftlsPaymentDetailDTO)
+        ).isEqualTo(ftlsPaymentDetailDTO)
     }
 }

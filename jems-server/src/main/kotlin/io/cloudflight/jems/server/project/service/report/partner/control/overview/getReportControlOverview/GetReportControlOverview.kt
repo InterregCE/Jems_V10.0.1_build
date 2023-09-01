@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetReportControlOverview(
-   private val getReportControlOverviewService: GetReportControlOverviewService
+   private val getReportControlOverviewCalculator: GetReportControlOverviewCalculator,
 ): GetReportControlOverviewInteractor {
 
     @CanViewPartnerControlReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetReportControlOverviewException::class)
     override fun get(partnerId: Long, reportId: Long): ControlOverview  =
-        getReportControlOverviewService.get(partnerId, reportId)
+        getReportControlOverviewCalculator.get(partnerId, reportId)
 }

@@ -3,5 +3,6 @@ package io.cloudflight.jems.api.project.dto.report.partner.expenditure.verificat
 data class ExpenditureParkingMetadataDTO(
     val reportOfOriginId: Long,
     val reportOfOriginNumber: Int,
+    val reportProjectOfOriginId: Long?,
     val originalExpenditureNumber: Int
 )

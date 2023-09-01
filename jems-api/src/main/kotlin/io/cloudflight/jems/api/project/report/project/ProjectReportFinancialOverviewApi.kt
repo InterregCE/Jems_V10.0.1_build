@@ -46,7 +46,6 @@ interface ProjectReportFinancialOverviewApi {
         @PathVariable reportId: Long,
     ): PerPartnerCostCategoryBreakdownDTO
 
-
     @ApiOperation("Returns Project Report Expenditure breakdown into Unit Costs")
     @GetMapping("${ENDPOINT_API_PROJECT_REPORT_IDENTIFICATION}/unitCosts")
     fun getUnitCostsBreakdown(
@@ -60,4 +59,5 @@ interface ProjectReportFinancialOverviewApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): CertificateInvestmentBreakdownDTO
+
 }

@@ -47,7 +47,7 @@ class ExportChecklistInstanceTest: UnitTest() {
     @Test
     fun exportNotFound() {
         every { checklistInstancePersistence.existsByIdAndRelatedToId(id = CHECKLIST_ID, relatedToId = 1L) } returns false
-        assertThrows<ExportChecklistInstanceExceptionNotFound> { exportChecklistInstance.export(1L, CHECKLIST_ID, SystemLanguage.EN) }
+        assertThrows<ExportChecklistInstanceNotFoundException> { exportChecklistInstance.export(1L, CHECKLIST_ID, SystemLanguage.EN) }
     }
 
 }

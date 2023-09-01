@@ -10,4 +10,5 @@ data class PreviouslyReportedFund(
     val previouslyReportedParked: BigDecimal,
     val previouslyValidated: BigDecimal,
     val previouslyPaid: BigDecimal,
+    val disabled: Boolean,
 )

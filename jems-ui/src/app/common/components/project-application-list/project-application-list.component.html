@@ -62,14 +62,23 @@
 </ng-container>
 
 <ng-container *ngIf="(filterByOwner ? listStore.pageFilteredByOwner$ : listStore.page$) | async as page">
-    <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
+    <p *ngIf="!page.content.length && !isThereAnyActiveFilter()">{{'project.list.empty' | translate}}</p>
+    <p *ngIf="!page.content.length && isThereAnyActiveFilter()">{{'common.filters.no.results' | translate}}</p>
     <jems-table *ngIf="page.content.length"
                 [configuration]="tableConfiguration"
                 [rows]="page.content"
                 [totalElements]="page?.totalElements"
                 [pageIndex]="listStore.newPageIndex$ | async"
+                [currentPageSize]="currentPageSize"
+                [disableTopPaginator]="disableTopPaginator"
                 (newPageIndex)="listStore.newPageIndex$.next($event)"
                 (newPageSize)="listStore.newPageSize$.next($event)"
                 (sortRows)="listStore.newSort$.next($event)">
     </jems-table>
 </ng-container>
+
+<ng-template #callNameCell let-project>
+    <span>
+        {{project.callId}} - {{project.callName}}
+    </span>
+</ng-template>

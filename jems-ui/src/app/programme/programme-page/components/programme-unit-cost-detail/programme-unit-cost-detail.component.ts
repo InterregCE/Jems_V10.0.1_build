@@ -11,11 +11,11 @@ import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.com
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {CurrencyDTO, ProgrammeUnitCostDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {NumberService} from '../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -74,7 +74,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       Validators.max(this.MAX_VALUE)])
     ],
     foreignCurrencyCode: [null,[]],
-    categories: ['', Validators.required]
+    categories: ['', Validators.required],
+    paymentClaim: [ProgrammeUnitCostDTO.PaymentClaimEnum.IncurredByBeneficiaries]
   });
 
   costErrors = {
@@ -106,6 +107,12 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     ProgrammeUnitCostDTO.CategoriesEnum.ExternalCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.EquipmentCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.InfrastructureCosts
+  ];
+  availablePaymentClaims = [
+    ProgrammeUnitCostDTO.PaymentClaimEnum.IncurredByBeneficiaries,
+    ProgrammeUnitCostDTO.PaymentClaimEnum.BasedOnSco,
+    ProgrammeUnitCostDTO.PaymentClaimEnum.FinancingNotBasedOnSco,
+    ProgrammeUnitCostDTO.PaymentClaimEnum.Other
   ];
   validNumberOfSelections = false;
 
@@ -154,6 +161,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     this.unitCostForm.controls.costPerUnitForeignCurrency.setValue(this.unitCost.costPerUnitForeignCurrency);
     this.unitCostForm.controls.foreignCurrencyCode.setValue(this.unitCost.foreignCurrencyCode);
     this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.oneCostCategory);
+    this.unitCostForm.controls.paymentClaim.setValue(this.unitCost.paymentClaim);
     this.selectionMultiple.clear();
     this.selectionSingle.clear();
     if (this.unitCost.oneCostCategory) {
@@ -191,7 +199,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
           foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
-          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
+          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected,
+          paymentClaim: this.unitCostForm?.controls?.paymentClaim.value
         } as ProgrammeUnitCostDTO);
       } else {
         this.updateUnitCost.emit({
@@ -205,7 +214,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
           foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
-          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
+          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected,
+          paymentClaim: this.unitCostForm?.controls.paymentClaim.value
         });
       }
     });

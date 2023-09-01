@@ -1,0 +1,57 @@
+<jems-project-page-template [isVersionedData]="false"
+                            *ngIf="data$ | async as data"
+                            [titleKey]="('project.application.project.verification.work.title.for' | translate : { reportNumber: data.projectReport.reportNumber })">
+
+    <div class="mb-3 status-wrapper">
+        <span class="status-label">Status</span>
+        <span class="ml-2"><jems-project-report-status [status]="data.projectReport.status" [longVersion]="false"></jems-project-report-status></span>
+
+        <a jemsText mat-stroked-button type="submit" class="ml-1"
+           (click)="redirectToReport(data.projectReport.id)">
+            {{'project.application.project.verification.work.switch.report' | translate}}
+        </a>
+
+    </div>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <nav mat-tab-nav-bar>
+        <a *ngIf="data.isVisibleForMonitoringUser && isFinance(data.projectReport.type)" [active]="activeTab('expenditure')" mat-tab-link (click)="routeTo('expenditure')">
+            <span jemsText maxWidth="230">
+                {{ 'project.application.project.verification.tab.expenditure' | translate }}
+            </span>
+        </a>
+
+        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForApplicantUser" [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
+            <span jemsText maxWidth="230">
+                {{ 'project.application.project.verification.work.tab.document' | translate }}
+            </span>
+        </a>
+
+        <a *ngIf="data.isVisibleForMonitoringUser" [active]="activeTab('verificationChecklistsTab')" mat-tab-link
+           (click)="routeTo('verificationChecklistsTab')">
+            <span jemsText maxWidth="230">
+                {{'project.application.project.verification.work.tab.verificationChecklists' | translate}}
+            </span>
+        </a>
+
+        <a *ngIf="isFinance(data.projectReport.type) && (data.isVisibleForMonitoringUser || (data.isVisibleForApplicantUser && data.projectReport.status === StatusEnum.Finalized))" [active]="activeTab('overview')" mat-tab-link
+           (click)="routeTo('overview')">
+            <span jemsText maxWidth="230">
+                {{'project.application.project.verification.work.tab.overview' | translate}}
+            </span>
+        </a>
+
+        <a *ngIf="data.isVisibleForMonitoringUser" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
+            <span jemsText maxWidth="230">
+                {{ 'project.application.project.verification.work.tab.finalise' | translate }}
+            </span>
+        </a>
+
+    </nav>
+    <router-outlet></router-outlet>
+</jems-project-page-template>

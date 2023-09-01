@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.createPro
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -16,7 +16,9 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.*
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.AutomaticPublic
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Private
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -63,7 +65,7 @@ class CreateProjectPartnerReportBudget(
     private val getProjectBudget: GetProjectBudget,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
     private val reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
-    private val paymentPersistence: PaymentRegularPersistence,
+    private val paymentPersistence: PaymentPersistence,
     private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
@@ -361,6 +363,7 @@ class CreateProjectPartnerReportBudget(
                 previouslyReportedParked = previousParked.funds.getOrDefault(it.fund?.id, ZERO),
                 previouslyValidated = previousValidated.funds.getOrDefault(it.fund?.id, ZERO),
                 previouslyPaid = paymentPaid.getOrDefault(it.fund?.id, ZERO),
+                disabled = false,
             )
         }
 
@@ -376,6 +379,7 @@ class CreateProjectPartnerReportBudget(
                 previouslyReportedParked = previousParked.funds[fundId]!!,
                 previouslyValidated = previousValidated.funds[fundId]!!,
                 previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO),
+                disabled = true,
             )
         }
         currentFunds.addAll(maxOf(currentFunds.size - 1, 0), removedFunds) /* insert removed funds before partner contribution */
@@ -391,6 +395,7 @@ class CreateProjectPartnerReportBudget(
                     previouslyReportedParked = previousParked.funds.getOrDefault(null, ZERO),
                     previouslyValidated = previousValidated.funds.getOrDefault(null, ZERO),
                     previouslyPaid = ZERO,
+                    disabled = false,
                 )
             )
 
@@ -433,9 +438,9 @@ class CreateProjectPartnerReportBudget(
             .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
 
     private fun List<PaymentPartnerInstallment>.byLumpSum() =
-        groupBy { it.lumpSumId }
+        filter { it.lumpSumId != null }.groupBy { it.lumpSumId!! }
             .mapValues { (_, installments) ->
-                installments.groupBy { it.orderNr }
+                installments.groupBy { it.orderNr!! }
                     .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
             }
 

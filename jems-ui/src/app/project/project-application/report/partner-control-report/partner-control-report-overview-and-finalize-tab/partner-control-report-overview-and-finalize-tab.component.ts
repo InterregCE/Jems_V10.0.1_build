@@ -56,6 +56,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
   data$: Observable<{
     overview: ControlWorkOverviewDTO;
     deduction: ControlDeductionOverviewDTO;
+    controlHasDeductions: boolean,
     finalizationAllowed: boolean;
     controlOpenButReportAlso: boolean;
     hideFinalizeSection: boolean;
@@ -114,6 +115,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       map(([overview, deduction, report, partnerId, userCanEdit, userCanView, controlReportOverview]: any) => ({
         overview,
         deduction,
+        controlHasDeductions: this.hasDeductions(deduction),
         finalizationAllowed: ReportUtil.controlCanBeFinalized(report.status),
         controlOpenButReportAlso: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast ||
             report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
@@ -251,5 +253,9 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
 
   getDateInfo(value: string): any {
     return this.localeDatePipe.transform(value);
+  }
+
+  hasDeductions(deductions: ControlDeductionOverviewDTO): boolean {
+    return deductions.deductionRows.filter(deduction => deduction.total).length > 0;
   }
 }

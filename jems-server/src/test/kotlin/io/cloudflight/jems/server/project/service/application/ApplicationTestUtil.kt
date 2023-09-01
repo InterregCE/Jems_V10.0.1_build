@@ -41,6 +41,7 @@ val callSettings = ProjectCallSettings(
     lengthOfPeriod = 2,
     endDateStep1 = null,
     isAdditionalFundAllowed = false,
+    isDirectContributionsAllowed = true,
     flatRates = emptySet(),
     lumpSums = emptyList(),
     unitCosts = emptyList(),
@@ -52,6 +53,7 @@ val callSettings = ProjectCallSettings(
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
     ),
+    jsNotifiable = false
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(

@@ -6,11 +6,14 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.notification.handler.FileChangeAction
+import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.project.authorization.CanEditSharedFolder
 import io.cloudflight.jems.server.project.repository.file.ProjectFileTypeNotSupported
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,6 +23,7 @@ class UploadFileToSharedFolder(
     private val filePersistence: JemsFilePersistence,
     private val projectFileService: JemsProjectFileService,
     private val securityService: SecurityService,
+    private val eventPublisher: ApplicationEventPublisher
 ) : UploadFileToSharedFolderInteractor {
 
     @CanEditSharedFolder
@@ -39,17 +43,25 @@ class UploadFileToSharedFolder(
             if (filePersistence.existsFile(exactPath = location, fileName = file.name)) {
                 throw FileAlreadyExists()
             }
-
-            return projectFileService.persistFile(
-                file.getFileMetadata(
-                    projectId = projectId,
-                    partnerId = null,
-                    location = location,
-                    type = this,
-                    userId = securityService.getUserIdOrThrow(),
-                )
+            val fileMetadata = file.getFileMetadata(
+                projectId = projectId,
+                partnerId = null,
+                location = location,
+                type = this,
+                userId = securityService.getUserIdOrThrow(),
             )
 
+            return projectFileService.persistFile(
+                fileMetadata
+            ).also {
+                eventPublisher.publishEvent(
+                    ProjectFileChangeEvent(
+                        action = FileChangeAction.Upload,
+                        projectSummary = projectPersistence.getProjectSummary(projectId),
+                        file = it,
+                    )
+                )
+            }.toSimple()
         }
 
     }

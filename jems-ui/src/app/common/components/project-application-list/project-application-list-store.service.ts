@@ -33,17 +33,17 @@ export class ProjectApplicationListStore {
               private priorityService: ProgrammePriorityService,
               private permissionService: PermissionService,
               private callService: CallService) {
-    this.page$ = this.page(false);
-    this.pageFilteredByOwner$ = this.page(true);
+    this.page$ = this.page(false, 25);
+    this.pageFilteredByOwner$ = this.page(true, 10);
     this.policyObjectives$ = this.policyObjectives();
     this.publishedCalls$ = this.publishedCalls();
   }
 
-  private page(filterByOwner: boolean): Observable<PageOutputProjectSimple> {
+  private page(filterByOwner: boolean, defaultPageSize: number): Observable<PageOutputProjectSimple> {
     return combineLatest([
       this.filter$,
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageSize$.pipe(startWith(defaultPageSize)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT)

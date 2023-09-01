@@ -64,9 +64,6 @@ export class ChecklistInstanceListComponent implements OnInit {
   @ViewChild('consolidateCell', {static: true})
   consolidateCell: TemplateRef<any>;
 
-  @ViewChild('downloadCell', {static: true})
-  downloadCell: TemplateRef<any>;
-
   @ViewChild('visibleCell', {static: true})
   visibleCell: TemplateRef<any>;
 
@@ -75,6 +72,9 @@ export class ChecklistInstanceListComponent implements OnInit {
 
   @ViewChild('descriptionCell', {static: true})
   descriptionCell: TemplateRef<any>;
+
+  @ViewChild('downloadCell', {static: true})
+  downloadCell: TemplateRef<any>;
 
   @ViewChild('tableInstances') tableInstances: TableComponent;
   @ViewChild('tableSelected') tableSelected: TableComponent;
@@ -200,12 +200,12 @@ export class ChecklistInstanceListComponent implements OnInit {
           sortProperty: 'description',
           customCellTemplate: this.descriptionCell,
         },
-        {
+        ...selection ? [{
           displayedColumn: 'checklists.instance.export',
           customCellTemplate: this.downloadCell,
           columnWidth: ColumnWidth.SmallColumn,
           clickable: false
-        },
+        }]: [],
         ...selection ? [{
           displayedColumn: 'checklists.instance.visible',
           customCellTemplate: this.visibleCell,

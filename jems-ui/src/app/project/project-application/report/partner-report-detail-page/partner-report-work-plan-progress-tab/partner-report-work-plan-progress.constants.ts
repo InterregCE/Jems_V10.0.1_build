@@ -18,9 +18,29 @@ export class PartnerReportWorkplanConstants {
     name: 'deliverables'
   };
 
+  public static WORK_PACKAGE_ID: AppControl = {
+    name: 'id'
+  };
+
+  public static WORK_PACKAGE_NUMBER: AppControl = {
+    name: 'number'
+  };
+
   public static WORK_PACKAGE_DESCRIPTION: AppControl = {
     name: 'description',
     maxLength: 2000,
+  };
+
+  public static WORK_PACKAGE_DEACTIVATED: AppControl = {
+    name: 'deactivated'
+  };
+
+  public static ACTIVITY_ID: AppControl = {
+    name: 'id'
+  };
+
+  public static ACTIVITY_NUMBER: AppControl = {
+    name: 'number'
   };
 
   public static ACTIVITY_PROGRESS: AppControl = {
@@ -34,6 +54,18 @@ export class PartnerReportWorkplanConstants {
 
   public static ACTIVITY_FILE: AppControl = {
     name: 'fileMetadata'
+  };
+
+  public static ACTIVITY_DEACTIVATED: AppControl = {
+    name: 'deactivated'
+  };
+
+  public static DELIVERABLE_ID: AppControl = {
+    name: 'id',
+  };
+
+  public static DELIVERABLE_NUMBER: AppControl = {
+    name: 'number'
   };
 
   public static DELIVERABLE_TITLE: AppControl = {
@@ -52,6 +84,18 @@ export class PartnerReportWorkplanConstants {
     name: 'fileMetadata',
   };
 
+  public static DELIVERABLE_DEACTIVATED: AppControl = {
+    name: 'deactivated',
+  };
+
+  public static OUTPUT_ID: AppControl = {
+    name: 'id',
+  };
+
+  public static OUTPUT_NUMBER: AppControl = {
+    name: 'number',
+  };
+
   public static OUTPUT_TITLE: AppControl = {
     name: 'title',
   };
@@ -60,12 +104,12 @@ export class PartnerReportWorkplanConstants {
     name: 'contribution',
   };
 
-  public static OUTPUT_EVIDENCE: AppControl = {
-    name: 'evidence',
-  };
-
   public static OUTPUT_FILE: AppControl = {
     name: 'fileMetadata',
+  };
+
+  public static OUTPUT_DEACTIVATED: AppControl = {
+    name: 'deactivated',
   };
 
 }

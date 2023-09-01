@@ -8,14 +8,19 @@
         <jems-notification-list jemsNoWidthLimit></jems-notification-list>
     </ng-container>
 
+    <ng-container *ngIf="pageStore.canViewPartnerReports$ | async">
+        <h2>{{'user.partner.reports' | translate}}</h2>
+        <jems-partner-report-list jemsNoWidthLimit></jems-partner-report-list>
+    </ng-container>
+
     <ng-container *jemsHasPermission="Permissions.ProjectsWithOwnershipRetrieve">
         <h2>{{'call.applications.title' | translate}}</h2>
-        <jems-project-application-list jemsNoWidthLimit filterByOwner="true"></jems-project-application-list>
+        <jems-project-application-list jemsNoWidthLimit filterByOwner="true" [currentPageSize]="currentApplicationPageSize" [disableTopPaginator]="true"></jems-project-application-list>
     </ng-container>
 
     <ng-container *jemsHasPermission="Permissions.CallPublishedRetrieve">
         <h2>{{'call.list.open.title' | translate}}</h2>
-        <jems-call-list jemsNoWidthLimit [publishedCallsOnly]="true"></jems-call-list>
+        <jems-call-list jemsNoWidthLimit [publishedCallsOnly]="true" [currentPageSize]="currentCallPageSize" [disableTopPaginator]="true"></jems-call-list>
     </ng-container>
 
 </jems-main-page-template>

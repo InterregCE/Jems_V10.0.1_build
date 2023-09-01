@@ -269,6 +269,8 @@ fun List<IndicatorOverviewLine>.toIndicatorOverviewLines() = map {
         resultIndicatorTargetValueSumUp = it.resultIndicator?.targetValueSumUp,
 
         onlyResultWithoutOutputs = it.onlyResultWithoutOutputs,
+        outputIndicatorCode = it.outputIndicator?.code,
+        resultIndicatorCode = it.resultIndicator?.code
     )
 }
 

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
@@ -74,7 +75,9 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         val newlyUnParkedExpenditureIds = unParkedNew.minus(unparkedOldIds)
         val unParkedExpenditures = newVerifications.filter { it.id in newlyUnParkedExpenditureIds }
 
-        validateUnParkedCertified(newlyUnParked = unParkedExpenditures, reportId, partnerId)
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        validateUnParkedCertified(newlyUnParked = unParkedExpenditures, report)
+        validateUnParkedReIncluded(newlyUnParked = unParkedExpenditures, report)
 
         reportParkedExpenditurePersistence.parkExpenditures(
             newVerifications.filter { it.id in newlyParked }.toParkData(reportId)
@@ -114,9 +117,9 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     ): List<ProjectPartnerReportExpenditureVerification> = map {
         it.apply {
             if (newValues.containsKey(it.id)) {
-                certifiedAmount = newValues[it.id]!!.certifiedAmount
-                deductedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
-                    (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(certifiedAmount)
+                deductedAmount = newValues[it.id]!!.deductedAmount
+                certifiedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
+                    (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(deductedAmount)
                 partOfSample = it.partOfSampleLocked || deductedAmount.compareTo(BigDecimal.ZERO) != 0 ||
                     newValues[it.id]!!.parked || newValues[it.id]!!.partOfSample
                 typologyOfErrorId = with(newValues[it.id]!!.typologyOfErrorId) {
@@ -146,6 +149,7 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         ParkExpenditureData(
             expenditureId = it.id,
             originalReportId = it.parkingMetadata?.reportOfOriginId ?: reportId,
+            parkedInProjectReportId = null,
             originalNumber = it.parkingMetadata?.originalExpenditureNumber ?: it.number,
             parkedOn = ZonedDateTime.now()
         )
@@ -153,10 +157,8 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
 
     private fun validateUnParkedCertified(
         newlyUnParked: List<ProjectPartnerReportExpenditureVerification>,
-        reportId: Long,
-        partnerId: Long
+        report: ProjectPartnerReport
     ) {
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         if (report.status == ReportStatus.ReOpenCertified) {
             val hasUnParkedCertified =
                 newlyUnParked.any { (it.parkedOn != null) && it.parkedOn!!.isBefore(report.lastControlReopening) }
@@ -164,6 +166,18 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
             if (hasUnParkedCertified) {
                 throw UnParkNotAllowedForPreviouslyCertifiedExpendituresException()
             }
+        }
+    }
+
+    private fun validateUnParkedReIncluded(
+        newlyUnParked: List<ProjectPartnerReportExpenditureVerification>,
+        report: ProjectPartnerReport,
+    ) {
+        val hasUnParkedReIncluded =
+            newlyUnParked.mapTo(HashSet()) { it.id }.minus(reportParkedExpenditurePersistence.getParkedExpenditureIds(report.id))
+
+        if (hasUnParkedReIncluded.isNotEmpty()) {
+            throw UnParkNotAllowedForPreviouslyReincludedExpendituresException(report.reportNumber, hasUnParkedReIncluded)
         }
     }
 }

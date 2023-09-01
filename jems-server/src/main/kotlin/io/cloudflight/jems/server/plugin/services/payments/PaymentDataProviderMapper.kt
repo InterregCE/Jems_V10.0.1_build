@@ -1,18 +1,19 @@
 package io.cloudflight.jems.server.plugin.services.payments
+
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
+import io.cloudflight.jems.plugin.contract.models.payments.regular.PartnerPaymentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentDetailData
+import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentPartnerInstallmentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentToProjectData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentTypeData
-import io.cloudflight.jems.plugin.contract.models.payments.regular.PartnerPaymentData
-import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentPartnerInstallmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-
+import java.time.ZoneId
 
 fun PaymentDetail.toDataModel() = PaymentDetailData(
     id = id,
@@ -41,7 +42,7 @@ fun PaymentToProject.toDataModel() = PaymentToProjectData(
     fundName = fundName,
     amountApprovedPerFund = amountApprovedPerFund,
     amountPaidPerFund = amountPaidPerFund,
-    dateOfLastPayment = dateOfLastPayment,
+    dateOfLastPayment = dateOfLastPayment?.atStartOfDay(ZoneId.systemDefault()),
     lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
 )
 fun List<PaymentToProject>.toDataModelList() = map { it.toDataModel() }
@@ -54,12 +55,14 @@ fun PartnerPayment.toDataModel() = PartnerPaymentData(
     orderNr = orderNr,
     programmeLumpSumId = programmeLumpSumId,
     programmeFundId = programmeFundId,
+    partnerReportId = partnerReportId,
+    partnerReportNumber = partnerReportNumber,
     partnerId = partnerId,
     partnerRole = ProjectPartnerRoleData.valueOf(this.partnerRole.name),
     partnerNumber = partnerNumber,
     partnerAbbreviation = partnerAbbreviation,
     amountApprovedPerPartner = amountApprovedPerPartner,
-    installments = installments.map { it.toDataModel() }
+    installments = installments.map { it.toDataModel() },
 )
 
 fun PaymentPartnerInstallment.toDataModel() = PaymentPartnerInstallmentData(

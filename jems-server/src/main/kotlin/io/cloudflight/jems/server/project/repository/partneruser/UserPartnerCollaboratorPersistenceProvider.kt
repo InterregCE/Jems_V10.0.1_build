@@ -27,6 +27,10 @@ class UserPartnerCollaboratorPersistenceProvider(
         collaboratorRepository.findAllByIdUserIdAndProjectId(userId = userId, projectId = projectId)
 
     @Transactional(readOnly = true)
+    override fun findPartnersByUser(userId: Long): Set<Long> =
+        collaboratorRepository.findAllByIdUserId(userId).map { it.id.partnerId }.toSet()
+
+    @Transactional(readOnly = true)
     override fun findPartnerCollaboratorsByProjectId(projectId: Long): Set<PartnerCollaborator> =
         collaboratorRepository.findByProjectId(projectId = projectId)
 

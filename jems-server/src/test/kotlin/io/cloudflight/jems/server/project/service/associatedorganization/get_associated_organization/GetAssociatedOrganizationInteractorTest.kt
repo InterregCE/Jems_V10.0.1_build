@@ -67,6 +67,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         prioritySpecificObjectives = mutableSetOf(),
         strategies = mutableSetOf(),
         isAdditionalFundAllowed = false,
+        isDirectContributionsAllowed = true,
         funds = mutableSetOf(),
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),

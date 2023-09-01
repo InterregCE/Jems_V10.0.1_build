@@ -14,5 +14,6 @@ data class ProgrammeUnitCostDTO(
     val costPerUnitForeignCurrency: BigDecimal? = null,
     val foreignCurrencyCode: String? = null,
     val oneCostCategory: Boolean,
-    val categories: Set<BudgetCategory> = emptySet()
+    val categories: Set<BudgetCategory> = emptySet(),
+    val paymentClaim: PaymentClaimDTO
 )

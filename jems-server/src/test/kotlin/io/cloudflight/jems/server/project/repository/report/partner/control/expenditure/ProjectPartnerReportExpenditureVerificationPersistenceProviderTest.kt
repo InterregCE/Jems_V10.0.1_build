@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
@@ -25,13 +26,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitTest() {
     companion object {
@@ -94,8 +95,9 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             typologyOfErrorId = 1L,
             verificationComment = "dummy comment",
             parked = false,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = report,
+            parkedInProjectReport = null,
             originalNumber = 12,
             partOfSampleLocked = false
         ).apply {
@@ -143,6 +145,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 600L,
                     reportOfOriginNumber = 601,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 12
                 ),
                 partOfSampleLocked = false
@@ -376,10 +379,33 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 55L,
                         reportOfOriginNumber = 16,
+                        reportProjectOfOriginId = null,
                         originalExpenditureNumber = 12
                     ),
                 ),
             )
     }
 
+    @Test
+    fun getParkedExpenditureIds() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every {
+            reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(11L, 23L)
+        } returns mutableListOf(
+            dummyExpenditure(id = 1L, report = report, gdpr = false),
+            dummyExpenditure(id = 2L, report = report, gdpr = false),
+            dummyExpenditure(id = 5L, report = report, gdpr = false)
+        )
+
+        val parkedExpenditureEntity1 = mockk<PartnerReportParkedExpenditureEntity>()
+        every { parkedExpenditureEntity1.parkedFromExpenditureId } returns 1L
+        val parkedExpenditureEntity2 = mockk<PartnerReportParkedExpenditureEntity>()
+        every { parkedExpenditureEntity2.parkedFromExpenditureId } returns 5L
+        every { reportExpenditureParkedRepository.findAllByParkedFromExpenditureIdIn(setOf(1, 2, 5)) } returns setOf(
+            parkedExpenditureEntity1,
+            parkedExpenditureEntity2
+        )
+
+        assertThat(persistence.getParkedExpenditureIds(23L, 11L)).isEqualTo(listOf(1L, 5L))
+    }
 }

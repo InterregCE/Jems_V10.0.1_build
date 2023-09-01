@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.contribution.updateProjectPartnerReportContribution
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionCustom
@@ -21,6 +23,8 @@ import kotlin.collections.HashSet
 class UpdateProjectPartnerReportContribution(
     private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
     private val generalValidator: GeneralValidatorService,
+    private val callPersistence: CallPersistence,
+    private val partnerPersistence: PartnerPersistence
 ) : UpdateProjectPartnerReportContributionInteractor {
 
     companion object {
@@ -39,6 +43,8 @@ class UpdateProjectPartnerReportContribution(
         data: UpdateProjectPartnerReportContributionWrapper
     ): ProjectPartnerReportContributionData {
         validateInputFields(data)
+        validateRightsToAddContributions(data, partnerId)
+
         val existingContributions = reportContributionPersistence.getPartnerReportContribution(partnerId, reportId = reportId)
 
         // filter only existing and deletable
@@ -80,8 +86,17 @@ class UpdateProjectPartnerReportContribution(
     }
 
     private fun validateMaxAmountOfContributions(existing: Int, removed: Int, added: Int) {
-        if (existing - removed + added > MAX_AMOUNT_OF_CONTRIBUTIONS)
+        if (existing - removed + added > MAX_AMOUNT_OF_CONTRIBUTIONS && added != 0)
             throw MaxAmountOfContributionsReachedException(MAX_AMOUNT_OF_CONTRIBUTIONS)
+    }
+
+    private fun validateRightsToAddContributions(data: UpdateProjectPartnerReportContributionWrapper, partnerId: Long) {
+        val newContributionsAdded = data.toBeCreated.isNotEmpty()
+        val directContributionsNotAllowed = !callPersistence.getCallByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId)).isDirectContributionsAllowed
+
+        if(newContributionsAdded && directContributionsNotAllowed) {
+            throw NotAllowedToAddContributionsException()
+        }
     }
 
     private fun List<UpdateProjectPartnerReportContributionCustom>.toCreateModels() = map {

@@ -1,0 +1,12 @@
+<jems-form *ngIf="data$ | async as data">
+
+
+    <h3>{{ 'project.application.verification.overview.table.work' | translate}}</h3>
+    <jems-verification-work-overview [overview]="data.verificationWorkOverview">
+    </jems-verification-work-overview>
+
+    <h3>{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.title' | translate}}</h3>
+    <jems-verification-report-total-eligible-per-sources [breakdown]="data.financingSourceBreakdown">
+    </jems-verification-report-total-eligible-per-sources>
+
+</jems-form>

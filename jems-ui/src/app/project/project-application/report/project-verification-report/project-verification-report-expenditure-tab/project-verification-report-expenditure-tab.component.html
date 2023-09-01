@@ -1,0 +1,609 @@
+<ng-container *ngIf="data$ | async as data">
+
+    <ng-container *ngIf="tableData.length > 0 else noCertificatesMessage">
+
+        <jems-project-verification-report-expenditure-risk-based [riskBasedVerification]="data.riskBasedVerification">
+        </jems-project-verification-report-expenditure-risk-based>
+
+        <div class="my-3">
+            <jems-form (save)="save()"
+                       (discard)="resetForm(data.aggregatedExpenditures)">
+
+                <div id="table-container" jemsNoWidthLimit>
+                    <div jemsFormLayout>
+                        <h4 class="pt-3">{{'project.application.project.verification.tab.expenditure.items' | translate}}</h4>
+                        <p>{{'project.application.project.verification.tab.expenditure.items.info' | translate}}</p>
+                    </div>
+
+                    <form jemsFormLayout [formGroup]="form">
+
+                        <jems-multi-language-container jemsNoWidthLimit>
+                            <mat-table #expenditureVerificationTable
+                                       jemsNoWidthLimit
+                                       class="table-condensed"
+                                       [jemsTableConfig]="columnWidthsToDisplay"
+                                       [dataSource]="tableData"
+                                       [formArrayName]="constants.EXPENDITURE_FORM_CONTROL_NAMES.expenditureLines">
+
+                                <!-- SECTION HEADERS -->
+                                <ng-container matColumnDef="section-expenditure">
+                                    <mat-header-cell *matHeaderCellDef [attr.colspan]="24" class="section-header">
+                                        <span jemsText maxLines="2">{{'project.application.reporting.section.expenditure' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-spacer">
+                                    <mat-header-cell *matHeaderCellDef class="section-header spacer"></mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-control">
+                                    <mat-header-cell *matHeaderCellDef [attr.colspan]="6" class="section-header control">
+                                        <mat-icon>supervised_user_circle</mat-icon>
+                                            <span jemsText maxLines="2">{{'project.application.reporting.section.control' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-jsma">
+                                    <mat-header-cell *matHeaderCellDef class="section-header jsma">
+                                        <mat-icon>person_search</mat-icon>
+                                        <span jemsText maxLines="2">{{'project.application.reporting.section.jsma' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
+
+                                <!-- EXPENDITURE -->
+                                <ng-container matColumnDef="partner" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                    <span jemsText
+                                          maxLines="2">{{'project.application.project.verification.tab.expenditure.table.partner.id' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+                                    <span>
+                                        {{expenditureItem(item, EXPENDITURE_CONTROL.partnerRole) === PartnerRole.LEADPARTNER ? 'LP' : 'PP'}}{{expenditureItem(item, EXPENDITURE_CONTROL.partnerNumber)}}
+                                    </span>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="report" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                    <span jemsText
+                                          maxLines="2">{{'project.application.project.verification.tab.expenditure.table.partner.report.id' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+                                        R{{expenditureItem(item, EXPENDITURE_CONTROL.partnerReportNumber)}}
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="costItemID" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.ID' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="text-overflow-ellipsis">
+                                            {{getIdentifier(item)}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="costGDPR" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <div class="custom-icon gdpr">
+                                            <mat-icon
+                                                    matTooltip="{{'project.application.partner.report.expenditures.tab.cost.checkbox.sensitive.info' | translate}}">
+                                                privacy_tip
+                                            </mat-icon>
+                                        </div>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <mat-checkbox [disabled]="true"
+                                                      [checked]="expenditureItem(item, EXPENDITURE_CONTROL.gdpr) === true">
+                                        </mat-checkbox>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="parkedBy" >
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.parked.by' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item">
+                                        <jems-expenditure-item-parked-by-chip [parkedBy]="getParkedBy(item)"></jems-expenditure-item-parked-by-chip>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="costOption" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper pointer"
+                                             [matTooltip]="getCostOptionsDefinition(item) | async"
+                                             [matTooltipClass]="'tooltip'">
+                                            <div class="custom-dropdown-text"
+                                                 [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{getCostOptionsDefinition(item) | async}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="costCategory" sticky>
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.category' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + expenditureItem(item, EXPENDITURE_CONTROL.costCategory)) | translate"
+                                             [matTooltipClass]="'tooltip'"
+                                             class="custom-wrapper pointer">
+                                            <div class="custom-dropdown-text cost-category"
+                                                 [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{ ('project.application.partner.report.expenditures.cost.category.' + expenditureItem(item, EXPENDITURE_CONTROL.costCategory)) | translate}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="investment">
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.investment.number' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper pointer"
+                                             [matTooltip]="expenditureItem(item, EXPENDITURE_CONTROL.investment)" [matTooltipClass]="'tooltip'">
+                                            <div class="custom-dropdown-text"
+                                                 [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{ getInvestmentIdentifier(expenditureItem(item, EXPENDITURE_CONTROL.investment)) | async}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="contract">
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        {{ getContractIdentifier(expenditureItem(item, EXPENDITURE_CONTROL.contract)) | async }}
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="internalReferenceNumber">
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.internal.reference.number' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{expenditureItem(item, EXPENDITURE_CONTROL.internalReferenceNumber)}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="invoiceNumber">
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.number' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                <span [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                    {{expenditureItem(item, EXPENDITURE_CONTROL.invoiceNumber)}}
+                                </span>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="invoiceDate">
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.date' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                <span [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                    {{expenditureItem(item, EXPENDITURE_CONTROL.invoiceDate)}}
+                                </span>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="dateOfPayment">
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.date.of.payment' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                <span [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                    {{expenditureItem(item, EXPENDITURE_CONTROL.dateOfPayment)}}
+                                </span>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="description">
+                                    <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                        <span>
+                                            <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                                privacy_tip
+                                            </mat-icon>
+                                        </span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper"
+                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.description) | translateByInputLanguage | async, constants.MAX_CHARS)"
+                                             [matTooltipClass]="'tooltip'">
+                                            <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked).value}">
+                                                {{expenditureItem(item, EXPENDITURE_CONTROL.description) | translateByInputLanguage | async}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="comment">
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                        <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper"
+                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.comment) | translateByInputLanguage | async, constants.MAX_CHARS)"
+                                             [matTooltipClass]="'tooltip'">
+                                            <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{expenditureItem(item, EXPENDITURE_CONTROL.comment) | translateByInputLanguage | async}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="totalValueInvoice">
+                                    <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.total.value.invoice' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{ getValueOrZero(expenditureItem(item, EXPENDITURE_CONTROL.totalValueInvoice)) | asMoney}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="vat">
+                                    <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.vat' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{ getValueOrZero(expenditureItem(item, EXPENDITURE_CONTROL.vat)) | asMoney}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="numberOfUnits">
+                                    <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{ getValueOrZero(expenditureItem(item, EXPENDITURE_CONTROL.numberOfUnits)) | asMoney}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="pricePerUnit">
+                                    <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{ getValueOrZero(expenditureItem(item, EXPENDITURE_CONTROL.pricePerUnit)) | asMoney}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="declaredAmount">
+                                    <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.declared.amount' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                            {{expenditureItem(item, EXPENDITURE_CONTROL.declaredAmount) | asMoney}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="currencyCode">
+                                    <mat-header-cell *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.currency' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper pointer">
+                                            <div class="custom-dropdown-text" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{expenditureItem(item, EXPENDITURE_CONTROL.currencyCode)}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="currencyConversionRate">
+                                    <mat-header-cell class="end-flex-header-table justify-end" *matHeaderCellDef>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.conversion.rate' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right">
+                                            <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{expenditureItem(item, EXPENDITURE_CONTROL.currencyConversionRate)}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="declaredAmountInEur">
+                                    <mat-header-cell class="justify-end" *matHeaderCellDef>
+                                <span jemsText maxLines="2">
+                                    {{'project.application.partner.report.expenditures.declared.amount.eur' | translate}}
+                                    <jems-context-info infoPosition="right"
+                                                       infoText="{{'project.application.partner.report.expenditures.amount.in.euro.info' | translate}}">
+                                    </jems-context-info>
+                                </span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <div class="custom-wrapper align-right">
+                                            <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
+                                                {{expenditureItem(item, EXPENDITURE_CONTROL.declaredAmountAfterSubmission) | asMoney}}
+                                            </div>
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="attachments">
+                                    <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
+                                        <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                            privacy_tip
+                                        </mat-icon>
+                                    </mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <jems-partner-actions-cell *ngIf="expenditureItem(item, EXPENDITURE_CONTROL.id)"
+                                                                   [fileMetadata]="expenditureItem(item, EXPENDITURE_CONTROL.attachment)"
+                                                                   [isReportEditable]="false"
+                                                                   (download)="onDownloadFile(expenditureItem(item, EXPENDITURE_CONTROL.partnerId), $event)">
+                                        </jems-partner-actions-cell>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <!-- CONTROL VERIFICATION -->
+
+                                <ng-container matColumnDef="partOfSample">
+                                    <mat-header-cell class="left-separator"
+                                                     *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start left-separator" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <mat-slide-toggle color="primary" disabled
+                                                          [checked]="expenditureItem(item, EXPENDITURE_CONTROL.partOfSample)"></mat-slide-toggle>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="deductedAmount">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.deducted.amount.eur' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        {{expenditureItem(item, EXPENDITURE_CONTROL.deductedAmount) | asMoney}}
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="certifiedAmount">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.certified.amount.eur' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        {{expenditureItem(item, EXPENDITURE_CONTROL.certifiedAmount) | asMoney}}
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="typologyOfErrorId">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.typology.error.eur' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index;" [formGroupName]="i">
+                                        {{getTypologyOfError(data.typologyOfErrors, expenditureItem(item, EXPENDITURE_CONTROL.typologyOfErrorId))?.description}}
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="parked">
+                                    <mat-header-cell class="left-separator"
+                                                     *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.park.item' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start left-separator" *matCellDef="let item; let i=index" [formGroupName]="i">
+                                        <mat-slide-toggle color="primary" disabled
+                                                          [checked]="expenditureItem(item, EXPENDITURE_CONTROL.parked)">
+                                        </mat-slide-toggle>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="verificationComment">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.partner.report.expenditures.tab.comment' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <div class="custom-wrapper"
+                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.verificationComment), constants.MAX_LENGTH_VERIFY_COMMENT)"
+                                             [matTooltipClass]="'tooltip'">
+                                            {{expenditureItem(item, EXPENDITURE_CONTROL.verificationComment)}}
+                                        </div>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <!-- JS/MA VERIFICATION -->
+                                <ng-container matColumnDef="partOfVerificationSample">
+                                    <mat-header-cell class="left-separator"
+                                                     *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start left-separator" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <ng-container [formGroupName]="VERIFICATION_DATA">
+                                            <mat-slide-toggle color="primary"
+                                                              [disabled]="verificationItem(item, VERIFICATION_CONTROL.parked)"
+                                                              [formControlName]="VERIFICATION_CONTROL.partOfVerificationSample">
+                                            </mat-slide-toggle>
+                                        </ng-container>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="deductedByJs">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.deducted.js' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <mat-form-field [class.mat-form-field-disabled]="isExpenditureParkedOrFormDisabled(item, data.isEditable)" jemsFormFieldWidth="full" [formGroupName]="VERIFICATION_DATA">
+                                            <input type="decimal" currencyMask matInput
+                                                   [formControlName]="VERIFICATION_CONTROL.deductedByJs"
+                                                   [readonly]="isExpenditureParkedOrFormDisabled(item, data.isEditable)"
+                                                   [ngClass]="{'disabled-text': getParkedByControlOrJsMa(item)}"
+                                                   [options]="{min: constants.MIN_VALUE, allowNegative: true, align: 'right'}"
+                                                   (keyup)="deductedChanged(item)">
+                                        </mat-form-field>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="deductedByMa">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.deducted.ma' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <mat-form-field [class.mat-form-field-disabled]="isExpenditureParkedOrFormDisabled(item, data.isEditable)" jemsFormFieldWidth="full" [formGroupName]="VERIFICATION_DATA">
+                                            <input type="decimal" currencyMask matInput
+                                                   [formControlName]="VERIFICATION_CONTROL.deductedByMa"
+                                                   [readonly]="isExpenditureParkedOrFormDisabled(item, data.isEditable)"
+                                                   [ngClass]="{'disabled-text': getParkedByControlOrJsMa(item)}"
+                                                   [options]="{min: constants.MIN_VALUE, allowNegative: true, align: 'right'}"
+                                                   (keyup)="deductedChanged(item)">
+                                        </mat-form-field>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="amountAfterVerification">
+                                    <mat-header-cell *matHeaderCellDef>
+                                    <span jemsText
+                                          maxLines="2">{{'project.application.project.verification.tab.expenditure.table.header.amount' | translate}}</span>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
+                                        <ng-container [formGroupName]="VERIFICATION_DATA">
+                                            <div class="custom-wrapper align-right"
+                                                 [ngClass]="{'disabled-text': getParkedByControlOrJsMa(item)}">
+                                                {{ getValueOrZero(verificationItem(item, VERIFICATION_CONTROL.amountAfterVerification)) | asMoney}}
+                                            </div>
+                                        </ng-container>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="verificationTypologyOfErrorId">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.typology.of.errors' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <mat-form-field jemsFormFieldWidth="full" [formGroupName]="VERIFICATION_DATA">
+                                            <mat-select #typologyOfErrorSelect
+                                                        [ngClass]="{'placeholder-required': verification(item)?.get(VERIFICATION_CONTROL.typologyOfErrorId)?.errors !== null} "
+                                                        [formControlName]="VERIFICATION_CONTROL.typologyOfErrorId"
+                                                        [matTooltip]="getTypologyOfErrorsTooltip(data.typologyOfErrors, typologyOfErrorSelect.triggerValue)"
+                                                        [placeholder]="'common.not.applicable.option' | translate"
+                                                        [disabled]="getParkedByControlOrJsMa(item)"
+                                                        [value]="null">
+                                                <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                                <mat-option *ngFor="let typologyOfError of data.typologyOfErrors"
+                                                            [value]="typologyOfError.id">{{typologyOfError.description}}</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="verificationParked">
+                                    <mat-header-cell class="left-separator"
+                                                     *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.park' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start left-separator" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <ng-container [formGroupName]="VERIFICATION_DATA"  >
+                                            <mat-slide-toggle color="primary"
+                                                              [disabled]="expenditureItem(item, EXPENDITURE_CONTROL.parked)"
+                                                              (change)="parkedChange(item, $event)"
+                                                              [formControlName]="VERIFICATION_CONTROL.parked"
+                                                              [matTooltip]="getTooltipForParkedExpenditures(item)">
+                                            </mat-slide-toggle>
+                                        </ng-container>
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="jsmaVerificationComment">
+                                    <mat-header-cell
+                                            *matHeaderCellDef>{{'project.application.project.verification.tab.expenditure.table.header.comment' | translate}}</mat-header-cell>
+                                    <mat-cell class="justify-start" *matCellDef="let item;let i=index" [formGroupName]="i">
+                                        <mat-form-field [formGroupName]="VERIFICATION_DATA">
+                                            <input matInput [formControlName]="VERIFICATION_CONTROL.verificationComment"
+                                                   [matTooltip]="getLimitedTextInputTooltip(verificationItem(item, VERIFICATION_CONTROL.verificationComment), constants.MAX_LENGTH_VERIFY_COMMENT)">
+                                            <mat-error>
+                                                <jems-form-field-errors condensed="true"
+                                                                        [errors]="verification(item)?.get(VERIFICATION_CONTROL.verificationComment)?.errors"></jems-form-field-errors>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                    </mat-cell>
+                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="['section-expenditure', 'section-spacer', 'section-control', 'section-jsma']"></mat-header-row>
+                                <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+                                <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex = index"
+                                         [class.row-has-error]="form.controls[rowIndex]?.invalid"></mat-row>
+
+                            </mat-table>
+                        </jems-multi-language-container>
+
+                    </form>
+                </div>
+            </jems-form>
+        </div>
+    </ng-container>
+
+    <ng-template #noCertificatesMessage>
+         <mat-card>
+                <jems-alert [closable]="false"
+                            [show]="true"
+                            [type]="Alert.INFO">
+                    <span>{{'project.application.project.verification.tab.expenditure.no.certificates.info' | translate}}</span>
+                </jems-alert>
+            </mat-card>
+    </ng-template>
+
+</ng-container>
+

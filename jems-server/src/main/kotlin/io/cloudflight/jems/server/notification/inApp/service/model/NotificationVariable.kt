@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.notification.inApp.service.model
 
 enum class NotificationVariable(val variable: String) {
+    UserName("userName"),
+
     ProgrammeName("programmeName"),
 
     CallId("callId"),
@@ -19,7 +21,10 @@ enum class NotificationVariable(val variable: String) {
     PartnerReportNumber("partnerReportNumber"),
 
     ProjectReportId("projectReportId"),
-    ProjectReportNumber("projectReportNumber");
+    ProjectReportNumber("projectReportNumber"),
+
+    FileUsername("fileUsername"),
+    FileName("fileName");
 
     /**
      * These are the minimum amount of variables that we need
@@ -30,6 +35,11 @@ enum class NotificationVariable(val variable: String) {
             ProjectId,
             ProjectIdentifier,
             ProjectAcronym,
+        )
+
+        val fileNotificationVariables = setOf(
+            FileUsername,
+            FileName,
         )
 
         val partnerReportNotificationVariables = projectNotificationVariables union setOf(
@@ -45,6 +55,12 @@ enum class NotificationVariable(val variable: String) {
             ProjectReportId,
             ProjectReportNumber,
         )
+
+        val projectFileNotificationVariables = projectNotificationVariables union fileNotificationVariables
+
+        val partnerReportFileNotificationVariables = partnerReportNotificationVariables union fileNotificationVariables
+
+        val projectReportFileNotificationVariables = projectReportNotificationVariables union fileNotificationVariables
     }
 
 }

@@ -116,8 +116,8 @@ export class PartnerControlReportDocumentTabComponent {
       this.fileSizeOverLimitError$,
       this.controlReportFileStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.controlReportFileStore.uploadFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.controlReportFileStore.uploadFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {
@@ -137,7 +137,7 @@ export class PartnerControlReportDocumentTabComponent {
     );
   };
 
-  deleteCallback = (file: FileListItem): Observable<void> => {
+  deleteCallback = (file: FileListItem): Observable<any> => {
     return combineLatest([
       this.controlReportFileStore.partnerId$,
       this.controlReportFileStore.reportId$,

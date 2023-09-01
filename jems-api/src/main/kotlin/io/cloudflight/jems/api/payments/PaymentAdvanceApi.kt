@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.payments
 
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 interface PaymentAdvanceApi {
 
     companion object {
-        const val ENDPOINT_API_ADV_PAYMENTS = "/api/advancepayment"
+        const val ENDPOINT_API_ADV_PAYMENTS = "/api/advancePayment"
     }
 
     @ApiOperation("Retrieve advance payments")
@@ -29,8 +31,11 @@ interface PaymentAdvanceApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping(ENDPOINT_API_ADV_PAYMENTS)
-    fun getAdvancePayments(pageable: Pageable): Page<AdvancePaymentDTO>
+    @PostMapping(ENDPOINT_API_ADV_PAYMENTS, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAdvancePayments(
+        pageable: Pageable,
+        @RequestBody(required = false) searchRequest: AdvancePaymentSearchRequestDTO?,
+    ): Page<AdvancePaymentDTO>
 
     @ApiOperation("Retrieve advance payment detail by advance payment id")
     @GetMapping("${ENDPOINT_API_ADV_PAYMENTS}/{paymentId}")

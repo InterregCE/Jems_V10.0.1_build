@@ -20,13 +20,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.ZonedDateTime
 
 internal class DeleteParkedExpenditureTest : UnitTest() {
 
@@ -78,9 +78,10 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
         val expenditure = ExpenditureParkingMetadata(
             reportOfOriginId = 348L,
             reportOfOriginNumber = 1,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 2
         )
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId) } returns
             mapOf(845L to expenditure)
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(845L)) } answers { }
 
@@ -110,7 +111,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
         val report = report(250L, status)
         every { reportPersistence.getPartnerReportById(partnerId = 48L, reportId = 250L) } returns report
 
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(48L, ReportStatus.Certified) } returns emptyMap()
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(48L) } returns emptyMap()
         assertThrows<ParkedExpenditureNotFound> {
             interactor.deleteParkedExpenditure(48L, reportId = 250L, expenditureId = -1L)
         }

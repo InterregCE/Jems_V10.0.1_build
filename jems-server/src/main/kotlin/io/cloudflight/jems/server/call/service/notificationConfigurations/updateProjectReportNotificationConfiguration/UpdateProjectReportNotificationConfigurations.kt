@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.projectFileVerificationCommunicationNotifications
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.projectReportNotifications
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,15 +20,17 @@ class UpdateProjectReportNotificationConfigurations(
     override fun update(
         callId: Long,
         projectNotificationConfigurations: List<ProjectNotificationConfiguration>
-    ) =
-        ifConfigurationIsValid(projectNotificationConfigurations).run {
-            persistence.saveProjectNotificationConfigurations(callId, projectNotificationConfigurations)
-        }
+    ): List<ProjectNotificationConfiguration> {
+        validateConfiguration(projectNotificationConfigurations)
+        return persistence.saveProjectNotificationConfigurations(callId, projectNotificationConfigurations)
+    }
 
+    private fun validateConfiguration(projectNotificationConfigurations: List<ProjectNotificationConfiguration>) {
+        val invalidConfigurations = projectNotificationConfigurations
+            .filter { it.id !in (projectReportNotifications union projectFileVerificationCommunicationNotifications)}
 
-    private fun ifConfigurationIsValid(projectNotificationConfigurations: List<ProjectNotificationConfiguration>) =
-        with(projectNotificationConfigurations.filter { it.id.isNotProjectReportNotification() }) {
-            if (this.isNotEmpty())
-                throw InvalidNotificationTypeException()
-        }
+        if (invalidConfigurations.isNotEmpty())
+            throw InvalidNotificationTypeException(invalidConfigurations)
+    }
+
 }

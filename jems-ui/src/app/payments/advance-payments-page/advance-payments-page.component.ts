@@ -9,6 +9,7 @@ import {AdvancePaymentsPageStore} from './advance-payments-page.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -28,7 +29,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild('remainingToBeSettledCell', {static: true})
   remainingToBeSettledCell: TemplateRef<any>;
 
-  @ViewChild('remainingToBeSettledCell', {static: true})
+  @ViewChild('advanceAmountPaidCell', {static: true})
   advanceAmountPaidCell: TemplateRef<any>;
 
   @ViewChild('deleteButtonCell', {static: true})
@@ -48,7 +49,8 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   tableConfiguration: TableConfiguration;
 
   constructor(public advancePaymentsStore: AdvancePaymentsPageStore,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private paymentsPageSidenav: PaymentsPageSidenavService) { }
 
   ngOnInit(): void {
     this.userCanEdit$ = this.advancePaymentsStore.userCanEdit$;
@@ -120,6 +122,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.advance.payment.table.header.amount.settled',
           elementProperty: 'amountSettled',
           columnWidth: ColumnWidth.ChipColumn,
+          columnType: ColumnType.Decimal,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.remaining.amount.to.be.settled',

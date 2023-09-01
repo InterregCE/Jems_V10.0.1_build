@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
@@ -21,6 +21,22 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
     private val reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService,
     private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
 ) {
+
+    companion object {
+        fun split(
+            toSplit: BigDecimal,
+            contributions: ProjectPartnerReportContributionOverview,
+            funds: List<ProjectPartnerCoFinancing>,
+            total: BigDecimal,
+        ): ReportExpenditureCoFinancingColumn =
+            getCurrentFrom(
+                contributions.generateCoFinCalculationInputData(
+                    totalEligibleBudget = total,
+                    currentValueToSplit = toSplit,
+                    funds = funds,
+                )
+            )
+    }
 
     @Transactional(readOnly = true)
     fun get(partnerId: Long, reportId: Long): ExpenditureCoFinancingBreakdown {
@@ -38,12 +54,14 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
             val currentValues = ExpenditureCoFinancingCurrentWithReIncluded(
                 current = split(
                     toSplit = expenditureTotal.currentReport,
-                    contributions, funds = report.identification.coFinancing,
+                    contributions = contributions,
+                    funds = report.identification.coFinancing,
                     total = expenditureTotal.totalEligibleBudget,
                 ),
                 currentReIncluded = split(
                     toSplit = expenditureTotal.currentReportReIncluded,
-                    contributions, funds = report.identification.coFinancing,
+                    contributions = contributions,
+                    funds = report.identification.coFinancing,
                     total = expenditureTotal.totalEligibleBudget,
                 ),
             )
@@ -54,19 +72,5 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
 
         return coFinancing.fillInOverviewFields()
     }
-
-    private fun split(
-        toSplit: BigDecimal,
-        contributions: ProjectPartnerReportContributionOverview,
-        funds: List<ProjectPartnerCoFinancing>,
-        total: BigDecimal,
-    ): ReportExpenditureCoFinancingColumn =
-        getCurrentFrom(
-            contributions.generateCoFinCalculationInputData(
-                totalEligibleBudget = total,
-                currentValueToSplit = toSplit,
-                funds = funds,
-            )
-        )
 
 }

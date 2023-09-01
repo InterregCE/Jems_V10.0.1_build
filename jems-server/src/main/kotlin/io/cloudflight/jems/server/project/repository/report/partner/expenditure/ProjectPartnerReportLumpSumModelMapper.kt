@@ -4,14 +4,15 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 
-fun List<PartnerReportLumpSumEntity>.toModel() = map {
+fun List<PartnerReportLumpSumEntity>.toModel() = map { it.toModel() }
+
+fun PartnerReportLumpSumEntity.toModel() =
     ProjectPartnerReportLumpSum(
-        id = it.id,
-        lumpSumProgrammeId = it.programmeLumpSum.id,
-        fastTrack = it.programmeLumpSum.isFastTrack,
-        orderNr = it.orderNr,
-        period = it.period,
-        cost = it.total,
-        name = it.programmeLumpSum.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+        id = id,
+        lumpSumProgrammeId = programmeLumpSum.id,
+        fastTrack = programmeLumpSum.isFastTrack,
+        orderNr = orderNr,
+        period = period,
+        cost = total,
+        name = programmeLumpSum.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
     )
-}

@@ -1,0 +1,1 @@
+ALTER TABLE mail_notification MODIFY COLUMN body MEDIUMTEXT NOT NULL;

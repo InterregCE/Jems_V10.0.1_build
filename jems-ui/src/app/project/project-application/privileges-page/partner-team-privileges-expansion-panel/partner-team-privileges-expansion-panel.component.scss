@@ -35,3 +35,22 @@
 .gdpr-toggle {
   margin-left: -0.5rem;
 }
+
+.overflow-scrollbar {
+  overflow-x: auto;
+}
+
+.help-icon{
+  flex-shrink: 0;
+}
+
+mat-panel-description {
+  overflow: hidden;
+  max-width: 100%;
+  align-items: center;
+}
+
+mat-panel-description * {
+  overflow: hidden;
+  max-width: 100%;
+}

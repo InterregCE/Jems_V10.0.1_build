@@ -42,4 +42,5 @@ class ProjectReportFinancialOverviewController(
 
     override fun getInvestmentsBreakdown(projectId: Long, reportId: Long): CertificateInvestmentBreakdownDTO =
         getReportCertificateInvestmentsBreakdown.get(projectId = projectId, reportId = reportId).toDto()
+
 }

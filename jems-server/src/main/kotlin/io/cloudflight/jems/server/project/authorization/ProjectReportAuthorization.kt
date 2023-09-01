@@ -13,12 +13,16 @@ import org.springframework.stereotype.Component
 annotation class CanEditProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditReportNotSpecific(#projectId)")
-annotation class CanEditProjectReportNotSpecific
+@PreAuthorize("@projectReportAuthorization.canCreateProjectReport(#projectId)")
+annotation class  CanCreateProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canViewReport(#projectId)")
 annotation class CanRetrieveProjectReport
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId)")
+annotation class CanStartProjectReportVerification
 
 @Component
 class ProjectReportAuthorization(
@@ -41,6 +45,16 @@ class ProjectReportAuthorization(
         return canMonitorEdit || canCreatorEdit
     }
 
+    fun canCreateProjectReport(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+
+        val canMonitorEdit = hasPermission(UserRolePermission.ProjectReportingProjectEdit, projectId)
+        val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
+
+        return canMonitorEdit ||
+                (canCreatorEdit && hasPermission(UserRolePermission.ProjectCreatorReportingProjectCreate))
+    }
+
     fun canViewReport(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
 
@@ -48,6 +62,10 @@ class ProjectReportAuthorization(
         val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
 
         return canMonitorView || canCreatorView
+    }
+
+    fun canStartReportVerification(projectId: Long): Boolean {
+        return hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
     }
 
 }

@@ -67,7 +67,8 @@ fun List<ProjectVersionRow>.toProjectVersion() =
 
 fun CallEntity.toSettingsModel(
     stateAidEntities: MutableSet<ProjectCallStateAidEntity>,
-    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
+    jsNotifiable: Boolean
 ) = ProjectCallSettings(
     callId = id,
     callName = name,
@@ -77,6 +78,7 @@ fun CallEntity.toSettingsModel(
     endDateStep1 = endDateStep1,
     lengthOfPeriod = lengthOfPeriod,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
+    isDirectContributionsAllowed = isDirectContributionsAllowed,
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),
@@ -88,17 +90,19 @@ fun CallEntity.toSettingsModel(
         projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
         projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
     ),
+    jsNotifiable = jsNotifiable
 )
 
 fun ProjectEntity.toModel(
     assessmentStep1: ProjectAssessmentEntity?,
     assessmentStep2: ProjectAssessmentEntity?,
     stateAidEntities: MutableSet<ProjectCallStateAidEntity>,
-    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
+    jsNotifiable: Boolean
 ) = ProjectFull(
     id = id,
     customIdentifier = customIdentifier,
-    callSettings = call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+    callSettings = call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities, jsNotifiable),
     acronym = acronym,
     applicant = applicant.toUserSummary(),
     projectStatus = currentStatus.toProjectStatus(),
@@ -125,11 +129,12 @@ fun ProjectEntity.toDetailModel(
     assessmentStep1: ProjectAssessmentEntity?,
     assessmentStep2: ProjectAssessmentEntity?,
     stateAidEntities: MutableSet<ProjectCallStateAidEntity>,
-    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
+    jsNotifiable: Boolean
 ) = ProjectDetail(
     id = id,
     customIdentifier = customIdentifier,
-    callSettings = call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+    callSettings = call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities, jsNotifiable),
     acronym = acronym,
     title = projectData?.translatedValues?.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.title)
@@ -166,7 +171,8 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     assessmentStep2: ProjectAssessmentEntity,
     stateAidEntities: MutableSet<ProjectCallStateAidEntity>,
     applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
-    priority: ProgrammePriorityEntity?
+    priority: ProgrammePriorityEntity?,
+    jsNotifiable: Boolean
 ) =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectFull(
@@ -181,7 +187,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                 groupedRows.value.first().programmePriorityPolicyObjectivePolicy,
                 groupedRows.value.first().programmePriorityPolicyCode),
             // map non historic data
-            callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+            callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities, jsNotifiable),
             applicant = project.applicant.toUserSummary(),
             programmePriority = priority?.toOutputProgrammePrioritySimple(),
             projectStatus = ProjectStatus(

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.entity.costoption
 
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -10,6 +11,8 @@ import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
 import javax.persistence.OneToMany
+import javax.persistence.Enumerated
+import javax.persistence.EnumType
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_unit_cost")
@@ -46,6 +49,9 @@ data class ProgrammeUnitCostEntity(
     var translatedValues: MutableSet<ProgrammeUnitCostTranslEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "programmeUnitCostId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var categories: MutableSet<ProgrammeUnitCostBudgetCategoryEntity> = mutableSetOf()
+    var categories: MutableSet<ProgrammeUnitCostBudgetCategoryEntity> = mutableSetOf(),
 
+    @field:NotNull
+    @Enumerated(EnumType.STRING)
+    var paymentClaim: PaymentClaim = PaymentClaim.IncurredByBeneficiaries
 )

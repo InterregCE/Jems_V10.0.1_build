@@ -19,7 +19,7 @@ class CreateProgrammeChecklist(
 
     companion object {
         const val MAX_NUMBER_OF_CHECKLIST = 100
-        const val MAX_NUMBER_OF_CHECKLIST_COMPONENTS = 100
+        const val MAX_NUMBER_OF_CHECKLIST_COMPONENTS = 200
     }
 
     @Transactional
@@ -33,7 +33,7 @@ class CreateProgrammeChecklist(
             auditPublisher.publishEvent(
                 checklistCreated(
                     context = this,
-                    checklist = programmeChecklist
+                    checklist = it
                 )
             )
         }

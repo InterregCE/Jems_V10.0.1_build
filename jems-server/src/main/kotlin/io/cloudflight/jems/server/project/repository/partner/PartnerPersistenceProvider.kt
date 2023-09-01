@@ -255,6 +255,10 @@ class PartnerPersistenceProvider(
     override fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata> =
         projectPartnerRepository.findTop50ByProjectId(projectId).onlyAssignmentMetadata()
 
+    @Transactional(readOnly = true)
+    override fun getPartnerIdsByProjectIds(projectIds: Set<Long>): Set<Long> =
+        projectPartnerRepository.getPartnerIdsByProjectIds(projectIds)
+
     /**
      * sets or updates the sort number for all partners for the specified project.
      */

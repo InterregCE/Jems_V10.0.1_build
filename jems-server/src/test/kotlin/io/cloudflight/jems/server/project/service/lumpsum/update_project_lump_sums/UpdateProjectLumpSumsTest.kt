@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_s
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -45,6 +46,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),
@@ -53,6 +55,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         private val periods = listOf(
@@ -79,7 +82,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -95,7 +99,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = false,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val lumpSumNonSplittable = lumpSum.copy(
             lumpSumContributions = listOf(
@@ -119,7 +124,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -135,7 +141,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = false,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -153,7 +160,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -178,7 +186,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))

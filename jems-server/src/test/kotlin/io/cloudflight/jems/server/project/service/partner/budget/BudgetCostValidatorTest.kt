@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator.UnitCostEntry
@@ -42,7 +43,8 @@ internal class BudgetCostValidatorTest : UnitTest() {
             projectId = null,
             costPerUnit = price,
             isOneCostCategory = true,
-            type = type
+            type = type,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 
@@ -498,6 +500,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 2,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
@@ -506,6 +509,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
     }
 }

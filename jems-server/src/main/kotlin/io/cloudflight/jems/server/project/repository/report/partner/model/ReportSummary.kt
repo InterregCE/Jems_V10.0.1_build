@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.model
 
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import java.math.BigDecimal
@@ -8,6 +9,12 @@ import java.time.ZonedDateTime
 
 data class ReportSummary(
     val id: Long,
+    val projectId: Long,
+    val projectCustomIdentifier: String,
+    val partnerId: Long,
+    val partnerRole: ProjectPartnerRole,
+    val partnerNumber: Int,
+    val partnerAbbreviation: String,
     val number: Int,
     val status: ReportStatus,
     val version: String,

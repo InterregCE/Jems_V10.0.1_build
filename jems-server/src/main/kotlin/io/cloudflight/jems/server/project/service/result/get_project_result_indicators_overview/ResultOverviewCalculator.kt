@@ -67,6 +67,7 @@ class ResultOverviewCalculator {
 
         private fun ResultIndicatorSummary?.toIndicatorResult(projectResults: List<ProjectResult>) = if (this == null) null else IndicatorResult(
             id = id!!,
+            code = code,
             identifier = identifier,
             name = name,
             measurementUnit = measurementUnit,
@@ -76,6 +77,7 @@ class ResultOverviewCalculator {
 
         private fun OutputIndicatorSummary.toIndicatorOutput(targetValueSumUp: BigDecimal) = IndicatorOutput(
             id = id!!,
+            code = code,
             identifier = identifier,
             name = name,
             measurementUnit = measurementUnit,

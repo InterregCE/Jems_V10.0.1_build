@@ -9,7 +9,7 @@ data class ContractingPartnerStateAidGberSection(
     val partnerId: Long,
     val dateOfGrantingAid: LocalDate?,
     val partnerFunds: Set<PartnerBudgetPerFund>,
-    val totalEligibleBudget: BigDecimal,
+    val amountGrantingAid: BigDecimal,
     val naceGroupLevel: NaceGroupLevel?,
 
     val aidIntensity: BigDecimal?,

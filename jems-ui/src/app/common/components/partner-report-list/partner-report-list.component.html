@@ -1,0 +1,42 @@
+<ng-container *ngIf="data$ | async as data">
+    <p *ngIf="data.page.content.length">
+        {{'user.partner.reports.info' | translate}}
+    </p>
+
+    <jems-table *ngIf="data.page.content.length"
+                [configuration]="tableConfiguration"
+                [rows]="data.page.content"
+                [totalElements]="data.page?.totalElements"
+                [pageIndex]="partnerReportListStoreService.newPageIndex$ | async"
+                [currentPageSize]="currentPageSize"
+                [disableTopPaginator]="true"
+                (newPageIndex)="partnerReportListStoreService.newPageIndex$.next($event)"
+                (newPageSize)="partnerReportListStoreService.newPageSize$.next($event)"
+                (sortRows)="partnerReportListStoreService.newSort$.next($event)">
+    </jems-table>
+</ng-container>
+
+<ng-template #partnerRoleCell let-report>
+    <span *ngIf="report.partnerRole === 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: ''} }}</span>
+    <span *ngIf="report.partnerRole !== 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: report.partnerNumber} }} </span>
+</ng-template>
+
+<ng-template #partnerReportNumberCell let-report>
+    <span>R.{{report.reportNumber}}</span>
+</ng-template>
+
+<ng-template #partnerReportStatusCell let-report>
+    <jems-partner-report-status [status]="report.status"></jems-partner-report-status>
+</ng-template>
+
+<ng-template #reportingPeriodCell let-report>
+    <span *ngIf="report.periodDetail" matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
+        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+            periodNumber: report.periodDetail.number,
+            start: report.periodDetail.start,
+            end: report.periodDetail.end
+        } }}
+    </span>
+</ng-template>
+
+

@@ -38,6 +38,7 @@ internal class GetProjectTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
@@ -46,6 +47,7 @@ internal class GetProjectTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         val dummyProject = ProjectSummary(

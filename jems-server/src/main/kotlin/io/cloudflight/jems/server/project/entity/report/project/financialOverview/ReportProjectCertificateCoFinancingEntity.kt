@@ -39,4 +39,16 @@ class ReportProjectCertificateCoFinancingEntity (
     @field:NotNull val privateContributionPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
-    ) : Serializable
+    @field:NotNull var partnerContributionCurrentVerified: BigDecimal,
+    @field:NotNull var publicContributionCurrentVerified: BigDecimal,
+    @field:NotNull var automaticPublicContributionCurrentVerified: BigDecimal,
+    @field:NotNull var privateContributionCurrentVerified: BigDecimal,
+    @field:NotNull var sumCurrentVerified: BigDecimal,
+
+    @field:NotNull val partnerContributionPreviouslyVerified: BigDecimal,
+    @field:NotNull val publicContributionPreviouslyVerified: BigDecimal,
+    @field:NotNull val automaticPublicContributionPreviouslyVerified: BigDecimal,
+    @field:NotNull val privateContributionPreviouslyVerified: BigDecimal,
+    @field:NotNull val sumPreviouslyVerified: BigDecimal,
+
+) : Serializable

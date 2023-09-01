@@ -129,7 +129,7 @@ internal class ContractingPartnerBeneficialOwnersPersistenceTest : UnitTest() {
     @Test
     fun `get beneficial owners`() {
         val partnerId = 20L
-        every { beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId) } returns
+        every { beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId) } returns
                 mutableListOf(beneficialOwnerEntity)
         every { beneficialOwnerEntity.projectPartner.id } returns partnerId
         Assertions.assertThat(persistence.getBeneficialOwners(partnerId))
@@ -144,7 +144,7 @@ internal class ContractingPartnerBeneficialOwnersPersistenceTest : UnitTest() {
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId) } returns
+        every { beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId) } returns
                 mutableListOf(beneficialOwnerEntity) andThen
                 mutableListOf(beneficialOwnerEntity, beneficialOwnerEntityToBeAdded)
 
@@ -184,7 +184,7 @@ internal class ContractingPartnerBeneficialOwnersPersistenceTest : UnitTest() {
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId) } returns
+        every { beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId) } returns
                 mutableListOf(beneficialOwnerEntity, beneficialOwnerEntityToBeDeleted) andThen
                 mutableListOf(beneficialOwnerEntity)
 
@@ -226,7 +226,7 @@ internal class ContractingPartnerBeneficialOwnersPersistenceTest : UnitTest() {
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId) } returns
+        every { beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId) } returns
                 mutableListOf(beneficialOwnerEntity) andThen
                 mutableListOf(beneficialOwnerEntity)
 

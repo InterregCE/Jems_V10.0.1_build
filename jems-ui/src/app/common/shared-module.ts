@@ -64,6 +64,7 @@ import {FilterTemplateComponent} from '@common/components/filter/filter-template
 import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
+import {FilterOnlyDateInputComponent} from '@common/components/filter/filter-only-date-input/filter-only-date-input.component';
 import {TextDirective} from '@common/directives/text.directive';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 import {SecondsToTimePipePipe} from '@common/pipe/seconds-to-time-pipe.pipe';
@@ -100,6 +101,13 @@ import {
 } from '@common/components/file-list/file-list-table-with-file-linking/file-list-table-with-file-linking.component';
 import {NotificationListComponent} from '@common/components/notification-list/notification-list.component';
 import {FilterNutsInputComponent} from '@common/components/filter/filter-nuts/filter-nuts-input.component';
+import {PartnerReportListComponent} from '@common/components/partner-report-list/partner-report-list.component';
+import {
+  PartnerReportStatusComponent
+} from '@project/project-application/report/partner-report-status/partner-report-status.component';
+import {
+  VerificationChecklistInstanceListComponent
+} from '@common/components/checklist/verification-checklist-instance-list/verification-checklist-instance-list.component';
 
 const modules = [
   CommonModule,
@@ -164,6 +172,7 @@ const declarations = [
   FilterTemplateComponent,
   FilterTextInputComponent,
   FilterDateInputComponent,
+  FilterOnlyDateInputComponent,
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
   FilterNutsInputComponent,
@@ -181,6 +190,9 @@ const declarations = [
   ChecklistUtilsComponent,
   FileOperationsActionCellComponent,
   FileListTableWithFileLinkingComponent,
+  PartnerReportListComponent,
+  PartnerReportStatusComponent,
+  VerificationChecklistInstanceListComponent
 ];
 
 const providers = [

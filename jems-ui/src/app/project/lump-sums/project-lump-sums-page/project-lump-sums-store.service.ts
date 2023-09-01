@@ -1,18 +1,22 @@
 import {Injectable} from '@angular/core';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectLumpSumDTO, ProjectLumpSumService, ProjectPartnerLumpSumDTO} from '@cat/api';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
-import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectLumpSumsStore {
 
-  projectCallLumpSums$ = this.projectStore.projectCall$.pipe(map(it => it.lumpSums));
+  projectCallLumpSums$ = this.projectStore.projectCallSettings$.pipe(map(it => it.lumpSums));
   projectLumpSums$: Observable<ProjectLumpSum[]>;
   projectTitle$ = this.projectStore.projectTitle$;
   isProjectEditable$ = this.projectStore.projectEditable$;

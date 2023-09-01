@@ -1,9 +1,36 @@
+@import "../../../../theme/themes/theme_light";
+
+jems-breadcrumb {
+  display: none;
+}
+
+.global-warning-container-card-container {
+  margin-top: 10%;
+  margin-right: 1rem;
+}
+
+.global-warning {
+  background-color: white;
+  padding: 0;
+}
+
+.global-warning-content {
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--error-color-lighter);
+}
+
+.browser-link {
+  min-width: 0 !important;
+}
+
 .double-card-container {
   display: flex;
   flex-direction: row;
   gap: 2rem;
+  margin-top: 1rem;
   align-items: flex-start;
-  margin-top: 10%;
   .content-card  {
     max-width: 32rem;
     padding: 1.5rem 1rem;
@@ -14,6 +41,9 @@
   .double-card-container {
     flex-direction: column;
     align-items: center;
+  }
+  .global-warning-container-card-container {
+    max-width: 32rem;
   }
 }
 

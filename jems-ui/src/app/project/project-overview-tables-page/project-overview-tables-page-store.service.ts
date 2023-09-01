@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {
   IndicatorOverviewLineDTO,
   ProjectCallSettingsDTO,
@@ -54,14 +56,14 @@ export class ProjectOverviewTablesPageStore {
   }
 
   private callMultipleFundsAllowed(): Observable<boolean> {
-    return this.projectStore.projectCall$
+    return this.projectStore.projectCallSettings$
       .pipe(
-        map(call => call.multipleFundsAllowed)
+        map(call => call.additionalFundAllowed)
       );
   }
 
   private isCallSpf(): Observable<boolean> {
-    return this.projectStore.projectCall$
+    return this.projectStore.projectCallSettings$
       .pipe(
         map(call => call.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF)
       );

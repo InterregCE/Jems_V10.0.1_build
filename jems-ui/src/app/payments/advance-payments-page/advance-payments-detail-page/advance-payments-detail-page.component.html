@@ -4,7 +4,7 @@
                [formGroup]="advancePaymentForm">
         <div jemsMultiColumnRow>
             <a color="primary" class="mr-1" mat-icon-button
-               routerLink="../../"
+               routerLink="../"
                matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}"
                aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
@@ -36,6 +36,7 @@
                         <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
                         <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
                         <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
+                        <div class="column-expand"><!-- Empty - just for alignment reasons --></div>
                     </div>
                     <ng-container>
                         <div  jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
@@ -184,6 +185,97 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="column-expand">
+                                <div class="display-row">
+                                    <button mat-icon-button *ngIf="data.paymentDetail.paymentConfirmed" class="button-expand column-expand-content"
+                                            [ngClass]="{'expanded' : settlementsExpanded}"
+                                            (click)="toggleSettlements()"
+                                            aria-label="expansion toggle">
+                                        <mat-icon>expand_more</mat-icon>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div *ngIf="data.paymentDetail.paymentConfirmed" id="settlements-table" class="settlements-table-container"
+                             [ngClass]="{'expanded' : settlementsExpanded}">
+                            <div [jemsTableConfig]="[{maxInRem:9},{maxInRem: 14},{maxInRem: 12},{minInRem: 12}, {maxInRem:5}]">
+                                <div class="table-row">
+                                    <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.number' | translate }}</div>
+                                    <div class="justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
+                                    <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
+                                    <div>{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
+                                    <div *ngIf="userCanEdit$ | async">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                                </div>
+
+                                <div *ngFor="let settlement of settlementsArray.controls; let i=index">
+                                    <ng-container formArrayName="paymentSettlements">
+                                        <ng-container [formGroupName]="i">
+                                            <div class="w-50">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr).value}}</div>
+                                            <div>
+                                                <mat-form-field class="w-100">
+                                                    <input name="amountSettled"
+                                                            matInput type="decimal" currencyMask
+                                                           [options]="{allowNegative: true, max: constants.MAX_VALUE, align:'right'}"
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.amountSettled"
+                                                           aria-label="value">
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div>
+                                                <mat-form-field class="w-100">
+                                                    <span [ngClass]="{'marked-as-required' : !inputSettlementDate.value}">
+                                                        <input #inputSettlementDate name="settlementDate"
+                                                               class="placeholder-required empty"
+                                                               [formControlName]="constants.FORM_CONTROL_NAMES.settlementDate" matInput
+                                                               [matDatepicker]="settlementDatePicker">
+                                                    </span>
+                                                    <mat-error>
+                                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementDate)?.errors"
+                                                                                [messages]="constants.inputErrorMessages"
+                                                                                [args] = "{}"></jems-form-field-errors>
+                                                    </mat-error>
+                                                    <mat-datepicker-toggle matSuffix [for]="settlementDatePicker"></mat-datepicker-toggle>
+                                                    <mat-datepicker #settlementDatePicker></mat-datepicker>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div>
+                                                <mat-form-field class="w-100">
+                                                    <input matInput #settlementComment class="text-overflow-ellipsis"
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.settlementComment"
+                                                           [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.value"/>
+                                                    <mat-hint [jemsHintFor]="settlementComment">
+                                                        <jems-text-hint [currentLength]="settlementComment.value.length" [maxLength]="500"></jems-text-hint>
+                                                    </mat-hint>
+                                                    <mat-error>
+                                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div *ngIf="userCanEdit$ | async">
+                                                <button (click)="removeSettlement(i)"
+                                                        class="delete-button"
+                                                        color="accent" mat-icon-button
+                                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                                        type="button"
+                                                        aria-label="delete">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </div>
+
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+                            <button *ngIf="(userCanEdit$ | async) && (settlementsArray.length < 25)" mat-stroked-button
+                                    class="mt-2"
+                                    (click)="addSettlement()">
+                                {{'payments.advance.payments.detail.settlement.add.button' | translate}}
+                            </button>
                         </div>
                     </ng-container>
                 </div>

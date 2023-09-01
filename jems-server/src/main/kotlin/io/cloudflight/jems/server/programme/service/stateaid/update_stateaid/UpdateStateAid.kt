@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
-private const val MAX_ALLOWED_AMOUNT_OF_STATE_AIDS = 20
+private const val MAX_ALLOWED_AMOUNT_OF_STATE_AIDS = 40
 
 @Service
 class UpdateStateAid(
@@ -40,7 +40,7 @@ class UpdateStateAid(
 
     private fun validateInput(stateAids: Collection<ProgrammeStateAid>) =
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.maxSize(stateAids, 20, "stateAids"),
+            generalValidator.maxSize(stateAids, 40, "stateAids"),
             *stateAids.map {
                 generalValidator.maxLength(it.name, 250, "name")
             }.toTypedArray(),

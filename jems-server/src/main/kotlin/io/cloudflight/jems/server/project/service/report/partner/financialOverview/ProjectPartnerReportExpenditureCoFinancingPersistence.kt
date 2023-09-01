@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview
 
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
@@ -17,7 +18,10 @@ interface ProjectPartnerReportExpenditureCoFinancingPersistence {
 
     fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: ExpenditureCoFinancingCurrent)
 
-    fun getReportCurrentSum(partnerId: Long, reportId: Long): BigDecimal
-
     fun getCoFinancingTotalEligible(reportIds: Set<Long>): ReportCertificateCoFinancingColumn
+
+    fun getTotalsForProjectReports(projectReportIds: Set<Long>): Map<Long, BigDecimal>
+
+    fun getAvailableFunds(reportId: Long): List<ProgrammeFund>
+
 }

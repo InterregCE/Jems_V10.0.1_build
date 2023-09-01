@@ -50,6 +50,7 @@ class PublishCallTest : UnitTest() {
         endDate = ZonedDateTime.now().plusDays(1),
         endDateStep1 = null,
         isAdditionalFundAllowed = true,
+        isDirectContributionsAllowed = true,
         lengthOfPeriod = 12,
         applicationFormFieldConfigurations = mutableSetOf(),
         strategies = sortedSetOf(ProgrammeStrategy.AtlanticStrategy),

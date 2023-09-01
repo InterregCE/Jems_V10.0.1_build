@@ -12,6 +12,8 @@ import Permissions = UserRoleDTO.PermissionsEnum;
 })
 export class DashboardPageComponent {
   Permissions = Permissions;
+  currentApplicationPageSize = 10;
+  currentCallPageSize = 5;
 
   constructor(public pageStore: DashboardPageStore) {
   }

@@ -1,0 +1,109 @@
+<p>{{'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.description' | translate}}</p>
+
+<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+    <ng-container matColumnDef="partnerReport" sticky>
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner.report' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="border-cell-right">
+            <span *ngIf="!line.isSplit">R.{{line.partnerReportNumber}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="partner">
+        <mat-header-cell *matHeaderCellDef class="text-left">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-left">
+            <mat-icon *ngIf="line.isSplit" class="sub-row-indent">subdirectory_arrow_right</mat-icon>
+            <span *ngIf="line.isSplit">{{line.splitFundAbbreviation| translateBySystemLanguage | async}}</span>
+            <span *ngIf="!line.isSplit && line.partnerRole === 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: line.partnerNumber} }}</span>
+            <span *ngIf="!line.isSplit && line.partnerRole !== 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: line.partnerNumber} }} </span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container *ngFor="let fund of funds" >
+        <ng-container matColumnDef="{{fund.id.toString()}}">
+            <mat-header-cell *matHeaderCellDef class="text-right fund-column">
+                <span jemsText maxLines="2">{{ fund.abbreviation | translateBySystemLanguage | async }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let line" class="text-right fund-column">
+                <span *ngIf="line.isSplit && line.splitFundId === fund.id">{{ line.splitFundValue | asMoney }}</span>
+                <span *ngIf="!line.isSplit">{{ line.fundValues.get(fund.id) !== undefined ? (line.fundValues.get(fund.id) | asMoney) : 'N/A' }}</span>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef class="text-right fund-column">{{ fund.amount | asMoney }}</mat-footer-cell>
+        </ng-container>
+    </ng-container>
+
+    <ng-container matColumnDef="partnerContribution">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner.contribution' | translate }}</span>
+            <jems-context-info infoPosition="right"
+                infoText="{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner.contribution.info' | translate}}">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{line.partnerContribution | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.partnerContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="publicContribution">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.public.contribution' | translate }}</span>
+            <jems-context-info infoPosition="right"
+                               infoText="{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.public.contribution.info' | translate}}">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{line.publicContribution | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.publicContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="automaticPublicContribution">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.automatic.public.contribution' | translate }}</span>
+            <jems-context-info infoPosition="right"
+                               infoText="{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.automatic.public.contribution.info' | translate}}">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{line.automaticPublicContribution | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.automaticPublicContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="privateContribution">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.private.contribution' | translate }}</span>
+            <jems-context-info infoPosition="right"
+                               infoText="{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.private.contribution.info' | translate}}">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{line.privateContribution | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.privateContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.total' | translate }}</span>
+            <jems-context-info infoPosition="right"
+                               infoText="{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.total.info' | translate}}">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{line.total | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.total | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let i = index; columns: displayedColumns" [class.border-bottom]="shouldDisplayBorderBottom(i)"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>

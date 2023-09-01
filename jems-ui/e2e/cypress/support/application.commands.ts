@@ -77,6 +77,10 @@ declare global {
       getContractMonitoring(applicationId: number);
 
       updateContractMonitoring(applicationId: number, contractMonitoring: {});
+
+      createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
+
+      findInputContaining(selectorForInput, textToFind: string)
     }
   }
 }
@@ -334,6 +338,14 @@ Cypress.Commands.add('getContractMonitoring', (applicationId: number) => {
 
 Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contractMonitoring: {}) => {
   updateContractMonitoring(applicationId, contractMonitoring);
+});
+
+Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
+  createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
+Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {
+  findInputContaining(selectorForInput, textToFind);
 });
 
 function createApplication(applicationDetails) {
@@ -595,6 +607,14 @@ function updateContractMonitoring(applicationId, contractMonitoring) {
   });
 }
 
+function createReportingDeadlines(applicationId, reportingDeadlines) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/reporting`,
+    body: reportingDeadlines
+  });
+}
+
 export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
   if (associatedOrganisations) {
     associatedOrganisations.forEach(associatedOrganisation => {
@@ -615,6 +635,14 @@ function createAssociatedOrganisation(applicationId, associatedOrganisation) {
       cy.wrap(response.body.id).as('associatedOrganisation');
     });
   });
+}
+
+function findInputContaining(selectorForInput, textToFind) {
+  return cy.wrap(selectorForInput)
+    .find(`input`)
+    .filter((_, el) => {
+      return (el as HTMLInputElement).value === textToFind
+    })
 }
 
 export {}

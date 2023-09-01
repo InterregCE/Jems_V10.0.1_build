@@ -164,7 +164,7 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
 
     @Test
     fun `update legal statuses - exception should be thrown when more legal statuses would be created then allowed`() {
-        every { mockedList.size } returns 21
+        every { mockedList.size } returns 51
         every { isProgrammeSetupLocked.isLocked() } returns true
         every { persistence.updateLegalStatuses(any(), any()) } returns mockedList
 
@@ -174,7 +174,7 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
                 emptyList()
             )
         }
-        assertThat(ex.message).isEqualTo("max allowed: 20")
+        assertThat(ex.message).isEqualTo("max allowed: 50")
 
         verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }

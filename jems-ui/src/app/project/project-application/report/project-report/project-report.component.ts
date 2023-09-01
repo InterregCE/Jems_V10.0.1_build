@@ -32,13 +32,16 @@ export class ProjectReportComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
-  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission', 'delete'];
+  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission',
+    'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
+  MAX_PROJECT_REPORTS_ALLOWED = 100;
 
   data$: Observable<{
     projectReports: PageProjectReportSummaryDTO;
     canEditReports: boolean;
     totalElements: number;
+    viewVerification: boolean;
   }>;
 
   constructor(
@@ -54,18 +57,25 @@ export class ProjectReportComponent {
   ) {
     this.data$ = combineLatest([
       pageStore.projectReports$,
-      pageStore.userCanEditReport$
+      pageStore.userCanEditReport$,
+      pageStore.userCanViewVerification$
     ]).pipe(
-      tap(([projectReports, isEditable]) => this.dataSource.data = projectReports.content),
-      map(([projectReports, isEditable]) => ({
+      tap(([projectReports, _, viewVerification]) => {
+        if (!viewVerification) {
+          this.displayedColumns = this.displayedColumns.filter(column => column !== 'verification');
+        }
+        this.dataSource.data = projectReports.content;
+      }),
+      map(([projectReports, isEditable, viewVerification]) => ({
         projectReports,
         canEditReports: isEditable,
-        totalElements: projectReports.totalElements
+        totalElements: projectReports.totalElements,
+        viewVerification
       })),
     );
   }
 
-  private showErrorMessage(error: APIError): Observable<null> {
+  showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);
@@ -96,4 +106,7 @@ export class ProjectReportComponent {
       ).subscribe();
   }
 
+  createProjectReport(): void {
+    this.router.navigate([`/app/project/detail/${this.projectId}/projectReports/create`]);
+  }
 }

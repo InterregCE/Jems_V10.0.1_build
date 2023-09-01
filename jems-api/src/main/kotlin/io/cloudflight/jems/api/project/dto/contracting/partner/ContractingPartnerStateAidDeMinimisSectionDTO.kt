@@ -7,11 +7,10 @@ import java.time.ZonedDateTime
 data class ContractingPartnerStateAidDeMinimisSectionDTO(
     val partnerId: Long?,
     val dateOfGrantingAid: LocalDate?,
-    val totalEligibleBudget: BigDecimal?,
+    val amountGrantingAid: BigDecimal?,
     val selfDeclarationSubmissionDate: ZonedDateTime?,
     val baseForGranting: BaseForGrantingDTO?,
     val aidGrantedByCountry: String?,
-    val aidGrantedByCountryCode: String?,
     val memberStatesGranting: Set<MemberStateForGrantingDTO>,
     val comment: String?
 )

@@ -17,16 +17,12 @@ import {
   ProjectReportProcurementFileDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {CurrencyStore} from '@common/services/currency.store';
 import {v4 as uuid} from 'uuid';
 import {APIError} from '@common/models/APIError';
@@ -267,7 +263,7 @@ export class PartnerReportProcurementStore {
       ),
       tap(() => this.filesChanged$.next()),
       tap(() => this.error$.next(null)),
-      tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
         return of({} as JemsFileMetadataDTO);
@@ -290,7 +286,7 @@ export class PartnerReportProcurementStore {
       ),
       tap(() => this.filesChanged$.next()),
       tap(() => this.gdprError$.next(null)),
-      tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.gdprError$.next(error.error);
         return of({} as JemsFileMetadataDTO);

@@ -51,12 +51,20 @@ export const routes: Routes = [
           },
           {
             path: 'funds',
-            data: {breadcrumb: 'programme.breadcrumb.funds'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.funds',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
             component: ProgrammeFundsComponent,
           },
           {
             path: 'priorities',
-            data: {breadcrumb: 'programme.breadcrumb.priorities'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.priorities',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
             children: [
               {
                 path: '',
@@ -77,26 +85,46 @@ export const routes: Routes = [
           {
             path: 'areas',
             component: ProgrammeAreaComponent,
-            data: {breadcrumb: 'programme.breadcrumb.areas'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.areas',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'conversionRates',
             component: ProgrammeConversionRatesComponent,
-            data: {breadcrumb: 'programme.breadcrumb.conversion.rates'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.conversion.rates',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'languages',
             component: ProgrammeLanguagesPageComponent,
-            data: {breadcrumb: 'programme.breadcrumb.languages'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.languages',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'translationManagement',
             component: TranslationManagementPageComponent,
-            data: {breadcrumb: 'programme.breadcrumb.translation.management'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.translation.management',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'indicators',
-            data: {breadcrumb: 'programme.breadcrumb.indicators'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.indicators',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
             children: [
               {
                 path: '',
@@ -145,21 +173,37 @@ export const routes: Routes = [
           {
             path: 'strategies',
             component: ProgrammeStrategiesPageComponent,
-            data: {breadcrumb: 'programme.breadcrumb.strategies'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.strategies',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'legalStatus',
             component: ProgrammeLegalStatusComponent,
-            data: {breadcrumb: 'programme.breadcrumb.legal.status'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.legal.status',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'typologyErrors',
             component: ProgrammeTypologyErrorsComponent,
-            data: {breadcrumb: 'programme.breadcrumb.typology.errors'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.typology.errors',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
           {
             path: 'costs',
-            data: {breadcrumb: 'programme.breadcrumb.costs'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.costs',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
             children: [
               {
                 path: '',
@@ -208,7 +252,11 @@ export const routes: Routes = [
           {
             path: 'stateAid',
             component: ProgrammeStateAidComponent,
-            data: {breadcrumb: 'programme.breadcrumb.state.aid'},
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'programme.breadcrumb.state.aid',
+              permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate]
+            },
           },
         ]
       },

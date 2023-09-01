@@ -4,6 +4,9 @@ import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
 import {takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {RoutingService} from '@common/services/routing.service';
+import {Title} from '@angular/platform-browser';
+import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {Observable, of} from 'rxjs';
 
 @Component({
   selector: 'jems-breadcrumb',
@@ -16,7 +19,9 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
   breadcrumbs: Breadcrumb[] = [];
 
   constructor(private route: ActivatedRoute,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private titleService: Title,
+              private customTranslatePipe: CustomTranslatePipe) {
     super();
   }
 
@@ -26,6 +31,8 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroyed$),
         tap(() => this.breadcrumbs = this.buildBreadcrumbs(this.route.root, '/'))
       ).subscribe();
+    this.getTitleObsservable()
+      .subscribe((title) => this.titleService.setTitle(title));
   }
 
   navigate(url: string, extras: NavigationExtras): void {
@@ -59,6 +66,13 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
     }
 
     return newBreadcrumbs;
+  }
+
+  private getTitleObsservable(): Observable<string> {
+    const breadcrumb = this.breadcrumbs[this.breadcrumbs.length - 1];
+    if (breadcrumb.dynamicValue) {return breadcrumb.dynamicValue;}
+    else if (breadcrumb.i18nKey) {return this.customTranslatePipe.translateService.get(breadcrumb.i18nKey);}
+    else {return of('Jems');}
   }
 
   private extractPathFrom(currentRoute: ActivatedRoute): string {

@@ -72,9 +72,6 @@ internal class SaveProjectVersionTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
 
-    @RelaxedMockK
-    lateinit var auditPublisher: ApplicationEventPublisher
-
     @InjectMockKs
     lateinit var saveProjectVersion: CreateNewProjectVersion
 
@@ -90,13 +87,9 @@ internal class SaveProjectVersionTest : UnitTest() {
             )
         } returns newProjectVersionSummary
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        val auditEventSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditEventSlot)) } returns Unit
 
         val createdProjectVersion = saveProjectVersion.create(projectId)
-
-        verify(exactly = 1) { auditPublisher.publishEvent(auditEventSlot.captured) }
-
+        
         assertThat(createdProjectVersion).isEqualTo(newProjectVersionSummary)
     }
 }

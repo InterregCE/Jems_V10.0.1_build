@@ -37,6 +37,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 75L,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         )
         private val uploadTime = ZonedDateTime.now()
@@ -108,7 +109,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     @Test
     fun getParked() {
         val reportId = 12L
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L, ReportStatus.Certified) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L) } returns
             mapOf(14L to parkingMetadata)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(45L, reportId) } returns listOf(lumpSum())
@@ -129,7 +130,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     @Test
     fun `getParked - check gdpr anonymization`() {
         val reportId = 12L
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L, ReportStatus.Certified) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L) } returns
             mapOf(14L to parkingMetadata)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(45L, reportId) } returns listOf(lumpSum())

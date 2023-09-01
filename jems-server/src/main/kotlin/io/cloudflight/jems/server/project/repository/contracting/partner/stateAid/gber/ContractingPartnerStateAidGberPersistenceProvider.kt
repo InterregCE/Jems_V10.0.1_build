@@ -25,6 +25,7 @@ class ContractingPartnerStateAidGberPersistenceProvider(
             partnerId = partnerId,
             aidIntensity = gberData.aidIntensity,
             locationInAssistedArea = gberData.locationInAssistedArea,
-            comment = gberData.comment
+            comment = gberData.comment,
+            amountGrantingAid = gberData.amountGrantingAid
         ))
 }

@@ -8,7 +8,7 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
-  UpdateProjectPartnerReportIdentificationDTO
+  UpdateProjectPartnerReportIdentificationDTO, UserRoleCreateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -20,6 +20,8 @@ import {
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {PermissionService} from '../../../../security/permissions/permission.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {
@@ -35,6 +37,7 @@ export class PartnerReportDetailPageStore {
   availablePeriods$: Observable<ProjectPartnerReportPeriodDTO[]>;
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
+  canUserAccessCall$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -47,7 +50,8 @@ export class PartnerReportDetailPageStore {
               public partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
-              private reportIdentificationService: ProjectPartnerReportIdentificationService) {
+              private reportIdentificationService: ProjectPartnerReportIdentificationService,
+              private permissionService: PermissionService) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.partnerReportLevel$ = this.partnerReportPageStore.partnerReportLevel$;
     this.partnerReportId$ = this.partnerReportId();
@@ -57,6 +61,11 @@ export class PartnerReportDetailPageStore {
     this.availablePeriods$ = this.availablePeriods();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
+    this.canUserAccessCall$ = this.canUserAccessCall();
+  }
+
+  private canUserAccessCall(): Observable<boolean> {
+    return this.permissionService.hasPermission([PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]);
   }
 
   private partnerReportId(): Observable<number> {

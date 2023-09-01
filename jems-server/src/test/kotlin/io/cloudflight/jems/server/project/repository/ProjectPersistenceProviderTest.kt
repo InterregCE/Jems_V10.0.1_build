@@ -22,14 +22,19 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
+import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
+import io.cloudflight.jems.server.call.repository.notifications.project.ProjectNotificationConfigurationRepository
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
@@ -94,7 +99,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
@@ -229,6 +234,21 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 ),
             )
         }
+
+        private val notificationConfiguration = ProjectNotificationConfigurationEntity(
+            ProjectNotificationConfigurationId(
+                NotificationType.ProjectSubmitted, CallPersistenceProviderTest.callEntity(
+                    CALL_ID
+                )
+            ), active = true,
+            sendToManager = true,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            sendToControllers = false,
+            emailSubject = "sub",
+            emailBody = "body"
+        )
     }
 
     @MockK
@@ -241,8 +261,10 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+
     @MockK
     lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
+
     @MockK
     lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 
@@ -274,6 +296,9 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
     lateinit var programmePriorityRepository: ProgrammePriorityRepository
 
     @MockK
+    lateinit var projectNotificationConfigurationRepository: ProjectNotificationConfigurationRepository
+
+    @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     private lateinit var persistence: ProjectPersistenceProvider
@@ -296,6 +321,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             applicationFormFieldConfigurationRepository,
             programmePriorityRepository,
             controllerInstitutionPersistence,
+            projectNotificationConfigurationRepository
         )
     }
 
@@ -386,6 +412,13 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
+        every {
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectReportVerificationDoneNotificationSent
+            )
+        } returns notificationConfiguration
+
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
             ProjectCallSettings(
                 callId = project.call.id,
@@ -396,6 +429,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 endDateStep1 = call.endDateStep1,
                 lengthOfPeriod = call.lengthOfPeriod,
                 isAdditionalFundAllowed = call.isAdditionalFundAllowed,
+                isDirectContributionsAllowed = call.isDirectContributionsAllowed,
                 flatRates = call.flatRates.toModel(),
                 lumpSums = call.lumpSums.toModel(),
                 unitCosts = call.unitCosts.toModel(),
@@ -418,6 +452,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                     projectDefinedUnitCostAllowed = true,
                     projectDefinedLumpSumAllowed = false,
                 ),
+                jsNotifiable = true
             )
         )
     }
@@ -442,14 +477,24 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         every { mockPeriodRow.periodNumber } returns 1
         every { mockPeriodRow.periodStart } returns 1
         every { mockPeriodRow.periodEnd } returns 12
-        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(
+            mockPeriodRow
+        )
+        every {
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectReportVerificationDoneNotificationSent
+            )
+        } returns notificationConfiguration
 
         assertThat(persistence.getProjectPeriods(PROJECT_ID, version))
-            .containsExactly(ProjectPeriod(
-                number = 1,
-                start = 1,
-                end = 12
-            ))
+            .containsExactly(
+                ProjectPeriod(
+                    number = 1,
+                    start = 1,
+                    end = 12
+                )
+            )
     }
 
     @Test
@@ -500,6 +545,13 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
 
         every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
+        every {
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectReportVerificationDoneNotificationSent
+            )
+        } returns notificationConfiguration
+
         assertThat(persistence.getProject(PROJECT_ID))
             .isEqualTo(
                 ProjectFull(
@@ -515,8 +567,9 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
                     callSettings = project.call.toSettingsModel(
-                        stateAidEntities,
-                        applicationFormFieldConfigurationEntities
+                        stateAidEntities = stateAidEntities,
+                        applicationFormFieldConfigurationEntities = applicationFormFieldConfigurationEntities,
+                        jsNotifiable = true
                     ),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
@@ -616,6 +669,12 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         every { programmePriorityRepository.findById(3L) } returns Optional.of(programmePriority)
         every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
+        every {
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectReportVerificationDoneNotificationSent
+            )
+        } returns notificationConfiguration
 
         assertThat(persistence.getProject(PROJECT_ID, version))
             .isEqualTo(
@@ -636,18 +695,29 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = ProjectStatus(
                         mockRow.statusId, mockRow.status,
-                    UserSummary(mockRow.userId, mockRow.email, mockRow.sendNotificationsToEmail, mockRow.name, mockRow.surname,
-                        UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
+                        UserSummary(
+                            mockRow.userId,
+                            mockRow.email,
+                            mockRow.sendNotificationsToEmail,
+                            mockRow.name,
+                            mockRow.surname,
+                            UserRoleSummary(mockRow.roleId, mockRow.roleName),
+                            mockRow.userStatus
+                        ),
                         ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneId.systemDefault()),
                         mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note
                     ),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
                     callSettings = project.call.toSettingsModel(
-                        stateAidEntities,
-                        applicationFormFieldConfigurationEntities
+                        stateAidEntities = stateAidEntities,
+                        applicationFormFieldConfigurationEntities = applicationFormFieldConfigurationEntities,
+                        jsNotifiable = true
                     ),
-                    specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "AT1"),
+                    specificObjective = OutputProgrammePriorityPolicySimpleDTO(
+                        ProgrammeObjectivePolicy.AdvancedTechnologies,
+                        "AT1"
+                    ),
                     programmePriority = programmePriority.toOutputProgrammePrioritySimple()
                 )
             )
@@ -663,13 +733,25 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
 
         every { projectAssessmentQualityRepository.findById(any()) } returns Optional.empty()
         every { projectAssessmentEligibilityRepository.findById(any()) } returns Optional.empty()
+        every {
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectReportVerificationDoneNotificationSent
+            )
+        } returns notificationConfiguration
+
 
         assertThrows<ApplicationVersionNotFoundException> { persistence.getProject(PROJECT_ID, notExistingVersion) }
     }
 
     @Test
     fun `getProjects - not owner`() {
-        every { projectRepository.findAll(BooleanBuilder(), Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
+        every {
+            projectRepository.findAll(
+                BooleanBuilder(),
+                Pageable.unpaged()
+            )
+        } returns PageImpl(listOf(dummyProject()))
 
         val result = persistence.getProjects(Pageable.unpaged(), null)
 
@@ -741,18 +823,20 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         val predicate = slot<Predicate>()
         every { projectRepository.findAll(capture(predicate), Pageable.unpaged()) } returns Page.empty()
 
-        persistence.getProjects(Pageable.unpaged(), ProjectSearchRequest(
-            id = "1",
-            acronym = "2",
-            firstSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
-            firstSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
-            lastSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
-            lastSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
-            objectives = setOf(ProgrammeObjectivePolicy.AdvancedTechnologies),
-            statuses = setOf(ApplicationStatus.DRAFT),
-            calls = setOf(CALL_ID),
-            users = null
-        ))
+        persistence.getProjects(
+            Pageable.unpaged(), ProjectSearchRequest(
+                id = "1",
+                acronym = "2",
+                firstSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+                firstSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+                lastSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+                lastSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+                objectives = setOf(ProgrammeObjectivePolicy.AdvancedTechnologies),
+                statuses = setOf(ApplicationStatus.DRAFT),
+                calls = setOf(CALL_ID),
+                users = null
+            )
+        )
 
         assertThat(predicate.captured.toString()).contains(
             "(str(projectEntity.id) like %1% " +
@@ -763,7 +847,8 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 "&& projectEntity.lastResubmission.updated > 2021-05-01T10:00+02:00 " +
                 "&& projectEntity.lastResubmission.updated < 2021-05-01T10:00+02:00 " +
                 "&& projectEntity.priorityPolicy.programmeObjectivePolicy = AdvancedTechnologies " +
-                "&& projectEntity.currentStatus.status = DRAFT && projectEntity.call.id = 12")
+                "&& projectEntity.currentStatus.status = DRAFT && projectEntity.call.id = 12"
+        )
     }
 
     @Test
@@ -771,18 +856,20 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         val predicate = slot<Predicate>()
         every { projectRepository.findAll(capture(predicate), Pageable.unpaged()) } returns Page.empty()
 
-        persistence.getAssignedProjects(Pageable.unpaged(), ProjectSearchRequest(
-            id = "1",
-            acronym = "2",
-            firstSubmissionFrom = null,
-            firstSubmissionTo = null,
-            lastSubmissionFrom = null,
-            lastSubmissionTo = null,
-            objectives = null,
-            statuses = setOf(ApplicationStatus.CONTRACTED),
-            calls = setOf(CALL_ID),
-            users = setOf(99L)
-        ))
+        persistence.getAssignedProjects(
+            Pageable.unpaged(), ProjectSearchRequest(
+                id = "1",
+                acronym = "2",
+                firstSubmissionFrom = null,
+                firstSubmissionTo = null,
+                lastSubmissionFrom = null,
+                lastSubmissionTo = null,
+                objectives = null,
+                statuses = setOf(ApplicationStatus.CONTRACTED),
+                calls = setOf(CALL_ID),
+                users = setOf(99L)
+            )
+        )
 
         assertThat(predicate.captured.toString()).contains(
             "(str(projectEntity.id) like %1% " +
@@ -790,7 +877,8 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 "&& lower(projectEntity.acronym) like %2% " +
                 "&& projectEntity.currentStatus.status = CONTRACTED " +
                 "&& projectEntity.call.id = 12 " +
-                "&& any(projectEntity.assignedUsers).id.userId = 99")
+                "&& any(projectEntity.assignedUsers).id.userId = 99"
+        )
     }
 
 }

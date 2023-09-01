@@ -46,6 +46,7 @@ class CreateCallTest : UnitTest() {
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 9,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -65,6 +66,7 @@ class CreateCallTest : UnitTest() {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 9,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -161,6 +163,7 @@ class CreateCallTest : UnitTest() {
             )
             assertThat(description).endsWith(
                 "isAdditionalFundAllowed set to enabled,\n" +
+                "isDirectContributionsAllowed set to enabled,\n" +
                     "lengthOfPeriod set to 9,\n" +
                     "description set to [\n" +
                     "  EN=EN desc\n" +

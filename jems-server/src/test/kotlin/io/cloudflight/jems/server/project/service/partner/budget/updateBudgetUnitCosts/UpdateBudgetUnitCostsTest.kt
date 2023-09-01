@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
@@ -71,7 +72,13 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = PARTNER_ID, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        val unitCost = ProgrammeUnitCost(id = 45L, projectId = null, isOneCostCategory = false, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(
+            id = 45L,
+            projectId = null,
+            isOneCostCategory = false,
+            costPerUnit = BigDecimal.TEN,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
+        )
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { call.projectDefinedUnitCostAllowed } returns false
@@ -105,7 +112,13 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = 57L, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(57L) } returns 1057L
 
-        val unitCost = ProgrammeUnitCost(id = 1L, projectId = null, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(
+            id = 1L,
+            projectId = null,
+            isOneCostCategory = true,
+            costPerUnit = BigDecimal.TEN,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
+        )
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { call.projectDefinedUnitCostAllowed } returns false
@@ -125,7 +138,13 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
 
-        val unitCost = ProgrammeUnitCost(id = 1L, projectId = null, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(
+            id = 1L,
+            projectId = null,
+            isOneCostCategory = true,
+            costPerUnit = BigDecimal.TEN,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
+        )
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { callPersistence.getCallByProjectId(projectId) } returns call

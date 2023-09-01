@@ -9,6 +9,7 @@ export class PartnerReportExpendituresTabConstants {
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
     number: 'number',
+    parkingMetadata: 'parkingMetadata',
     reportOfOriginNumber: 'reportOfOriginNumber',
     originalExpenditureNumber: 'originalExpenditureNumber',
     costOptions: 'costOptions',

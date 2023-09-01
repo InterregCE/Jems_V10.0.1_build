@@ -249,10 +249,9 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
         private val stateAidDeMinimisSection = ContractingPartnerStateAidDeMinimisSection(
             partnerId = 1L,
             dateOfGrantingAid = LocalDate.of(2022, 1, 5),
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             selfDeclarationSubmissionDate = ZonedDateTime.of(2022,1,30,15,10,10,10, ZoneId.systemDefault()),
             baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
-            aidGrantedByCountryCode = "AT",
             aidGrantedByCountry = "Österreich",
             memberStatesGranting = setOf(
                 MemberStateForGranting(
@@ -277,7 +276,7 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
                     value = BigDecimal.ZERO
                 )
             ),
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             naceGroupLevel = NaceGroupLevel.A_01_1,
             aidIntensity = BigDecimal.TEN,
             locationInAssistedArea = LocationInAssistedArea.A_AREA,
@@ -559,7 +558,7 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
                 totalEligibleBudget = BigDecimal.TEN,
                 selfDeclarationSubmissionDate = ZonedDateTime.of(2022,1,30,15,10,10,10, ZoneId.systemDefault()),
                 baseForGranting = BaseForGrantingData.ADDENDUM_SUBSIDY_CONTRACT,
-                aidGrantedByCountryCode = "AT",
+                aidGrantedByCountryCode = null,
                 aidGrantedByCountry = "Österreich",
                 memberStatesGranting = setOf(
                     MemberStateForGrantingData(

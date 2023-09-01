@@ -115,7 +115,7 @@ class StartSecondStepInteractorTest : UnitTest() {
         assertThat(slotAuditVersion.captured.auditCandidate).matches {
             it.action == AuditAction.APPLICATION_VERSION_RECORDED
                 && it.project == AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym")
-                && it.description.startsWith("New project version \"V.1.0\" is recorded by user: some@applicant on") // ..timestamp could differ
+                && it.description.startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
         }
     }
 

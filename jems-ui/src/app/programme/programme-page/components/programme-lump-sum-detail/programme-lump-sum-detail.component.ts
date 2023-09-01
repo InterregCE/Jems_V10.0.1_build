@@ -12,15 +12,13 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {
-  ProgrammeLumpSumDTO
-} from '@cat/api';
+import {ProgrammeLumpSumDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {NumberService} from '../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {combineLatest} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 
@@ -71,7 +69,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     allowSplitting: ['', Validators.required],
     isFastTrack: ['', Validators.required],
     phase: ['', Validators.required],
-    categories: ['', Validators.required]
+    categories: ['', Validators.required],
+    paymentClaim: [ProgrammeLumpSumDTO.PaymentClaimEnum.IncurredByBeneficiaries]
   });
   costErrors = {
     required: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR,
@@ -91,6 +90,13 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     ProgrammeLumpSumDTO.CategoriesEnum.InfrastructureCosts
   ];
   validNumberOfSelections = false;
+
+  availablePaymentClaims = [
+    ProgrammeLumpSumDTO.PaymentClaimEnum.IncurredByBeneficiaries,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.BasedOnSco,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.FinancingNotBasedOnSco,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.Other
+  ];
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -129,6 +135,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     this.lumpSumForm.controls.name.setValue(this.lumpSum.name);
     this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
     this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
+    this.lumpSumForm.controls.paymentClaim.setValue(this.lumpSum.paymentClaim);
     this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
     this.isFastTrack = this.lumpSum.fastTrack ? 'Yes' : 'No';
     this.previousPhase = this.lumpSum.phase;
@@ -163,7 +170,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           splittingAllowed: this.previousSplitting === 'Yes',
           fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
-          categories: this.selection.selected
+          categories: this.selection.selected,
+          paymentClaim: this.lumpSumForm.controls.paymentClaim.value
         } as ProgrammeLumpSumDTO);
       } else {
         this.updateLumpSum.emit({
@@ -174,7 +182,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           splittingAllowed: this.previousSplitting === 'Yes',
           fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
-          categories: this.selection.selected
+          categories: this.selection.selected,
+          paymentClaim: this.lumpSumForm.controls.paymentClaim.value
         });
       }
     });

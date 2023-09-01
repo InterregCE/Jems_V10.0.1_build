@@ -1,8 +1,6 @@
 package io.cloudflight.jems.server.project.repository.contracting.partner.stateAid.deMinimis
 
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerStateAidMinimisEntity
-import io.cloudflight.jems.server.project.repository.contracting.partner.stateAid.gber.toModel
 import io.cloudflight.jems.server.project.repository.contracting.partner.stateAid.toEntities
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.ContractingPartnerStateAidDeMinimis
 import io.cloudflight.jems.server.project.service.contracting.partner.stateAid.deMinimis.ContractingPartnerStateAidDeMinimisPersistence
@@ -29,9 +27,9 @@ class ContractingPartnerStateAidDeMinimisPersistenceProvider(
                 selfDeclarationSubmissionDate = minimisData.selfDeclarationSubmissionDate,
                 baseForGranting = minimisData.baseForGranting,
                 aidGrantedByCountry = minimisData.aidGrantedByCountry,
-                aidGrantedByCountryCode = minimisData.aidGrantedByCountryCode,
                 memberStatesGranting = minimisData.memberStatesGranting.toEntities(),
-                comment = minimisData.comment
+                comment = minimisData.comment,
+                amountGrantingAid = minimisData.amountGrantingAid,
             )
         )
 

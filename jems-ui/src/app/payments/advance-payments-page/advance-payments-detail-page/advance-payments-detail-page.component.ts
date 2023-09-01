@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
-  AdvancePaymentDetailDTO,
+  AdvancePaymentDetailDTO, AdvancePaymentSettlementDTO,
   AdvancePaymentUpdateDTO,
   OutputProjectSimple,
   OutputUser,
@@ -10,7 +10,7 @@ import {
   UserDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {catchError, debounceTime, map, take, tap} from 'rxjs/operators';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FormService} from '@common/components/section/form/form.service';
@@ -24,6 +24,8 @@ import {AdvancePaymentsDetailPageConstants} from './advance-payments-detail-page
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
+import {NumberService} from '@common/services/number.service';
+import {PaymentsToProjectPageStore} from '../../payments-to-projects-page/payments-to-projects-page.store';
 
 @UntilDestroy()
 @Component({
@@ -42,6 +44,8 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class AdvancePaymentsDetailPageComponent implements OnInit {
   Alert = Alert;
+
+  settlementsExpanded = true;
   constants = AdvancePaymentsDetailPageConstants;
   tableData: AbstractControl[] = [];
   paymentId = this.activatedRoute.snapshot.params.advancePaymentId;
@@ -72,7 +76,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     paymentAuthorizedDate: this.formBuilder.control(''),
     paymentConfirmed: this.formBuilder.control(''),
     paymentConfirmedUser: this.formBuilder.control(''),
-    paymentConfirmedDate: this.formBuilder.control('')
+    paymentConfirmedDate: this.formBuilder.control(''),
+    paymentSettlements: this.formBuilder.array([]),
   });
   initialAdvancePaymentDetail: AdvancePaymentDetailDTO;
   currentUserDetails: UserDTO;
@@ -86,6 +91,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   partnerData$: Observable<ProjectPartnerPaymentSummaryDTO[]>;
   fundsAndContributions: ProjectPartnerPaymentSummaryDTO | null;
 
+  userCanEdit$: Observable<boolean>;
+
   constructor(private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
               private formService: FormService,
@@ -95,7 +102,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private localeDatePipe: LocaleDatePipe,
               private router: RoutingService,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private paymentToProjectsStore: PaymentsToProjectPageStore,){
+    this.userCanEdit$ = this.paymentToProjectsStore.userCanEdit$;
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.projectCustomIdentifierSearchForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch)?.valueChanges
@@ -197,6 +206,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO) {
+    this.advancePaymentsDetailPageStore.searchProjectsByName$.next(paymentDetail.projectCustomIdentifier ? paymentDetail.projectCustomIdentifier : ' ');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
@@ -235,13 +245,26 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.setValue(paymentDetail.paymentConfirmed ? paymentDetail.paymentConfirmed : false);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(paymentDetail?.paymentConfirmedUser ? this.getOutputUserObject(paymentDetail?.paymentConfirmedUser) : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(paymentDetail?.paymentConfirmedDate ? paymentDetail?.paymentConfirmedDate : null);
+    this.settlementsArray.clear();
+    paymentDetail.paymentSettlements?.forEach(settlement => {
+          this.settlementsArray.push(
+              this.formBuilder.group({
+                    id: settlement.id,
+                    number: settlement.number,
+                    amountSettled: settlement.amountSettled,
+                    settlementDate: settlement.settlementDate,
+                    comment: settlement.comment
+                  }
+              ));
+        }
+    );
 
     this.setValidators();
     this.disableFieldsIfPaymentIsSaved();
     this.disableFieldsIfPaymentIsConfirmed();
     this.disableFieldsIfProjectNotSelected(paymentDetail);
     this.disableAuthorizationCheckbox(paymentDetail);
-    this.disableConfirmationCheckbox();
+    this.disableConfirmationCheckbox(paymentDetail.paymentSettlements);
 
     this.advancePaymentsDetailPageStore.userCanEdit$.pipe(
       tap(userCanEdit => this.disableAllFields(userCanEdit)),
@@ -252,6 +275,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   disableAllFields(userCanEdit: boolean) {
     if(!userCanEdit) {
       this.advancePaymentForm.disable();
+      this.settlementsArray.controls.forEach(control => control.disable());
     }
   }
 
@@ -261,6 +285,12 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValidators([Validators.required]);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValidators([Validators.maxLength(500)]);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.setValidators([Validators.required, Validators.min(0.01)]);
+    this.settlementsArray.controls.forEach(control => {
+          control.get(this.constants.FORM_CONTROL_NAMES.settlementDate)?.setValidators([Validators.required]);
+          control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.setValidators([Validators.required]);
+          control.get(this.constants.FORM_CONTROL_NAMES.settlementComment)?.setValidators([Validators.maxLength(500)]);
+      }
+    );
   }
 
   setFoundOrContribution(paymentDetail: AdvancePaymentDetailDTO) {
@@ -282,11 +312,14 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     }
   }
 
-  disableConfirmationCheckbox() {
+  disableConfirmationCheckbox(settlements: AdvancePaymentSettlementDTO[]) {
     if(!this.isPaymentAuthorised()) {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
     } else {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.enable();
+    }
+    if (settlements?.length > 0) {
+      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
     }
   }
 
@@ -303,6 +336,28 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   get advancePayment(): FormGroup {
     return this.advancePaymentForm;
+  }
+
+  addSettlement() {
+    this.settlementsArray.push(
+        this.formBuilder.group({
+              id: null,
+              number: this.settlementsArray.length + 1,
+              amountSettled: this.getProposedSettlementAmount(),
+              settlementDate: ['', Validators.required],
+              comment: ['', Validators.maxLength(500)]
+            }
+        ));
+    this.formService.setDirty(true);
+  }
+
+  removeSettlement(settlementIndex: number) {
+    this.settlementsArray.removeAt(settlementIndex);
+    this.formService.setDirty(true);
+  }
+
+  get settlementsArray(): FormArray {
+    return this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.settlements) as FormArray;
   }
 
   updateAdvancePayment() {
@@ -350,6 +405,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       comment: data.comment,
       paymentAuthorized: data.paymentAuthorized,
       paymentConfirmed: data.paymentConfirmed,
+      paymentSettlements: data.paymentSettlements
     };
   }
 
@@ -510,5 +566,14 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   isPaymentValueValid(value: string): boolean{
     return parseInt(value, 10) > 0;
+  }
+
+  toggleSettlements() {
+    this.settlementsExpanded = !this.settlementsExpanded;
+  }
+  private getProposedSettlementAmount(): Number {
+    const previouslySettledAmounts = this.settlementsArray.controls.map(control => control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.value);
+    const amountPaid = this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
+    return NumberService.minus(amountPaid, NumberService.sum(previouslySettledAmounts));
   }
 }

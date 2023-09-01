@@ -154,13 +154,13 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
     });
   }
 
-  isEditable(): Observable<boolean> {
+  isLocked(): Observable<boolean> {
     return combineLatest([
-      this.programmeEditableStateStore.hasOnlyViewPermission$,
+      this.programmeEditableStateStore.hasEditPermission$,
       this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$
     ])
       .pipe(
-        map(([hasOnlyViewPermission, isProgrammeEditableDependingOnCall]) => hasOnlyViewPermission || isProgrammeEditableDependingOnCall)
+        map(([hasEditPermission, isProgrammeEditableDependingOnCall]) => !hasEditPermission || isProgrammeEditableDependingOnCall),
       );
   }
 }

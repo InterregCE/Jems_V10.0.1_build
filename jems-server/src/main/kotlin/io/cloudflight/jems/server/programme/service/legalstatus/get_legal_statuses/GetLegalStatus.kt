@@ -14,6 +14,6 @@ class GetLegalStatus(
     @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getLegalStatuses(): List<ProgrammeLegalStatus> =
-        persistence.getMax20Statuses()
+        persistence.getMax50Statuses()
 
 }

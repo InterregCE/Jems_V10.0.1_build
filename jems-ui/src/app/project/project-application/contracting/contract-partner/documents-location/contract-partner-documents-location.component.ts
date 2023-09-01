@@ -66,7 +66,7 @@ export class ContractPartnerDocumentsLocationComponent {
         Validators.maxLength(255)
       ])],
       telephoneNo: ['', Validators.compose([
-        Validators.pattern('^[0-9 +()/-]*$'),
+        Validators.pattern('^([\s]+[0-9+()/]+)|([0-9+()/]+)[ 0-9+()/-]*$'),
         Validators.maxLength(25)
       ])],
       institutionName: ['', Validators.maxLength(100)],

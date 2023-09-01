@@ -4,11 +4,12 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.mockk.clearMocks
 import io.mockk.every
@@ -32,7 +33,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentRegularPersistence
+    lateinit var paymentPersistence: PaymentPersistence
 
     @MockK
     lateinit var filePersistence: JemsFilePersistence
@@ -64,11 +65,13 @@ class UploadPaymentAttachmentTest : UnitTest() {
         every { filePersistence.existsFile("Payment/Regular/000004/PaymentAttachment/", "test.xlsx") } returns false
 
         val fileToAdd = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
+        val mockResult = mockk<JemsFile>()
+        val mockResultSimple = mockk<JemsFileMetadata>()
+        every { mockResult.toSimple() } returns mockResultSimple
         every { fileRepository.persistFile(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
-        assertThat(interactor.upload(paymentId, file)).isEqualTo(mockResult)
+        assertThat(interactor.upload(paymentId, file)).isEqualTo(mockResultSimple)
 
         assertThat(fileToAdd.captured).isEqualTo(
             JemsFileCreate(

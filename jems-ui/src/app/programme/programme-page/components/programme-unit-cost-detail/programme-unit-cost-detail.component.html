@@ -49,7 +49,7 @@
     </mat-form-field>
 
     <div jemsMultiColumnRow>
-        <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2" [class.mat-form-field-disabled]="!isForeignCurrencySelected()">
+        <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2" [class.mat-form-field-disabled]="!isForeignCurrencySelected() || this.unitCostForm.controls.costPerUnitForeignCurrency.disabled">
             <mat-label>{{'unit.cost.form.field.cost.currency.other' | translate}}</mat-label>
             <input currencyMask type="decimal"
                    [required]="isForeignCurrencySelected()"
@@ -133,6 +133,17 @@
             </p>
         </div>
     </div>
+    <br>
+    <p>
+        {{'unit.cost.form.field.payment.claims.title' | translate}}
+    </p>
+    <mat-form-field>
+        <mat-select formControlName="paymentClaim">
+            <mat-option *ngFor="let paymentClaim of availablePaymentClaims" [value]="paymentClaim">
+                {{('unit.cost.form.field.payment.claims.option.'+paymentClaim) | translate}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <br><br>
 
     <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">

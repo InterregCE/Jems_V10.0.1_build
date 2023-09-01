@@ -45,4 +45,5 @@ data class ProjectNotificationEventListener(
         NotificationVariable.ProjectIdentifier to projectSummary.customIdentifier,
         NotificationVariable.ProjectAcronym to projectSummary.acronym
     )
+
 }

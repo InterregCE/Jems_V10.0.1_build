@@ -16,7 +16,7 @@
                 <jems-regions-tree
                         [dataSource]="dataSource"
                         [disabled]="formState === FormState.VIEW"
-                        [isLocked]="(isEditable$ | async)"
+                        [isLocked]="(isLocked$ | async)"
                         (selectionChanged)="selectionChanged.emit($event)">
                 </jems-regions-tree>
             </div>

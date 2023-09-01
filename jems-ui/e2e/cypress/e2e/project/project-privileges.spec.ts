@@ -33,11 +33,14 @@ context('Project privileges tests', () => {
 
         // Remove user privileges from the project
         cy.loginByRequest(user.applicantUser.email);
+        cy.intercept(`/api/projectUserCollaborator/${applicationId}`).as('getProjectUserCollaborator')
         cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
-        cy.get('jems-application-form-privileges-expansion-panel').then(applicationFormUsers => {
-          cy.wrap(applicationFormUsers).find('mat-icon:contains("delete")').last().click();
-          cy.wrap(applicationFormUsers).contains('Save changes').click();
-
+        cy.wait('@getProjectUserCollaborator')
+        cy.get('jems-application-form-privileges-expansion-panel').within(($form) => {
+          cy.findInputContaining($form, testData.projectCollaborator.email)
+            .parents('div.jems-multi-column-row')
+            .find('mat-icon:contains("delete")').click();
+          cy.contains('Save changes').click();
           cy.get('div.jems-alert-success').should('contain', 'Project collaborators were saved successfully');
         });
 
@@ -339,4 +342,5 @@ context('Project privileges tests', () => {
     cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
     cy.contains('button', 'Save changes').click();
   }
+
 });

@@ -16,7 +16,9 @@ import {
 
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -68,7 +70,7 @@ export class ProjectReportFinancialOverviewStoreService {
 
   private callFunds(): Observable<CallFundRateDTO[]> {
     return combineLatest([
-      this.projectStore.projectCall$,
+      this.projectStore.projectCallSettings$,
     ])
       .pipe(
         map(([call]) => call.callId),
@@ -119,7 +121,7 @@ export class ProjectReportFinancialOverviewStoreService {
 
   private allowedCostCategories(): Observable<Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>> {
     return combineLatest([
-      this.projectStore.projectCall$,
+      this.projectStore.projectCallSettings$,
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,
     ])
@@ -158,8 +160,8 @@ export class ProjectReportFinancialOverviewStoreService {
       );
   }
 
-  private anySingleCostCategory(unitCosts: Array<ProgrammeUnitCost>, costCategory: BudgetCostCategoryEnum) {
-    return unitCosts.some(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(costCategory))
+  private anySingleCostCategory(unitCosts: ProgrammeUnitCost[], costCategory: BudgetCostCategoryEnum) {
+    return unitCosts.some(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(costCategory));
   }
 
   private perCostCategory(): Observable<CertificateCostCategoryBreakdownDTO> {

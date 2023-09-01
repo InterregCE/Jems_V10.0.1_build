@@ -1,38 +1,43 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-    PageJemsFileDTO,
-    ProjectReportAnnexesService,
-    JemsFileMetadataDTO,
-    ProjectReportFileSearchRequestDTO,
-    ProjectReportSummaryDTO,
-    SettingsService
+  JemsFileMetadataDTO,
+  PageJemsFileDTO,
+  ProjectReportAnnexesService,
+  ProjectReportFileSearchRequestDTO,
+  ProjectReportSummaryDTO,
+  SettingsService
 } from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {APIError} from '@common/models/APIError';
 import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
-import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
-import {v4 as uuid} from 'uuid';
 import {
-    ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+    catchError,
+    distinctUntilChanged,
+    filter,
+    finalize,
+    map,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+    tap
+} from 'rxjs/operators';
+import {v4 as uuid} from 'uuid';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {Tables} from '@common/utils/tables';
-import {
-    ProjectReportCategoryTypeEnum
-} from '@project/project-application/report/project-report/project-report-category-type';
+import {ProjectReportCategoryTypeEnum} from '@project/project-application/report/project-report/project-report-category-type';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
+import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
 import {
-    ProjectReportPageStore
-} from '@project/project-application/report/project-report/project-report-page-store.service';
-import {
-    ProjectReportDetailPageStore
+  ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {
-    ProjectReportIdentificationExtensionStore
+  ProjectReportIdentificationExtensionStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-store.service';
 
 
@@ -77,7 +82,7 @@ export class ProjectReportAnnexesFileManagementStore {
     }
 
     getMaximumAllowedFileSize(): Observable<number> {
-        return this.settingsService.getMaximumAllowedFileSize();
+        return this.fileManagementStore.maxFileSize$.asObservable();
     }
 
     changeFilter(section: CategoryInfo): void {
@@ -228,11 +233,11 @@ export class ProjectReportAnnexesFileManagementStore {
             ),
             tap(() => this.filesChanged$.next()),
             tap(() => this.error$.next(null)),
+            finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
             catchError(error => {
                 this.error$.next(error.error);
                 return of({} as JemsFileMetadataDTO);
             }),
-            finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
         );
     }
 

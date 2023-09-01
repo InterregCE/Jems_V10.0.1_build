@@ -13,6 +13,8 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
     ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
+
+    ProjectCreatorReportingProjectCreate("ProjectCreatorReportingProjectCreate"),
     // endregion Creator
 
     // region Monitor
@@ -22,6 +24,9 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen"),
     ProjectReportingProjectView("ProjectReportingProjectView"),
     ProjectReportingProjectEdit("ProjectReportingProjectEdit"),
+    ProjectReportingVerificationProjectView("ProjectReportingVerificationProjectView"),
+    ProjectReportingVerificationProjectEdit("ProjectReportingVerificationProjectEdit"),
+    ProjectReportingVerificationFinalize("ProjectReportingVerificationFinalize"),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl"),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),
@@ -86,6 +91,7 @@ enum class UserRolePermissionDTO(val key: String) {
     // endregion Monitor
 
     // region top navigation
+    PartnerReportsRetrieve("PartnerReportsRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
     NotificationsRetrieve("NotificationsRetrieve"),
@@ -111,6 +117,8 @@ enum class UserRolePermissionDTO(val key: String) {
     PaymentsUpdate("PaymentsUpdate"),
     AdvancePaymentsRetrieve("AdvancePaymentsRetrieve"),
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
+    PaymentsToEcRetrieve("PaymentsToEcRetrieve"),
+    PaymentsToEcUpdate("PaymentsToEcUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

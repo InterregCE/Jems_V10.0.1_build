@@ -25,7 +25,7 @@ class ContractingPartnerBeneficialOwnersPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBeneficialOwners(partnerId: Long): List<ContractingPartnerBeneficialOwner> {
-        return beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId).toModel()
+        return beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId).toModel()
     }
 
     @Transactional
@@ -36,7 +36,7 @@ class ContractingPartnerBeneficialOwnersPersistenceProvider(
     ): List<ContractingPartnerBeneficialOwner> {
         val projectSummary = projectPersistence.getProjectSummary(projectId)
         val existingById = beneficialOwnersRepository
-            .findTop10ByProjectPartnerId(partnerId).associateBy { it.id }
+            .findTop30ByProjectPartnerId(partnerId).associateBy { it.id }
         val projectPartner =
             if (existingById[0] != null) existingById[0]!!.projectPartner else partnerRepository.findById(partnerId)
                 .orElseThrow { ResourceNotFoundException("project_partner") }
@@ -45,7 +45,7 @@ class ContractingPartnerBeneficialOwnersPersistenceProvider(
         deleteBeneficialOwners(existingById, stayedBeneficialOwnerIds, projectSummary, projectPartner)
         processBeneficialOwners(beneficialOwners, existingById, projectSummary, projectPartner)
 
-        return beneficialOwnersRepository.findTop10ByProjectPartnerId(partnerId).toModel()
+        return beneficialOwnersRepository.findTop30ByProjectPartnerId(partnerId).toModel()
     }
 
     private fun processBeneficialOwners(

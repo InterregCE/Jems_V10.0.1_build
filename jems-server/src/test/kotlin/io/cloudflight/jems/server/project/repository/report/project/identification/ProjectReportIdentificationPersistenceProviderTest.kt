@@ -25,12 +25,12 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
 
@@ -71,6 +71,12 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             createdAt = ZonedDateTime.now().minusWeeks(1),
             firstSubmission = ZonedDateTime.now().minusYears(1),
             verificationDate = null,
+            verificationEndDate = null,
+            verificationConclusionJs = null,
+            verificationConclusionMa = null,
+            verificationFollowup = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(
@@ -111,7 +117,6 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
     private lateinit var spendingProfileRepository: ProjectReportSpendingProfileRepository
     @MockK
     private lateinit var projectPartnerReportRepository: ProjectPartnerReportRepository
-
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportIdentificationPersistenceProvider

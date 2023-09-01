@@ -45,14 +45,15 @@
         </div>
     </jems-filter-template>
 
-    <jems-table (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
-               (newPageSize)="auditLogStore.auditPageSize$.next($event)"
-               (sortRows)="auditLogStore.auditPageSort$.next($event)"
-               *ngIf="auditPage?.content.length"
-               [configuration]="auditTableConfiguration"
-               [pageIndex]="auditLogStore.auditPageIndex$ | async"
-               [rows]="auditPage?.content"
-               [totalElements]="auditPage?.totalElements">
+    <p *ngIf="!auditPage?.content.length && isThereAnyActiveFilter()">{{'common.filters.no.results' | translate}}</p>
+    <jems-table *ngIf="auditPage?.content.length"
+                (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
+                (newPageSize)="auditLogStore.auditPageSize$.next($event)"
+                (sortRows)="auditLogStore.auditPageSort$.next($event)"
+                [configuration]="auditTableConfiguration"
+                [pageIndex]="auditLogStore.auditPageIndex$ | async"
+                [rows]="auditPage?.content"
+                [totalElements]="auditPage?.totalElements">
     </jems-table>
 </jems-main-page-template>
 
@@ -71,5 +72,5 @@
 </ng-template>
 
 <ng-template #descriptionCell let-audit>
-    <span [innerHTML]="getDescription(audit.description)"></span>
+    <span class="description-overflow" [innerHTML]="getDescription(audit.description)"></span>
 </ng-template>

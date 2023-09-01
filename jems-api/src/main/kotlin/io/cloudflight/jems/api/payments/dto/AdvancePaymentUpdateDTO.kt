@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.payments.dto
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -19,4 +18,6 @@ data class AdvancePaymentUpdateDTO(
 
     val paymentAuthorized: Boolean? = null,
     val paymentConfirmed: Boolean? = null,
+
+    val paymentSettlements: List<AdvancePaymentSettlementDTO>,
 )

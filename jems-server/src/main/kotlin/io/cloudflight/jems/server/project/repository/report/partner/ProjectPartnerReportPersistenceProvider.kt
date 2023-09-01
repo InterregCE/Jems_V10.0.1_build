@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.data.domain.Page
@@ -18,6 +20,7 @@ import kotlin.streams.asSequence
 class ProjectPartnerReportPersistenceProvider(
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository,
+    private val partnerRepository: ProjectPartnerRepository,
 ) : ProjectPartnerReportPersistence {
 
     @Transactional
@@ -53,9 +56,18 @@ class ProjectPartnerReportPersistenceProvider(
         partnerId: Long,
         reportId: Long
     ): ProjectPartnerReportStatusAndVersion =
-        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).let {
-            ProjectPartnerReportStatusAndVersion(it.id, it.status, it.applicationFormVersion)
-        }
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toStatusAndVersion()
+
+    @Transactional(readOnly = true)
+    override fun getPartnerReportByProjectIdAndId(projectId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion? {
+        val report = partnerReportRepository.getById(reportId)
+        val projectIdInEntity = partnerRepository.getProjectIdForPartner(report.partnerId)
+
+        return if (projectId == projectIdInEntity)
+            report.toStatusAndVersion()
+        else
+            null
+    }
 
     @Transactional(readOnly = true)
     override fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport =
@@ -64,8 +76,19 @@ class ProjectPartnerReportPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
-        partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
+    override fun getPartnerReportByIdUnsecured(reportId: Long): ProjectPartnerReportSubmissionSummary =
+        partnerReportRepository.getById(reportId).toSubmissionSummary()
+
+    @Transactional(readOnly = true)
+    override fun getProjectPartnerReportSubmissionSummary(
+        partnerId: Long,
+        reportId: Long
+    ): ProjectPartnerReportSubmissionSummary =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toSubmissionSummary()
+
+    @Transactional(readOnly = true)
+    override fun listPartnerReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ProjectPartnerReportSummary> =
+        partnerReportRepository.findAllByPartnerIdInAndStatusIn(partnerIds, statuses, pageable)
             .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)

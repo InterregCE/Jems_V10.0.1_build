@@ -2,16 +2,14 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
+  ProjectCallSettingsDTO,
   ProjectContractingReportingScheduleDTO,
-  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO
+  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO, UserRoleCreateDTO
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {
-  ProjectApplicationFormSidenavService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 import { ProjectReportDetailPageStore } from '../project-report-detail-page-store.service';
@@ -26,6 +24,7 @@ import {
 } from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 import {MatSelectChange} from '@angular/material/select/select';
 import {Alert} from '@common/components/forms/alert';
+import {CallStore} from '../../../../../../call/services/call-store.service';
 
 @Component({
   selector: 'jems-project-report-identification-tab',
@@ -40,11 +39,14 @@ export class ProjectReportIdentificationTabComponent {
   Alert = Alert;
   TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
   public reportId = this.router.getParameter(this.activatedRoute, 'reportId');
+  CALL_PATH = CallStore.CALL_DETAIL_PATH;
 
   data$: Observable<{
     projectReport: ProjectReportDTO;
     periods: ProjectPeriodDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
+    relatedCall: ProjectCallSettingsDTO;
+    canUserAccessCall: boolean;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -80,23 +82,26 @@ export class ProjectReportIdentificationTabComponent {
               private router: RoutingService,
               private activatedRoute: ActivatedRoute,
               private projectReportPageStore: ProjectReportPageStore,
-              private projectSidenavService: ProjectApplicationFormSidenavService,
               public languageStore: LanguageStore,
               public contractReportingStore: ContractReportingStore) {
     this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$);
     this.data$ = combineLatest([
       pageStore.projectReport$,
-      this.projectStore.projectPeriods$,
-      this.contractReportingStore.contractReportingDeadlines$
+      projectStore.projectPeriods$,
+      contractReportingStore.contractReportingDeadlines$,
+      projectStore.projectCallSettings$,
+      pageStore.canUserAccessCall$
     ]).pipe(
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
           this.availablePeriods = availablePeriods;
           this.availableDeadlines = reportingDeadlines;
       }),
-      map(([projectReport, availablePeriods, reportingDeadlines]) => ({
+      map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,
         periods: availablePeriods,
-        reportingDeadlines
+        reportingDeadlines,
+        relatedCall,
+        canUserAccessCall
       })),
       tap((data) => this.resetForm(data.projectReport)),
     );

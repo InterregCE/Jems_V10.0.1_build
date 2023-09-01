@@ -16,6 +16,7 @@ data class ProgrammeDataDTO(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
+    val technicalAssistanceFlatRate: Double?,
     val projectIdProgrammeAbbreviation: String?,
     val projectIdUseCallId: Boolean,
     val programmeNuts: List<OutputNuts>
@@ -56,6 +57,10 @@ data class ProgrammeDataDTO(
         if (programmeAmendingDecisionDate != newData.programmeAmendingDecisionDate) {
             changes["programmeAmendingDecisionDate"] =
                 Pair(programmeAmendingDecisionDate, newData.programmeAmendingDecisionDate)
+        }
+        if (technicalAssistanceFlatRate != newData.technicalAssistanceFlatRate) {
+            changes["technicalAssistanceFlatRate"] =
+                Pair(technicalAssistanceFlatRate, newData.technicalAssistanceFlatRate)
         }
         if (projectIdProgrammeAbbreviation != newData.projectIdProgrammeAbbreviation) {
             changes["programme abbreviation"] =

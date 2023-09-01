@@ -130,6 +130,7 @@ fun Page<ProjectSummary>.toDto() = map {
         id = it.id,
         customIdentifier = it.customIdentifier,
         callName = it.callName,
+        callId = it.callId,
         acronym = it.acronym,
         projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
         firstSubmissionDate = it.firstSubmissionDate,
@@ -194,12 +195,14 @@ abstract class ProjectMapper {
             endDateStep1 = projectCallSettings.endDateStep1,
             lengthOfPeriod = projectCallSettings.lengthOfPeriod,
             additionalFundAllowed = projectCallSettings.isAdditionalFundAllowed,
+            directContributionsAllowed = projectCallSettings.isDirectContributionsAllowed,
             flatRates = projectCallSettings.flatRates.toDto(),
             lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
             unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),
             stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
             applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType),
             costOption = projectCallSettings.costOption.toDto(),
+            jsNotifiable = projectCallSettings.jsNotifiable
         )
     }
 

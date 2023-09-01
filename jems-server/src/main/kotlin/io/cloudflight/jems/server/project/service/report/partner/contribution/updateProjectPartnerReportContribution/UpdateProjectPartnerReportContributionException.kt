@@ -21,3 +21,8 @@ class MaxAmountOfContributionsReachedException(maxAmount: Int) : ApplicationUnpr
     ),
     message = "max allowed: $maxAmount",
 )
+
+class NotAllowedToAddContributionsException : ApplicationUnprocessableException(
+    code = "$UDPATE_PROJECT_PARTNER_REPORT_CONTRIBUTION_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_PARTNER_REPORT_CONTRIBUTION_ERROR_KEY_PREFIX.not.allowed.to.add.new.contributions"),
+)

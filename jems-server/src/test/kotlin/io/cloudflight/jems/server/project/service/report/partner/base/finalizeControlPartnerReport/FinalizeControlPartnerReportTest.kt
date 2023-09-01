@@ -45,15 +45,15 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class FinalizeControlPartnerReportTest : UnitTest() {
 
@@ -284,6 +284,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                         parkingMetadata = ExpenditureParkingMetadata(
                             reportOfOriginId = 70L,
                             reportOfOriginNumber = 5,
+                            reportProjectOfOriginId = null,
                             originalExpenditureNumber = 3
                         ),
                         parked = true

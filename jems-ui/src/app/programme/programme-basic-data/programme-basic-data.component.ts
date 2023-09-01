@@ -17,6 +17,7 @@ import {ProgrammeEditableStateStore} from '../programme-page/services/programme-
 import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Router} from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -72,6 +73,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
+    technicalAssistanceFlatRate: ['', Validators.compose([Validators.min(0), Validators.max(100)])],
     projectIdProgrammeAbbreviation: ['', Validators.maxLength(12)],
     projectIdUseCallId: false,
   },{
@@ -109,13 +111,24 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     matDatepickerMin: 'programme.eligibleUntil.must.be.after.eligibleFrom',
   };
 
+  flatRateArgs = {
+    min: {min: 0, max: 100},
+    max: {min: 0, max: 100}
+  };
+
+  flatRateErrors = {
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR
+  };
+
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
               private programmeDataService: ProgrammeDataService,
-              private programmePageSidenavService: ProgrammePageSidenavService
+              private programmePageSidenavService: ProgrammePageSidenavService,
+              private router: Router
   ) {
     super(changeDetectorRef, translationService);
 
@@ -140,6 +153,17 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
 
   ngOnInit(): void {
     super.ngOnInit();
+    combineLatest([
+      this.programmeEditableStateStore.hasViewPermission$,
+      this.programmeEditableStateStore.hasEditPermission$,
+    ]).pipe(
+      tap(([hasView, hasEdit]) => {
+        if(!hasView && !hasEdit){
+          this.router.navigate(['app/programme/export']);
+        }
+      }),
+      take(1)
+    ).subscribe();
     this.projectIdExample$ = combineLatest([
       this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith('')),
       this.programmeForm.controls.projectIdUseCallId.valueChanges.pipe(startWith(true)),
@@ -166,6 +190,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     controls.commissionDecisionDate.setValue(programme.commissionDecisionDate);
     controls.programmeAmendingDecisionNumber.setValue(this.getSizedValue(programme.programmeAmendingDecisionNumber));
     controls.programmeAmendingDecisionDate.setValue(programme.programmeAmendingDecisionDate);
+    controls.technicalAssistanceFlatRate.setValue(programme.technicalAssistanceFlatRate);
     controls.projectIdProgrammeAbbreviation.setValue(programme.projectIdProgrammeAbbreviation);
     controls.projectIdUseCallId.setValue(programme.projectIdUseCallId);
   }
@@ -194,6 +219,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
       commissionDecisionDate: controls?.commissionDecisionDate?.value,
       programmeAmendingDecisionNumber: controls?.programmeAmendingDecisionNumber?.value,
       programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
+      technicalAssistanceFlatRate: controls?.technicalAssistanceFlatRate?.value,
       projectIdProgrammeAbbreviation: controls?.projectIdProgrammeAbbreviation?.value,
       projectIdUseCallId: controls?.projectIdUseCallId?.value,
     } as ProgrammeDataDTO);

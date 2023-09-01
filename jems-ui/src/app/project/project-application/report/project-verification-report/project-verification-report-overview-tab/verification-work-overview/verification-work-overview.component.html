@@ -1,0 +1,129 @@
+<p>{{ 'project.application.verification.overview.table.work.description' | translate }}</p>
+
+<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+
+    <ng-container matColumnDef="partnerReport" sticky>
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.id' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="border-cell-right"><span>R.{{ line.partnerReportNumber }}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="partner">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line">
+            <span *ngIf="line.partnerRole === 'LEAD_PARTNER'">{{ 'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: line.partnerNumber} }}</span>
+            <span *ngIf="line.partnerRole !== 'LEAD_PARTNER'">{{ 'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: line.partnerNumber} }} </span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="requestedByPartner">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control.euro' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right block">
+            <div>{{ line.requestedByPartner | asMoney }}</div>
+            <span jemsText maxLines="1" class="additional-info-text mat-small">
+                {{ 'project.application.verification.overview.table.withoutFlatRates' | translate }} {{ line.requestedByPartnerWithoutFlatRates | asMoney }}
+            </span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right block">
+            <div>{{ overview.total.requestedByPartner | asMoney }}</div>
+            <span jemsText maxLines="1" class="additional-info-text mat-small">
+                {{ 'project.application.verification.overview.table.withoutFlatRates' | translate }} {{ overview.total.requestedByPartnerWithoutFlatRates | asMoney }}
+            </span>
+        </mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="inVerificationSample">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.verification.overview.table.inVerificationSample' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.inVerificationSample | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.inVerificationSample | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="inVerificationSamplePercentage">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.verification.overview.table.inVerificationSamplePercentage' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.inVerificationSamplePercentage | asMoney }}%</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.inVerificationSamplePercentage | asMoney }}%</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="parked">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">
+                {{ 'project.application.verification.overview.table.parked' | translate }}
+                <jems-context-info infoPosition="right"
+                                   infoText="{{'project.application.partner.report.control.tab.overviewAndFinalize.total.parked.info' | translate}}">
+                </jems-context-info>
+            </span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.parked | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.parked | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="deductedByJs">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.tab.expenditure.table.header.deducted.js' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.deductedByJs | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.deductedByJs | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="deductedByMa">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.verification.tab.expenditure.table.header.deducted.ma' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.deductedByMa | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.deductedByMa | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="deducted">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.expenditure.table.header.deducted.amount.eur' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.deducted | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.deducted | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="afterVerification">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.project.report.table.total.eligible' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.afterVerification | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.afterVerification | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="afterVerificationPercentage">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.verification.overview.table.eligibleAfterVerificationPercentage' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.afterVerificationPercentage | asMoney }}%</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.afterVerificationPercentage | asMoney }}%</mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let i = index; columns: displayedColumns"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>

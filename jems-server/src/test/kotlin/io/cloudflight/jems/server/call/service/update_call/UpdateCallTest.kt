@@ -58,6 +58,7 @@ class UpdateCallTest : UnitTest() {
             endDateStep1 = ZonedDateTime.now().plusHours(4),
             endDate = ZonedDateTime.now().plusDays(2),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -97,6 +98,7 @@ class UpdateCallTest : UnitTest() {
             startDate = existingCall.startDate,
             endDate = existingCall.endDate.plusDays(1),
             isAdditionalFundAllowed = existingCall.isAdditionalFundAllowed,
+            isDirectContributionsAllowed = existingCall.isDirectContributionsAllowed,
             lengthOfPeriod = existingCall.lengthOfPeriod!!,
             description = emptySet(),
             priorityPolicies = setOf(AdvancedTechnologies, Digitisation, Growth),

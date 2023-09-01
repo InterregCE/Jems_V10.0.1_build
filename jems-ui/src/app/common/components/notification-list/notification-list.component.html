@@ -1,15 +1,7 @@
 <ng-container *ngIf="data$ | async as data">
 
     <ng-container *ngIf="data.page.totalElements">
-
-        <jems-paginator
-                [length]="data.page.totalElements"
-                [currentPageIndex]="data.page.pageable.pageNumber"
-                [currentPageSize]="data.page.pageable.pageSize"
-                (pageIndexChanged)="listStore.newPageIndex$.next($event)"
-                (pageSizeChanged)="listStore.newPageSize$.next($event)">
-        </jems-paginator>
-
+        <br>
         <div jemsNoWidthLimit class="wrapper">
             <table id="notification-list-table" mat-table matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)"
                    [dataSource]="data.page.content">

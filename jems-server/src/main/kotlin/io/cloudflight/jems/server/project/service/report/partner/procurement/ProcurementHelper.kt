@@ -24,7 +24,7 @@ fun ProjectPartnerReportProcurement.fillThisReportFlag(currentReportId: Long) = 
 
 fun ProjectPartnerReportProcurementChange.getStaticValidationResults(validator: GeneralValidatorService) = listOf(
     validator.notBlank(contractName, "contractName"),
-    validator.maxLength(contractName, 50, "contractName"),
+    validator.maxLength(contractName, 300, "contractName"),
     validator.maxLength(referenceNumber, 30, "referenceNumber"),
     validator.maxLength(contractType, 30, "contractType"),
     validator.maxLength(supplierName, 30, "supplierName"),

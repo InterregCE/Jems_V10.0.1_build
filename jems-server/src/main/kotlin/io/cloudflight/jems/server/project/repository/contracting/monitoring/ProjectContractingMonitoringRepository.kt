@@ -14,7 +14,7 @@ interface ProjectContractingMonitoringRepository: JpaRepository<ProjectContracti
     @Query("""
         SELECT CASE WHEN COUNT(ppi) > 0 THEN TRUE ELSE FALSE END
             FROM payment_partner_installment ppi, payment_partner pp, payment pay
-            WHERE pay.project.id = :projectId AND pay.programmeLumpSumId = :lumpSumId AND pay.orderNr = :orderNr
+            WHERE pay.project.id = :projectId AND pay.projectLumpSum.programmeLumpSum.id = :lumpSumId AND pay.projectLumpSum.id.orderNr = :orderNr
                 AND pay.id = pp.payment.id
                 AND pp.id = ppi.paymentPartner.id
                 AND ppi.isSavePaymentInfo = TRUE

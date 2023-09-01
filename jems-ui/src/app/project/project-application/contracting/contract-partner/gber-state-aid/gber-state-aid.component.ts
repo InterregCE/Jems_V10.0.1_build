@@ -125,13 +125,12 @@ export class GberStateAidComponent implements OnInit {
     this.addFunds(this.gber.partnerFunds);
     this.tableData = [...this.funds.controls];
     this.gberForm.controls.dateOfGrantingAid.setValue(this.gber.dateOfGrantingAid);
-    this.gberForm.controls.amountGrantedAid.setValue(this.gber.totalEligibleBudget);
+    this.gberForm.controls.amountGrantingAid.setValue(this.gber.amountGrantingAid);
     this.gberForm.controls.aidIntensity.setValue(this.gber.aidIntensity === 0 ? this.minimumPercentage : this.gber.aidIntensity);
     this.gberForm.controls.sector.setValue(this.gber.naceGroupLevel);
     this.gberForm.controls.locationInAssistedArea.setValue(this.gber.locationInAssistedArea);
     this.gberForm.controls.comment.setValue(this.gber.comment);
     this.gberForm.controls.dateOfGrantingAid.disable();
-    this.gberForm.controls.amountGrantedAid.disable();
     this.gberForm.controls.sector.disable();
     this.funds.disable();
     setTimeout(() => this.changeDetectorRef.detectChanges());
@@ -147,6 +146,7 @@ export class GberStateAidComponent implements OnInit {
       aidIntensity: this.gberForm.controls.aidIntensity.value,
       locationInAssistedArea: this.gberForm.controls.locationInAssistedArea.value,
       comment: this.gberForm.controls.comment.value,
+      amountGrantingAid: this.gberForm.controls.amountGrantingAid.value
     } as ContractingPartnerStateAidGberDTO;
   }
 
@@ -155,7 +155,7 @@ export class GberStateAidComponent implements OnInit {
     this.minimumPercentage = Math.min(...this.gber.partnerFunds.map(fund => fund.percentage));
     this.gberForm = this.formBuilder.group({
       dateOfGrantingAid: [''],
-      amountGrantedAid: [''],
+      amountGrantingAid: [''],
       aidIntensity: [0, Validators.min(this.minimumPercentage)],
       sector: [''],
       locationInAssistedArea: [''],
@@ -165,7 +165,6 @@ export class GberStateAidComponent implements OnInit {
     this.addFunds(this.gber.partnerFunds);
     this.formService.init(this.gberForm, new Observable<boolean>().pipe(startWith(data.canEdit && !data.isPartnerLocked)));
     this.gberForm.controls.dateOfGrantingAid.disable();
-    this.gberForm.controls.amountGrantedAid.disable();
     this.gberForm.controls.sector.disable();
     this.funds.disable();
   }

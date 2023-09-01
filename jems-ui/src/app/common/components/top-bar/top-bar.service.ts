@@ -106,7 +106,7 @@ export class TopBarService {
           if (Permission.CONTROLLERS_ASSIGNMENT_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.controllerAssignmentItem);
           }
-          if (permissions.includes(PermissionsEnum.PaymentsRetrieve) || permissions.includes(PermissionsEnum.AdvancePaymentsRetrieve)) {
+          if (permissions.includes(PermissionsEnum.PaymentsRetrieve) || permissions.includes(PermissionsEnum.AdvancePaymentsRetrieve) || permissions.includes(PermissionsEnum.PaymentsToEcRetrieve)) {
             menuItems.push(this.paymentsItem);
           }
           if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {

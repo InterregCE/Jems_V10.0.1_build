@@ -1,7 +1,8 @@
-import {ProjectPartnerReportDTO} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectReportDTO, ProjectReportSummaryDTO} from '@cat/api';
 
 export class ReportUtil {
 
+  // Partner Report
   static isPartnerReportSubmittable(status: ProjectPartnerReportDTO.StatusEnum): boolean {
     return [
       ProjectPartnerReportDTO.StatusEnum.Draft,
@@ -27,6 +28,12 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.InControl,
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
+    ].includes(status);
+  }
+
+  static isVerificationReportOpen(status: ProjectReportDTO.StatusEnum): boolean {
+    return [
+      ProjectReportDTO.StatusEnum.InVerification,
     ].includes(status);
   }
 
@@ -57,4 +64,20 @@ export class ReportUtil {
       || status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified;
   }
 
+  // Project Report
+  static isProjectReportOpen(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.Draft;
+  }
+
+  static isProjectReportSubmitted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.Submitted;
+  }
+
+  static isProjectReportAfterVerificationStarted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return [ProjectReportSummaryDTO.StatusEnum.InVerification, ProjectReportSummaryDTO.StatusEnum.Finalized].includes(status);
+  }
+
+  static isProjectReportVerificationOngoing(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return [ProjectReportSummaryDTO.StatusEnum.InVerification].includes(status);
+  }
 }

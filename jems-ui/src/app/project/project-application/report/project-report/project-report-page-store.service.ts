@@ -1,27 +1,35 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {
-  PageProjectReportSummaryDTO, ProjectReportDTO,
-  ProjectReportService, ProjectReportUpdateDTO,
-  ProjectUserCollaboratorService, UserRoleDTO
+  CallNotificationConfigurationService,
+  PageProjectReportSummaryDTO,
+  ProjectReportDTO,
+  ProjectReportService,
+  ProjectReportUpdateDTO,
+  ProjectUserCollaboratorService,
+  UserRoleDTO
 } from '@cat/api';
 import {Tables} from '@common/utils/tables';
 import {RoutingService} from '@common/services/routing.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {MatSort} from '@angular/material/sort';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportPageStore {
 
   projectReports$: Observable<PageProjectReportSummaryDTO>;
+  userCanCreateReport$: Observable<boolean>;
   userCanViewReport$: Observable<boolean>;
   userCanEditReport$: Observable<boolean>;
+  userCanViewVerification$: Observable<boolean>;
+  userCanEditVerification$: Observable<boolean>;
+  userCanFinalizeVerification$: Observable<boolean>;
+  userHasEditVerificationPrivilege$: Observable<boolean>;
+  isVerificationNotificationEnabledInCallSettings$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -32,10 +40,16 @@ export class ProjectReportPageStore {
               private projectReportService: ProjectReportService,
               private projectStore: ProjectStore,
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              ) {
     this.projectReports$ = this.projectReports();
+    this.userCanCreateReport$ = this.userCanCreateReports();
     this.userCanViewReport$ = this.userCanViewReports();
     this.userCanEditReport$ = this.userCanEditReports();
+    this.userCanViewVerification$ = this.userCanViewVerification();
+    this.userCanEditVerification$ = this.userCanEditVerification();
+    this.userCanFinalizeVerification$ = this.userCanFinalizeVerification();
+    this.userHasEditVerificationPrivilege$ = this.userHasEditVerificationPrivilege();
   }
 
   createProjectReport(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
@@ -87,6 +101,20 @@ export class ProjectReportPageStore {
       );
   }
 
+  private userCanCreateReports(): Observable<boolean> {
+    return combineLatest([
+      this.projectReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorReportingProjectCreate),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingProjectEdit),
+    ])
+        .pipe(
+            map(([level, creatorCanCreateReport, monitorCanEdit]) => {
+              const creatorCanEdit = level === 'EDIT' || level === 'MANAGE';
+              return (creatorCanEdit && creatorCanCreateReport) || monitorCanEdit;
+            })
+        );
+  }
+
   private userCanEditReports(): Observable<boolean> {
     return combineLatest([
       this.projectReportLevel(),
@@ -108,4 +136,37 @@ export class ProjectReportPageStore {
       );
   }
 
+  private userCanViewVerification(): Observable<boolean> {
+    return combineLatest([
+      this.projectReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectView),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
+    ]).pipe(
+      map(([level, hasViewPrivilege, hasEditPrivilege]) => level === 'VIEW' || level === 'EDIT' || level === 'MANAGE' || hasViewPrivilege || hasEditPrivilege)
+    );
+  }
+
+  private userCanEditVerification(): Observable<boolean> {
+    return combineLatest([
+      this.projectReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
+    ]).pipe(
+      map(([level, hasEditPrivilege]) => level === 'EDIT' || level === 'MANAGE' || hasEditPrivilege)
+    );
+  }
+
+  private userHasEditVerificationPrivilege(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit)
+      .pipe(
+        map((canEdit) => canEdit)
+      );
+  }
+
+  private userCanFinalizeVerification(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationFinalize),
+    ]).pipe(
+      map(([canFinalize]) => canFinalize)
+    );
+  }
 }

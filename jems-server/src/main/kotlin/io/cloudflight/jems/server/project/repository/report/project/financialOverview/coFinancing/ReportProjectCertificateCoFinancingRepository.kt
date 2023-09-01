@@ -26,5 +26,19 @@ interface ReportProjectCertificateCoFinancingRepository :
         FROM #{#entityName} report
         WHERE report.reportEntity.id IN :reportIds
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): ReportCertificateCoFinancingColumnWithoutFunds
+    fun findCumulativeCurrentForReportIds(reportIds: Set<Long>): ReportCertificateCoFinancingColumnWithoutFunds
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumnWithoutFunds(
+            COALESCE(SUM(report.partnerContributionCurrentVerified), 0),
+            COALESCE(SUM(report.publicContributionCurrentVerified), 0),
+            COALESCE(SUM(report.automaticPublicContributionCurrentVerified), 0),
+            COALESCE(SUM(report.privateContributionCurrentVerified), 0),
+            COALESCE(SUM(report.sumCurrentVerified), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
+    """)
+    fun findCumulativeVerifiedForReportIds(reportIds: Set<Long>): ReportCertificateCoFinancingColumnWithoutFunds
+
 }

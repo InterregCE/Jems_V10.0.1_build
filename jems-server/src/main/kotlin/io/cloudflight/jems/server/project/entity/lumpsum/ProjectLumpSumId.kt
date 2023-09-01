@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull
 @Embeddable
 data class ProjectLumpSumId(
 
+    @Column(name = "project_id")
     @field:NotNull
     val projectId: Long,
 

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.model.partner.expendit
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterControl
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
@@ -36,7 +36,7 @@ data class ProjectPartnerReportExpenditureVerification(
 
     var partOfSample: Boolean,
     var partOfSampleLocked: Boolean,
-    var certifiedAmount: BigDecimal,
+    override var certifiedAmount: BigDecimal,
     var deductedAmount: BigDecimal,
     var typologyOfErrorId: Long?,
     var parked: Boolean,
@@ -44,4 +44,4 @@ data class ProjectPartnerReportExpenditureVerification(
     var verificationComment: String?,
 
     override val parkingMetadata: ExpenditureParkingMetadata?,
-): ExpenditureCost
+): ExpenditureCostAfterControl

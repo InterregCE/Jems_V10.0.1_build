@@ -266,6 +266,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 70L,
                     reportOfOriginNumber = 5,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 3
                 ),
                 currencyConversionRate = BigDecimal.valueOf(175, 2)

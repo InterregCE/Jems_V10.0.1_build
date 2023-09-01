@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.payments.model.regular
 
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
-data class PaymentToProject (
+data class PaymentToProject(
     val id: Long,
     val paymentType: PaymentType,
     val projectCustomIdentifier: String,
@@ -18,6 +19,7 @@ data class PaymentToProject (
     val fundName: String,
     val amountApprovedPerFund: BigDecimal,
     val amountPaidPerFund: BigDecimal,
-    val dateOfLastPayment: ZonedDateTime? = null,
+    val amountAuthorizedPerFund: BigDecimal,
+    val dateOfLastPayment: LocalDate? = null,
     val lastApprovedVersionBeforeReadyForPayment: String?
 )

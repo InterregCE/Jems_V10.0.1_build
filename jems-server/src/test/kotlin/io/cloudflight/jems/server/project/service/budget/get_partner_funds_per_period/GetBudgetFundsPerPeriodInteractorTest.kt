@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -90,6 +91,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         isAdditionalFundAllowed = true,
+        isDirectContributionsAllowed = true,
         lengthOfPeriod = 9,
         description = setOf(
             InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -129,10 +131,10 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
             ),
         ),
         lumpSums = listOf(
-            ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+            ProgrammeLumpSum(splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
         ),
         unitCosts = listOf(
-            ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+            ProgrammeUnitCost(projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
@@ -154,6 +156,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         isAdditionalFundAllowed = true,
+        isDirectContributionsAllowed = true,
         lengthOfPeriod = 9,
         description = setOf(
             InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),

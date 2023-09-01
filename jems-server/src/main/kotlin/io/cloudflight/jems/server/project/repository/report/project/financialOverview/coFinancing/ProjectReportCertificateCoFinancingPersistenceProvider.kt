@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing
 
+import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -15,6 +18,11 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
 ) : ProjectReportCertificateCoFinancingPersistence {
 
     @Transactional(readOnly = true)
+    override fun getAvailableFunds(reportId: Long): List<ProgrammeFund> =
+        projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
+            .mapNotNull { it.programmeFund?.toModel() }
+
+    @Transactional(readOnly = true)
     override fun getCoFinancing(projectId: Long, reportId: Long): ReportCertificateCoFinancing =
         certificateCoFinancingRepository
             .findFirstByReportEntityProjectIdAndReportEntityId(projectId = projectId, reportId = reportId)
@@ -24,10 +32,11 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
             )
 
     @Transactional(readOnly = true)
-    override fun getCoFinancingCumulative(reportIds: Set<Long>) =
-        with(certificateCoFinancingRepository.findCumulativeForReportIds(reportIds)) {
+    override fun getCoFinancingCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>): ReportCertificateCoFinancingPrevious {
+        val cumulativeCurrentForSubmitted = with(certificateCoFinancingRepository.findCumulativeCurrentForReportIds(submittedReportIds)) {
             ReportCertificateCoFinancingColumn(
-                funds = projectReportCoFinancingRepository.findCumulativeForReportIds(reportIds).associateBy({ it.reportFundId }, { it.sum }),
+                funds = projectReportCoFinancingRepository.findCumulativeCurrentForReportIds(submittedReportIds)
+                    .associateBy({ it.reportFundId }, { it.sum }),
                 partnerContribution = partnerContribution,
                 publicContribution = publicContribution,
                 automaticPublicContribution = automaticPublicContribution,
@@ -35,6 +44,22 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
                 sum = sum,
             )
         }
+        val cumulativeVerifiedForFinalized = with(certificateCoFinancingRepository.findCumulativeVerifiedForReportIds(finalizedReportIds)) {
+            ReportCertificateCoFinancingColumn(
+                funds = projectReportCoFinancingRepository.findCumulativeVerifiedForReportIds(finalizedReportIds)
+                    .associateBy({ it.reportFundId }, { it.sum }),
+                partnerContribution = partnerContribution,
+                publicContribution = publicContribution,
+                automaticPublicContribution = automaticPublicContribution,
+                privateContribution = privateContribution,
+                sum = sum,
+            )
+        }
+        return ReportCertificateCoFinancingPrevious(
+            previouslyReported = cumulativeCurrentForSubmitted,
+            previouslyVerified = cumulativeVerifiedForFinalized,
+        )
+    }
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -54,6 +79,27 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
                 automaticPublicContributionCurrent = currentlyReported.automaticPublicContribution
                 privateContributionCurrent = currentlyReported.privateContribution
                 sumCurrent = currentlyReported.sum
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationValues(
+        projectId: Long,
+        reportId: Long,
+        afterVerification: ReportCertificateCoFinancingColumn,
+    ) {
+        projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
+            .forEachIndexed { index, coFin ->
+                coFin.currentVerified = afterVerification.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+            }
+
+        certificateCoFinancingRepository
+            .findFirstByReportEntityProjectIdAndReportEntityId(projectId = projectId, reportId = reportId).apply {
+                partnerContributionCurrentVerified = afterVerification.partnerContribution
+                publicContributionCurrentVerified = afterVerification.publicContribution
+                automaticPublicContributionCurrentVerified = afterVerification.automaticPublicContribution
+                privateContributionCurrentVerified = afterVerification.privateContribution
+                sumCurrentVerified = afterVerification.sum
             }
     }
 

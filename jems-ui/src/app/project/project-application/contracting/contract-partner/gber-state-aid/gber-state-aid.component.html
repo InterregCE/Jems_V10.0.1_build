@@ -43,7 +43,7 @@
 
         <mat-form-field>
             <mat-label>{{'project.application.contract.partner.section.gber.amount.granted' | translate}}</mat-label>
-            <input currencyMask formControlName="amountGrantedAid" matInput type="decimal">
+            <input currencyMask type="decimal" [options]="{min: 0, max: 999999999.99}" formControlName="amountGrantingAid" matInput>
         </mat-form-field>
 
         <mat-form-field>

@@ -18,6 +18,7 @@ import {PermissionService} from 'src/app/security/permissions/permission.service
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {MatSort} from '@angular/material/sort';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -36,6 +37,7 @@ export class PartnerReportPageStore {
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
+  newSort$ = new Subject<Partial<MatSort>>();
 
   private refreshReports$ = new Subject<void>();
 
@@ -62,6 +64,7 @@ export class PartnerReportPageStore {
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
     return this.partnerId$
       .pipe(
+        take(1),
         switchMap((partnerId) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
@@ -71,6 +74,7 @@ export class PartnerReportPageStore {
   deletePartnerReport(reportId: number) {
     return this.partnerId$
       .pipe(
+        take(1),
         switchMap((partnerId) => this.projectPartnerReportService.deleteProjectPartnerReport(partnerId as number, reportId)),
         tap(() => {
           Log.info('Partner report deleted');
@@ -84,12 +88,16 @@ export class PartnerReportPageStore {
       this.partnerId$,
       this.newPageIndex$,
       this.newPageSize$,
+      this.newSort$.pipe(
+          startWith(({ active: undefined, direction: undefined }) as Partial<MatSort>),
+          map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc'),
+      ),
       this.refreshReports$.pipe(startWith(null)),
     ])
       .pipe(
         filter(([partnerId]) => !!partnerId),
-        switchMap(([partnerId, pageIndex, pageSize]) =>
-          this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), pageIndex, pageSize, `number,desc`)),
+        switchMap(([partnerId, pageIndex, pageSize, sort]) =>
+          this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), pageIndex, pageSize, sort)),
         tap((data: PageProjectPartnerReportSummaryDTO) => Log.info('Fetched partner reports for partner:', this, data))
       );
   }

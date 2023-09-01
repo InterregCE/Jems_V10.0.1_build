@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -84,6 +85,7 @@ fun createTestCallEntity(
     endDate: ZonedDateTime = END,
     lengthOfPeriod: Int = 1,
     isAdditionalFundAllowed: Boolean = false,
+    isDirectContributionsAllowed: Boolean = true,
     translatedValues: MutableSet<CallTranslEntity> = mutableSetOf(),
     prioritySpecificObjectives: MutableSet<ProgrammeSpecificObjectiveEntity> = mutableSetOf(),
     strategies: MutableSet<ProgrammeStrategyEntity> = mutableSetOf(),
@@ -103,6 +105,7 @@ fun createTestCallEntity(
         endDate = endDate,
         lengthOfPeriod = lengthOfPeriod,
         isAdditionalFundAllowed = isAdditionalFundAllowed,
+        isDirectContributionsAllowed = isDirectContributionsAllowed,
         translatedValues = translatedValues,
         prioritySpecificObjectives = prioritySpecificObjectives,
         strategies = strategies,
@@ -141,6 +144,7 @@ fun createCallDetailModel(
     endDateStep1: ZonedDateTime? = null,
     endDate: ZonedDateTime = END,
     isAdditionalFundAllowed: Boolean = false,
+    isDirectContributionsAllowed: Boolean = true,
     lengthOfPeriod: Int = 1,
     description: Set<InputTranslation> = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
     objectives: List<ProgrammePriority> = defaultObjectives,
@@ -168,6 +172,7 @@ fun createCallDetailModel(
         endDateStep1 = endDateStep1,
         endDate = endDate,
         isAdditionalFundAllowed = isAdditionalFundAllowed,
+        isDirectContributionsAllowed = isDirectContributionsAllowed,
         lengthOfPeriod = lengthOfPeriod,
         description = description,
         objectives = objectives,
@@ -260,6 +265,7 @@ fun callDetail(
     endDateStep1 : ZonedDateTime = ZonedDateTime.of(2020,1,15,10,10,10,10, ZoneId.systemDefault()),
     endDate : ZonedDateTime = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
     isAdditionalFundAllowed : Boolean = true,
+    isDirectContributionsAllowed: Boolean = true,
     lengthOfPeriod : Int = 12,
     applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
     preSubmissionCheckPluginKey: String? = null,
@@ -277,6 +283,7 @@ fun callDetail(
     endDateStep1 = endDateStep1,
     endDate = endDate,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
+    isDirectContributionsAllowed = isDirectContributionsAllowed,
     lengthOfPeriod = lengthOfPeriod,
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
@@ -354,7 +361,8 @@ private val defaultLumpSums = listOf(
         splittingAllowed = true,
         phase = ProgrammeLumpSumPhase.Closure,
         categories = setOf(BudgetCategory.InfrastructureCosts),
-        fastTrack = false
+        fastTrack = false,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 )
 
@@ -366,7 +374,8 @@ private val defaultUnitCosts = listOf(
         isOneCostCategory = true,
         categories = setOf(BudgetCategory.InfrastructureCosts),
         costPerUnitForeignCurrency = BigDecimal.ZERO,
-        foreignCurrencyCode = null
+        foreignCurrencyCode = null,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 )
 

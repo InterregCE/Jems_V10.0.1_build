@@ -40,11 +40,10 @@ class GetContractingPartnerStateAidDeMinimisService(
             ContractingPartnerStateAidDeMinimisSection(
                 partnerId = partnerId,
                 dateOfGrantingAid = projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
-                totalEligibleBudget = partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO,
+                amountGrantingAid = deMinimisData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 selfDeclarationSubmissionDate = deMinimisData?.selfDeclarationSubmissionDate,
                 baseForGranting = deMinimisData?.baseForGranting,
                 aidGrantedByCountry = deMinimisData?.aidGrantedByCountry,
-                aidGrantedByCountryCode = deMinimisData?.aidGrantedByCountryCode,
                 memberStatesGranting = getStatesGrantingData(partnerId, deMinimisData),
                 comment = deMinimisData?.comment,
             )

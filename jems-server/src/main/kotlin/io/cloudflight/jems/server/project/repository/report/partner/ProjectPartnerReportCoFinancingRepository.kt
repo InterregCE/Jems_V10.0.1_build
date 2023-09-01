@@ -37,4 +37,6 @@ interface ProjectPartnerReportCoFinancingRepository :
     """)
     fun findCumulativeTotalsForReportIds(reportIds: Set<Long>): List<ProjectReportCumulativeFund>
 
+    fun findAllByIdReportIdAndDisabledFalse(reportId: Long): List<ProjectPartnerReportCoFinancingEntity>
+
 }

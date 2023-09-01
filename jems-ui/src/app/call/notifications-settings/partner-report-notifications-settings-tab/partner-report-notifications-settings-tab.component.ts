@@ -40,6 +40,8 @@ export class PartnerReportNotificationsSettingsTabComponent {
     NotificationVariable.PARTNER_ABBREVIATION,
     NotificationVariable.PARTNER_REPORT_ID,
     NotificationVariable.PARTNER_REPORT_NUMBER,
+    NotificationVariable.FILE_USERNAME,
+    NotificationVariable.FILE_NAME
   ];
   constructor(
     private formBuilder: FormBuilder,

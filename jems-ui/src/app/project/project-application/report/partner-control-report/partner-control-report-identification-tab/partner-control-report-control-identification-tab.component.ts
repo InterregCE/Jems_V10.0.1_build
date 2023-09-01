@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   UserSimpleDTO,
@@ -8,7 +8,15 @@ import {
   ProjectPartnerDetailDTO, ReportOnTheSpotVerificationDTO,
   ReportVerificationDTO
 } from '@cat/api';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -29,6 +37,7 @@ import VerificationLocationsEnum = ReportOnTheSpotVerificationDTO.VerificationLo
 import GeneralMethodologiesEnum = ReportVerificationDTO.GeneralMethodologiesEnum;
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'jems-partner-control-report-identification-tab',
@@ -66,19 +75,19 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       controlInstitution: this.formBuilder.control(''),
       controlInstitutionId: this.formBuilder.control(''),
       controllingUserId: this.formBuilder.control(''),
-      controllingUserName: this.formBuilder.control(''),
+      controllingUserName: this.formBuilder.control('', [this.isControllingUserNameSelected()]),
       jobTitle: this.formBuilder.control('', [Validators.maxLength(this.constants.JOB_TITLE_MAX_LENGTH)]),
       divisionUnit: this.formBuilder.control('', [Validators.maxLength(this.constants.DIVISION_MAX_LENGTH)]),
       address: this.formBuilder.control('', [Validators.maxLength(this.constants.ADDRESS_MAX_LENGTH)]),
       country: this.formBuilder.control(''),
       countryCode: this.formBuilder.control(''),
       telephone: this.formBuilder.control('', Validators.compose([
-          Validators.pattern('^[0-9 +()/-]*$'),
+          Validators.pattern('^([\s]+[0-9+()/]+)|([0-9+()/]+)[ 0-9+()/-]*$'),
           Validators.maxLength(this.constants.PHONE_MAX_LENGTH)
         ])
       ),
       controllerReviewerId: this.formBuilder.control(''),
-      controllerReviewerName: this.formBuilder.control(''),
+      controllerReviewerName: this.formBuilder.control('', [this.isControllingUserNameSelected()]),
       }
     ),
     reportVerification: this.formBuilder.group({
@@ -98,6 +107,8 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     ProjectPartnerControlReportDTO.ControllerFormatsEnum.Copy,
     ProjectPartnerControlReportDTO.ControllerFormatsEnum.Electronic
   ];
+
+  @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
 
   constructor(
     public pageStore: PartnerReportDetailPageStore,
@@ -262,6 +273,14 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
   }
 
   saveIdentification(): void {
+    if(!this.designatedController.get('controllingUserName')?.value){
+      this.selectedControllerUser = undefined;
+      this.autocomplete.closePanel();
+    }
+    if(!this.designatedController.get('controllerReviewerName')?.value){
+      this.selectedReviewerUser = undefined;
+      this.autocomplete.closePanel();
+    }
     const data = {
       controllerFormats: this.form.value.formats,
       type: this.form.value.partnerType,
@@ -312,6 +331,16 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     });
   }
 
+  private isControllingUserNameSelected(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (this.controllerUsers && control.value && !this.getSelectedControllerUser(control.value)) {
+        return {controllingUserNameNotSelected : true};
+      } else {
+        return null;
+      }
+    };
+  }
+
   getListOfGeneralMethodologies(verificationData: any): GeneralMethodologiesEnum[] {
     const generalMethodologies: GeneralMethodologiesEnum[] = [];
 
@@ -352,11 +381,17 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
   }
 
   controlUserChanged(selection: string): void {
-    this.selectedControllerUser = this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
+    this.selectedControllerUser = this.getSelectedControllerUser(selection);
+    this.designatedController.get('controllingUserName')?.updateValueAndValidity();
   }
 
   reviewerUserChanged(selection: string): void {
-    this.selectedReviewerUser = this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
+    this.selectedReviewerUser = this.getSelectedControllerUser(selection);
+    this.designatedController.get('controllerReviewerName')?.updateValueAndValidity();
+  }
+
+  private getSelectedControllerUser(selection: string) {
+    return this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
   }
 
   private findByName(value: string, nuts: OutputNuts[]): OutputNuts | undefined {

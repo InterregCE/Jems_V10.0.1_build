@@ -38,7 +38,10 @@ export class FormComponent {
       map(([dirty, pending, showMenu]) => (dirty || pending) && showMenu)
     );
 
-  constructor(public formService: FormService) {
+
+  constructor(
+    public formService: FormService,
+  ) {
   }
 
   submit(): void {

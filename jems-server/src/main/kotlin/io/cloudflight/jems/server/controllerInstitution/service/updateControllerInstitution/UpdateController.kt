@@ -34,6 +34,7 @@ class UpdateController(
         controllerInstitution: UpdateControllerInstitution
     ): ControllerInstitution {
 
+        controllerInstitutionValidator.validateInputData(controllerInstitution)
         val userSummaries = mutableListOf<UserSummary>()
         controllerInstitution.institutionUsers.takeIf { it.isNotEmpty() }?.let { institutionUsers ->
             userSummaries.addAll(userPersistence.findAllByEmails(institutionUsers.map { it.userEmail }))

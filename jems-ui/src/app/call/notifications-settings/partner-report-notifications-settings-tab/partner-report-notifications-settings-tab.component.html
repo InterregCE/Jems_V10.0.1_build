@@ -25,11 +25,11 @@
                                     <span>
                                         <mat-slide-toggle formControlName="active" color="primary"
                                                           (click)="$event.stopPropagation()">
-                                             {{'call.detail.notifications.config.tab.partner.report.status.' + notificationTemplate.get('id').value | translate}}
+                                             {{'call.detail.notifications.config.tab.partner.report.notification.id.' + notificationTemplate.get('id').value | translate}}
                                         </mat-slide-toggle>
                                     </span>
                                     <jems-context-info
-                                            infoText="{{'call.detail.notifications.config.tab.partner.report.status.'+ notificationTemplate.get('id').value +'.info'| translate}}"
+                                            infoText="{{'call.detail.notifications.config.tab.partner.report.notification.id.'+ notificationTemplate.get('id').value +'.info'| translate}}"
                                             infoPosition="right">
                                     </jems-context-info>
                                 </div>

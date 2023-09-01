@@ -165,7 +165,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             previouslyPaid = BigDecimal.valueOf(81L),
             currentParked = BigDecimal.valueOf(50L),
             currentReIncluded = BigDecimal.valueOf(125L),
-            previouslyReportedParked = BigDecimal.valueOf(50L)
+            previouslyReportedParked = BigDecimal.valueOf(50L),
+            disabled = true,
         )
 
         private fun partnerContribution() = ProjectPartnerReportCoFinancingEntity(
@@ -180,7 +181,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             previouslyPaid = BigDecimal.valueOf(123L),
             currentParked = BigDecimal.valueOf(150L),
             currentReIncluded = BigDecimal.valueOf(375L),
-            previouslyReportedParked = BigDecimal.valueOf(150L)
+            previouslyReportedParked = BigDecimal.valueOf(150L),
+            disabled = true,
         )
 
         private val reportsCumulative = ReportExpenditureCoFinancingColumnWithoutFunds(
@@ -373,17 +375,6 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         assertThat(coFinEntity.automaticPublicContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(15L))
         assertThat(coFinEntity.privateContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(25L))
         assertThat(coFinEntity.sumTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(100L))
-    }
-
-    @Test
-    fun getReportCurrentSum() {
-        val coFin = mockk<ReportProjectPartnerExpenditureCoFinancingEntity>()
-        every { coFin.sumCurrent } returns BigDecimal.valueOf(64789, 2)
-
-        every { expenditureCoFinancingRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L)
-        } returns coFin
-        assertThat(persistence.getReportCurrentSum(PARTNER_ID, reportId = 15L)).isEqualTo(BigDecimal.valueOf(64789, 2))
     }
 
 }

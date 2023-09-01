@@ -6,5 +6,6 @@ data class ParkExpenditureData (
     val expenditureId: Long,
     val originalReportId: Long,
     val originalNumber: Int,
+    val parkedInProjectReportId: Long?,
     val parkedOn: ZonedDateTime
 )

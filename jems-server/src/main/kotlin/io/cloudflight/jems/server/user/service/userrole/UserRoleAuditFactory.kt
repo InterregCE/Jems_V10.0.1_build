@@ -11,8 +11,33 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermissionNodeType
 val DEFAULT_PROJECT_PERMISSIONS =
     UserRolePermissionNode(
         name = "Allow user to create/collaborate",
-        editPermissions = setOf(UserRolePermission.ProjectCreate),
         type = UserRolePermissionNodeType.TOGGLE_SECTION,
+        editPermissions = setOf(UserRolePermission.ProjectCreate),
+        children = listOf(
+            UserRolePermissionNode(
+                name = "Create project reports",
+                editPermissions = setOf(UserRolePermission.ProjectCreatorReportingProjectCreate),
+                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+            ),
+            UserRolePermissionNode(
+                name = "Project reporting schedule",
+                viewPermissions = setOf(UserRolePermission.ProjectCreatorContractingReportingView),
+                editPermissions = setOf(UserRolePermission.ProjectCreatorContractingReportingEdit),
+                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+            ),
+            UserRolePermissionNode(
+                name = "Project privileges",
+                viewPermissions = setOf(UserRolePermission.ProjectCreatorCollaboratorsRetrieve),
+                editPermissions = setOf(UserRolePermission.ProjectCreatorCollaboratorsUpdate),
+                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+            ),
+            UserRolePermissionNode(
+                name = "Shared folder",
+                viewPermissions = setOf(UserRolePermission.ProjectCreatorSharedFolderView),
+                editPermissions = setOf(UserRolePermission.ProjectCreatorSharedFolderEdit),
+                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+            ),
+        )
     )
 
 val DEFAULT_USER_INSPECT_PERMISSIONS =
@@ -26,9 +51,26 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                 children = listOf(
                     UserRolePermissionNode(
                         name = "Project reports",
-                        viewPermissions = setOf(UserRolePermission.ProjectReportingProjectView),
-                        editPermissions = setOf(UserRolePermission.ProjectReportingProjectEdit),
-                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                        type = UserRolePermissionNodeType.SECTION_HEADER,
+                        children = listOf(
+                            UserRolePermissionNode(
+                                name = "Project reports",
+                                viewPermissions = setOf(UserRolePermission.ProjectReportingProjectView),
+                                editPermissions = setOf(UserRolePermission.ProjectReportingProjectEdit),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Project report verification",
+                                viewPermissions = setOf(UserRolePermission.ProjectReportingVerificationProjectView),
+                                editPermissions = setOf(UserRolePermission.ProjectReportingVerificationProjectEdit),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Finalize project report verification",
+                                editPermissions = setOf(UserRolePermission.ProjectReportingVerificationFinalize),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                        )
                     ),
                     UserRolePermissionNode(
                         name = "Partner reports",
@@ -399,8 +441,10 @@ private fun appendToAudit(
         .append('\n', indent, if (node.children.isEmpty()) "" else '+', node.name)
         .append(" ", getAuditPermissionState(node, permissions))
 
-    node.children.forEach { child ->
-        appendToAudit(permissions, child, indent + '\t', audit)
+    if (sectionIsChecked(node, permissions)){
+        node.children.forEach { child ->
+            appendToAudit(permissions, child, indent + '\t', audit)
+        }
     }
 }
 

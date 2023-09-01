@@ -49,14 +49,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
@@ -125,9 +125,10 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             typologyOfErrorId = null,
             verificationComment = null,
             parked = false,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = if (unParkedFrom == null) null else report,
             originalNumber = if (unParkedFrom == null) null else 14,
+            parkedInProjectReport = null,
             partOfSampleLocked = false
         ).apply {
             translatedValues.add(
@@ -171,6 +172,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
+                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 4,
                 originalExpenditureNumber = 8
             ),
@@ -178,7 +180,15 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
         private fun dummyExpectedParkedExpenditure() = ProjectPartnerReportParkedExpenditure(
             expenditure = dummyExpectedExpenditure(id = 14L, 828L, 829L, 830L, 1)
-                .copy(contractId = PROCUREMENT_ID, parkingMetadata = ExpenditureParkingMetadata(80L, 81, 14)),
+                .copy(
+                    contractId = PROCUREMENT_ID,
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 80L,
+                        reportOfOriginNumber = 81,
+                        reportProjectOfOriginId = null,
+                        originalExpenditureNumber = 14
+                    )
+                ),
             lumpSum = ProjectPartnerReportParkedLinked(828L, 8281L, 4, false),
             lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "name ls")),
             unitCost = ProjectPartnerReportParkedLinked(829L, 8291L, null, false),
@@ -220,6 +230,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 4,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 8
             ),
         )
@@ -229,7 +240,14 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             reportEntity = reportEntity,
             programmeLumpSum = ProgrammeLumpSumEntity(
                 id = 400L,
-                translatedValues = mutableSetOf(ProgrammeLumpSumTranslEntity(ProgrammeLumpSumTranslId(400L, SystemLanguage.EN), "name EN", "desc EN")),
+                translatedValues = mutableSetOf(
+                    ProgrammeLumpSumTranslEntity(
+                        ProgrammeLumpSumTranslId(
+                            400L,
+                            SystemLanguage.EN
+                        ), "name EN", "desc EN"
+                    )
+                ),
                 cost = BigDecimal.TEN,
                 splittingAllowed = true,
                 phase = ProgrammeLumpSumPhase.Implementation,
@@ -255,7 +273,14 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             programmeUnitCost = ProgrammeUnitCostEntity(
                 id = 400L,
                 projectId = null,
-                translatedValues = mutableSetOf(ProgrammeUnitCostTranslEntity(ProgrammeUnitCostTranslId(400L, SystemLanguage.EN), "name EN", "desc EN")),
+                translatedValues = mutableSetOf(
+                    ProgrammeUnitCostTranslEntity(
+                        ProgrammeUnitCostTranslId(
+                            400L,
+                            SystemLanguage.EN
+                        ), "name EN", "desc EN"
+                    )
+                ),
                 isOneCostCategory = false,
                 costPerUnit = BigDecimal.ONE,
                 costPerUnitForeignCurrency = BigDecimal.TEN,
@@ -270,7 +295,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         id = 2L,
                         programmeUnitCostId = 5L,
                         category = BudgetCategory.EquipmentCosts
-                    )),
+                    )
+                ),
             ),
             numberOfUnits = BigDecimal.ONE,
             total = BigDecimal.ONE,
@@ -384,10 +410,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 PartnerReportExpenditureCostTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "comm", "desc"),
             ),
             attachment = null,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = reportOfOrigin,
             originalNumber = if (reportOfOrigin == null) null else 42,
-            partOfSampleLocked = false
+            parkedInProjectReport = null,
+            partOfSampleLocked = false,
         )
 
         private fun parkedFromExpected() = ProjectPartnerReportExpenditureCost(
@@ -417,6 +444,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 11L,
                 reportOfOriginNumber = 111,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 4
             ),
         )
@@ -451,7 +479,12 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportExpenditureRepository, reportLumpSumRepository, reportUnitCostRepository, reportInvestmentRepository)
+        clearMocks(
+            reportExpenditureRepository,
+            reportLumpSumRepository,
+            reportUnitCostRepository,
+            reportInvestmentRepository
+        )
     }
 
     @Test
@@ -468,16 +501,27 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { lumpSum.id } returns LUMP_SUM_ID
         every { unitCost.id } returns UNIT_COST_ID
         every { investment.id } returns INVESTMENT_ID
-        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 3L, report))
-        every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
-            reportId = 44L,
-            partnerId = PARTNER_ID,
-        ) } returns mutableListOf(expenditure)
+        val expenditure =
+            dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 3L, report))
+        every {
+            reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
+                reportId = 44L,
+                partnerId = PARTNER_ID,
+            )
+        } returns mutableListOf(expenditure)
 
         assertThat(persistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 44L))
             .containsExactly(
                 dummyExpectedExpenditure(id = 14L, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 1)
-                    .copy(contractId = PROCUREMENT_ID, parkingMetadata = ExpenditureParkingMetadata(60L, 61, 14))
+                    .copy(
+                        contractId = PROCUREMENT_ID,
+                        parkingMetadata = ExpenditureParkingMetadata(
+                            reportOfOriginId = 60L,
+                            reportOfOriginNumber = 61,
+                            reportProjectOfOriginId = null,
+                            originalExpenditureNumber = 14
+                        )
+                    )
             )
     }
 
@@ -495,14 +539,18 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
         val proLumpSum = mockk<ProgrammeLumpSumEntity>()
         every { proLumpSum.id } returns PRO_LUMP_SUM_ID
-        every { proLumpSum.translatedValues } returns mutableSetOf(ProgrammeLumpSumTranslEntity(
-            ProgrammeLumpSumTranslId(PRO_LUMP_SUM_ID, SystemLanguage.EN), "name ls"
-        ))
+        every { proLumpSum.translatedValues } returns mutableSetOf(
+            ProgrammeLumpSumTranslEntity(
+                ProgrammeLumpSumTranslId(PRO_LUMP_SUM_ID, SystemLanguage.EN), "name ls"
+            )
+        )
         val proUnitCost = mockk<ProgrammeUnitCostEntity>()
         every { proUnitCost.id } returns PRO_UNIT_COST_ID
-        every { proUnitCost.translatedValues } returns mutableSetOf(ProgrammeUnitCostTranslEntity(
-            ProgrammeUnitCostTranslId(PRO_UNIT_COST_ID, SystemLanguage.EN), "name uc"
-        ))
+        every { proUnitCost.translatedValues } returns mutableSetOf(
+            ProgrammeUnitCostTranslEntity(
+                ProgrammeUnitCostTranslId(PRO_UNIT_COST_ID, SystemLanguage.EN), "name uc"
+            )
+        )
 
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
         val unitCost = mockk<PartnerReportUnitCostEntity>()
@@ -517,8 +565,13 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { investment.workPackageNumber } returns 14
         every { investment.investmentNumber } returns 11
 
-        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 3L, report))
-        every { reportExpenditureRepository.findAllByIdIn(setOf(14L), Pageable.unpaged()) } returns PageImpl(listOf(expenditure))
+        val expenditure =
+            dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 3L, report))
+        every { reportExpenditureRepository.findAllByIdIn(setOf(14L), Pageable.unpaged()) } returns PageImpl(
+            listOf(
+                expenditure
+            )
+        )
 
         assertThat(persistence.getPartnerReportExpenditureCosts(setOf(14L), Pageable.unpaged()))
             .containsExactly(dummyExpectedParkedExpenditure())
@@ -526,8 +579,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @Test
     fun existsByExpenditureId() {
-        every { reportExpenditureRepository.existsByPartnerReportPartnerIdAndPartnerReportIdAndId(
-            PARTNER_ID, reportId = 18L, 45L) } returns false
+        every {
+            reportExpenditureRepository.existsByPartnerReportPartnerIdAndPartnerReportIdAndId(
+                PARTNER_ID, reportId = 18L, 45L
+            )
+        } returns false
         assertThat(persistence.existsByExpenditureId(PARTNER_ID, reportId = 18L, 45L)).isFalse
     }
 
@@ -560,13 +616,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val parked = mockk<PartnerReportParkedExpenditureEntity>()
         every { parked.parkedFrom.attachment } returns attachment
 
-        every { reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                PARTNER_ID, ReportStatus.Certified, 46L
-            )
+        every {
+            reportExpenditureParkedRepository.findParkedExpenditure(PARTNER_ID, 46L)
         } returns parked
 
-        assertThat(persistence.getExpenditureAttachment(PARTNER_ID,46L)).isEqualTo(
+        assertThat(persistence.getExpenditureAttachment(PARTNER_ID, 46L)).isEqualTo(
             JemsFile(
                 id = 248L,
                 name = "powerpoint.pptx",
@@ -574,7 +628,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 uploaded = time,
                 author = UserSimple(id = 210L, "email", name = "name", surname = "surname"),
                 size = 324L,
-                description = "desc"
+                description = "desc",
+                indexedPath = "path"
             )
         )
     }
@@ -584,33 +639,45 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val parked = mockk<PartnerReportParkedExpenditureEntity>()
         every { parked.parkedFrom.attachment } returns null
 
-        every { reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                PARTNER_ID, ReportStatus.Certified, -1L
-            )
+        every {
+            reportExpenditureParkedRepository.findParkedExpenditure(PARTNER_ID, -1L)
         } returns parked
 
-        assertThat(persistence.getExpenditureAttachment(PARTNER_ID,-1L)).isNull()
+        assertThat(persistence.getExpenditureAttachment(PARTNER_ID, -1L)).isNull()
     }
 
     @Test
     fun getAvailableLumpSums() {
-        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 20L) } returns
+        every {
+            reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
+                PARTNER_ID,
+                reportId = 20L
+            )
+        } returns
             mutableListOf(dummyLumpSumEntity(mockk()))
         assertThat(persistence.getAvailableLumpSums(PARTNER_ID, reportId = 20L)).containsExactly(dummyLumpSum)
     }
 
     @Test
     fun getAvailableUnitCosts() {
-        every { reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 20L) } returns
+        every {
+            reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(
+                PARTNER_ID,
+                reportId = 20L
+            )
+        } returns
             mutableListOf(dummyUnitCostEntity(mockk()))
         assertThat(persistence.getAvailableUnitCosts(PARTNER_ID, reportId = 20L)).containsExactly(dummyUnitCost)
     }
 
     @Test
     fun getAvailableInvestments() {
-        every { reportInvestmentRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(PARTNER_ID, reportId = 20L)
+        every {
+            reportInvestmentRepository
+                .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(
+                    PARTNER_ID,
+                    reportId = 20L
+                )
         } returns mutableListOf(dummyInvestmentEntity(mockk()))
         assertThat(persistence.getAvailableInvestments(PARTNER_ID, reportId = 20L)).containsExactly(dummyInvestment)
     }
@@ -625,8 +692,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { budgetOptionsEntity.travelAndAccommodationOnStaffCostsFlatRate } returns 8
         every { budgetOptionsEntity.staffCostsFlatRate } returns 1
         every { budgetOptionsEntity.otherCostsOnStaffCostsFlatRate } returns null
-        every { reportCostCategoriesRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 20L)
+        every {
+            reportCostCategoriesRepository
+                .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 20L)
         } returns budgetOptionsEntity
         assertThat(persistence.getAvailableBudgetOptions(PARTNER_ID, reportId = 20L)).isEqualTo(dummyBudgetOptions)
     }
@@ -659,27 +727,52 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val slotDeleted = slot<Iterable<PartnerReportExpenditureCostEntity>>()
         every { reportExpenditureRepository.deleteAll(capture(slotDeleted)) } answers { }
 
-        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 58L) } returns
+        every {
+            reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
+                PARTNER_ID,
+                reportId = 58L
+            )
+        } returns
             mutableListOf(lumpSum)
 
-        every { reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 58L) } returns
+        every {
+            reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(
+                PARTNER_ID,
+                reportId = 58L
+            )
+        } returns
             mutableListOf(unitCost)
 
-        every { reportInvestmentRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(PARTNER_ID, reportId = 58L)
+        every {
+            reportInvestmentRepository
+                .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(
+                    PARTNER_ID,
+                    reportId = 58L
+                )
         } returns mutableListOf(investment)
 
         val slotSavedEntities = mutableListOf<PartnerReportExpenditureCostEntity>()
         every { reportExpenditureRepository.save(capture(slotSavedEntities)) } returnsArgument 0
 
-        assertThat(persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, listOf(
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null, 1),
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null, 4),
-        ))).containsExactly(
+        assertThat(
+            persistence.updatePartnerReportExpenditureCosts(
+                PARTNER_ID, reportId = 58L, listOf(
+                    dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null, 1),
+                    dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2),
+                    dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3),
+                    dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null, 4),
+                )
+            )
+        ).containsExactly(
             dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null, 1)
-                .copy(parkingMetadata = ExpenditureParkingMetadata(75L, 4, 14)),
+                .copy(
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 75L,
+                        reportOfOriginNumber = 4,
+                        reportProjectOfOriginId = null,
+                        originalExpenditureNumber = 14
+                    )
+                ),
             dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2)
                 .copy(parkingMetadata = null),
             dummyExpectedExpenditureNew(id = 0L /* EXPENDITURE_TO_ADD_1 */, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3)
@@ -740,18 +833,34 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { proInvestment.id } returns 638L
 
         val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 2L
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
-        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(reportId = 600L, 636L, 12) } returns proLumpSum
-        every { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(reportId = 600L, 637L) } returns proUnitCost
-        every { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(reportId = 600L, 638L) } returns proInvestment
-
-        every { reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
+        every {
+            reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(
+                reportId = 600L,
+                636L,
+                12
             )
+        } returns proLumpSum
+        every {
+            reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(
+                reportId = 600L,
+                637L
+            )
+        } returns proUnitCost
+        every {
+            reportInvestmentRepository.findByReportEntityIdAndInvestmentId(
+                reportId = 600L,
+                638L
+            )
+        } returns proInvestment
+
+        every {
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
+            parkedInProjectReport = null,
             parkedFrom = parkedFrom(
                 report = report,
                 lumpSum = lumpSum,
@@ -794,12 +903,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { report.number } returns 21
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
-        every { reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
-            )
+        every {
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
+            parkedInProjectReport = null,
             parkedFrom = parkedFrom(
                 report = report,
                 lumpSum = lumpSum,
@@ -819,18 +927,31 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { proUnitCost.id } returns 6900L
         val proInvestment = mockk<PartnerReportInvestmentEntity>()
         every { proInvestment.id } returns 7100L
-        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(600L, 650L, 4) } returns proLumpSum
+        every {
+            reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(
+                600L,
+                650L,
+                4
+            )
+        } returns proLumpSum
         every { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(600L, 690L) } returns proUnitCost
         every { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(600L, 710L) } returns proInvestment
         every { reportExpenditureRepository.save(any()) } returnsArgument 0
 
         assertThat(persistence.reIncludeParkedExpenditure(partnerId = partnerId, reportId = 600L, expenditureId))
-            .isEqualTo(parkedFromExpected().copy(
-                lumpSumId = 6500L,
-                unitCostId = 6900L,
-                investmentId = 7100L,
-                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 4),
-            ))
+            .isEqualTo(
+                parkedFromExpected().copy(
+                    lumpSumId = 6500L,
+                    unitCostId = 6900L,
+                    investmentId = 7100L,
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 2L,
+                        reportOfOriginNumber = 21,
+                        reportProjectOfOriginId = null,
+                        originalExpenditureNumber = 4
+                    ),
+                )
+            )
     }
 
     @Test
@@ -846,10 +967,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { report.number } returns 21
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
-        every { reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
-            )
+        every {
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
             parkedFrom = parkedFrom(
@@ -861,6 +980,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 reportOfOrigin = null,
             ),
             reportOfOrigin = reportOfOrigin,
+            parkedInProjectReport = null,
             originalNumber = 4,
             parkedOn = parkedOn
         )
@@ -868,12 +988,19 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportExpenditureRepository.save(any()) } returnsArgument 0
 
         assertThat(persistence.reIncludeParkedExpenditure(partnerId = partnerId, reportId = 600L, expenditureId))
-            .isEqualTo(parkedFromExpected().copy(
-                lumpSumId = null,
-                unitCostId = null,
-                investmentId = null,
-                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 4),
-            ))
+            .isEqualTo(
+                parkedFromExpected().copy(
+                    lumpSumId = null,
+                    unitCostId = null,
+                    investmentId = null,
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 2L,
+                        reportOfOriginNumber = 21,
+                        reportProjectOfOriginId = null,
+                        originalExpenditureNumber = 4
+                    ),
+                )
+            )
     }
 
     @Test

@@ -1,9 +1,13 @@
 import {Injectable} from '@angular/core';
 import {
-  AdvancePaymentDetailDTO, AdvancePaymentsService, PageAdvancePaymentDTO, UserRoleCreateDTO,
+  AdvancePaymentDetailDTO,
+  AdvancePaymentSearchRequestDTO,
+  AdvancePaymentsService,
+  PageAdvancePaymentDTO,
+  UserRoleCreateDTO,
 } from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Observable, combineLatest, Subject, of, merge} from 'rxjs';
+import {Observable, combineLatest, Subject, of, merge, BehaviorSubject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
@@ -25,6 +29,7 @@ export class AdvancePaymentsPageStore {
   userCanEdit$: Observable<boolean>;
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
+  filter$ = new BehaviorSubject<AdvancePaymentSearchRequestDTO>(null as any);
   newSort$ = new Subject<Partial<MatSort>>();
   advancePaymentDTO$: Observable<PageAdvancePaymentDTO>;
   advancePayment$: Observable<AdvancePaymentDetailDTO>;
@@ -44,6 +49,7 @@ export class AdvancePaymentsPageStore {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.filter$,
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => (sort?.direction) ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -51,8 +57,8 @@ export class AdvancePaymentsPageStore {
       )
     ])
       .pipe(
-        switchMap(([pageIndex, pageSize, sort]) =>
-          this.advancePaymentsService.getAdvancePayments(pageIndex, pageSize, sort)),
+        switchMap(([pageIndex, pageSize, filter, sort]) =>
+          this.advancePaymentsService.getAdvancePayments(filter, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the advance payments:', this, page.content)),
       );
   }

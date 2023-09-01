@@ -23,7 +23,7 @@
             <mat-label>{{ 'project.application.partner.report.procurements.table.contract.name' | translate}}</mat-label>
             <input #contractNameInput name="contractName" formControlName="contractName" matInput required>
             <mat-hint [jemsHintFor]="contractNameInput" [hide]="form.controls?.contractName?.errors !== null">
-                <jems-text-hint [currentLength]="contractNameInput?.value?.length" [maxLength]="50"></jems-text-hint>
+                <jems-text-hint [currentLength]="contractNameInput?.value?.length" [maxLength]="300"></jems-text-hint>
             </mat-hint>
             <mat-error>
                 <jems-form-field-errors [errors]="form.controls?.contractName?.errors"></jems-form-field-errors>
@@ -46,7 +46,7 @@
             <input name="contractDate" formControlName="contractDate" matInput
                    [matDatepicker]="contractDatePicker">
             <mat-datepicker-toggle matSuffix [for]="contractDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #contractDatePicker startView="year"></mat-datepicker>
+            <mat-datepicker #contractDatePicker startView="month"></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field>

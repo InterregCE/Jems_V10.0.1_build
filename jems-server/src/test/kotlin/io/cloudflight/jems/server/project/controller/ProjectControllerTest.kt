@@ -5,10 +5,7 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.costoption.*
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
@@ -33,6 +30,7 @@ import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjectsInteractor
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -99,6 +97,7 @@ class ProjectControllerTest {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
@@ -106,6 +105,7 @@ class ProjectControllerTest {
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             ),
+            jsNotifiable = false
         )
 
         private val partner1 = ProjectPartnerSummary(
@@ -156,6 +156,7 @@ class ProjectControllerTest {
             id = 8L,
             customIdentifier = "01",
             callName = "call name",
+            callId = 2L,
             acronym = "ACR",
             projectStatus = ApplicationStatusDTO.SUBMITTED,
             firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
@@ -168,6 +169,7 @@ class ProjectControllerTest {
             id = 8L,
             customIdentifier = "01",
             callName = "call name",
+            callId = 2L,
             acronym = "ACR",
             projectStatus = ApplicationStatusDTO.CONTRACTED,
             firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
@@ -316,6 +318,7 @@ class ProjectControllerTest {
             endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = setOf(
                 ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, adjustable = true),
             ),
@@ -328,7 +331,8 @@ class ProjectControllerTest {
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
                     categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
-                    fastTrack = false
+                    fastTrack = false,
+                    paymentClaim = PaymentClaim.IncurredByBeneficiaries
                 ),
             ),
             unitCosts = listOf(
@@ -341,6 +345,7 @@ class ProjectControllerTest {
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                    paymentClaim = PaymentClaim.IncurredByBeneficiaries
                 ),
             ),
             stateAids = emptyList(),
@@ -351,6 +356,7 @@ class ProjectControllerTest {
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             ),
+            jsNotifiable = false
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -363,6 +369,7 @@ class ProjectControllerTest {
                 endDateStep1 = null,
                 lengthOfPeriod = 6,
                 additionalFundAllowed = false,
+                directContributionsAllowed = true,
                 flatRates = FlatRateSetupDTO(
                     staffCostFlatRateSetup = FlatRateDTO(15, true),
                 ),
@@ -375,7 +382,8 @@ class ProjectControllerTest {
                         splittingAllowed = false,
                         phase = ProgrammeLumpSumPhase.Preparation,
                         categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
-                        fastTrack = false
+                        fastTrack = false,
+                        paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
                     ),
                 ),
                 unitCosts = listOf(
@@ -387,7 +395,8 @@ class ProjectControllerTest {
                         type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
                         oneCostCategory = false,
-                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts)
+                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                        paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
                     )
                 ),
                 stateAids = emptyList(),
@@ -396,6 +405,7 @@ class ProjectControllerTest {
                     projectDefinedUnitCostAllowed = true,
                     projectDefinedLumpSumAllowed = false,
                 ),
+                jsNotifiable = false
             )
         )
     }
@@ -466,6 +476,7 @@ class ProjectControllerTest {
                     callSettings.endDateStep1,
                     callSettings.lengthOfPeriod,
                     callSettings.isAdditionalFundAllowed,
+                    callSettings.isDirectContributionsAllowed,
                     FlatRateSetupDTO(),
                     emptyList(),
                     emptyList(),
@@ -475,6 +486,7 @@ class ProjectControllerTest {
                         projectDefinedUnitCostAllowed = true,
                         projectDefinedLumpSumAllowed = false,
                     ),
+                    jsNotifiable = false
                 ),
                 acronym = project.acronym,
                 title = project.title,

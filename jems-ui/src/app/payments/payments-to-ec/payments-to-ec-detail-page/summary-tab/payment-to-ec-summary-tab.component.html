@@ -1,0 +1,31 @@
+<ng-container *ngIf="data$ | async as data">
+    <jems-form  (discard)="resetForm(data.paymentDetail)"
+                (save)="updatePaymentApplicationToEc()"
+               [formGroup]="summaryForm">
+
+        <h3>{{'payments.to.ec.detail.summary.tab.header' | translate}}</h3>
+        <p>{{'payments.to.ec.detail.summary.tab.subheader' | translate}}</p>
+
+        <div class="summary-form" jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'payments.to.ec.detail.summary.tab.fund.select.label' | translate}}</mat-label>
+                <mat-select formControlName="programmeFund" required>
+                    <mat-option *ngFor="let fund of data.programmeFunds" [value]="fund.id" role="option">
+                        {{fund.abbreviation  | translateBySystemLanguage: true | async}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
+                <mat-select formControlName="accountingYear" required>
+                    <mat-option *ngFor="let accountingYear of data.accountingYears" [value]="accountingYear.id" role="option">
+                        <span>{{ ('accounting.year.' + accountingYear.year) | translate }}:
+                            {{ accountingYear.startDate | localeDate }} - {{ accountingYear.endDate | localeDate }}</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </jems-form>
+</ng-container>

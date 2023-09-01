@@ -114,7 +114,7 @@
         </mat-table>
 
         <button type="button" *ngIf="data.canEdit && !data.isPartnerLocked" mat-raised-button jemsText class="mb-3 mt-3 mat-primary"
-                [disabled]="beneficials.length >= 10" (click)="addBeneficialOwner()"
+                [disabled]="beneficials.length >= 30" (click)="addBeneficialOwner()"
                 aria-label="add">
             <mat-icon>add</mat-icon>
             {{ 'project.application.partner.report.procurements.beneficial.add' | translate }}

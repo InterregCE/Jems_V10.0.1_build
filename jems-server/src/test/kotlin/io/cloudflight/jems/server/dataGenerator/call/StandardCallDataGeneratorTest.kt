@@ -65,6 +65,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
                     startDateTime = ZonedDateTime.now().minusDays(1),
                     endDateTime = ZonedDateTime.now().plusDays(1),
                     additionalFundAllowed = true,
+                    directContributionsAllowed = true,
                     lengthOfPeriod = STANDARD_CALL_LENGTH_OF_PERIOD,
                     funds = setOf(
                         CallFundRateDTO(SELECTED_PROGRAMME_FUNDS.filter { it.selected }.first(), BigDecimal.TEN, true)

@@ -96,7 +96,7 @@
         <h3 class="mt-0">{{'project.application.partner.control.report.section.three' | translate}}</h3>
         <div id="control-project-partner-controller" class="mb-5 mt-3" [formGroupName]="constants.FORM_CONTROL_NAMES.designatedController">
             <div class="control-institution-container">
-                <mat-form-field jemsFormFieldWidth="full" >
+                <mat-form-field [matTooltip]="this.designatedController?.get('controlInstitution')?.value" jemsFormFieldWidth="full" >
                     <mat-label>{{'project.application.partner.control.report.controller.institution.name' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.controlInstitution" matInput>
                 </mat-form-field>
@@ -113,6 +113,12 @@
                             {{controlUser}}
                         </mat-option>
                     </mat-autocomplete>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="this.designatedController?.get(constants.FORM_CONTROL_NAMES.controllingUserName)?.errors"
+                                [messages]="{controllingUserNameNotSelected: 'project.application.partner.control.report.controller.name.not.selected.warning'}">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
             </div>
 
@@ -206,6 +212,12 @@
                             {{reviewerUser}}
                         </mat-option>
                     </mat-autocomplete>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="this.designatedController?.get(constants.FORM_CONTROL_NAMES.controllerReviewerName)?.errors"
+                                [messages]="{controllingUserNameNotSelected: 'project.application.partner.control.report.controller.name.not.selected.warning'}">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
             </div>
         </div>
@@ -348,10 +360,9 @@
                 <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
                 <textarea [formControlName]="constants.FORM_CONTROL_NAMES.riskBasedVerificationDescription" matInput
                       #autosize="cdkTextareaAutosize"
-                      [matTooltip]="samplingMethodology.value"
                       [cdkTextareaAutosize]
                       [cdkAutosizeMinRows]="4"
-                      [cdkAutosizeMaxRows]="7"
+                      [cdkAutosizeMaxRows]="16"
                       #samplingMethodology>
                 </textarea>
                 <mat-hint [jemsHintFor]="samplingMethodology">
