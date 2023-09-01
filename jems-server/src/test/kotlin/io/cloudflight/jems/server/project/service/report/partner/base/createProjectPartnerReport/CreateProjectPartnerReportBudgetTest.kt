@@ -475,19 +475,22 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 fund.id, percentage = BigDecimal.valueOf(30),
                 total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
                 previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(1719, 2),
-                previouslyReportedParked = BigDecimal.valueOf(14)
+                previouslyReportedParked = BigDecimal.valueOf(14),
+                disabled = false,
             ),
             PreviouslyReportedFund(
                 -1L, percentage = BigDecimal.ZERO,
                 total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN,
                 previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.TEN,
-                previouslyReportedParked = BigDecimal.valueOf(10)
+                previouslyReportedParked = BigDecimal.valueOf(10),
+                disabled = true,
             ),
             PreviouslyReportedFund(
                 null, percentage = BigDecimal.valueOf(70),
                 total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
                 previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(3233, 2),
-                previouslyReportedParked = BigDecimal.valueOf(25)
+                previouslyReportedParked = BigDecimal.valueOf(25),
+                disabled = false,
             ),
         ),
         totalPartner = BigDecimal.valueOf(1),
@@ -731,6 +734,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             previouslyReportedParked = BigDecimal.ZERO,
                             previouslyValidated = BigDecimal.valueOf(7.23),
                             previouslyPaid = BigDecimal.ZERO,
+                            disabled = false,
                         ),
                     ),
                     previouslyReportedPartner = BigDecimal.valueOf(4931, 2),

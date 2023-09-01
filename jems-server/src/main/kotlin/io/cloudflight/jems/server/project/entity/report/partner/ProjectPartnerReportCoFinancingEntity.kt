@@ -40,4 +40,6 @@ class ProjectPartnerReportCoFinancingEntity(
     @field:NotNull var currentReIncluded: BigDecimal,
     @field:NotNull val previouslyReportedParked: BigDecimal,
 
+    @field:NotNull val disabled: Boolean,
+
 )

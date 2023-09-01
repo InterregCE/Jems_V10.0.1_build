@@ -363,6 +363,7 @@ class CreateProjectPartnerReportBudget(
                 previouslyReportedParked = previousParked.funds.getOrDefault(it.fund?.id, ZERO),
                 previouslyValidated = previousValidated.funds.getOrDefault(it.fund?.id, ZERO),
                 previouslyPaid = paymentPaid.getOrDefault(it.fund?.id, ZERO),
+                disabled = false,
             )
         }
 
@@ -378,6 +379,7 @@ class CreateProjectPartnerReportBudget(
                 previouslyReportedParked = previousParked.funds[fundId]!!,
                 previouslyValidated = previousValidated.funds[fundId]!!,
                 previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO),
+                disabled = true,
             )
         }
         currentFunds.addAll(maxOf(currentFunds.size - 1, 0), removedFunds) /* insert removed funds before partner contribution */
@@ -393,6 +395,7 @@ class CreateProjectPartnerReportBudget(
                     previouslyReportedParked = previousParked.funds.getOrDefault(null, ZERO),
                     previouslyValidated = previousValidated.funds.getOrDefault(null, ZERO),
                     previouslyPaid = ZERO,
+                    disabled = false,
                 )
             )
 

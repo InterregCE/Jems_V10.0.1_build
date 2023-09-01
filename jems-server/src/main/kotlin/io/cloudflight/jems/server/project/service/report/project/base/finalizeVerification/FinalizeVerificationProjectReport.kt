@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
@@ -33,6 +34,7 @@ class FinalizeVerificationProjectReport(
     private val projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence,
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
     private val paymentRegularPersistence: PaymentPersistence,
+    private val partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
@@ -41,13 +43,10 @@ class FinalizeVerificationProjectReport(
     override fun finalizeVerification(reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
         validateReportIsInVerification(report)
-        val parkedExpenditures =
-            expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId)
 
-        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
         val financialData = calculateSourcesAndSplits(
             verification = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId),
-            availableFunds = projectReportAvailableFunds,
+            availableFundsResolver = { certificateId -> partnerReportCoFinancingPersistence.getAvailableFunds(certificateId) },
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
 
@@ -55,7 +54,7 @@ class FinalizeVerificationProjectReport(
         projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(
             projectId = report.projectId,
             reportId = reportId,
-            afterVerification = financialData.sumUp(projectReportAvailableFunds).totalLineToColumn()
+            afterVerification = financialData.sumUp().totalLineToColumn()
         )
 
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
@@ -68,7 +67,7 @@ class FinalizeVerificationProjectReport(
                     context = this,
                     projectId = report.projectId,
                     report = it,
-                    parkedExpenditures
+                    parkedExpenditures = expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId),
                 )
             )
         }.status

@@ -244,6 +244,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 currentParked = ONE,
                 currentReIncluded = ONE,
                 previouslyReportedParked = ZERO,
+                disabled = true,
             ),
             ProjectPartnerReportCoFinancingEntity(
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
@@ -257,7 +258,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 previouslyPaid = ZERO,
                 currentParked = ONE,
                 currentReIncluded = ONE,
-                previouslyReportedParked = ONE
+                previouslyReportedParked = ONE,
+                disabled = false,
             ),
         )
 
