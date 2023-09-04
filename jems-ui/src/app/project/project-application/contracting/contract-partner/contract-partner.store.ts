@@ -1,28 +1,24 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {
-    ContractingPartnerBeneficialOwnerDTO,
-    ContractingPartnerDocumentsLocationDTO,
-    ContractingPartnerStateAidDeMinimisDTO,
-    ContractingPartnerStateAidDeMinimisSectionDTO,
-    ContractingPartnerStateAidGberDTO,
-    ContractingPartnerStateAidGberSectionDTO,
-    ProjectContractingPartnerBeneficialOwnerService,
-    ProjectContractingPartnerLocationOfDocumentsService,
-    ProjectContractingPartnerStateAidService,
-    ProjectPartnerSummaryDTO,
-    ProjectPartnerUserCollaboratorService,
-    ProjectStatusDTO,
-    ProjectUserCollaboratorDTO,
-    UserRoleCreateDTO,
+  ContractingPartnerBeneficialOwnerDTO,
+  ContractingPartnerDocumentsLocationDTO,
+  ContractingPartnerStateAidDeMinimisDTO,
+  ContractingPartnerStateAidDeMinimisSectionDTO,
+  ContractingPartnerStateAidGberDTO,
+  ContractingPartnerStateAidGberSectionDTO,
+  ProjectContractingPartnerBeneficialOwnerService,
+  ProjectContractingPartnerLocationOfDocumentsService,
+  ProjectContractingPartnerStateAidService,
+  ProjectPartnerSummaryDTO,
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
+  ProjectUserCollaboratorDTO,
+  UserRoleCreateDTO,
 } from '@cat/api';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
@@ -39,8 +35,8 @@ import LevelEnum = ProjectUserCollaboratorDTO.LevelEnum;
 export class ContractPartnerStore {
   public static PARTNER_PATH = '/contractPartner/';
   projectId$: Observable<number>;
+  partnerId$: Observable<number>;
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
-  partnerId$: Observable<string | number | null>;
   beneficialOwners$: Observable<ContractingPartnerBeneficialOwnerDTO[]>;
   documentsLocation$: Observable<ContractingPartnerDocumentsLocationDTO>;
   savedBeneficialOwners$ = new Subject<ContractingPartnerBeneficialOwnerDTO[]>();
@@ -50,28 +46,28 @@ export class ContractPartnerStore {
   userCanEditContractPartner$: Observable<boolean>;
   userCanViewContractPartner$: Observable<boolean>;
   isPartnerLocked$: Observable<boolean>;
-  deMinimis$: Observable<ContractingPartnerStateAidDeMinimisSectionDTO | null>;
-  GBER$: Observable<ContractingPartnerStateAidGberSectionDTO | null>;
+  deMinimis$: Observable<ContractingPartnerStateAidDeMinimisSectionDTO>;
+  GBER$: Observable<ContractingPartnerStateAidGberSectionDTO>;
 
   constructor(
-      private projectPartnerStore: ProjectPartnerStore,
-      private projectStore: ProjectStore,
-      private routingService: RoutingService,
-      private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
-      private permissionService: PermissionService,
-      private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-      private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService,
-      private contractingStore: ContractingStore,
-      private projectContractingPartnerStateAidService: ProjectContractingPartnerStateAidService
+    private projectPartnerStore: ProjectPartnerStore,
+    private projectStore: ProjectStore,
+    private routingService: RoutingService,
+    private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
+    private permissionService: PermissionService,
+    private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+    private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService,
+    private contractingStore: ContractingStore,
+    private projectContractingPartnerStateAidService: ProjectContractingPartnerStateAidService,
   ) {
-    this.partnerId$ = this.partnerId();
     this.projectId$ = this.projectStore.projectId$;
+    this.partnerId$ = this.partnerId();
+    this.isPartnerLocked$ = this.isPartnerLocked();
     this.partnerSummary$ = this.partnerInfo();
     this.beneficialOwners$ = this.beneficialOwners();
     this.userCanEditContractPartner$ = this.userCanEditContractPartner();
     this.userCanViewContractPartner$ = this.userCanViewContractPartner();
     this.documentsLocation$ = this.documentsLocation();
-    this.isPartnerLocked$ = this.isPartnerLocked();
     this.deMinimis$ = this.deMinimis();
     this.GBER$ = this.GBER();
   }
@@ -79,22 +75,26 @@ export class ContractPartnerStore {
   updateBeneficialOwners(beneficialOwners: ContractingPartnerBeneficialOwnerDTO[]) {
     return combineLatest([this.partnerId$, this.projectId$])
       .pipe(
-        switchMap(([partnerId, projectId]) => this.beneficialOwnerService.updateBeneficialOwners(partnerId as number,projectId,  beneficialOwners)),
+        switchMap(([partnerId, projectId]) => this.beneficialOwnerService.updateBeneficialOwners(partnerId, projectId, beneficialOwners)),
         tap(saved => Log.info('Saved contract partner beneficial owners', saved)),
         tap(data => this.savedBeneficialOwners$.next(data))
       );
   }
+
   private partnerInfo(): Observable<ProjectPartnerSummaryDTO> {
     return combineLatest([this.partnerId$, this.projectPartnerStore.partnerSummariesOfLastApprovedVersion$])
       .pipe(
-        filter(([partnerId, partnerSummaries]) => !!partnerId),
         map(([partnerId, partnerSummaries]) =>
           partnerSummaries.find(value => value.id === Number(partnerId)) || {} as any
         ));
   }
 
-  private partnerId(): Observable<number | string | null> {
-    return this.routingService.routeParameterChanges(ContractPartnerStore.PARTNER_PATH, 'partnerId');
+  private partnerId(): Observable<number> {
+    return this.routingService.routeParameterChanges(ContractPartnerStore.PARTNER_PATH, 'partnerId')
+      .pipe(
+        filter(Boolean),
+        map(Number),
+      );
   }
 
   private beneficialOwners(): Observable<ContractingPartnerBeneficialOwnerDTO[]> {
@@ -102,70 +102,63 @@ export class ContractPartnerStore {
       .pipe(
         switchMap(([partnerId, projectId]) => this.beneficialOwnerService.getBeneficialOwners(partnerId as number, projectId)),
       );
+
     return merge(initialData$, this.savedBeneficialOwners$)
       .pipe(
         shareReplay(1)
       );
   }
 
-    private deMinimis(): Observable<ContractingPartnerStateAidDeMinimisSectionDTO | null> {
-        const initialData$ = this.partnerId$
-            .pipe(
-                switchMap((partnerId) => this.projectContractingPartnerStateAidService.getDeMinimisSection(partnerId as number)),
-            );
-        return merge(initialData$, this.savedDeMinimis$)
-            .pipe(
-                shareReplay(1)
-            );
-    }
+  private deMinimis(): Observable<ContractingPartnerStateAidDeMinimisSectionDTO> {
+    const initialData$ = this.partnerId$.pipe(
+      switchMap((partnerId) => this.projectContractingPartnerStateAidService.getDeMinimisSection(partnerId)),
+    );
 
-    private GBER(): Observable<ContractingPartnerStateAidGberSectionDTO | null> {
-        const initialData$ = this.partnerId$
-            .pipe(
-                switchMap((partnerId) => this.projectContractingPartnerStateAidService.getGberSection(partnerId as number)),
-            );
-        return merge(initialData$, this.savedGber$)
-            .pipe(
-                shareReplay(1)
-            );
-    }
+    return merge(initialData$, this.savedDeMinimis$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
 
-    updateDeMinimis(deMinimis: ContractingPartnerStateAidDeMinimisDTO) {
-        return this.partnerId$
-            .pipe(
-                switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateDeMinimisSection(partnerId as number, deMinimis)),
-                tap(saved => Log.info('Saved deMinimis', saved)),
-                tap(data => this.savedDeMinimis$.next(data))
-            );
-    }
+  private GBER(): Observable<ContractingPartnerStateAidGberSectionDTO> {
+    const initialData$ = this.partnerId$.pipe(
+      switchMap((partnerId) => this.projectContractingPartnerStateAidService.getGberSection(partnerId)),
+    );
 
-    updateGber(gber: ContractingPartnerStateAidGberDTO) {
-        return this.partnerId$
-            .pipe(
-                switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateGberSection(partnerId as number, gber)),
-                tap(saved => Log.info('Saved gber', saved)),
-                tap(data => this.savedGber$.next(data))
-            );
-    }
+    return merge(initialData$, this.savedGber$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
+
+  updateDeMinimis(deMinimis: ContractingPartnerStateAidDeMinimisDTO) {
+    return this.partnerId$
+      .pipe(
+        switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateDeMinimisSection(partnerId, deMinimis)),
+        tap(saved => Log.info('Saved deMinimis', saved)),
+        tap(data => this.savedDeMinimis$.next(data))
+      );
+  }
+
+  updateGber(gber: ContractingPartnerStateAidGberDTO) {
+    return this.partnerId$
+      .pipe(
+        switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateGberSection(partnerId, gber)),
+        tap(saved => Log.info('Saved gber', saved)),
+        tap(data => this.savedGber$.next(data))
+      );
+  }
 
   private userCanEditContractPartner(): Observable<boolean> {
     return combineLatest([
-      this.partnerId$,
+      this.partnerId$.pipe(switchMap(partnerId => this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId))),
       this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
       this.projectStore.userIsProjectOwnerOrEditCollaborator$,
       this.projectStore.collaboratorLevel$
     ]).pipe(
-      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel  ]) =>
-        combineLatest([
-          this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
-          of(userIsPartnerCollaborator),
-          of(hasContractingPartnerEdit),
-          of(isProjectOwnerOrEditCollaborator),
-          of(collaboratorLevel),
-        ])
-      ),
-      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) => hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))),
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) =>
+        hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))),
       shareReplay(1)
     );
   }
@@ -173,28 +166,17 @@ export class ContractPartnerStore {
   private userCanViewContractPartner(): Observable<boolean> {
     return combineLatest([
       this.partnerId$,
+      this.partnerId$.pipe(switchMap(partnerId => this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId))),
       this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
       this.projectStore.userIsProjectOwner$,
       this.projectPartnerStore.partnerSummaries$,
       this.projectStore.projectStatus$
     ]).pipe(
-      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner, partners, projectStatus]:
-          [string | number | null, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
-        combineLatest([
-          of(Number(partnerId)),
-          this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
-          of(userIsPartnerCollaborator),
-          of(hasContractingPartnerView),
-          of(userIsProjectOwner),
-          of(partners),
-          of(projectStatus)
-        ])
-      ),
       map(([partnerId, partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner, partners, projectStatus]:
-      [number, string, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
-          (partners.map(partner => partner.id).find(id => id === partnerId) !== undefined) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus) &&
-          (userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW)))),
+             [number, string, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
+        (partners.map(partner => partner.id).find(id => id === partnerId) !== undefined) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus) &&
+        (userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW)))),
       shareReplay(1)
     );
   }
@@ -202,7 +184,7 @@ export class ContractPartnerStore {
   updateDocumentsLocation(documentsLocation: ContractingPartnerDocumentsLocationDTO): Observable<ContractingPartnerDocumentsLocationDTO> {
     return combineLatest([this.partnerId$, this.projectId$])
       .pipe(
-        switchMap(([partnerId, projectId]) => this.documentsLocationService.updateDocumentsLocation(partnerId as number, projectId,  documentsLocation)),
+        switchMap(([partnerId, projectId]) => this.documentsLocationService.updateDocumentsLocation(partnerId as number, projectId, documentsLocation)),
         tap(saved => Log.info('Saved contract partner documents location', saved)),
         tap(data => this.savedDocumentsLocation$.next(data))
       );
@@ -211,7 +193,7 @@ export class ContractPartnerStore {
   private documentsLocation(): Observable<ContractingPartnerDocumentsLocationDTO> {
     const initialData$ = combineLatest([this.partnerId$, this.projectId$])
       .pipe(
-        switchMap(([partnerId, projectId]) => this.documentsLocationService.getDocumentsLocation(partnerId as number, projectId)),
+        switchMap(([partnerId, projectId]) => this.documentsLocationService.getDocumentsLocation(partnerId, projectId)),
       );
     return merge(initialData$, this.savedDocumentsLocation$)
       .pipe(
@@ -224,8 +206,8 @@ export class ContractPartnerStore {
       this.partnerId$,
       this.contractingStore.partnerSummaries$,
     ]).pipe(
-        map(([partnerId, partners]) =>
-            partners.find(partner => partner.id === Number(partnerId))?.locked || false)
+      map(([partnerId, partners]) =>
+        partners.find(partner => partner.id === Number(partnerId))?.locked || false)
     );
   }
 

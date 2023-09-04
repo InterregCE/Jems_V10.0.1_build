@@ -1,14 +1,12 @@
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {
-  ContractingPartnerDocumentsLocationDTO, OutputNuts,
-} from '@cat/api';
+import {ContractingPartnerDocumentsLocationDTO, OutputNuts,} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, startWith, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, startWith, take, tap} from 'rxjs/operators';
 import {NutsStore} from '@common/services/nuts.store';
 
 @UntilDestroy()
@@ -21,13 +19,11 @@ import {NutsStore} from '@common/services/nuts.store';
 })
 export class ContractPartnerDocumentsLocationComponent {
 
-  @Input()
-  public partnerId: number;
-
-  public nutsConfig = { COUNTRY_AND_NUTS: 'application.config.project.partner.secondary-address.country.and.nuts'};
+  public nutsConfig = {COUNTRY_AND_NUTS: 'application.config.project.partner.secondary-address.country.and.nuts'};
   documentsLocationForm: FormGroup;
   documentsLocationId: number | null = null;
   data$: Observable<{
+    partnerId: number,
     documentsLocation: ContractingPartnerDocumentsLocationDTO;
     canEdit: boolean;
     canView: boolean;
@@ -43,13 +39,16 @@ export class ContractPartnerDocumentsLocationComponent {
     public formService: FormService,
   ) {
     this.data$ = combineLatest([
+      this.contractPartnerStore.partnerId$.pipe(filter(Boolean), map(Number)),
       this.contractPartnerStore.documentsLocation$,
       this.contractPartnerStore.userCanEditContractPartner$,
       this.contractPartnerStore.userCanViewContractPartner$,
       this.nutsStore.getNuts(),
       this.contractPartnerStore.isPartnerLocked$,
     ]).pipe(
-      map(([documentsLocation, canEdit, canView, nuts, isPartnerLocked]) => ({documentsLocation, canEdit, canView, nuts, isPartnerLocked})),
+      map(([partnerId, documentsLocation, canEdit, canView, nuts, isPartnerLocked]) => ({
+        partnerId, documentsLocation, canEdit, canView, nuts, isPartnerLocked
+      })),
       tap(data => this.documentsLocationId = data.documentsLocation.id),
       tap(data => this.initForm(data.canEdit, data.isPartnerLocked)),
       tap(data => this.resetForm(data.documentsLocation)),
@@ -111,8 +110,8 @@ export class ContractPartnerDocumentsLocationComponent {
     return (this.documentsLocationForm.controls?.nuts as FormGroup).controls;
   }
 
-  saveForm(): void {
-    this.contractPartnerStore.updateDocumentsLocation(this.getUpdatedDocumentsLocationDTO())
+  saveForm(partnerId: number): void {
+    this.contractPartnerStore.updateDocumentsLocation(this.getUpdatedDocumentsLocationDTO(partnerId))
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.contract.partner.section.beneficial.owner.save.success')),
@@ -120,10 +119,10 @@ export class ContractPartnerDocumentsLocationComponent {
       ).subscribe();
   }
 
-  private getUpdatedDocumentsLocationDTO(): ContractingPartnerDocumentsLocationDTO {
+  private getUpdatedDocumentsLocationDTO(partnerId: number): ContractingPartnerDocumentsLocationDTO {
     return {
       id: this.documentsLocationId,
-      partnerId: this.partnerId,
+      partnerId: partnerId,
       title: this.documentsLocationForm.controls.title.value,
       firstName: this.documentsLocationForm.controls.firstName.value,
       lastName: this.documentsLocationForm.controls.lastName.value,

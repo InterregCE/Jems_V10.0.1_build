@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   ContractingPartnerStateAidGberDTO,
@@ -16,13 +8,10 @@ import {
   ProjectPartnerSummaryDTO
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
 import {FormService} from '@common/components/section/form/form.service';
-import {map, startWith, take, tap} from 'rxjs/operators';
-import {
-  ContractMonitoringStore
-} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-store';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
+import {ContractMonitoringStore} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-store';
 
 @Component({
   selector: 'jems-gber-state-aid',
@@ -31,27 +20,14 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FormService],
 })
-export class GberStateAidComponent implements OnInit {
-  @Input()
-  gber: ContractingPartnerStateAidGberSectionDTO;
+export class GberStateAidComponent {
 
-  @Input()
-  success$: Observable<any>;
-  @Input()
-  error$: Observable<any>;
-
-  @Output()
-  updateGber: EventEmitter<ContractingPartnerStateAidGberDTO> = new EventEmitter<ContractingPartnerStateAidGberDTO>();
-
-  partnerId: number;
-  projectId: number;
   tableData: AbstractControl[] = [];
   displayedColumns = ['fund', 'coFinancing'];
 
   LocationInAssistedArea = ContractingPartnerStateAidGberDTO.LocationInAssistedAreaEnum;
 
   gberForm: FormGroup;
-  fundList: ProgrammeFundDTO[];
 
   aidIntensityErrors = {
     min: 'project.application.contract.partner.section.gber.aid.intensity.under.minimum'
@@ -63,11 +39,11 @@ export class GberStateAidComponent implements OnInit {
     canEdit: boolean;
     partnerSummary: ProjectPartnerSummaryDTO;
     isPartnerLocked: boolean;
+    gber: ContractingPartnerStateAidGberSectionDTO,
+    fundList: ProgrammeFundDTO[];
   }>;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    protected changeDetectorRef: ChangeDetectorRef,
     private contractPartnerStore: ContractPartnerStore,
     private contractMonitoringStore: ContractMonitoringStore,
     private formBuilder: FormBuilder,
@@ -78,34 +54,22 @@ export class GberStateAidComponent implements OnInit {
       this.contractMonitoringStore.canSetToContracted$,
       this.contractPartnerStore.partnerSummary$,
       this.contractPartnerStore.isPartnerLocked$,
+      this.contractPartnerStore.GBER$,
     ]).pipe(
-      map(([canEdit, partnerSummary, isPartnerLocked]) => ({
+      map(([canEdit, partnerSummary, isPartnerLocked, gber]) => ({
         canEdit,
         partnerSummary,
-        isPartnerLocked
+        isPartnerLocked,
+        gber,
+        fundList: gber.partnerFunds.map(partnerFund => partnerFund.fund),
       })),
-      tap(data => this.fundList = this.gber.partnerFunds.map(fund => fund.fund)),
       tap(data => this.initForm(data)),
-      tap(data => this.resetForm())
+      tap(data => this.resetForm(data.gber))
     );
   }
 
   get funds(): FormArray {
     return this.gberForm.get('funds') as FormArray;
-  }
-
-  ngOnInit(): void {
-    this.success$
-      .pipe(
-        tap((data) => this.formService.setSuccess(data)),
-      )
-      .subscribe();
-
-    this.error$
-      .pipe(
-        tap((data) => this.formService.setError(data)),
-      )
-      .subscribe();
   }
 
   addFunds(funds: PartnerBudgetPerFundDTO[] | null) {
@@ -120,29 +84,34 @@ export class GberStateAidComponent implements OnInit {
     });
   }
 
-  resetForm() {
+  resetForm(gber: ContractingPartnerStateAidGberSectionDTO) {
     this.funds.clear();
-    this.addFunds(this.gber.partnerFunds);
+    this.addFunds(gber.partnerFunds);
     this.tableData = [...this.funds.controls];
-    this.gberForm.controls.dateOfGrantingAid.setValue(this.gber.dateOfGrantingAid);
-    this.gberForm.controls.amountGrantingAid.setValue(this.gber.amountGrantingAid);
-    this.gberForm.controls.aidIntensity.setValue(this.gber.aidIntensity === 0 ? this.minimumPercentage : this.gber.aidIntensity);
-    this.gberForm.controls.sector.setValue(this.gber.naceGroupLevel);
-    this.gberForm.controls.locationInAssistedArea.setValue(this.gber.locationInAssistedArea);
-    this.gberForm.controls.comment.setValue(this.gber.comment);
+    this.gberForm.controls.dateOfGrantingAid.setValue(gber.dateOfGrantingAid);
+    this.gberForm.controls.amountGrantingAid.setValue(gber.amountGrantingAid);
+    this.gberForm.controls.aidIntensity.setValue(gber.aidIntensity === 0 ? this.minimumPercentage : gber.aidIntensity);
+    this.gberForm.controls.sector.setValue(gber.naceGroupLevel);
+    this.gberForm.controls.locationInAssistedArea.setValue(gber.locationInAssistedArea);
+    this.gberForm.controls.comment.setValue(gber.comment);
     this.gberForm.controls.dateOfGrantingAid.disable();
     this.gberForm.controls.sector.disable();
     this.funds.disable();
-    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
-  saveForm() {
-    this.updateGber.emit(this.buildSaveEntity());
+  saveForm(partnerId: number) {
+    const gber = this.buildSaveEntity(partnerId)
+
+    this.contractPartnerStore.updateGber(gber).pipe(
+      take(1),
+      tap(() => this.formService.setSuccess('project.application.contract.partner.section.gber.saved')),
+      catchError(async (error) => this.formService.setError(error)),
+    ).subscribe();
   }
 
-  buildSaveEntity(): ContractingPartnerStateAidGberDTO {
+  buildSaveEntity(partnerId: number): ContractingPartnerStateAidGberDTO {
     return {
-      partnerId: this.gber.partnerId,
+      partnerId: partnerId,
       aidIntensity: this.gberForm.controls.aidIntensity.value,
       locationInAssistedArea: this.gberForm.controls.locationInAssistedArea.value,
       comment: this.gberForm.controls.comment.value,
@@ -151,8 +120,7 @@ export class GberStateAidComponent implements OnInit {
   }
 
   private initForm(data: any): void {
-
-    this.minimumPercentage = Math.min(...this.gber.partnerFunds.map(fund => fund.percentage));
+    this.minimumPercentage = Math.min(...data.gber.partnerFunds.map((fund: PartnerBudgetPerFundDTO) => fund.percentage));
     this.gberForm = this.formBuilder.group({
       dateOfGrantingAid: [''],
       amountGrantingAid: [''],
@@ -162,7 +130,7 @@ export class GberStateAidComponent implements OnInit {
       comment: ['', Validators.maxLength(2000)],
       funds: this.formBuilder.array([]),
     });
-    this.addFunds(this.gber.partnerFunds);
+    this.addFunds(data.gber.partnerFunds);
     this.formService.init(this.gberForm, new Observable<boolean>().pipe(startWith(data.canEdit && !data.isPartnerLocked)));
     this.gberForm.controls.dateOfGrantingAid.disable();
     this.gberForm.controls.sector.disable();
