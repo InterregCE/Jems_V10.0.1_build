@@ -36,7 +36,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
         val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
+            .mapTo(HashSet()) { it.id }
 
         val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
             .content.associateBy { it.id }
@@ -51,7 +51,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
         val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
+            .mapTo(HashSet()) { it.id }
 
         val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
             .content.associateBy { it.id }
@@ -80,7 +80,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
             expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId = projectReportId)
                 .associateBy { it.expenditure.id }
         val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
+            .mapTo(HashSet()) { it.id }
 
         val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
             .content.associateBy { it.id }

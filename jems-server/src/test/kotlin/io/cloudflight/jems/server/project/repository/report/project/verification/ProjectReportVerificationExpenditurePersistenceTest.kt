@@ -295,9 +295,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
         val certificate = mockk<ProjectPartnerReportSubmissionSummary>()
         every { certificate.id } returns 101L
-        every { certificate.partnerId } returns PARTNER_ID
 
-        val certificateIds = listOf(certificate).mapTo(HashSet()) { it.partnerId }
+        val certificateIds = setOf(certificate.id)
 
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
@@ -361,9 +360,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
         val certificate = mockk<ProjectPartnerReportSubmissionSummary>()
         every { certificate.id } returns 101L
-        every { certificate.partnerId } returns PARTNER_ID
 
-        val certificateIds = listOf(certificate).mapTo(HashSet()) { it.partnerId }
+        val certificateIds = setOf(certificate.id)
 
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
