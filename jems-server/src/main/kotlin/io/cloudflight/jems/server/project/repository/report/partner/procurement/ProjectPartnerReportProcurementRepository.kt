@@ -16,6 +16,8 @@ interface ProjectPartnerReportProcurementRepository :
 
     fun findByReportEntityPartnerIdAndReportEntityIdAndId(partnerId: Long, reportId: Long, id: Long): ProjectPartnerReportProcurementEntity
 
+    fun findAllByReportEntityPartnerIdIn(partnerIds: Set<Long>): List<ProjectPartnerReportProcurementEntity>
+
     fun findTop50ByReportEntityIdIn(reportIds: Set<Long>): List<ProjectPartnerReportProcurementEntity>
 
     fun countByReportEntityPartnerId(partnerId: Long): Long

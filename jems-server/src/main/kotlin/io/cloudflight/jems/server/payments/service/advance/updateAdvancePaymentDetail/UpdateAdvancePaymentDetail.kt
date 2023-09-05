@@ -6,13 +6,13 @@ import io.cloudflight.jems.server.payments.authorization.CanUpdateAdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
-import io.cloudflight.jems.server.payments.service.advancePaymentAuthorized
-import io.cloudflight.jems.server.payments.service.advancePaymentCreated
-import io.cloudflight.jems.server.payments.service.advancePaymentConfirmed
-import io.cloudflight.jems.server.payments.service.advancePaymentSettlementCreated
-import io.cloudflight.jems.server.payments.service.advancePaymentSettlementDeleted
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
+import io.cloudflight.jems.server.payments.service.advancePaymentAuthorized
+import io.cloudflight.jems.server.payments.service.advancePaymentConfirmed
+import io.cloudflight.jems.server.payments.service.advancePaymentCreated
+import io.cloudflight.jems.server.payments.service.advancePaymentSettlementCreated
+import io.cloudflight.jems.server.payments.service.advancePaymentSettlementDeleted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -129,7 +129,7 @@ class UpdateAdvancePaymentDetail(
 
     private fun AdvancePaymentUpdate.getDeletedSettlements(existing: List<AdvancePaymentSettlement>?): List<AdvancePaymentSettlement>  {
         val updatedSettlementsIds = this.paymentSettlements.map { it.id }
-        return existing?.filter { existing -> existing.id !in updatedSettlementsIds } ?: emptyList()
+        return existing?.filter { it.id !in updatedSettlementsIds } ?: emptyList()
     }
 
     private fun AdvancePaymentUpdate.getNewSettlements() = this.paymentSettlements.filter { it.id == 0L }
