@@ -21,7 +21,6 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:4200',
     specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**'],
-    excludeSpecPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts'],
     async setupNodeEvents(on, config) {
       on('task', {
         async parseXLSX(subject) {
