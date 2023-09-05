@@ -1,5 +1,5 @@
 <jems-main-page-template *ngIf="data$ | async as data">
-    <jems-form (discard)="resetForm(data.paymentDetail)"
+    <jems-form (discard)="resetForm(data.paymentDetail, data.userCanEdit)"
                (save)="updateAdvancePayment()"
                [formGroup]="advancePaymentForm">
         <div jemsMultiColumnRow>
@@ -207,7 +207,7 @@
                                     <div class="justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
                                     <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
                                     <div>{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
-                                    <div *ngIf="userCanEdit$ | async">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                                    <div *ngIf="data.userCanEdit">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
                                 </div>
 
                                 <div *ngFor="let settlement of settlementsArray.controls; let i=index">
@@ -256,7 +256,7 @@
                                                 </mat-form-field>
                                             </div>
 
-                                            <div *ngIf="userCanEdit$ | async">
+                                            <div *ngIf="data.userCanEdit">
                                                 <button (click)="removeSettlement(i)"
                                                         class="delete-button"
                                                         color="accent" mat-icon-button
@@ -271,7 +271,7 @@
                                     </ng-container>
                                 </div>
                             </div>
-                            <button *ngIf="(userCanEdit$ | async) && (settlementsArray.length < 25)" mat-stroked-button
+                            <button *ngIf="data.userCanEdit && (settlementsArray.length < 25)" mat-stroked-button
                                     class="mt-2"
                                     (click)="addSettlement()">
                                 {{'payments.advance.payments.detail.settlement.add.button' | translate}}

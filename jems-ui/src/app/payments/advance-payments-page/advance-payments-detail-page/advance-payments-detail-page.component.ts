@@ -25,7 +25,6 @@ import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {NumberService} from '@common/services/number.service';
-import {PaymentsToProjectPageStore} from '../../payments-to-projects-page/payments-to-projects-page.store';
 
 @UntilDestroy()
 @Component({
@@ -86,6 +85,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   data$: Observable<{
     paymentDetail: AdvancePaymentDetailDTO;
     currentUser: UserDTO;
+    userCanEdit: boolean;
   }>;
   contractedProjects$: Observable<OutputProjectSimple[]>;
   partnerData$: Observable<ProjectPartnerPaymentSummaryDTO[]>;
@@ -102,9 +102,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private localeDatePipe: LocaleDatePipe,
               private router: RoutingService,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef,
-              private paymentToProjectsStore: PaymentsToProjectPageStore,){
-    this.userCanEdit$ = this.paymentToProjectsStore.userCanEdit$;
+              private changeDetectorRef: ChangeDetectorRef,){
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.projectCustomIdentifierSearchForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch)?.valueChanges
@@ -125,18 +123,20 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.data$ = combineLatest([
       this.advancePaymentsDetailPageStore.advancePaymentDetail$,
       this.securityService.currentUserDetails,
+      this.advancePaymentsDetailPageStore.userCanEdit$
     ])
       .pipe(
-        map(([paymentDetail, currentUser]: any) => ({
+        map(([paymentDetail, currentUser, userCanEdit]: any) => ({
           paymentDetail,
           currentUser,
+          userCanEdit
         })),
         tap((data) => this.initialAdvancePaymentDetail = data.paymentDetail),
         tap(data => this.currentUserDetails = data.currentUser),
         tap(data => this.loadData(data.paymentDetail)),
         tap(data => this.getSelectedProject(data.paymentDetail.projectCustomIdentifier)),
         tap(data => this.getSelectedPartner(data.paymentDetail.partnerId)),
-        tap(data => this.resetForm(data.paymentDetail))
+        tap(data => this.resetForm(data.paymentDetail, data.userCanEdit))
       );
     this.formService.init(this.advancePaymentForm, of(true));
   }
@@ -205,7 +205,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return undefined;
   }
 
-  resetForm(paymentDetail: AdvancePaymentDetailDTO) {
+  resetForm(paymentDetail: AdvancePaymentDetailDTO, userCanEdit: boolean) {
     this.advancePaymentsDetailPageStore.searchProjectsByName$.next(paymentDetail.projectCustomIdentifier ? paymentDetail.projectCustomIdentifier : ' ');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue('');
@@ -266,10 +266,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.disableAuthorizationCheckbox(paymentDetail);
     this.disableConfirmationCheckbox(paymentDetail.paymentSettlements);
 
-    this.advancePaymentsDetailPageStore.userCanEdit$.pipe(
-      tap(userCanEdit => this.disableAllFields(userCanEdit)),
-      untilDestroyed(this)
-    ).subscribe();
+    this.disableAllFields(userCanEdit);
   }
 
   disableAllFields(userCanEdit: boolean) {
