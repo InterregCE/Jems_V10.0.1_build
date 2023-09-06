@@ -25,9 +25,9 @@ export class PaymentsToProjectDetailPageConstants {
   public static columnsWidths = [
     {minInRem: 4, maxInRem: 4}, //Installment number (just to align with the name)
     {minInRem: 9, maxInRem: 9}, //Amount paid
-    {minInRem: 9, maxInRem: 9}, //Payment date
     {minInRem: 12},             //Comment
     {minInRem: 10, maxInRem: 12}, //Authorise payment
+    {minInRem: 9, maxInRem: 9}, //Payment date
     {minInRem: 10, maxInRem: 12}, //Confirm payment
     {minInRem: 3, maxInRem: 3}  //Actions
   ];

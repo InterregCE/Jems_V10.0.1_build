@@ -32,9 +32,9 @@
                         <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
                         <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
                         <div class="column-advance-amount justify-start">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
-                        <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
                         <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
                         <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
+                        <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
                         <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
                         <div class="column-expand"><!-- Empty - just for alignment reasons --></div>
                     </div>
@@ -129,21 +129,6 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-date">
-                                <mat-form-field class="w-100">
-                                    <input name="paymentDate"
-                                           class="placeholder-required"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                           [matDatepicker]="paymentDatePicker">
-                                    <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
-                                        [messages]="constants.inputErrorMessages"
-                                        [args] = "{}"></jems-form-field-errors>
-                                    </mat-error>
-                                    <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
-                                    <mat-datepicker #paymentDatePicker></mat-datepicker>
-                                </mat-form-field>
-                            </div>
 
 
                             <div class="column-comment">
@@ -172,6 +157,22 @@
                                         <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="column-date">
+                                <mat-form-field class="w-100">
+                                    <input name="paymentDate"
+                                           class="placeholder-required"
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                           [matDatepicker]="paymentDatePicker">
+                                    <mat-error>
+                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
+                                                                [messages]="constants.inputErrorMessages"
+                                                                [args] = "{}"></jems-form-field-errors>
+                                    </mat-error>
+                                    <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #paymentDatePicker></mat-datepicker>
+                                </mat-form-field>
                             </div>
 
                             <div class="column-checkbox justify-start">
