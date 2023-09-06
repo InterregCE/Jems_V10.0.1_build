@@ -54,8 +54,10 @@ class SubmitProjectReport(
     @ExceptionWrapper(SubmitProjectReportException::class)
     override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId, reportId)
-        val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
         validateReportIsStillDraft(report)
+
+        deleteDataBasedOnContractingDeadlineType(projectId, report)
+        val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
 
         saveCurrentSpendingProfile(reportId)
         saveCurrentCoFinancing(certificates, projectId, reportId)
@@ -63,8 +65,6 @@ class SubmitProjectReport(
         saveCurrentUnitCosts(certificates, projectId, reportId)
         saveCurrentLumpSums(certificates, projectId, reportId)
         saveCurrentInvestments(certificates, projectId, reportId)
-
-        deleteContentTypeDataIfNotNeeded(projectId, report)
 
         return reportPersistence.submitReport(
             projectId = projectId,
@@ -159,14 +159,18 @@ class SubmitProjectReport(
         )
     }
 
-    private fun deleteContentTypeDataIfNotNeeded(
-        projectId: Long,
-        report: ProjectReportModel,
-    ) {
-        if (report.type!! == ContractingDeadlineType.Finance) {
-            reportResultPrinciplePersistence.deleteProjectResultPrinciples(report.id)
-            reportWorkPlanPersistence.deleteWorkPlan(projectId, report.id)
+    private fun deleteDataBasedOnContractingDeadlineType(projectId: Long, report: ProjectReportModel) =
+        when(report.type!!) {
+            ContractingDeadlineType.Finance -> {
+                reportResultPrinciplePersistence.deleteProjectResultPrinciples(report.id)
+                reportWorkPlanPersistence.deleteWorkPlan(projectId, report.id)
+            }
+            ContractingDeadlineType.Content -> {
+                reportCertificatePersistence.deselectCertificatesOfProjectReport(report.id)
+            }
+            ContractingDeadlineType.Both -> {
+                // intentionally left empty
+            }
         }
-    }
 
 }
