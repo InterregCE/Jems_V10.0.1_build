@@ -130,7 +130,7 @@ class ProjectReportCreatePersistenceProvider(
     }
 
     private fun persistCertificatesForFinanceReport(reportEntity: ProjectReportEntity) {
-        if (reportEntity.type!!.hasFinance()) {
+        if (reportEntity.fetchType().hasFinance()) {
             val partnerIds = partnerRepository.findTop50ByProjectId(reportEntity.projectId)
                 .map { it.id }.toSet()
 
