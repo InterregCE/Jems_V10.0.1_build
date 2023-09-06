@@ -65,8 +65,8 @@ interface PaymentPersistence {
 
     fun deleteContributionsWhenReadyForPaymentReverted(projectId: Long, orderNrs: Set<Int>)
 
-    fun getCoFinancingAndContributionsCumulative(partnerId: Long): ReportExpenditureCoFinancingColumn
+    fun getFtlsCumulativeForPartner(partnerId: Long): ReportExpenditureCoFinancingColumn
 
-    fun getPaymentsCumulativeForProject(projectId: Long): PaymentCumulativeData
+    fun getFtlsCumulativeForProject(projectId: Long): PaymentCumulativeData
 
 }

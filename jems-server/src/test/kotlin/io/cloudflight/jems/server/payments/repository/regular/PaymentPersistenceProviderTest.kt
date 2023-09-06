@@ -65,7 +65,6 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
@@ -903,11 +902,11 @@ class PaymentPersistenceProviderTest: UnitTest() {
             automaticPublicContribution = BigDecimal.valueOf(170L),
             privateContribution = BigDecimal.valueOf(190L),
         )
-        every { paymentPartnerRepository.getPaymentCumulative(partnerId_5) } returns listOf(
+        every { paymentPartnerRepository.getPaymentOfTypeCumulativeForPartner(PaymentType.FTLS, partnerId_5) } returns listOf(
             Pair(45L, BigDecimal.valueOf(750L)),
             Pair(46L, BigDecimal.valueOf(347L)),
         )
-        assertThat(paymentPersistenceProvider.getCoFinancingAndContributionsCumulative(partnerId_5)).isEqualTo(
+        assertThat(paymentPersistenceProvider.getFtlsCumulativeForPartner(partnerId_5)).isEqualTo(
             ReportExpenditureCoFinancingColumn(
                 funds = mapOf(
                     45L to BigDecimal.valueOf(750L),
@@ -939,7 +938,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             Pair(47L, BigDecimal.valueOf(111L)),
             Pair(48L, BigDecimal.valueOf(333L)),
         )
-        assertThat(paymentPersistenceProvider.getPaymentsCumulativeForProject(projectId)).isEqualTo(
+        assertThat(paymentPersistenceProvider.getFtlsCumulativeForProject(projectId)).isEqualTo(
             PaymentCumulativeData(
                 amounts = PaymentCumulativeAmounts(
                     funds = mapOf(
