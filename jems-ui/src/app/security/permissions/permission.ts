@@ -485,6 +485,14 @@ export class Permission {
           ],
         },
         {
+          name: 'user.project.reports',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.ProjectReportsRetrieve,
+          ],
+          viewTooltip: 'permission.top.bar.project.reports'
+        },
+        {
           name: 'user.partner.reports',
           mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [
