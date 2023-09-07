@@ -58,6 +58,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -324,12 +326,13 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         clearMocks(reportPersistence, reportExpenditurePersistence, reportExpenditureVerificationPersistence, auditPublisher)
     }
 
-    @Test
-    fun submit() {
+    @ParameterizedTest(name = "submit - clear verification {0}")
+    @ValueSource(booleans = [true, false])
+    fun `submit - clear verification`(clearVerification: Boolean) {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.ReOpenInControlLast
         every { report.id } returns 35L
-        every { report.lastControlReopening } returns null
+        every { report.lastControlReopening } returns if (clearVerification) null else mockk()
         every { report.identification.coFinancing } returns coFinancing
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
@@ -381,9 +384,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every {
             reportExpenditureVerificationPersistence
                 .updateExpenditureCurrencyRatesAndClearVerification(
-                    PARTNER_ID,
                     35L,
-                    capture(slotRates)
+                    capture(slotRates),
+                    clearVerification,
                 )
 
         } returns listOf(
@@ -403,7 +406,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         submitReport.submit(PARTNER_ID, 35L)
 
-        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, ReportStatus.InControl, any(), any()) }
+        val expectedStatus = if (clearVerification) ReportStatus.InControl else ReportStatus.ReOpenCertified
+        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedStatus, any(), any()) }
         verify(exactly = 1) { reportExpenditurePersistence.markAsSampledAndLock(setOf(21L)) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
@@ -474,9 +478,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every {
             reportExpenditureVerificationPersistence
                 .updateExpenditureCurrencyRatesAndClearVerification(
-                    PARTNER_ID,
                     36L,
-                    capture(slotRates)
+                    capture(slotRates),
+                    true,
                 )
 
         } returns emptyList()
@@ -526,6 +530,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     fun `submit - needed rates not available`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.Draft
+        every { report.lastControlReopening } returns null
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 40L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 40L) } returns PreConditionCheckResult(emptyList(), true)

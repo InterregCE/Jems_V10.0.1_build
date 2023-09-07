@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 
-import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -19,7 +18,7 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
 
     fun findAllByPartnerReportProjectReportId(projectReportId: Long): List<PartnerReportExpenditureCostEntity>
 
-    fun findByPartnerReportOrderByIdDesc(reportEntity: ProjectPartnerReportEntity): MutableList<PartnerReportExpenditureCostEntity>
+    fun findByPartnerReportIdOrderByIdDesc(reportId: Long): MutableList<PartnerReportExpenditureCostEntity>
 
     fun existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 

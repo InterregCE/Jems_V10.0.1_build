@@ -18,9 +18,9 @@ interface ProjectPartnerReportExpenditureVerificationPersistence {
     ): List<ProjectPartnerReportExpenditureVerification>
 
     fun updateExpenditureCurrencyRatesAndClearVerification(
-        partnerId: Long,
         reportId: Long,
         newRates: Collection<ProjectPartnerReportExpenditureCurrencyRateChange>,
+        clearVerification: Boolean,
     ): List<ProjectPartnerReportExpenditureCost>
 
 }

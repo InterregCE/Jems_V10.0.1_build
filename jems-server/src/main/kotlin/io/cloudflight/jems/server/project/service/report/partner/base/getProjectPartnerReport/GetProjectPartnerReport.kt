@@ -38,7 +38,7 @@ class GetProjectPartnerReport(
 
     private fun Page<ProjectPartnerReportSummary>.removeEligibleAfterControlFromNotInControlOnes() =
         this.onEach {
-            if (it.status.controlNotStartedYet()) {
+            if (!it.status.isFinalized()) {
                 it.totalEligibleAfterControl = null
             }
             if (it.status.isOpenForNumbersChanges()) {

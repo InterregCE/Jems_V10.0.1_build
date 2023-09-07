@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.expenditure
 
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
-import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
-    private val reportRepository: ProjectPartnerReportRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportExpenditureParkedRepository: PartnerReportParkedExpenditureRepository,
 ) : ProjectPartnerReportExpenditureVerificationPersistence {
@@ -66,23 +64,24 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
 
     @Transactional
     override fun updateExpenditureCurrencyRatesAndClearVerification(
-        partnerId: Long,
         reportId: Long,
         newRates: Collection<ProjectPartnerReportExpenditureCurrencyRateChange>,
+        clearVerification: Boolean,
     ): List<ProjectPartnerReportExpenditureCost> {
-        val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
         val newById = newRates.associateBy { it.id }
 
-        return reportExpenditureRepository.findByPartnerReportOrderByIdDesc(reportEntity).onEach {
+        return reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(reportId).onEach {
             // update rates
             if (newById.containsKey(it.id)) {
                 it.currencyConversionRate = newById[it.id]!!.currencyConversionRate
                 it.declaredAmountAfterSubmission = newById[it.id]!!.declaredAmountAfterSubmission
             }
             // clear verification
-            it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
-            it.deductedAmount = BigDecimal.ZERO
-            it.typologyOfErrorId = null
+            if (clearVerification) {
+                it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
+                it.deductedAmount = BigDecimal.ZERO
+                it.typologyOfErrorId = null
+            }
         }.toModel()
     }
 

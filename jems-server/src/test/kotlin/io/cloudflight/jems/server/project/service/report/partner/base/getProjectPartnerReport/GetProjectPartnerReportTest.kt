@@ -89,11 +89,11 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(11L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
             report(12L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
             report(13L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
-            report(14L, ReportStatus.InControl),
-            report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
-            report(16L, ReportStatus.ReOpenInControlLimited),
+            report(14L, ReportStatus.InControl).copy(totalEligibleAfterControl = null),
+            report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null),
+            report(16L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null),
             report(17L, ReportStatus.Certified),
-            report(18L, ReportStatus.ReOpenCertified)
+            report(18L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null),
         )
     }
 
@@ -114,13 +114,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(20L, status).copy(
                 deletable = false,
                 // test removal of total when status is not yet in control
-                totalEligibleAfterControl = if (status in setOf(
-                        ReportStatus.InControl,
-                        ReportStatus.ReOpenInControlLast,
-                        ReportStatus.ReOpenInControlLimited,
-                        ReportStatus.Certified,
-                        ReportStatus.ReOpenCertified,
-                )) BigDecimal.TEN else null,
+                totalEligibleAfterControl = if (status == ReportStatus.Certified) BigDecimal.TEN else null,
                 totalAfterSubmitted = if (status in setOf(
                     ReportStatus.Draft,
                     ReportStatus.ReOpenSubmittedLast,
@@ -131,11 +125,11 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(22L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
             report(23L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
             report(24L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
-            report(25L, ReportStatus.InControl),
-            report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
-            report(27L, ReportStatus.ReOpenInControlLimited),
+            report(25L, ReportStatus.InControl).copy(totalEligibleAfterControl = null),
+            report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null),
+            report(27L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null),
             report(28L, ReportStatus.Certified),
-            report(29L, ReportStatus.ReOpenCertified),
+            report(29L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null),
         )
     }
 

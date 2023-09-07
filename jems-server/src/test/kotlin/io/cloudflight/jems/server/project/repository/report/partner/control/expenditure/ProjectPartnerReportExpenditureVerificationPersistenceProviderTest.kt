@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
-import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
@@ -30,6 +29,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -191,9 +192,6 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
     }
 
     @MockK
-    private lateinit var reportRepository: ProjectPartnerReportRepository
-
-    @MockK
     private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
 
     @MockK
@@ -204,7 +202,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportRepository, reportExpenditureRepository)
+        clearMocks(reportExpenditureRepository, reportExpenditureParkedRepository)
     }
 
     @Test
@@ -262,6 +260,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             reportId = 44L,
             partnerId = PARTNER_ID,
         ) } returns mutableListOf(expenditure)
+
+        every { reportExpenditureParkedRepository.findAllByParkedFromExpenditureIdIn(setOf(14L)) } returns emptyList()
 
         assertThat(persistence.getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 44L))
             .containsExactly(
@@ -330,36 +330,32 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         assertThat(result.first().declaredAmountAfterSubmission).isEqualByComparingTo(BigDecimal.valueOf(3680))
     }
 
-    @Test
-    fun updateExpenditureCurrencyRatesAndClearVerification() {
+    @ParameterizedTest(name = "updateExpenditureCurrencyRatesAndClearVerification - clear verification {0}")
+    @ValueSource(booleans = [true, false])
+    fun updateExpenditureCurrencyRatesAndClearVerification(clearVerification: Boolean) {
         val report = mockk<ProjectPartnerReportEntity>()
         every { report.id } returns 55L
         every { report.number } returns 16
-        every { reportRepository.findByIdAndPartnerId(id = 55L, PARTNER_ID) } returns report
 
         val rate = BigDecimal.valueOf(15L, 1)
         val declared = BigDecimal.valueOf(33654L, 2)
 
         val expenditure = dummyExpenditure(780L, report, gdpr = false)
-        expenditure.partOfSample = true
-        expenditure.partOfSampleLocked = true
         expenditure.deductedAmount = BigDecimal.ONE
+
         val expenditureReIncluded = dummyExpenditure(781L, report, gdpr = false, unParkedFrom = mockk())
-        expenditureReIncluded.partOfSample = true
-        expenditureReIncluded.partOfSampleLocked = true
         expenditureReIncluded.deductedAmount = BigDecimal.ONE
+
         // verify before test that all values are not same as after test
         setOf(expenditure, expenditureReIncluded).forEach {
             assertThat(it.currencyConversionRate).isNotEqualByComparingTo(rate)
             assertThat(it.declaredAmountAfterSubmission).isNotEqualByComparingTo(declared)
-            assertThat(it.partOfSample).isTrue()
-            assertThat(it.partOfSampleLocked).isTrue()
             assertThat(it.certifiedAmount).isNotEqualByComparingTo(it.declaredAmountAfterSubmission)
             assertThat(it.deductedAmount).isNotEqualByComparingTo(BigDecimal.ZERO)
             assertThat(it.typologyOfErrorId).isNotNull()
         }
 
-        every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
+        every { reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(55L) } returns
                 mutableListOf(expenditure, expenditureReIncluded)
 
         val newRate = ProjectPartnerReportExpenditureCurrencyRateChange(
@@ -368,7 +364,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             declaredAmountAfterSubmission = declared,
         )
 
-        assertThat(persistence.updateExpenditureCurrencyRatesAndClearVerification(PARTNER_ID, reportId = 55L, setOf(newRate)))
+        assertThat(persistence.updateExpenditureCurrencyRatesAndClearVerification(reportId = 55L, setOf(newRate), clearVerification))
             .containsExactly(
                 // updated rate and cleared verification
                 dummyExpectedExpenditure(780L),

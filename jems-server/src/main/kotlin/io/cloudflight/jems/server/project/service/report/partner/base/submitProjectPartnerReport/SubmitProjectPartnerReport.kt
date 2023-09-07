@@ -76,7 +76,8 @@ class SubmitProjectPartnerReport(
             throw SubmissionNotAllowed()
         }
 
-        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId)
+        val newStatus = report.status.submitStatus(report.hasControlReopenedBefore())
+        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId, newStatus)
         val needsRecalculation = report.status.isOpenForNumbersChanges()
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
@@ -88,7 +89,7 @@ class SubmitProjectPartnerReport(
             )
         }
 
-        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = report.status.submitStatus(report.hasControlReopenedBefore()),
+        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = newStatus,
             firstSubmissionTime = if (report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { partnerReportSummary ->
@@ -134,7 +135,11 @@ class SubmitProjectPartnerReport(
         saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, report.id) // table 5
     }
 
-    private fun fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
+    private fun fillInVerificationForExpendituresAndSaveCurrencyRates(
+        partnerId: Long,
+        reportId: Long,
+        newStatus: ReportStatus,
+    ): List<ProjectPartnerReportExpenditureCost> {
         val expenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
         val usedCurrencies = expenditures.mapTo(HashSet()) { it.currencyCode }
 
@@ -148,9 +153,9 @@ class SubmitProjectPartnerReport(
             throw CurrencyRatesMissing(notExistingRates)
 
         return reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(
-            partnerId = partnerId,
             reportId = reportId,
             newRates = expenditures.fillCurrencyRates(rates).toChanges(),
+            clearVerification = newStatus != ReportStatus.ReOpenCertified,
         )
     }
 
