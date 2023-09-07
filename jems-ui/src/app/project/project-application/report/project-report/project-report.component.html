@@ -5,7 +5,10 @@
         subTitleKey="project.application.project.report.title"
         [isVersionedData]="false">
 
-    <h3>{{'project.application.project.report.title' | translate}}</h3>
+    <div jemsFormLayout class="mb-4">
+        <h3>{{'project.application.project.report.title' | translate}}</h3>
+        <p>{{'project.application.project.report.description' | translate}}</p>
+    </div>
     <ng-container *ngIf="(pageStore.userCanCreateReport$ | async)">
         <p class="mb-3">
             <button jemsText class="action-button"

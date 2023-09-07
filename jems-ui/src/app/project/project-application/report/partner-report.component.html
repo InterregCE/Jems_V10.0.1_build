@@ -3,8 +3,12 @@
                             titleKey="project.application.reporting.title"
                             subTitleKey="project.application.partner.reports.title"
                             [isVersionedData]="false">
-    <h3>{{'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
-        : {partner: getPartnerTranslationString(data.partner)} }}</h3>
+    <div jemsFormLayout class="mb-4">
+        <h3>{{'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
+            : {partner: getPartnerTranslationString(data.partner)} }}</h3>
+        <p>{{'project.application.partner.reports.description' | translate}}</p>
+    </div>
+
     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
                 [show]="!data.partner.active">
