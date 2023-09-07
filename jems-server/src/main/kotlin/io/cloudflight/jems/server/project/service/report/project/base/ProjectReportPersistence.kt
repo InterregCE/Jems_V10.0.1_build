@@ -16,6 +16,8 @@ interface ProjectReportPersistence {
 
     fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel>
 
+    fun listProjectReports(projectIds: Set<Long>, statuses: Set<ProjectReportStatus>, pageable: Pageable): Page<ProjectReportModel>
+
     fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData>
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel

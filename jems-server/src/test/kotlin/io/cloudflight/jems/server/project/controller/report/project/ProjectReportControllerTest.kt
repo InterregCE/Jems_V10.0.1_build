@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.project.base.createProjectReport.CreateProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.finalizeVerification.FinalizeVerificationProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.getMyProjectReports.GetMyProjectReportsInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
@@ -96,6 +97,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     private val reportSummary = ProjectReportSummary(
         id = 52L,
+        projectId = 15L,
         reportNumber = 6,
         status = ProjectReportStatus.Draft,
         linkedFormVersion = "4.0",
@@ -118,6 +120,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     private val expectedReportSummary = ProjectReportSummaryDTO(
         id = 52L,
+        projectId = 15L,
         reportNumber = 6,
         status = ProjectReportStatusDTO.Draft,
         linkedFormVersion = "4.0",
@@ -164,6 +167,9 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor
+
+    @MockK
+    private lateinit var getMyProjectReports: GetMyProjectReportsInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -277,5 +283,12 @@ internal class ProjectReportControllerTest : UnitTest() {
     fun finalizeVerificationOnProjectReport() {
         every { finalizeVerificationProjectReport.finalizeVerification(6L) } returns ProjectReportStatus.Finalized
         assertThat(controller.finalizeVerificationOnProjectReport(22L, reportId = 6L)).isEqualTo(ProjectReportStatusDTO.Finalized)
+    }
+
+    @Test
+    fun getMyProjectReports() {
+        every { getMyProjectReports.findAllOfMine(Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
+        assertThat(controller.getMyProjectReports(Pageable.unpaged()).content)
+            .containsExactly(expectedReportSummary)
     }
 }

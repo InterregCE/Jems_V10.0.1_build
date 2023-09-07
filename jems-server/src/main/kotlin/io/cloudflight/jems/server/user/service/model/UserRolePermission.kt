@@ -92,6 +92,7 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     // region top navigation
     PartnerReportsRetrieve("PartnerReportsRetrieve"),
+    ProjectReportsRetrieve("ProjectReportsRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
     NotificationsRetrieve("NotificationsRetrieve"),

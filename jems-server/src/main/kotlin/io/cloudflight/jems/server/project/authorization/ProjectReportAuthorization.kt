@@ -17,6 +17,10 @@ annotation class CanEditProjectReport
 annotation class  CanCreateProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportsRetrieve')")
+annotation class CanViewMyProjectReports
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canViewReport(#projectId)")
 annotation class CanRetrieveProjectReport
 

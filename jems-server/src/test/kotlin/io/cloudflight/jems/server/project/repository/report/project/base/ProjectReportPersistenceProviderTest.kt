@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
@@ -220,6 +221,38 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { query.  fetchResults() } returns result
 
         assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
+    }
+
+    @Test
+    fun listProjectReports() {
+        val projectId = 95L
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any()) } returns query
+        every { query.from(any()) } returns query
+        every { query.leftJoin(any<EntityPath<Any>>()) } returns query
+        every { query.on(any()) } returns query
+        every { query.where(any()) } returns query
+        every { query.groupBy(any()) } returns query
+        every { query.having(any()) } returns query
+        every { query.offset(any()) } returns query
+        every { query.limit(any()) } returns query
+        every { query.orderBy(any()) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, ProjectReportEntity::class.java) } returns reportEntity(42L, projectId)
+        every { tuple.get(1, ReportProjectCertificateCoFinancingEntity::class.java) } returns reportProjectCertificateCoFinancingEntity()
+
+        val result = mockk<QueryResults<Tuple>>()
+        every { result.total } returns 1
+        every { result.results } returns listOf(tuple)
+        every { query.  fetchResults() } returns result
+
+        assertThat(persistence.listProjectReports(
+            setOf(projectId),
+            setOf(ProjectReportStatus.Submitted),
+            Pageable.ofSize(1)))
+            .containsExactly(reportForListing(42L, projectId))
     }
 
     @Test

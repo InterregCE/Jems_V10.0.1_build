@@ -83,6 +83,7 @@ internal class GetProjectReportTest : UnitTest() {
 
         val expectedReportSummary = ProjectReportSummary(
             id = 14L,
+            projectId = 114L,
             reportNumber = 4,
             status = ProjectReportStatus.Draft,
             linkedFormVersion = "v4",
