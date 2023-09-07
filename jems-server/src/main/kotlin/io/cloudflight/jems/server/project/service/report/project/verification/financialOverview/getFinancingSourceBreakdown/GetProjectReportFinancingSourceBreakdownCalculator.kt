@@ -31,7 +31,8 @@ class GetProjectReportFinancingSourceBreakdownCalculator(
 
     fun projectReportFinalized(projectId: Long, reportId: Long): FinancingSourceBreakdown {
         val sources = projectReportFinancialOverviewPersistence.getOverviewPerFund(reportId)
-        val allAvailableFunds = sources.flatMap { it.fundsSorted.map { it.first } }
+        val allAvailableFunds = sources.flatMap { source -> source.fundsSorted.map { it.first } }
+            .distinctBy { it.id }
         val total = projectReportCertificateCoFinancingPersistence
             .getCoFinancing(projectId = projectId, reportId).currentVerified
             .toTotalLine(availableFunds = allAvailableFunds)
