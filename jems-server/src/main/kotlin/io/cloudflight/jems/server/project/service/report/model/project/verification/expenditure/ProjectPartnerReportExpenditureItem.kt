@@ -2,7 +2,9 @@ package io.cloudflight.jems.server.project.service.report.model.project.verifica
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostWithCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
@@ -55,4 +57,12 @@ data class ProjectPartnerReportExpenditureItem(
     var verificationComment: String?,
 
     val parkingMetadata: ExpenditureParkingMetadata?,
-)
+) : ExpenditureCostWithCategory {
+
+    override fun getCategory(): BudgetCostCategory =
+        when {
+            lumpSum != null -> BudgetCostCategory.LumpSum
+            else -> costCategory.translateCostCategory()
+        }
+
+}

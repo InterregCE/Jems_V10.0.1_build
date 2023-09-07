@@ -1,24 +1,24 @@
-import {Injectable} from "@angular/core";
-import {BehaviorSubject, combineLatest, Observable, of, Subject} from "rxjs";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   JemsFileMetadataDTO,
   PageJemsFileDTO,
   PaymentApplicationToEcAttachmentService,
   UserRoleDTO
-} from "@cat/api";
-import {APIError} from "@common/models/APIError";
-import {Tables} from "@common/utils/tables";
-import {MatSort} from "@angular/material/sort";
-import {FileListTableConstants} from "@common/components/file-list/file-list-table/file-list-table-constants";
-import {RoutingService} from "@common/services/routing.service";
-import {PermissionService} from "../../../../../security/permissions/permission.service";
-import {DownloadService} from "@common/services/download.service";
-import {catchError, distinctUntilChanged, finalize, map, startWith, switchMap, take, tap} from "rxjs/operators";
-import {Log} from "@common/utils/log";
-import {v4 as uuid} from "uuid";
-import {FileListItem} from "@common/components/file-list/file-list-item";
+} from '@cat/api';
+import {APIError} from '@common/models/APIError';
+import {Tables} from '@common/utils/tables';
+import {MatSort} from '@angular/material/sort';
+import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
+import {RoutingService} from '@common/services/routing.service';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {DownloadService} from '@common/services/download.service';
+import {catchError, distinctUntilChanged, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
+import {v4 as uuid} from 'uuid';
+import {FileListItem} from '@common/components/file-list/file-list-item';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {PaymentsToEcDetailPageStore} from "../../payments-to-ec-detail-page-store.service";
+import {PaymentsToEcDetailPageStore} from '../../payments-to-ec-detail-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PaymentToEcAttachmentsStore {

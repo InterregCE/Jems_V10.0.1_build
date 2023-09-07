@@ -21,4 +21,5 @@ data class ExpenditureVerification(
     val parked: Boolean,
     val deductedByJs: BigDecimal,
     val deductedByMa: BigDecimal,
+    val typologyOfErrorId: Long?
 ): ExpenditureCostAfterControl

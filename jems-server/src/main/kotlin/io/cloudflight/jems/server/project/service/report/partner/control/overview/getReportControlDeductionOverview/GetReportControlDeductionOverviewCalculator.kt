@@ -39,7 +39,7 @@ class GetReportControlDeductionOverviewCalculator(
 
         val totalDeductedSplit = totalDeclared.minus(totalParked).minus(totalEligibleAfterControl)
 
-        val byTypologyError = expenditures.filter { it.typologyOfErrorId != null }
+        val byTypologyError = expenditures
             .filter { it.typologyOfErrorId != null }
             .groupBy { it.typologyOfErrorId!! }
             .mapValues {

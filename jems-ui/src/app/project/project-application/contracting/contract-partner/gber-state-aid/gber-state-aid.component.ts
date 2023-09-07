@@ -39,7 +39,7 @@ export class GberStateAidComponent {
     canEdit: boolean;
     partnerSummary: ProjectPartnerSummaryDTO;
     isPartnerLocked: boolean;
-    gber: ContractingPartnerStateAidGberSectionDTO,
+    gber: ContractingPartnerStateAidGberSectionDTO;
     fundList: ProgrammeFundDTO[];
   }>;
 
@@ -100,7 +100,7 @@ export class GberStateAidComponent {
   }
 
   saveForm(partnerId: number) {
-    const gber = this.buildSaveEntity(partnerId)
+    const gber = this.buildSaveEntity(partnerId);
 
     this.contractPartnerStore.updateGber(gber).pipe(
       take(1),
@@ -111,7 +111,7 @@ export class GberStateAidComponent {
 
   buildSaveEntity(partnerId: number): ContractingPartnerStateAidGberDTO {
     return {
-      partnerId: partnerId,
+      partnerId,
       aidIntensity: this.gberForm.controls.aidIntensity.value,
       locationInAssistedArea: this.gberForm.controls.locationInAssistedArea.value,
       comment: this.gberForm.controls.comment.value,

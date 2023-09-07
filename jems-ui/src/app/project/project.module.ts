@@ -584,6 +584,9 @@ import {
 import {
   ReportAdvancePaymentsOverviewComponent
 } from './project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
+import {
+  VerificationDeductionPerCertificateComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-deduction-per-certificate/verification-deduction-per-certificate.component';
 
 @NgModule({
   declarations: [
@@ -783,6 +786,7 @@ import {
     VerificationWorkOverviewComponent,
     ExpenditureItemParkedByChipComponent,
     ReportAdvancePaymentsOverviewComponent,
+    VerificationDeductionPerCertificateComponent,
   ],
   imports: [
     SharedModule,

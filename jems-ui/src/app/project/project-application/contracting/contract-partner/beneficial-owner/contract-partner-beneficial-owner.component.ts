@@ -166,7 +166,7 @@ export class ContractPartnerBeneficialOwnerComponent {
     for (const item of this.beneficials.controls) {
       beneficialOwnerDTOs.push({
         id: item.value.id,
-        partnerId: partnerId,
+        partnerId,
         birth: item.value.birth,
         firstName: item.value.firstName,
         lastName: item.value.lastName,

@@ -6,7 +6,7 @@ import {map, tap} from 'rxjs/operators';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {ProjectReportListStoreService} from "@common/components/project-report-list/project-report-list-store.service";
+import {ProjectReportListStoreService} from '@common/components/project-report-list/project-report-list-store.service';
 
 @Component({
   selector: 'jems-project-report-list',

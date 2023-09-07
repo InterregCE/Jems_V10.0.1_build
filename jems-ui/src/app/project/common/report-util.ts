@@ -19,7 +19,7 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.InControl,
       ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
       ProjectPartnerReportDTO.StatusEnum.Certified,
-    ].includes(status)
+    ].includes(status);
   }
 
   static isControlReportExists(status: ProjectPartnerReportDTO.StatusEnum): boolean {

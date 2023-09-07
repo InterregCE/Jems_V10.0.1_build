@@ -4,21 +4,28 @@ import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.CertificateVerificationDeductionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownSplitLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceFundDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationDeductionOverviewDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationDeductionOverviewRowDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationWorkOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationWorkOverviewLineDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.deductionOverview.CertificateVerificationDeductionOverview
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.deductionOverview.VerificationDeductionOverview
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.deductionOverview.VerificationDeductionOverviewRow
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverviewLine
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getDeductionOverview.GetProjectReportVerificationDeductionOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.GetProjectReportFinancingSourceBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getVerificationWorkOverview.GetProjectReportVerificationWorkOverviewInteractor
 import io.cloudflight.jems.server.toScaledBigDecimal
@@ -188,12 +195,129 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
             total = verifOverviewLineExpected,
         )
 
+        // certificates deductions overview
+        val certificateVerificationDeductionOverview = CertificateVerificationDeductionOverview(
+            partnerReportNumber = 1,
+            partnerNumber = 1,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            deductionOverview =  VerificationDeductionOverview(
+                deductionRows = listOf(
+                    VerificationDeductionOverviewRow(
+                        typologyOfErrorId = 1,
+                        typologyOfErrorName = "err1",
+                        staffCost = BigDecimal.ZERO,
+                        officeAndAdministration = BigDecimal.ZERO,
+                        travelAndAccommodation = BigDecimal.ZERO,
+                        externalExpertise = BigDecimal.ZERO,
+                        equipment = BigDecimal.ZERO,
+                        infrastructureAndWorks = BigDecimal.ZERO,
+                        lumpSums = BigDecimal.valueOf(555.56),
+                        unitCosts = BigDecimal.ZERO,
+                        otherCosts = BigDecimal.ZERO,
+                        total = BigDecimal.valueOf(555.56)
+                    ),
+                    VerificationDeductionOverviewRow(
+                        typologyOfErrorId = 2,
+                        typologyOfErrorName = "err2",
+                        staffCost = BigDecimal.valueOf(200.0),
+                        officeAndAdministration = BigDecimal.ZERO,
+                        travelAndAccommodation = BigDecimal.ZERO,
+                        externalExpertise = BigDecimal.ZERO,
+                        equipment = BigDecimal.ZERO,
+                        infrastructureAndWorks = BigDecimal.ZERO,
+                        lumpSums = BigDecimal.ZERO,
+                        unitCosts = BigDecimal.ZERO,
+                        otherCosts = BigDecimal.ZERO,
+                        total = BigDecimal.valueOf(200.0)
+                    )
+                ),
+                staffCostsFlatRate = null,
+                officeAndAdministrationFlatRate = null,
+                travelAndAccommodationFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
+                total = VerificationDeductionOverviewRow(
+                    typologyOfErrorId = null,
+                    typologyOfErrorName = null,
+                    staffCost = BigDecimal.valueOf(200.0),
+                    officeAndAdministration =  BigDecimal.ZERO,
+                    travelAndAccommodation = BigDecimal.ZERO,
+                    externalExpertise = BigDecimal.ZERO,
+                    equipment = BigDecimal.ZERO,
+                    infrastructureAndWorks = BigDecimal.ZERO,
+                    lumpSums = BigDecimal.valueOf(555.56),
+                    unitCosts = BigDecimal.ZERO,
+                    otherCosts = BigDecimal.ZERO,
+                    total = BigDecimal.valueOf(755.56)
+                )
+            )
+        )
+
+        val expectedRow1 =   VerificationDeductionOverviewRowDTO(
+            typologyOfErrorId = 1,
+            typologyOfErrorName = "err1",
+            staffCost = BigDecimal.ZERO,
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.ZERO,
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.valueOf(555.56),
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(555.56)
+        )
+
+        val expectedRow2 = VerificationDeductionOverviewRowDTO(
+            typologyOfErrorId = 2,
+            typologyOfErrorName = "err2",
+            staffCost = BigDecimal.valueOf(200.0),
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.ZERO,
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(200.0)
+        )
+
+        val expectedOverview = CertificateVerificationDeductionOverviewDTO(
+            partnerReportNumber =1,
+            partnerNumber = 1,
+            partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            deductionOverview =  VerificationDeductionOverviewDTO(
+                deductionRows = mutableListOf(expectedRow1, expectedRow2),
+                staffCostsFlatRate = null,
+                officeAndAdministrationFlatRate = null,
+                travelAndAccommodationFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
+                total = VerificationDeductionOverviewRowDTO(
+                    typologyOfErrorId = null,
+                    typologyOfErrorName = null,
+                    staffCost = BigDecimal.valueOf(200.0),
+                    officeAndAdministration =  BigDecimal.ZERO,
+                    travelAndAccommodation = BigDecimal.ZERO,
+                    externalExpertise = BigDecimal.ZERO,
+                    equipment = BigDecimal.ZERO,
+                    infrastructureAndWorks = BigDecimal.ZERO,
+                    lumpSums = BigDecimal.valueOf(555.56),
+                    unitCosts = BigDecimal.ZERO,
+                    otherCosts = BigDecimal.ZERO,
+                    total = BigDecimal.valueOf(755.56)
+                )
+            )
+        )
+
+
     }
 
     @MockK
     private lateinit var getProjectReportVerificationWorkOverview: GetProjectReportVerificationWorkOverviewInteractor
     @MockK
     private lateinit var getProjectReportFinancingSourceBreakdown: GetProjectReportFinancingSourceBreakdownInteractor
+    @MockK
+    private lateinit var getProjectReportDeductionOverviewInteractor: GetProjectReportVerificationDeductionOverviewInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportVerificationOverviewController
@@ -203,6 +327,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         clearMocks(
             getProjectReportVerificationWorkOverview,
             getProjectReportFinancingSourceBreakdown,
+            getProjectReportDeductionOverviewInteractor
         )
     }
 
@@ -303,6 +428,19 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         every { getProjectReportFinancingSourceBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns financingSourceBreakdown
         assertThat(controller.getFinancingSourceBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expected)
+    }
+
+    @Test
+    fun getDeductionsPerCertificateByTypologyOfError() {
+        every { getProjectReportDeductionOverviewInteractor.getDeductionOverview(REPORT_ID) } returns listOf(certificateVerificationDeductionOverview)
+        assertThat(
+            controller.getDeductionsByTypologyOfErrors(
+                projectId = PROJECT_ID,
+                reportId = REPORT_ID
+            )
+        ).usingRecursiveComparison().isEqualTo(
+            listOf(expectedOverview)
+        )
     }
 
 }

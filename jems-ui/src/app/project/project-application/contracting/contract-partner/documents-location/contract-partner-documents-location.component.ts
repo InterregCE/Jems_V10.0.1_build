@@ -23,7 +23,7 @@ export class ContractPartnerDocumentsLocationComponent {
   documentsLocationForm: FormGroup;
   documentsLocationId: number | null = null;
   data$: Observable<{
-    partnerId: number,
+    partnerId: number;
     documentsLocation: ContractingPartnerDocumentsLocationDTO;
     canEdit: boolean;
     canView: boolean;
@@ -122,7 +122,7 @@ export class ContractPartnerDocumentsLocationComponent {
   private getUpdatedDocumentsLocationDTO(partnerId: number): ContractingPartnerDocumentsLocationDTO {
     return {
       id: this.documentsLocationId,
-      partnerId: partnerId,
+      partnerId,
       title: this.documentsLocationForm.controls.title.value,
       firstName: this.documentsLocationForm.controls.firstName.value,
       lastName: this.documentsLocationForm.controls.lastName.value,

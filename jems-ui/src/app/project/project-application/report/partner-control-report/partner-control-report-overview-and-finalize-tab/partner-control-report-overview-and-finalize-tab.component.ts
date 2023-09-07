@@ -56,7 +56,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
   data$: Observable<{
     overview: ControlWorkOverviewDTO;
     deduction: ControlDeductionOverviewDTO;
-    controlHasDeductions: boolean,
+    controlHasDeductions: boolean;
     finalizationAllowed: boolean;
     controlOpenButReportAlso: boolean;
     hideFinalizeSection: boolean;

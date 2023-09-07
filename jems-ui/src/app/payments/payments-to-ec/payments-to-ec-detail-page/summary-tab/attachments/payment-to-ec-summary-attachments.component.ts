@@ -1,22 +1,22 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Alert} from "@common/components/forms/alert";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
-import {FormService} from "@common/components/section/form/form.service";
-import {AcceptedFileTypesConstants} from "@project/common/components/file-management/accepted-file-types.constants";
-import {combineLatest, Observable, Subject} from "rxjs";
-import {PageFileList} from "@common/components/file-list/page-file-list";
-import {ActivatedRoute} from "@angular/router";
+import {Alert} from '@common/components/forms/alert';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormService} from '@common/components/section/form/form.service';
+import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
+import {combineLatest, Observable, Subject} from 'rxjs';
+import {PageFileList} from '@common/components/file-list/page-file-list';
+import {ActivatedRoute} from '@angular/router';
 import {
   ReportFileManagementStore
-} from "@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store";
-import {JemsFileDTO, PaymentApplicationToEcAttachmentService, UserRoleDTO} from "@cat/api";
-import {map, take} from "rxjs/operators";
-import {FileListComponent} from "@common/components/file-list/file-list.component";
-import {FileListItem} from "@common/components/file-list/file-list-item";
-import {FileDescriptionChange} from "@common/components/file-list/file-list-table/file-description-change";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
+import {JemsFileDTO, PaymentApplicationToEcAttachmentService, UserRoleDTO} from '@cat/api';
+import {map, take} from 'rxjs/operators';
+import {FileListComponent} from '@common/components/file-list/file-list.component';
+import {FileListItem} from '@common/components/file-list/file-list-item';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import { Tables } from '@common/utils/tables';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum
-import {PaymentToEcAttachmentsStore} from "./payment-to-ec-summary-attachments-store.service";
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PaymentToEcAttachmentsStore} from './payment-to-ec-summary-attachments-store.service';
 
 @UntilDestroy()
 @Component({
@@ -68,7 +68,7 @@ export class PaymentToEcSummaryAttachmentsComponent {
             iconIfNotDeletable: ''
           })),
         },
-        isPaymentToEcEditable: isPaymentToEcEditable,
+        isPaymentToEcEditable,
       })),
     );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this))

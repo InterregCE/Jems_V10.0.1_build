@@ -108,10 +108,10 @@ import {
 import {
   VerificationChecklistInstanceListComponent
 } from '@common/components/checklist/verification-checklist-instance-list/verification-checklist-instance-list.component';
-import {ProjectReportListComponent} from "@common/components/project-report-list/project-report-list.component";
+import {ProjectReportListComponent} from '@common/components/project-report-list/project-report-list.component';
 import {
   ProjectReportStatusComponent
-} from "@project/project-application/report/project-report/project-report-status/project-report-status.component";
+} from '@project/project-application/report/project-report/project-report-status/project-report-status.component';
 
 const modules = [
   CommonModule,
