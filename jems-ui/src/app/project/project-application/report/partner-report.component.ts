@@ -31,6 +31,7 @@ export class PartnerReportComponent {
   PermissionsEnum = PermissionsEnum;
   ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
   successfulDeletionMessage: boolean;
+  StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
   private allColumns: string[] = ['id', 'status', 'projectReport', 'version', 'period', 'createdAt', 'firstSubmission',
     'lastReSubmission', 'totalAfterSubmitted', 'controlEnd', 'totalEligible', 'control', 'delete'];
