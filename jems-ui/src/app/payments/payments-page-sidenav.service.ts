@@ -55,10 +55,9 @@ export class PaymentsPageSidenavService {
     if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.AdvancePaymentsRetrieve || permission === PermissionsEnum.AdvancePaymentsUpdate)) {
       bullets.push(this.advancePaymentsPage);
     }
-    //Will be enabled in V9: MP2-3852
-    /*if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
+    if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
       bullets.push(this.paymentsToEcPage);
-    }*/
+    }
 
     this.sideNavService.setHeadlines(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH, [
       ...this.hasAccessToPayments(permissions) ?

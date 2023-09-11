@@ -23,5 +23,5 @@ annotation class CanUpdateAdvancePayments
 annotation class CanRetrievePaymentApplicationsToEc
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("false")//Will be reverted in V9: MP2-3852
+@PreAuthorize("hasAuthority('PaymentsToEcUpdate')")
 annotation class CanUpdatePaymentApplicationsToEc
