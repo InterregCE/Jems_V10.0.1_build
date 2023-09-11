@@ -163,11 +163,12 @@ export class TableComponent implements OnInit, OnChanges {
       queryParams = {queryParams: {version: this.selectedVersion?.version}};
     }
     let url = '';
-    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0) {
+    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0 && this.configuration.routerLink) {
+      url = this.configuration.routerLink;
       this.configuration.extraPathParamFields.forEach((element) => {
-        this.configuration.routerLink = this.configuration.routerLink?.replace(`{${element}}`, row[element]);
+        url = url.replace(`{${element}}`, row[element]);
       });
-      url = this.urlSerializer.serialize(this.router.createUrlTree([this.configuration.routerLink], {
+      url = this.urlSerializer.serialize(this.router.createUrlTree([url], {
         ...queryParams,
         relativeTo: this.activatedRoute
       }));

@@ -9,6 +9,12 @@
   }
 }
 
+.table-wrapper, .mat-table {
+  a, button, .mat-tooltip-trigger, .mat-form-field {
+    z-index: 5 !important;
+  }
+}
+
 .jems-table-config {
 
   margin: 0;
@@ -16,6 +22,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   width: 100%;
+
 
   &.table-condensed {
     > * {

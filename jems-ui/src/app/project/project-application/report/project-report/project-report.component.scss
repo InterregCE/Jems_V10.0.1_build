@@ -77,6 +77,13 @@ mat-row, mat-header-row {
   right: 0;
   bottom: 0;
   z-index: 2;
+  margin: 0 !important;
+  padding: 0 !important;
+  a:focus {
+    background: none !important;
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
 }
 
 a {

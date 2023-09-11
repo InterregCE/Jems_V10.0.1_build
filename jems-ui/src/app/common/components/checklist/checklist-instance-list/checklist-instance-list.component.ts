@@ -216,7 +216,6 @@ export class ChecklistInstanceListComponent implements OnInit {
         ] : [{
           displayedColumn: 'common.action',
           customCellTemplate: this.actionsCell,
-          columnWidth: ColumnWidth.SmallColumn,
           clickable: false
         }],
       ]

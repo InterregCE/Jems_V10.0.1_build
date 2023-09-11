@@ -90,7 +90,8 @@ mat-footer-cell {
 }
 
 .mat-column-anchor {
-  opacity: .1;
+  opacity: 1;
+  background: none !important;
   position: absolute;
   top: 0;
   left: 0;
@@ -99,6 +100,13 @@ mat-footer-cell {
   height:100%;
   width: 100%;
   z-index: 2;
+  margin: 0 !important;
+  padding: 0 !important;
+  a:focus {
+    background: none !important;
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
 }
 
 .anchor-column-header {
