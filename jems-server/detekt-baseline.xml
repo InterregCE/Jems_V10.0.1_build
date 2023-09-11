@@ -54,6 +54,7 @@
     <ID>LongParameterList:ProjectModelMapper.kt$( project: ProjectEntity, periods: List&lt;ProjectPeriod&gt;, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, stateAidEntities: MutableSet&lt;ProjectCallStateAidEntity&gt;, applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;, priority: ProgrammePriorityEntity?, jsNotifiable: Boolean )</ID>
     <ID>LongParameterList:ProjectPartnerControlReportHelper.kt$( report: ProjectPartnerReport, programmeTitle: String?, projectTitle: Set&lt;InputTranslation&gt;?, startAndEndDate: Pair&lt;LocalDate, LocalDate?&gt;?, identification: ProjectPartnerReportIdentification, designatedController: ReportDesignatedController, reportVerification: ReportVerification )</ID>
     <ID>LongParameterList:ProjectPartnerReportExpenditurePersistenceProviderTest.kt$ProjectPartnerReportExpenditurePersistenceProviderTest.Companion$( report: ProjectPartnerReportEntity, lumpSum: PartnerReportLumpSumEntity?, unitCost: PartnerReportUnitCostEntity?, investment: PartnerReportInvestmentEntity?, unParkedFrom: PartnerReportExpenditureCostEntity?, reportOfOrigin: ProjectPartnerReportEntity?, )</ID>
+    <ID>LongParameterList:ProjectPartnerReportExpenditureVerificationPersistenceProviderTest.kt$ProjectPartnerReportExpenditureVerificationPersistenceProviderTest.Companion$( id: Long, declaredAmount: BigDecimal, currencyConversionRate: BigDecimal, declaredAmountAfterSubmission: BigDecimal, certifiedAmount: BigDecimal, deductedAmount: BigDecimal, )</ID>
     <ID>LongParameterList:ProjectPartnerReportExportInteractor.kt$ProjectPartnerReportExportInteractor$( partnerId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
     <ID>LongParameterList:ProjectPersistenceProvider.kt$ProjectPersistenceProvider$( projectId: Long, timestamp: Timestamp, project: ProjectEntity, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, jsNotifiable: Boolean, )</ID>
     <ID>LongParameterList:ProjectReportExportInteractor.kt$ProjectReportExportInteractor$( projectId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
@@ -73,7 +74,6 @@
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
     <ID>MaxLineLength:FileHelper.kt$private val ALLOWED_EXTENSIONS = arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url","p7m")</ID>
-    <ID>MaxLineLength:FinalizeVerificationProjectReportTest.kt$FinalizeVerificationProjectReportTest$assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked: [LP1] - item [R1.1], ")</ID>
     <ID>MaxLineLength:GetBudgetTotalCostCalculatorTest.kt$GetBudgetTotalCostCalculatorTest$fun</ID>
     <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
@@ -653,7 +653,6 @@
     <ID>UnnecessaryAbstractClass:UnitTest.kt$UnitTest</ID>
     <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
     <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
-    <ID>UnusedPrivateMember:GetProjectReportFinancingSourceBreakdownHelperTest.kt$GetProjectReportFinancingSourceBreakdownHelperTest.Companion$projectReportId: Long</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>

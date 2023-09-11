@@ -8,6 +8,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction.ClearDeductions
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction.UpdateCertified
 import java.math.BigDecimal
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -63,10 +66,10 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
     }
 
     @Transactional
-    override fun updateExpenditureCurrencyRatesAndClearVerification(
+    override fun updateCurrencyRatesAndPrepareVerification(
         reportId: Long,
         newRates: Collection<ProjectPartnerReportExpenditureCurrencyRateChange>,
-        clearVerification: Boolean,
+        whatToDoWithVerification: VerificationAction,
     ): List<ProjectPartnerReportExpenditureCost> {
         val newById = newRates.associateBy { it.id }
 
@@ -76,11 +79,10 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
                 it.currencyConversionRate = newById[it.id]!!.currencyConversionRate
                 it.declaredAmountAfterSubmission = newById[it.id]!!.declaredAmountAfterSubmission
             }
-            // clear verification
-            if (clearVerification) {
-                it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
-                it.deductedAmount = BigDecimal.ZERO
-                it.typologyOfErrorId = null
+            // update/clear verification
+            when (whatToDoWithVerification) {
+                ClearDeductions -> it.clearDeductions()
+                UpdateCertified -> it.updateCertified()
             }
         }.toModel()
     }
@@ -93,4 +95,15 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
         parked = newData.parked
         verificationComment = newData.verificationComment
     }
+
+    private fun PartnerReportExpenditureCostEntity.clearDeductions() {
+        certifiedAmount = declaredAmountAfterSubmission ?: BigDecimal.ZERO
+        deductedAmount = BigDecimal.ZERO
+        typologyOfErrorId = null
+    }
+
+    private fun PartnerReportExpenditureCostEntity.updateCertified() {
+        certifiedAmount = (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(deductedAmount)
+    }
+
 }

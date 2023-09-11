@@ -22,6 +22,8 @@ import io.cloudflight.jems.server.project.service.report.partner.base.runPartner
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction.ClearDeductions
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction.UpdateCertified
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.toChanges
@@ -152,10 +154,10 @@ class SubmitProjectPartnerReport(
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
-        return reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(
+        return reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(
             reportId = reportId,
             newRates = expenditures.fillCurrencyRates(rates).toChanges(),
-            clearVerification = newStatus != ReportStatus.ReOpenCertified,
+            whatToDoWithVerification = if (newStatus == ReportStatus.ReOpenCertified) UpdateCertified else ClearDeductions,
         )
     }
 

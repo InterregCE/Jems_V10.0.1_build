@@ -17,10 +17,10 @@ interface ProjectPartnerReportExpenditureVerificationPersistence {
         expenditureVerification: List<ExpenditureVerificationUpdate>,
     ): List<ProjectPartnerReportExpenditureVerification>
 
-    fun updateExpenditureCurrencyRatesAndClearVerification(
+    fun updateCurrencyRatesAndPrepareVerification(
         reportId: Long,
         newRates: Collection<ProjectPartnerReportExpenditureCurrencyRateChange>,
-        clearVerification: Boolean,
+        whatToDoWithVerification: VerificationAction,
     ): List<ProjectPartnerReportExpenditureCost>
 
 }
