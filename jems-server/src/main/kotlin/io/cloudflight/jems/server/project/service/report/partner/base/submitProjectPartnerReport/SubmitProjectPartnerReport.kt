@@ -157,7 +157,7 @@ class SubmitProjectPartnerReport(
         return reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(
             reportId = reportId,
             newRates = expenditures.fillCurrencyRates(rates).toChanges(),
-            whatToDoWithVerification = if (newStatus == ReportStatus.ReOpenCertified) UpdateCertified else ClearDeductions,
+            whatToDoWithVerification = if (newStatus.controlNotFullyOpen()) ClearDeductions else UpdateCertified,
         )
     }
 

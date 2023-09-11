@@ -434,8 +434,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
 
         val expectedAction = when (expectedNewStatus) {
-            ReportStatus.Submitted,
-            ReportStatus.InControl -> VerificationAction.ClearDeductions
+            ReportStatus.Submitted -> VerificationAction.ClearDeductions
+            ReportStatus.InControl,
             ReportStatus.ReOpenCertified -> VerificationAction.UpdateCertified
             else -> throw IllegalStateException("not real scenario")
         }
@@ -512,7 +512,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 .updateCurrencyRatesAndPrepareVerification(
                     36L,
                     capture(slotRates),
-                    VerificationAction.ClearDeductions,
+                    VerificationAction.UpdateCertified,
                 )
 
         } returns emptyList()
