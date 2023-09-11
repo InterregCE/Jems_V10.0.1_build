@@ -61,11 +61,12 @@
                 <span jemsText maxLines="3">{{ 'project.application.partner.reports.table.included' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let report">
-                <span *ngIf="data.canViewProjectReport && report.projectReportNumber">
-                    <a [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', report.projectReportId, 'identification']">
+                <div class="layout-wrapper">
+                    <a *ngIf="data.canViewProjectReport && report.projectReportNumber"
+                       [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', report.projectReportId, 'identification']">
                         PR.{{ report.projectReportNumber }}
                     </a>
-                </span>
+                </div>
                 <span *ngIf="!canViewProjectReport && report.projectReportNumber">PR.{{ report.projectReportNumber }}</span>
             </mat-cell>
         </ng-container>

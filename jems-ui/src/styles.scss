@@ -67,6 +67,15 @@ mat-card {
     }
   }
 
+  .table-wrapper, .mat-table {
+    .layout-wrapper{
+      z-index: 5 !important;
+    }
+    a, button, .mat-tooltip-trigger, .mat-form-field {
+      z-index: 5 !important;
+    }
+  }
+
   a.unstyled-link, .section-link, .support-links a {
     cursor: pointer;
     color: var(--primary-color) !important;
@@ -174,3 +183,5 @@ mat-card {
     }
   }
 }
+
+
