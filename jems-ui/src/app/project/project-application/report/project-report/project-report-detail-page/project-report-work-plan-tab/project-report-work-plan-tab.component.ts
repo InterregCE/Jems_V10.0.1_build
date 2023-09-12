@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
+  ProjectReportDTO,
   ProjectReportWorkPackageActivityDeliverableDTO,
   ProjectReportWorkPackageActivityDTO,
   ProjectReportWorkPackageDTO,
@@ -60,6 +61,7 @@ export class ProjectReportWorkPlanTabComponent {
 
   data$: Observable<{
     reportEditable: boolean;
+    reopenedLimited: boolean;
     workPackages: ProjectReportWorkPackageDTO[];
   }>;
 
@@ -76,14 +78,16 @@ export class ProjectReportWorkPlanTabComponent {
     this.data$ = combineLatest([
       this.projectReportDetailPageStore.reportEditable$,
       this.workPlanTabStore.workPackages$,
+      this.projectReportDetailPageStore.projectReport$,
     ])
       .pipe(
-        map(([reportEditable, workPackages]) => ({
+        map(([reportEditable, workPackages, projectReport]) => ({
           reportEditable,
-          workPackages
+          workPackages,
+          reopenedLimited: projectReport.status === ProjectReportDTO.StatusEnum.ReOpenSubmittedLimited || projectReport.status === ProjectReportDTO.StatusEnum.VerificationReOpenedLimited
         })),
         tap(data => this.formService.init(this.form, of(data.reportEditable))),
-        tap(data => this.resetForm(data.workPackages, data.reportEditable))
+        tap(data => this.resetForm(data.workPackages, data.reportEditable, data.reopenedLimited))
       );
   }
 
@@ -175,9 +179,9 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageInvestmentDTO));
   }
 
-  resetForm(workPackagesDTO: ProjectReportWorkPackageDTO[], reportEditable: boolean) {
+  resetForm(workPackagesDTO: ProjectReportWorkPackageDTO[], reportEditable: boolean, reopenedLimited: boolean) {
     this.workPackages.clear();
-    workPackagesDTO.map((dto: ProjectReportWorkPackageDTO) => this.extractWorkPackageFormFromDTO(dto))
+    workPackagesDTO.map((dto: ProjectReportWorkPackageDTO) => this.extractWorkPackageFormFromDTO(dto, reopenedLimited))
       .forEach(workPackages => this.workPackages.push(workPackages));
 
     if (!reportEditable) {
@@ -185,9 +189,9 @@ export class ProjectReportWorkPlanTabComponent {
     }
   }
 
-  private extractWorkPackageFormFromDTO(dto: ProjectReportWorkPackageDTO): FormGroup {
-    const activities = dto.activities.map((activityDTO: ProjectReportWorkPackageActivityDTO) => this.extractActivitiesFormFromDTO(activityDTO));
-    const outputs = dto.outputs.map((outputDTO: ProjectReportWorkPackageOutputDTO) => this.extractOutputsFormFromDTO(outputDTO));
+  private extractWorkPackageFormFromDTO(dto: ProjectReportWorkPackageDTO, reopenedLimited: boolean): FormGroup {
+    const activities = dto.activities.map((activityDTO: ProjectReportWorkPackageActivityDTO) => this.extractActivitiesFormFromDTO(activityDTO, reopenedLimited));
+    const outputs = dto.outputs.map((outputDTO: ProjectReportWorkPackageOutputDTO) => this.extractOutputsFormFromDTO(outputDTO, reopenedLimited));
     const investments = dto.investments.map((outputDTO: ProjectReportWorkPackageInvestmentDTO) => this.extractInvestmentsFormFromDTO(outputDTO));
     const isPrevCommunicationProgressIncluded = dto.previousCommunicationStatus === ProjectReportWorkPackageDTO.PreviousCommunicationStatusEnum.Fully && dto.communicationStatusLabel === this.CommunicationStatusLabelEnum.Gray;
     const isPrevSpecificProgressIncluded = dto.previousSpecificStatus === ProjectReportWorkPackageDTO.PreviousSpecificStatusEnum.Fully && dto.specificStatusLabel === this.SpecificStatusLabelEnum.Gray;
@@ -217,9 +221,9 @@ export class ProjectReportWorkPlanTabComponent {
     });
   }
 
-  private extractActivitiesFormFromDTO(dto: ProjectReportWorkPackageActivityDTO): FormGroup {
+  private extractActivitiesFormFromDTO(dto: ProjectReportWorkPackageActivityDTO, reopenedLimited: boolean): FormGroup {
     const isPreviousProgressIncluded = dto.previousStatus === ProjectReportWorkPackageActivityDTO.PreviousStatusEnum.Fully && dto.activityStatusLabel === ProjectReportWorkPackageActivityDTO.ActivityStatusLabelEnum.Gray;
-    const deliverables = dto.deliverables.map((deliverableDTO: ProjectReportWorkPackageActivityDeliverableDTO) => this.extractDeliverablesFormFromDTO(deliverableDTO, isPreviousProgressIncluded));
+    const deliverables = dto.deliverables.map((deliverableDTO: ProjectReportWorkPackageActivityDeliverableDTO) => this.extractDeliverablesFormFromDTO(deliverableDTO, isPreviousProgressIncluded, reopenedLimited));
 
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
@@ -237,14 +241,14 @@ export class ProjectReportWorkPlanTabComponent {
     });
   }
 
-  private extractDeliverablesFormFromDTO(dto: ProjectReportWorkPackageActivityDeliverableDTO, isPreviousProgressIncluded: boolean): FormGroup {
+  private extractDeliverablesFormFromDTO(dto: ProjectReportWorkPackageActivityDeliverableDTO, isPreviousProgressIncluded: boolean, reopenedLimited: boolean): FormGroup {
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
       number: this.formBuilder.control(dto.number),
       title: this.formBuilder.control(this.disableControl(dto.title ?? '')),
       deactivated: this.formBuilder.control(dto.deactivated ?? false),
       period: this.formBuilder.control(this.disableControl(dto.period ?? '')),
-      currentReport: isPreviousProgressIncluded ? this.formBuilder.control(dto.previousCurrentReport ?? 0) : this.formBuilder.control(dto.currentReport ?? 0),
+      currentReport: isPreviousProgressIncluded ? this.formBuilder.control({value: (dto.previousCurrentReport ?? 0), disabled: reopenedLimited}) : this.formBuilder.control({value: (dto.currentReport ?? 0), disabled: reopenedLimited}),
       previouslyReported: this.formBuilder.control(this.disableControl(dto.previouslyReported ?? 0)),
       totalReportedSoFar: this.formBuilder.control(this.disableControl((dto.currentReport ?? 0) + (dto.previouslyReported ?? 0))),
       progress: isPreviousProgressIncluded ? this.formBuilder.control(dto.previousProgress ?? '') : this.formBuilder.control(dto.progress ?? ''),
@@ -252,7 +256,7 @@ export class ProjectReportWorkPlanTabComponent {
     });
   }
 
-  private extractOutputsFormFromDTO(dto: ProjectReportWorkPackageOutputDTO): FormGroup {
+  private extractOutputsFormFromDTO(dto: ProjectReportWorkPackageOutputDTO, reopenedLimited: boolean): FormGroup {
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
       title: this.formBuilder.control(this.disableControl(dto.title)),
@@ -261,7 +265,7 @@ export class ProjectReportWorkPlanTabComponent {
       outputIndicator: this.formBuilder.control(this.disableControl(dto.outputIndicator ?? '')),
       period: this.formBuilder.control(this.disableControl(dto.period ?? '')),
       targetValue: this.formBuilder.control(this.disableControl(dto.targetValue ?? 0)),
-      currentReport: this.formBuilder.control(dto.currentReport ?? 0),
+      currentReport: this.formBuilder.control({value: (dto.currentReport ?? 0), disabled: reopenedLimited}),
       previouslyReported: this.formBuilder.control(this.disableControl(dto.previouslyReported ?? 0)),
       totalReportedSoFar: this.formBuilder.control(this.disableControl((dto.currentReport ?? 0) + (dto.previouslyReported ?? 0))),
       progress: this.formBuilder.control(dto.progress ?? ''),

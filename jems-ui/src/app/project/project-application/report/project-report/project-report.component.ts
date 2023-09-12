@@ -33,7 +33,7 @@ export class ProjectReportComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission',
-    'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete', 'anchor'];
+    'lastSubmission', 'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete', 'anchor'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
   MAX_PROJECT_REPORTS_ALLOWED = 100;
 

@@ -74,8 +74,22 @@ export class ReportUtil {
   }
 
   // Project Report
-  static isProjectReportOpen(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+  static isProjectReportDraft(status: ProjectReportSummaryDTO.StatusEnum): boolean {
     return status === ProjectReportSummaryDTO.StatusEnum.Draft;
+  }
+
+  static isProjectReportOpen(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return [
+      ProjectReportSummaryDTO.StatusEnum.Draft,
+      ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLimited,
+      ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLast,
+      ProjectReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited,
+      ProjectReportSummaryDTO.StatusEnum.ReOpenSubmittedLast
+    ].includes(status);
+  }
+
+  static isProjectReportLimitedReopened(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited || status === ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLimited;
   }
 
   static isProjectReportSubmitted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
@@ -83,7 +97,12 @@ export class ReportUtil {
   }
 
   static isProjectReportAfterVerificationStarted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
-    return [ProjectReportSummaryDTO.StatusEnum.InVerification, ProjectReportSummaryDTO.StatusEnum.Finalized].includes(status);
+    return [
+      ProjectReportSummaryDTO.StatusEnum.InVerification,
+      ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLimited,
+      ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLast,
+      ProjectReportSummaryDTO.StatusEnum.Finalized
+    ].includes(status);
   }
 
   static isProjectReportVerificationOngoing(status: ProjectReportSummaryDTO.StatusEnum): boolean {

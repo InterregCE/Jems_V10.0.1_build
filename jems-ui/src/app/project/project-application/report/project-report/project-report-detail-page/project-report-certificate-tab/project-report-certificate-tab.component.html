@@ -12,7 +12,7 @@
                     <mat-cell *matCellDef="let certificate" class="text-center border-cell-right">
                         <mat-checkbox [checked]="certificate.projectReportId"
                                       [value]="certificate.checked"
-                                      [disabled]="certificate.disabled || !data.reportEditable"
+                                      [disabled]="certificate.disabled || !data.reportEditable || data.reopenedLimited"
                                       (change)="!certificate.disabled && certificateChanged(data.projectId, data.projectReportId, certificate.partnerReportId, certificate.checked, $event)">
                         </mat-checkbox>
                     </mat-cell>

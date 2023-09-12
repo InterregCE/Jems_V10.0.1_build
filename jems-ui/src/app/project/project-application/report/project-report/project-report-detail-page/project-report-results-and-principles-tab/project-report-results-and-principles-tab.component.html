@@ -1,4 +1,4 @@
-<jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable)">
+<jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable, data.reopenedLimited)">
 
     <form jemsFormLayout [formGroup]="form">
         <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>

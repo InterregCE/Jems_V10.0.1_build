@@ -250,6 +250,11 @@ export class Permission {
               editPermissions: [PermissionsEnum.ProjectReportingVerificationFinalize],
               infoMessage: 'permission.inspect.reporting.project.finalize',
             },
+            {
+              name: 'project.application.project.report.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingProjectReOpen]
+            },
           ]
         },
         {

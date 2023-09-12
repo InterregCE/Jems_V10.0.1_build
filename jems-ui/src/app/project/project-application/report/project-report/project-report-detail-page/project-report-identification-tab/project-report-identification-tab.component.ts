@@ -123,13 +123,14 @@ export class ProjectReportIdentificationTabComponent {
     this.form.patchValue({
       periodNumber: identification?.periodDetail?.number,
     });
-    if (identification?.deadlineId === null || !this.reportId){
+    if (identification?.deadlineId === null || !this.reportId) {
       this.form.get('deadlineId')?.patchValue(0);
     } else if (identification?.deadlineId) {
       this.form.get('type')?.disable();
       this.form.get('periodNumber')?.disable();
       this.form.get('reportingDate')?.disable();
     }
+    this.disableFieldsIfReopened(identification?.status);
     this.displayReportTypeWarningMessage = false;
   }
 
@@ -198,6 +199,19 @@ export class ProjectReportIdentificationTabComponent {
       ['..', report.id, 'identification'],
       {relativeTo: this.activatedRoute}
     );
+  }
+
+  private disableFieldsIfReopened(status: ProjectReportDTO.StatusEnum | undefined): void {
+    const reopenedStatuses = [
+      ProjectReportDTO.StatusEnum.ReOpenSubmittedLast,
+      ProjectReportDTO.StatusEnum.ReOpenSubmittedLimited,
+      ProjectReportDTO.StatusEnum.VerificationReOpenedLast,
+      ProjectReportDTO.StatusEnum.VerificationReOpenedLimited
+    ];
+    if (status && reopenedStatuses.includes(status)) {
+        this.form.get('deadlineId')?.disable();
+        this.form.get('type')?.disable();
+    }
   }
 
 }

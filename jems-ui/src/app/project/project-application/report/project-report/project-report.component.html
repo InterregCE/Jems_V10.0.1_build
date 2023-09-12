@@ -119,6 +119,18 @@
                 </mat-cell>
             </ng-container>
 
+            <ng-container matColumnDef="lastSubmission">
+                <mat-header-cell *matHeaderCellDef class="text-left" mat-sort-header="lastSubmission">
+                    <span jemsText maxLines="3">{{ 'project.application.project.report.table.last.submission.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.lastReSubmission | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.lastReSubmission | localeDate: 'LT'}}</div>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
             <ng-container matColumnDef="verificationEndDate">
                 <mat-header-cell *matHeaderCellDef class="text-left" mat-sort-header="verificationEndDate">
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.verification.end.date' | translate }}</span>

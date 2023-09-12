@@ -34,3 +34,18 @@ mat-chip {
 .status-Finalized {
   background-color: var(--status-contracted) !important;
 }
+.status-ReOpenSubmittedLast {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenSubmittedLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-VerificationReOpenedLast {
+  background-color: var(--status-declined) !important;
+}
+.status-VerificationReOpenedLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenFinalized {
+  background-color: var(--status-declined) !important;
+}

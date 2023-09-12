@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectReportDetailPageStore} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
-import {PagePartnerReportCertificateDTO, PartnerReportCertificateDTO} from '@cat/api';
+import {PagePartnerReportCertificateDTO, PartnerReportCertificateDTO, ProjectReportDTO} from '@cat/api';
 import {
   ProjectReportCertificateTabStore,
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-certificate-tab/project-report-certificate-tab-store.service';
@@ -34,6 +34,7 @@ export class ProjectReportCertificateTabComponent {
     projectId: number;
     projectReportId: number;
     reportEditable: boolean;
+    reopenedLimited: boolean;
     partnerReportCertificates: PagePartnerReportCertificateDTO;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
@@ -50,12 +51,14 @@ export class ProjectReportCertificateTabComponent {
       this.projectReportDetailPageStore.projectReportId$,
       this.projectReportDetailPageStore.reportEditable$,
       this.pageStore.projectReportCertificates$,
+      this.projectReportDetailPageStore.projectReport$
     ]).pipe(
-      map(([projectId, projectReportId, reportEditable, partnerReportCertificates]) => ({
+      map(([projectId, projectReportId, reportEditable, partnerReportCertificates, projectReport]) => ({
         projectId,
         projectReportId,
         reportEditable,
-        partnerReportCertificates
+        partnerReportCertificates,
+        reopenedLimited: projectReport.status === ProjectReportDTO.StatusEnum.ReOpenSubmittedLimited || projectReport.status === ProjectReportDTO.StatusEnum.VerificationReOpenedLimited
       })),
       tap(data => this.dataSource.data = data.partnerReportCertificates.content),
     );

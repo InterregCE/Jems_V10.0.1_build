@@ -9,17 +9,21 @@ import {
   ProjectReportVerificationNotificationDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
   public static REPORT_DETAIL_PATH = '/projectReports/';
+  ReportUtil = ReportUtil;
 
   projectReport$: Observable<ProjectReportDTO>;
   projectReportVerificationNotification$: Observable<ProjectReportVerificationNotificationDTO>;
@@ -72,6 +76,7 @@ export class ProjectReportDetailPageStore {
       ),
       tap(report => this.reportVersion$.next(report.linkedFormVersion)),
       tap(report => Log.info('Fetched the project report:', this, report)),
+      shareReplay(1)
     );
 
     return merge(initialReport$, this.updatedReport$);
@@ -123,7 +128,7 @@ export class ProjectReportDetailPageStore {
       this.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && status === ProjectReportSummaryDTO.StatusEnum.Draft)
+        map(([canEdit, status]) => canEdit && ReportUtil.isProjectReportOpen(status))
       );
   }
 
@@ -168,5 +173,15 @@ export class ProjectReportDetailPageStore {
         tap(notificationData => Log.info('Verification done by JS, notification was sent', reportId, notificationData))
       );
   }
+
+  reopenReport(projectId: number, projectReportId: number): Observable<ProjectReportDTO.StatusEnum> {
+    return this.projectReportService.reOpenProjectReport(projectId, projectReportId)
+      .pipe(
+        map(status => status as ProjectReportDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', projectReportId, status))
+      );
+  }
+
 }
 
