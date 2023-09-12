@@ -41,6 +41,7 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
@@ -58,6 +59,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -324,12 +327,26 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         clearMocks(reportPersistence, reportExpenditurePersistence, reportExpenditureVerificationPersistence, auditPublisher)
     }
 
-    @Test
-    fun submit() {
+    @ParameterizedTest(name = "submit - clear verification {0} to {2}")
+    @CsvSource(value = [
+        "Draft,false,Submitted,true",
+        "ReOpenSubmittedLast,false,Submitted,true",
+        "ReOpenSubmittedLimited,false,Submitted,false",
+        "ReOpenInControlLast,false,InControl,true",
+        "ReOpenInControlLimited,false,InControl,false",
+        "ReOpenInControlLast,true,ReOpenCertified,true",
+        "ReOpenInControlLimited,true,ReOpenCertified,false",
+    ])
+    fun `submit - clear verification`(
+        currentStatus: ReportStatus,
+        controlReopenedBefore: Boolean,
+        expectedNewStatus: ReportStatus,
+        shouldUpdateFinancing: Boolean,
+    ) {
         val report = mockk<ProjectPartnerReport>()
-        every { report.status } returns ReportStatus.ReOpenInControlLast
+        every { report.status } returns currentStatus
         every { report.id } returns 35L
-        every { report.lastControlReopening } returns null
+        every { report.lastControlReopening } returns if (controlReopenedBefore) mockk() else null
         every { report.identification.coFinancing } returns coFinancing
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
@@ -369,7 +386,11 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentSlot)) } answers { }
 
         val submissionTime = slot<ZonedDateTime>()
-        every { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), capture(submissionTime)) } returns mockedResult
+        if (currentStatus == ReportStatus.Draft)
+            every { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedNewStatus, capture(submissionTime), null, null) } returns mockedResult
+        else
+            every { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedNewStatus, null, capture(submissionTime), null) } returns mockedResult
+
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
@@ -378,12 +399,13 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
 
         val slotRates = slot<Collection<ProjectPartnerReportExpenditureCurrencyRateChange>>()
+        val slotVerificationPreparationAction = slot<VerificationAction>()
         every {
             reportExpenditureVerificationPersistence
-                .updateExpenditureCurrencyRatesAndClearVerification(
-                    PARTNER_ID,
+                .updateCurrencyRatesAndPrepareVerification(
                     35L,
-                    capture(slotRates)
+                    capture(slotRates),
+                    capture(slotVerificationPreparationAction),
                 )
 
         } returns listOf(
@@ -403,10 +425,22 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         submitReport.submit(PARTNER_ID, 35L)
 
-        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, ReportStatus.InControl, any(), any()) }
-        verify(exactly = 1) { reportExpenditurePersistence.markAsSampledAndLock(setOf(21L)) }
+        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedNewStatus, any(), any()) }
+
+        if (currentStatus == ReportStatus.InControl)
+            verify(exactly = 1) { reportExpenditurePersistence.markAsSampledAndLock(setOf(21L)) }
+
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
+
+        val expectedAction = when (expectedNewStatus) {
+            ReportStatus.Submitted -> VerificationAction.ClearDeductions
+            ReportStatus.InControl,
+            ReportStatus.ReOpenCertified -> VerificationAction.UpdateCertified
+            else -> throw IllegalStateException("not real scenario")
+        }
+
+        assertThat(slotVerificationPreparationAction.captured).isEqualTo(expectedAction)
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_SUBMITTED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
@@ -419,32 +453,34 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             ProjectPartnerReportExpenditureCurrencyRateChange(631L, BigDecimal.valueOf(77895L, 4), BigDecimal.valueOf(623L, 2)),
             ProjectPartnerReportExpenditureCurrencyRateChange(632L, BigDecimal.ONE, BigDecimal.valueOf(1650L, 2)),
         )
-        assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
-        assertThat(coFinSlot.captured).isEqualTo(ExpenditureCoFinancingCurrentWithReIncluded(expectedCoFinancing, expectedReIncludedCoFinancing))
-        assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(
-            mapOf(
-                22L to ExpenditureLumpSumCurrentWithReIncluded(
-                    current = BigDecimal.valueOf(485, 1),
-                    currentReIncluded = BigDecimal.valueOf(485, 1),
-                ),
+        if (shouldUpdateFinancing) {
+            assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
+            assertThat(coFinSlot.captured).isEqualTo(ExpenditureCoFinancingCurrentWithReIncluded(expectedCoFinancing, expectedReIncludedCoFinancing))
+            assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(
+                mapOf(
+                    22L to ExpenditureLumpSumCurrentWithReIncluded(
+                        current = BigDecimal.valueOf(485, 1),
+                        currentReIncluded = BigDecimal.valueOf(485, 1),
+                    ),
+                )
             )
-        )
-        assertThat(unitCostSlot.captured).containsExactlyEntriesOf(
-            mapOf(
-                15L to ExpenditureUnitCostCurrentWithReIncluded(
-                    current = BigDecimal.valueOf(165L, 1),
-                    currentReIncluded = BigDecimal.ZERO,
-                ),
+            assertThat(unitCostSlot.captured).containsExactlyEntriesOf(
+                mapOf(
+                    15L to ExpenditureUnitCostCurrentWithReIncluded(
+                        current = BigDecimal.valueOf(165L, 1),
+                        currentReIncluded = BigDecimal.ZERO,
+                    ),
+                )
             )
-        )
-        assertThat(investmentSlot.captured).containsExactlyEntriesOf(
-            mapOf(
-                10L to ExpenditureInvestmentCurrentWithReIncluded(
-                    current = BigDecimal.valueOf(999L, 2),
-                    currentReIncluded = BigDecimal.ZERO,
-                ),
+            assertThat(investmentSlot.captured).containsExactlyEntriesOf(
+                mapOf(
+                    10L to ExpenditureInvestmentCurrentWithReIncluded(
+                        current = BigDecimal.valueOf(999L, 2),
+                        currentReIncluded = BigDecimal.ZERO,
+                    ),
+                )
             )
-        )
+        }
     }
 
     @Test
@@ -473,10 +509,10 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val slotRates = slot<Collection<ProjectPartnerReportExpenditureCurrencyRateChange>>()
         every {
             reportExpenditureVerificationPersistence
-                .updateExpenditureCurrencyRatesAndClearVerification(
-                    PARTNER_ID,
+                .updateCurrencyRatesAndPrepareVerification(
                     36L,
-                    capture(slotRates)
+                    capture(slotRates),
+                    VerificationAction.UpdateCertified,
                 )
 
         } returns emptyList()
@@ -519,13 +555,14 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 44L) } returns PreConditionCheckResult(emptyList(), false)
 
         assertThrows<SubmissionNotAllowed> { submitReport.submit(PARTNER_ID, 44L) }
-        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(any(), any(), any()) }
     }
 
     @Test
     fun `submit - needed rates not available`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.Draft
+        every { report.lastControlReopening } returns null
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 40L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 40L) } returns PreConditionCheckResult(emptyList(), true)
@@ -534,7 +571,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
 
         assertThrows<CurrencyRatesMissing> { submitReport.submit(PARTNER_ID, 40L) }
-        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(any(), any(), any()) }
     }
 
 }

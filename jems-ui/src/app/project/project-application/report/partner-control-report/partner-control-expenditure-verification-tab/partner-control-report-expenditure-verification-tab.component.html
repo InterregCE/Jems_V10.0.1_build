@@ -416,7 +416,7 @@
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.deductedAmount"
                                            [disabled]="control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                            [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
-                                           [options]="{min: constants.MIN_VALUE, max: data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission, allowNegative: true, align: 'right'}"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                                            (keyup)="updateCertifiedAmount(expenditureIndex,
                                             data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission,
                                             items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.deductedAmount)?.value)"
@@ -433,7 +433,7 @@
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
                                 <mat-form-field jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
-                                           [options]="{align: 'right'}"
+                                           [options]="{align: 'right', allowNegative: true}"
                                            [readonly]="control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                            [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            currencyMask matInput

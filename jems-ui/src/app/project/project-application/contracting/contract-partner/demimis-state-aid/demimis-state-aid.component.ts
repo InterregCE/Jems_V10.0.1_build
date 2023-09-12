@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   ContractingPartnerStateAidDeMinimisDTO,
   ContractingPartnerStateAidDeMinimisSectionDTO,
@@ -16,14 +8,11 @@ import {
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
 import {FormService} from '@common/components/section/form/form.service';
-import {map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {NutsStore} from '@common/services/nuts.store';
-import {
-  ContractMonitoringStore
-} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-store';
+import {ContractMonitoringStore} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-store';
 
 @Component({
   selector: 'jems-demimis-state-aid',
@@ -32,23 +21,10 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FormService],
 })
-export class DemimisStateAidComponent implements OnInit {
-
-  @Input()
-  deMinimis: ContractingPartnerStateAidDeMinimisSectionDTO;
-
-  @Input()
-  success$: Observable<any>;
-  @Input()
-  error$: Observable<any>;
-
-  @Output()
-  updateDeMinimis: EventEmitter<ContractingPartnerStateAidDeMinimisDTO> = new EventEmitter<ContractingPartnerStateAidDeMinimisDTO>();
+export class DemimisStateAidComponent {
 
   BaseForGrantingEnum = ContractingPartnerStateAidDeMinimisDTO.BaseForGrantingEnum;
 
-  partnerId: number;
-  projectId: number;
   tableData: AbstractControl[] = [];
   displayedColumns = ['selected', 'memberState', 'amount'];
 
@@ -63,11 +39,10 @@ export class DemimisStateAidComponent implements OnInit {
     canEdit: boolean;
     partnerSummary: ProjectPartnerSummaryDTO;
     isPartnerLocked: boolean;
+    deMinimis: ContractingPartnerStateAidDeMinimisSectionDTO;
   }>;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    protected changeDetectorRef: ChangeDetectorRef,
     private contractPartnerStore: ContractPartnerStore,
     private contractMonitoringStore: ContractMonitoringStore,
     private formBuilder: FormBuilder,
@@ -79,17 +54,19 @@ export class DemimisStateAidComponent implements OnInit {
       this.contractMonitoringStore.canSetToContracted$,
       this.contractPartnerStore.partnerSummary$,
       this.contractPartnerStore.isPartnerLocked$,
+      this.contractPartnerStore.deMinimis$,
     ]).pipe(
-      map(([nuts, canEdit, partnerSummary, isPartnerLocked]) => ({
+      map(([nuts, canEdit, partnerSummary, isPartnerLocked, deMinimis]) => ({
         nuts,
         canEdit,
         partnerSummary,
-        isPartnerLocked
+        isPartnerLocked,
+        deMinimis
       })),
       tap(data =>
-        this.nuts = this.deMinimis.memberStatesGranting.flatMap((state) => this.filterNuts(state.country, data.nuts))),
+        this.nuts = data.deMinimis.memberStatesGranting.flatMap((state: MemberStateForGrantingDTO) => this.filterNuts(state.country, data.nuts))),
       tap(data => this.initForm(data)),
-      tap(data => this.resetForm(data.canEdit, data.isPartnerLocked))
+      tap(data => this.resetForm(data.canEdit, data.isPartnerLocked, data.deMinimis))
     );
   }
 
@@ -103,20 +80,6 @@ export class DemimisStateAidComponent implements OnInit {
 
   private static selectOptionClicked(event: FocusEvent): boolean {
     return !!event.relatedTarget && (event.relatedTarget as any).tagName === 'MAT-OPTION';
-  }
-
-  ngOnInit(): void {
-    this.success$
-      .pipe(
-        tap((data) => this.formService.setSuccess(data)),
-      )
-      .subscribe();
-
-    this.error$
-      .pipe(
-        tap((data) => this.formService.setError(data)),
-      )
-      .subscribe();
   }
 
   addMemberStates(states: MemberStateForGrantingDTO[] | null) {
@@ -140,31 +103,36 @@ export class DemimisStateAidComponent implements OnInit {
       );
   }
 
-  resetForm(canEdit: boolean, isPartnerLocked: boolean) {
+  resetForm(canEdit: boolean, isPartnerLocked: boolean, deMinimis: ContractingPartnerStateAidDeMinimisSectionDTO) {
     this.memberStates.clear();
-    this.addMemberStates(this.deMinimis.memberStatesGranting);
+    this.addMemberStates(deMinimis.memberStatesGranting);
     this.tableData = [...this.memberStates.controls];
-    this.deMinimisForm.controls.dateOfGrantingAid.setValue(this.deMinimis.dateOfGrantingAid);
-    this.deMinimisForm.controls.amountGrantingAid.setValue(this.deMinimis.amountGrantingAid);
-    this.deMinimisForm.controls.selfDeclarationSubmissionDate.setValue(this.deMinimis.selfDeclarationSubmissionDate);
-    this.deMinimisForm.controls.aidGrantedOnBasis.setValue(this.deMinimis.baseForGranting);
-    this.deMinimisForm.controls.country.setValue(this.deMinimis.aidGrantedByCountry);
-    this.deMinimisForm.controls.comment.setValue(this.deMinimis.comment);
+    this.deMinimisForm.controls.dateOfGrantingAid.setValue(deMinimis.dateOfGrantingAid);
+    this.deMinimisForm.controls.amountGrantingAid.setValue(deMinimis.amountGrantingAid);
+    this.deMinimisForm.controls.selfDeclarationSubmissionDate.setValue(deMinimis.selfDeclarationSubmissionDate);
+    this.deMinimisForm.controls.aidGrantedOnBasis.setValue(deMinimis.baseForGranting);
+    this.deMinimisForm.controls.country.setValue(deMinimis.aidGrantedByCountry);
+    this.deMinimisForm.controls.comment.setValue(deMinimis.comment);
     this.deMinimisForm.controls.dateOfGrantingAid.disable();
     this.memberStates.controls.forEach((memberState: any) => memberState.controls.memberCountry.disable());
     if (!canEdit || isPartnerLocked) {
       this.memberStates.disable();
     }
-    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
-  saveForm() {
-    this.updateDeMinimis.emit(this.buildSaveEntity());
+  saveForm(partnerId: number) {
+    const deMinimis = this.buildSaveEntity(partnerId);
+
+    this.contractPartnerStore.updateDeMinimis(deMinimis).pipe(
+      take(1),
+      tap(() => this.formService.setSuccess('project.application.contract.monitoring.project.de.minimis.saved')),
+      catchError(async (error) => this.formService.setError(error)),
+    ).subscribe();
   }
 
-  buildSaveEntity(): ContractingPartnerStateAidDeMinimisDTO {
+  buildSaveEntity(partnerId: number): ContractingPartnerStateAidDeMinimisDTO {
     return {
-      partnerId: this.deMinimis.partnerId,
+      partnerId: partnerId,
       selfDeclarationSubmissionDate: this.deMinimisForm.controls.selfDeclarationSubmissionDate.value,
       baseForGranting: this.deMinimisForm.controls.aidGrantedOnBasis.value,
       aidGrantedByCountry: this.deMinimisForm.controls.country.value,
@@ -206,7 +174,7 @@ export class DemimisStateAidComponent implements OnInit {
       comment: ['', Validators.maxLength(2000)],
       memberStates: this.formBuilder.array([]),
     });
-    this.addMemberStates(this.deMinimis.memberStatesGranting);
+    this.addMemberStates(data.deMinimis.memberStatesGranting);
     this.formService.init(this.deMinimisForm, new Observable<boolean>().pipe(startWith(data.canEdit && !data.isPartnerLocked)));
     this.deMinimisForm.controls.dateOfGrantingAid.disable();
     this.memberStates.controls.forEach((memberState: any) => memberState.controls.memberCountry.disable());

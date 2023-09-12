@@ -1,5 +1,5 @@
 <jems-form *ngIf="data$ | async as data"
-           (save)="saveForm()"
+           (save)="saveForm(data.partnerId)"
            (discard)="discardChanges(data.beneficials, data.canEdit, data.isPartnerLocked)">
 
     <jems-alert *ngIf="error$ | async as error"

@@ -31,7 +31,7 @@ class DeleteFileFromSharedFolder(
                 ProjectFileChangeEvent(
                     action = FileChangeAction.Delete,
                     projectSummary = projectPersistence.getProjectSummary(projectId),
-                    file = file!!,
+                    file = file,
                     overrideAuthorEmail = securityService.currentUser?.user?.email
                 )
             )

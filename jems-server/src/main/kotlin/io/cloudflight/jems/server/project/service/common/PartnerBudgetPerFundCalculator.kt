@@ -7,8 +7,8 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudge
 import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -124,10 +124,10 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
                 partner = null,
                 costType = null,
                 budgetPerFund = totalBudgetsPerFundTotal.toSet(),
-                publicContribution = tableRowsExceptTotal.sumOf { it.publicContribution!! },
-                autoPublicContribution = tableRowsExceptTotal.sumOf { it.autoPublicContribution!! },
-                privateContribution = tableRowsExceptTotal.sumOf { it.privateContribution!! },
-                totalPartnerContribution = tableRowsExceptTotal.sumOf { it.totalPartnerContribution!! },
+                publicContribution = tableRowsExceptTotal.sumOf { it.publicContribution },
+                autoPublicContribution = tableRowsExceptTotal.sumOf { it.autoPublicContribution },
+                privateContribution = tableRowsExceptTotal.sumOf { it.privateContribution },
+                totalPartnerContribution = tableRowsExceptTotal.sumOf { it.totalPartnerContribution },
                 totalEligibleBudget = totalEligibleBudgetSum,
                 percentageOfTotalEligibleBudget = BigDecimal(100)
             )

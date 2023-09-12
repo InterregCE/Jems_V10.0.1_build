@@ -260,9 +260,10 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence)
-        clearMocks(partnerPersistence)
-        clearMocks(auditPublisher)
+        clearMocks(reportPersistence, partnerPersistence, reportControlExpenditurePersistence,
+            reportExpenditureCostCategoryPersistence, reportExpenditureCoFinancingPersistence, reportContributionPersistence,
+            reportLumpSumPersistence, reportUnitCostPersistence, reportInvestmentPersistence, controlOverviewPersistence,
+            auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence, projectPersistence)
     }
 
     @ParameterizedTest(name = "finalizeControl (status {0})")

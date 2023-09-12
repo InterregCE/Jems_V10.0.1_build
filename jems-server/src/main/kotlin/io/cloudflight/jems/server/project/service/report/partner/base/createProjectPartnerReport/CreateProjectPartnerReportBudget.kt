@@ -102,7 +102,7 @@ class CreateProjectPartnerReportBudget(
 
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
 
-        val readyForPaymentLumpSums = paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId)
+        val readyForPaymentLumpSums = paymentPersistence.getFtlsCumulativeForPartner(partnerId)
         val previouslyReportedCostCategories = reportExpenditureCostCategoryPersistence
             .getCostCategoriesCumulative(submittedReportIds, finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(readyForPaymentLumpSums.sum)

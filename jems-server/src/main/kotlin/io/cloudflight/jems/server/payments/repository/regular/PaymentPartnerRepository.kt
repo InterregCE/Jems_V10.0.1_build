@@ -22,10 +22,10 @@ interface PaymentPartnerRepository: JpaRepository<PaymentPartnerEntity, Long> {
     @Query("""
         SELECT new kotlin.Pair(pp.payment.fund.id, COALESCE(SUM(pp.amountApprovedPerPartner), 0))
         FROM #{#entityName} pp
-        WHERE pp.projectPartner.id = :partnerId
+        WHERE pp.projectPartner.id = :partnerId and pp.payment.type = :paymentType
         GROUP BY pp.payment.fund.id
     """)
-    fun getPaymentCumulative(partnerId: Long): List<Pair<Long, BigDecimal>>
+    fun getPaymentOfTypeCumulativeForPartner(paymentType: PaymentType, partnerId: Long): List<Pair<Long, BigDecimal>>
 
     @Query("""
         SELECT new kotlin.Pair(pp.payment.fund.id, COALESCE(SUM(pp.amountApprovedPerPartner), 0))

@@ -1,11 +1,12 @@
-<jems-form *ngIf="data$ | async as data" (save)="saveForm()"
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm(data.partnerId)"
            (discard)="resetForm(data.documentsLocation)">
     <form *ngIf="data.canView" jemsFormLayout [formGroup]="documentsLocationForm">
         <div jemsMultiColumnRow>
             <h3>{{'project.application.contract.partner.section.documents.location.title' | translate}}</h3>
         </div>
 
-        <mat-form-field jemsFormFieldWidth="xx-large"  [matTooltip]="lodTitle.value">
+        <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodTitle.value">
             <mat-label>{{'project.application.contract.partner.section.documents.location.persontitle' | translate}}</mat-label>
             <input #lodTitle formControlName="title" matInput>
             <mat-hint [jemsHintFor]="lodTitle" [hide]="documentsLocationForm?.controls?.title?.errors !== null">
@@ -112,10 +113,10 @@
         <mat-form-field jemsFormFieldWidth="xx-large">
             <mat-label>{{'project.application.contract.partner.section.documents.location.postalcode' | translate}}</mat-label>
             <input #lodPostalCode formControlName="postalCode" matInput>
-                <mat-hint [jemsHintFor]="lodPostalCode"
-                          [hide]="documentsLocationForm?.controls?.postalCode?.errors !== null">
-                    <jems-text-hint [currentLength]="lodPostalCode.value.length" [maxLength]="20"></jems-text-hint>
-                </mat-hint>
+            <mat-hint [jemsHintFor]="lodPostalCode"
+                      [hide]="documentsLocationForm?.controls?.postalCode?.errors !== null">
+                <jems-text-hint [currentLength]="lodPostalCode.value.length" [maxLength]="20"></jems-text-hint>
+            </mat-hint>
             <mat-error>
                 <jems-form-field-errors
                         [errors]="documentsLocationForm?.controls?.postalCode?.errors">
@@ -150,7 +151,7 @@
 
         <jems-project-application-form-address
                 *ngIf="documentsLocationForm?.controls"
-                [partnerId]="partnerId"
+                [partnerId]="data.partnerId"
                 [addressForm]="documentsLocationForm?.controls?.nuts"
                 [nuts]="data.nuts"
                 [fieldIds]="nutsConfig">

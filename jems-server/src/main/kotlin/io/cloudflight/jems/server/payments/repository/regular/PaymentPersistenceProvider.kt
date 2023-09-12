@@ -298,9 +298,9 @@ class PaymentPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getCoFinancingAndContributionsCumulative(partnerId: Long): ReportExpenditureCoFinancingColumn {
+    override fun getFtlsCumulativeForPartner(partnerId: Long): ReportExpenditureCoFinancingColumn {
         val contribution = paymentContributionMetaRepository.getContributionCumulative(partnerId)
-        val funds = paymentPartnerRepository.getPaymentCumulative(partnerId).toMap()
+        val funds = paymentPartnerRepository.getPaymentOfTypeCumulativeForPartner(PaymentType.FTLS, partnerId).toMap()
             .plus(Pair(null, contribution.partnerContribution))
         return ReportExpenditureCoFinancingColumn(
             funds = funds,
@@ -313,7 +313,7 @@ class PaymentPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getPaymentsCumulativeForProject(projectId: Long): PaymentCumulativeData {
+    override fun getFtlsCumulativeForProject(projectId: Long): PaymentCumulativeData {
         val contribution = paymentContributionMetaRepository.getContributionCumulativePerProject(projectId)
         val funds = paymentPartnerRepository.getPaymentOfTypeCumulativeForProject(PaymentType.FTLS, projectId).toMap()
 

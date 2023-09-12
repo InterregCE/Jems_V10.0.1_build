@@ -19,15 +19,15 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import kotlin.streams.asSequence
 
 @Repository
@@ -154,7 +154,7 @@ class ProjectReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getSubmittedProjectReports(projectId: Long): List<ProjectReportStatusAndType> =
         projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.SUBMITTED_STATUSES)
-            .map { ProjectReportStatusAndType(it.id, it.status, it.deadline?.type ?: it.type!!) }
+            .map { ProjectReportStatusAndType(it.id, it.status, it.fetchType()) }
 
     @Transactional(readOnly = true)
     override fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus> =

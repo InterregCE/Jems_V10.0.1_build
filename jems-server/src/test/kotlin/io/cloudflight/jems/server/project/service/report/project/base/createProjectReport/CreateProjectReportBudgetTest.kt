@@ -430,7 +430,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
             role = ProjectPartnerRole.LEAD_PARTNER
         )))
         every { reportCertificateCoFinancingPersistence.getCoFinancingCumulative(setOf(21L, 28L), setOf(28L)) } returns previousCoFinancing
-        every { paymentPersistence.getPaymentsCumulativeForProject(projectId) } returns paymentCumulative
+        every { paymentPersistence.getFtlsCumulativeForProject(projectId) } returns paymentCumulative
         every { reportCertificateLumpSumPersistence.getLumpSumCumulative(setOf(21L, 28L)) } returns mapOf(Pair(1, BigDecimal.valueOf(1_944L)))
         every { paymentPersistence.getPaymentsByProjectId(projectId) } returns listOf(payment)
         every { reportCertificateUnitCostPersistence.getUnitCostsCumulative(setOf(21L, 28L)) } returns mapOf(Pair(unitCostId, BigDecimal.TEN))

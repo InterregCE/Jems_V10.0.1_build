@@ -29,7 +29,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -294,15 +293,14 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         )
 
         val certificate = mockk<ProjectPartnerReportSubmissionSummary>()
-        every { certificate.id } returns 101L
         every { certificate.partnerId } returns PARTNER_ID
 
-        val certificateIds = listOf(certificate).mapTo(HashSet()) { it.partnerId }
+        val partnerIds = setOf(certificate.partnerId)
 
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
         )
-        every { procurementRepository.findByReportEntityIdIn(certificateIds, any() )  } returns PageImpl(listOf(procurementEntity))
+        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds)  } returns listOf(procurementEntity)
         every {
             expenditureVerificationRepository
                 .findAllByExpenditurePartnerReportProjectReportId(PROJECT_REPORT_ID)
@@ -358,19 +356,14 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
         every { unParkedFrom.id } returns 5L
 
-
         val certificate = mockk<ProjectPartnerReportSubmissionSummary>()
-        every { certificate.id } returns 101L
         every { certificate.partnerId } returns PARTNER_ID
-
-        val certificateIds = listOf(certificate).mapTo(HashSet()) { it.partnerId }
+        val partnerIds = setOf(certificate.partnerId)
 
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
         )
-
-        every { procurementRepository.findByReportEntityIdIn(certificateIds, any() )  } returns PageImpl(listOf(procurementEntity))
-
+        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds)  } returns listOf(procurementEntity)
 
         val reportEntity = ProjectPartnerReportEntity(
             id = PARTNER_REPORT_ID,

@@ -821,7 +821,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             paymentInstallment_2()
         )
         // previously reported
-        every { paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId) } returns previousPayments
+        every { paymentPersistence.getFtlsCumulativeForPartner(partnerId) } returns previousPayments
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L, 409L), setOf(409L)) } returns previousExpenditures
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L, 409L), setOf(409L)) } returns ExpenditureCoFinancingPrevious(
             previous = previousReportedCoFinancing,

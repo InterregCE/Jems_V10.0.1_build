@@ -182,6 +182,10 @@ internal class SubmitProjectReportTest : UnitTest() {
 
         if (type == ContractingDeadlineType.Finance) {
             every { reportWorkPlanPersistence.deleteWorkPlan(PROJECT_ID, REPORT_ID) } answers { }
+            every { reportResultPrinciplePersistence.deleteProjectResultPrinciples(REPORT_ID) } answers { }
+        }
+        if (type == ContractingDeadlineType.Content) {
+            every { reportCertificatePersistence.deselectCertificatesOfProjectReport(REPORT_ID) } answers { }
         }
 
         val submissionTime = slot<ZonedDateTime>()
@@ -210,7 +214,6 @@ internal class SubmitProjectReportTest : UnitTest() {
         val investmentSlot = slot<Map<Long, BigDecimal>>()
         every { reportCertificateInvestmentPersistence.updateCurrentlyReportedValues(PROJECT_ID, reportId = REPORT_ID, capture(investmentSlot)) } answers { }
         every { reportResultPrinciplePersistence.getProjectResultPrinciples(PROJECT_ID, reportId = REPORT_ID) } returns emptyReportResultPrinciple
-        every { reportResultPrinciplePersistence.deleteProjectResultPrinciples(REPORT_ID) } returnsArgument 0
         every { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, REPORT_ID) } returns listOf()
 
         submitReport.submit(PROJECT_ID, REPORT_ID)

@@ -30,7 +30,7 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     endDate = endDate,
 
     deadlineId = deadline?.id,
-    type = deadline?.type ?: type,
+    type = fetchType(),
     periodNumber = deadline?.periodNumber ?: periodNumber,
     reportingDate = deadline?.deadline ?: reportingDate,
 
@@ -59,7 +59,7 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
     endDate = first.endDate,
 
     deadlineId = first.deadline?.id,
-    type = first.deadline?.type ?: first.type,
+    type = first.fetchType(),
     periodNumber = first.deadline?.periodNumber ?: first.periodNumber,
     reportingDate = first.deadline?.deadline ?: first.reportingDate,
 
@@ -250,3 +250,5 @@ fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationCo
     conclusionMA = verificationConclusionMa,
     verificationFollowUp = verificationFollowup
 )
+
+fun ProjectReportEntity.fetchType() = deadline?.type ?: type!!

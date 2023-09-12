@@ -574,10 +574,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
-    const isParked = !!reportExpenditureCost.parkingMetadata;
-    const conversionRate = isParked
+    const isParked = reportExpenditureCost.parkingMetadata != null;
+    const isSubmitted = ReportUtil.isPartnerReportSubmittedOrAfter(this.currentReport.status);
+    const conversionRate = isParked || isSubmitted
       ? reportExpenditureCost.currencyConversionRate
       : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
+
     const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
     this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
     const item = this.formBuilder.group(
@@ -663,8 +665,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   updateAmountInEur(expenditureIndex: number, declaredAmount: number) {
-    const newConversionRate = this.getConversionRateByCode(this.items.at(expenditureIndex).get('currencyCode')?.value);
-    const declaredAmountInEur = declaredAmount && newConversionRate ? NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
+    const conversionRate = this.items.at(expenditureIndex).get('currencyConversionRate')?.value;
+    const declaredAmountInEur = declaredAmount && conversionRate ? NumberService.roundNumber(NumberService.divide(declaredAmount, conversionRate)) : 0;
 
     this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(NumberService.roundNumber(declaredAmountInEur));
   }

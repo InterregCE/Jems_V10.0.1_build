@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.project.verification
 
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.verification.expenditure.ProjectReportVerificationExpenditureEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
@@ -9,7 +10,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationRiskBased
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -35,11 +35,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
     override fun getProjectReportExpenditureVerification(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
-        val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
-
-        val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
-            .content.associateBy { it.id }
+        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
 
         return expenditureVerificationRepository
             .findAllByExpenditurePartnerReportProjectReportId(projectReportId)
@@ -50,11 +46,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
     override fun getParkedProjectReportExpenditureVerification(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
-        val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
-
-        val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
-            .content.associateBy { it.id }
+        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
 
         return expenditureVerificationRepository
             .findAllByExpenditurePartnerReportProjectReportIdAndParkedIsTrue(projectReportId)
@@ -79,11 +71,8 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         val existingEntities =
             expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId = projectReportId)
                 .associateBy { it.expenditure.id }
-        val certificateIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
-            .mapTo(HashSet()) { it.partnerId }
 
-        val procurementsById = procurementRepository.findByReportEntityIdIn(certificateIds, Pageable.unpaged())
-            .content.associateBy { it.id }
+        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
 
         expenditureVerification.forEach {
             existingEntities.getValue(it.expenditureId).updateWith(it, existingEntities[it.expenditureId]!!)
@@ -103,6 +92,13 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         savedProjectReport.riskBasedVerificationDescription = riskBasedData.riskBasedVerificationDescription
 
         return savedProjectReport.toRiskBasedModel()
+    }
+
+    private fun fetchAllProcurementsForProjectReport(projectReportId: Long): Map<Long, ProjectPartnerReportProcurementEntity> {
+        val partnerIds = projectReportCertificatePersistence.listCertificatesOfProjectReport(projectReportId)
+            .map { it.partnerId }.toSet()
+        return procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds)
+            .associateBy { it.id }
     }
 
     private fun ProjectReportVerificationExpenditureEntity.updateWith(

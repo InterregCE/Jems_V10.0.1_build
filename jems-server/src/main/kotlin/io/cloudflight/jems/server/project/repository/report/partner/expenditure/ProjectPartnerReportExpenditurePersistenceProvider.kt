@@ -15,7 +15,6 @@ import io.cloudflight.jems.server.project.repository.report.partner.control.expe
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.toBudgetOptionsModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
@@ -65,7 +64,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
         val toNotBeDeletedIds = expenditureCosts.mapNotNullTo(HashSet()) { it.id }
-        val existingIds = reportExpenditureRepository.findByPartnerReportOrderByIdDesc(reportEntity).associateBy { it.id }
+        val existingIds = reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(reportId).associateBy { it.id }
 
         reportExpenditureRepository.deleteAll(
             existingIds.minus(toNotBeDeletedIds).values.deleteAttachments()

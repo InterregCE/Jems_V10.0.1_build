@@ -86,7 +86,7 @@ class CreateProjectReportBudget(
                 totalFromAF = totalFromAF,
                 previousValues = reportCertificateCoFinancingPersistence.getCoFinancingCumulative(submittedReportIds, finalizedReportIds),
                 totalFastTrackReady = sumOfPaymentReady,
-                paymentCumulativeData = paymentPersistence.getPaymentsCumulativeForProject(projectId),
+                paymentCumulativeData = paymentPersistence.getFtlsCumulativeForProject(projectId),
             ),
             costCategorySetup = costCategorySetup(
                 budget = costCategoryBreakdownFromAF,

@@ -32,7 +32,6 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
@@ -720,7 +719,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report, lumpSum, unitCost, investment)
         every { reportRepository.findByIdAndPartnerId(id = 58L, PARTNER_ID) } returns report
 
-        every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
+        every { reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(58L) } returns
             mutableListOf(entityToStay, entityToDelete, entityToUpdate)
 
         every { fileRepository.delete(dummyAttachment) } answers { }

@@ -1,6 +1,6 @@
 <jems-form *ngIf="data$ | async as data"
-           (save)="saveForm()"
-           (discard)="resetForm()">
+           (save)="saveForm(data?.gber?.partnerId)"
+           (discard)="resetForm(data?.gber)">
     <form jemsFormLayout [formGroup]="gberForm">
 
         <h4>{{'project.application.contract.partner.section.gber' | translate}}</h4>
@@ -20,7 +20,7 @@
                 <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                     <mat-form-field>
                         <mat-select formControlName="fund" class="no-arrow">
-                            <mat-option *ngFor="let fund of fundList"
+                            <mat-option *ngFor="let fund of data.fundList"
                                         [value]="fund">
                                 {{fund.abbreviation | translateBySystemLanguage | async}}
                             </mat-option>

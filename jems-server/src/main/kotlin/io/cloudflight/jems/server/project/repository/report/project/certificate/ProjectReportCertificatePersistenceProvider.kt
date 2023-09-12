@@ -1,12 +1,11 @@
 package io.cloudflight.jems.server.project.repository.report.project.certificate
 
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.toIdentificationSummaries
+import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.toSubmissionSummary
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
@@ -30,11 +29,16 @@ class ProjectReportCertificatePersistenceProvider(
     }
 
     @Transactional
+    override fun deselectCertificatesOfProjectReport(projectReportId: Long) {
+        partnerReportRepository.findAllByProjectReportId(projectReportId)
+            .forEach { it.projectReport = null }
+    }
+
+    @Transactional
     override fun deselectAllCertificatesForDeadlines(deadlineIds: Set<Long>) {
         partnerReportRepository.findAllByProjectReportDeadlineIdIn(deadlineIds)
             .forEach { it.projectReport = null }
     }
-
 
     @Transactional
     override fun selectCertificate(projectReportId: Long, certificateId: Long) {

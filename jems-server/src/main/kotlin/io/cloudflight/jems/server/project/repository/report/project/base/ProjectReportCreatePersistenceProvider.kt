@@ -90,7 +90,7 @@ class ProjectReportCreatePersistenceProvider(
         persistAvailableInvestmentsToReport(reportToCreate.reportBudget.investments, report = reportPersisted)
         persistResultsAndHorizontalPrinciples(reportToCreate.results, reportToCreate.horizontalPrinciples, reportPersisted)
 
-        fillProjectReportToAllEmptyCertificates(projectId = reportToCreate.reportBase.projectId, reportPersisted)
+        persistCertificatesForFinanceReport(reportPersisted)
 
         return reportPersisted.toModel()
     }
@@ -129,11 +129,13 @@ class ProjectReportCreatePersistenceProvider(
         )
     }
 
-    private fun fillProjectReportToAllEmptyCertificates(projectId: Long, report: ProjectReportEntity) {
-        val partnerIds = partnerRepository.findTop50ByProjectId(projectId).mapTo(HashSet()) { it.id }
+    private fun persistCertificatesForFinanceReport(reportEntity: ProjectReportEntity) {
+        if (reportEntity.fetchType().hasFinance()) {
+            val partnerIds = partnerRepository.findTop50ByProjectId(reportEntity.projectId)
+                .map { it.id }.toSet()
 
-        partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds, ReportStatus.Certified).forEach {
-            it.projectReport = report
+            partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds, ReportStatus.Certified)
+                .forEach { it.projectReport = reportEntity }
         }
     }
 

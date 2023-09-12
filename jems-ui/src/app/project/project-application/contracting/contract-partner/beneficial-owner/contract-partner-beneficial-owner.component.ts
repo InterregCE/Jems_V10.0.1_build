@@ -1,10 +1,9 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ContractingPartnerBeneficialOwnerDTO,} from '@cat/api';
-import {ActivatedRoute} from '@angular/router';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
 import {ContractingSectionLockStore} from '@project/project-application/contracting/contracting-section-lock.store';
@@ -27,8 +26,6 @@ export class ContractPartnerBeneficialOwnerComponent {
 
   error$ = new BehaviorSubject<APIError | null>(null);
 
-  @Input()
-  private partnerId: number;
   private allColumns = ['firstName', 'lastName', 'birth', 'vatNumber', 'delete'];
   private readonlyColumns = this.allColumns.filter(col => col !== 'delete');
   displayedColumns: string[] = [];
@@ -42,6 +39,7 @@ export class ContractPartnerBeneficialOwnerComponent {
   tableData: AbstractControl[] = [];
 
   data$: Observable<{
+    partnerId: number;
     beneficials: ContractingPartnerBeneficialOwnerDTO[];
     canEdit: boolean;
     canView: boolean;
@@ -49,7 +47,6 @@ export class ContractPartnerBeneficialOwnerComponent {
   }>;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private contractPartnerStore: ContractPartnerStore,
     private formBuilder: FormBuilder,
     public formService: FormService,
@@ -57,12 +54,15 @@ export class ContractPartnerBeneficialOwnerComponent {
     private dialog: MatDialog,
   ) {
     this.data$ = combineLatest([
+      this.contractPartnerStore.partnerId$.pipe(filter(Boolean), map(Number)),
       this.contractPartnerStore.beneficialOwners$,
       this.contractPartnerStore.userCanEditContractPartner$,
       this.contractPartnerStore.userCanViewContractPartner$,
       this.contractPartnerStore.isPartnerLocked$,
     ]).pipe(
-      map(([beneficials, canEdit, canView,isPartnerLocked]) => ({ beneficials, canEdit, canView ,isPartnerLocked})),
+      map(([partnerId, beneficials, canEdit, canView, isPartnerLocked]) => ({
+        partnerId, beneficials, canEdit, canView, isPartnerLocked
+      })),
       tap(data => this.resetForm(data.beneficials, data.canEdit, data.isPartnerLocked)),
       tap(data => this.prepareVisibleColumns(data.canEdit, data.isPartnerLocked)),
     );
@@ -101,8 +101,8 @@ export class ContractPartnerBeneficialOwnerComponent {
     this.formService.setDirty(true);
   }
 
-  saveForm() {
-    this.contractPartnerStore.updateBeneficialOwners(this.convertFormToBeneficialOwnersDTOs())
+  saveForm(partnerId: number) {
+    this.contractPartnerStore.updateBeneficialOwners(this.convertFormToBeneficialOwnersDTOs(partnerId))
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.contract.partner.section.beneficial.owner.save.success')),
@@ -127,51 +127,51 @@ export class ContractPartnerBeneficialOwnerComponent {
 
   lock(event: any) {
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.partner.lock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.partner.lock.dialog.message',
-            i18nArguments: {name: ''}
-          }
-        }).pipe(
-        take(1),
-        filter(confirm => confirm),
-        switchMap(() => this.contractingSectionLockStore.lockPartner()),
-        catchError((error) => this.showErrorMessage(error.error)),
-        untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.partner.lock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.partner.lock.dialog.message',
+          i18nArguments: {name: ''}
+        }
+      }).pipe(
+      take(1),
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.lockPartner()),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
   }
 
   unlock(event: any) {
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.partner.unlock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.partner.unlock.dialog.message',
-            i18nArguments: {name: ''}
-          }
-        }).pipe(
-        take(1),
-        filter(confirm => confirm),
-        switchMap(() => this.contractingSectionLockStore.unlockPartner()),
-        catchError((error) => this.showErrorMessage(error.error)),
-        untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.partner.unlock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.partner.unlock.dialog.message',
+          i18nArguments: {name: ''}
+        }
+      }).pipe(
+      take(1),
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.unlockPartner()),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
   }
 
-  private convertFormToBeneficialOwnersDTOs(): ContractingPartnerBeneficialOwnerDTO[] {
+  private convertFormToBeneficialOwnersDTOs(partnerId: number): ContractingPartnerBeneficialOwnerDTO[] {
     const beneficialOwnerDTOs = [];
     for (const item of this.beneficials.controls) {
-        beneficialOwnerDTOs.push({
-          id: item.value.id,
-          partnerId: this.partnerId,
-          birth: item.value.birth,
-          firstName: item.value.firstName,
-          lastName: item.value.lastName,
-          vatNumber: item.value.vatNumber
-        } as ContractingPartnerBeneficialOwnerDTO);
+      beneficialOwnerDTOs.push({
+        id: item.value.id,
+        partnerId: partnerId,
+        birth: item.value.birth,
+        firstName: item.value.firstName,
+        lastName: item.value.lastName,
+        vatNumber: item.value.vatNumber
+      } as ContractingPartnerBeneficialOwnerDTO);
     }
     return beneficialOwnerDTOs;
   }

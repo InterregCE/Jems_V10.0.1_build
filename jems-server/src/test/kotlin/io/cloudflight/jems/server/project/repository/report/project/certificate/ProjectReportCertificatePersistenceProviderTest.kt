@@ -126,6 +126,21 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun deselectCertificatesOfProjectReport() {
+        val reports = listOf(
+            mockk<ProjectReportEntity>(),
+            mockk<ProjectReportEntity>(),
+        )
+
+        val certificates = reports.map { partnerReport(it) }
+        every { partnerReportRepository.findAllByProjectReportId(921L) } returns certificates
+
+        persistence.deselectCertificatesOfProjectReport(921L)
+
+        assertThat(certificates.map { it.projectReport }).allMatch { it == null }
+    }
+
+    @Test
     fun selectCertificate() {
         val certificate = partnerReport(null)
         every { partnerReportRepository.getById(77L) } returns certificate
