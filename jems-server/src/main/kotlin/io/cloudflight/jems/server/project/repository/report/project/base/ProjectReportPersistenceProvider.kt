@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.CaseBuilder
@@ -39,28 +40,41 @@ class ProjectReportPersistenceProvider(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : ProjectReportPersistence {
 
+    companion object {
+        private fun filterProjects(projectIds: Set<Long>, specReport: QProjectReportEntity) =
+            if (projectIds.isEmpty()) null else specReport.projectId.`in`(projectIds)
+        private fun filterStatuses(statuses: Collection<ProjectReportStatus>, specReport: QProjectReportEntity) =
+            if (statuses.isEmpty()) null else specReport.status.`in`(statuses)
+    }
+
     @Transactional(readOnly = true)
     override fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel> =
-        fetchReports(projectId, pageable).map { it.toModel() }
+        fetchReports(projectIds = setOf(projectId), statuses = emptySet(), pageable)
+            .map { it.toModel() }
 
     override fun listProjectReports(
         projectIds: Set<Long>,
         statuses: Set<ProjectReportStatus>,
         pageable: Pageable
     ): Page<ProjectReportModel> =
-        fetchMyReports(projectIds, statuses, pageable)
+        fetchReports(projectIds = projectIds, statuses = statuses, pageable)
             .map { it.toModel() }
 
-    private fun fetchReports(projectId: Long, pageable: Pageable): Page<Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>> {
+    private fun fetchReports(
+        projectIds: Set<Long>,
+        statuses: Collection<ProjectReportStatus>,
+        pageable: Pageable,
+    ): Page<Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>> {
         val specReport = QProjectReportEntity.projectReportEntity
         val specReportCoFinancing = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
 
         val results = jpaQueryFactory
             .select(specReport, specReportCoFinancing)
-            .from(specReport)
-                .leftJoin(specReportCoFinancing)
-                    .on(specReport.id.eq(specReportCoFinancing.reportEntity.id))
-            .where(specReport.projectId.eq(projectId))
+            .from(specReport).leftJoin(specReportCoFinancing).on(specReport.id.eq(specReportCoFinancing.reportEntity.id))
+            .where(ExpressionUtils.allOf(
+                filterProjects(projectIds, specReport),
+                filterStatuses(statuses, specReport),
+            ))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())
@@ -70,32 +84,6 @@ class ProjectReportPersistenceProvider(
             results.results.map { it: Tuple -> Pair(
                 it.get(0, ProjectReportEntity::class.java)!!,
                 it.get(1, ReportProjectCertificateCoFinancingEntity::class.java),
-            ) },
-            pageable,
-            results.total,
-        )
-    }
-
-    private fun fetchMyReports(projectIds: Set<Long>, statuses: Set<ProjectReportStatus>, pageable: Pageable):
-            Page<Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>> {
-        val specReport = QProjectReportEntity.projectReportEntity
-        val specReportCoFinancing = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
-
-        val results = jpaQueryFactory
-            .select(specReport, specReportCoFinancing)
-            .from(specReport)
-            .leftJoin(specReportCoFinancing)
-            .on(specReport.id.eq(specReportCoFinancing.reportEntity.id))
-            .where(specReport.projectId.`in`(projectIds).and(specReport.status.`in`(statuses)))
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(pageable.sort.toQueryDslOrderBy())
-            .fetchResults()
-
-        return PageImpl(
-            results.results.map { it: Tuple -> Pair(
-                it.get(0, ProjectReportEntity::class.java)!!,
-                it.get(1, ReportProjectCertificateCoFinancingEntity::class.java)
             ) },
             pageable,
             results.total,

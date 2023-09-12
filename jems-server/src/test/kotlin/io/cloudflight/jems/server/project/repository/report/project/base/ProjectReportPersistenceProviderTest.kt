@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.repository.report.project.base
 import com.querydsl.core.QueryResults
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
+import com.querydsl.core.types.Predicate
+import com.querydsl.core.types.dsl.BooleanOperation
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
@@ -25,6 +27,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -204,9 +207,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { query.from(any()) } returns query
         every { query.leftJoin(any<EntityPath<Any>>()) } returns query
         every { query.on(any()) } returns query
-        every { query.where(any()) } returns query
-        every { query.groupBy(any()) } returns query
-        every { query.having(any()) } returns query
+        val slotWhere = slot<BooleanOperation>()
+        every { query.where(capture(slotWhere)) } returns query
         every { query.offset(any()) } returns query
         every { query.limit(any()) } returns query
         every { query.orderBy(any()) } returns query
@@ -221,20 +223,20 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { query.  fetchResults() } returns result
 
         assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
+        assertThat(slotWhere.captured.toString()).isEqualTo("projectReportEntity.projectId = 95")
     }
 
     @Test
     fun listProjectReports() {
-        val projectId = 95L
+        val projectId = 96L
 
         val query = mockk<JPAQuery<Tuple>>()
         every { jpaQueryFactory.select(any(), any()) } returns query
         every { query.from(any()) } returns query
         every { query.leftJoin(any<EntityPath<Any>>()) } returns query
         every { query.on(any()) } returns query
-        every { query.where(any()) } returns query
-        every { query.groupBy(any()) } returns query
-        every { query.having(any()) } returns query
+        val slotWhere = slot<Predicate>()
+        every { query.where(capture(slotWhere)) } returns query
         every { query.offset(any()) } returns query
         every { query.limit(any()) } returns query
         every { query.orderBy(any()) } returns query
@@ -249,10 +251,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { query.  fetchResults() } returns result
 
         assertThat(persistence.listProjectReports(
-            setOf(projectId),
-            setOf(ProjectReportStatus.Submitted),
-            Pageable.ofSize(1)))
-            .containsExactly(reportForListing(42L, projectId))
+            setOf(projectId, 97L),
+            setOf(ProjectReportStatus.Submitted, ProjectReportStatus.InVerification),
+            Pageable.ofSize(1)
+        )).containsExactly(reportForListing(42L, projectId))
+        assertThat(slotWhere.captured.toString())
+            .isEqualTo("projectReportEntity.projectId in [96, 97] && projectReportEntity.status in [Submitted, InVerification]")
     }
 
     @Test
