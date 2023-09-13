@@ -35,7 +35,7 @@ export class RoutingService {
   }
 
   navigate(commands: any[], extras?: NavigationExtras): void {
-    const navigationExtras = extras || {queryParamsHandling: 'merge'} as NavigationExtras;
+    const navigationExtras = extras || {queryParamsHandling: 'merge', skipLocationChange: true} as NavigationExtras;
     if (![...this.confirmLeaveMap.values()].some(val => val)) {
       this.router.navigate(commands, navigationExtras);
       return;

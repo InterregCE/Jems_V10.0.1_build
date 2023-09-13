@@ -17,6 +17,7 @@ import {PaymentsToProjectPageComponent} from './payments-to-projects-page/paymen
 import {
   PaymentsToEcDetailPageComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+import {PermissionGuard} from '../security/permission.guard';
 
 export const paymentsRoutes: Routes = [
   {
@@ -36,9 +37,21 @@ export const paymentsRoutes: Routes = [
       {
         path: '',
         component: PaymentsPageComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          permissionsOnly: [
+            PermissionsEnum.PaymentsRetrieve,
+            PermissionsEnum.PaymentsUpdate,
+            PermissionsEnum.AdvancePaymentsRetrieve,
+            PermissionsEnum.AdvancePaymentsUpdate,
+            PermissionsEnum.PaymentsToEcRetrieve,
+            PermissionsEnum.PaymentsToEcUpdate,
+          ],
+        },
       },
       {
         path: 'paymentsToProjects',
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'payments.projects.header',
           permissionsOnly: [
@@ -50,6 +63,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments',
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
           permissionsOnly: [
@@ -61,6 +75,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc',
+        canActivate: [PermissionGuard],
         component: PaymentsToEcPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
@@ -72,6 +87,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentsToProjects/:paymentId',
+        canActivate: [PermissionGuard],
         component: PaymentsToProjectDetailPageComponent,
         data: {
           dynamicBreadcrumb: true,
@@ -86,6 +102,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments/create',
+        canActivate: [PermissionGuard],
         component: AdvancePaymentsDetailPageComponent,
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
@@ -97,6 +114,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments/:advancePaymentId',
+        canActivate: [PermissionGuard],
         component: AdvancePaymentsDetailPageComponent,
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
@@ -108,6 +126,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc/create',
+        canActivate: [PermissionGuard],
         component: PaymentsToEcDetailPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
@@ -119,6 +138,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc/:paymentToEcId',
+        canActivate: [PermissionGuard],
         component: PaymentsToEcDetailPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
