@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.dele
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcDeleted
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import org.springframework.context.ApplicationEventPublisher
@@ -19,6 +20,9 @@ class DeletePaymentApplicationToEc(
     @ExceptionWrapper(DeletePaymentApplicationToEcException::class)
     override fun deleteById(id: Long) {
         val paymentApplicationToEc = persistence.getPaymentApplicationToEcDetail(id)
+        if (paymentApplicationToEc.status == PaymentEcStatus.Finished) {
+            throw PaymentFinishedException()
+        }
 
         persistence.deleteById(id).also {
             auditPublisher.publishEvent(

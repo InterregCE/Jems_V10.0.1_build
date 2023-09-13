@@ -16,6 +16,7 @@ import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {Alert} from '@common/components/forms/alert';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
+import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -68,7 +69,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
               private securityService: SecurityService,
               private localeDatePipe: LocaleDatePipe,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private paymentsPageSidenav: PaymentsPageSidenavService) {
     this.userCanEdit$ = this.paymentToProjectsStore.userCanEdit$;
   }
 

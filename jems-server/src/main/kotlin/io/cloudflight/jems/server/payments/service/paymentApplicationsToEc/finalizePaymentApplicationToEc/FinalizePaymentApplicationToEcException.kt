@@ -15,6 +15,6 @@ class FinalizePaymentApplicationToEcException(cause: Throwable) : ApplicationExc
 )
 
 class PaymentApplicationToEcNotInDraftException : ApplicationUnprocessableException(
-    code = FINALIZE_PAYMENT_APPLICATION_TO_EC_ERROR_CODE_PREFIX,
+    code = "$FINALIZE_PAYMENT_APPLICATION_TO_EC_ERROR_CODE_PREFIX-01",
     i18nMessage = I18nMessage("$FINALIZE_PAYMENT_APPLICATION_TO_EC_ERROR_KEY_PREFIX.not.in.draft")
 )

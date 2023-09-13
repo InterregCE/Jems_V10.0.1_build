@@ -25,6 +25,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {NumberService} from '@common/services/number.service';
+import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -102,7 +103,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private localeDatePipe: LocaleDatePipe,
               private router: RoutingService,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef,){
+              private changeDetectorRef: ChangeDetectorRef,
+              private paymentsPageSidenav: PaymentsPageSidenavService){
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.projectCustomIdentifierSearchForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch)?.valueChanges

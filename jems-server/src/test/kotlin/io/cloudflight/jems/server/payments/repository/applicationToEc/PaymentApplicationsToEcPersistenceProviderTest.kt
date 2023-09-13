@@ -1,14 +1,18 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -18,12 +22,15 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {

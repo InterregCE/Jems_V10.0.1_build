@@ -7,6 +7,7 @@ import PaymentEcStatusEnum = PaymentApplicationToEcDTO.StatusEnum;
 import {catchError, finalize, map, take} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
+import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -28,18 +29,19 @@ export class PaymentToEcDetailPageComponent {
     finalizationDisabled: boolean;
   }>;
 
-  constructor(public pageStore: PaymentsToEcDetailPageStore) {
+  constructor(public pageStore: PaymentsToEcDetailPageStore,
+              private paymentsPageSidenav: PaymentsPageSidenavService) {
     this.data$ = combineLatest([
       this.pageStore.paymentToEcDetail$,
       this.pageStore.updatedPaymentApplicationStatus$,
       this.pageStore.userCanEdit$
     ]).pipe(
-      map(([paymentDetail, paymentStatus, userCanEdit]) => ({
-          paymentDetail: this.getUpdatePayment(paymentDetail, paymentStatus),
-          userCanEdit: userCanEdit,
-          finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit)
-        })
-      )
+        map(([paymentDetail, paymentStatus, userCanEdit]) => ({
+              paymentDetail: this.getUpdatePayment(paymentDetail, paymentStatus),
+              userCanEdit,
+              finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit)
+            })
+        )
     );
   }
 

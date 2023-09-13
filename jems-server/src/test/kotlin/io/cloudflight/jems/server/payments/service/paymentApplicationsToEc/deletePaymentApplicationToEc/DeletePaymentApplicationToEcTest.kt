@@ -19,6 +19,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -42,9 +43,9 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
             comment = "Comment"
         )
 
-        private val paymentApplicationsToEcDetail = PaymentApplicationToEcDetail(
+        private fun paymentApplicationsToEcDetail(status: PaymentEcStatus) = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
-            status = PaymentEcStatus.Draft,
+            status = status,
             paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
@@ -68,7 +69,7 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
     fun deleteById() {
         every {
             paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)
-        } returns paymentApplicationsToEcDetail
+        } returns paymentApplicationsToEcDetail(PaymentEcStatus.Draft)
 
         every {
             paymentApplicationsToEcPersistence.deleteById(paymentApplicationsToEcId)
@@ -88,5 +89,13 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
                 description = "Payment application to EC number 1 created for Fund (3, OTHER) for accounting Year 1: 2021-01-01 - 2022-06-30 was deleted"
             )
         )
+    }
+
+    @Test
+    fun `delete finished payment should throw exception`() {
+        every {
+            paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)
+        } returns paymentApplicationsToEcDetail(PaymentEcStatus.Finished)
+        assertThrows<PaymentFinishedException> { service.deleteById(paymentApplicationsToEcId) }
     }
 }

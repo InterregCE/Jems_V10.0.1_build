@@ -10,11 +10,13 @@ import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
@@ -62,6 +64,11 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
     @InjectMockKs
     lateinit var finalizePaymentApplicationToEc: FinalizePaymentApplicationToEc
 
+    @BeforeEach
+    fun reset() {
+        clearMocks(auditPublisher, paymentApplicationsToEcPersistence)
+    }
+
     @Test
     fun finalizePaymentApplicationToEc() {
         val finalizedPayment = paymentApplicationDetail(PaymentEcStatus.Finished)
@@ -86,8 +93,6 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
 
     @Test
     fun `finalizePaymentApplicationToEc wrong status - should throw PaymentApplicationToEcNotInDraftException`() {
-        val finalizedPayment = paymentApplicationDetail(PaymentEcStatus.Finished)
-        every { paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(PAYMENT_ID) } returns finalizedPayment
         every { paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_ID) } returns paymentApplicationDetail(
             PaymentEcStatus.Finished
         )
