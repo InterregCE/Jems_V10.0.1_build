@@ -1,4 +1,5 @@
-import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDetailDTO, ProjectPeriodDTO, ProjectStatusDTO} from '@cat/api';
+import * as moment from 'moment/moment';
 
 export enum ProjectPaths {
   PROJECT_DETAIL_PATH = '/app/project/detail/',
@@ -72,5 +73,23 @@ export class ProjectUtil {
 
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum | string) {
     return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
+  }
+
+  static getPeriodArguments(period: ProjectPeriodDTO): { [key: string]: number | string } {
+    return {
+      periodNumber: period?.number,
+      start: period?.start,
+      end: period?.end,
+      startDate: moment(period?.startDate).format('MM/DD/YYYY'),
+      endDate: moment(period?.endDate).format('MM/DD/YYYY')
+    };
+  }
+
+  static getPeriodKey(hasStartDate: any): string {
+    if(hasStartDate) {
+      return 'project.application.form.work.package.output.delivery.period.entry.contracted';
+    } else {
+      return 'project.application.form.work.package.output.delivery.period.entry';
+    }
   }
 }

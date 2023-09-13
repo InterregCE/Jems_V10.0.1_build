@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
@@ -24,7 +23,7 @@ internal class GetLastApprovedPeriodsTest : UnitTest() {
             end = 36,
         )
 
-        private val expectedPeriodWithDates = ProjectPeriodForMonitoring(
+        private val expectedPeriodWithDates = ProjectPeriod(
             number = 3,
             start = 25,
             end = 36,
@@ -32,7 +31,7 @@ internal class GetLastApprovedPeriodsTest : UnitTest() {
             endDate = LocalDate.of(2025, 5, 18),
         )
 
-        private val expectedPeriodWithoutDates = ProjectPeriodForMonitoring(
+        private val expectedPeriodWithoutDates = ProjectPeriod(
             number = 3,
             start = 25,
             end = 36,

@@ -113,16 +113,17 @@ fun ProjectForm.toDto() = ProjectDetailFormDTO(
     duration = duration,
     specificObjective = specificObjective,
     programmePriority = programmePriority,
-    periods = periods.toDtos(id),
+    periods = periods.toDtos(),
 )
 
-fun Collection<ProjectPeriod>.toDtos(projectId: Long?) = map { it.toDto(projectId) }
+fun Collection<ProjectPeriod>.toDtos() = map { it.toDto() }
 
-fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
-    projectId = projectId ?: 0,
+fun ProjectPeriod.toDto() = ProjectPeriodDTO(
     number = number,
     start = start,
-    end = end
+    end = end,
+    startDate = startDate,
+    endDate = endDate
 )
 
 fun Page<ProjectSummary>.toDto() = map {

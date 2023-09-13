@@ -87,7 +87,7 @@
                                                     {{'project.application.form.section.part.e.period.preparation' | translate}}
                                                 </mat-option>
                                                 <mat-option *ngFor="let period of data.periods"
-                                                            [value]="period.periodNumber">
+                                                            [value]="period.number">
                                                     {{getPeriodLabel(period)}}
                                                 </mat-option>
                                                 <mat-option [value]="CLOSURE_PERIOD">

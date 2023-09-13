@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods
 
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.lumpsum.model.PREPARATION_PERIOD_NUMBER
 import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.lumpsum.model.PREPARATION_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import java.time.LocalDate
 
 fun List<ProjectPartnerReportPeriod>.filterOutPreparationAndClosure() = filter {
     it.number != PREPARATION_PERIOD_NUMBER && it.number != CLOSURE_PERIOD_NUMBER

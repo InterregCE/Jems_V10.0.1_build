@@ -88,7 +88,7 @@ export class PartnerReportIdentificationTabComponent {
       ),
       map(([partnerReport, projectId, availablePeriods, identification, partnerSummary, relatedCall, canUserAccessCall]: any) => ({
         partnerReport,
-        periods: availablePeriods.map((p: ProjectPeriodDTO) => ({...p, projectId} as ProjectPeriodDTO)),
+        periods: availablePeriods.map((p: ProjectPeriodDTO) => ({...p} as ProjectPeriodDTO)),
         identification,
         partnerSummary,
         relatedCall,

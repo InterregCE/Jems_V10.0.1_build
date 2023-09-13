@@ -207,7 +207,7 @@ class ProjectControllerTest {
             duration = projectForm.duration,
             specificObjective = projectForm.specificObjective,
             programmePriority = projectForm.programmePriority,
-            periods = listOf(ProjectPeriodDTO(projectId = projectId, number = 1, start = 1, end = 12))
+            periods = listOf(ProjectPeriodDTO(number = 1, start = 1, end = 12, startDate = null, endDate = null))
         )
 
         private val dummySearchRequest = ProjectSearchRequestDTO(

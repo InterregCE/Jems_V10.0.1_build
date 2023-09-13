@@ -30,6 +30,7 @@ import {
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.constants';
 import {NumberService} from '@common/services/number.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ProjectUtil} from '@project/common/project-util';
 import WorkPlanStatusLabelEnum = ProjectReportWorkPackageDTO.WorkPlanStatusLabelEnum;
 
 @Component({
@@ -66,6 +67,7 @@ export class ProjectReportWorkPlanTabComponent {
   }>;
 
   isUploadDone: boolean;
+  ProjectUtil = ProjectUtil;
 
   constructor(
     private readonly projectStore: ProjectStore,
@@ -283,14 +285,6 @@ export class ProjectReportWorkPlanTabComponent {
       nutsRegion3: this.formBuilder.control(dto.nutsRegion3),
       progress: this.formBuilder.control(dto.progress)
     });
-  }
-
-  getPeriodArguments(period: any): { [key: string]: number } {
-    return {
-      periodNumber: period?.number,
-      start: period?.start,
-      end: period?.end
-    };
   }
 
   onDownloadFile(fileId: number) {

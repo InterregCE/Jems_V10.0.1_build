@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {ProjectLumpSumsStore} from './project-lump-sums-store.service';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
@@ -15,21 +15,26 @@ import {
 import {FormService} from '@common/components/section/form/form.service';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProjectLumSumsConstants} from './project-lum-sums.constants';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '@common/services/number.service';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {ProjectPartner} from '../../model/ProjectPartner';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Alert} from '@common/components/forms/alert';
-import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import {ProgrammeLumpSumDTO} from '@cat/api';
+import {ProgrammeLumpSumDTO, ProjectPeriodDTO} from '@cat/api';
+import {
+  ContractMonitoringExtensionStore
+} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
-@UntilDestroy()
 @Component({
   selector: 'jems-project-lump-sums-page',
   templateUrl: './project-lump-sums-page.component.html',
@@ -43,7 +48,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
               private formBuilder: FormBuilder,
               private formService: FormService,
               private translateService: TranslateService,
-              private formVisibilityStatusService: FormVisibilityStatusService
+              private formVisibilityStatusService: FormVisibilityStatusService,
+              public projectStore: ProjectStore
   ) {
   }
 
@@ -65,7 +71,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     withConfigs: TableConfig[];
     partners: ProjectPartner[];
     lumpSums: ProgrammeLumpSumDTO[];
-    periods: ProjectPeriod[];
+    periods: ProjectPeriodDTO[];
     showAddButton: boolean;
     showGapExistsWarning: boolean;
     showPeriodMissingWarning: boolean;
@@ -239,22 +245,22 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     return this.getPeriodControl(itemGroupControl)?.value === null;
   }
 
-  getPeriodLabel(period: ProjectPeriod | undefined): string {
+  getPeriodLabel(period: ProjectPeriodDTO | undefined): string {
     if (!period) {
       return '';
     }
-    if (period.periodNumber === 0) {
+    if (period.number === 0) {
       return 'Preparation';
     }
-    return this.translateService.instant('project.application.form.work.package.output.delivery.period.entry', period);
+    return this.translateService.instant(ProjectUtil.getPeriodKey(period.startDate), ProjectUtil.getPeriodArguments(period));
   }
 
-  getPeriod(itemIndex: number, periods: ProjectPeriod[]): ProjectPeriod | undefined {
+  getPeriod(itemIndex: number, periods: ProjectPeriodDTO[]): ProjectPeriodDTO | undefined {
     const periodNumber = this.items.at(itemIndex)?.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
     if (periodNumber === 0) {
-      return {periodNumber: 0} as any;
+      return {number: 0} as any;
     }
-    return periods.find(period => period.periodNumber === periodNumber);
+    return periods.find(period => period.number === periodNumber);
   }
 
   private calculatePartnerColumnsTotal(): number[] {
@@ -300,10 +306,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     projectLumpSums: ProjectLumpSum[],
     projectCallLumpSums: ProgrammeLumpSumDTO[],
     partners: ProjectPartner[],
-    periods: ProjectPeriod[]
+    periods: ProjectPeriodDTO[]
   ): void {
     this.items.clear();
-    const periodNumbers = [this.PREPARATION_PERIOD, ...periods.map(period => period.periodNumber), this.CLOSURE_PERIOD];
+    const periodNumbers = [this.PREPARATION_PERIOD, ...periods.map(period => period.number), this.CLOSURE_PERIOD];
     projectLumpSums.forEach(projectLumpSum => {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = ProjectLumpSumsPageComponent.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));

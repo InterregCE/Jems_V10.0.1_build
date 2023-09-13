@@ -60,13 +60,6 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     partnerNumber = partnerNumber
 )
 
-fun ProjectPartnerReportPeriod.toDto() = ProjectPartnerReportPeriodDTO(
-    number = number,
-    periodBudget = periodBudget,
-    periodBudgetCumulative = periodBudgetCumulative,
-    start = start,
-    end = end,
-)
 
 fun Page<ProjectPartnerReportSummary>.toDto() = map { it.toDto() }
 
@@ -136,9 +129,11 @@ val partnerReportMapper = Mappers.getMapper(ProjectPartnerReportMapper::class.ja
 
 fun JemsFileMetadata.toDto() = partnerReportMapper.map(this)
 fun UserSimple.toDto() = partnerReportMapper.map(this)
+fun ProjectPartnerReportPeriod.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {
     fun map(model: JemsFileMetadata): JemsFileMetadataDTO
     fun map(model: UserSimple): UserSimpleDTO
+    fun map(model: ProjectPartnerReportPeriod): ProjectPartnerReportPeriodDTO
 }

@@ -4,10 +4,9 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectReportingSchedule
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
-import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.common.toLimits
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -22,7 +21,7 @@ class GetLastApprovedPeriods(
     @CanRetrieveProjectReportingSchedule
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetLatestApprovedException::class)
-    override fun getPeriods(projectId: Long): List<ProjectPeriodForMonitoring> {
+    override fun getPeriods(projectId: Long): List<ProjectPeriod> {
         val version = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
         val periods = projectPersistence.getProjectPeriods(projectId, version)
         val startDate = contractingMonitoringPersistence.getContractingMonitoring(projectId).startDate
@@ -30,10 +29,10 @@ class GetLastApprovedPeriods(
         return periods.calculateDates(startDate = startDate)
     }
 
-    private fun List<ProjectPeriod>.calculateDates(startDate: LocalDate?): List<ProjectPeriodForMonitoring> {
+    private fun List<ProjectPeriod>.calculateDates(startDate: LocalDate?): List<ProjectPeriod> {
         if (startDate == null)
             return this.map {
-                ProjectPeriodForMonitoring(
+                ProjectPeriod(
                     number = it.number,
                     start = it.start,
                     end = it.end,
@@ -43,7 +42,7 @@ class GetLastApprovedPeriods(
             }
         else
             return this.map { it to it.toLimits(startDate) }.toMap().map {
-                ProjectPeriodForMonitoring(
+                ProjectPeriod(
                     number = it.key.number,
                     start = it.key.start,
                     end = it.key.end,

@@ -77,7 +77,7 @@ export class ProjectResultsPageStore {
       .pipe(
         map(projectForm => [
           ...projectForm.periods,
-          { projectId: projectForm.id, number: 255, start: 0, end: 0 },
+          { number: 255, start: 0, end: 0, startDate: '', endDate: '' },
         ]),
       );
   }

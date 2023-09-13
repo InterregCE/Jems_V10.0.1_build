@@ -10,10 +10,10 @@ import io.cloudflight.jems.server.project.service.contracting.model.ProjectContr
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
-import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.common.toLimits
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate

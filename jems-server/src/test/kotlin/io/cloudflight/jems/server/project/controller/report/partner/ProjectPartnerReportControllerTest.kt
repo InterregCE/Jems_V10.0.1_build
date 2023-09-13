@@ -146,6 +146,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 periodBudgetCumulative = BigDecimal.TEN,
                 start = 4,
                 end = 6,
+                startDate = null,
+                endDate = null,
             ),
             projectReportId = 758L,
             projectReportNumber = 759,

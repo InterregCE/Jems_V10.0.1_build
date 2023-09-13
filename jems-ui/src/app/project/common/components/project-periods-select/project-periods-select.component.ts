@@ -2,6 +2,10 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {ProjectPeriodDTO} from '@cat/api';
 import {AbstractControl} from '@angular/forms';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-periods-select',
@@ -27,12 +31,7 @@ export class ProjectPeriodsSelectComponent {
   @Output()
   selectionChanged = new EventEmitter<void>();
 
-  getPeriodArguments(period: ProjectPeriodDTO): { [key: string]: number } {
-    return {
-      periodNumber: period.number,
-      start: period.start,
-      end: period.end
-    };
-  }
+  ProjectUtil = ProjectUtil;
 
+  constructor(public projectStore: ProjectStore) { }
 }

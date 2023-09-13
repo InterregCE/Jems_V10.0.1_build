@@ -2,8 +2,12 @@ import {Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -23,6 +27,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '@common/services/number.service';
 import {ReportUtil} from '@project/common/report-util';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-report-results-and-principles-tab',
@@ -44,6 +49,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
   });
 
   ReportUtil = ReportUtil;
+  ProjectUtil = ProjectUtil;
   isUploadDone = false;
   selection = new SelectionModel<string>(true, []);
   selectedContributionPrincipleDevelopment = '';
@@ -190,11 +196,4 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     ));
   }
 
-  getPeriodArguments(period: any): { [key: string]: number } {
-    return {
-      periodNumber: period?.number,
-      start: period?.start,
-      end: period?.end
-    };
-  }
 }
