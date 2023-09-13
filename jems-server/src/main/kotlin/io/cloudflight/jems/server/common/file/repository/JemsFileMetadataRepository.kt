@@ -68,6 +68,14 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
     @EntityGraph(value = "FileMetadataEntity.user")
     override fun findAll(predicate: Predicate, pageable: Pageable): Page<JemsFileMetadataEntity>
 
+    @Query(
+        """
+        SELECT COUNT(e)
+        FROM #{#entityName} e
+        WHERE e.projectId = :projectId AND e.path LIKE :pathPrefix% AND e.type = :type
+    """
+    )
+    fun countByProjectIdAndPathPrefixAndType(projectId: Long, pathPrefix: String, type: JemsFileType): Long
 }
 
 fun JemsFileMetadataRepository.filterAttachment(

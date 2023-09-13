@@ -1,11 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {
-  ProjectReportVerificationClarificationDTO,
-  ProjectReportVerificationConclusionDTO,
-  ProjectReportVerificationService
-} from '@cat/api';
-import {RoutingService} from '@common/services/routing.service';
+import {ProjectReportVerificationClarificationDTO, ProjectReportVerificationConclusionDTO, ProjectReportVerificationService} from '@cat/api';
 import {switchMap} from 'rxjs/operators';
 import {
   ProjectReportDetailPageStore
@@ -18,13 +13,13 @@ export class ProjectVerificationReportFinalizeStore {
   clarifications$: Observable<ProjectReportVerificationClarificationDTO[]>;
 
   constructor(
-    public routingService: RoutingService,
-    public projectReportDetailPageStore: ProjectReportDetailPageStore,
+    private projectReportDetailPageStore: ProjectReportDetailPageStore,
     private service: ProjectReportVerificationService
   ) {
     this.conclusions$ = this.getConclusions();
     this.clarifications$ = this.getClarifications();
   }
+
 
   private getConclusions(): Observable<ProjectReportVerificationConclusionDTO> {
     return combineLatest([
@@ -42,9 +37,8 @@ export class ProjectVerificationReportFinalizeStore {
       this.projectReportDetailPageStore.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,
     ]).pipe(
-      switchMap(([partnerId, reportId]) => {
-          return this.service.getReportVerificationClarificationRequests(partnerId, reportId);
-        }
+      switchMap(([partnerId, reportId]) =>
+        this.service.getReportVerificationClarificationRequests(partnerId, reportId)
       )
     );
   }

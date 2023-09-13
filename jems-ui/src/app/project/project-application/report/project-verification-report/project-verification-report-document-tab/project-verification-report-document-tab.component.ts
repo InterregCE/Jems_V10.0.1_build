@@ -6,7 +6,7 @@ import {finalize, map, take, tap} from 'rxjs/operators';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {
   ProjectReportVerificationFileStore
-} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-report-verification-file.store';
+} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-report-verification-communication-file-store.service';
 import {Alert} from '@common/components/forms/alert';
 import {JemsFileDTO} from '@cat/api';
 import {SecurityService} from '../../../../../security/security.service';

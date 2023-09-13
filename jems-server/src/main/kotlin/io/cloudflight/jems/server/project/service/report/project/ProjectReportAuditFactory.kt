@@ -173,6 +173,18 @@ fun projectReportVerificationDoneByJs(
             .build()
     )
 
+fun verificationCertificateCreated(
+    context: Any,
+    report: ProjectReportModel
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_VERIFICATION_CERTIFICATE_GENERATED)
+        .project(report)
+        .entityRelatedId(entityRelatedId = report.id)
+        .description("A verification certificate was generated for project report PR.${report.reportNumber}")
+        .build()
+)
+
 private fun getParkedExpendituresDescription(parkedExpenditure: List<ProjectReportVerificationExpenditureLine>): String {
     val expenditureString = StringBuilder()
     parkedExpenditure.forEach {

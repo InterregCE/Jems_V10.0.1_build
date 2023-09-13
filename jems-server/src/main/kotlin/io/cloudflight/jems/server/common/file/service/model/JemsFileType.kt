@@ -25,6 +25,7 @@ enum class JemsFileType(
 
           ProjectReportVerification(ProjectReport, false),
             VerificationDocument(ProjectReportVerification, false),
+            VerificationCertificate(ProjectReportVerification, false),
 
         Partner(Report, true),
           PartnerReport(Partner, true),

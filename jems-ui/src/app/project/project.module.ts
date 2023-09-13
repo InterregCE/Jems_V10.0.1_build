@@ -582,6 +582,9 @@ import {
   VerificationWorkOverviewComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-work-overview/verification-work-overview.component';
 import {
+  ProjectReportVerificationCertificateComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-report-verification-certificate/project-report-verification-certificate.component';
+import {
   ReportAdvancePaymentsOverviewComponent
 } from './project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
 import {
@@ -786,6 +789,7 @@ import {
     VerificationWorkOverviewComponent,
     ExpenditureItemParkedByChipComponent,
     ReportAdvancePaymentsOverviewComponent,
+    ProjectReportVerificationCertificateComponent,
     VerificationDeductionPerCertificateComponent,
   ],
   imports: [

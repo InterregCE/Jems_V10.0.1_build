@@ -112,6 +112,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "DeliverableProjectReport",
         "OutputProjectReport",
         "VerificationDocument",
+        "VerificationCertificate",
 
         "PartnerReport",
         "Activity",
@@ -189,6 +190,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "DeliverableProjectReport",
         "OutputProjectReport",
         "VerificationDocument",
+        "VerificationCertificate",
 
         "PartnerReport",
         "Activity",

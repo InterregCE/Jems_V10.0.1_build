@@ -2,11 +2,13 @@ package io.cloudflight.jems.server.project.repository.report.project.file
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.VerificationCertificate
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityEntity
@@ -141,6 +143,9 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var fileService: JemsProjectFileService
 
+    @MockK
+    private lateinit var jemsFileMetadataRepository: JemsFileMetadataRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportFilePersistenceProvider
 
@@ -216,6 +221,27 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.addAttachmentToProjectReport(fileCreate))
             .isEqualTo(dummyResult)
+    }
+
+    @Test
+    fun saveVerificationCertificateFile() {
+        val certificate = fileCreate(type = VerificationCertificate)
+
+        every { fileService.persistFile(eq(certificate)) } returns dummyResult
+
+        assertThat(persistence.saveVerificationCertificateFile(certificate))
+            .isEqualTo(dummyResult)
+    }
+
+    @Test
+    fun countProjectReportVerificationCertificates() {
+        val pathPrefix = JemsFileType.ProjectReport.generatePath(1L, 2L)
+
+        every {
+            jemsFileMetadataRepository.countByProjectIdAndPathPrefixAndType(projectId = 1L, pathPrefix = pathPrefix, type = VerificationCertificate)
+        } returns 5
+
+        assertThat(persistence.countProjectReportVerificationCertificates(1L, 2L)).isEqualTo(5)
     }
 
     private fun mockFileDeletion(

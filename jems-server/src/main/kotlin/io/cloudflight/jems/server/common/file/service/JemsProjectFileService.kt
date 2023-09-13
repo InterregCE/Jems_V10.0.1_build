@@ -38,6 +38,7 @@ class JemsProjectFileService(
 
             // Project Report Verification
             JemsFileType.VerificationDocument,
+            JemsFileType.VerificationCertificate,
 
             // Partner Report
             JemsFileType.PartnerReport,

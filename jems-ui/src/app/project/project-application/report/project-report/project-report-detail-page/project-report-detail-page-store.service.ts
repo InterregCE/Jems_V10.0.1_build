@@ -4,7 +4,9 @@ import {
   ProjectReportDTO,
   ProjectReportService,
   ProjectReportSummaryDTO,
-  ProjectReportUpdateDTO, ProjectReportVerificationNotificationAPIService, ProjectReportVerificationNotificationDTO
+  ProjectReportUpdateDTO,
+  ProjectReportVerificationNotificationAPIService,
+  ProjectReportVerificationNotificationDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -13,9 +15,7 @@ import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
