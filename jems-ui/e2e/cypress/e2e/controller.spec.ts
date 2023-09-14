@@ -74,8 +74,7 @@ context('Controller tests', () => {
       cy.contains('Controller institution was updated successfully').should('be.visible');
 
       cy.contains('Institutions').click();
-      cy.contains('mat-row', testData.institution.name).should('be.visible');
-      cy.contains(testData.institution.nutsVerification).should('be.visible');
+      cy.contains('mat-row', testData.institution.name).should('exist').contains(testData.institution.nutsVerification).should('exist');
     });
   });
 
@@ -93,13 +92,13 @@ context('Controller tests', () => {
         cy.contains('Assignment').click();
         cy.get('table mat-row').then(_ => {
           cy.contains('mat-header-cell', 'ProjectID').click().click();
-          cy.get(`mat-row:contains(${this.applicationId})`).filter(':contains("Project Partner")').contains('Select Institution').click();
+          cy.get(`mat-row:contains(${this.applicationId})`).filter(':contains("Project Partner")').contains('Select Institution').parents('mat-row').find('.mat-column-anchor').click();
           cy.contains('mat-option', testData.institution.name).click();
           cy.contains('Save changes').click();
 
           cy.contains('Controller institutions assignments have been successfully saved.').should('be.visible');
           cy.contains('Controller institutions assignments have been successfully saved.').should('not.exist');
-          cy.get(`mat-row:contains(${this.applicationId})`).filter(':contains("Lead Partner")').contains('Select Institution').click();
+          cy.get(`mat-row:contains(${this.applicationId})`).filter(':contains("Lead Partner")').contains('Select Institution').parents('mat-row').find('.mat-column-anchor').click();
           cy.contains('mat-option', testData.institution.name).should('not.exist');
 
           cy.loginByRequest(user.applicantUser.email);

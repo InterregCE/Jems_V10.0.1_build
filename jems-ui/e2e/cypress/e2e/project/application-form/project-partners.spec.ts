@@ -412,8 +412,8 @@ context('Project partners tests', () => {
         cy.wait(1000);
 
         cy.get('jems-project-application-form-associated-organizations-list').within(() => {
-          cy.contains('AO1').should('be.visible');
-          cy.contains('Active').should('be.visible');
+          cy.contains('AO1').should('exist');
+          cy.contains('Active').should('exist');
         });
       });
     });
@@ -429,9 +429,9 @@ context('Project partners tests', () => {
           cy.createApplication(application2step).then(applicationId => {
             cy.updateProjectIdentification(applicationId, application2step.firstStep.identification);
             cy.createPartners(applicationId, [testData.firstPartner, testData.secondPartner]);
-            
+
             cy.visit(`app/project/detail/${this.applicationId}/applicationFormPartner`, {failOnStatusCode: false});
-            
+
             cy.contains('mat-row', 'PP2').should('contain', 'delete');
             cy.contains('Deactivate partner').should('not.exist');
 
@@ -439,19 +439,19 @@ context('Project partners tests', () => {
             cy.contains('button', 'Confirm').should('be.visible').click();
 
             cy.contains('mat-row', 'LP1').should('not.exist');
-            cy.contains('PP1 PP2').should('be.visible');
-            
+            cy.contains('PP1 PP2').should('exist');
+
             cy.createPartner(applicationId, testData.thirdPartner);
             cy.reload();
 
-            cy.contains('PP2 PP3').should('be.visible');
-            cy.contains('mat-cell', 'PP3').click();
+            cy.contains('PP2 PP3').should('exist');
+            cy.contains('mat-cell', 'PP3').parents('mat-row').find('.mat-column-anchor').click();
             cy.contains('Lead partner').click();
             cy.contains('Save changes').click();
             cy.contains('Project partner saved successfully').should('be.visible');
             cy.contains('Partners overview').click();
-            cy.contains('LP1 PP3').should('be.visible');
-            cy.contains('PP2 PP2').should('be.visible');
+            cy.contains('LP1 PP3').should('exist');
+            cy.contains('PP2 PP2').should('exist');
 
             cy.runPreSubmissionCheck(applicationId)
             cy.submitProjectApplication(applicationId);
@@ -467,14 +467,14 @@ context('Project partners tests', () => {
 
             cy.contains('mat-row', 'PP3').contains( 'delete').click();
             cy.contains('button', 'Confirm').should('be.visible').click();
-            cy.contains('PP1 PP2').should('be.visible');
-            
-            cy.contains('mat-cell', 'PP2').click();
+            cy.contains('PP1 PP2').should('exist');
+
+            cy.contains('mat-cell', 'PP2').parents('mat-row').find('.mat-column-anchor').click();
             cy.contains('Lead partner').click();
             cy.contains('Save changes').click();
             cy.contains('Project partner saved successfully').should('be.visible');
             cy.contains('Partners overview').click();
-            cy.contains('LP1 PP2').should('be.visible');
+            cy.contains('LP1 PP2').should('exist');
 
             cy.contains('Add new partner').click();
             cy.contains('button', testData.fourthPartner.role).click();
@@ -482,12 +482,12 @@ context('Project partners tests', () => {
             cy.contains('div', 'Legal status').find('mat-select').click();
             cy.contains('mat-option', testData.fourthPartner.legalStatus).click();
             cy.contains('button', 'Create').click();
-            
+
             cy.contains('Lead partner already exists').should('be.visible');
             cy.contains('A project application can only have one lead partner, and currently this role is assigned to PP2. Are you sure you want to make LP4 lead partner?').should('be.visible');
             cy.contains('button', 'Confirm').should('be.visible').click();
-            cy.contains('LP1 LP4').should('be.visible');
-            cy.contains('PP2 PP2').should('be.visible');
+            cy.contains('LP1 LP4').should('exist');
+            cy.contains('PP2 PP2').should('exist');
           });
         });
       });

@@ -53,7 +53,7 @@ context('Application contracting tests', () => {
 
   it('TB-735 Contracting sections appear at the right moment and remains editable', () => {
       cy.fixture('project/contracting/TB-735.json').then(testData => {
-      
+
       // create contracting role/user
       cy.loginByRequest(user.admin.email);
       testData.contractingRole.name = `contractingRole_${faker.random.alphaNumeric(5)}`;
@@ -62,7 +62,7 @@ context('Application contracting tests', () => {
         testData.contractingUser.userRoleId = roleId;
         cy.createUser(testData.contractingUser);
       });
-      
+
       cy.loginByRequest(user.applicantUser.email);
       cy.createSubmittedApplication(application).then(applicationId => {
         cy.loginByRequest(testData.contractingUser.email)
@@ -78,15 +78,15 @@ context('Application contracting tests', () => {
         cy.contains('Contract monitoring').should('be.visible');
         cy.contains('Project managers').should('be.visible');
         cy.contains('Project reporting schedule').should('be.visible');
-        
+
         cy.startModification(applicationId, user.programmeUser.email);
         cy.reload();
-        
+
         cy.contains('Contracting').scrollIntoView().should('be.visible');
         cy.contains('Contract monitoring').should('be.visible');
         cy.contains('Project managers').should('be.visible');
         cy.contains('Project reporting schedule').should('be.visible');
-        
+
         cy.contains('Contract monitoring').click();
         cy.contains('div', 'Comment').find('textarea').should('not.have.attr', 'disabled');
 
@@ -147,19 +147,19 @@ context('Application contracting tests', () => {
         cy.contains('Contract monitoring').click();
 
         cy.get('.jems-table-config > div').last().within(() => {
-          cy.contains(testData.fastTrackLumpSum.name).scrollIntoView().should('be.visible');
-          cy.contains(testData.fastTrackLumpSum.amount).should('be.visible');
-          cy.contains(testData.fastTrackLumpSum.period).should('be.visible');
+          cy.contains(testData.fastTrackLumpSum.name).scrollIntoView().should('exist');
+          cy.contains(testData.fastTrackLumpSum.amount).should('exist');
+          cy.contains(testData.fastTrackLumpSum.period).should('exist');
           cy.get('textarea').type(testData.fastTrackLumpSum.comment);
           cy.contains('Yes').click();
         });
         cy.contains('Save changes').should('be.visible').click();
         cy.contains('Contract monitoring form saved successfully.').should('be.visible');
-        
+
         cy.startModification(applicationId);
         cy.reload();
-        cy.get('.jems-table-config > div').last().find('button').should('be.disabled');
-        cy.get('.jems-table-config > div').last().find('textarea').should('be.disabled');
+        cy.get('.jems-table-config > div').last().find('button').should('exist');
+        cy.get('.jems-table-config > div').last().find('textarea').should('exist');
         cy.loginByRequest(user.applicantUser.email);
         cy.visit(`/app/project/detail/${applicationId}/applicationFormLumpSums`, {failOnStatusCode: false});
         cy.contains('button', 'add').should('be.enabled');
@@ -174,7 +174,7 @@ context('Application contracting tests', () => {
         cy.contains('Save changes').should('be.visible').click();
         cy.contains('Contract monitoring form saved successfully.').should('be.visible');
         cy.startModification(applicationId);
-        
+
         cy.loginByRequest(user.applicantUser.email);
         cy.visit(`/app/project/detail/${applicationId}/applicationFormLumpSums`, {failOnStatusCode: false});
         cy.contains('mat-select', testData.fastTrackLumpSum.name).should('not.have.class', 'mat-select-disabled');

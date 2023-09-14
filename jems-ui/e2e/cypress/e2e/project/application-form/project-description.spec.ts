@@ -150,7 +150,7 @@ context('Project description tests', () => {
 
       cy.contains('C.4 Project work plan').click();
       cy.contains('Add new work package').click();
-      cy.get('jems-table').contains('1').click();
+      cy.get('jems-table').contains('1').parents('mat-row').find('.mat-column-anchor').click();
 
       cy.contains('jems-multi-language-container', 'Work package title').within(() => {
         testData.workPlanTitle.forEach(workPlanTitle => {

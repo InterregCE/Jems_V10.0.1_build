@@ -62,7 +62,7 @@ context('Call management tests', () => {
 
 
     it('TB-389 Edit and publish 1-step call', function () {
-      cy.contains(this.callName).click();
+      cy.contains(this.callName).parents('mat-row').find('.mat-column-anchor').click();
       cy.get('input[name="name"]').should('have.value', this.callName);
 
       // Budget settings
@@ -178,12 +178,12 @@ context('Call management tests', () => {
       // Strategies
       cy.contains('EU Strategy for the Alpine Region').click();
       cy.contains('EU Strategy for the Baltic Sea Region').click();
-      
+
       // Fund
       cy.contains('div', 'ERDF').within(() => {
         cy.get('mat-checkbox input').check({force: true});
       });
-      
+
       cy.contains('button', 'Create').click();
       cy.contains('span', 'General call settings').should('be.visible');
       cy.contains('button', 'Publish call').should('be.visible').and('be.disabled');
@@ -191,7 +191,7 @@ context('Call management tests', () => {
     });
 
     it("TB-876 Edit and publish a 2-step call", function () {
-      cy.contains(this.callName).click();
+      cy.contains(this.callName).parents('mat-row').find('.mat-column-anchor').click();
       cy.get('input[name="name"]').should('have.value', this.callName);
 
       cy.contains('Application form configuration').click();

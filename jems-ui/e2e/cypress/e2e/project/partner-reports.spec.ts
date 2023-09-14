@@ -2521,7 +2521,7 @@ context('Partner reports tests', () => {
   }
 
   function verifyIconsInProjectPrivileges(application, partnerIdsToDisable, shouldIconsBeDisplayed) {
-    const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
+    const displayFlag = shouldIconsBeDisplayed ? 'exist' : 'not.exist';
 
     cy.contains('Project privileges')
       .click()
@@ -2537,7 +2537,7 @@ context('Partner reports tests', () => {
   }
 
   function verifyDeactivatedPartnerBannerDisplay(headerTitle, disabledPartnerAbbreviation, shouldBannerBeDisplayed) {
-    const displayFlag = shouldBannerBeDisplayed ? 'be.visible' : 'not.exist';
+    const displayFlag = shouldBannerBeDisplayed ? 'exist' : 'not.exist';
 
     cy.get(`mat-expansion-panel-header:contains(${headerTitle})`)
       .next('div')

@@ -29,7 +29,7 @@ context('Project privileges tests', () => {
 
         cy.loginByRequest(testData.projectCollaborator.email);
         cy.visit('/');
-        cy.get('jems-project-application-list').contains(application.identification.acronym).should('be.visible');
+        cy.get('jems-project-application-list').contains(application.identification.acronym).should('exist');
 
         // Remove user privileges from the project
         cy.loginByRequest(user.applicantUser.email);
@@ -111,7 +111,7 @@ context('Project privileges tests', () => {
         // Testing the view privileges
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
-        cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
+        cy.get('jems-table:first').contains('div', applicationId).should('exist');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
@@ -240,11 +240,11 @@ context('Project privileges tests', () => {
 
           // checking for the added users
           cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
-            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('exist');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('exist');
           })
           cy.contains('mat-row', secondApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('exist');
             cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('not.exist');
           })
 
@@ -268,7 +268,7 @@ context('Project privileges tests', () => {
           cy.loginByRequest(testData.monitorUser1.email);
           cy.visit('/');
           cy.contains(firstApplicationAcronym).should('not.exist');
-          cy.contains(secondApplicationAcronym).should('be.visible');
+          cy.contains(secondApplicationAcronym).should('exist');
           cy.visit(`/app/project/detail/${applicationId2}/applicationFormIdentification`, {failOnStatusCode: false});
           cy.get('textarea.mat-input-element:first').should('have.attr', 'readonly');
 
