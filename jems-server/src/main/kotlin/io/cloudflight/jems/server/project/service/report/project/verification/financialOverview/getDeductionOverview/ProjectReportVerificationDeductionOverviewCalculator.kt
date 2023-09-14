@@ -32,14 +32,14 @@ class ProjectReportVerificationDeductionOverviewCalculator(
 
         val verificationExpendituresByCertificate =
             projectReportVerificationExpenditurePersistenceProvider.getProjectReportExpenditureVerification(reportId)
-            .groupBy ({ it.toIdentifiers() }, {it.toVerification()})
+                .groupBy({ it.toIdentifiers() }, { it.toVerification() })
 
         val allTypologyErrors = typologyOfErrorsPersistence.getAllTypologyErrors()
         val certificateIds = verificationExpendituresByCertificate.keys.mapTo(HashSet()) { it.partnerReportId }
         val expenditureCostCategoriesByCertificate =
             reportExpenditureCostCategoryPersistence.getCostCategoriesFor(certificateIds)
 
-        return verificationExpendituresByCertificate.map { (certificate, verificationExpenditures) ->
+        return verificationExpendituresByCertificate.mapNotNull { (certificate, verificationExpenditures) ->
 
             val certificateCostCategories = expenditureCostCategoriesByCertificate[certificate.partnerReportId]!!
             val options = certificateCostCategories.options
@@ -68,25 +68,27 @@ class ProjectReportVerificationDeductionOverviewCalculator(
                 total = certificateDeductionRows.sumUp()
             )
 
-            return@map CertificateVerificationDeductionOverview(
-                partnerReportNumber = certificate.partnerReportNumber,
-                partnerNumber = certificate.partnerNumber,
-                partnerRole = certificate.partnerRole,
-                deductionOverview = overview
-            )
-
+            return@mapNotNull if (certificateDeductionRows.isEmpty()) null else
+                CertificateVerificationDeductionOverview(
+                    partnerReportNumber = certificate.partnerReportNumber,
+                    partnerNumber = certificate.partnerNumber,
+                    partnerRole = certificate.partnerRole,
+                    deductionOverview = overview
+                )
         }
     }
 
 
-    private fun Map<Long, Map<BudgetCostCategory, BigDecimal>>.getForTypologyAndCategory(typologyId: Long, category: BudgetCostCategory): BigDecimal =
-        get(typologyId)?.get(category) ?: BigDecimal.ZERO
+    private fun Map<Long, Map<BudgetCostCategory, BigDecimal>>.getForTypologyAndCategory(
+        typologyId: Long,
+        category: BudgetCostCategory
+    ) = get(typologyId)?.get(category) ?: BigDecimal.ZERO
 
     private fun List<VerificationDeductionOverviewRow>.appendFlatRatesDeductionRow(
-        options:  ProjectPartnerBudgetOptions,
+        options: ProjectPartnerBudgetOptions,
         totalDeducted: BudgetCostsCalculationResultFull
     ): List<VerificationDeductionOverviewRow> {
-        if (this.isEmpty())  {
+        if (this.isEmpty()) {
             return this
         }
         return if (options.isEmpty()) this else this.plus(options.toFlatRatesRow(totalDeducted))
@@ -101,31 +103,37 @@ class ProjectReportVerificationDeductionOverviewCalculator(
             travelAndAccommodation = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.Travel),
             externalExpertise = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.External),
             equipment = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.Equipment),
-            infrastructureAndWorks = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.Infrastructure),
+            infrastructureAndWorks = getForTypologyAndCategory(
+                typologyId = error.id,
+                BudgetCostCategory.Infrastructure
+            ),
             lumpSums = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.LumpSum),
             unitCosts = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.UnitCost),
             otherCosts = getForTypologyAndCategory(typologyId = error.id, BudgetCostCategory.Other),
             total = this[error.id]?.values?.sumOf { it } ?: BigDecimal.ZERO
         )
 
-    private fun BudgetCostsCalculationResultFull.minus(subtractor: BudgetCostsCalculationResultFull) = BudgetCostsCalculationResultFull(
-        staff = staff.minus(subtractor.staff),
-        office = office.minus(subtractor.office),
-        travel = travel.minus(subtractor.travel),
-        external = external.minus(subtractor.external),
-        equipment = equipment.minus(subtractor.equipment),
-        infrastructure = infrastructure.minus(subtractor.infrastructure),
-        other = other.minus(subtractor.other),
-        lumpSum = lumpSum.minus(subtractor.lumpSum),
-        unitCost = unitCost.minus(subtractor.unitCost),
-        sum = sum.minus(subtractor.sum),
-    )
+    private fun BudgetCostsCalculationResultFull.minus(subtractor: BudgetCostsCalculationResultFull) =
+        BudgetCostsCalculationResultFull(
+            staff = staff.minus(subtractor.staff),
+            office = office.minus(subtractor.office),
+            travel = travel.minus(subtractor.travel),
+            external = external.minus(subtractor.external),
+            equipment = equipment.minus(subtractor.equipment),
+            infrastructure = infrastructure.minus(subtractor.infrastructure),
+            other = other.minus(subtractor.other),
+            lumpSum = lumpSum.minus(subtractor.lumpSum),
+            unitCost = unitCost.minus(subtractor.unitCost),
+            sum = sum.minus(subtractor.sum),
+        )
 
     private fun ProjectPartnerBudgetOptions.toFlatRatesRow(flatRates: BudgetCostsCalculationResultFull): VerificationDeductionOverviewRow {
         val staffCost = if (staffCostsFlatRate == null) BigDecimal.ZERO else flatRates.staff
         val officeAndAdministration = if (officeAndAdministrationOnDirectCostsFlatRate == null
-            && officeAndAdministrationOnStaffCostsFlatRate == null) BigDecimal.ZERO else flatRates.office
-        val travelAndAccommodation = if (travelAndAccommodationOnStaffCostsFlatRate == null) BigDecimal.ZERO else flatRates.travel
+            && officeAndAdministrationOnStaffCostsFlatRate == null
+        ) BigDecimal.ZERO else flatRates.office
+        val travelAndAccommodation =
+            if (travelAndAccommodationOnStaffCostsFlatRate == null) BigDecimal.ZERO else flatRates.travel
         val otherCosts = if (otherCostsOnStaffCostsFlatRate == null) BigDecimal.ZERO else flatRates.other
 
         return VerificationDeductionOverviewRow(

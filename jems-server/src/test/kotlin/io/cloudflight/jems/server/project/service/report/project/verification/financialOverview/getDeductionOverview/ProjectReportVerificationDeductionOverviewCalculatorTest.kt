@@ -410,9 +410,56 @@ class ProjectReportVerificationDeductionOverviewCalculatorTest: UnitTest() {
             )
         )
 
+    }
+
+    @Test
+    fun `No deductions should return no overview`() {
+
+        every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(LEAD_PARTNER_R1_ID)) } returns mapOf(
+            LEAD_PARTNER_R1_ID to costOptionsWithFlatRate,
+        )
+        every {
+            projectReportVerificationExpenditurePersistenceProvider.getProjectReportExpenditureVerification(
+                PROJECT_REPORT_ID
+            )
+        } returns listOf(
+            getVerificationExpenditureLineMock(
+                expenditureItem = getExpenditureItemMock(
+                    LEAD_PARTNER_ID, ProjectPartnerRole.LEAD_PARTNER, 1,
+                    partnerReportId = LEAD_PARTNER_R1_ID,
+                    partnerReportNumber = 1,
+                    reportCostCategory = ReportBudgetCategory.StaffCosts,
+                    budgetCostCategory = BudgetCostCategory.Staff,
+                    certifiedAmount = BigDecimal.valueOf(2187.34)
+                ),
+                deductedByJs = BigDecimal.ZERO,
+                deductedByMa = BigDecimal.ZERO,
+                amountAfterVerification = BigDecimal.ZERO,
+                typologyOfErrorId = null,
+                budgetCostCategory = BudgetCostCategory.Staff,
+                parked = false
+            ),
+            getVerificationExpenditureLineMock(
+                expenditureItem = getExpenditureItemMock(
+                    LEAD_PARTNER_ID, ProjectPartnerRole.LEAD_PARTNER, 1,
+                    partnerReportId = LEAD_PARTNER_R1_ID,
+                    partnerReportNumber = 1,
+                    reportCostCategory = ReportBudgetCategory.StaffCosts,
+                    budgetCostCategory = BudgetCostCategory.Staff,
+                    certifiedAmount = BigDecimal.valueOf(1062.66)
+                ),
+                deductedByJs = BigDecimal.ZERO,
+                deductedByMa = BigDecimal.ZERO,
+                amountAfterVerification = BigDecimal.ZERO,
+                typologyOfErrorId = null,
+                budgetCostCategory = BudgetCostCategory.Staff,
+                parked = false
+            )
+        )
 
 
-
+        assertThat(projectReportVerificationDeductionOverviewCalculator.getDeductionOverview(PROJECT_REPORT_ID)).isEmpty()
     }
 
 }
