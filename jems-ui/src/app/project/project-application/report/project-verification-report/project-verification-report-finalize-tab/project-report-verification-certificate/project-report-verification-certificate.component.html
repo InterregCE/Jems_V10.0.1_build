@@ -9,7 +9,7 @@
             </mat-select>
         </mat-form-field>
         <jems-pending-button (clicked)="generateVerificationCertificate(plugin)"
-                             [disabled]="(exportInProgress$ | async) || !exportForm.get('plugin')?.value"
+                             [disabled]="(exportInProgress$ | async) || !plugin"
                              [pending]="(exportInProgress$ | async) ?? false">
             {{'project.application.project.verification.work.tab.finalise.certificate.label.button' | translate}}
         </jems-pending-button>

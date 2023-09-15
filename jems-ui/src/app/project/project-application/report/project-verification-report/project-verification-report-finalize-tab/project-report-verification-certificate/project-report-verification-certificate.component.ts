@@ -68,7 +68,7 @@ export class ProjectReportVerificationCertificateComponent {
       }))
     );
     this.exportForm = this.formBuilder.group({
-      plugin: this.formBuilder.control({}),
+      plugin: [],
     });
   }
 
