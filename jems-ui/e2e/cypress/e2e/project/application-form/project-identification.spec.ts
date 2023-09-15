@@ -22,7 +22,7 @@ context('Project identification tests', () => {
 
     cy.contains('Call list').should('be.visible');
 
-    cy.contains(call.generalCallSettings.name).click({force: true});
+    cy.contains(call.generalCallSettings.name).parents('mat-row').find('.mat-column-anchor').click();
     cy.contains('jems-breadcrumb', call.generalCallSettings.name).should('exist');
     cy.contains('Apply').click();
 

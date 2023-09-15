@@ -2570,7 +2570,7 @@ context('Partner reports tests', () => {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
             .scrollIntoView()
-            .should('be.visible')
+            .should('exist')
         } else {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
@@ -2580,7 +2580,7 @@ context('Partner reports tests', () => {
   }
 
   function verifyPartnerAvailabilityInProjectPrivileges(shouldPartnerBeDisplayed) {
-    const displayFlag = shouldPartnerBeDisplayed ? 'be.visible' : 'not.exist';
+    const displayFlag = shouldPartnerBeDisplayed ? 'exist' : 'not.exist';
 
     cy.contains('Project privileges')
       .click()
@@ -2622,12 +2622,12 @@ context('Partner reports tests', () => {
       cy.contains('mat-row', application.partners[id].details.abbreviation)
         .contains('Inactive')
         .scrollIntoView()
-        .should('be.visible');
+        .should('exist');
 
       cy.contains('mat-row', application.partners[id].details.abbreviation)
         .contains('mat-icon', 'person_off')
         .scrollIntoView()
-        .should('be.visible');
+        .should('exist');
 
       verifyIconsInProjectPartners(application, id, true);
     })

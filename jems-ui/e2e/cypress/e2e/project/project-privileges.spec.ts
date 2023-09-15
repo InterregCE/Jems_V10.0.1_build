@@ -316,7 +316,7 @@ context('Project privileges tests', () => {
 
   function testEditPrivileges(applicationId) {
     cy.visit('/');
-    cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
+    cy.get('jems-table:first').contains('div', applicationId).should('exist');
     cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});

@@ -598,7 +598,7 @@ context('Control report tests', () => {
           // change name of institution
           cy.loginByRequest(user.admin.email);
           cy.visit(`/app/controller/`, {failOnStatusCode: false});
-          cy.contains('div', testData.controllerInstitution.name).click();
+          cy.contains('div', testData.controllerInstitution.name).parents('mat-row').find('.mat-column-anchor').click();
           testData.controllerInstitution.updatedName = `${faker.word.adjective()} ${faker.word.noun()}`;
           cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.updatedName);
           cy.contains('button', 'Save changes').click();
@@ -622,7 +622,7 @@ context('Control report tests', () => {
           //change name of institution again to the original
           cy.loginByRequest(user.admin.email);
           cy.visit(`/app/controller/`, {failOnStatusCode: false});
-          cy.contains('div', testData.controllerInstitution.updatedName).click();
+          cy.contains('div', testData.controllerInstitution.updatedName).parents('mat-row').find('.mat-column-anchor').click();
           cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.name);
           cy.contains('button', 'Save changes').click();
 
