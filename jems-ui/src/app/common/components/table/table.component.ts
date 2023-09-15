@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
-import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
@@ -16,6 +15,7 @@ import {ActivatedRoute, Router, UrlSerializer} from '@angular/router';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {LongDateFormatKey} from 'moment';
+import {MatTableDataSource} from "@angular/material/table";
 
 @UntilDestroy()
 
@@ -28,10 +28,12 @@ export class TableComponent implements OnInit, OnChanges {
   ColumnType = ColumnType;
   ColumnWidth = ColumnWidth;
 
+  dataSource = new MatTableDataSource();
+
   @Input()
   configuration: TableConfiguration;
   @Input()
-  rows: Observable<any[]> | any[];
+  rows: any[];
   @Input()
   totalElements: number;
   @Input()
@@ -69,13 +71,8 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
     this.versionStore.selectedVersion$.pipe(untilDestroyed(this))
       .subscribe((selectedVersion) => this.selectedVersion = selectedVersion);
-
-    if(this.configuration.isTableClickable) {
-      this.columnsToDisplay.push('anchor');
-    }
   }
 
   /**
@@ -184,6 +181,15 @@ export class TableComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.configuration) {
       this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+      if(this.configuration.isTableClickable) {
+        this.columnsToDisplay.push('anchor');
+      }
+    }
+    if (changes.rows) {
+      this.dataSource.data = this.rows.map(row => ({
+        ...row,
+        link: this.getRowLink(row),
+      }));
     }
   }
 }

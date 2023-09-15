@@ -13,7 +13,7 @@
 <div class="table-wrapper">
     <table matSort
            mat-table
-           [dataSource]="rows"
+           [dataSource]="dataSource"
            (matSortChange)="sortRows.emit($event)"
            [class.multi-languages-table]="isMultiLanguage"
            aria-describedby="table component">
@@ -112,7 +112,7 @@
 
         <ng-container matColumnDef="anchor">
             <mat-header-cell *matHeaderCellDef class="anchor-column-header"></mat-header-cell>
-            <mat-cell *matCellDef="let row" class="anchor-column"><a [href]="getRowLink(row)"></a></mat-cell>
+            <mat-cell *matCellDef="let row" class="anchor-column"><a [href]="row.link"></a></mat-cell>
         </ng-container>
     </table>
 </div>
