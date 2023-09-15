@@ -97,7 +97,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     private val reportSummary = ProjectReportSummary(
         id = 52L,
-        projectId = 15L,
+        projectIdentifier = "iden",
         reportNumber = 6,
         status = ProjectReportStatus.Draft,
         linkedFormVersion = "4.0",
@@ -120,7 +120,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     private val expectedReportSummary = ProjectReportSummaryDTO(
         id = 52L,
-        projectId = 15L,
+        projectIdentifier = "iden",
         reportNumber = 6,
         status = ProjectReportStatusDTO.Draft,
         linkedFormVersion = "4.0",

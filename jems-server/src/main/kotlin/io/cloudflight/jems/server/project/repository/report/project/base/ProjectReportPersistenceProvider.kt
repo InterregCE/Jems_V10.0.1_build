@@ -230,6 +230,9 @@ class ProjectReportPersistenceProvider(
                 .otherwise(specReport.type)
             "createdAt" -> specReport.createdAt
             "firstSubmission" -> specReport.firstSubmission
+            "status" -> specReport.status
+            "verificationEndDate" -> specReport.verificationEndDate
+            "projectIdentifier" -> specReport.projectIdentifier
 
             else -> specReport.id
         }

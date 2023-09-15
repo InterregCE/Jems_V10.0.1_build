@@ -8,7 +8,7 @@ import java.time.ZonedDateTime
 
 data class ProjectReportSummary(
     val id: Long,
-    val projectId: Long,
+    val projectIdentifier: String,
     val reportNumber: Int,
     val status: ProjectReportStatus,
     val linkedFormVersion: String,

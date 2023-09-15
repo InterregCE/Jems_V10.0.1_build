@@ -120,7 +120,7 @@
             </ng-container>
 
             <ng-container matColumnDef="verificationEndDate">
-                <mat-header-cell *matHeaderCellDef class="text-left">
+                <mat-header-cell *matHeaderCellDef class="text-left" mat-sort-header="verificationEndDate">
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.verification.end.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">

@@ -37,7 +37,7 @@ fun ProjectReportModel.toServiceSummaryModel(
     periodResolver: (Int) -> ProjectPeriod?,
 ) = ProjectReportSummary(
     id = id,
-    projectId = projectId,
+    projectIdentifier = projectIdentifier,
     reportNumber = reportNumber,
     status = status,
     linkedFormVersion = linkedFormVersion,

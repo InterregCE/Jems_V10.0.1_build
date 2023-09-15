@@ -60,8 +60,8 @@ export class ProjectReportListComponent implements OnInit {
       columns: [
         {
           displayedColumn: 'user.project.reports.table.column.name.project.id',
-          elementProperty: 'projectId',
-          sortProperty: 'projectId',
+          elementProperty: 'projectIdentifier',
+          sortProperty: 'projectIdentifier',
           columnWidth: ColumnWidth.IdColumn
         },
         {

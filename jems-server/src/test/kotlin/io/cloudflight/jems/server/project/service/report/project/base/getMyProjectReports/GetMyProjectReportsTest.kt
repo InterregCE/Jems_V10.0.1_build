@@ -27,9 +27,9 @@ internal class GetMyProjectReportsTest: UnitTest() {
         private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val DAYS_AGO_2 = YESTERDAY.minusDays(1).toLocalDate()
 
-        private fun report(id: Long, status: ProjectReportStatus, projectId: Long) = ProjectReportModel(
+        private fun report(id: Long, status: ProjectReportStatus, projectId: String) = ProjectReportModel(
             id = id,
-            projectId = projectId,
+            projectId = 55L,
             reportNumber = id.toInt(),
             status = status,
             startDate = DAYS_AGO_2,
@@ -46,16 +46,16 @@ internal class GetMyProjectReportsTest: UnitTest() {
             leadPartnerNameInOriginalLanguage = "",
             periodNumber = id.toInt(),
             projectAcronym = "project",
-            projectIdentifier = "identifier",
+            projectIdentifier = projectId,
             riskBasedVerification = false,
             riskBasedVerificationDescription = null,
             amountRequested = BigDecimal.TEN,
             totalEligibleAfterVerification = BigDecimal.ONE,
         )
 
-        private fun reportSummary(id: Long, status: ProjectReportStatus, projectId: Long) = ProjectReportSummary(
+        private fun reportSummary(id: Long, status: ProjectReportStatus, projectId: String) = ProjectReportSummary(
             id = id,
-            projectId = projectId,
+            projectIdentifier = projectId,
             reportNumber = id.toInt(),
             status = status,
             startDate = DAYS_AGO_2,
@@ -114,14 +114,14 @@ internal class GetMyProjectReportsTest: UnitTest() {
         ) } returns
             PageImpl(
                 listOf(
-                    report(101L, ProjectReportStatus.Submitted, firstProjectId),
-                    report(102L, ProjectReportStatus.Finalized, secondProjectId)
+                    report(101L, ProjectReportStatus.Submitted, "id 101"),
+                    report(102L, ProjectReportStatus.Finalized, "id 102"),
                 )
             )
 
         assertThat(getMyProjectReports.findAllOfMine(Pageable.unpaged()).content).containsExactly(
-            reportSummary(101L, ProjectReportStatus.Submitted, firstProjectId),
-            reportSummary(102L, ProjectReportStatus.Finalized, secondProjectId)
+            reportSummary(101L, ProjectReportStatus.Submitted, "id 101"),
+            reportSummary(102L, ProjectReportStatus.Finalized, "id 102"),
         )
     }
 }
