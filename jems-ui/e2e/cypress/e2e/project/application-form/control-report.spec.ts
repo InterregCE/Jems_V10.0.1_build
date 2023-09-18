@@ -35,7 +35,7 @@ context('Control report tests', () => {
 
           // create controller role/user + assignment
           cy.loginByRequest(user.admin.email);
-          testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+          testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
           testData.controllerUserEdit.email = faker.internet.email();
           testData.controllerUserView.email = faker.internet.email();
           cy.createRole(testData.controllerRole).then(roleId => {
@@ -91,12 +91,11 @@ context('Control report tests', () => {
 
           cy.contains('h3', application.partners[0].details.abbreviation).should('be.visible');
           cy.contains('mat-row', 'Draft').should('not.contain', 'Start control');
-          cy.contains('mat-cell', 'Submitted').next().should('be.empty')
-            .next().should('contain', '1.0');
+          cy.contains('mat-cell', 'Submitted').next().find('div').should('be.empty')
+          cy.contains('mat-cell', 'Submitted').next().next().should('contain', '1.0');
           cy.contains('Start control').should('be.enabled').click();
           cy.contains('Confirm').should('be.visible').click();
 
-          cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
           cy.contains('Project acronym').next().should('contain', application.identification.acronym);
           cy.contains('Name of partner organisation in English language').next().should('contain', 'Name in English to be changed');
           cy.contains('Name of partner organisation in original language').next().should('contain', 'Original name to be changed');
@@ -116,7 +115,6 @@ context('Control report tests', () => {
             cy.loginByRequest(testData.controllerUserEdit.email);
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${this.reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
 
-            cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
             cy.contains('Project acronym').next().should('contain', application.identification.acronym);
             cy.contains('Application Form version').next().should('contain', '1.0');
             cy.contains('Name of partner organisation in English language').next().should('contain', 'Name in English to be changed');
@@ -134,12 +132,11 @@ context('Control report tests', () => {
 
             cy.loginByRequest(testData.controllerUserEdit.email);
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports`, {failOnStatusCode: false});
-            cy.contains('mat-cell', 'Submitted').next().should('be.empty')
-              .next().should('contain', '2.0');
+            cy.contains('mat-cell', 'Submitted').next().find('div').should('be.empty')
+            cy.contains('mat-cell', 'Submitted').next().next().should('contain', '2.0');
             cy.contains('Start control').should('be.enabled').click();
             cy.contains('Confirm').should('be.visible').click();
 
-            cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
             cy.contains('Project acronym').next().should('contain', application.identification.acronym);
             cy.contains('Application Form version').next().should('contain', '2.0');
             cy.contains('Name of partner organisation in English language').next().should('contain', 'Updated name in english');
@@ -161,10 +158,10 @@ context('Control report tests', () => {
 
         // create controller role/user + assignment
         cy.loginByRequest(user.admin.email);
-        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
         testData.controllerUser1.email = faker.internet.email();
         testData.controllerUser2.email = faker.internet.email();
-        cy.createRole(testData.controllerRole).then(roleId => {
+        cy.createRole(testData.controllerRole).then((roleId: any) => {
           testData.controllerUser1.userRoleId = roleId;
           testData.controllerUser2.userRoleId = roleId;
           cy.createUser(testData.controllerUser1);
@@ -180,7 +177,7 @@ context('Control report tests', () => {
         });
 
         // create checklist
-        testData.controlChecklist.name = `control_checklist_${faker.random.alphaNumeric(5)}`;
+        testData.controlChecklist.name = `control_checklist_${faker.string.alphanumeric(5)}`;
         cy.createChecklist(testData.controlChecklist);
 
         // create partner report
@@ -264,7 +261,7 @@ context('Control report tests', () => {
 
         // create controller role/user + assignment
         cy.loginByRequest(user.admin.email);
-        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
         testData.controllerUser1.email = faker.internet.email();
         cy.createRole(testData.controllerRole).then(roleId => {
           testData.controllerUser1.userRoleId = roleId;
@@ -341,7 +338,7 @@ context('Control report tests', () => {
 
         // create controller role/user + assignment
         cy.loginByRequest(user.admin.email);
-        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
         testData.controllerUser1.email = faker.internet.email();
         cy.createRole(testData.controllerRole).then(roleId => {
           testData.controllerUser1.userRoleId = roleId;
@@ -559,7 +556,7 @@ context('Control report tests', () => {
 
         // create controller role/user + assignment
         cy.loginByRequest(user.admin.email);
-        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
         testData.controllerUser1.email = faker.internet.email();
         cy.createRole(testData.controllerRole).then(roleId => {
           testData.controllerUser1.userRoleId = roleId;

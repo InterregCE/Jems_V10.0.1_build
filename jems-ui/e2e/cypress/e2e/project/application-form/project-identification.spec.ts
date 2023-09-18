@@ -20,7 +20,7 @@ context('Project identification tests', () => {
   it('TB-390 Applicant can apply for a call', () => {
     cy.visit('/');
 
-    cy.contains('Call list').should('be.visible');
+    cy.contains('Call list').scrollIntoView().should('be.visible');
 
     cy.contains(call.generalCallSettings.name).parents('mat-row').find('.mat-column-anchor').click();
     cy.contains('jems-breadcrumb', call.generalCallSettings.name).should('exist');
@@ -33,11 +33,6 @@ context('Project identification tests', () => {
     cy.contains('Create project application').click();
 
     cy.get('jems-project-page-template').find('h1').contains(`${application.details.acronym}`);
-    cy.location('pathname').then(path => {
-      const regex = /detail\/(\d+)\//;
-      const match = path.match(regex);
-      cy.wrap(match[1]).as('applicationId');
-    });
   });
 
   it('TB-556 Applicant can open and edit his projects', function () {
@@ -45,9 +40,7 @@ context('Project identification tests', () => {
 
       cy.visit('/');
 
-      cy.contains('My applications').should('be.visible');
-
-      cy.contains(this.applicationAcronym).click({force: true});
+      cy.contains('mat-row', this.applicationAcronym).scrollIntoView().click();
 
       cy.contains('.link', 'A - Project identification').should('be.visible').click();
 
