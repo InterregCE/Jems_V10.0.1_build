@@ -92,7 +92,7 @@ context('Project report tests', () => {
     });
   });
 
-  it.only('TB-1034 Make sure Pre-check works and that you can submit', function () {
+  it('TB-1034 Make sure Pre-check works and that you can submit', function () {
     cy.fixture('project/reporting/TB-1034.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
