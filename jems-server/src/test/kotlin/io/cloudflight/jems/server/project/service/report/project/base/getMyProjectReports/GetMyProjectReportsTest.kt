@@ -55,6 +55,7 @@ internal class GetMyProjectReportsTest: UnitTest() {
 
         private fun reportSummary(id: Long, status: ProjectReportStatus, projectId: String) = ProjectReportSummary(
             id = id,
+            projectId = 55L,
             projectIdentifier = projectId,
             reportNumber = id.toInt(),
             status = status,
