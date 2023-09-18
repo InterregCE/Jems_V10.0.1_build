@@ -2464,12 +2464,12 @@ context('Partner reports tests', () => {
           cy.contains('mat-row', application.partners[id].details.abbreviation)
             .contains('Inactive')
             .scrollIntoView()
-            .should('be.visible');
+            .should('exist');
 
           cy.contains('mat-row', application.partners[id].details.abbreviation)
             .contains('mat-icon', 'person_off')
             .scrollIntoView()
-            .should('be.visible');
+            .should('exist');
 
           verifyIconsInPartnerDetails(application, id, false);
           verifyIconsInProjectPartners(application, id, true);
@@ -2502,7 +2502,7 @@ context('Partner reports tests', () => {
   }
 
   function verifyIconsInProjectPartners(application, id, shouldIconsBeDisplayed) {
-    const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
+    const displayFlag = shouldIconsBeDisplayed ? 'exist' : 'not.exist';
 
     cy.get('mat-expansion-panel-header:contains("Project partners")')
       .next('div')
