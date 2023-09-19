@@ -157,7 +157,6 @@ context('Application contracting tests', () => {
         cy.contains('Contract monitoring form saved successfully.').should('be.visible');
 
         cy.startModification(applicationId);
-        cy.reload();
         cy.get('.jems-table-config > div').last().find('button').should('exist');
         cy.get('.jems-table-config > div').last().find('textarea').should('exist');
         cy.loginByRequest(user.applicantUser.email);
