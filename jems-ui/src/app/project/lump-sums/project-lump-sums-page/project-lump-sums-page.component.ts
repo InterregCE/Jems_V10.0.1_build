@@ -15,7 +15,7 @@ import {
 import {FormService} from '@common/components/section/form/form.service';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProjectLumSumsConstants} from './project-lum-sums.constants';
-import {untilDestroyed} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '@common/services/number.service';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {ProjectPartner} from '../../model/ProjectPartner';
@@ -35,6 +35,7 @@ import {
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectUtil} from '@project/common/project-util';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-project-lump-sums-page',
   templateUrl: './project-lump-sums-page.component.html',
