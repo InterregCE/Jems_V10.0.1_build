@@ -54,6 +54,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(1),
             totalReportedSoFarPercentage = BigDecimal.valueOf(2),
             remainingBudget = BigDecimal.valueOf(3),
+            previouslyVerified = BigDecimal.valueOf(23),
+            currentVerified = BigDecimal.ZERO
         )
 
         private val lumpSum_2 = CertificateLumpSumBreakdownLine(
@@ -69,6 +71,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyVerified =  BigDecimal.valueOf(7),
+            currentVerified = BigDecimal.ZERO
         )
 
         private val lumpSum_ft = CertificateLumpSumBreakdownLine(
@@ -84,6 +88,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(7),
             totalReportedSoFarPercentage = BigDecimal.valueOf(8),
             remainingBudget = BigDecimal.valueOf(9),
+            previouslyVerified =  BigDecimal.ZERO,
+            currentVerified = BigDecimal.ZERO
         )
 
         private val expectedDraftBreakdown = CertificateLumpSumBreakdown(
@@ -101,6 +107,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.valueOf(269, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
                     remainingBudget = BigDecimal.valueOf(251, 1),
+                    previouslyVerified =  BigDecimal.valueOf(23),
+                    currentVerified = BigDecimal.ZERO
                 ),
                 CertificateLumpSumBreakdownLine(
                     reportLumpSumId = 2L,
@@ -115,6 +123,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.valueOf(81, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
+                    previouslyVerified = BigDecimal.valueOf(7),
+                    currentVerified = BigDecimal.ZERO
                 ),
                 CertificateLumpSumBreakdownLine(
                     reportLumpSumId = 3L,
@@ -129,6 +139,9 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.ZERO,
                     totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
                     remainingBudget = BigDecimal.valueOf(15),
+                    previouslyVerified = BigDecimal.ZERO,
+                    currentVerified = BigDecimal.ZERO
+
                 ),
             ),
             total = CertificateLumpSumBreakdownLine(
@@ -144,6 +157,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFar = BigDecimal.valueOf(350, 1),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(4118, 2),
                 remainingBudget = BigDecimal.valueOf(500, 1),
+                previouslyVerified = BigDecimal.valueOf(30),
+                currentVerified = BigDecimal.ZERO
             ),
         )
     }

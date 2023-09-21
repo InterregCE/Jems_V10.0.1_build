@@ -16,5 +16,7 @@ data class CertificateLumpSumBreakdownLineDTO(
     val currentReport: BigDecimal,
     val totalReportedSoFar: BigDecimal,
     val totalReportedSoFarPercentage: BigDecimal,
+    val previouslyVerified: BigDecimal,
+    val currentVerified: BigDecimal,
     val remainingBudget: BigDecimal,
 )

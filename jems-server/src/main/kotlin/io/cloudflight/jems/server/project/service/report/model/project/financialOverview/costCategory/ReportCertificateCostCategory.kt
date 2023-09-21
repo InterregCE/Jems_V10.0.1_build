@@ -6,4 +6,6 @@ data class ReportCertificateCostCategory(
     val totalsFromAF: BudgetCostsCalculationResultFull,
     val currentlyReported: BudgetCostsCalculationResultFull,
     val previouslyReported: BudgetCostsCalculationResultFull,
+    val currentVerified: BudgetCostsCalculationResultFull,
+    val previouslyVerified: BudgetCostsCalculationResultFull
 )

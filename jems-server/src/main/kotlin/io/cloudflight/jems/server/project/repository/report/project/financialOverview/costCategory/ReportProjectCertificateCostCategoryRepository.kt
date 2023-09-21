@@ -36,4 +36,25 @@ interface ReportProjectCertificateCostCategoryRepository :
     )
     fun findCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
+
+    @Query(
+        """
+        SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
+            COALESCE(SUM(report.staffCurrentVerified), 0),
+            COALESCE(SUM(report.officeCurrentVerified), 0),
+            COALESCE(SUM(report.travelCurrentVerified), 0),
+            COALESCE(SUM(report.externalCurrentVerified), 0),
+            COALESCE(SUM(report.equipmentCurrentVerified), 0),
+            COALESCE(SUM(report.infrastructureCurrentVerified), 0),
+            COALESCE(SUM(report.otherCurrentVerified), 0),
+            COALESCE(SUM(report.lumpSumCurrentVerified), 0),
+            COALESCE(SUM(report.unitCostCurrentVerified), 0),
+            COALESCE(SUM(report.sumCurrentVerified), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
+    """
+    )
+    fun findCumulativeVerifiedForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
+
 }

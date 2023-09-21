@@ -2,14 +2,12 @@ package io.cloudflight.jems.server.project.service.report.project.financialOverv
 
 import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class GetReportCertificateUnitCostCalculatorService(
@@ -39,30 +37,8 @@ class GetReportCertificateUnitCostCalculatorService(
 
         return CertificateUnitCostBreakdown(
             unitCosts = unitCostLines,
-            total = unitCostLines.sumUp(),
+            total = unitCostLines.sumUp().fillInOverviewFields(),
         )
     }
 
-    fun Collection<CertificateUnitCostBreakdownLine>.fillInCurrent(current: Map<Long, BigDecimal>) = apply {
-        forEach {
-            it.currentReport = current.get(it.unitCostId) ?: BigDecimal.ZERO
-        }
-    }
-
-    private fun emptyLine() = CertificateUnitCostBreakdownLine(
-        reportUnitCostId = 0L,
-        unitCostId = 0L,
-        name = emptySet(),
-        totalEligibleBudget = BigDecimal.ZERO,
-        previouslyReported = BigDecimal.ZERO,
-        currentReport = BigDecimal.ZERO
-    )
-
-    fun List<CertificateUnitCostBreakdownLine>.sumUp() =
-        fold(emptyLine()) { resultingTotalLine, lumpSum ->
-            resultingTotalLine.totalEligibleBudget += lumpSum.totalEligibleBudget
-            resultingTotalLine.previouslyReported += lumpSum.previouslyReported
-            resultingTotalLine.currentReport += lumpSum.currentReport
-            return@fold resultingTotalLine
-        }.fillInOverviewFields()
 }

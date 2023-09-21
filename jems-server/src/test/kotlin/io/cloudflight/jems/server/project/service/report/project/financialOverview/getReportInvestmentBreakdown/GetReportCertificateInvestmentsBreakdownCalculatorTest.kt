@@ -51,6 +51,8 @@ class GetReportCertificateInvestmentsBreakdownCalculatorTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(200L),
             currentReport = BigDecimal.valueOf(100L),
             deactivated = false,
+            previouslyVerified = BigDecimal.valueOf(200L),
+            currentVerified =  BigDecimal.ZERO
         )
 
         private val investment_2 = CertificateInvestmentBreakdownLine(
@@ -63,6 +65,8 @@ class GetReportCertificateInvestmentsBreakdownCalculatorTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(40L),
             currentReport = BigDecimal.valueOf(20L),
             deactivated = true,
+            previouslyVerified = BigDecimal.valueOf(40L),
+            currentVerified =  BigDecimal.ZERO
         )
 
         private val expectedDraftResult = CertificateInvestmentBreakdown(
@@ -80,6 +84,9 @@ class GetReportCertificateInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6667, 2),
                     remainingBudget = BigDecimal.valueOf(100),
                     deactivated = false,
+                    previouslyVerified = BigDecimal.valueOf(200L),
+                    currentVerified =  BigDecimal.ZERO
+
                 ),
                 CertificateInvestmentBreakdownLine(
                     reportInvestmentId = 2L,
@@ -94,6 +101,8 @@ class GetReportCertificateInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6667, 2),
                     remainingBudget = BigDecimal.valueOf(20),
                     deactivated = true,
+                    previouslyVerified = BigDecimal.valueOf(40L),
+                    currentVerified =  BigDecimal.ZERO
                 ),
             ),
             total = CertificateInvestmentBreakdownLine(
@@ -109,6 +118,9 @@ class GetReportCertificateInvestmentsBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFarPercentage = BigDecimal.valueOf(6667, 2),
                 remainingBudget = BigDecimal.valueOf(120),
                 deactivated = true,
+                previouslyVerified =  BigDecimal.valueOf(240L),
+                currentVerified =  BigDecimal.ZERO
+
             )
         )
     }

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.project.financialOverview.investment
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.BreakdownLine
 import java.math.BigDecimal
 
 data class CertificateInvestmentBreakdownLine(
@@ -10,10 +11,13 @@ data class CertificateInvestmentBreakdownLine(
     val workPackageNumber: Int,
     val title: Set<InputTranslation>,
     val deactivated: Boolean,
-    var totalEligibleBudget: BigDecimal,
-    var previouslyReported: BigDecimal,
-    var currentReport: BigDecimal,
-    var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
-    var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
-    var remainingBudget: BigDecimal = BigDecimal.ZERO,
-)
+
+    override var totalEligibleBudget: BigDecimal,
+    override var previouslyReported: BigDecimal,
+    override var currentReport: BigDecimal,
+    override var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
+    override var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
+    var previouslyVerified: BigDecimal,
+    var currentVerified: BigDecimal,
+    override var remainingBudget: BigDecimal = BigDecimal.ZERO,
+) : BreakdownLine

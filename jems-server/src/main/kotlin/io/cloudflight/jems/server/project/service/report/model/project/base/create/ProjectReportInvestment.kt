@@ -11,4 +11,5 @@ data class ProjectReportInvestment(
     val deactivated: Boolean,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyVerified: BigDecimal,
 )

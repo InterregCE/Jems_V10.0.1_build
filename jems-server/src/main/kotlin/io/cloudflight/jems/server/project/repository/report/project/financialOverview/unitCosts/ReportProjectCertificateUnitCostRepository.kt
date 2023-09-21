@@ -24,5 +24,17 @@ interface ReportProjectCertificateUnitCostRepository :
         WHERE unitCost.reportEntity.id IN :reportIds
         GROUP BY unitCost.programmeUnitCost.id
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+    fun findReportedCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            unitCost.programmeUnitCost.id,
+            COALESCE(SUM(unitCost.currentVerified), 0)
+        )
+        FROM #{#entityName} unitCost
+        WHERE unitCost.reportEntity.id IN :reportIds
+        GROUP BY unitCost.programmeUnitCost.id
+    """)
+    fun findVerifiedCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
 }

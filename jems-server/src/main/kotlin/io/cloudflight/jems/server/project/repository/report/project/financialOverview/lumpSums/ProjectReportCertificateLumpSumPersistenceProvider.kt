@@ -28,16 +28,21 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 previouslyReported = it.previouslyReported,
                 previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
-                totalReportedSoFar = BigDecimal.ZERO,
-                totalReportedSoFarPercentage = BigDecimal.ZERO,
-                remainingBudget = BigDecimal.ZERO,
+                previouslyVerified = it.previouslyVerified,
+                currentVerified = it.currentVerified,
             ) }
 
 
     @Transactional(readOnly = true)
-    override fun getLumpSumCumulative(reportIds: Set<Long>) =
-        reportLumpSumRepository.findCumulativeForReportIds(reportIds)
+    override fun getReportedLumpSumCumulative(reportIds: Set<Long>) =
+        reportLumpSumRepository.findReportedCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, it.second) }
+
+    @Transactional(readOnly = true)
+    override fun getVerifiedLumpSumCumulative(reportIds: Set<Long>) =
+        reportLumpSumRepository.findVerifiedCumulativeForReportIds(reportIds)
+            .associate { Pair(it.first, it.second) }
+
 
     @Transactional
     override fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Int, BigDecimal>) {

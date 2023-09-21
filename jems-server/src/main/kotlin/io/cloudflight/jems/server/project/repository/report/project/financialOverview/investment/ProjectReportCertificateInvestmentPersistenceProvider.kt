@@ -27,12 +27,19 @@ class ProjectReportCertificateInvestmentPersistenceProvider(
                 totalEligibleBudget = it.total,
                 previouslyReported = it.previouslyReported,
                 currentReport = it.current,
+                previouslyVerified = it.previouslyVerified,
+                currentVerified = it.currentVerified,
             ) }
 
     @Transactional(readOnly = true)
-    override fun getInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
+    override fun getReportedInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
         reportInvestmentRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, it.second) }
+
+
+    @Transactional(readOnly = true)
+    override fun getVerifiedInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportInvestmentRepository.findVerifiedCumulativeForReportIds(reportIds).associate { Pair(it.first, it.second) }
 
     @Transactional
     override fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Long, BigDecimal>) {

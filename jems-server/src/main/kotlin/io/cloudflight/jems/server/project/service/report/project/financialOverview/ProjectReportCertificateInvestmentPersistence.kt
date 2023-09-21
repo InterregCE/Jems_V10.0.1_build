@@ -6,6 +6,10 @@ import java.math.BigDecimal
 interface ProjectReportCertificateInvestmentPersistence {
 
     fun getInvestments(projectId: Long, reportId: Long): List<CertificateInvestmentBreakdownLine>
-    fun getInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
+
+    fun getReportedInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
+
+    fun getVerifiedInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
+
     fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Long, BigDecimal>)
 }

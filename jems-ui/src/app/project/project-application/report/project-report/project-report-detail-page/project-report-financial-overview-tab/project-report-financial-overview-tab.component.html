@@ -13,25 +13,32 @@
     <h3>{{ 'project.application.project.report.financial.breakdown.cost.category' | translate}}</h3>
     <jems-project-report-cost-category
             [breakdown]="data.perCostCategory"
-            [allowedCostCategories]="data.allowedCostCategories">
+            [allowedCostCategories]="data.allowedCostCategories"
+            [isVerified]="data.isVerified">
     </jems-project-report-cost-category>
 
     <ng-container *ngIf="data.perInvestment.investments.length > 0">
         <h3>{{ 'project.application.project.report.financial.breakdown.investment' | translate}}</h3>
 
-        <jems-project-breakdown-investment [breakdown]="data.perInvestment">
+        <jems-project-breakdown-investment
+                [breakdown]="data.perInvestment"
+                [isVerified]="data.isVerified">
         </jems-project-breakdown-investment>
     </ng-container>
 
     <ng-container *ngIf="data.perLumpSum.lumpSums.length > 0">
         <h3>{{ 'project.application.project.report.financial.breakdown.lump.sum' | translate}}</h3>
-        <jems-project-breakdown-lump-sum [breakdown]="data.perLumpSum">
+        <jems-project-breakdown-lump-sum
+                [breakdown]="data.perLumpSum"
+                [isVerified]="data.isVerified">
         </jems-project-breakdown-lump-sum>
     </ng-container>
 
     <ng-container *ngIf="data.perUnitCost.unitCosts.length > 0">
         <h3>{{ 'project.application.project.report.financial.breakdown.unit.cost' | translate}}</h3>
-        <jems-project-breakdown-unit-cost [breakdown]="data.perUnitCost">
+        <jems-project-breakdown-unit-cost
+                [breakdown]="data.perUnitCost"
+                [isVerified]="data.isVerified">
         </jems-project-breakdown-unit-cost>
     </ng-container>
 

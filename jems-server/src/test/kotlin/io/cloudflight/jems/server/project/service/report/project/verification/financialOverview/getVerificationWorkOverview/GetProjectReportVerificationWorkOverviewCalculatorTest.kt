@@ -242,8 +242,9 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
     @Test
     fun getWorkOverviewPerPartner() {
         every { verificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns expenditures
-        every { partnerReportExpenditureCostCategoryPersistence.getCostCategories(4L, 400L) } returns partner_4
-        every { partnerReportExpenditureCostCategoryPersistence.getCostCategories(5L, 500L) } returns partner_5
+        every {
+            partnerReportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(400L, 500L,))
+        } returns mapOf(400L to partner_4, 500L to partner_5)
 
         assertThat(calculator.getWorkOverviewPerPartner(REPORT_ID)).isEqualTo(expectedOverview)
     }

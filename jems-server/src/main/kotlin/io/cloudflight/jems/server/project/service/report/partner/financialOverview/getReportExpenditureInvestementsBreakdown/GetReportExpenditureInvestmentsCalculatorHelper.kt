@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 
 fun Collection<ExpenditureInvestmentBreakdownLine>.fillInCurrent(current: Map<Long, ExpenditureInvestmentCurrentWithReIncluded>) = apply {

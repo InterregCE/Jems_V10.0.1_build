@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 
 fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCostCategory(
     totalsFromAF = BudgetCostsCalculationResultFull(
@@ -44,6 +44,30 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         lumpSum = lumpSumPreviouslyReported,
         unitCost = unitCostPreviouslyReported,
         sum = sumPreviouslyReported,
+    ),
+    currentVerified = BudgetCostsCalculationResultFull(
+        staff = staffCurrentVerified,
+        office = officeCurrentVerified,
+        travel = travelCurrentVerified,
+        external = externalCurrentVerified,
+        equipment = equipmentCurrentVerified,
+        infrastructure = infrastructureCurrentVerified,
+        other = otherCurrentVerified,
+        lumpSum = lumpSumCurrentVerified,
+        unitCost = unitCostCurrentVerified,
+        sum = sumCurrentVerified,
+    ),
+    previouslyVerified = BudgetCostsCalculationResultFull(
+        staff = staffPreviouslyVerified,
+        office = officePreviouslyVerified,
+        travel = travelPreviouslyVerified,
+        external = externalPreviouslyVerified,
+        equipment = equipmentPreviouslyVerified,
+        infrastructure = infrastructurePreviouslyVerified,
+        other = otherPreviouslyVerified,
+        lumpSum = lumpSumPreviouslyVerified,
+        unitCost = unitCostPreviouslyVerified,
+        sum = sumPreviouslyVerified,
     )
 )
 

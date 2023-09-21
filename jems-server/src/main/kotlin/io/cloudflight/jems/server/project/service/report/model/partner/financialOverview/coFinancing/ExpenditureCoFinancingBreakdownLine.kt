@@ -16,4 +16,5 @@ data class ExpenditureCoFinancingBreakdownLine(
     override var remainingBudget: BigDecimal = BigDecimal.ZERO,
     val previouslyValidated: BigDecimal,
     val previouslyPaid: BigDecimal,
+
 ) : BreakdownLine

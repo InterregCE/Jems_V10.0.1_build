@@ -2,10 +2,11 @@ package io.cloudflight.jems.server.project.repository.report.project.financialOv
 
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryCurrentlyReported
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -24,9 +25,15 @@ class ProjectReportCertificateCostCategoryPersistenceProvider(
             .toModel()
 
     @Transactional(readOnly = true)
-    override fun getCostCategoriesCumulative(reportIds: Set<Long>) = CertificateCostCategoryPreviouslyReported(
-        certificateCostCategoryRepository.findCumulativeForReportIds(reportIds)
-    )
+    override fun getCostCategoriesCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>
+    ): CertificateCostCategoryPrevious {
+        return CertificateCostCategoryPrevious(
+            previouslyReported = certificateCostCategoryRepository.findCumulativeForReportIds(submittedReportIds),
+            previouslyVerified = certificateCostCategoryRepository.findCumulativeVerifiedForReportIds(finalizedReportIds)
+        )
+    }
+
+
 
     @Transactional(readOnly = true)
     override fun getCostCategoriesPerPartner(projectId: Long, reportId: Long): List<PerPartnerCostCategoryBreakdownLine> {
@@ -53,6 +60,27 @@ class ProjectReportCertificateCostCategoryPersistenceProvider(
                 lumpSumCurrent = currentlyReported.currentlyReported.lumpSum
                 unitCostCurrent = currentlyReported.currentlyReported.unitCost
                 sumCurrent = currentlyReported.currentlyReported.sum
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerification(
+        projectId: Long,
+        reportId: Long,
+        currentVerified: BudgetCostsCalculationResultFull
+    ) {
+        certificateCostCategoryRepository
+            .findFirstByReportEntityProjectIdAndReportEntityId(projectId = projectId, reportId = reportId).apply {
+                staffCurrentVerified = currentVerified.staff
+                officeCurrentVerified = currentVerified.office
+                travelCurrentVerified = currentVerified.travel
+                externalCurrentVerified = currentVerified.external
+                equipmentCurrentVerified = currentVerified.equipment
+                infrastructureCurrentVerified = currentVerified.infrastructure
+                otherCurrentVerified = currentVerified.other
+                lumpSumCurrentVerified = currentVerified.lumpSum
+                unitCostCurrentVerified = currentVerified.unitCost
+                sumCurrentVerified = currentVerified.sum
             }
     }
 }

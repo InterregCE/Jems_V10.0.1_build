@@ -10,4 +10,6 @@ data class CertificateCostCategoryBreakdownLine(
     override var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     override var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
     override var remainingBudget: BigDecimal = BigDecimal.ZERO,
+    var currentVerified: BigDecimal = BigDecimal.ZERO,
+    var previouslyVerified: BigDecimal = BigDecimal.ZERO,
 ) : BreakdownLine

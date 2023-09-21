@@ -6,6 +6,10 @@ import java.math.BigDecimal
 interface ProjectReportCertificateLumpSumPersistence {
 
     fun getLumpSums(projectId: Long, reportId: Long): List<CertificateLumpSumBreakdownLine>
-    fun getLumpSumCumulative(reportIds: Set<Long>): Map<Int, BigDecimal>
+
+    fun getReportedLumpSumCumulative(reportIds: Set<Long>): Map<Int, BigDecimal>
+
+    fun getVerifiedLumpSumCumulative(reportIds: Set<Long>): Map<Int, BigDecimal>
+
     fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Int, BigDecimal>)
 }

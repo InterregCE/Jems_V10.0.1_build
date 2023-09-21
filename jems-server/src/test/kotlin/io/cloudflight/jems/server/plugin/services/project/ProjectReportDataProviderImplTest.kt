@@ -96,12 +96,12 @@ import io.cloudflight.jems.server.project.service.report.project.workPlan.Projec
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectReportDataProviderImplTest : UnitTest() {
 
@@ -753,7 +753,9 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             currentReport = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
-            remainingBudget = BigDecimal.valueOf(5)
+            remainingBudget = BigDecimal.valueOf(5),
+            previouslyVerified = BigDecimal.ONE,
+            currentVerified = BigDecimal.ONE
         )
         private val expectedInvestmentBreakDownLine = CertificateInvestmentBreakdownLineData(
             reportInvestmentId = 1L,
@@ -791,7 +793,9 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
             remainingBudget = BigDecimal.valueOf(5),
-            previouslyPaid = BigDecimal.ONE
+            previouslyPaid = BigDecimal.ONE,
+            previouslyVerified = BigDecimal.ONE,
+            currentVerified = BigDecimal.ONE
         )
         private val expectedLumpSumBreakdownLine = CertificateLumpSumBreakdownLineData(
             reportLumpSumId = 1L,
@@ -828,6 +832,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
             remainingBudget = BigDecimal.valueOf(5),
+            previouslyVerified = BigDecimal.ONE,
+            currentVerified = BigDecimal.ONE
         )
         private val expectedUnitCostBreakdownLine = CertificateUnitCostBreakdownLineData(
             reportUnitCostId = 1L,

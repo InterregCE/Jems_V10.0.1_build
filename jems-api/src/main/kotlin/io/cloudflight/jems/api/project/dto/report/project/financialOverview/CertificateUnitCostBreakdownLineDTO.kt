@@ -13,5 +13,7 @@ data class CertificateUnitCostBreakdownLineDTO(
     val currentReport: BigDecimal,
     val totalReportedSoFar: BigDecimal,
     val totalReportedSoFarPercentage: BigDecimal,
+    val previouslyVerified: BigDecimal,
+    val currentVerified: BigDecimal,
     val remainingBudget: BigDecimal,
 )

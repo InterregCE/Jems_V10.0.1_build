@@ -6,5 +6,6 @@ data class ProjectReportUnitCostBase (
     val unitCostId: Long,
     var numberOfUnits: BigDecimal,
     var totalCost: BigDecimal,
-    var previouslyReported: BigDecimal
+    var previouslyReported: BigDecimal,
+    var previouslyVerified: BigDecimal,
 )

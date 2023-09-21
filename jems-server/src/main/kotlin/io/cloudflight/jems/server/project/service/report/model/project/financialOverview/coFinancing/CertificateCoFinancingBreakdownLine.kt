@@ -10,8 +10,8 @@ data class CertificateCoFinancingBreakdownLine(
     override val previouslyReported: BigDecimal,
     override var currentReport: BigDecimal,
 
-    val previouslyVerified: BigDecimal,
-    var currentVerified: BigDecimal,
+    var previouslyVerified: BigDecimal = BigDecimal.ZERO,
+    var currentVerified: BigDecimal = BigDecimal.ZERO,
 
     override var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     override var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,

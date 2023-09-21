@@ -21,6 +21,11 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
             .toModel()
 
     @Transactional(readOnly = true)
+    override fun getCostCategoriesFor(reportIds: Set<Long>): Map<Long, ReportExpenditureCostCategory> =
+        expenditureCostCategoryRepository.findAllByReportEntityIdIn(reportIds).associateBy { it.reportEntity.id }
+            .mapValues { it.value.toModel() }
+
+    @Transactional(readOnly = true)
     override fun getCostCategoriesCumulative(reportIds: Set<Long>, finalizedReportIds: Set<Long>) = ExpenditureCostCategoryPreviouslyReportedWithParked(
         previouslyReported = expenditureCostCategoryRepository.findCumulativeForReportIds(reportIds),
         previouslyReportedParked = expenditureCostCategoryRepository.findParkedCumulativeForReportIds(reportIds),

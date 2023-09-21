@@ -6,20 +6,25 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ProjectReportCertificateCostCategoryPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
+import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.calculateSourcesAndSplits
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.getPartnerReportFinancialData.GetPartnerReportFinancialData
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.sumUp
+import io.cloudflight.jems.server.project.service.report.project.verification.toIdentifiers
+import io.cloudflight.jems.server.project.service.report.project.verification.toVerification
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,10 +36,12 @@ class FinalizeVerificationProjectReport(
     private val auditPublisher: ApplicationEventPublisher,
     private val expenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence,
     private val projectReportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence,
+    private val projectReportCertificateCostCategoryPersistenceProvider: ProjectReportCertificateCostCategoryPersistenceProvider,
     private val projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence,
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
     private val paymentRegularPersistence: PaymentPersistence,
     private val partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
@@ -43,9 +50,10 @@ class FinalizeVerificationProjectReport(
     override fun finalizeVerification(reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
         validateReportIsInVerification(report)
+        val projectReportVerificationExpenditures = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId)
 
         val financialData = calculateSourcesAndSplits(
-            verification = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId),
+            verification = projectReportVerificationExpenditures,
             availableFundsResolver = { certificateId -> partnerReportCoFinancingPersistence.getAvailableFunds(certificateId) },
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
@@ -55,6 +63,18 @@ class FinalizeVerificationProjectReport(
             projectId = report.projectId,
             reportId = reportId,
             afterVerification = financialData.sumUp().totalLineToColumn()
+        )
+
+
+        val expendituresByCertificate = projectReportVerificationExpenditures.groupBy({ it.toIdentifiers() }, { it.toVerification() })
+        val budgetOptionsByCertificate =
+            reportExpenditureCostCategoryPersistence.getCostCategoriesFor(expendituresByCertificate.keys.mapTo(HashSet()) { it.partnerReportId })
+                .mapValues { it.value.options }
+
+        projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(
+            projectId = report.projectId,
+            reportId = reportId,
+            currentVerified = expendituresByCertificate.calculateCostCategoriesCurrentVerified(budgetOptionsByCertificate)
         )
 
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)

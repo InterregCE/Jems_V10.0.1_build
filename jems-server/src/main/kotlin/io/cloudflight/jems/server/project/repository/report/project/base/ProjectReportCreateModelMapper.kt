@@ -222,6 +222,8 @@ fun ProjectReportInvestment.toEntity(
     total = total,
     current = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
+    previouslyVerified = previouslyVerified,
+    currentVerified = BigDecimal.ZERO,
 ).apply {
     translatedValues.addAll(
         combineInvestmentTranslatedValues(this, title)

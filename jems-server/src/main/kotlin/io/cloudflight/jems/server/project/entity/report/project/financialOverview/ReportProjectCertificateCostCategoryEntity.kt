@@ -55,4 +55,26 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull val unitCostPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
+    @field:NotNull val staffPreviouslyVerified: BigDecimal,
+    @field:NotNull val officePreviouslyVerified: BigDecimal,
+    @field:NotNull val travelPreviouslyVerified: BigDecimal,
+    @field:NotNull val externalPreviouslyVerified: BigDecimal,
+    @field:NotNull val equipmentPreviouslyVerified: BigDecimal,
+    @field:NotNull val infrastructurePreviouslyVerified: BigDecimal,
+    @field:NotNull val otherPreviouslyVerified: BigDecimal,
+    @field:NotNull val lumpSumPreviouslyVerified: BigDecimal,
+    @field:NotNull val unitCostPreviouslyVerified: BigDecimal,
+    @field:NotNull val sumPreviouslyVerified: BigDecimal,
+
+    @field:NotNull var staffCurrentVerified: BigDecimal,
+    @field:NotNull var officeCurrentVerified: BigDecimal,
+    @field:NotNull var travelCurrentVerified: BigDecimal,
+    @field:NotNull var externalCurrentVerified: BigDecimal,
+    @field:NotNull var equipmentCurrentVerified: BigDecimal,
+    @field:NotNull var infrastructureCurrentVerified: BigDecimal,
+    @field:NotNull var otherCurrentVerified: BigDecimal,
+    @field:NotNull var lumpSumCurrentVerified: BigDecimal,
+    @field:NotNull var unitCostCurrentVerified: BigDecimal,
+    @field:NotNull var sumCurrentVerified: BigDecimal,
+
     ) : Serializable

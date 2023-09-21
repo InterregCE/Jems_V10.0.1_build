@@ -16,7 +16,8 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 })
 export class ProjectReportCostCategoryComponent implements OnChanges {
 
-  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'previouslyVerified', 'currentVerified', 'remainingBudget'];
+  verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 
   @Input()
@@ -24,7 +25,7 @@ export class ProjectReportCostCategoryComponent implements OnChanges {
   @Input()
   allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
   @Input()
-  isCertified = false;
+  isVerified = false;
 
   dataSource: MatTableDataSource<CertificateLine> = new MatTableDataSource([]);
 
@@ -49,7 +50,8 @@ export class ProjectReportCostCategoryComponent implements OnChanges {
       ...(this.allowedCostCategories.get('UnitCost') ?
         [{ ...this.breakdown.unitCost, translation: 'project.partner.budget.unitCosts'}] : []),
     ];
-    this.displayedColumns = [...this.columnsAvailable];
+    this.displayedColumns = [...this.columnsAvailable]
+        .filter(column => this.isVerified || !this.verifiedColumns.includes(column));
   }
 
 }

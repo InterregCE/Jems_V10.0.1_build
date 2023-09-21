@@ -70,9 +70,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -80,6 +77,9 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class CreateProjectReportTest : UnitTest() {
 
@@ -283,6 +283,30 @@ internal class CreateProjectReportTest : UnitTest() {
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
                     sum = BigDecimal.valueOf(197),
+                ),
+                currentVerified = BudgetCostsCalculationResultFull(
+                    staff = BigDecimal.valueOf(106),
+                    office = BigDecimal.valueOf(116),
+                    travel = BigDecimal.valueOf(126),
+                    external = BigDecimal.valueOf(136),
+                    equipment = BigDecimal.valueOf(146),
+                    infrastructure = BigDecimal.valueOf(156),
+                    other = BigDecimal.valueOf(166),
+                    lumpSum = BigDecimal.valueOf(176),
+                    unitCost = BigDecimal.valueOf(186),
+                    sum = BigDecimal.valueOf(196),
+                ),
+                previouslyVerified = BudgetCostsCalculationResultFull(
+                    staff = BigDecimal.valueOf(107),
+                    office = BigDecimal.valueOf(117),
+                    travel = BigDecimal.valueOf(127),
+                    external = BigDecimal.valueOf(137),
+                    equipment = BigDecimal.valueOf(147),
+                    infrastructure = BigDecimal.valueOf(157),
+                    other = BigDecimal.valueOf(167),
+                    lumpSum = BigDecimal.valueOf(177),
+                    unitCost = BigDecimal.valueOf(187),
+                    sum = BigDecimal.valueOf(197),
                 )
             ),
             availableLumpSums = listOf(
@@ -292,7 +316,8 @@ internal class CreateProjectReportTest : UnitTest() {
                     period = 1,
                     total = BigDecimal.TEN,
                     previouslyReported = BigDecimal.ONE,
-                    previouslyPaid = BigDecimal.ZERO
+                    previouslyPaid = BigDecimal.ZERO,
+                    previouslyVerified = BigDecimal.ONE,
                 )
             ),
             unitCosts = setOf(
@@ -300,7 +325,8 @@ internal class CreateProjectReportTest : UnitTest() {
                     unitCostId = 1L,
                     numberOfUnits = BigDecimal.ONE,
                     totalCost = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE
+                    previouslyReported = BigDecimal.ONE,
+                    previouslyVerified = BigDecimal.ONE,
                 )
             ),
             investments = listOf(
@@ -311,7 +337,8 @@ internal class CreateProjectReportTest : UnitTest() {
                     title = emptySet(),
                     deactivated = false,
                     total = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE
+                    previouslyReported = BigDecimal.ONE,
+                    previouslyVerified = BigDecimal.ONE,
                 )
             )
         )
@@ -502,6 +529,30 @@ internal class CreateProjectReportTest : UnitTest() {
                         unitCost = BigDecimal.valueOf(187),
                         sum = BigDecimal.valueOf(197),
                     ),
+                    currentVerified = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(106),
+                        office = BigDecimal.valueOf(116),
+                        travel = BigDecimal.valueOf(126),
+                        external = BigDecimal.valueOf(136),
+                        equipment = BigDecimal.valueOf(146),
+                        infrastructure = BigDecimal.valueOf(156),
+                        other = BigDecimal.valueOf(166),
+                        lumpSum = BigDecimal.valueOf(176),
+                        unitCost = BigDecimal.valueOf(186),
+                        sum = BigDecimal.valueOf(196),
+                    ),
+                    previouslyVerified = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(107),
+                        office = BigDecimal.valueOf(117),
+                        travel = BigDecimal.valueOf(127),
+                        external = BigDecimal.valueOf(137),
+                        equipment = BigDecimal.valueOf(147),
+                        infrastructure = BigDecimal.valueOf(157),
+                        other = BigDecimal.valueOf(167),
+                        lumpSum = BigDecimal.valueOf(177),
+                        unitCost = BigDecimal.valueOf(187),
+                        sum = BigDecimal.valueOf(197),
+                    )
                 ),
                 availableLumpSums = listOf(
                     ProjectReportLumpSum(
@@ -510,7 +561,8 @@ internal class CreateProjectReportTest : UnitTest() {
                         period = 1,
                         total = BigDecimal.TEN,
                         previouslyReported = BigDecimal.ONE,
-                        previouslyPaid = BigDecimal.ZERO
+                        previouslyPaid = BigDecimal.ZERO,
+                        previouslyVerified = BigDecimal.ONE,
                     )
                 ),
                 unitCosts = setOf(
@@ -518,7 +570,8 @@ internal class CreateProjectReportTest : UnitTest() {
                         unitCostId = 1L,
                         numberOfUnits = BigDecimal.ONE,
                         totalCost = BigDecimal.TEN,
-                        previouslyReported = BigDecimal.ONE
+                        previouslyReported = BigDecimal.ONE,
+                        previouslyVerified = BigDecimal.ONE,
                     )
                 ),
                 investments = listOf(
@@ -529,7 +582,8 @@ internal class CreateProjectReportTest : UnitTest() {
                         title = emptySet(),
                         deactivated = false,
                         total = BigDecimal.TEN,
-                        previouslyReported = BigDecimal.ONE
+                        previouslyReported = BigDecimal.ONE,
+                        previouslyVerified = BigDecimal.ONE,
                     )
                 )
             ),

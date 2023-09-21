@@ -19,12 +19,19 @@ export class ProjectBreakdownInvestmentComponent implements OnChanges {
   @Input()
   breakdown: CertificateInvestmentBreakdownDTO;
 
+  @Input()
+  isVerified = false;
+
   dataSource: MatTableDataSource<CertificateInvestmentBreakdownLineDTO> = new MatTableDataSource([]);
 
-  displayedColumns = ['investmentNr', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  columnsAvailable = ['investmentNr', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'previouslyVerified', 'currentVerified', 'remainingBudget'];
+  verifiedColumns = ['currentVerified'];
+  displayedColumns = this.columnsAvailable;
 
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = this.breakdown.investments;
+    this.displayedColumns = [...this.columnsAvailable]
+        .filter(column => this.isVerified || !this.verifiedColumns.includes(column));
   }
 }
 

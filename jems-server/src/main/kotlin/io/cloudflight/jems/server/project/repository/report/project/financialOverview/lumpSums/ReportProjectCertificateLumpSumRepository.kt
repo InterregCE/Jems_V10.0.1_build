@@ -24,5 +24,18 @@ interface ReportProjectCertificateLumpSumRepository :
         WHERE lumpSum.reportEntity.id IN :reportIds
         GROUP BY lumpSum.orderNr
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Int, BigDecimal>>
+    fun findReportedCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Int, BigDecimal>>
+
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            lumpSum.orderNr,
+            COALESCE(SUM(lumpSum.currentVerified), 0)
+        )
+        FROM #{#entityName} lumpSum
+        WHERE lumpSum.reportEntity.id IN :reportIds
+        GROUP BY lumpSum.orderNr
+    """)
+    fun findVerifiedCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Int, BigDecimal>>
+
 }

@@ -217,6 +217,28 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         unitCostPreviouslyReported = previouslyReported.unitCost,
         sumPreviouslyReported = previouslyReported.sum,
 
+        staffPreviouslyVerified = previouslyVerified.staff,
+        officePreviouslyVerified = previouslyVerified.office,
+        travelPreviouslyVerified = previouslyVerified.travel,
+        externalPreviouslyVerified = previouslyVerified.external,
+        equipmentPreviouslyVerified = previouslyVerified.equipment,
+        infrastructurePreviouslyVerified = previouslyVerified.infrastructure,
+        otherPreviouslyVerified = previouslyVerified.other,
+        lumpSumPreviouslyVerified = previouslyVerified.lumpSum,
+        unitCostPreviouslyVerified = previouslyVerified.unitCost,
+        sumPreviouslyVerified = previouslyVerified.sum,
+
+        staffCurrentVerified = ZERO,
+        officeCurrentVerified = ZERO,
+        travelCurrentVerified = ZERO,
+        externalCurrentVerified = ZERO,
+        equipmentCurrentVerified = ZERO,
+        infrastructureCurrentVerified = ZERO,
+        otherCurrentVerified = ZERO,
+        lumpSumCurrentVerified = ZERO,
+        unitCostCurrentVerified = ZERO,
+        sumCurrentVerified = ZERO,
+
         )
 
 fun ProjectReportLumpSum.toEntity(
@@ -230,6 +252,8 @@ fun ProjectReportLumpSum.toEntity(
     total = total,
     current = ZERO,
     previouslyReported = previouslyReported,
+    previouslyVerified = previouslyVerified,
+    currentVerified = ZERO,
     previouslyPaid = previouslyPaid,
 )
 
@@ -242,6 +266,8 @@ fun ProjectReportUnitCostBase.toEntity(
     total = totalCost,
     current = ZERO,
     previouslyReported = previouslyReported,
+    previouslyVerified = previouslyVerified,
+    currentVerified = ZERO,
 )
 
 fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationConclusion(

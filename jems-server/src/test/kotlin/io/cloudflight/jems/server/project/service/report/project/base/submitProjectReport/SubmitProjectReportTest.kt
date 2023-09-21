@@ -112,7 +112,9 @@ internal class SubmitProjectReportTest : UnitTest() {
         private val certificateCostCategory = ReportCertificateCostCategory(
             totalsFromAF = budgetCostFull,
             currentlyReported = budgetCostFull,
-            previouslyReported = budgetCostFull
+            previouslyReported = budgetCostFull,
+            currentVerified = budgetCostFull,
+            previouslyVerified = budgetCostFull
         )
 
         private val emptyReportResultPrinciple = ProjectReportResultPrinciple(
