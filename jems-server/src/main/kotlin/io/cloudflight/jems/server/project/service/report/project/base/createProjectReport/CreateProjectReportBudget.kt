@@ -76,7 +76,6 @@ class CreateProjectReportBudget(
             .getCostCategoriesCumulative(submittedReportIds = submittedReportIds, finalizedReportIds = finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
 
-
         val totalFromAF = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
             .first { it.partner === null }
         val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)

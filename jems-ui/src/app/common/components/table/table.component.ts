@@ -15,7 +15,7 @@ import {ActivatedRoute, Router, UrlSerializer} from '@angular/router';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {LongDateFormatKey} from 'moment';
-import {MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from '@angular/material/table';
 
 @UntilDestroy()
 

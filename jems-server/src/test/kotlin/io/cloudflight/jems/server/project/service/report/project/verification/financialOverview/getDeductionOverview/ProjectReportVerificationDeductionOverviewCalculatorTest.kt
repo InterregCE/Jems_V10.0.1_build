@@ -261,6 +261,8 @@ class ProjectReportVerificationDeductionOverviewCalculatorTest: UnitTest() {
             every { expenditureItemMock.parkingMetadata } returns mockk<ExpenditureParkingMetadata>()
             every { expenditureItemMock.declaredAmountAfterSubmission } returns null
             every { expenditureItemMock.lumpSum } returns null
+            every { expenditureItemMock.unitCost } returns null
+            every { expenditureItemMock.investment } returns null
 
             every { expenditureItemMock.costCategory } returns reportCostCategory
             every { expenditureItemMock.getCategory() } returns budgetCostCategory

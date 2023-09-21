@@ -79,6 +79,7 @@ fun ProjectReportVerificationExpenditureLine.toVerification() = ExpenditureVerif
     parked = parked,
     deductedByJs = deductedByJs,
     deductedByMa = deductedByMa,
+    typologyOfErrorId = typologyOfErrorId,
 )
 
 private fun BudgetCostsCalculationResultFull.plus(adder: BudgetCostsCalculationResultFull) =
