@@ -47,7 +47,18 @@ class ProjectReportCertificateInvestmentPersistenceProvider(
             .findByReportEntityProjectIdAndReportEntityIdOrderByIdAsc(projectId = projectId, reportId = reportId)
             .forEach {
                 if (currentValues.containsKey(it.investmentId)) {
-                    it.current = currentValues.get(it.investmentId)!!
+                    it.current = currentValues[it.investmentId]!!
+                }
+            }
+    }
+
+    @Transactional
+    override fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>) {
+        reportInvestmentRepository
+            .findByReportEntityProjectIdAndReportEntityIdOrderByIdAsc(projectId = projectId, reportId = reportId)
+            .forEach {
+                if (verifiedValues.containsKey(it.investmentId)) {
+                    it.currentVerified = verifiedValues[it.investmentId]!!
                 }
             }
     }

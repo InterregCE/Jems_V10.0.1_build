@@ -54,4 +54,15 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 }
             }
     }
+
+    @Transactional
+    override fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>) {
+        reportLumpSumRepository
+            .findByReportEntityProjectIdAndReportEntityIdOrderByOrderNrAscIdAsc(projectId = projectId, reportId = reportId)
+            .forEach {
+                if (verifiedValues.containsKey(it.programmeLumpSum.id)) {
+                    it.currentVerified = verifiedValues[it.programmeLumpSum.id]!!
+                }
+            }
+    }
 }

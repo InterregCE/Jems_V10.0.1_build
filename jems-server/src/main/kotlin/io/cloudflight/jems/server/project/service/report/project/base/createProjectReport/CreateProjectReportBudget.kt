@@ -293,8 +293,10 @@ class CreateProjectReportBudget(
         val lumpSumPartnerShare = it.lumpSumContributions.sumOf { contribution -> contribution.amount }
 
         var fromPreviousReported = previouslyReported[it.orderNr] ?: ZERO
+        var fromPreviousVerified = previouslyVerified[it.orderNr] ?: ZERO
         if (it.isReady()) {
             fromPreviousReported += lumpSumPartnerShare
+            fromPreviousVerified += lumpSumPartnerShare
         }
 
         ProjectReportLumpSum(
@@ -304,7 +306,7 @@ class CreateProjectReportBudget(
             total = lumpSumPartnerShare,
             previouslyReported = fromPreviousReported,
             previouslyPaid = previouslyPaid[it.programmeLumpSumId]?.get(it.orderNr) ?: ZERO,
-            previouslyVerified = previouslyVerified[it.orderNr] ?: ZERO
+            previouslyVerified = fromPreviousVerified
         )
     }
 

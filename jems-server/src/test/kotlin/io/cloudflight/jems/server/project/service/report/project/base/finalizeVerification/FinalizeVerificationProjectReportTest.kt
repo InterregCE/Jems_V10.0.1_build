@@ -35,6 +35,9 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.getPartnerReportFinancialData.GetPartnerReportFinancialData
@@ -338,6 +341,15 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
     @MockK
     private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
 
+    @MockK
+    private lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
+
+    @MockK
+    private lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
+
+    @MockK
+    private lateinit var reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence
+
     @InjectMockKs
     lateinit var interactor: FinalizeVerificationProjectReport
 
@@ -381,6 +393,11 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every {  reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(PARTNER_REPORT_ID)) } returns mapOf(PARTNER_REPORT_ID to partner_costs)
         every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
         every { projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
+
+        every { reportCertificateLumpSumPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportInvestmentPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
+
         every { paymentPersistence.saveRegularPayments(PROJECT_REPORT_ID, emptyList()) } returns Unit
 
 

@@ -41,6 +41,8 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
             every { expenditure.declaredAmountAfterSubmission } returns BigDecimal.valueOf(230L)
             every { expenditure.certifiedAmount } returns BigDecimal.valueOf(200L)
             every { expenditure.parkingMetadata } returns null
+            every { expenditure.unitCost } returns null
+            every { expenditure.investment } returns null
             return ProjectReportVerificationExpenditureLine(
                 expenditure = expenditure,
                 partOfVerificationSample = true,
@@ -66,6 +68,8 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
             every { expenditure.declaredAmountAfterSubmission } returns BigDecimal.valueOf(390L)
             every { expenditure.certifiedAmount } returns BigDecimal.valueOf(350L)
             every { expenditure.parkingMetadata } returns null
+            every { expenditure.unitCost } returns null
+            every { expenditure.investment } returns null
             return ProjectReportVerificationExpenditureLine(
                 expenditure = expenditure,
                 partOfVerificationSample = true,
@@ -91,6 +95,8 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
             every { expenditure.declaredAmountAfterSubmission } returns BigDecimal.valueOf(275L)
             every { expenditure.certifiedAmount } returns BigDecimal.valueOf(270L)
             every { expenditure.parkingMetadata } returns mockk()
+            every { expenditure.unitCost } returns null
+            every { expenditure.investment } returns null
             return ProjectReportVerificationExpenditureLine(
                 expenditure = expenditure,
                 partOfVerificationSample = true,

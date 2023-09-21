@@ -12,4 +12,6 @@ interface ProjectReportCertificateInvestmentPersistence {
     fun getVerifiedInvestmentCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
 
     fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Long, BigDecimal>)
+
+    fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>)
 }

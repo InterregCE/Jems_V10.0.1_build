@@ -49,4 +49,15 @@ class ProjectReportCertificateUnitCostPersistenceProvider(
                 }
             }
     }
+
+    @Transactional
+    override fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>) {
+        reportUnitCostRepository
+            .findByReportEntityProjectIdAndReportEntityIdOrderByIdAsc(projectId = projectId, reportId = reportId)
+            .forEach {
+                if (verifiedValues.containsKey(it.programmeUnitCost.id)) {
+                    it.currentVerified = verifiedValues.get(it.programmeUnitCost.id)!!
+                }
+            }
+    }
 }

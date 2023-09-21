@@ -59,6 +59,15 @@
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asMoney }}&nbsp;%</mat-footer-cell>
     </ng-container>
 
+
+    <ng-container matColumnDef="remainingBudget">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.remaining.budget' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.remainingBudget | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="previouslyVerified">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.project.report.financial.breakdown.previouslyVerified' | translate }}</span>
@@ -74,14 +83,6 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.currentVerified | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.currentVerified | asMoney }}</mat-footer-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="remainingBudget">
-        <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.remaining.budget' | translate }}</span>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right">{{ line.remainingBudget | asMoney }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

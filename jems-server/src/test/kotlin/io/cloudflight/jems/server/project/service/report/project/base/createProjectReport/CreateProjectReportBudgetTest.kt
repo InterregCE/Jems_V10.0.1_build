@@ -385,7 +385,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         total = BigDecimal.valueOf(10_002_000L),
         previouslyReported = BigDecimal.valueOf(10_002_000L),
         previouslyPaid = BigDecimal.valueOf(6789L, 2),
-        previouslyVerified = BigDecimal.valueOf(10_002_000L),
+        previouslyVerified = BigDecimal.valueOf(20_004_000L),
     )
 
     private val expectedUnitCost = ProjectReportUnitCostBase(

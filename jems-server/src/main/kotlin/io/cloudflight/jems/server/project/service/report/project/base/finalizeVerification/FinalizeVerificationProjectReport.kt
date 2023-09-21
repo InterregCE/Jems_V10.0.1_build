@@ -12,10 +12,15 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureIdentifiers
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
 import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
@@ -28,6 +33,7 @@ import io.cloudflight.jems.server.project.service.report.project.verification.to
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Service
@@ -42,6 +48,9 @@ class FinalizeVerificationProjectReport(
     private val paymentRegularPersistence: PaymentPersistence,
     private val partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+    private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence,
+    private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
+    private val reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
@@ -75,6 +84,24 @@ class FinalizeVerificationProjectReport(
             projectId = report.projectId,
             reportId = reportId,
             currentVerified = expendituresByCertificate.calculateCostCategoriesCurrentVerified(budgetOptionsByCertificate)
+        )
+
+        reportCertificateLumpSumPersistence.updateCurrentlyVerifiedValues(
+            projectId = report.projectId,
+            reportId = reportId,
+            verifiedValues = expendituresByCertificate.getAfterVerificationForLumpSums()
+        )
+
+        reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(
+            projectId = report.projectId,
+            reportId = reportId,
+            verifiedValues = expendituresByCertificate.getAfterVerificationForUnitCosts()
+        )
+
+        reportInvestmentPersistence.updateCurrentlyVerifiedValues(
+            projectId = report.projectId,
+            reportId = reportId,
+            verifiedValues = expendituresByCertificate.getAfterVerificationForInvestments()
         )
 
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
@@ -130,5 +157,22 @@ class FinalizeVerificationProjectReport(
 
 
     private fun List<PartnerCertificateFundSplit>.getTotalPaymentForFund() = this.sumOf { it.value }
+
+
+    private fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.getAfterVerificationForLumpSums(): Map<Long, BigDecimal> {
+        return this.values.flatten().filter { it.lumpSumId != null }.groupBy { it.lumpSumId!! }
+            .mapValues { it.value.sumOf { expenditure -> expenditure.amountAfterVerification } }
+    }
+
+    private fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.getAfterVerificationForUnitCosts(): Map<Long, BigDecimal> {
+        return this.values.flatten().filter { it.unitCostId != null }.groupBy { it.unitCostId!! }
+            .mapValues { it.value.sumOf { expenditure -> expenditure.amountAfterVerification } }
+    }
+
+    private fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.getAfterVerificationForInvestments(): Map<Long, BigDecimal> {
+        return this.values.flatten().filter { it.investmentId != null }.groupBy { it.investmentId!! }
+            .mapValues { it.value.sumOf { expenditure -> expenditure.amountAfterVerification } }
+    }
+
 
 }
