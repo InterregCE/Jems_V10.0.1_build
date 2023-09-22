@@ -13,7 +13,7 @@ interface ReportProjectCertificateLumpSumRepository :
     fun findByReportEntityProjectIdAndReportEntityIdOrderByOrderNrAscIdAsc(
         projectId: Long,
         reportId: Long,
-    ): MutableList<ReportProjectCertificateLumpSumEntity>
+    ): List<ReportProjectCertificateLumpSumEntity>
 
     @Query("""
         SELECT new kotlin.Pair(

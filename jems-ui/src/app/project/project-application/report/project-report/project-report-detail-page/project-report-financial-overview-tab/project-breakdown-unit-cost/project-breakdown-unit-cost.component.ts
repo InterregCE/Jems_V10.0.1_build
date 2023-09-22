@@ -16,7 +16,7 @@ import { Alert } from '@common/components/forms/alert';
 })
 export class ProjectBreakdownUnitCostComponent implements OnChanges {
   Alert = Alert;
-  columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'previouslyVerified', 'currentVerified', 'remainingBudget'];
+  columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyVerified', 'currentVerified'];
   verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 

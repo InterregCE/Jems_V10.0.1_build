@@ -24,7 +24,7 @@ export class ProjectBreakdownInvestmentComponent implements OnChanges {
 
   dataSource: MatTableDataSource<CertificateInvestmentBreakdownLineDTO> = new MatTableDataSource([]);
 
-  columnsAvailable = ['investmentNr', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'previouslyVerified', 'currentVerified', 'remainingBudget'];
+  columnsAvailable = ['investmentNr', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyVerified', 'currentVerified'];
   verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 

@@ -16,7 +16,7 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 })
 export class ProjectReportCostCategoryComponent implements OnChanges {
 
-  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'previouslyVerified', 'currentVerified', 'remainingBudget'];
+  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyVerified', 'currentVerified'];
   verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 

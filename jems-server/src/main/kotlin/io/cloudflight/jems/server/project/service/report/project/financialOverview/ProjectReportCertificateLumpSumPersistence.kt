@@ -13,5 +13,5 @@ interface ProjectReportCertificateLumpSumPersistence {
 
     fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Int, BigDecimal>)
 
-    fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>)
+    fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Int, BigDecimal>)
 }
