@@ -6,7 +6,6 @@
 .gradle
 build
 out
-esdata
 
 node_modules
 coverage
