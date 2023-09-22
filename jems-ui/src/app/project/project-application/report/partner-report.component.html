@@ -90,7 +90,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let report">
                 <span *ngIf="report.periodDetail"
-                      matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
+                      matTooltip="{{ 'project.application.partner.report.reporting.period.tooltip' | translate }} {{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
                     {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
                     periodNumber: report.periodDetail.number,
                     start: report.periodDetail.start,
