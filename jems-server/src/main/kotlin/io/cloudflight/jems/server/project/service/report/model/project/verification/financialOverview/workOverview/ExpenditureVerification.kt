@@ -8,6 +8,9 @@ import java.math.BigDecimal
 data class ExpenditureVerification(
     override val id: Long?,
     override var lumpSumId: Long?,
+    val lumpSumOrderNr: Int?,
+    val unitCostId: Long?,
+    val investmentId: Long?,
     override val costCategory: ReportBudgetCategory,
     override var declaredAmountAfterSubmission: BigDecimal?,
     override val parkingMetadata: ExpenditureParkingMetadata?,

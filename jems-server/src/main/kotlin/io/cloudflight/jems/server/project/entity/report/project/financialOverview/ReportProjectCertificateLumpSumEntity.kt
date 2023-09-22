@@ -35,5 +35,7 @@ class ReportProjectCertificateLumpSumEntity(
     @field:NotNull val total: BigDecimal,
     @field:NotNull var current: BigDecimal,
     @field:NotNull val previouslyReported: BigDecimal,
+    @field:NotNull val previouslyVerified: BigDecimal,
+    @field:NotNull var currentVerified: BigDecimal,
     @field:NotNull val previouslyPaid: BigDecimal,
 )

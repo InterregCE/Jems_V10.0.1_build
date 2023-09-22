@@ -47,6 +47,9 @@ internal class GetReportCertificateUnitCostBreakdownCalculatorTest : UnitTest() 
             totalEligibleBudget = BigDecimal.valueOf(52),
             previouslyReported = BigDecimal.valueOf(23),
             currentReport = BigDecimal.valueOf(39, 1),
+            previouslyVerified =  BigDecimal.valueOf(23),
+            currentVerified = BigDecimal.ZERO
+
         )
 
         private val unitCost_2 = CertificateUnitCostBreakdownLine(
@@ -55,7 +58,9 @@ internal class GetReportCertificateUnitCostBreakdownCalculatorTest : UnitTest() 
             name = setOf(InputTranslation(SystemLanguage.MK, "name 2 MK")),
             totalEligibleBudget = BigDecimal.valueOf(18),
             previouslyReported = BigDecimal.valueOf(7),
-            currentReport = BigDecimal.valueOf(11, 1)
+            currentReport = BigDecimal.valueOf(11, 1),
+            previouslyVerified =  BigDecimal.valueOf(7),
+            currentVerified = BigDecimal.ZERO
         )
 
         private val expectedDraftBreakdown = CertificateUnitCostBreakdown(
@@ -70,6 +75,8 @@ internal class GetReportCertificateUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalReportedSoFar = BigDecimal.valueOf(23),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4423, 2),
                     remainingBudget = BigDecimal.valueOf(29),
+                    previouslyVerified =  BigDecimal.valueOf(23),
+                    currentVerified = BigDecimal.ZERO
                 ),
                 CertificateUnitCostBreakdownLine(
                     reportUnitCostId = 2L,
@@ -81,6 +88,8 @@ internal class GetReportCertificateUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalReportedSoFar = BigDecimal.valueOf(7),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
+                    previouslyVerified =  BigDecimal.valueOf(7),
+                    currentVerified = BigDecimal.ZERO
                 ),
             ),
             total = CertificateUnitCostBreakdownLine(
@@ -93,6 +102,8 @@ internal class GetReportCertificateUnitCostBreakdownCalculatorTest : UnitTest() 
                 totalReportedSoFar = BigDecimal.valueOf(30),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(4286, 2),
                 remainingBudget = BigDecimal.valueOf(40),
+                previouslyVerified =  BigDecimal.valueOf(30),
+                currentVerified = BigDecimal.ZERO
             ),
         )
     }

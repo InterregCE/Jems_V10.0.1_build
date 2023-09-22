@@ -8,5 +8,6 @@ data class ProjectReportLumpSum(
     val period: Int?,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyVerified: BigDecimal,
     val previouslyPaid: BigDecimal,
 )

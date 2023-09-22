@@ -9,10 +9,10 @@ import io.cloudflight.jems.server.project.repository.report.partner.financialOve
 import io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryCurrentlyReported
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
@@ -71,6 +71,29 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             lumpSumPreviouslyReported = BigDecimal.valueOf(37),
             unitCostPreviouslyReported = BigDecimal.valueOf(38),
             sumPreviouslyReported = BigDecimal.valueOf(39),
+
+            staffCurrentVerified = BigDecimal.valueOf(20),
+            officeCurrentVerified = BigDecimal.valueOf(21),
+            travelCurrentVerified = BigDecimal.valueOf(22),
+            externalCurrentVerified = BigDecimal.valueOf(23),
+            equipmentCurrentVerified = BigDecimal.valueOf(24),
+            infrastructureCurrentVerified = BigDecimal.valueOf(25),
+            otherCurrentVerified = BigDecimal.valueOf(26),
+            lumpSumCurrentVerified = BigDecimal.valueOf(27),
+            unitCostCurrentVerified = BigDecimal.valueOf(28),
+            sumCurrentVerified = BigDecimal.valueOf(29),
+
+            staffPreviouslyVerified = BigDecimal.valueOf(30),
+            officePreviouslyVerified = BigDecimal.valueOf(31),
+            travelPreviouslyVerified = BigDecimal.valueOf(32),
+            externalPreviouslyVerified = BigDecimal.valueOf(33),
+            equipmentPreviouslyVerified = BigDecimal.valueOf(34),
+            infrastructurePreviouslyVerified = BigDecimal.valueOf(35),
+            otherPreviouslyVerified = BigDecimal.valueOf(36),
+            lumpSumPreviouslyVerified = BigDecimal.valueOf(37),
+            unitCostPreviouslyVerified = BigDecimal.valueOf(38),
+            sumPreviouslyVerified = BigDecimal.valueOf(39),
+
         )
 
         private val expenditure = ReportCertificateCostCategory(
@@ -110,6 +133,31 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 unitCost = BigDecimal.valueOf(38),
                 sum = BigDecimal.valueOf(39),
             ),
+            currentVerified = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(20),
+                office = BigDecimal.valueOf(21),
+                travel = BigDecimal.valueOf(22),
+                external = BigDecimal.valueOf(23),
+                equipment = BigDecimal.valueOf(24),
+                infrastructure = BigDecimal.valueOf(25),
+                other = BigDecimal.valueOf(26),
+                lumpSum = BigDecimal.valueOf(27),
+                unitCost = BigDecimal.valueOf(28),
+                sum = BigDecimal.valueOf(29),
+            ),
+            previouslyVerified = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(30),
+                office = BigDecimal.valueOf(31),
+                travel = BigDecimal.valueOf(32),
+                external = BigDecimal.valueOf(33),
+                equipment = BigDecimal.valueOf(34),
+                infrastructure = BigDecimal.valueOf(35),
+                other = BigDecimal.valueOf(36),
+                lumpSum = BigDecimal.valueOf(37),
+                unitCost = BigDecimal.valueOf(38),
+                sum = BigDecimal.valueOf(39),
+            )
+
         )
 
         private val expenditureCurrentlyReportedWithReIncluded = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
@@ -152,6 +200,46 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 unitCost = BigDecimal.valueOf(108),
                 sum = BigDecimal.valueOf(109),
             ),
+        )
+
+        private val expected = CertificateCostCategoryPrevious(
+            previouslyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(100),
+                office = BigDecimal.valueOf(101),
+                travel = BigDecimal.valueOf(102),
+                external = BigDecimal.valueOf(103),
+                equipment = BigDecimal.valueOf(104),
+                infrastructure = BigDecimal.valueOf(105),
+                other = BigDecimal.valueOf(106),
+                lumpSum = BigDecimal.valueOf(107),
+                unitCost = BigDecimal.valueOf(108),
+                sum = BigDecimal.valueOf(109),
+            ),
+            previouslyVerified = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(100),
+                office = BigDecimal.valueOf(101),
+                travel = BigDecimal.valueOf(102),
+                external = BigDecimal.valueOf(103),
+                equipment = BigDecimal.valueOf(104),
+                infrastructure = BigDecimal.valueOf(105),
+                other = BigDecimal.valueOf(106),
+                lumpSum = BigDecimal.valueOf(107),
+                unitCost = BigDecimal.valueOf(108),
+                sum = BigDecimal.valueOf(109),
+            )
+        )
+
+        private val expendituresPreviouslyVerified =  BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(100),
+            office = BigDecimal.valueOf(101),
+            travel = BigDecimal.valueOf(102),
+            external = BigDecimal.valueOf(103),
+            equipment = BigDecimal.valueOf(104),
+            infrastructure = BigDecimal.valueOf(105),
+            other = BigDecimal.valueOf(106),
+            lumpSum = BigDecimal.valueOf(107),
+            unitCost = BigDecimal.valueOf(108),
+            sum = BigDecimal.valueOf(109),
         )
 
         private fun partnerProfile() = ProjectReportSpendingProfileEntity(
@@ -257,7 +345,9 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
     fun getCostCategoriesCumulative() {
         every { certificateCostCategoryRepository.findCumulativeForReportIds(setOf(42L, 43L)) } returns
             expenditurePreviouslyReportedWithParked.previouslyReported
-        assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L))).isEqualTo(expenditurePreviouslyReportedWithParked)
+        every { certificateCostCategoryRepository.findCumulativeVerifiedForReportIds(setOf(45L)) } returns expendituresPreviouslyVerified
+
+        assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L), setOf(45L))).isEqualTo(expected)
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.math.BigDecimal
 class ProjectReportCertificateUnitCostPersistenceProvider(
     private val reportUnitCostRepository: ReportProjectCertificateUnitCostRepository,
 ) : ProjectReportCertificateUnitCostPersistence {
+
     @Transactional(readOnly = true)
     override fun getUnitCosts(projectId: Long, reportId: Long): List<CertificateUnitCostBreakdownLine> =
         reportUnitCostRepository
@@ -24,11 +25,18 @@ class ProjectReportCertificateUnitCostPersistenceProvider(
                 totalEligibleBudget = it.total,
                 previouslyReported = it.previouslyReported,
                 currentReport = it.current,
+                currentVerified = it.currentVerified,
+                previouslyVerified = it.previouslyVerified,
             ) }
 
     @Transactional(readOnly = true)
-    override fun getUnitCostsCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
-        reportUnitCostRepository.findCumulativeForReportIds(reportIds)
+    override fun getReportedUnitCostsCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportUnitCostRepository.findReportedCumulativeForReportIds(reportIds)
+            .associate { Pair(it.first, it.second) }
+
+    @Transactional(readOnly = true)
+    override fun getVerifiedUnitCostsCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportUnitCostRepository.findVerifiedCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, it.second) }
 
     @Transactional
@@ -38,6 +46,17 @@ class ProjectReportCertificateUnitCostPersistenceProvider(
             .forEach {
                 if (currentValues.containsKey(it.programmeUnitCost.id)) {
                     it.current = currentValues.get(it.programmeUnitCost.id)!!
+                }
+            }
+    }
+
+    @Transactional
+    override fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Long, BigDecimal>) {
+        reportUnitCostRepository
+            .findByReportEntityProjectIdAndReportEntityIdOrderByIdAsc(projectId = projectId, reportId = reportId)
+            .forEach {
+                if (verifiedValues.containsKey(it.programmeUnitCost.id)) {
+                    it.currentVerified = verifiedValues.get(it.programmeUnitCost.id)!!
                 }
             }
     }

@@ -18,7 +18,8 @@ import { Alert } from '@common/components/forms/alert';
 export class ProjectBreakdownLumpSumComponent implements OnChanges {
   Alert = Alert;
   columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport',
-    'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
+    'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyVerified', 'currentVerified', 'previouslyPaid'];
+  verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 
   readonly PERIOD_PREPARATION: number = 0;
@@ -30,11 +31,15 @@ export class ProjectBreakdownLumpSumComponent implements OnChanges {
   @Input()
   isCertified = false;
 
+  @Input()
+  isVerified = false;
+
   dataSource: MatTableDataSource<CertificateLumpSumBreakdownLineDTO> = new MatTableDataSource([]);
 
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = this.breakdown.lumpSums;
-    this.displayedColumns = [...this.columnsAvailable];
+    this.displayedColumns = [...this.columnsAvailable]
+        .filter(column => this.isVerified || !this.verifiedColumns.includes(column));
   }
 
 }

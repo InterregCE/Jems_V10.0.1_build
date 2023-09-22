@@ -33,15 +33,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentsBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown.GetReportCertificateUnitCostsBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
-import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -115,6 +112,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
             remainingBudget = BigDecimal.ONE,
+            currentVerified = BigDecimal.ONE,
+            previouslyVerified = BigDecimal.ZERO
         )
 
         private val dummyCostCategory = CertificateCostCategoryBreakdown(
@@ -137,6 +136,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
             remainingBudget = BigDecimal.ONE,
+            currentVerified = BigDecimal.ONE,
+            previouslyVerified = BigDecimal.ZERO
         )
 
         private val expectedDummyCostCategory = CertificateCostCategoryBreakdownDTO(
@@ -294,7 +295,10 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
-            previouslyPaid = BigDecimal.valueOf(7)
+            previouslyPaid = BigDecimal.valueOf(7),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
+
         )
 
         private val dummyLumpSum = CertificateLumpSumBreakdown(
@@ -314,7 +318,9 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
-            previouslyPaid = BigDecimal.valueOf(7)
+            previouslyPaid = BigDecimal.valueOf(7),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
         )
 
         private val expectedDummyLumpSum = CertificateLumpSumBreakdownDTO(
@@ -332,6 +338,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
         )
 
         private val dummyUnitCost = CertificateUnitCostBreakdown(
@@ -349,6 +357,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
         )
 
         private val expectedDummyUnitCost = CertificateUnitCostBreakdownDTO(
@@ -369,6 +379,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
         )
 
         private val dummyInvestment = CertificateInvestmentBreakdown(
@@ -389,6 +401,8 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyVerified = BigDecimal.valueOf(2),
+            currentVerified = BigDecimal.valueOf(3)
         )
 
         private val expectedDummyInvestment = CertificateInvestmentBreakdownDTO(

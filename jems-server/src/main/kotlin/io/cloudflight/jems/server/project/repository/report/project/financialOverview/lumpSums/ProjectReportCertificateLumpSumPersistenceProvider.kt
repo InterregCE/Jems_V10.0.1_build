@@ -28,16 +28,21 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 previouslyReported = it.previouslyReported,
                 previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
-                totalReportedSoFar = BigDecimal.ZERO,
-                totalReportedSoFarPercentage = BigDecimal.ZERO,
-                remainingBudget = BigDecimal.ZERO,
+                previouslyVerified = it.previouslyVerified,
+                currentVerified = it.currentVerified,
             ) }
 
 
     @Transactional(readOnly = true)
-    override fun getLumpSumCumulative(reportIds: Set<Long>) =
-        reportLumpSumRepository.findCumulativeForReportIds(reportIds)
+    override fun getReportedLumpSumCumulative(reportIds: Set<Long>) =
+        reportLumpSumRepository.findReportedCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, it.second) }
+
+    @Transactional(readOnly = true)
+    override fun getVerifiedLumpSumCumulative(reportIds: Set<Long>) =
+        reportLumpSumRepository.findVerifiedCumulativeForReportIds(reportIds)
+            .associate { Pair(it.first, it.second) }
+
 
     @Transactional
     override fun updateCurrentlyReportedValues(projectId: Long, reportId: Long, currentValues: Map<Int, BigDecimal>) {
@@ -47,6 +52,16 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 if (currentValues.containsKey(it.orderNr)) {
                     it.current = currentValues.get(it.orderNr)!!
                 }
+            }
+    }
+
+    @Transactional
+    override fun updateCurrentlyVerifiedValues(projectId: Long, reportId: Long, verifiedValues: Map<Int, BigDecimal>) {
+        reportLumpSumRepository
+            .findByReportEntityProjectIdAndReportEntityIdOrderByOrderNrAscIdAsc(projectId = projectId, reportId = reportId)
+            .forEach {
+                if (verifiedValues.containsKey(it.orderNr))
+                    it.currentVerified = verifiedValues[it.orderNr]!!
             }
     }
 }

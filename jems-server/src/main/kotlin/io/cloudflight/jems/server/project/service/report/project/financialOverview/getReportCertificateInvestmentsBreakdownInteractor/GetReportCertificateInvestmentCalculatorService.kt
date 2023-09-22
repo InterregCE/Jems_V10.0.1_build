@@ -69,7 +69,9 @@ class GetReportCertificateInvestmentCalculatorService(
         deactivated = true,
         totalEligibleBudget = BigDecimal.ZERO,
         previouslyReported = BigDecimal.ZERO,
-        currentReport = BigDecimal.ZERO
+        currentReport = BigDecimal.ZERO,
+        previouslyVerified = BigDecimal.ZERO,
+        currentVerified = BigDecimal.ZERO,
     )
 
     fun List<CertificateInvestmentBreakdownLine>.sumUp() =
@@ -77,6 +79,8 @@ class GetReportCertificateInvestmentCalculatorService(
             resultingTotalLine.totalEligibleBudget += lumpSum.totalEligibleBudget
             resultingTotalLine.previouslyReported += lumpSum.previouslyReported
             resultingTotalLine.currentReport += lumpSum.currentReport
+            resultingTotalLine.previouslyVerified += lumpSum.previouslyVerified
+            resultingTotalLine.currentVerified += lumpSum.currentVerified
             return@fold resultingTotalLine
         }.fillInOverviewFields()
 }

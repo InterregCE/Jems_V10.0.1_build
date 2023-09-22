@@ -17,6 +17,8 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         reportId: Long,
     ): ReportProjectPartnerExpenditureCostCategoryEntity
 
+    fun findAllByReportEntityIdIn(reportIds: Set<Long>): List<ReportProjectPartnerExpenditureCostCategoryEntity>
+
     @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffCurrent), 0),
