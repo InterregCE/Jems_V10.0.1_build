@@ -195,34 +195,6 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 partOfSampleLocked = false
             )
 
-        private fun dummyExpectedExpenditure(id: Long) =
-            ProjectPartnerReportExpenditureCost(
-                id = id,
-                number = 1,
-                lumpSumId = null,
-                unitCostId = null,
-                costCategory = ReportBudgetCategory.InfrastructureCosts,
-                gdpr = false,
-                investmentId = null,
-                contractId = 18L,
-                internalReferenceNumber = "irn",
-                invoiceNumber = "invoice",
-                invoiceDate = YESTERDAY,
-                dateOfPayment = TOMORROW,
-                description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
-                comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
-                totalValueInvoice = BigDecimal.ONE,
-                vat = BigDecimal.ZERO,
-                numberOfUnits = BigDecimal.ONE,
-                pricePerUnit = BigDecimal.ZERO,
-                declaredAmount = BigDecimal.TEN,
-                currencyCode = "HUF",
-                currencyConversionRate = BigDecimal.valueOf(15L, 1),
-                declaredAmountAfterSubmission = BigDecimal.valueOf(33654L, 2),
-                attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
-                parkingMetadata = null,
-            )
-
         private fun expectedFinanceExpenditure(
             id: Long,
             declaredAmount: BigDecimal,
@@ -456,8 +428,18 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             certifiedAmount = BigDecimal.valueOf(3400L),
             deductedAmount = BigDecimal.valueOf(100L),
         )
+        val expenditureParked = financingExpenditure(
+            id = 782L,
+            declaredAmount = BigDecimal.valueOf(450L),
+            currencyConversionRate = BigDecimal.valueOf(10L),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(4500L),
+            certifiedAmount = BigDecimal.ZERO,
+            deductedAmount = BigDecimal.ZERO,
+        )
+        expenditureParked.parked = true
 
-        every { reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(56L) } returns mutableListOf(expenditure)
+        every { reportExpenditureRepository.findByPartnerReportIdOrderByIdDesc(56L) } returns
+                mutableListOf(expenditure, expenditureParked)
 
         val newRates = setOf(ProjectPartnerReportExpenditureCurrencyRateChange(
             id = 781L,
@@ -473,10 +455,20 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     currencyConversionRate = BigDecimal.valueOf(11L),
                     declaredAmountAfterSubmission = BigDecimal.valueOf(3850L),
                 ),
+                expectedFinanceExpenditure(
+                    id = 782L,
+                    declaredAmount = BigDecimal.valueOf(450L),
+                    currencyConversionRate = BigDecimal.valueOf(10L),
+                    declaredAmountAfterSubmission = BigDecimal.valueOf(4500L),
+                ),
             )
 
         assertThat(expenditure.certifiedAmount).isEqualTo(BigDecimal.valueOf(3750L)) // 3850 - 100
         assertThat(expenditure.deductedAmount).isEqualTo(BigDecimal.valueOf(100L))
+        assertThat(expenditure.typologyOfErrorId).isEqualTo(15L)
+
+        assertThat(expenditureParked.certifiedAmount).isEqualTo(BigDecimal.ZERO) // parked
+        assertThat(expenditureParked.deductedAmount).isEqualTo(BigDecimal.ZERO)
         assertThat(expenditure.typologyOfErrorId).isEqualTo(15L)
     }
 
