@@ -103,7 +103,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
     }
 
     private fun PartnerReportExpenditureCostEntity.updateCertified() {
-        certifiedAmount = (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(deductedAmount)
+        certifiedAmount = if (parked) BigDecimal.ZERO else (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(deductedAmount)
     }
 
 }
