@@ -39,7 +39,7 @@ import {ActivatedRoute} from '@angular/router';
 import {
   ProjectReportIdentificationExtensionStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-store.service';
-import {ReportUtil} from "@project/common/report-util";
+import {ReportUtil} from '@project/common/report-util';
 
 
 @Injectable({providedIn: 'root'})
