@@ -35,6 +35,8 @@ import io.cloudflight.jems.server.payments.repository.toRegularPaymentEntity
 import io.cloudflight.jems.server.payments.repository.toRegularPaymentModel
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
@@ -93,6 +95,8 @@ class PaymentPersistenceProvider(
         val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
         val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
         val specPartnerReportCertificateCoFin = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
+        val specProjectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
+        val specProjectReport = QProjectReportEntity.projectReportEntity
 
         val results = jpaQueryFactory
             .select(
@@ -109,7 +113,11 @@ class PaymentPersistenceProvider(
                 .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
             .leftJoin(specPartnerReportCertificateCoFin)
                 .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
-            .where(filters.transformToWhereClause())
+            .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
+                .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
+            .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
+                .on(specProjectReport.id.eq(specPayment.projectReport.id))
+            .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport))
             .groupBy(specPayment)
             .having(filters.transformToHavingClause())
             .offset(pageable.offset)

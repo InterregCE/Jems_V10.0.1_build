@@ -5,11 +5,15 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.CaseBuilder
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -30,7 +34,9 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         "fund.type" -> specPayment.fund.type
         "id" -> specPayment.id
         "projectReport.number" -> specPayment.projectReport?.number
-        "projectReport.verificationEndDate" -> specPayment.projectReport?.verificationEndDate
+        "projectReport.verificationEndDate" -> CaseBuilder().`when`(specPayment.type.eq(PaymentType.FTLS))
+            .then(specPayment.projectLumpSum.paymentEnabledDate)
+            .otherwise(specPayment.projectReport.verificationEndDate)
         else -> specPayment.id
     }
 
@@ -49,49 +55,62 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
     total,
 )
 
-fun PaymentSearchRequest.transformToWhereClause(): BooleanExpression? {
-    val spec = QPaymentEntity.paymentEntity
+fun PaymentSearchRequest.transformToWhereClause(
+    qPayment: QPaymentEntity,
+    qProjectLumpSum: QProjectLumpSumEntity,
+    qProjectReport: QProjectReportEntity,
+): BooleanExpression? {
     val expressions = mutableListOf<BooleanExpression>()
 
     if (this.paymentId != null)
-        expressions.add(spec.id.eq(this.paymentId))
+        expressions.add(qPayment.id.eq(this.paymentId))
 
     if (this.paymentType != null)
-        expressions.add(spec.type.eq(this.paymentType))
+        expressions.add(qPayment.type.eq(this.paymentType))
 
     val projectIds = this.projectIdentifiers.mapNotNull { it.toLongOrNull() }
     val projectIdentifiers = this.projectIdentifiers.filter { it.isNotBlank() }
 
     val projectIdExpressions = mutableListOf<BooleanExpression>()
     if (projectIds.isNotEmpty())
-        projectIdExpressions.add(spec.project.id.`in`(projectIds))
+        projectIdExpressions.add(qPayment.project.id.`in`(projectIds))
     if (projectIdentifiers.isNotEmpty())
-        projectIdExpressions.add(spec.projectCustomIdentifier.`in`(projectIdentifiers))
+        projectIdExpressions.add(qPayment.projectCustomIdentifier.`in`(projectIdentifiers))
     if (projectIdExpressions.isNotEmpty())
         expressions.add(projectIdExpressions.reduce { f, s -> f.or(s) })
 
     if (!this.projectAcronym.isNullOrBlank())
-        expressions.add(spec.projectAcronym.containsIgnoreCase(this.projectAcronym))
+        expressions.add(qPayment.projectAcronym.containsIgnoreCase(this.projectAcronym))
 
     val submissionDateFrom = this.claimSubmissionDateFrom?.atTime(LocalTime.MIN)?.atZone(ZoneId.systemDefault())
     val submissionDateTo = this.claimSubmissionDateTo?.atTime(LocalTime.MAX)?.atZone(ZoneId.systemDefault())
     if (submissionDateFrom != null)
-        expressions.add(spec.project.contractedDecision.updated.goe(submissionDateFrom))
+        expressions.add(qPayment.project.contractedDecision.updated.goe(submissionDateFrom))
     if (submissionDateTo != null)
-        expressions.add(spec.project.contractedDecision.updated.loe(submissionDateTo))
+        expressions.add(qPayment.project.contractedDecision.updated.loe(submissionDateTo))
 
     val paymentApprovalDateFrom = this.approvalDateFrom?.atTime(LocalTime.MIN)?.atZone(ZoneId.systemDefault())
     val paymentApprovalDateTo = this.approvalDateTo?.atTime(LocalTime.MAX)?.atZone(ZoneId.systemDefault())
     if (paymentApprovalDateFrom != null)
-        expressions.add(spec.projectLumpSum.paymentEnabledDate.goe(paymentApprovalDateFrom))
+        expressions.add(listOf(
+            qProjectLumpSum.paymentEnabledDate.goe(paymentApprovalDateFrom),
+            qProjectReport.verificationEndDate.goe(paymentApprovalDateFrom),
+        ).joinWithOr())
     if (paymentApprovalDateTo != null)
-        expressions.add(spec.projectLumpSum.paymentEnabledDate.loe(paymentApprovalDateTo))
+        expressions.add(listOf(
+            qProjectLumpSum.paymentEnabledDate.loe(paymentApprovalDateTo),
+            qProjectReport.verificationEndDate.loe(paymentApprovalDateTo),
+        ).joinWithOr())
 
     if (this.fundIds.isNotEmpty())
-        expressions.add(spec.fund.id.`in`(this.fundIds))
+        expressions.add(qPayment.fund.id.`in`(this.fundIds))
 
-    return if (expressions.isNotEmpty()) expressions.reduce { f, s -> f.and(s) } else null
+    return expressions.joinWithAnd()
 }
+
+private fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
+private fun Collection<BooleanExpression>.joinWithAnd() =
+    if (isEmpty()) null else reduce { f, s -> f.and(s) }
 
 fun PaymentSearchRequest.transformToHavingClause(): BooleanExpression? {
     val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
