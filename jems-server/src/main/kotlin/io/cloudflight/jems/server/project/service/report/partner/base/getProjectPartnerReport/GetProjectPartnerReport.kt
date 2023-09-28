@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.base.removeEligibleAfterControlFromNotInControlOnes
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -35,15 +36,5 @@ class GetProjectPartnerReport(
 
     private fun Page<ProjectPartnerReportSummary>.fillInDeletableFor(latestReportId: Long?) =
         this.onEach { it.deletable = it.id == latestReportId && it.status.isOpenInitially() }
-
-    private fun Page<ProjectPartnerReportSummary>.removeEligibleAfterControlFromNotInControlOnes() =
-        this.onEach {
-            if (!it.status.isFinalized()) {
-                it.totalEligibleAfterControl = null
-            }
-            if (it.status.isOpenForNumbersChanges()) {
-                it.totalAfterSubmitted = null
-            }
-        }
 
 }

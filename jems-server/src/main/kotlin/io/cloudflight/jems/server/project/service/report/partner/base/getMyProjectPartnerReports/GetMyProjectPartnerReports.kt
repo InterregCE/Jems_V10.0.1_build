@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollabo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.base.removeEligibleAfterControlFromNotInControlOnes
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -31,6 +32,7 @@ class GetMyProjectPartnerReports(
     override fun findAllOfMine(pageable: Pageable): Page<ProjectPartnerReportSummary> {
         val partnerIds = getAllPartnerIdsByUserId(securityService.getUserIdOrThrow())
         return reportPersistence.listPartnerReports(partnerIds, ReportStatus.FINANCIALLY_CLOSED_STATUSES, pageable)
+            .removeEligibleAfterControlFromNotInControlOnes()
     }
 
     private fun getAllPartnerIdsByUserId(userId: Long): Set<Long> {
