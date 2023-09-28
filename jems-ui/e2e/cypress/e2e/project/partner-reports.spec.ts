@@ -14,7 +14,7 @@ const costCategories = [
   'External expertise and services',
   'Equipment',
   'Infrastructure and works'
-]
+];
 
 context('Partner reports tests', () => {
 
@@ -33,7 +33,7 @@ context('Partner reports tests', () => {
         testData.users[0].userEmail = testData.partnerUser.email;
         cy.createUser(testData.partnerUser, user.admin.email);
         const firstPartner = application.partners[0].details.abbreviation;
-        const secondPartner = application.partners[1].details.abbreviation
+        const secondPartner = application.partners[1].details.abbreviation;
         cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
           cy.setProjectToContracted(applicationId, user.programmeUser.email);
           const partnerId = this[secondPartner];
@@ -93,7 +93,7 @@ context('Partner reports tests', () => {
 
             cy.addPartnerReport(partnerId2)
               .then(reportId => {
-                cy.addPublicProcurement(partnerId2, reportId, partnerProcurement[1])
+                cy.addPublicProcurement(partnerId2, reportId, partnerProcurement[1]);
               });
 
             cy.addPartnerReport(partnerId1)
@@ -133,18 +133,18 @@ context('Partner reports tests', () => {
                 removeUploadedFileByRowIndex(0);
 
                 // Delete the expenditure that contained the attachment previously
-                removeExpenditureByRowIndex(0)
+                removeExpenditureByRowIndex(0);
                 verifyExpendituresTableSize(8);
 
                 // Delete another expenditure that has no attachments
-                removeExpenditureByRowIndex(2)
+                removeExpenditureByRowIndex(2);
                 verifyExpendituresTableSize(7);
 
                 // We have to save before going for parked expenditure table modification
                 saveExpenditure();
 
                 // Delete a parked expenditure
-                removeParkedExpenditureByRowIndex(0)
+                removeParkedExpenditureByRowIndex(0);
               });
           });
         });
@@ -227,7 +227,7 @@ context('Partner reports tests', () => {
                     .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('be.visible');
-                })
+                });
 
                 //upload file to deliverable
                 cy.get('div.activity-container > jems-multi-language-container').eq(1).within(() => {
@@ -247,7 +247,7 @@ context('Partner reports tests', () => {
                       .contains('fileToUpload.txt')
                       .should('be.visible');
                   });
-                })
+                });
 
                 //upload file to output
                 cy.get(`#outputs-table > div`).eq(1).within(() => {
@@ -263,7 +263,7 @@ context('Partner reports tests', () => {
                     .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('be.visible');
-                })
+                });
 
                 //delete file from activity
                 cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
@@ -271,15 +271,15 @@ context('Partner reports tests', () => {
                     .contains('mat-icon', 'cancel')
                     .scrollIntoView()
                     .click();
-                })
+                });
 
-                cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+/).as('deleteFileFromActivity')
+                cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+/).as('deleteFileFromActivity');
 
                 cy.contains('button', 'Confirm')
                   .should('be.visible')
                   .click();
 
-                cy.wait('@deleteFileFromActivity')
+                cy.wait('@deleteFileFromActivity');
 
                 cy.get('div.activity-container > jems-multi-language-container input').eq(0)
                   .scrollIntoView()
@@ -294,14 +294,14 @@ context('Partner reports tests', () => {
                     .scrollIntoView()
                     .contains('fileForUpdate.txt')
                     .should('be.visible');
-                })
+                });
 
                 cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
                   cy.get('mat-chip > span')
                     .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('not.exist');
-                })
+                });
               });
           });
       });
@@ -364,11 +364,11 @@ context('Partner reports tests', () => {
                         });
                       // add beneficial owner, subcontractor and attachment description
                       cy.addBeneficialOwnerToProcurement(partnerId1, reportId, procurement.id, testData.beneficialOwners[0]);
-                      cy.addSubcontractorToProcurement(partnerId1, reportId, procurement.id, testData.subcontracts[0])
+                      cy.addSubcontractorToProcurement(partnerId1, reportId, procurement.id, testData.subcontracts[0]);
                       cy.addAttachmentToProcurement('fileToUpload.txt', 'project/reporting/', partnerId1, reportId, procurement.id);
                       cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
                       cy.submitPartnerReport(partnerId1, reportId);
-                    })
+                    });
                 });
 
               cy.addPartnerReport(partnerId1)
@@ -381,7 +381,7 @@ context('Partner reports tests', () => {
 
                       // New procurement with same name as an already existing one can't be created
                       cy.contains('mat-icon', 'add')
-                        .click()
+                        .click();
                       cy.get('input[name="contractName"]')
                         .type(partnerProcurement[0].contractName);
                       cy.get('input[name="vatNumber"]')
@@ -481,12 +481,12 @@ context('Partner reports tests', () => {
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
 
-                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription')
+                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription');
 
                       cy.contains('button', 'Save')
                         .click();
 
-                      cy.wait('@updateReportFileDescription')
+                      cy.wait('@updateReportFileDescription');
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .should('be.visible');
@@ -720,12 +720,12 @@ context('Partner reports tests', () => {
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
 
-                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription')
+                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription');
 
                       cy.contains('button', 'Save')
                         .click();
 
-                      cy.wait('@updateReportFileDescription')
+                      cy.wait('@updateReportFileDescription');
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .scrollIntoView()
@@ -909,8 +909,8 @@ context('Partner reports tests', () => {
           cy.contains('Financial overview').click({force: true});
           const unitCostExternalFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.external[1].pricePerUnit);
           const unitCostsFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.unit[0].rowSum / 2);
-          console.log(unitCostExternalFormatted)
-          console.log(unitCostsFormatted)
+          console.log(unitCostExternalFormatted);
+          console.log(unitCostsFormatted);
           cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', unitCostExternalFormatted);
           cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', unitCostsFormatted);
 
@@ -954,225 +954,225 @@ context('Partner reports tests', () => {
   });
 
   it('TB-741 Partner user can report contributions', function () {
-        cy.fixture('project/reporting/TB-741.json').then(testData => {
-            cy.fixture('api/application/application.json').then(application => {
+    cy.fixture('project/reporting/TB-741.json').then(testData => {
+      cy.fixture('api/application/application.json').then(application => {
 
-                cy.loginByRequest(user.programmeUser.email);
-                cy.createCall(call).then(callId => {
-                    application.details.projectCallId = callId;
-                    cy.publishCall(callId);
-                });
-
-                cy.loginByRequest(user.admin.email);
-                testData.partnerUser1.email = faker.internet.email();
-                cy.createUser(testData.partnerUser1, user.admin.email);
-                const leadPartnerAbbreviation = application.partners[0].details.abbreviation;
-
-                cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
-                    const leadPartnerId = this[leadPartnerAbbreviation];
-                    const currentlyReportedInput = 'input[name="currentlyReported"]';
-                    const sourceOfContributionInput = 'input[name="sourceOfContribution"]';
-
-                    const firstReportContributionAmounts = testData.reportContributionData[0].amounts;
-                    const firstReportCurrentContributionSubTotals = testData.reportContributionData[0].subTotals;
-
-                    const secondReportContributionAmounts = testData.reportContributionData[1].amounts;
-
-                    const thirdReportContributionAmounts = testData.reportContributionData[2].amounts;
-                    const thirdReportCurrentContributionSubTotals = testData.reportContributionData[2].subTotals;
-
-
-                    testData.firstUser[0].userEmail = testData.partnerUser1.email;
-                    cy.assignPartnerCollaborators(applicationId, leadPartnerId, testData.firstUser);
-                    cy.setProjectToContracted(applicationId, user.programmeUser.email);
-
-                    cy.loginByRequest(testData.partnerUser1.email);
-
-                    cy.addPartnerReport(leadPartnerId).then(reportId => {
-                        cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
-                        cy.contains('Contributions').click({force: true});
-
-                        cy.get('[id=contributions-table] mat-row').each((row, index) => {
-                            expect(row.find(sourceOfContributionInput)).to.have.value(application.partners[0].cofinancing.partnerContributions[index].name);
-                            expect(row.find(currentlyReportedInput)).to.exist
-                        });
-
-                        cy.get('[id=contributions-table]').children().eq(1).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[0].currentReport));
-                        cy.get('[id=contributions-table]').children().eq(2).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[1].currentReport));
-                        cy.get('[id=contributions-table]').children().eq(3).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[2].currentReport));
-
-                        cy.contains('add').click();
-
-                        cy.get('[id=contributions-table]').children().last().within(() => {
-                            cy.contains('mat-form-field', 'Source of contribution').type("Lead contribution report 1");
-                            cy.contains('mat-select', 'Legal status').click();
-                            cy.root().closest('body').find('mat-option').contains('Private').click();
-                            cy.get('input').eq(1).type(formatAmount(firstReportContributionAmounts[3].currentReport));
-                        });
-
-                        cy.contains('add').click();
-
-                        cy.get('[id=contributions-table]').children().last().within(() => {
-                            cy.contains('mat-form-field', 'Source of contribution').type("Lead contribution report 2");
-                            cy.contains('mat-select', 'Legal status').click();
-                            cy.root().closest('body').find('mat-option').contains('Automatic Public').click();
-                            cy.get('input').eq(1).type(formatAmount(firstReportContributionAmounts[4].currentReport));
-                        });
-
-                        cy.contains('button', 'Save changes').click();
-                        cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
-
-                        cy.get('[id=contributions-table]').children().eq(1).find('input[type=file]').selectFile(`cypress/fixtures/project/reporting/partner-report-attachment01.txt`, {force: true});
-                        cy.get('[id=contributions-table]').children().eq(5).find('input[type=file]').selectFile(`cypress/fixtures/project/reporting/partner-report-attachment01.txt`, {force: true});
-
-                        cy.get('[id=contributions-table]').children().eq(1).within(() => {
-                            cy.contains('mat-icon', 'cancel').click({force: true});
-                        });
-                        cy.contains('Confirm').should('be.visible').click();
-
-
-                        cy.get('[id=contributions-table]').children().last().within(() => {
-                            cy.contains('button', 'delete').should('be.disabled');
-                            cy.contains('mat-icon', 'cancel').click({force: true});
-                        });
-                        cy.contains('Confirm').should('be.visible').click();
-
-
-                        cy.get('[id=contributions-table]').children().last().within(() => {
-                            cy.contains('button', 'delete').should('be.enabled').click();
-                        })
-
-                        cy.contains('button', 'Save changes').click();
-
-                        cy.contains('div', 'Sub-total public contribution').children().eq(4).then(value => {
-                            expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalPublic.currentReport));
-                        });
-
-                        cy.contains('div', 'Sub-total automatic public contribution').parent().children().eq(4).then(value => {
-                            expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalAutomaticPublic.currentReport));
-                        });
-
-                        cy.contains('div', 'Sub-total private contribution').parent().children().eq(4).then(value => {
-                            expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalPrivate.currentReport));
-                        });
-                        cy.runPreSubmissionPartnerReportCheck(leadPartnerId, reportId);
-                        cy.submitPartnerReport(leadPartnerId, reportId);
-                    });
-
-                    cy.addPartnerReport(leadPartnerId).then(reportId => {
-                        cy.wrap(reportId).as('idOfSecondReport');
-                        cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
-                        cy.contains('Contributions').click({force: true});
-                    });
-
-                    cy.startModification(applicationId, user.programmeUser.email);
-                    cy.loginByRequest(user.admin.email);
-                    cy.visit(`app/project/detail/${applicationId}/applicationFormPartner/${leadPartnerId}/coFinancing`, {failOnStatusCode: false});
-
-
-                    cy.contains('Source of contribution').parent().parent().children().last().within(_ => {
-                        cy.get('input').eq(1).type(formatAmount(testData.applicationFormNewContributionData.existingContributionNewAmount));
-                    });
-
-                    cy.contains('Add new contribution origin').click();
-                    cy.contains('Source of contribution').parent().parent().children().last().within(() => {
-                        cy.contains('mat-form-field', 'Source of contribution').find('input').type(testData.cofinancing.newPartnerContribution.name);
-                        cy.contains('Legal status').click();
-                        cy.root().closest('body').find('mat-option').contains("Automatic Public").click();
-                        cy.get('input').eq(1).type(formatAmount(testData.applicationFormNewContributionData.newContributionAmount));
-                    });
-
-
-                    const alertMessage = 'The total of contribution must match the total partner contribution';
-                    cy.contains(alertMessage).should('not.exist');
-                    cy.contains('Save changes').click();
-                    cy.contains('Co-financing and partner contributions saved successfully').should('be.visible');
-
-                    cy.submitProjectApplication(applicationId);
-                    cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
-                    cy.loginByRequest(testData.partnerUser1.email);
-
-
-                    cy.get('@idOfSecondReport').then(reportId => {
-                        cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
-                        cy.contains('Contributions').click({force: true});
-
-                        cy.contains(testData.cofinancing.newPartnerContribution.name).should('not.exist');
-
-                        cy.contains('Source of contribution').parent().parent().parent().then(table => {
-                            cy.wrap(table).children().eq(1).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[0].currentReport));
-                            cy.wrap(table).children().eq(2).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[1].currentReport));
-                            cy.wrap(table).children().eq(3).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[2].currentReport));
-                            cy.wrap(table).children().eq(4).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[3].currentReport));
-
-                            cy.contains('button', 'Save changes').click();
-                            cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
-                            cy.submitPartnerReport(leadPartnerId, Number(reportId));
-                        });
-                    });
-
-                    //TB-741 step 10
-                    cy.addPartnerReport(leadPartnerId).then(reportId => {
-                        cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
-                        cy.contains('Contributions').click({force: true});
-
-                        cy.get('[id=contributions-table] mat-row').then((rows) => {
-                            cy.wrap(rows.get(0)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[0].currentReport));
-                            cy.wrap(rows.get(1)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[1].currentReport));
-                            cy.wrap(rows.get(2)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[2].currentReport));
-                            cy.wrap(rows.get(3)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[3].currentReport));
-                            cy.wrap(rows.get(4)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[4].currentReport));
-                        })
-
-                        const previouslyReportedColumnIndex = 3;
-                        const currentReportColumnIndex = 4;
-                        const totalReportedSoFarColumnIndex = 5;
-                        cy.get('[id=contributions-table] mat-row').then((rows) => {
-
-                            cy.wrap(rows.get(2)).should('contain', formatAmount(testData.applicationFormNewContributionData.existingContributionNewAmount));
-
-                            cy.wrap(rows.get(3)).find(sourceOfContributionInput).should('have.value', testData.cofinancing.newPartnerContribution.name);
-                            cy.wrap(rows.get(3)).should('contain', formatAmount(testData.applicationFormNewContributionData.newContributionAmount));
-
-                            expect(rows.get(0).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[0].previouslyReported));
-                            expect(rows.get(1).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[1].previouslyReported));
-                            expect(rows.get(2).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[2].previouslyReported));
-                            expect(rows.get(3).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[3].previouslyReported));
-                            expect(rows.get(4).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[4].previouslyReported));
-
-                            expect(rows.get(0).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[0].totalReportedSoFar));
-                            expect(rows.get(1).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[1].totalReportedSoFar));
-                            expect(rows.get(2).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[2].totalReportedSoFar));
-                            expect(rows.get(3).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[3].totalReportedSoFar));
-                            expect(rows.get(4).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[4].totalReportedSoFar));
-                        });
-
-                        cy.contains('div', 'Sub-total public contribution').children().then(row => {
-                            expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.previouslyReported));
-                            expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.currentReport));
-                            expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.totalReportedSoFar));
-                        });
-
-                        cy.contains('div', 'Sub-total automatic public contribution').parent().children().then(row => {
-                            expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.previouslyReported));
-                            expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.currentReport));
-                            expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.totalReportedSoFar));
-                        });
-
-                        cy.contains('div', 'Sub-total private contribution').parent().children().then(row => {
-                            expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.previouslyReported));
-                            expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.currentReport));
-                            expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.totalReportedSoFar));
-                        });
-
-                        cy.contains('button', 'Save changes').click();
-                        cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
-                        cy.submitPartnerReport(leadPartnerId, Number(reportId));
-                    });
-                });
-            })
+        cy.loginByRequest(user.programmeUser.email);
+        cy.createCall(call).then(callId => {
+          application.details.projectCallId = callId;
+          cy.publishCall(callId);
         });
+
+        cy.loginByRequest(user.admin.email);
+        testData.partnerUser1.email = faker.internet.email();
+        cy.createUser(testData.partnerUser1, user.admin.email);
+        const leadPartnerAbbreviation = application.partners[0].details.abbreviation;
+
+        cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
+          const leadPartnerId = this[leadPartnerAbbreviation];
+          const currentlyReportedInput = 'input[name="currentlyReported"]';
+          const sourceOfContributionInput = 'input[name="sourceOfContribution"]';
+
+          const firstReportContributionAmounts = testData.reportContributionData[0].amounts;
+          const firstReportCurrentContributionSubTotals = testData.reportContributionData[0].subTotals;
+
+          const secondReportContributionAmounts = testData.reportContributionData[1].amounts;
+
+          const thirdReportContributionAmounts = testData.reportContributionData[2].amounts;
+          const thirdReportCurrentContributionSubTotals = testData.reportContributionData[2].subTotals;
+
+
+          testData.firstUser[0].userEmail = testData.partnerUser1.email;
+          cy.assignPartnerCollaborators(applicationId, leadPartnerId, testData.firstUser);
+          cy.setProjectToContracted(applicationId, user.programmeUser.email);
+
+          cy.loginByRequest(testData.partnerUser1.email);
+
+          cy.addPartnerReport(leadPartnerId).then(reportId => {
+            cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
+            cy.contains('Contributions').click({force: true});
+
+            cy.get('[id=contributions-table] mat-row').each((row, index) => {
+              expect(row.find(sourceOfContributionInput)).to.have.value(application.partners[0].cofinancing.partnerContributions[index].name);
+              expect(row.find(currentlyReportedInput)).to.exist;
+            });
+
+            cy.get('[id=contributions-table]').children().eq(1).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[0].currentReport));
+            cy.get('[id=contributions-table]').children().eq(2).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[1].currentReport));
+            cy.get('[id=contributions-table]').children().eq(3).find(currentlyReportedInput).type(formatAmount(firstReportContributionAmounts[2].currentReport));
+
+            cy.contains('add').click();
+
+            cy.get('[id=contributions-table]').children().last().within(() => {
+              cy.contains('mat-form-field', 'Source of contribution').type("Lead contribution report 1");
+              cy.contains('mat-select', 'Legal status').click();
+              cy.root().closest('body').find('mat-option').contains('Private').click();
+              cy.get('input').eq(1).type(formatAmount(firstReportContributionAmounts[3].currentReport));
+            });
+
+            cy.contains('add').click();
+
+            cy.get('[id=contributions-table]').children().last().within(() => {
+              cy.contains('mat-form-field', 'Source of contribution').type("Lead contribution report 2");
+              cy.contains('mat-select', 'Legal status').click();
+              cy.root().closest('body').find('mat-option').contains('Automatic Public').click();
+              cy.get('input').eq(1).type(formatAmount(firstReportContributionAmounts[4].currentReport));
+            });
+
+            cy.contains('button', 'Save changes').click();
+            cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
+
+            cy.get('[id=contributions-table]').children().eq(1).find('input[type=file]').selectFile(`cypress/fixtures/project/reporting/partner-report-attachment01.txt`, {force: true});
+            cy.get('[id=contributions-table]').children().eq(5).find('input[type=file]').selectFile(`cypress/fixtures/project/reporting/partner-report-attachment01.txt`, {force: true});
+
+            cy.get('[id=contributions-table]').children().eq(1).within(() => {
+              cy.contains('mat-icon', 'cancel').click({force: true});
+            });
+            cy.contains('Confirm').should('be.visible').click();
+
+
+            cy.get('[id=contributions-table]').children().last().within(() => {
+              cy.contains('button', 'delete').should('be.disabled');
+              cy.contains('mat-icon', 'cancel').click({force: true});
+            });
+            cy.contains('Confirm').should('be.visible').click();
+
+
+            cy.get('[id=contributions-table]').children().last().within(() => {
+              cy.contains('button', 'delete').should('be.enabled').click();
+            });
+
+            cy.contains('button', 'Save changes').click();
+
+            cy.contains('div', 'Sub-total public contribution').children().eq(4).then(value => {
+              expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalPublic.currentReport));
+            });
+
+            cy.contains('div', 'Sub-total automatic public contribution').parent().children().eq(4).then(value => {
+              expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalAutomaticPublic.currentReport));
+            });
+
+            cy.contains('div', 'Sub-total private contribution').parent().children().eq(4).then(value => {
+              expect(value).to.contain(formatAmount(firstReportCurrentContributionSubTotals.subTotalPrivate.currentReport));
+            });
+            cy.runPreSubmissionPartnerReportCheck(leadPartnerId, reportId);
+            cy.submitPartnerReport(leadPartnerId, reportId);
+          });
+
+          cy.addPartnerReport(leadPartnerId).then(reportId => {
+            cy.wrap(reportId).as('idOfSecondReport');
+            cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
+            cy.contains('Contributions').click({force: true});
+          });
+
+          cy.startModification(applicationId, user.programmeUser.email);
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`app/project/detail/${applicationId}/applicationFormPartner/${leadPartnerId}/coFinancing`, {failOnStatusCode: false});
+
+
+          cy.contains('Source of contribution').parent().parent().children().last().within(_ => {
+            cy.get('input').eq(1).type(formatAmount(testData.applicationFormNewContributionData.existingContributionNewAmount));
+          });
+
+          cy.contains('Add new contribution origin').click();
+          cy.contains('Source of contribution').parent().parent().children().last().within(() => {
+            cy.contains('mat-form-field', 'Source of contribution').find('input').type(testData.cofinancing.newPartnerContribution.name);
+            cy.contains('Legal status').click();
+            cy.root().closest('body').find('mat-option').contains("Automatic Public").click();
+            cy.get('input').eq(1).type(formatAmount(testData.applicationFormNewContributionData.newContributionAmount));
+          });
+
+
+          const alertMessage = 'The total of contribution must match the total partner contribution';
+          cy.contains(alertMessage).should('not.exist');
+          cy.contains('Save changes').click();
+          cy.contains('Co-financing and partner contributions saved successfully').should('be.visible');
+
+          cy.submitProjectApplication(applicationId);
+          cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
+          cy.loginByRequest(testData.partnerUser1.email);
+
+
+          cy.get('@idOfSecondReport').then(reportId => {
+            cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
+            cy.contains('Contributions').click({force: true});
+
+            cy.contains(testData.cofinancing.newPartnerContribution.name).should('not.exist');
+
+            cy.contains('Source of contribution').parent().parent().parent().then(table => {
+              cy.wrap(table).children().eq(1).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[0].currentReport));
+              cy.wrap(table).children().eq(2).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[1].currentReport));
+              cy.wrap(table).children().eq(3).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[2].currentReport));
+              cy.wrap(table).children().eq(4).find(currentlyReportedInput).type(formatAmount(secondReportContributionAmounts[3].currentReport));
+
+              cy.contains('button', 'Save changes').click();
+              cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
+              cy.submitPartnerReport(leadPartnerId, Number(reportId));
+            });
+          });
+
+          //TB-741 step 10
+          cy.addPartnerReport(leadPartnerId).then(reportId => {
+            cy.visit(`app/project/detail/${applicationId}/reporting/${leadPartnerId}/reports/${reportId}/identification`, {failOnStatusCode: false});
+            cy.contains('Contributions').click({force: true});
+
+            cy.get('[id=contributions-table] mat-row').then((rows) => {
+              cy.wrap(rows.get(0)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[0].currentReport));
+              cy.wrap(rows.get(1)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[1].currentReport));
+              cy.wrap(rows.get(2)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[2].currentReport));
+              cy.wrap(rows.get(3)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[3].currentReport));
+              cy.wrap(rows.get(4)).find(currentlyReportedInput).type(formatAmount(thirdReportContributionAmounts[4].currentReport));
+            });
+
+            const previouslyReportedColumnIndex = 3;
+            const currentReportColumnIndex = 4;
+            const totalReportedSoFarColumnIndex = 5;
+            cy.get('[id=contributions-table] mat-row').then((rows) => {
+
+              cy.wrap(rows.get(2)).should('contain', formatAmount(testData.applicationFormNewContributionData.existingContributionNewAmount));
+
+              cy.wrap(rows.get(3)).find(sourceOfContributionInput).should('have.value', testData.cofinancing.newPartnerContribution.name);
+              cy.wrap(rows.get(3)).should('contain', formatAmount(testData.applicationFormNewContributionData.newContributionAmount));
+
+              expect(rows.get(0).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[0].previouslyReported));
+              expect(rows.get(1).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[1].previouslyReported));
+              expect(rows.get(2).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[2].previouslyReported));
+              expect(rows.get(3).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[3].previouslyReported));
+              expect(rows.get(4).childNodes[previouslyReportedColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[4].previouslyReported));
+
+              expect(rows.get(0).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[0].totalReportedSoFar));
+              expect(rows.get(1).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[1].totalReportedSoFar));
+              expect(rows.get(2).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[2].totalReportedSoFar));
+              expect(rows.get(3).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[3].totalReportedSoFar));
+              expect(rows.get(4).childNodes[totalReportedSoFarColumnIndex]).to.contain(formatAmount(thirdReportContributionAmounts[4].totalReportedSoFar));
+            });
+
+            cy.contains('div', 'Sub-total public contribution').children().then(row => {
+              expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.previouslyReported));
+              expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.currentReport));
+              expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPublic.totalReportedSoFar));
+            });
+
+            cy.contains('div', 'Sub-total automatic public contribution').parent().children().then(row => {
+              expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.previouslyReported));
+              expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.currentReport));
+              expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalAutomaticPublic.totalReportedSoFar));
+            });
+
+            cy.contains('div', 'Sub-total private contribution').parent().children().then(row => {
+              expect(row.get(previouslyReportedColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.previouslyReported));
+              expect(row.get(currentReportColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.currentReport));
+              expect(row.get(totalReportedSoFarColumnIndex)).to.contain(formatAmount(thirdReportCurrentContributionSubTotals.subTotalPrivate.totalReportedSoFar));
+            });
+
+            cy.contains('button', 'Save changes').click();
+            cy.contains('div', 'Report contribution has been saved successfully').should('be.visible');
+            cy.submitPartnerReport(leadPartnerId, Number(reportId));
+          });
+        });
+      });
     });
+  });
 
   it('TB-742 Partner user can manage report annexes', function () {
     cy.fixture('project/reporting/TB-742.json').then(testData => {
@@ -1251,11 +1251,11 @@ context('Partner reports tests', () => {
               .then(procurement => {
                 cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
                 cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
-                    .then(response => {
-                        for (let i = 0; i < response.length; i++) {
-                            partnerParkedExpenditures[i].id = response[i].id;
-                        }
-                    });
+                  .then(response => {
+                    for (let i = 0; i < response.length; i++) {
+                      partnerParkedExpenditures[i].id = response[i].id;
+                    }
+                  });
                 cy.addBeneficialOwnerToProcurement(partnerId1, reportId, procurement.id, testData.beneficialOwner);
                 cy.addSubcontractorToProcurement(partnerId1, reportId, procurement.id, testData.subcontract);
                 cy.addAttachmentToProcurement('fileToUpload.txt', 'project/reporting/', partnerId1, reportId, procurement.id);
@@ -1264,10 +1264,10 @@ context('Partner reports tests', () => {
                 cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
                 cy.contains('mat-panel-title', 'Work package 1').click();
                 cy.get('div.activity-container > jems-multi-language-container input').eq(0)
-                    .scrollIntoView()
-                    .invoke('show')
-                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-                    .invoke('hide');
+                  .scrollIntoView()
+                  .invoke('show')
+                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                  .invoke('hide');
 
                 // submit report
                 cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/submission`, {failOnStatusCode: false});
@@ -1280,14 +1280,14 @@ context('Partner reports tests', () => {
                 cy.contains('Partner progress report identification').should('be.visible');
               });
 
-              verifyIdentification(applicationId, partnerId1, reportId);
-              verifyWorkplan(applicationId, partnerId1, reportId);
-              verifyProcurements(applicationId, partnerId1, reportId);
-              verifyExpendituresCheckbox(applicationId, partnerId1, reportId);
-              verifyContributions(applicationId, partnerId1, reportId);
-              verifyAnnexesEditable(applicationId, partnerId1, reportId);
-              verifyReportExport(applicationId, partnerId1, reportId);
-            });
+            verifyIdentification(applicationId, partnerId1, reportId);
+            verifyWorkplan(applicationId, partnerId1, reportId);
+            verifyProcurements(applicationId, partnerId1, reportId);
+            verifyExpendituresCheckbox(applicationId, partnerId1, reportId);
+            verifyContributions(applicationId, partnerId1, reportId);
+            verifyAnnexesEditable(applicationId, partnerId1, reportId);
+            verifyReportExport(applicationId, partnerId1, reportId);
+          });
         });
       });
     });
@@ -1417,7 +1417,7 @@ context('Partner reports tests', () => {
 
             //Group Order 2
             cy.loginByRequest(user.admin.email);
-            cy.createTypologyOfErrors(testData.typologyOfErrors)
+            cy.createTypologyOfErrors(testData.typologyOfErrors);
             testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
             testData.controllerUserEdit.email = faker.internet.email();
             cy.createRole(testData.controllerRole).then(roleId => {
@@ -1681,6 +1681,63 @@ context('Partner reports tests', () => {
     });
   });
 
+  it('TB-936 Control Expenditure verification', function () {
+    cy.fixture('project/reporting/TB-936.json').then(testData => {
+      cy.loginByRequest(user.admin.email);
+      const typologyOfError = testData.typologyOfErrors.toPersist[0].description;
+      cy.createTypologyOfErrors(testData.typologyOfErrors);
+
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+          const partnerId = this[application.partners[0].details.abbreviation];
+
+          createControllerUser(testData, partnerId);
+
+          cy.loginByRequest(user.applicantUser.email);
+          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+
+          cy.addPartnerReport(partnerId).then(reportId => {
+            addExpendituresAndSubmit(partnerId, reportId);
+
+            // Set-up
+            cy.loginByRequest(testData.controllerUser.email);
+            cy.startControlWork(partnerId, reportId);
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+            cy.contains('mat-row', 'Control ongoing')
+              .contains('button', 'Open controller work')
+              .click();
+
+            // Group 1.
+            parkExpenditureRowByIndex(1);
+            verifyParkedExpenditureRowByIndex(1, true, false, 0);
+            verifyParkedOverviewRowByIndex(partnerReportExpenditures[1].declaredAmountInEur);
+
+            // Group 2.
+            parkExpenditureRowByIndex(1);
+            verifyParkedExpenditureRowByIndex(1, true, true, partnerReportExpenditures[1].declaredAmountInEur);
+
+            // Group 3.
+            const deductedAmount = 100;
+            const certifiedAmount = partnerReportExpenditures[2].declaredAmountInEur - deductedAmount;
+            deductExpenditureRowByIndex(2, deductedAmount, typologyOfError);
+            verifyDeductedExpenditureRowByIndex(2, true, false, certifiedAmount);
+            verifyDeductedOverviewRowByIndex(typologyOfError, deductedAmount);
+
+            // Group 4.
+            finalizeControlWork();
+            verifyCannotEdit(applicationId, partnerId);
+          });
+        });
+      });
+      // });
+    });
+  });
+
   //region TB-744 METHODS
   function verifyIdentification(applicationId, partnerId1, reportId) {
     cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
@@ -1818,7 +1875,7 @@ context('Partner reports tests', () => {
 
 
   function updatePartnerReportDetails(partnerId, reportId, partnerProcurement) {
-    cy.addPublicProcurement(partnerId, reportId, partnerProcurement[0])
+    cy.addPublicProcurement(partnerId, reportId, partnerProcurement[0]);
     cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
     cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures)
       .then(response => {
@@ -1859,7 +1916,7 @@ context('Partner reports tests', () => {
               .should('be.visible')
               .click();
           }
-        })
+        });
       });
     });
   }
@@ -1872,7 +1929,7 @@ context('Partner reports tests', () => {
             cy.contains('mat-option', `${lumpSumName.translation}`)
               .should('not.exist');
           }
-        })
+        });
       });
     });
   }
@@ -1899,7 +1956,7 @@ context('Partner reports tests', () => {
                 .scrollIntoView()
                 .should('be.visible');
             }
-          })
+          });
         });
       });
 
@@ -1913,7 +1970,7 @@ context('Partner reports tests', () => {
                 .scrollIntoView()
                 .should('be.visible');
             }
-          })
+          });
         });
       });
 
@@ -1934,7 +1991,7 @@ context('Partner reports tests', () => {
                   .should('be.visible');
               }
             }
-          })
+          });
         });
       });
 
@@ -2094,7 +2151,7 @@ context('Partner reports tests', () => {
           cy.wrap(currentSubject)
             .find('mat-select')
             .should('have.attr', 'aria-disabled', 'true');
-        })
+        });
     } else {
       cy.get('#expenditure-costs-table mat-cell.mat-column-costCategory')
         .eq(rowIndex)
@@ -2430,7 +2487,7 @@ context('Partner reports tests', () => {
   function openModification(applicationId) {
     cy.loginByRequest(user.programmeUser.email);
 
-    cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false})
+    cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
     cy.contains('Open new modification')
       .click();
     cy.get('jems-confirm-dialog')
@@ -2475,7 +2532,7 @@ context('Partner reports tests', () => {
           verifyIconsInProjectPartners(application, id, true);
         });
 
-        verifyIconsInProjectPrivileges(application, partnerIdsToDisable, false)
+        verifyIconsInProjectPrivileges(application, partnerIdsToDisable, false);
         verifyDeactivatedPartnerBannerDisplay("Partner details", disabledPartnerAbbreviation, false);
         verifyDeactivatedPartnerBannerDisplay("Project partners", disabledPartnerAbbreviation, true);
       });
@@ -2492,13 +2549,13 @@ context('Partner reports tests', () => {
           cy.wrap(foundElement)
             .contains('mat-icon', 'person_off')
             .scrollIntoView()
-            .should(displayFlag)
+            .should(displayFlag);
         } else {
           cy.wrap(foundElement)
             .contains('mat-icon', 'person_off')
-            .should(displayFlag)
+            .should(displayFlag);
         }
-      })
+      });
   }
 
   function verifyIconsInProjectPartners(application, id, shouldIconsBeDisplayed) {
@@ -2517,7 +2574,7 @@ context('Partner reports tests', () => {
           cy.wrap(foundElement)
             .should(displayFlag);
         }
-      })
+      });
   }
 
   function verifyIconsInProjectPrivileges(application, partnerIdsToDisable, shouldIconsBeDisplayed) {
@@ -2531,7 +2588,7 @@ context('Partner reports tests', () => {
             .first()
             .scrollIntoView()
             .contains('mat-icon', 'person_off')
-            .should(displayFlag)
+            .should(displayFlag);
         });
       });
   }
@@ -2570,11 +2627,11 @@ context('Partner reports tests', () => {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
             .scrollIntoView()
-            .should('exist')
+            .should('exist');
         } else {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
-            .should('not.exist')
+            .should('not.exist');
         }
       });
   }
@@ -2589,11 +2646,11 @@ context('Partner reports tests', () => {
           cy.wrap(foundElement)
             .get(`mat-expansion-panel-header:contains("PP50")`)
             .scrollIntoView()
-            .should(displayFlag)
+            .should(displayFlag);
         } else {
           cy.wrap(foundElement)
             .get(`mat-expansion-panel-header:contains("PP50")`)
-            .should(displayFlag)
+            .should(displayFlag);
         }
       });
   }
@@ -2630,14 +2687,14 @@ context('Partner reports tests', () => {
         .should('exist');
 
       verifyIconsInProjectPartners(application, id, true);
-    })
+    });
   }
 
   function verify50PartnersLimit(applicationId) {
     loginByRequest(user.applicantUser.email).then(() => {
       cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
       cy.contains('Add new partner')
-        .should('not.exist')
+        .should('not.exist');
     });
   }
 
@@ -2651,9 +2708,9 @@ context('Partner reports tests', () => {
     cy.contains('mat-option', 'Staff costs').click();
     cy.get('mat-row').last().find('.mat-column-declaredAmount').scrollIntoView().click();
     cy.get('mat-row').last().find('.mat-column-declaredAmount').find('input').scrollIntoView().type(declaredAmountFormatted);
-    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner');
     cy.contains('Save changes').click();
-    cy.wait('@getPartner')
+    cy.wait('@getPartner');
   }
 
   function createLumpSumAsExpenditure() {
@@ -2661,9 +2718,9 @@ context('Partner reports tests', () => {
     cy.contains('add expenditure').click();
     cy.get('mat-row').last().find('.mat-column-costOptions').click();
     cy.contains('mat-option', 'Implementation Lump sum DE - Period 1').click();
-    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner');
     cy.contains('Save changes').click();
-    cy.wait('@getPartner')
+    cy.wait('@getPartner');
   }
 
   function createUnitCostsAsExpenditures() {
@@ -2674,9 +2731,9 @@ context('Partner reports tests', () => {
     cy.contains('add expenditure').click();
     cy.get('mat-row').last().find('.mat-column-costOptions').click();
     cy.contains('mat-option', 'Unit cost single - External DE').click();
-    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner');
     cy.contains('Save changes').click();
-    cy.wait('@getPartner')
+    cy.wait('@getPartner');
   }
 
   function submitPartnerReport() {
@@ -2786,8 +2843,121 @@ context('Partner reports tests', () => {
 
   //endregion
 
+  //region TB-936 METHODS
+  function addExpendituresAndSubmit(partnerId, reportId) {
+    cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+    cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures)
+      .then(response => {
+        for (let i = 0; i < response.length; i++) {
+          partnerParkedExpenditures[i].id = response[i].id;
+        }
+      });
+    cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+    cy.submitPartnerReport(partnerId, reportId);
+  }
+
+  function parkExpenditureRowByIndex(rowIndex) {
+    cy.contains('a', 'Expenditure verification').click();
+
+    cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle')
+      .eq(rowIndex)
+      .click();
+
+    cy.contains('button', 'Save changes')
+      .click();
+  }
+
+  function verifyParkedExpenditureRowByIndex(rowIndex, partOfSample, partOfSampleEnabled, certifiedAmount) {
+    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
+      .eq(rowIndex)
+      .should(partOfSample ? 'be.checked' : 'not.checked')
+      .should(partOfSampleEnabled ? 'be.enabled' : 'be.disabled');
+
+    cy.get('#expenditure-costs-table mat-cell.mat-column-certifiedAmount input')
+      .eq(rowIndex)
+      .should('have.value', formatAmount(certifiedAmount));
+  }
+
+  function verifyParkedOverviewRowByIndex(certifiedAmount) {
+    cy.get('.mat-tab-header-pagination-after').click();
+    cy.wait(200);
+    cy.contains('a', 'Overview and Finalize').click();
+
+    cy.get("#overview-of-control-work-table mat-cell.mat-column-inControlSample")
+      .should('be.visible')
+      .should('have.text', ` ${formatAmount(certifiedAmount)} `);
+  }
+
+  function deductExpenditureRowByIndex(rowIndex, deductedAmount, typologyOfError) {
+    cy.wait(300);
+    cy.get('#expenditure-costs-table mat-cell.mat-column-deductedAmount input')
+      .eq(rowIndex)
+      .clear()
+      .type(`${deductedAmount}`);
+
+    cy.get('#expenditure-costs-table mat-cell.mat-column-typologyOfErrorId mat-select')
+      .eq(rowIndex)
+      .click();
+    cy.get('mat-option').contains(typologyOfError).click();
+
+    cy.contains('button', 'Save changes')
+      .click();
+  }
+
+  function verifyDeductedExpenditureRowByIndex(rowIndex, partOfSample, partOfSampleEnabled, certifiedAmount) {
+    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
+      .eq(rowIndex)
+      .should(partOfSample ? 'be.checked' : 'not.checked')
+      .should(partOfSampleEnabled ? 'be.enabled' : 'be.disabled');
+
+    cy.get('#expenditure-costs-table mat-cell.mat-column-certifiedAmount input')
+      .eq(rowIndex)
+      .should('have.value', formatAmount(certifiedAmount));
+  }
+
+  function verifyDeductedOverviewRowByIndex(typologyOfError, certifiedAmount) {
+    cy.get('.mat-tab-header-pagination-after').click();
+    cy.wait(200);
+    cy.contains('a', 'Overview and Finalize').click();
+
+    cy.contains('#overview-of-deduction-table:last-of-type mat-row', typologyOfError)
+      .find('mat-cell.mat-column-total')
+      .should('have.text', formatAmount(certifiedAmount));
+  }
+
+  function finalizeControlWork() {
+    // Set Controller
+    cy.get('.mat-tab-header-pagination-before').click();
+    cy.wait(200);
+    cy.contains('Control Identification').click();
+    cy.get('input[name="controlUser"]').eq(0).click();
+    cy.get('mat-option:last-of-type').click();
+    cy.contains('button', 'Save changes').click();
+
+    // Finalize
+    cy.get('.mat-tab-header-pagination-after').click();
+    cy.contains('Overview and Finalize').should('be.visible').click();
+    cy.contains('Run pre-submission check').click();
+    cy.contains('button', 'Finalize control').should('be.enabled').click();
+    cy.contains('Confirm').click();
+  }
+
+  function verifyCannotEdit(applicationId, partnerId) {
+    cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+    cy.contains('mat-row', 'Certified')
+      .contains('button', 'Open controller work')
+      .click();
+
+    cy.contains('a', 'Expenditure verification').click();
+    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
+      .each((el) => cy.wrap(el).should('be.disabled'));
+    cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle input')
+      .each((el) => cy.wrap(el).should('be.disabled'));
+  }
+  //endregion
+
   function formatAmount(amount) {
-    return new Intl.NumberFormat('de-DE').format(amount);
+    return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
   }
 
 });
