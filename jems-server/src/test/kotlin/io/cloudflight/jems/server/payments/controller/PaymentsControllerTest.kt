@@ -51,6 +51,7 @@ class PaymentsControllerTest : UnitTest() {
         private const val projectId = 2L
         private const val partnerId = 3L
         private const val lumpSumId = 4L
+        private const val paymentClaimId = 5L
 
         private val call = createTestCallEntity(2)
         private val account = UserEntity(
@@ -79,8 +80,10 @@ class PaymentsControllerTest : UnitTest() {
         private val ftlsPaymentToProject = PaymentToProject(
             id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
+            projectId = project.id,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            paymentClaimId = null,
             paymentClaimNo = 0,
             fundId = 5L,
             fundName = fund.type.name,
@@ -96,8 +99,10 @@ class PaymentsControllerTest : UnitTest() {
         private val regularPaymentToProject = PaymentToProject(
             id = regularPaymentId,
             paymentType = PaymentType.REGULAR,
+            projectId = project.id,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            paymentClaimId = paymentClaimId,
             paymentClaimNo = projectReportNumber,
             fundId = 5L,
             fundName = fund.type.name,
@@ -293,8 +298,10 @@ class PaymentsControllerTest : UnitTest() {
             PaymentToProjectDTO(
                 id = ftlsPaymentId,
                 paymentType = PaymentTypeDTO.FTLS,
+                projectId = ftlsPaymentToProject.projectId,
                 projectCustomIdentifier = ftlsPaymentToProject.projectCustomIdentifier,
                 projectAcronym = ftlsPaymentToProject.projectAcronym,
+                paymentClaimId = null,
                 paymentClaimNo = ftlsPaymentToProject.paymentClaimNo,
                 paymentClaimSubmissionDate = ftlsPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
@@ -309,8 +316,10 @@ class PaymentsControllerTest : UnitTest() {
             PaymentToProjectDTO(
                 id = regularPaymentId,
                 paymentType = PaymentTypeDTO.REGULAR,
+                projectId = regularPaymentToProject.projectId,
                 projectCustomIdentifier = regularPaymentToProject.projectCustomIdentifier,
                 projectAcronym = regularPaymentToProject.projectAcronym,
+                paymentClaimId = regularPaymentToProject.paymentClaimId,
                 paymentClaimNo = regularPaymentToProject.paymentClaimNo,
                 paymentClaimSubmissionDate = regularPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,

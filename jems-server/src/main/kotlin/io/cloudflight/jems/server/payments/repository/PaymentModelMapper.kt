@@ -54,8 +54,10 @@ fun PaymentEntity.toDetailModel(
 ) = PaymentToProject(
     id = id,
     paymentType = type,
+    projectId = project.id,
     projectCustomIdentifier = this.projectCustomIdentifier,
     projectAcronym = this.projectAcronym,
+    paymentClaimId = if (type == PaymentType.FTLS) null else projectReport!!.id,
     paymentClaimNo = if (type == PaymentType.FTLS) 0 else projectReport!!.number,
     paymentClaimSubmissionDate = project.contractedDecision?.updated,
     lumpSumId = lumpSum?.programmeLumpSum?.id,
@@ -74,8 +76,10 @@ fun PaymentEntity.toDetailModel(
 fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
     id = payment.id,
     paymentType = payment.type,
+    projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentClaimId = payment.projectReport!!.id,
     paymentClaimNo = payment.projectReport!!.number,
     paymentClaimSubmissionDate = payment.projectReport?.firstSubmission,
     lumpSumId = null,
@@ -94,8 +98,10 @@ fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
 fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
     id = payment.id,
     paymentType = payment.type,
+    projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentClaimId = null,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
     lumpSumId = payment.projectLumpSum?.programmeLumpSum?.id,
