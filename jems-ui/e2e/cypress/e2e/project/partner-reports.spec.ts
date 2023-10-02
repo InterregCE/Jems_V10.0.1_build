@@ -2885,7 +2885,7 @@ context('Partner reports tests', () => {
 
     cy.get("#overview-of-control-work-table mat-cell.mat-column-inControlSample")
       .should('be.visible')
-      .should('have.text', ` ${formatAmount(certifiedAmount)} `);
+      .should('have.text', `${formatAmount(certifiedAmount)}`);
   }
 
   function deductExpenditureRowByIndex(rowIndex, deductedAmount, typologyOfError) {
