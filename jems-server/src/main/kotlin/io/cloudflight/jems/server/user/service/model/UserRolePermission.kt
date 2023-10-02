@@ -90,6 +90,11 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView", true),
     ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit", true),
+
+    ProjectMonitorAuditAndControlView("ProjectMonitorAuditAndControlView", true),
+    ProjectMonitorAuditAndControlEdit("ProjectMonitorAuditAndControlEdit", true),
+    ProjectMonitorCloseAuditControl("ProjectMonitorCloseAuditControl", true),
+    ProjectMonitorCloseAuditControlCorrection("ProjectMonitorCloseAuditControlCorrection", true),
     // endregion Monitor
 
     // region top navigation

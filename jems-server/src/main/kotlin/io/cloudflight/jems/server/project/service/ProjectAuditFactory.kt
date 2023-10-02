@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
@@ -25,11 +26,8 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 fun projectApplicationCreated(
     context: Any,
@@ -374,6 +372,21 @@ fun projectContractingPartnerDocumentsLocationChanged(
         auditCandidate = AuditBuilder(AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE)
             .project(projectSummary)
             .description("Documents Location fields changed for partner ${getPartnerName(partner)}:\n$changes")
+            .build()
+    )
+}
+
+
+fun projectAuditControlCreated(
+    context: Any,
+    projectSummary: ProjectSummary,
+    auditControl: ProjectAuditControl
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
+            .project(projectSummary)
+            .description("Audit/control number A${auditControl.projectCustomIdentifier}${auditControl.id} is created")
             .build()
     )
 }
