@@ -621,7 +621,7 @@ context('Control report tests', () => {
           cy.visit(`/app/controller/`, {failOnStatusCode: false});
           cy.contains('div', testData.controllerInstitution.updatedName).parents('mat-row').find('.mat-column-anchor').click();
           cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.name);
-          cy.contains('button', 'Save changes').click();
+          cy.contains('button', 'Save changes').should('be.visible').click();
 
           //check if institution was not updated
           cy.loginByRequest(testData.controllerUser1.email);

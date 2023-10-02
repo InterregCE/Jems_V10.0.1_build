@@ -8,6 +8,7 @@ import partnerReportExpenditures from "../../fixtures/api/partnerReport/partnerR
 import partnerParkedExpenditures from "../../fixtures/api/partnerReport/partnerParkedExpenditures.json";
 import approvalInfo from "../../fixtures/api/application/modification/approval.info.json";
 import partner from '../../fixtures/api/application/partner/partner.json';
+import {partnerReportPage} from "./partner-reports.pom";
 
 const costCategories = [
   'Travel and accommodation',
@@ -1358,67 +1359,12 @@ context('Partner reports tests', () => {
 
             //Group order 1
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
-            //check expenditure summary table
-            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '2.980,43');
-            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '728,21');
-            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '1.258,75');
-            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '460,62');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '534,54');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '263,57');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 're-included 0,00');
-
-            //check expenditure breakdown per cost category table
-            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '435,56');
-            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '43,55');
-            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '200,16');
-            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '187,33');
-            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '555,55');
-            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '1.234,80');
-            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', '2.000,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 're-included 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '310,44');
-            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 're-included 0,00');
-
-            //check expenditure breakdown per lump sum
-            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', '2.000,00');
-            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 're-included 0,00');
-
-            //check expenditure breakdown per unit cost
-            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '310,44');
-            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 'parked 0,00');
-            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 're-included 0,00');
-
-
+            partnerReportPage.verifyAmountsInTables(testData.expectedResults.group1); // TODO replace all amount verifications below with this method
+            
             //Group Order 2
             cy.loginByRequest(user.admin.email);
             cy.createTypologyOfErrors(testData.typologyOfErrors);
-            testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+            testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
             testData.controllerUserEdit.email = faker.internet.email();
             cy.createRole(testData.controllerRole).then(roleId => {
               testData.controllerUserEdit.userRoleId = roleId;
@@ -1851,7 +1797,7 @@ context('Partner reports tests', () => {
   //region TB-738 METHODS
   function createControllerUser(testData, partnerId1) {
     cy.loginByRequest(user.admin.email);
-    testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+    testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
     testData.controllerUser.email = faker.internet.email();
 
     cy.createRole(testData.controllerRole)
@@ -2959,5 +2905,4 @@ context('Partner reports tests', () => {
   function formatAmount(amount) {
     return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
   }
-
 });

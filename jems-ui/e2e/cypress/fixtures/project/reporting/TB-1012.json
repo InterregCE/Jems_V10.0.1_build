@@ -1,12 +1,12 @@
 {
   "typologyOfErrors": {
-    "toPersist":[
+    "toPersist": [
       {
-        "id":null,
-        "description":"Typology of Error"
+        "id": null,
+        "description": "Typology of Error"
       }
     ],
-    "toDeleteIds":[]
+    "toDeleteIds": []
   },
   "partnerCollaborator": [
     {
@@ -283,5 +283,101 @@
       "unitCostId": 6,
       "gdpr": ""
     }
-  ]
+  ],
+  "expectedResults": {
+    "group1": {
+      "co-financing": {
+        "ERDF": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "2.980,43 re-included 0,00"
+        },
+        "Other fund EN": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "728,21 re-included 0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "1.258,75 re-included 0,00"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "460,62 re-included 0,00"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "534,54 re-included 0,00"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "263,57 re-included 0,00"
+        },
+        "Total": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "4.967,39 re-included 0,00"
+        }
+      },
+      "cost-category": {
+        "Staff costs": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "435,56 re-included 0,00"
+        },
+        "Office and administrative costs": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "43,55 re-included 0,00"
+        },
+        "Travel and accommodation": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "200,16 re-included 0,00"
+        },
+        "External expertise and services": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "187,33 re-included 0,00"
+        },
+        "Equipment": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "555,55 re-included 0,00"
+        },
+        "Infrastructure and works": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "1.234,80 re-included 0,00"
+        },
+        "Other costs": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "0,00 re-included 0,00"
+        },
+        "Lump sum": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "2.000,00 re-included 0,00"
+        },
+        "Unit Costs": {
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "310,44 re-included 0,00"
+        },
+        "Total": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "4.967,39 re-included 0,00"
+        }
+      },
+      "lump-sum": {
+        "Implementation Lump sum DE": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "2.000,00 re-included 0,00"
+        },
+        "Total": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "2.000,00 re-included 0,00"
+        }
+      },
+      "unit-cost": {
+        "Unit cost multi - all DE": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "310,44 re-included 0,00"
+        },
+        "Total": {
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "310,44 re-included 0,00"
+        }
+      }
+    }
+  }
 }
