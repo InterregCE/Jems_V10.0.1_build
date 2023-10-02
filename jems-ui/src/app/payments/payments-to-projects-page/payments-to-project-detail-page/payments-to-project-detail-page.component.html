@@ -71,7 +71,9 @@
                             </div>
                             <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
                             <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-left">
-                                {{'payment.detail.table.partner.report.number.abbreviation' | translate : {number: partnerPayment.partnerReportNumber} }}
+                                <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId +'/reporting/'+ partnerPayment.partnerId +'/reports/' + partnerPayment.partnerReportId">
+                                    {{'payment.detail.table.partner.report.number.abbreviation' | translate : {number: partnerPayment.partnerReportNumber} }}
+                                </a>
                             </div>
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
                             <div class="column-payments-remaining justify-end">{{this.getUnauthorisedAmountForIndex(index) | asMoney}}</div>

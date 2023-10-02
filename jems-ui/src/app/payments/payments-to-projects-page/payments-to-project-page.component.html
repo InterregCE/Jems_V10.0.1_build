@@ -116,7 +116,8 @@
 
 <ng-template #claimNoCell let-payment>
     <span *ngIf="payment.paymentType === PaymentTypeEnum.FTLS">{{payment.paymentClaimNo}}</span>
-    <span *ngIf="payment.paymentType === PaymentTypeEnum.REGULAR">
+    <a *ngIf="payment.paymentType === PaymentTypeEnum.REGULAR"
+       [routerLink]="'/app/project/detail/' + payment.projectId + '/projectReports/' + payment.paymentClaimId">
         {{'payments.payment.to.project.table.column.payment.project.report.id.abbreviation' | translate : {id: payment.paymentClaimNo} }}
-    </span>
+    </a>
 </ng-template>

@@ -32,8 +32,10 @@ import org.mapstruct.factory.Mappers
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
+    projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
+    paymentClaimId = paymentClaimId,
     paymentClaimNo = paymentClaimNo,
     paymentClaimSubmissionDate = paymentClaimSubmissionDate,
     paymentApprovalDate = paymentApprovalDate,

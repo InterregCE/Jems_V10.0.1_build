@@ -361,8 +361,10 @@ class PaymentPersistenceProviderTest: UnitTest() {
         private val expectedPayments = PaymentToProject(
             id = paymentId,
             paymentType = PaymentType.FTLS,
+            projectId = dummyProject.id,
             projectCustomIdentifier = dummyProject.customIdentifier,
             projectAcronym = "Test Project",
+            paymentClaimId = null,
             paymentClaimNo = 0,
             fundName = "OTHER",
             fundId = fundId,
@@ -421,8 +423,10 @@ class PaymentPersistenceProviderTest: UnitTest() {
         private val expectedFtlsPayment = PaymentToProject(
             id = paymentId,
             paymentType = PaymentType.FTLS,
+            projectId = projectId,
             projectCustomIdentifier = "proj-cust",
             projectAcronym = "proj-acr",
+            paymentClaimId = null,
             paymentClaimNo = 0,
             paymentClaimSubmissionDate = weekBefore,
             lumpSumId = 50L,
@@ -441,8 +445,10 @@ class PaymentPersistenceProviderTest: UnitTest() {
         private val expectedRegularPayment = expectedFtlsPayment.copy(
             id = paymentId,
             paymentType = PaymentType.REGULAR,
+            projectId = projectId,
             projectCustomIdentifier = "proj-cust",
             projectAcronym = "proj-acr",
+            paymentClaimId = 777L,
             paymentClaimNo = 23,
             paymentClaimSubmissionDate = yesterday,
             lumpSumId = null,

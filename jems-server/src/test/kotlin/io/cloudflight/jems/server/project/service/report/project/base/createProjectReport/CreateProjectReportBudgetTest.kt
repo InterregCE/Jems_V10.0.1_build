@@ -142,8 +142,10 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     private val payment = PaymentToProject(
         id = 1L,
         paymentType = PaymentType.FTLS,
+        projectId = 2L,
         projectCustomIdentifier = "PR1",
         projectAcronym = "Test Project",
+        paymentClaimId = null,
         paymentClaimNo = 0,
         lumpSumId = 45L,
         orderNr = 16,
