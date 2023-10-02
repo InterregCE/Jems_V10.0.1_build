@@ -49,6 +49,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         private val CONTRIB_4_ID = UUID.randomUUID()
 
         private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
+        private val MIN_NUMBER = BigDecimal.valueOf(-999_999_999_99, 2)
 
         private val UPLOADED = ZonedDateTime.now()
 
@@ -325,7 +326,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
     @Test
     fun `update - wrong inputs`() {
         val bigValue = BigDecimal.valueOf(999_999_999_991, 3)
-        val minusValue = BigDecimal.valueOf(-1, 5)
+        val minusValue = BigDecimal.valueOf(-999_999_999_991, 3)
 
         val slotValue = mutableListOf<BigDecimal>()
         val slotValueName = mutableListOf<String>()
@@ -345,7 +346,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
                         UpdateProjectPartnerReportContributionCustom(
                             sourceOfContribution = getStringOfLength(256),
                             legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
-                            currentlyReported = BigDecimal.valueOf(-1, 5),
+                            currentlyReported = BigDecimal.valueOf(-999_999_999_991, 3),
                         )
                     ),
                 )
@@ -353,7 +354,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         }
 
         verify(exactly = 2) { generalValidator.maxLength(any<String>(), 255, any()) }
-        verify(exactly = 2) { generalValidator.numberBetween(any(), BigDecimal.ZERO, MAX_NUMBER, any()) }
+        verify(exactly = 2) { generalValidator.numberBetween(any(), MIN_NUMBER, MAX_NUMBER, any()) }
 
         assertThat(slotValue).containsExactly(minusValue, bigValue)
         assertThat(slotValueName).containsExactly("new.currentlyReported[0]", "currentlyReported[0]")

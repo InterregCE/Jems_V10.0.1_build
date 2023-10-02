@@ -29,7 +29,7 @@ class UpdateProjectPartnerReportContribution(
 
     companion object {
         private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
-        private val MIN_NUMBER = BigDecimal.ZERO
+        private val MIN_NUMBER = BigDecimal.valueOf(-999_999_999_99, 2)
 
         private const val MAX_AMOUNT_OF_CONTRIBUTIONS = 25
     }
