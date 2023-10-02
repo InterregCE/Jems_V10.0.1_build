@@ -84,12 +84,12 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   ngOnInit(): void {
     this.data$ = combineLatest([this.partnerPage$, this.projectStore.projectCallType$, this.projectStore.projectStatus$, this.projectStore.projectEditable$])
       .pipe(
+        tap(([partnerPage, projectCallType, projectStatus, projectEditable]) => this.totalElements = partnerPage.totalElements),
         map(([partnerPage, projectCallType, projectStatus, projectEditable]) => ({
           tableRows: this.getProjectPartnerSummary(partnerPage, projectEditable),
           projectCallType,
           projectStatus,
         })),
-        tap(data => this.totalElements = data.tableRows.length),
         tap(data => this.generateTableConfiguration(data.projectCallType === CallTypeEnum.STANDARD ? '' : 'spf.', data.projectStatus)),
       );
   }

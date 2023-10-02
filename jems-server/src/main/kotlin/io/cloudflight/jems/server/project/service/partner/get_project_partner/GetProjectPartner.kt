@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
+import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -34,20 +35,7 @@ class GetProjectPartner(
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
         val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version)
 
-        return PageImpl(partnerBudgets.map {
-            ProjectBudgetPartnerSummary(
-                partnerSummary = ProjectPartnerSummary(
-                    id = it.partner.id,
-                    abbreviation = it.partner.abbreviation,
-                    active = it.partner.active,
-                    role = it.partner.role,
-                    sortNumber = it.partner.sortNumber,
-                    country = it.partner.country,
-                    region = it.partner.region
-                ),
-                totalBudget = it.totalCosts
-            )
-        }, page, partnerBudgets.size.toLong())
+        return PageImpl(partnerBudgets.toSummary(), page, partnersPage.totalElements)
     }
 
     @CanRetrieveProjectPartner
@@ -81,4 +69,19 @@ class GetProjectPartner(
         version: String?
     ): List<ProjectPartnerPaymentSummary> =
         persistence.findAllByProjectIdWithContributionsForDropdown(projectId, version)
+
+    fun List<PartnerBudget>.toSummary() = map {
+        ProjectBudgetPartnerSummary(
+            partnerSummary = ProjectPartnerSummary(
+                id = it.partner.id,
+                abbreviation = it.partner.abbreviation,
+                active = it.partner.active,
+                role = it.partner.role,
+                sortNumber = it.partner.sortNumber,
+                country = it.partner.country,
+                region = it.partner.region
+            ),
+            totalBudget = it.totalCosts
+        )
+    }
 }
