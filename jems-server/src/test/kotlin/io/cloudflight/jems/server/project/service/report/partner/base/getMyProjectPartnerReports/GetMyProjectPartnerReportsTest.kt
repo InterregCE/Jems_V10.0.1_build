@@ -11,7 +11,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReport
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,7 +25,6 @@ internal class GetMyProjectPartnerReportsTest: UnitTest() {
 
     companion object {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
-        private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val DAYS_AGO_2 = YESTERDAY.minusDays(1)
 
         private fun report(id: Long, status: ReportStatus, projectId: Long, partnerId: Long) = ProjectPartnerReportSummary(
@@ -42,7 +40,7 @@ internal class GetMyProjectPartnerReportsTest: UnitTest() {
             version = "V4.4",
             firstSubmission = YESTERDAY,
             lastReSubmission = DAYS_AGO_2,
-            controlEnd = HOUR_AGO,
+            controlEnd = null,
             createdAt = DAYS_AGO_2,
             startDate = null,
             endDate = null,
@@ -55,7 +53,7 @@ internal class GetMyProjectPartnerReportsTest: UnitTest() {
             ),
             projectReportId = 648L,
             projectReportNumber = 649,
-            totalEligibleAfterControl = BigDecimal.TEN,
+            totalEligibleAfterControl = null,
             totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
         )

@@ -22,7 +22,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'jems-partner-report-list',
+  selector: 'jems-partner-report',
   templateUrl: './partner-report.component.html',
   styleUrls: ['./partner-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

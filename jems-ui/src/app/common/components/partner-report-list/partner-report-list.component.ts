@@ -51,7 +51,7 @@ export class PartnerReportListComponent implements OnInit {
         map(([page]) => ({
           page,
         })),
-        tap(data => this.generateTableConfiguration())
+        tap(_ => this.generateTableConfiguration())
       );
   }
 

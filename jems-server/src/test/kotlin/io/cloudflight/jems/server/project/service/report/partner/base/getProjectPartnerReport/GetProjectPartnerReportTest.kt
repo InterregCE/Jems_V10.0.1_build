@@ -85,15 +85,15 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             PageImpl(ReportStatus.values().map { report(10L + it.ordinal, it) })
 
         assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
-            report(10L, ReportStatus.Draft).copy(deletable = isDeletable, totalEligibleAfterControl = null, totalAfterSubmitted = null),
-            report(11L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
-            report(12L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
-            report(13L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
-            report(14L, ReportStatus.InControl).copy(totalEligibleAfterControl = null),
-            report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null),
-            report(16L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null),
+            report(10L, ReportStatus.Draft).copy(deletable = isDeletable, totalEligibleAfterControl = null, totalAfterSubmitted = null, controlEnd = null),
+            report(11L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(12L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null, controlEnd = null),
+            report(13L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(14L, ReportStatus.InControl).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null, controlEnd = null),
+            report(16L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null, controlEnd = null),
             report(17L, ReportStatus.Certified),
-            report(18L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null),
+            report(18L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null, controlEnd = null),
         )
     }
 
@@ -120,16 +120,17 @@ internal class GetProjectPartnerReportTest : UnitTest() {
                     ReportStatus.ReOpenSubmittedLast,
                     ReportStatus.ReOpenInControlLast,
                 )) null else BigDecimal.ONE,
+                controlEnd = if (status == ReportStatus.Certified) HOUR_AGO else null
             ),
-            report(21L, ReportStatus.Draft).copy(deletable = false, totalEligibleAfterControl = null, totalAfterSubmitted = null),
-            report(22L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
-            report(23L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
-            report(24L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
-            report(25L, ReportStatus.InControl).copy(totalEligibleAfterControl = null),
-            report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null),
-            report(27L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null),
+            report(21L, ReportStatus.Draft).copy(deletable = false, totalEligibleAfterControl = null, totalAfterSubmitted = null, controlEnd = null),
+            report(22L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(23L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null, controlEnd = null),
+            report(24L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(25L, ReportStatus.InControl).copy(totalEligibleAfterControl = null, controlEnd = null),
+            report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null, totalEligibleAfterControl = null, controlEnd = null),
+            report(27L, ReportStatus.ReOpenInControlLimited).copy(totalEligibleAfterControl = null, controlEnd = null),
             report(28L, ReportStatus.Certified),
-            report(29L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null),
+            report(29L, ReportStatus.ReOpenCertified).copy(totalEligibleAfterControl = null, controlEnd = null),
         )
     }
 
