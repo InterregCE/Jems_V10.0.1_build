@@ -206,7 +206,7 @@ context('Payments tests', () => {
     });
   });
 
-  it('TB-1018 Payment section population with FTLS info', function () {
+  it('TB-1018 FTLS in partner report overviews', function () {
     cy.fixture('payments/TB-1018.json').then(testData => {
       cy.fixture('api/call/1.step.call.json').then(call => {
         cy.fixture('api/application/application.json').then(application => {
