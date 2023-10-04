@@ -7,13 +7,20 @@ import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
+import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -26,6 +33,7 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
     val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
 
     val specPayment = QPaymentEntity.paymentEntity
+    val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
     val dfg = when (orderBy.property) {
         "type" -> specPayment.type
         "projectCustomIdentifier" -> specPayment.projectCustomIdentifier
@@ -37,6 +45,7 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         "projectReport.verificationEndDate" -> CaseBuilder().`when`(specPayment.type.eq(PaymentType.FTLS))
             .then(specPayment.projectLumpSum.paymentEnabledDate)
             .otherwise(specPayment.projectReport.verificationEndDate)
+        "ecId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
         else -> specPayment.id
     }
 
@@ -49,7 +58,11 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
         amountPaid = it.get(1, BigDecimal::class.java),
         amountAuthorized  = it.get(2, BigDecimal::class.java),
         lastPaymentDate = it.get(3, LocalDate::class.java),
-        totalEligibleForRegular = it.get(4, BigDecimal::class.java)
+        totalEligibleForRegular = it.get(4, BigDecimal::class.java),
+        projectFallsUnderArticle94 = it.get(5, ContractingMonitoringExtendedOption::class.java),
+        projectFallsUnderArticle95 = it.get(6, ContractingMonitoringExtendedOption::class.java),
+        code = it.get(7, String::class.java),
+        paymentToEcExtensionEntity = it.get(8, PaymentToEcExtensionEntity::class.java),
     ) },
     pageable,
     total,
@@ -59,6 +72,8 @@ fun PaymentSearchRequest.transformToWhereClause(
     qPayment: QPaymentEntity,
     qProjectLumpSum: QProjectLumpSumEntity,
     qProjectReport: QProjectReportEntity,
+    specProjectContracting: QProjectContractingMonitoringEntity,
+    specPaymentToEcExtension: QPaymentToEcExtensionEntity,
 ): BooleanExpression? {
     val expressions = mutableListOf<BooleanExpression>()
 
@@ -102,18 +117,31 @@ fun PaymentSearchRequest.transformToWhereClause(
             qProjectReport.verificationEndDate.loe(paymentApprovalDateTo),
         ).joinWithOr())
 
-    if (this.fundIds.isNotEmpty())
+    if (fundIds.isNotEmpty())
         expressions.add(qPayment.fund.id.`in`(this.fundIds))
+
+    if (availableForEcId != null)
+        expressions.add(specPaymentToEcExtension.paymentApplicationToEc.isNull.or(specPaymentToEcExtension.paymentApplicationToEc.id.eq(availableForEcId)))
+
+    if (scoBasis != null) {
+        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
+            .and(specProjectContracting.typologyProv95.eq(No))
+        when (scoBasis) {
+            DoesNotFallUnderArticle94Nor95 ->
+                expressions.add(scoBasisFilter)
+            FallsUnderArticle94Or95 ->
+                expressions.add(scoBasisFilter.not())
+        }
+    }
 
     return expressions.joinWithAnd()
 }
 
 private fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
-private fun Collection<BooleanExpression>.joinWithAnd() =
+fun Collection<BooleanExpression>.joinWithAnd() =
     if (isEmpty()) null else reduce { f, s -> f.and(s) }
 
-fun PaymentSearchRequest.transformToHavingClause(): BooleanExpression? {
-    val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+fun PaymentSearchRequest.transformToHavingClause(specPaymentPartnerInstallment: QPaymentPartnerInstallmentEntity): BooleanExpression? {
     val expressions = mutableListOf<BooleanExpression>()
 
     if (this.lastPaymentDateFrom != null)

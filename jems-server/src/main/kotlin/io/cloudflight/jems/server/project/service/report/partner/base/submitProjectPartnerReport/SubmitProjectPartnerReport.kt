@@ -34,6 +34,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.onlyReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getCurrentForInvestments
@@ -193,14 +194,14 @@ class SubmitProjectPartnerReport(
                         currentValueToSplit = currentReport,
                         funds = report.identification.coFinancing,
                     )
-                ),
+                ).toColumn(),
                 currentReIncluded = getCurrentFrom(
                     contributions.generateCoFinCalculationInputData(
                         totalEligibleBudget = totalEligibleBudget,
                         currentValueToSplit = currentReportReIncluded,
                         funds = report.identification.coFinancing,
                     )
-                )
+                ).toColumn(),
             )
         )
     }

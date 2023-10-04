@@ -1,8 +1,8 @@
-package io.cloudflight.jems.server.payments.controller
+package io.cloudflight.jems.server.payments.controller.applicationToEc
 
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
-import io.cloudflight.jems.api.payments.PaymentApplicationToEcAttachmentApi
+import io.cloudflight.jems.api.payments.applicationToEc.PaymentApplicationToEcAttachmentApi
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.attachment.deletePaymentToEcAttachment.DeletePaymentToEcAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.attachment.downloadPaymentToEcAttachment.DownloadPaymentToEcAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.attachment.getPaymentToEcAttachment.GetPaymentToEcAttachmentInteractor

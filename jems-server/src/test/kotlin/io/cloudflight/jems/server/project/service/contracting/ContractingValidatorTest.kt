@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ManagementType
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
@@ -284,8 +286,11 @@ class ContractingValidatorTest : UnitTest() {
                 ProjectContractingMonitoringAddDate(projectID, 25, LocalDate.parse("2022-07-28")),
                 ProjectContractingMonitoringAddDate(projectID, 26, LocalDate.parse("2022-07-29")),
             ),
-            dimensionCodes = emptyList()
-
+            dimensionCodes = emptyList(),
+            typologyProv94 = ContractingMonitoringExtendedOption.No,
+            typologyProv95 = ContractingMonitoringExtendedOption.No,
+            typologyStrategic = ContractingMonitoringOption.No,
+            typologyPartnership = ContractingMonitoringOption.No,
         )
 
         val ex = assertThrows<AppInputValidationException> {

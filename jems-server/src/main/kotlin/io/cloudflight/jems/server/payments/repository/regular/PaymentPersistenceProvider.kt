@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
+import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -8,9 +9,12 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
@@ -20,11 +24,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
 import io.cloudflight.jems.server.payments.repository.toFTLSPaymentEntity
@@ -34,7 +40,11 @@ import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.payments.repository.toRegularPaymentEntity
 import io.cloudflight.jems.server.payments.repository.toRegularPaymentModel
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.project.entity.QProjectEntity
+import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
@@ -44,6 +54,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
@@ -73,6 +84,7 @@ class PaymentPersistenceProvider(
     private val projectReportRepository: ProjectReportRepository,
     private val fileRepository: JemsProjectFileService,
     private val projectPartnerReportRepository: ProjectPartnerReportRepository,
+    private val paymentToEcExtensionRepository: PaymentToEcExtensionRepository,
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentPersistence {
 
@@ -90,6 +102,26 @@ class PaymentPersistenceProvider(
         }
     }
 
+    override fun getAllPaymentToEcPayment(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToEcPayment> {
+        return fetchPayments(pageable, filters).map {
+            PaymentToEcPayment(
+                payment = when(it.payment.type) {
+                    PaymentType.REGULAR -> it.toRegularPaymentModel()
+                    PaymentType.FTLS -> it.toFTLSPaymentModel()
+                },
+                paymentToEcId = it.paymentToEcExtensionEntity!!.paymentApplicationToEc?.id,
+                partnerContribution = it.paymentToEcExtensionEntity.partnerContribution,
+                publicContribution = it.paymentToEcExtensionEntity.publicContribution,
+                correctedPublicContribution = it.paymentToEcExtensionEntity.correctedPublicContribution,
+                autoPublicContribution = it.paymentToEcExtensionEntity.autoPublicContribution,
+                correctedAutoPublicContribution = it.paymentToEcExtensionEntity.correctedAutoPublicContribution,
+                privateContribution = it.paymentToEcExtensionEntity.privateContribution,
+                correctedPrivateContribution = it.paymentToEcExtensionEntity.correctedPrivateContribution,
+                priorityAxis = it.code!!,
+            )
+        }
+    }
+
     private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
         val specPayment = QPaymentEntity.paymentEntity
         val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
@@ -97,6 +129,11 @@ class PaymentPersistenceProvider(
         val specPartnerReportCertificateCoFin = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
         val specProjectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
         val specProjectReport = QProjectReportEntity.projectReportEntity
+        val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        val specProjectEntity = QProjectEntity.projectEntity
+        val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        val specProgrammePriorityEntity = QProgrammePriorityEntity.programmePriorityEntity
+        val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
 
         val results = jpaQueryFactory
             .select(
@@ -104,7 +141,11 @@ class PaymentPersistenceProvider(
                 specPaymentPartnerInstallment.amountPaid(),
                 specPaymentPartnerInstallment.amountAuthorized(),
                 specPaymentPartnerInstallment.paymentDate.max(),
-                specPartnerReportCertificateCoFin.sumCurrentVerified
+                specPartnerReportCertificateCoFin.sumCurrentVerified,
+                specProjectContracting.typologyProv94,
+                specProjectContracting.typologyProv95,
+                specProgrammePriorityEntity.code,
+                specPaymentToEcExtensionEntity,
             )
             .from(specPayment)
             .leftJoin(specPaymentPartner)
@@ -117,9 +158,19 @@ class PaymentPersistenceProvider(
                 .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
             .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
                 .on(specProjectReport.id.eq(specPayment.projectReport.id))
-            .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport))
+            .leftJoin(specProjectContracting)
+                .on(specProjectContracting.projectId.eq(specPayment.project.id))
+            .leftJoin(specProjectEntity)
+                .on(specProjectEntity.id.eq(specPayment.project.id))
+            .leftJoin(specProgrammeSpecificObjectiveEntity)
+                .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .leftJoin(specProgrammePriorityEntity)
+                .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+            .leftJoin(specPaymentToEcExtensionEntity)
+                .on(specPaymentPartner.payment.id.eq(specPaymentToEcExtensionEntity.paymentId))
+            .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
             .groupBy(specPayment)
-            .having(filters.transformToHavingClause())
+            .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())
@@ -152,14 +203,13 @@ class PaymentPersistenceProvider(
     }
 
     @Transactional
-    override fun deleteAllByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>) {
-        paymentRepository.deleteAllByProjectIdAndOrderNr(projectId, orderNr)
-    }
+    override fun deleteFTLSByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>) =
+        paymentRepository.deleteAllByProjectIdAndProjectLumpSumIdOrderNrInAndType(projectId, orderNr, PaymentType.FTLS)
 
     @Transactional
     override fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(
         projectId: Long,
-        orderNrsToBeAdded: MutableSet<Int>
+        orderNrsToBeAdded: Set<Int>,
     ): List<PaymentPerPartner> =
         paymentRepository
             .getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
@@ -172,19 +222,33 @@ class PaymentPersistenceProvider(
             model.toFTLSPaymentEntity(
                 projectEntity = projectEntity,
                 lumpSum = projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, id.orderNr),
-                fundEntity = fundRepository.getById(id.programmeFundId)
+                fundEntity = fundRepository.getById(id.programmeFundId),
             )
         }).associateBy { PaymentGroupingId(it.projectLumpSum!!.id.orderNr, it.fund.id) }
 
         paymentEntities.forEach { (paymentId, entity) ->
+            val toCreate = paymentsToBeSaved[paymentId]!!
             paymentPartnerRepository.saveAll(
-                paymentsToBeSaved[paymentId]!!.partnerPayments.map {
+                toCreate.partnerPayments.map {
                     it.toEntity(
                         paymentEntity = entity,
                         partnerEntity = projectPartnerRepository.getById(it.partnerId),
                         partnerReportEntity = null
                     )
                 }
+            )
+            paymentToEcExtensionRepository.save(
+                PaymentToEcExtensionEntity(
+                    paymentId = entity.id,
+                    payment = entity,
+                    autoPublicContribution = toCreate.defaultOfWhichAutoPublic,
+                    correctedAutoPublicContribution = toCreate.defaultOfWhichAutoPublic,
+                    partnerContribution = toCreate.defaultPartnerContribution,
+                    privateContribution = toCreate.defaultOfWhichPrivate,
+                    correctedPrivateContribution = toCreate.defaultOfWhichPrivate,
+                    publicContribution = toCreate.defaultOfWhichPublic,
+                    correctedPublicContribution = toCreate.defaultOfWhichPublic
+                )
             )
         }
     }
@@ -289,7 +353,7 @@ class PaymentPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentsByProjectId(projectId: Long): List<PaymentToProject> {
         return paymentRepository.findAllByProjectId(projectId).toListModel(
-            getConfirm = { id -> getConfirmedInfosForPayment(id) }
+            getConfirm = { id -> getConfirmedInfosForPayment(id) },
         )
     }
 
@@ -339,6 +403,36 @@ class PaymentPersistenceProvider(
         )
     }
 
+    override fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long> {
+        val specPayment = QPaymentEntity.paymentEntity
+        val specPaymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+        val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        val whereExpressions = mutableListOf<BooleanExpression>(
+            specPayment.fund.id.eq(fundId),
+            // this will be removed with next story so also regular ones are linked automatically
+            specPayment.type.eq(PaymentType.FTLS),
+            specPaymentToEcExtension.paymentApplicationToEc.isNull(),
+        )
+
+        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
+            .and(specProjectContracting.typologyProv95.eq(No))
+
+        if (basis == PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
+            whereExpressions.add(scoBasisFilter)
+        else
+            whereExpressions.add(scoBasisFilter.not())
+
+        return jpaQueryFactory
+            .select(specPayment.id)
+            .from(specPayment)
+            .leftJoin(specPaymentToEcExtension)
+                .on(specPayment.id.eq(specPaymentToEcExtension.paymentId))
+            .leftJoin(specProjectContracting)
+                .on(specProjectContracting.projectId.eq(specPayment.project.id))
+            .where(whereExpressions.joinWithAnd())
+            .fetch().toSet()
+    }
+
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
             userRepository.getById(userId)
@@ -349,4 +443,5 @@ class PaymentPersistenceProvider(
 
     private fun QPaymentPartnerInstallmentEntity.amountAuthorized() =
         CaseBuilder().`when`(this.isSavePaymentInfo.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
+
 }

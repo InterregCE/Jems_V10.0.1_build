@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.repository.regular
 
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentRow
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
@@ -27,9 +27,7 @@ interface PaymentRepository: JpaRepository<PaymentEntity, Long> {
                 ORDER BY programme_fund_id """, nativeQuery = true)
     fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId: Long, orderNr: Set<Int>): List<PaymentRow>
 
-    @Modifying
-    @Query("DELETE FROM #{#entityName} WHERE project_id = :projectId AND order_nr IN :orderNr", nativeQuery = true)
-    fun deleteAllByProjectIdAndOrderNr(projectId: Long, orderNr: Set<Int>): List<PaymentEntity>
+    fun deleteAllByProjectIdAndProjectLumpSumIdOrderNrInAndType(projectId: Long, orderNr: Set<Int>, type: PaymentType)
 
     fun findAllByProjectId(projectId: Long): List<PaymentEntity>
 

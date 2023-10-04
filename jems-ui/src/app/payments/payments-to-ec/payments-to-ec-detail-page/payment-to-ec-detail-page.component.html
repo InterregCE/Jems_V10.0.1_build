@@ -40,6 +40,11 @@
         <mat-tab label="{{'payments.to.ec.detail.summary.tab' | translate}}" id="summaryTab" >
             <jems-payments-application-to-ec-summary-tab jemsNoWidthLimit></jems-payments-application-to-ec-summary-tab>
         </mat-tab>
+
+        <mat-tab *ngIf="data.paymentDetail.id" label="{{'payments.to.ec.detail.ftls.tab' | translate}}" id="ftlsTab" >
+            <jems-payments-application-to-ec-ftls-tab jemsNoWidthLimit></jems-payments-application-to-ec-ftls-tab>
+        </mat-tab>
+
     </mat-tab-group>
 
     <jems-alert *ngIf="finalizeError$ | async as error"

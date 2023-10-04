@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.contracting.monitoring
 
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import org.springframework.stereotype.Repository
@@ -17,7 +19,15 @@ class ContractingMonitoringPersistenceProvider(
             .let {
                 when {
                     it.isPresent -> it.get().toModel()
-                    else -> ProjectContractingMonitoring(projectId = projectId, addDates = emptyList(), dimensionCodes = emptyList())
+                    else -> ProjectContractingMonitoring(
+                        projectId = projectId,
+                        addDates = emptyList(),
+                        dimensionCodes = emptyList(),
+                        typologyPartnership = ContractingMonitoringOption.No,
+                        typologyProv94 = ContractingMonitoringExtendedOption.No,
+                        typologyProv95 = ContractingMonitoringExtendedOption.No,
+                        typologyStrategic = ContractingMonitoringOption.No
+                    )
                 }
             }
     }

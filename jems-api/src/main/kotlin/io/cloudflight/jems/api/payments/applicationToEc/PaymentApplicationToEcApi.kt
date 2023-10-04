@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments
+package io.cloudflight.jems.api.payments.applicationToEc
 
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
@@ -52,7 +52,7 @@ interface PaymentApplicationToEcApi {
     fun getPaymentApplicationsToEc(pageable: Pageable): Page<PaymentApplicationToEcDTO>
 
     @ApiOperation("Delete payment application to ec by id")
-    @DeleteMapping("${ENDPOINT_API_EC_PAYMENTS}/{id}")
+    @DeleteMapping("$ENDPOINT_API_EC_PAYMENTS/{id}")
     fun deletePaymentApplicationToEc(@PathVariable id: Long)
 
     @ApiOperation("Finalize payment application to ec")

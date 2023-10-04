@@ -22,7 +22,11 @@ class FinalizePaymentApplicationToEc(
         validatePaymentApplicationIsDraft(paymentId)
 
         return paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(paymentId).also {
-            auditPublisher.publishEvent(paymentApplicationToEcFinalized(context = this, paymentApplicationToEc = it))
+            auditPublisher.publishEvent(paymentApplicationToEcFinalized(
+                context = this,
+                paymentApplicationToEc = it,
+                paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(paymentId),
+            ))
         }.status
     }
 

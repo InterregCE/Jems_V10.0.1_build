@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.clearMocks
@@ -76,6 +77,12 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
         every { paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_ID) } returns paymentApplicationDetail(
             PaymentEcStatus.Draft
         )
+        every { paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(PAYMENT_ID) } returns mapOf(
+            14L to PaymentType.FTLS,
+            15L to PaymentType.FTLS,
+            16L to PaymentType.REGULAR,
+            17L to PaymentType.FTLS,
+        )
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -85,8 +92,9 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED,
-                description = "Payment application to EC number 3 created for Fund (10, OTHER) for accounting" +
-                    " Year 1: 2021-01-01 - 2022-06-30 changes status from Draft to Finished"
+                description = "Payment application to EC number 3 created for Fund (10, OTHER) for accounting " +
+                        "Year 1: 2021-01-01 - 2022-06-30 changes status from Draft to Finished " +
+                        "and the following items were included:\nFTLS [14, 15, 17]\nRegular [16]"
             )
         )
     }

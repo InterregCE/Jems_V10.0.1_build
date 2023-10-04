@@ -35,7 +35,7 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
                     currentValueToSplit = toSplit,
                     funds = funds,
                 )
-            )
+            ).toColumn()
     }
 
     @Transactional(readOnly = true)

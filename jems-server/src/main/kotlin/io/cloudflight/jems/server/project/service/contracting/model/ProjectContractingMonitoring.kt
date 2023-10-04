@@ -8,14 +8,14 @@ data class ProjectContractingMonitoring(
     val startDate: LocalDate? = null,
     var endDate: LocalDate? = null,
 
-    val typologyProv94: ContractingMonitoringExtendedOption? = null,
+    val typologyProv94: ContractingMonitoringExtendedOption,
     val typologyProv94Comment: String? = null,
-    val typologyProv95: ContractingMonitoringExtendedOption? = null,
+    val typologyProv95: ContractingMonitoringExtendedOption,
     val typologyProv95Comment: String? = null,
 
-    val typologyStrategic: ContractingMonitoringOption? = null,
+    val typologyStrategic: ContractingMonitoringOption,
     val typologyStrategicComment: String? = null,
-    val typologyPartnership: ContractingMonitoringOption? = null,
+    val typologyPartnership: ContractingMonitoringOption,
     val typologyPartnershipComment: String? = null,
 
     val addDates: List<ProjectContractingMonitoringAddDate>,

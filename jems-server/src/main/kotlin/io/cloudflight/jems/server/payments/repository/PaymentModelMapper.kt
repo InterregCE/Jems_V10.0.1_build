@@ -1,11 +1,7 @@
 package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
-import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
-import io.cloudflight.jems.server.payments.entity.PaymentEntity
-import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
-import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.entity.*
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
@@ -70,7 +66,7 @@ fun PaymentEntity.toDetailModel(
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
     amountAuthorizedPerFund = paymentConfirmedInfo.amountAuthorizedPerFund,
     dateOfLastPayment = paymentConfirmedInfo.dateOfLastPayment,
-    lastApprovedVersionBeforeReadyForPayment = lumpSum?.lastApprovedVersionBeforeReadyForPayment
+    lastApprovedVersionBeforeReadyForPayment = lumpSum?.lastApprovedVersionBeforeReadyForPayment,
 )
 
 fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
@@ -118,7 +114,7 @@ fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
 )
 
 fun List<PaymentRow>.toListModel() = map { it.toDetailModel() }
-fun PaymentRow.toDetailModel() = PaymentPerPartner(
+private fun PaymentRow.toDetailModel() = PaymentPerPartner(
     projectId, partnerId, orderNr, programmeLumpSumId, programmeFundId, amountApprovedPerPartner
 )
 
@@ -140,7 +136,7 @@ fun PaymentRegularToCreate.toRegularPaymentEntity(
 fun PaymentToCreate.toFTLSPaymentEntity(
     projectEntity: ProjectEntity,
     lumpSum: ProjectLumpSumEntity?,
-    fundEntity: ProgrammeFundEntity
+    fundEntity: ProgrammeFundEntity,
 ) = PaymentEntity(
     type = PaymentType.FTLS,
     project = projectEntity,

@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringStartDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
@@ -20,7 +22,11 @@ internal class GetContractingMonitoringStartDateTest : UnitTest() {
             projectId = 1L,
             addDates = listOf(),
             dimensionCodes = listOf(),
-            startDate = startDate
+            startDate = startDate,
+            typologyProv94 = ContractingMonitoringExtendedOption.No,
+            typologyProv95 = ContractingMonitoringExtendedOption.No,
+            typologyStrategic = ContractingMonitoringOption.No,
+            typologyPartnership = ContractingMonitoringOption.No,
         )
     }
 

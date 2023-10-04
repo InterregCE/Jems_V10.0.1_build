@@ -65,9 +65,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
         private val project = ProjectFull(
             id = projectId,
-            customIdentifier = "identifier",
+            customIdentifier = "TSTCM",
             callSettings = mockk(),
-            acronym = "acronym",
+            acronym = "TCM",
             applicant = mockk(),
             projectStatus = mockk(),
             duration = 11
@@ -156,7 +156,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         }
 
         val fund = mockk<ProgrammeFund>().also {
-            every { it.id } returns 4452L
+            every { it.id } returns 1L
         }
 
         private val partner_52_coFin = ProjectPartnerCoFinancingAndContribution(
@@ -165,7 +165,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectPartnerCoFinancing(ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal.valueOf(85)),
             ),
             partnerContributions = listOf(
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Public, BigDecimal.valueOf(3750L, 2), true),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Public, BigDecimal.valueOf(3755L, 2), true),
                 ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
                 ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Private, BigDecimal.valueOf(4750L, 2), false),
             ),
@@ -365,8 +365,12 @@ class UpdateContractingMonitoringTest : UnitTest() {
                         2L,
                         listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
                         BigDecimal.ONE,
-                        "identifier",
-                        "acronym"
+                        "TSTCM",
+                        "TCM",
+                        defaultPartnerContribution = BigDecimal.valueOf(15.06),
+                        defaultOfWhichPublic = BigDecimal.valueOf(25.13),
+                        defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
+                        defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
                     )
             )
         )
@@ -377,7 +381,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 programmeLumpSumId = 2L,
                 orderNr = 1,
                 partnerContribution = BigDecimal.valueOf(8535L, 2),
-                publicContribution = BigDecimal.valueOf(2510L, 2),
+                publicContribution = BigDecimal.valueOf(2513L, 2),
                 automaticPublicContribution = BigDecimal.valueOf(2844L, 2),
                 privateContribution = BigDecimal.valueOf(3179L, 2),
             )
@@ -449,7 +453,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
-        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
+        every { paymentPersistence.deleteFTLSByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
         val slotDeleted = slot<Set<Int>>()
         every { paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, capture(slotDeleted)) } answers { }

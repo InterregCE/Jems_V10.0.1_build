@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.*
 import java.math.BigDecimal
+import java.math.MathContext
 import java.math.RoundingMode
 
 fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdown(
@@ -130,23 +131,79 @@ fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMod
     percentage.divide(BigDecimal.valueOf(100))
 ).setScale(2, roundingMode)
 
-fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): ReportExpenditureCoFinancingColumn {
-    with(input) {
-        val funds = fundsPercentages.mapValues { fundPercentage -> currentTotal.applyPercentage(fundPercentage.value) }
-        val fundsTotal = funds.values.sumOf { it }
-        val partnerContrib = currentTotal.minus(fundsTotal)
+fun BigDecimal.applyRatio(ratio: BigDecimal): BigDecimal =
+    this.multiply(ratio, MathContext(17, RoundingMode.DOWN))
 
-        return ReportExpenditureCoFinancingColumn(
-            // main funds + partner contribution
-            funds = fundsPercentages.mapValues { fundPercentage -> currentTotal.applyPercentage(fundPercentage.value) }
-                .plus(Pair(null, partnerContrib)),
-            partnerContribution = partnerContrib,
-            publicContribution = currentTotal.applyPercentage(publicPercentage),
-            automaticPublicContribution = currentTotal.applyPercentage(automaticPublicPercentage),
-            privateContribution = currentTotal.applyPercentage(privatePercentage),
-            sum = currentTotal,
+fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): List<DetailedSplit> {
+    with(input) {
+        val funds = fundsPercentages.map { (fundId, percentage) ->
+            FundShare(id = fundId, percentage = percentage, value = currentTotal.applyPercentage(percentage))
+        }
+        val fundsTotal = funds.sum()
+        val partnerContributionPercentage = BigDecimal.valueOf(100L).minus(fundsTotal.percentage)
+        val partnerContributionValue = currentTotal.minus(fundsTotal.value)
+
+        return funds.map { fundShare ->
+            val partnerContributionFundPartRatio = fundShare.value.divide(fundsTotal.value, 17, RoundingMode.DOWN)
+            val partnerContributionFundPart = partnerContributionValue.multiply(partnerContributionFundPartRatio).setScale(2, RoundingMode.HALF_UP)
+            val fund100Percent = partnerContributionFundPart.fromCurrentShareTo(partnerContributionPercentage, 100)
+            DetailedSplit(
+                fundIdOrPartnerContributionWhenNull = fundShare.id,
+                value = fundShare.value,
+                partnerContribution = partnerContributionFundPart,
+                ofWhichPublic = fund100Percent.applyPercentage(publicPercentage),
+                ofWhichAutoPublic = fund100Percent.applyPercentage(automaticPublicPercentage),
+                ofWhichPrivate = fund100Percent.applyPercentage(privatePercentage),
+            )
+        }.plus( // add partner contribution to funds
+            DetailedSplit(
+                fundIdOrPartnerContributionWhenNull = null,
+                value = partnerContributionValue,
+                partnerContribution = partnerContributionValue,
+                ofWhichPublic = currentTotal.applyPercentage(publicPercentage),
+                ofWhichAutoPublic = currentTotal.applyPercentage(automaticPublicPercentage),
+                ofWhichPrivate = currentTotal.applyPercentage(privatePercentage),
+            )
         )
     }
+}
+
+private fun BigDecimal.fromCurrentShareTo(currentSharePercentage: BigDecimal, neededSharePercentage: Int): BigDecimal =
+    if (currentSharePercentage.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
+        divide(currentSharePercentage, 17, RoundingMode.HALF_UP)
+            .multiply(BigDecimal.valueOf(neededSharePercentage.toLong(), 0))
+
+fun List<DetailedSplit>.toColumn(): ReportExpenditureCoFinancingColumn {
+    val partnerContribution = first { it.isPartnerContribution() }
+    return ReportExpenditureCoFinancingColumn(
+        funds = this.associate { Pair(it.fundIdOrPartnerContributionWhenNull, it.value) },
+        partnerContribution = partnerContribution.value,
+        publicContribution = partnerContribution.ofWhichPublic,
+        automaticPublicContribution = partnerContribution.ofWhichAutoPublic,
+        privateContribution = partnerContribution.ofWhichPrivate,
+        sum = this.sumOf { it.value },
+    )
+}
+
+data class FundShare(
+    val id: Long,
+    val percentage: BigDecimal,
+    val value: BigDecimal,
+)
+
+private fun List<FundShare>.sum() = fold(FundShare(0L, BigDecimal.ZERO, BigDecimal.ZERO)) { a, b ->
+    FundShare(0L, percentage = a.percentage.plus(b.percentage), value = a.value.plus(b.value))
+}
+
+data class DetailedSplit(
+    val fundIdOrPartnerContributionWhenNull: Long?,
+    val value: BigDecimal,
+    val partnerContribution: BigDecimal,
+    val ofWhichPublic: BigDecimal,
+    val ofWhichAutoPublic: BigDecimal,
+    val ofWhichPrivate: BigDecimal,
+) {
+    fun isPartnerContribution() = fundIdOrPartnerContributionWhenNull == null
 }
 
 /**

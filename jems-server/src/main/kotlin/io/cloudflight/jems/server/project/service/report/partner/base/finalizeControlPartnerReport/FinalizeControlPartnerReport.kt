@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getAfterControlForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getAfterControlForLumpSums
@@ -140,14 +141,14 @@ class FinalizeControlPartnerReport(
                         currentValueToSplit = afterControlExpenditureCurrent,
                         funds = report.identification.coFinancing,
                     )
-                ),
+                ).toColumn(),
                 currentParked = getCurrentFrom(
                     contributions.generateCoFinCalculationInputData(
                         totalEligibleBudget = totalEligibleBudget,
                         currentValueToSplit = afterControlExpenditureParked,
                         funds = report.identification.coFinancing,
                     )
-                ),
+                ).toColumn(),
             ),
         )
     }

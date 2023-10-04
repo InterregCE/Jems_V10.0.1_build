@@ -12,14 +12,14 @@ import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.RoundingMode
 import java.time.LocalDate
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
-    project: ProjectSummary,
+    project: ProjectFull,
     ftlsId: Int,
     state: Boolean
 ): AuditCandidateEvent =
@@ -227,25 +227,33 @@ fun paymentApplicationToEcCreated(
 
 fun paymentApplicationToEcFinalized(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationToEcDetail
-): AuditCandidateEvent = AuditCandidateEvent(
-    context = context,
-    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
-        .description(
-            "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
-                    paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}" +
-            " changes status from Draft to ${paymentApplicationToEc.status.name}"
-        )
-        .build()
-)
+    paymentApplicationToEc: PaymentApplicationToEcDetail,
+    includedPayments: Map<Long, PaymentType>,
+): AuditCandidateEvent {
+    val ftlsPaymentIds = includedPayments.filterValues { it == PaymentType.FTLS }.keys
+    val regularPaymentIds = includedPayments.filterValues { it == PaymentType.REGULAR }.keys
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
+            .description(
+                "Payment application to EC number ${paymentApplicationToEc.id} " +
+                        "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                        "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                        "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                            paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                        } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}" +
+                        " changes status from Draft to ${paymentApplicationToEc.status.name} " +
+                        "and the following items were included:\n" +
+                        "FTLS [${ftlsPaymentIds.joinToString(", ")}]\n" +
+                        "Regular [${regularPaymentIds.joinToString(", ")}]"
+            )
+            .build()
+    )
+}
 
 fun paymentApplicationToEcDeleted(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationToEcDetail
+    paymentApplicationToEc: PaymentApplicationToEcDetail,
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED)
