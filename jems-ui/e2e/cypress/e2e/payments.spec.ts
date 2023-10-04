@@ -261,7 +261,7 @@ context('Payments tests', () => {
             cy.loginByRequest(paymentsUser.email);
             findProjectPayments(applicationId).then(projectPayments => {
               const projectPayment = projectPayments.find(payment => payment.fundName === testData.authorizedPayments[0].fundName);
-              cy.visit(`https://amsterdam.interact-eu.net/app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
+              cy.visit(`app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
               
               cy.contains('expand_more').click();
               cy.get('mat-checkbox').eq(1).click();
