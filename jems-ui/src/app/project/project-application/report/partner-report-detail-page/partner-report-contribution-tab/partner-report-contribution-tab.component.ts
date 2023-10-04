@@ -39,6 +39,7 @@ export class PartnerReportContributionTabComponent {
 
   PartnerContributionStatus = ProjectPartnerContributionDTO.StatusEnum;
   MAX_VALUE = 999_999_999.99;
+  MIN_VALUE = -999_999_999.99;
 
   savedContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
   toBeDeletedIds: number[] = [];

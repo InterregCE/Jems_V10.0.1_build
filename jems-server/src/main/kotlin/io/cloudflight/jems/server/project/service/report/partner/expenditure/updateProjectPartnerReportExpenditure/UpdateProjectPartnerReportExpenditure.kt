@@ -36,7 +36,7 @@ class UpdateProjectPartnerReportExpenditure(
     companion object {
         private const val TO_CREATE = 0L
         private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
-        private val MIN_NUMBER = BigDecimal.ZERO
+        private val MIN_NUMBER = BigDecimal.valueOf(-999_999_999_99, 2)
 
         private const val MAX_AMOUNT = 150
     }

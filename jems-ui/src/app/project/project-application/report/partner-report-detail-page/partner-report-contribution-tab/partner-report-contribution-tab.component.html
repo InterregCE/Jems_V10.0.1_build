@@ -93,7 +93,7 @@
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
                         <mat-form-field jemsFormFieldWidth="full">
                             <input currencyMask type="decimal"
-                                   [options]="{align: 'right', max: MAX_VALUE}"
+                                   [options]="{align: 'right', max: MAX_VALUE, min: MIN_VALUE, allowNegative: true}"
                                    name="currentlyReported"
                                    [formControlName]="'currentlyReported'" matInput
                                    (ngModelChange)="totalsChanged()">
