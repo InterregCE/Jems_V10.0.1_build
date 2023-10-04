@@ -9,4 +9,9 @@ data class PaymentToCreate(
 
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+
+    val defaultPartnerContribution: BigDecimal,
+    val defaultOfWhichPublic: BigDecimal,
+    val defaultOfWhichAutoPublic: BigDecimal,
+    val defaultOfWhichPrivate: BigDecimal,
 )

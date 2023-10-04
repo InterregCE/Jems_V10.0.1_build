@@ -10,7 +10,10 @@ import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class PaymentApplicationToEcPersistenceProvider(
     private val paymentApplicationsToEcRepository: PaymentApplicationsToEcRepository,
+    private val paymentToEcExtensionRepository: PaymentToEcExtensionRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val accountingYearRepository: AccountingYearRepository,
     private val fileRepository: JemsSystemFileService,
@@ -116,6 +120,42 @@ class PaymentApplicationToEcPersistenceProvider(
             reportFileRepository.findByTypeAndId(JemsFileType.PaymentToEcAttachment, fileId)
                 ?: throw ResourceNotFoundException("file")
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentExtension(paymentId: Long): PaymentToEcExtension =
+        paymentToEcExtensionRepository.getById(paymentId).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentType> =
+        paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(ecPaymentId = ecPaymentId)
+            .associate { Pair(it.paymentId, it.payment.type) }
+
+    @Transactional
+    override fun selectPaymentToEcPayment(paymentIds: Set<Long>, ecPaymentId: Long) {
+        val ecPayment = paymentApplicationsToEcRepository.getById(ecPaymentId)
+        paymentToEcExtensionRepository.findAllById(paymentIds).forEach {
+            it.paymentApplicationToEc = ecPayment
+        }
+    }
+
+    @Transactional
+    override fun deselectPaymentFromEcPaymentAndResetFields(paymentId: Long) {
+        val paymentExtension = paymentToEcExtensionRepository.findById(paymentId).get()
+        paymentExtension.paymentApplicationToEc = null
+        paymentExtension.correctedPublicContribution = paymentExtension.publicContribution
+        paymentExtension.correctedAutoPublicContribution = paymentExtension.autoPublicContribution
+        paymentExtension.correctedPrivateContribution = paymentExtension.privateContribution
+    }
+
+
+    @Transactional
+    override fun updatePaymentToEcCorrectedAmounts(paymentId: Long, paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate) {
+        paymentToEcExtensionRepository.getById(paymentId).apply {
+            this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
+            this.correctedPublicContribution = paymentToEcLinkingUpdate.correctedPublicContribution
+            this.correctedPrivateContribution = paymentToEcLinkingUpdate.correctedPrivateContribution
+        }
     }
 
 }

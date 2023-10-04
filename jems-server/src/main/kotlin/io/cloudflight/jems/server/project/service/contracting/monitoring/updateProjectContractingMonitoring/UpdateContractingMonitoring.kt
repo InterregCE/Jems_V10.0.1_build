@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
-import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
@@ -19,10 +18,9 @@ import io.cloudflight.jems.server.project.service.contracting.model.ProjectContr
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.projectContractingMonitoringChanged
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import org.springframework.context.ApplicationEventPublisher
@@ -69,21 +67,21 @@ class UpdateContractingMonitoring(
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
 
-            val lumpSums = contractMonitoring.fastTrackLumpSums!!
+            val fastTrackLumpSums = contractMonitoring.fastTrackLumpSums!!
             updateReadyForPayment(
                 projectId = projectId,
-                lumpSums = lumpSums,
+                lumpSums = fastTrackLumpSums,
                 savedFastTrackLumpSums = oldMonitoring.fastTrackLumpSums!!,
                 orderNrsToBeAdded = lumpSumsOrderNrTobeAdded,
                 orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted
             )
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted,
-                projectCustomIdentifier = project.customIdentifier, projectAcronym = project.acronym)
-            updateApprovedAmountContributions(
-                projectId = projectId,
-                lumpSumsToUpdate = lumpSums.filter { it.orderNr in lumpSumsOrderNrTobeAdded },
-                orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted,
+
+            updatePaymentRelatedData(
+                project,
+                lumpSumsOrderNrTobeAdded,
+                lumpSumsOrderNrToBeDeleted,
+                fastTrackLumpSums = fastTrackLumpSums,
                 version = version,
             )
             updateProjectContractedOnDate(updated, projectId)
@@ -141,26 +139,41 @@ class UpdateContractingMonitoring(
         }
     }
 
-    private fun updateApprovedAmountPerPartner(
-        project: ProjectSummary,
-        orderNrsToBeAdded: MutableSet<Int>,
-        orderNrsToBeDeleted: Set<Int>,
-        projectCustomIdentifier: String,
-        projectAcronym: String,
+    private fun updatePaymentRelatedData(
+        projectOfCorrectVersion: ProjectFull,
+        lumpSumOrderNrsToBeAdded: MutableSet<Int>,
+        lumpSumOrderNrsToBeDeleted: MutableSet<Int>,
+        fastTrackLumpSums: List<ProjectLumpSum>,
+        version: String,
     ) {
-        val projectId = project.id
-        if (orderNrsToBeDeleted.isNotEmpty()) {
-            this.paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, orderNrsToBeDeleted)
-            orderNrsToBeDeleted.forEach { orderNr ->
-                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, false))
+        val projectId = projectOfCorrectVersion.id!!
+        val partnerTotalByPartnerId = getProjectBudget.getBudget(projectId = projectId, version)
+            .associate { Pair(it.partner.id!!, it.totalCosts) }
+
+        val ftlsPaymentContributionMetadata = fastTrackLumpSums
+            .filter { it.orderNr in lumpSumOrderNrsToBeAdded }
+            .associateWith { lumpSum ->
+                lumpSum.lumpSumContributions.associateWith { contribution ->
+                    getCurrentFrom(
+                        generateCoFinCalculationInputData(
+                            totalEligibleBudget = partnerTotalByPartnerId[contribution.partnerId]!!,
+                            currentValueToSplit = contribution.amount,
+                            coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(contribution.partnerId, version),
+                        )
+                    )
+                }
             }
-        }
 
-        if (orderNrsToBeAdded.isNotEmpty()) {
-            val calculatedAmountsToBeAdded = this.paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
+        if (lumpSumOrderNrsToBeAdded.isNotEmpty()) {
+            paymentPersistence.storePartnerContributionsWhenReadyForPayment(
+                ftlsPaymentContributionMetadata.onlyPartnerContributions(projectId)
+            )
 
-            val paymentsToUpdate = calculatedAmountsToBeAdded.groupBy { PaymentGroupingId(it.orderNr, it.programmeFundId) }
-                .mapValues { (_, partnerPayments) ->
+            val ftlsByFund = ftlsPaymentContributionMetadata.sumByFund()
+            val paymentsToUpdate = paymentPersistence // TODO decode what is this query doing ???
+                .getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, lumpSumOrderNrsToBeAdded)
+                .groupBy { PaymentGroupingId(it.orderNr, it.programmeFundId) }
+                .mapValues { (id, partnerPayments) ->
                     PaymentToCreate(
                         partnerPayments.first().programmeLumpSumId,
                         partnerPayments.map { o ->
@@ -171,59 +184,27 @@ class UpdateContractingMonitoring(
                             )
                         },
                         partnerPayments.sumOf { it.amountApprovedPerPartner },
-                        projectCustomIdentifier = projectCustomIdentifier,
-                        projectAcronym = projectAcronym,
+                        projectCustomIdentifier = projectOfCorrectVersion.customIdentifier,
+                        projectAcronym = projectOfCorrectVersion.acronym,
+                        defaultPartnerContribution = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.value,
+                        defaultOfWhichPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPublic,
+                        defaultOfWhichAutoPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichAutoPublic,
+                        defaultOfWhichPrivate = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPrivate,
                     )
                 }
+            paymentPersistence.saveFTLSPayments(projectId, paymentsToUpdate)
+            lumpSumOrderNrsToBeAdded.forEach { orderNr ->
+                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, projectOfCorrectVersion, orderNr, true))
+            }
+        }
 
-            this.paymentPersistence.saveFTLSPayments(projectId, paymentsToUpdate)
-            orderNrsToBeAdded.forEach { orderNr ->
-                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, true))
+        if (lumpSumOrderNrsToBeDeleted.isNotEmpty()) {
+            paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, lumpSumOrderNrsToBeDeleted)
+            paymentPersistence.deleteFTLSByProjectIdAndOrderNrIn(projectId, lumpSumOrderNrsToBeDeleted)
+            lumpSumOrderNrsToBeDeleted.forEach { orderNr ->
+                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, projectOfCorrectVersion, orderNr, false))
             }
         }
     }
 
-    private fun updateApprovedAmountContributions(
-        projectId: Long,
-        lumpSumsToUpdate: List<ProjectLumpSum>,
-        orderNrsToBeDeleted: Set<Int>,
-        version: String,
-    ) {
-        val partnersById = getProjectBudget.getBudget(projectId = projectId, version).associateBy { it.partner.id!! }
-        val paymentContributions = lumpSumsToUpdate.map { lumpSum ->
-            lumpSum.lumpSumContributions.map { contribution ->
-                getCurrentFrom(
-                    generateCoFinCalculationInputData(
-                        totalEligibleBudget = partnersById[contribution.partnerId]!!.totalCosts,
-                        currentValueToSplit = contribution.amount,
-                        coFinancing = partnerCoFinancingPersistence
-                            .getCoFinancingAndContributions(contribution.partnerId, version),
-                    )
-                ).toPaymentContributionModel(
-                    projectId = projectId,
-                    partnerId = contribution.partnerId,
-                    lumpSum = lumpSum,
-                )
-            }
-        }.flatten()
-        if (paymentContributions.isNotEmpty())
-            paymentPersistence.storePartnerContributionsWhenReadyForPayment(paymentContributions)
-        if (orderNrsToBeDeleted.isNotEmpty())
-            paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, orderNrsToBeDeleted)
-    }
-
-    private fun ReportExpenditureCoFinancingColumn.toPaymentContributionModel(
-        projectId: Long,
-        partnerId: Long,
-        lumpSum: ProjectLumpSum,
-    ) = ContributionMeta(
-        projectId = projectId,
-        partnerId = partnerId,
-        programmeLumpSumId = lumpSum.programmeLumpSumId,
-        orderNr = lumpSum.orderNr,
-        partnerContribution = partnerContribution,
-        publicContribution = publicContribution,
-        automaticPublicContribution = automaticPublicContribution,
-        privateContribution = privateContribution,
-    )
 }

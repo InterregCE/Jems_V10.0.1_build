@@ -9,12 +9,17 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
+import io.cloudflight.jems.server.payments.entity.PaymentEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -32,21 +37,22 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.util.*
 
 class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
+
     @MockK
     private lateinit var paymentApplicationsToEcRepository: PaymentApplicationsToEcRepository
-
     @MockK
-    lateinit var programmeFundRepository: ProgrammeFundRepository
-
+    private lateinit var paymentToEcExtensionRepository: PaymentToEcExtensionRepository
     @MockK
-    lateinit var accountingYearRepository: AccountingYearRepository
-
+    private lateinit var programmeFundRepository: ProgrammeFundRepository
     @MockK
-    lateinit var reportFileRepository: JemsFileMetadataRepository
+    private lateinit var accountingYearRepository: AccountingYearRepository
     @MockK
-    lateinit var fileRepository: JemsSystemFileService
+    private lateinit var fileRepository: JemsSystemFileService
+    @MockK
+    private lateinit var reportFileRepository: JemsFileMetadataRepository
 
     @InjectMockKs
     private lateinit var persistenceProvider: PaymentApplicationToEcPersistenceProvider
@@ -189,6 +195,37 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
             accountingYear = accountingYear,
             status = PaymentEcStatus.Draft
         )
+
+        private val ftlsPayment = PaymentEntity(
+            id = 99L,
+            type = PaymentType.FTLS,
+            project = mockk(),
+            projectCustomIdentifier = "sample project",
+            amountApprovedPerFund = BigDecimal.valueOf(255.88),
+            fund = mockk(),
+            projectAcronym = "sample",
+            projectLumpSum = mockk(),
+            projectReport = mockk()
+        )
+
+        private fun paymentToEcExtensionEntity(paymentApplicationToEcEntity: PaymentApplicationToEcEntity?) = PaymentToEcExtensionEntity(
+            paymentId = 99L,
+            payment = ftlsPayment,
+            autoPublicContribution = BigDecimal.ZERO,
+            correctedAutoPublicContribution = BigDecimal.ZERO,
+            partnerContribution = BigDecimal.valueOf(45.80),
+            publicContribution = BigDecimal.valueOf(25.00),
+            correctedPublicContribution = BigDecimal.valueOf(55.00),
+            privateContribution = BigDecimal.ZERO,
+            correctedPrivateContribution = BigDecimal.ZERO,
+            paymentApplicationToEc = paymentApplicationToEcEntity
+        )
+
+        private val paymentToEcExtensionModel = PaymentToEcExtension(
+            paymentId = 99L,
+            ecPaymentId = paymentApplicationsToEcId,
+            ecPaymentStatus = PaymentEcStatus.Draft
+        )
     }
 
     @BeforeEach
@@ -276,4 +313,62 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
         assertThat(persistenceProvider.finalizePaymentApplicationToEc(paymentApplicationsToEcId)).isEqualTo(expectedPaymentApplicationToEcFinalized)
     }
+
+    @Test
+    fun getPaymentExtension() {
+        every { paymentToEcExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        assertThat(persistenceProvider.getPaymentExtension(99L)).isEqualTo(paymentToEcExtensionModel)
+    }
+
+    @Test
+    fun getPaymentsLinkedToEcPayment() {
+        every { paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } returns
+            listOf(paymentToEcExtensionEntity(paymentApplicationToEcEntity))
+
+        assertThat(persistenceProvider.getPaymentsLinkedToEcPayment(paymentApplicationsToEcId)).isEqualTo(
+            mapOf(
+                99L to PaymentType.FTLS
+            )
+        )
+    }
+
+    @Test
+    fun selectPaymentToEcPayment() {
+        val entity = paymentToEcExtensionEntity(null)
+        every { paymentToEcExtensionRepository.findAllById(setOf(99L)) } returns listOf(entity)
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity
+
+        persistenceProvider.selectPaymentToEcPayment(paymentIds = setOf(99L), ecPaymentId = paymentApplicationsToEcId)
+        assertThat(entity.paymentApplicationToEc).isEqualTo(paymentApplicationToEcEntity)
+    }
+
+    @Test
+    fun deselectPaymentFromEcPaymentAndResetFields() {
+        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        every { paymentToEcExtensionRepository.findById(99L) } returns Optional.of(entity)
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity
+
+        persistenceProvider.deselectPaymentFromEcPaymentAndResetFields(99L)
+        assertThat(entity.paymentApplicationToEc).isEqualTo(null)
+        assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(25.00))
+        assertThat(entity.correctedAutoPublicContribution).isEqualTo(BigDecimal.ZERO)
+        assertThat(entity.correctedPrivateContribution).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun updatePaymentToEcCorrectedAmounts() {
+        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        every { paymentToEcExtensionRepository.getById(99L) } returns entity
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity
+        val update = PaymentToEcLinkingUpdate(
+            correctedPrivateContribution = BigDecimal.TEN,
+            correctedPublicContribution = BigDecimal.valueOf(100.00),
+            correctedAutoPublicContribution = BigDecimal.ZERO
+        )
+        persistenceProvider.updatePaymentToEcCorrectedAmounts(99L, update)
+        assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(100.00))
+        assertThat(entity.correctedAutoPublicContribution).isEqualTo(BigDecimal.ZERO)
+        assertThat(entity.correctedPrivateContribution).isEqualTo(BigDecimal.TEN)
+    }
+
 }

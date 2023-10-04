@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments
+package io.cloudflight.jems.api.payments.applicationToEc
 
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO

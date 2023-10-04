@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.payments.repository.applicationToEc
 
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import org.mapstruct.Mapper
@@ -19,6 +21,12 @@ private val mapper = Mappers.getMapper(PaymentApplicationToEcModelMapper::class.
 fun PaymentApplicationToEcEntity.toModel(): PaymentApplicationToEc = mapper.map(this)
 fun PaymentApplicationToEc.toEntity(): PaymentApplicationToEcEntity = mapper.map(this)
 fun Page<PaymentApplicationToEcEntity>.toModel() = map { it.toModel() }
+
+fun PaymentToEcExtensionEntity.toModel() = PaymentToEcExtension(
+    paymentId = paymentId,
+    ecPaymentId = paymentApplicationToEc?.id,
+    ecPaymentStatus = paymentApplicationToEc?.status,
+)
 
 fun PaymentApplicationToEcEntity.toDetailModel() = PaymentApplicationToEcDetail(
     id = id,

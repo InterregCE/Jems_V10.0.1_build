@@ -1,6 +1,6 @@
-package io.cloudflight.jems.server.payments.controller
+package io.cloudflight.jems.server.payments.controller.applicationToEc
 
-import io.cloudflight.jems.api.payments.PaymentApplicationToEcApi
+import io.cloudflight.jems.api.payments.applicationToEc.PaymentApplicationToEcApi
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
@@ -24,7 +24,7 @@ class PaymentApplicationToEcController(
     private val getPaymentApplicationsToEc: GetPaymentApplicationsToEcInteractor,
     private val deletePaymentApplicationToEc: DeletePaymentApplicationToEcInteractor,
     private val getPaymentApplicationToEcDetail: GetPaymentApplicationToEcDetailInteractor,
-    private val finalizePaymentApplicationToEc: FinalizePaymentApplicationToEcInteractor
+    private val finalizePaymentApplicationToEc: FinalizePaymentApplicationToEcInteractor,
 ) : PaymentApplicationToEcApi {
 
     override fun createPaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdateDTO): PaymentApplicationToEcDetailDTO =
@@ -35,13 +35,13 @@ class PaymentApplicationToEcController(
         updatePaymentApplicationToEc.updatePaymentApplicationToEc(paymentApplicationToEcUpdate.toModel())
             .toDto()
 
-
     override fun getPaymentApplicationToEcDetail(id: Long): PaymentApplicationToEcDetailDTO {
         return getPaymentApplicationToEcDetail.getPaymentApplicationToEcDetail(id).toDto()
     }
 
     override fun getPaymentApplicationsToEc(pageable: Pageable): Page<PaymentApplicationToEcDTO> =
         getPaymentApplicationsToEc.getPaymentApplicationsToEc(pageable).toDto()
+
 
     override fun deletePaymentApplicationToEc(id: Long) {
         deletePaymentApplicationToEc.deleteById(id)

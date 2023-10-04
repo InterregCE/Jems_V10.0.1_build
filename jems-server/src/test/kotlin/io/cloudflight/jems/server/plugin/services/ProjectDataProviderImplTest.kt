@@ -125,6 +125,8 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
@@ -1739,13 +1741,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             projectId = projectId,
             startDate = projectStartDate,
             endDate = null,
-            typologyProv94 = null,
+            typologyProv94 = ContractingMonitoringExtendedOption.Yes,
             typologyProv94Comment = null,
-            typologyProv95= null,
+            typologyProv95= ContractingMonitoringExtendedOption.No,
             typologyProv95Comment= null,
-            typologyStrategic= null,
+            typologyStrategic= ContractingMonitoringOption.Yes,
             typologyStrategicComment= null,
-            typologyPartnership= null,
+            typologyPartnership= ContractingMonitoringOption.No,
             typologyPartnershipComment= null,
             addDates= emptyList(),
             dimensionCodes = emptyList(),

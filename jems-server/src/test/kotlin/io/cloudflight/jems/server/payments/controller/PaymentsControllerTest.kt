@@ -43,7 +43,7 @@ import java.time.ZonedDateTime
 class PaymentsControllerTest : UnitTest() {
 
     companion object {
-        private val currentTime = ZonedDateTime.now()
+        val currentTime = ZonedDateTime.now()
         private val currentDate = LocalDate.now()
         private const val ftlsPaymentId = 1L
         private const val regularPaymentId = 11L
@@ -77,7 +77,7 @@ class PaymentsControllerTest : UnitTest() {
             selected = true,
             type = ProgrammeFundType.OTHER
         )
-        private val ftlsPaymentToProject = PaymentToProject(
+        val ftlsPaymentToProject = PaymentToProject(
             id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
             projectId = project.id,
@@ -273,6 +273,8 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = setOf(511L, 512L),
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
+            availableForEcId = null,
+            scoBasis = null,
         )
     }
 
@@ -353,6 +355,8 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = emptySet(),
             lastPaymentDateFrom = null,
             lastPaymentDateTo = null,
+            availableForEcId = null,
+            scoBasis = null,
         ))
     }
 

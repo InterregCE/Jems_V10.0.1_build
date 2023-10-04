@@ -29,6 +29,9 @@ import {
   PaymentToEcSummaryTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
 import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/attachments/payment-to-ec-summary-attachments.component';
+import {
+  PaymentToEcFtlsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-ftls-tab.component';
 
 @NgModule({
     declarations: [
@@ -38,6 +41,7 @@ import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payment
         PaymentsToEcPageComponent,
         PaymentToEcDetailPageComponent,
         PaymentToEcSummaryTabComponent,
+        PaymentToEcFtlsTabComponent,
         PaymentsToProjectDetailPageComponent,
         PaymentsToProjectAttachmentsComponent,
         AdvancePaymentsDetailPageComponent,

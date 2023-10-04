@@ -1,17 +1,9 @@
 package io.cloudflight.jems.server.payments.service.regular
 
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
-import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
-import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
-import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
+import io.cloudflight.jems.server.payments.model.regular.*
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
@@ -24,6 +16,8 @@ interface PaymentPersistence {
 
     fun getAllPaymentToProject(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProject>
 
+    fun getAllPaymentToEcPayment(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToEcPayment>
+
     fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo
 
     fun getPaymentDetails(paymentId: Long): PaymentDetail
@@ -32,11 +26,11 @@ interface PaymentPersistence {
 
     fun getAllPartnerPaymentsForPartner(partnerId: Long): List<PartnerPaymentSimple>
 
-    fun deleteAllByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>)
+    fun deleteFTLSByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>)
 
     fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(
         projectId: Long,
-        orderNrsToBeAdded: MutableSet<Int>
+        orderNrsToBeAdded: Set<Int>,
     ): List<PaymentPerPartner>
 
     fun saveFTLSPayments(projectId: Long, paymentsToBeSaved:  Map<PaymentGroupingId, PaymentToCreate>)
@@ -68,5 +62,7 @@ interface PaymentPersistence {
     fun getFtlsCumulativeForPartner(partnerId: Long): ReportExpenditureCoFinancingColumn
 
     fun getFtlsCumulativeForProject(projectId: Long): PaymentCumulativeData
+
+    fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long>
 
 }

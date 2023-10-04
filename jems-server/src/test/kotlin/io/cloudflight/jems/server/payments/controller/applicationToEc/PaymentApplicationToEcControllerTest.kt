@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.controller
+package io.cloudflight.jems.server.payments.controller.applicationToEc
 
 import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
@@ -32,7 +32,7 @@ import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class PaymentApplicationsToEcControllerTest : UnitTest() {
+class PaymentApplicationToEcControllerTest : UnitTest() {
     companion object {
         private const val paymentApplicationsToEcId = 1L
         private val accountingYearDTO =

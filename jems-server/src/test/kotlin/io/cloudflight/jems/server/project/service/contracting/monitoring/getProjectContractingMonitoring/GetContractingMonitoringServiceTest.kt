@@ -324,7 +324,11 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             projectId = projectId,
             addDates = emptyList(),
             fastTrackLumpSums = listOf(lumpSum),
-            dimensionCodes = emptyList()
+            dimensionCodes = emptyList(),
+            typologyProv94 = ContractingMonitoringExtendedOption.Partly,
+            typologyProv95 = ContractingMonitoringExtendedOption.Yes,
+            typologyStrategic = ContractingMonitoringOption.No,
+            typologyPartnership = ContractingMonitoringOption.Yes,
         )
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoringOld
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
@@ -338,7 +342,11 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     fastTrackLumpSums = listOf(lumpSum.copy(
                         installmentsAlreadyCreated = true
                     )),
-                    dimensionCodes = emptyList()
+                dimensionCodes = emptyList(),
+                typologyProv94 = ContractingMonitoringExtendedOption.Partly,
+                typologyProv95 = ContractingMonitoringExtendedOption.Yes,
+                typologyStrategic = ContractingMonitoringOption.No,
+                typologyPartnership = ContractingMonitoringOption.Yes,
             ))
 
     }

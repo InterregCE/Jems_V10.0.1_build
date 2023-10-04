@@ -23,21 +23,25 @@ class ProjectContractingMonitoringEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typology_prov_94")
-    val typologyProv94: ContractingMonitoringExtendedOption? = null,
+    @field:NotNull
+    val typologyProv94: ContractingMonitoringExtendedOption,
     @Column(name = "typology_prov_94_comment")
     val typologyProv94Comment: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typology_prov_95")
-    val typologyProv95: ContractingMonitoringExtendedOption? = null,
+    @field:NotNull
+    val typologyProv95: ContractingMonitoringExtendedOption,
     @Column(name = "typology_prov_95_comment")
     val typologyProv95Comment: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val typologyStrategic: ContractingMonitoringOption? = null,
+    @field:NotNull
+    val typologyStrategic: ContractingMonitoringOption,
     val typologyStrategicComment: String? = null,
     @Enumerated(EnumType.STRING)
-    val typologyPartnership: ContractingMonitoringOption? = null,
+    @field:NotNull
+    val typologyPartnership: ContractingMonitoringOption,
     val typologyPartnershipComment: String? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "addDateId.projectId")
