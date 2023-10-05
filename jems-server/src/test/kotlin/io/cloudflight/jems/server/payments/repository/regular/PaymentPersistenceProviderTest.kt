@@ -49,6 +49,7 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.repository.fund.toEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -88,7 +89,6 @@ import io.cloudflight.jems.server.utils.IPA_III_FUND
 import io.cloudflight.jems.server.utils.partner.CREATED_AT
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.utils.partner.legalStatusEntity
-import io.cloudflight.jems.server.utils.toEntity
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -401,15 +401,6 @@ class PaymentPersistenceProviderTest: UnitTest() {
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
             isFastTrack = false
-        )
-
-        private fun partner(sortNumber: Int, id: Long) = ProjectPartnerEntity(
-            id = id,
-            project = dummyProject,
-            abbreviation = "",
-            role = ProjectPartnerRole.LEAD_PARTNER,
-            sortNumber = sortNumber,
-            legalStatus = ProgrammeLegalStatusEntity(id = 1),
         )
 
         val leadPartner = projectPartnerEntity(partnerId_5, abbreviation = "A", role = ProjectPartnerRole.LEAD_PARTNER, sortNumber = 2)

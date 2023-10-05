@@ -67,6 +67,10 @@
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
+      "hash": "1331c713",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
       "hash": "13285bf0",
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
 

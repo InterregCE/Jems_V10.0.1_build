@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.fina
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinalized
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.sumUpProperColumns
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +21,12 @@ class FinalizePaymentApplicationToEc(
     @Transactional
     @ExceptionWrapper(FinalizePaymentApplicationToEcException::class)
     override fun finalizePaymentApplicationToEc(paymentId: Long): PaymentEcStatus {
-        validatePaymentApplicationIsDraft(paymentId)
+        val ecPayment = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentId)
+        validatePaymentApplicationIsDraft(ecPayment)
+
+        val selectedPaymentTotals = paymentApplicationsToEcPersistence.getSelectedPaymentsToEcPayment(paymentId)
+            .sumUpProperColumns()
+        paymentApplicationsToEcPersistence.saveCumulativeAmountsByType(paymentId, selectedPaymentTotals)
 
         return paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(paymentId).also {
             auditPublisher.publishEvent(paymentApplicationToEcFinalized(
@@ -30,10 +37,9 @@ class FinalizePaymentApplicationToEc(
         }.status
     }
 
-    private fun validatePaymentApplicationIsDraft(paymentId: Long) {
-        val paymentApplication = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentId)
-
-        if (paymentApplication.status != PaymentEcStatus.Draft)
+    private fun validatePaymentApplicationIsDraft(payment: PaymentApplicationToEcDetail) {
+        if (payment.status != PaymentEcStatus.Draft)
             throw PaymentApplicationToEcNotInDraftException()
     }
+
 }

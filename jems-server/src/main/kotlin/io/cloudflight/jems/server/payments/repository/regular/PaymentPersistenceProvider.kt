@@ -95,7 +95,7 @@ class PaymentPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAllPaymentToProject(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProject> {
         return fetchPayments(pageable, filters).map {
-            when(it.payment.type) {
+            when (it.payment.type) {
                 PaymentType.REGULAR -> it.toRegularPaymentModel()
                 PaymentType.FTLS -> it.toFTLSPaymentModel()
             }
@@ -106,7 +106,7 @@ class PaymentPersistenceProvider(
     override fun getAllPaymentToEcPayment(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToEcPayment> {
         return fetchPayments(pageable, filters).map {
             PaymentToEcPayment(
-                payment = when(it.payment.type) {
+                payment = when (it.payment.type) {
                     PaymentType.REGULAR -> it.toRegularPaymentModel()
                     PaymentType.FTLS -> it.toFTLSPaymentModel()
                 },
@@ -258,8 +258,9 @@ class PaymentPersistenceProvider(
     override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: List<PaymentRegularToCreate>) {
         val projectReportEntity = projectReportRepository.getById(projectReportId)
         val projectEntity = projectRepository.getById(projectReportEntity.projectId)
-        val fundIdToFundEntity = projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
-            .mapNotNull { it.programmeFund }.associateBy { it.id }
+        val fundIdToFundEntity =
+            projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
+                .mapNotNull { it.programmeFund }.associateBy { it.id }
 
         val paymentEntitiesByFundId = paymentRepository.saveAll(
             paymentsToBeSaved.map {
@@ -285,8 +286,8 @@ class PaymentPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
         paymentRepository.getById(paymentId).toDetailModel(
-             partnerPayments = getAllPartnerPayments(paymentId)
-         )
+            partnerPayments = getAllPartnerPayments(paymentId)
+        )
 
     @Transactional(readOnly = true)
     override fun getAllPartnerPayments(

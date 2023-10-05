@@ -1,14 +1,26 @@
 package io.cloudflight.jems.server.payments.service
 
-import io.cloudflight.jems.api.payments.dto.*
-import io.cloudflight.jems.server.payments.model.ec.*
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentEcStatusDTO
+import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestScoBasisDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 
 private val mapper = Mappers.getMapper(PaymentApplicationsToEcMapper::class.java)
 
@@ -28,6 +40,10 @@ fun Page<PaymentToEcPayment>.toPaymentToEcLinkingDTO() = map { it.toDto() }
 fun PaymentToEcPayment.toDto(): PaymentToEcLinkingDTO = mapper.map(this)
 fun PaymentToEcLinkingUpdateDTO.toModel(): PaymentToEcLinkingUpdate = mapper.map(this)
 
+fun PaymentToEcAmountSummaryDTO.toModel() = mapper.map(this)
+fun PaymentToEcAmountSummary.toDto() = mapper.map(this)
+fun PaymentSearchRequestScoBasisDTO.toModel() = mapper.map(this)
+
 @Mapper
 interface PaymentApplicationsToEcMapper {
     fun map(dto: PaymentApplicationToEcDTO): PaymentApplicationToEc
@@ -41,4 +57,7 @@ interface PaymentApplicationsToEcMapper {
     fun map(model: PaymentEcStatus): PaymentEcStatusDTO
     fun map(model: PaymentToEcPayment): PaymentToEcLinkingDTO
     fun map(dto: PaymentToEcLinkingUpdateDTO): PaymentToEcLinkingUpdate
+    fun map(dto: PaymentToEcAmountSummaryDTO): PaymentToEcAmountSummary
+    fun map(model: PaymentToEcAmountSummary): PaymentToEcAmountSummaryDTO
+    fun map(model: PaymentSearchRequestScoBasisDTO): PaymentSearchRequestScoBasis
 }

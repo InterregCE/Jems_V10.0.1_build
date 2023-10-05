@@ -14,9 +14,10 @@ import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+import io.cloudflight.jems.server.payments.model.regular.PaymentToEcExtensionTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
-import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
@@ -45,6 +46,7 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         "projectReport.verificationEndDate" -> CaseBuilder().`when`(specPayment.type.eq(PaymentType.FTLS))
             .then(specPayment.projectLumpSum.paymentEnabledDate)
             .otherwise(specPayment.projectReport.verificationEndDate)
+
         "ecId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
         else -> specPayment.id
     }
@@ -53,20 +55,33 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
 }
 
 fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
-    results.map { it: Tuple -> PaymentToProjectTmp(
-        payment = it.get(0, PaymentEntity::class.java)!!,
-        amountPaid = it.get(1, BigDecimal::class.java),
-        amountAuthorized  = it.get(2, BigDecimal::class.java),
-        lastPaymentDate = it.get(3, LocalDate::class.java),
-        totalEligibleForRegular = it.get(4, BigDecimal::class.java),
-        projectFallsUnderArticle94 = it.get(5, ContractingMonitoringExtendedOption::class.java),
-        projectFallsUnderArticle95 = it.get(6, ContractingMonitoringExtendedOption::class.java),
-        code = it.get(7, String::class.java),
-        paymentToEcExtensionEntity = it.get(8, PaymentToEcExtensionEntity::class.java),
-    ) },
+    results.map { it: Tuple ->
+        PaymentToProjectTmp(
+            payment = it.get(0, PaymentEntity::class.java)!!,
+            amountPaid = it.get(1, BigDecimal::class.java),
+            amountAuthorized = it.get(2, BigDecimal::class.java),
+            lastPaymentDate = it.get(3, LocalDate::class.java),
+            totalEligibleForRegular = it.get(4, BigDecimal::class.java),
+            projectFallsUnderArticle94 = it.get(5, ContractingMonitoringExtendedOption::class.java),
+            projectFallsUnderArticle95 = it.get(6, ContractingMonitoringExtendedOption::class.java),
+            code = it.get(7, String::class.java),
+            paymentToEcExtensionEntity = it.get(8, PaymentToEcExtensionEntity::class.java),
+        )
+    },
     pageable,
     total,
 )
+
+fun QueryResults<Tuple>.toExtensionResult(): List<PaymentToEcExtensionTmp> =
+    results.map { it: Tuple ->
+        PaymentToEcExtensionTmp(
+            payment = it.get(0, PaymentEntity::class.java)!!,
+            projectFallsUnderArticle94 = it.get(1, ContractingMonitoringExtendedOption::class.java),
+            projectFallsUnderArticle95 = it.get(2, ContractingMonitoringExtendedOption::class.java),
+            code = it.get(3, String::class.java),
+            paymentToEcExtensionEntity = it.get(4, PaymentToEcExtensionEntity::class.java)!!,
+        )
+    }
 
 fun PaymentSearchRequest.transformToWhereClause(
     qPayment: QPaymentEntity,
@@ -107,21 +122,31 @@ fun PaymentSearchRequest.transformToWhereClause(
     val paymentApprovalDateFrom = this.approvalDateFrom?.atTime(LocalTime.MIN)?.atZone(ZoneId.systemDefault())
     val paymentApprovalDateTo = this.approvalDateTo?.atTime(LocalTime.MAX)?.atZone(ZoneId.systemDefault())
     if (paymentApprovalDateFrom != null)
-        expressions.add(listOf(
-            qProjectLumpSum.paymentEnabledDate.goe(paymentApprovalDateFrom),
-            qProjectReport.verificationEndDate.goe(paymentApprovalDateFrom),
-        ).joinWithOr())
+        expressions.add(
+            listOf(
+                qProjectLumpSum.paymentEnabledDate.goe(paymentApprovalDateFrom),
+                qProjectReport.verificationEndDate.goe(paymentApprovalDateFrom),
+            ).joinWithOr()
+        )
     if (paymentApprovalDateTo != null)
-        expressions.add(listOf(
-            qProjectLumpSum.paymentEnabledDate.loe(paymentApprovalDateTo),
-            qProjectReport.verificationEndDate.loe(paymentApprovalDateTo),
-        ).joinWithOr())
+        expressions.add(
+            listOf(
+                qProjectLumpSum.paymentEnabledDate.loe(paymentApprovalDateTo),
+                qProjectReport.verificationEndDate.loe(paymentApprovalDateTo),
+            ).joinWithOr()
+        )
 
     if (fundIds.isNotEmpty())
         expressions.add(qPayment.fund.id.`in`(this.fundIds))
 
     if (availableForEcId != null)
-        expressions.add(specPaymentToEcExtension.paymentApplicationToEc.isNull.or(specPaymentToEcExtension.paymentApplicationToEc.id.eq(availableForEcId)))
+        expressions.add(
+            specPaymentToEcExtension.paymentApplicationToEc.isNull.or(
+                specPaymentToEcExtension.paymentApplicationToEc.id.eq(
+                    availableForEcId
+                )
+            )
+        )
 
     if (scoBasis != null) {
         val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
@@ -129,6 +154,39 @@ fun PaymentSearchRequest.transformToWhereClause(
         when (scoBasis) {
             DoesNotFallUnderArticle94Nor95 ->
                 expressions.add(scoBasisFilter)
+
+            FallsUnderArticle94Or95 ->
+                expressions.add(scoBasisFilter.not())
+        }
+    }
+
+    return expressions.joinWithAnd()
+}
+
+fun PaymentSearchRequest.transformToWhereClauseForCumulativeAmounts(
+    qPayment: QPaymentEntity,
+    specProjectContracting: QProjectContractingMonitoringEntity,
+    specPaymentToEcExtension: QPaymentToEcExtensionEntity,
+): BooleanExpression? {
+    val expressions = mutableListOf<BooleanExpression>()
+
+    if (this.paymentType != null)
+        expressions.add(qPayment.type.eq(this.paymentType))
+
+    if (availableForEcId != null)
+        expressions.add(
+            specPaymentToEcExtension.paymentApplicationToEc.id.eq(
+                availableForEcId
+            )
+        )
+
+    if (scoBasis != null) {
+        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
+            .and(specProjectContracting.typologyProv95.eq(No))
+        when (scoBasis) {
+            DoesNotFallUnderArticle94Nor95 ->
+                expressions.add(scoBasisFilter)
+
             FallsUnderArticle94Or95 ->
                 expressions.add(scoBasisFilter.not())
         }

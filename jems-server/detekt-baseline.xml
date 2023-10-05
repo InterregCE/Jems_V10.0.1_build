@@ -662,6 +662,7 @@
     <ID>UnnecessaryAbstractClass:UnitTest.kt$UnitTest</ID>
     <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
     <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:PaymentApplicationsToEcPersistenceProviderTest.kt$PaymentApplicationsToEcPersistenceProviderTest$@MockK private lateinit var jpaQueryFactory: JPAQueryFactory</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$isPartnerCollaborator: Boolean</ID>
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$isProjectCollaborator: Boolean</ID>

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
+import com.querydsl.core.annotations.QueryInit
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -22,6 +23,7 @@ class PaymentEntity (
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_id")
     @field:NotNull
+    @QueryInit("*.*.*", "priorityPolicy.programmePriority.code") // to support deeper QueryDSL joins
     val project: ProjectEntity,
 
     @field:NotNull
