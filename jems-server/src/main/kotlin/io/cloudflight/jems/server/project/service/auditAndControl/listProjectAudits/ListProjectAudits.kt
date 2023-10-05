@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewProjectAuditAndControl
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlPersistenceProvider
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,7 +17,7 @@ class ListProjectAudits(
     @CanViewProjectAuditAndControl
     @Transactional
     @ExceptionWrapper(ListProjectAuditControlException::class)
-    override fun listForProject(projectId: Long): List<ProjectAuditControl> {
-        return auditControlPersistence.findAllProjectAudits(projectId)
+    override fun listForProject(projectId: Long, pageable: Pageable): Page<ProjectAuditControl> {
+        return auditControlPersistence.findAllProjectAudits(projectId, pageable)
     }
 }

@@ -21,6 +21,9 @@ class AuditControlEntity(
     val id: Long = 0,
 
     @field:NotNull
+    val number: Int,
+
+    @field:NotNull
     val projectId: Long,
 
     @field:NotNull
@@ -38,11 +41,9 @@ class AuditControlEntity(
     @field:NotNull
     var controlType: AuditControlType,
 
-    @field:NotNull
-    var startDate: ZonedDateTime,
+    var startDate: ZonedDateTime?,
 
-    @field:NotNull
-    var endDate: ZonedDateTime,
+    var endDate: ZonedDateTime?,
 
     var finalReportDate: ZonedDateTime?,
 
@@ -53,5 +54,4 @@ class AuditControlEntity(
     var totalCorrectionsAmount: BigDecimal,
 
     var comment: String?
-
 )

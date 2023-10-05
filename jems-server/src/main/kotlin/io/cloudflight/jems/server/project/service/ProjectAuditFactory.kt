@@ -386,7 +386,7 @@ fun projectAuditControlCreated(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
             .project(projectSummary)
-            .description("Audit/control number A${auditControl.projectCustomIdentifier}${auditControl.id} is created")
+            .description("Audit/control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created")
             .build()
     )
 }

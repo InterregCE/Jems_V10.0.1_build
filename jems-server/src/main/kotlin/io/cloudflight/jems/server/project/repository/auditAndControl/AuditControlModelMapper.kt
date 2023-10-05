@@ -7,10 +7,9 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectA
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import java.math.BigDecimal
 
-
-
-fun ProjectAuditControlUpdate.toCreateModel(projectSummary: ProjectSummary) = ProjectAuditControl(
+fun ProjectAuditControlUpdate.toCreateModel(projectSummary: ProjectSummary, latestNumber: Int) = ProjectAuditControl(
     id = 0L,
+    number = latestNumber.plus(1),
     projectId = projectSummary.id,
     projectCustomIdentifier = projectSummary.customIdentifier,
     status = AuditStatus.Ongoing,
@@ -26,6 +25,7 @@ fun ProjectAuditControlUpdate.toCreateModel(projectSummary: ProjectSummary) = Pr
 
 fun ProjectAuditControl.toUpdatedModel(newData: ProjectAuditControlUpdate) = ProjectAuditControl(
     id = id,
+    number = number,
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     status = status,
@@ -41,6 +41,7 @@ fun ProjectAuditControl.toUpdatedModel(newData: ProjectAuditControlUpdate) = Pro
 
 fun  ProjectAuditControl.toEntity() = AuditControlEntity(
     id = id,
+    number = number,
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     status = status,
@@ -57,6 +58,7 @@ fun  ProjectAuditControl.toEntity() = AuditControlEntity(
 
 fun AuditControlEntity.toModel() = ProjectAuditControl(
     id = id,
+    number = number,
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     status = status,

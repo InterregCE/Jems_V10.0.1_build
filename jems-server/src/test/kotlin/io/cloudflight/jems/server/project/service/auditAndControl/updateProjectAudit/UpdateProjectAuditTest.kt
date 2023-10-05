@@ -64,7 +64,7 @@ class UpdateProjectAuditTest: UnitTest() {
     lateinit var projectAuditAndControlValidator: ProjectAuditAndControlValidator
 
     @InjectMockKs
-    lateinit var updateProjectAudit: UpdateProjectAudit
+    lateinit var updateProjectAudit: UpdateProjectAuditControl
 
     @Test
     fun `updateAudit`() {

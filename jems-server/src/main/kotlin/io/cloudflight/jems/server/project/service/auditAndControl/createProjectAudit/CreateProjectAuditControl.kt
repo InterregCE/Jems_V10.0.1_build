@@ -19,27 +19,27 @@ class CreateProjectAuditControl(
     private val projectAuditAndControlValidator: ProjectAuditAndControlValidator,
     private val auditPublisher: ApplicationEventPublisher,
     private val projectPersistenceProvider: ProjectPersistenceProvider
-): CreateProjectAuditControlInteractor {
+) : CreateProjectAuditControlInteractor {
 
     @CanEditProjectAuditAndControl
     @Transactional
     @ExceptionWrapper(CrateProjectAuditControlException::class)
     override fun createAudit(projectId: Long, auditControl: ProjectAuditControlUpdate): ProjectAuditControl {
+        val auditsForProject = auditControlPersistence.countAuditsForProject(projectId)
 
-        projectAuditAndControlValidator.validateMaxNumberOfAudits(
-            auditControlPersistence.countAuditsForProject(projectId)
-        )
+        projectAuditAndControlValidator.validateMaxNumberOfAudits(auditsForProject)
         projectAuditAndControlValidator.validateData(auditControl)
 
         val projectSummary = projectPersistenceProvider.getProjectSummary(projectId)
-        return auditControlPersistence.saveAuditControl(auditControl.toCreateModel(projectSummary)).also {
-            auditPublisher.publishEvent(
-                projectAuditControlCreated(
-                    context = this,
-                    projectSummary = projectSummary,
-                    auditControl = it
+        return auditControlPersistence.saveAuditControl(auditControl.toCreateModel(projectSummary, auditsForProject.toInt()))
+            .also {
+                auditPublisher.publishEvent(
+                    projectAuditControlCreated(
+                        context = this,
+                        projectSummary = projectSummary,
+                        auditControl = it
+                    )
                 )
-            )
-        }
+            }
     }
 }

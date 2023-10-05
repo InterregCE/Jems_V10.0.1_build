@@ -3,7 +3,11 @@ package io.cloudflight.jems.api.project.auditAndControl
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditControlDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiImplicitParam
+import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -35,9 +39,13 @@ interface ProjectAuditAndControlApi {
     ): AuditControlDTO
 
     @ApiOperation("Retrieve all project financial audits")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
     @GetMapping(ENDPOINT_API_PROJECT_AUDIT_CONTROL)
-    fun listAuditsForProject(@PathVariable projectId: Long): List<AuditControlDTO>
-
+    fun listAuditsForProject(@PathVariable projectId: Long, pageable: Pageable): Page<AuditControlDTO>
 
     @ApiOperation("Retrieve project financial audit details")
     @GetMapping("$ENDPOINT_API_PROJECT_AUDIT_CONTROL/{auditControlId}")

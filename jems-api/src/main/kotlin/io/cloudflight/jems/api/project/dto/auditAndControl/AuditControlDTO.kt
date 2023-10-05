@@ -6,12 +6,13 @@ import java.time.ZonedDateTime
 data class AuditControlDTO(
     val id: Long,
     val projectId: Long,
+    val number: Int,
     val projectCustomIdentifier: String,
     val status: AuditStatusDTO,
     val controllingBody: ControllingBodyDTO,
     val controlType: AuditControlTypeDTO,
-    val startDate: ZonedDateTime,
-    val endDate: ZonedDateTime,
+    val startDate: ZonedDateTime?,
+    val endDate: ZonedDateTime?,
     val finalReportDate: ZonedDateTime?,
 
     val totalControlledAmount: BigDecimal,

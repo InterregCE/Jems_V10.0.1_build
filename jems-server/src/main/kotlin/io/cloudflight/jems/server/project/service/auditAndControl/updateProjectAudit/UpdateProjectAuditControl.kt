@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateProjectAudit(
+class UpdateProjectAuditControl(
     private val auditControlPersistence: AuditControlPersistenceProvider,
     private val projectAuditAndControlValidator: ProjectAuditAndControlValidator
-) : UpdateProjectAuditInteractor {
+) : UpdateProjectAuditControlInteractor {
 
 
     @CanEditProjectAuditAndControl

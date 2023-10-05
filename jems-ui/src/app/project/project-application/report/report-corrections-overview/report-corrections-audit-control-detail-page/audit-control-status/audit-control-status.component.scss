@@ -1,0 +1,30 @@
+:host {
+  max-width: 100%;
+}
+mat-chip {
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding-left: .25rem;
+  margin: 0 .25rem !important;
+  overflow: hidden;
+  color: var(--font-color-primary);
+  font-weight: 600;
+  font-size: 1em;
+
+  .chip-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.status-Disabled {
+  border: 1px solid var(--table-border-color);
+  background: white !important;
+  opacity: 0.6;
+}
+.status-Ongoing {
+  background-color: var(--status-submitted) !important;
+}
+.status-Closed {
+  background-color: var(--status-approved-with-conditions) !important;
+}

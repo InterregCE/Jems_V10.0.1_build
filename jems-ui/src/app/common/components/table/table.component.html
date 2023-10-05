@@ -29,6 +29,7 @@
                                  [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
                                  [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                                  [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
+                                 [class.medium-column-no-limit]="column.columnWidth === ColumnWidth.MediumColumn"
                                  [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
                                  [class.deletion-column-width]="column.columnWidth === ColumnWidth.DeletionColumn"
                                  [mat-sort-header]="column.sortProperty"
@@ -112,7 +113,7 @@
 
         <ng-container matColumnDef="anchor">
             <mat-header-cell *matHeaderCellDef class="anchor-column-header"></mat-header-cell>
-            <mat-cell *matCellDef="let row" class="anchor-column"><a [href]="row.link"></a></mat-cell>
+            <mat-cell *matCellDef="let row" class="anchor-column"><a [routerLink]="row.link"></a></mat-cell>
         </ng-container>
     </table>
 </div>

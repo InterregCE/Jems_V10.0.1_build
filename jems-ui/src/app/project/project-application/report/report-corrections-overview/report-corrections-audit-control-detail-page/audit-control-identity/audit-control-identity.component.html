@@ -1,0 +1,149 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="isCreate ? redirectToCorrections(data.projectId) : resetForm(data.auditControl, data.canEdit)"
+           (save)="save(data.auditControl.id)">
+
+    <h3 jemsMultiColumnRow>
+        <button *ngIf="!isCreate"
+                color="primary" class="mr-1" mat-icon-button
+                [matTooltip]="'programme.indicator.back.to.list' | translate"
+                (click)="redirectToCorrections(data.projectId)">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </button>
+
+        <span *ngIf="!isCreate">{{'project.application.reporting.corrections.audit.control.title' | translate:
+            {projectIdentifier: data.auditControl.projectCustomIdentifier, auditControlNumber: data.auditControl.number} }}</span>
+        <span *ngIf="isCreate">{{'project.application.reporting.corrections.create.audit' | translate}}</span>
+    </h3>
+
+    <div class="mb-3 status-wrapper" *ngIf="!isCreate">
+        <span class="status-label">{{'common.status' | translate}}</span>
+        <span class="ml-2"><jems-audit-control-status [status]="data.auditControl.status"></jems-audit-control-status></span>
+    </div>
+
+    <form [formGroup]="form" jemsFormLayout>
+        <div jemsMultiColumnRow stretch="1" class="mt-2">
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.controllingBody' | translate}}</mat-label>
+                <mat-select formControlName="controllingBody" required>
+                    <mat-option *ngFor="let controllingBody of constants.CONTROLLING_BODY" [value]="controllingBody" role="option">
+                        {{ 'project.application.reporting.corrections.audit.control.controllingBody.' + controllingBody | translate }}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <jems-form-field-errors [errors]="form.controls?.controllingBody?.errors"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.controlType' | translate}}</mat-label>
+                <mat-select formControlName="controlType" required>
+                    <mat-option *ngFor="let controlType of constants.CONTROL_TYPES" [value]="controlType" role="option">
+                        {{ 'project.application.reporting.corrections.audit.control.controlType.' + controlType | translate }}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <jems-form-field-errors [errors]="form.controls?.controlType?.errors"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+
+        <div jemsMultiColumnRow stretch="1" class="mt-2">
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.startDate' | translate}}</mat-label>
+                <input matInput
+                       name="startDate"
+                       [max]="form?.controls?.endDate?.value"
+                       [ngxMatDatetimePicker]="startDate"
+                       [formControlName]="constants.FORM_CONTROLS.startDate">
+                <mat-datepicker-toggle [disabled]="false" [for]="startDate" matSuffix>
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #startDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.startDate?.errors"
+                            [messages]="inputErrorMessages">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.endDate' | translate}}</mat-label>
+                <input matInput
+                       name="endDate"
+                       [min]="form?.controls?.startDate?.value"
+                       [ngxMatDatetimePicker]="endDate"
+                       [formControlName]="constants.FORM_CONTROLS.endDate">
+                <mat-datepicker-toggle [disabled]="false" [for]="endDate" matSuffix>
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #endDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.endDate?.errors"
+                            [messages]="inputErrorMessages">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.finalReportDate' | translate}}</mat-label>
+                <input matInput
+                       name="finalReportDate"
+                       [ngxMatDatetimePicker]="finalReportDate"
+                       [formControlName]="constants.FORM_CONTROLS.finalReportDate">
+                <mat-datepicker-toggle [disabled]="false" [for]="finalReportDate" matSuffix>
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #finalReportDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.finalReportDate?.errors"
+                            [messages]="inputErrorMessages">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow stretch="1" class="mt-2">
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.totalControlledAmount' | translate}}</mat-label>
+                <input [formControlName]="constants.FORM_CONTROLS.totalControlledAmount"
+                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput
+                       type="decimal">
+                <mat-error>
+                    <jems-form-field-errors [errors]="form.controls?.totalControlledAmount?.errors"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.audit.control.totalCorrectionsAmount' | translate}}</mat-label>
+                <input [formControlName]="constants.FORM_CONTROLS.totalCorrectionsAmount"
+                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput
+                       type="decimal">
+                <mat-error>
+                    <jems-form-field-errors [errors]="form.controls?.totalCorrectionsAmount?.errors"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                  [control]="form.controls?.comment"
+                                  [errors]="form.controls?.comment.errors"
+                                  [characterLimit]="2000"
+                                  [minRows]="3"
+                                  [maxRows]="30"
+                                  label='Comment'>
+        </jems-expandable-textarea>
+    </form>
+
+</jems-form>
+
+
+

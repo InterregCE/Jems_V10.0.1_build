@@ -288,6 +288,16 @@ import {
 import {
   ReportAdvancePaymentsOverviewComponent
 } from '@project/project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
+import {ReportCorrectionsOverviewComponent} from '@project/project-application/report/report-corrections-overview/report-corrections-overview.component';
+import {
+  ReportCorrectionsAuditControlDetailPageComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.component';
+import {
+  ReportCorrectionsAuditControlCreatePageComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-create-page/report-corrections-audit-control-create-page.component';
+import {
+  ReportCorrectionsAuditControlDetailPageBreadcrumbResolver
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page-breadcrumb.resolver';
 
 export const routes: Routes = [
   {
@@ -433,6 +443,36 @@ export const routes: Routes = [
                 path: '',
                 component: ReportAdvancePaymentsOverviewComponent,
                 data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
+              }
+            ]
+          },
+          {
+            path: 'corrections',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.corrections'
+            },
+            children: [
+              {
+                path: '',
+                component: ReportCorrectionsOverviewComponent,
+              },
+              {
+                path: 'create',
+                component: ReportCorrectionsAuditControlCreatePageComponent,
+                data: {
+                  breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.corrections.create'
+                },
+              },
+              {
+                path: 'auditControl/:auditControlId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ReportCorrectionsAuditControlDetailPageBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: ReportCorrectionsAuditControlDetailPageComponent,
+                  }
+                ]
               }
             ]
           },

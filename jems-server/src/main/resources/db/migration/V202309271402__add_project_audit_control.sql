@@ -1,6 +1,7 @@
 CREATE TABLE project_audit_control
 (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    number INT NOT NULL,
     project_id INT UNSIGNED NOT NULL,
     project_custom_identifier VARCHAR(31) NOT NULL,
     status ENUM ('Ongoing', 'Closed') NOT NULL DEFAULT 'Ongoing',
@@ -18,8 +19,8 @@ CREATE TABLE project_audit_control
         'OLAF'
         ) NOT NULL,
     control_type ENUM ('Administrative','OnTheSpot') NOT NULL,
-    start_date DATETIME(3) NOT NULL,
-    end_date DATETIME(3) NOT NULL,
+    start_date DATETIME(3),
+    end_date DATETIME(3),
     final_report_date DATETIME(3),
     total_controlled_amount DECIMAL(17, 2) NOT NULL DEFAULT 0.00,
     total_corrections_amount DECIMAL(17, 2) NOT NULL DEFAULT 0.00,

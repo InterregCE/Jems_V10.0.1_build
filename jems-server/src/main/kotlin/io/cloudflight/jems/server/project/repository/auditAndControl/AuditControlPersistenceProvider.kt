@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.repository.auditAndControl
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,10 +27,9 @@ class AuditControlPersistenceProvider(
             projectId = projectId
         ).toModel()
 
-
     @Transactional(readOnly = true)
-    override fun findAllProjectAudits(projectId: Long): List<ProjectAuditControl> {
-       return auditControlRepository.findAllByProjectId(projectId).map { it.toModel() }
+    override fun findAllProjectAudits(projectId: Long, pageable: Pageable): Page<ProjectAuditControl> {
+       return auditControlRepository.findAllByProjectId(projectId, pageable).map { it.toModel() }
     }
 
     @Transactional

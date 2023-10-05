@@ -590,6 +590,11 @@ import {
 import {
   VerificationDeductionPerCertificateComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-deduction-per-certificate/verification-deduction-per-certificate.component';
+import { ReportCorrectionsOverviewComponent } from './project-application/report/report-corrections-overview/report-corrections-overview.component';
+import { ReportCorrectionsAuditControlDetailPageComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.component';
+import { ReportCorrectionsAuditControlCreatePageComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-create-page/report-corrections-audit-control-create-page.component';
+import { AuditControlIdentityComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-identity/audit-control-identity.component';
+import { AuditControlStatusComponent } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-status/audit-control-status.component';
 
 @NgModule({
   declarations: [
@@ -791,6 +796,11 @@ import {
     ReportAdvancePaymentsOverviewComponent,
     ProjectReportVerificationCertificateComponent,
     VerificationDeductionPerCertificateComponent,
+    ReportCorrectionsOverviewComponent,
+    ReportCorrectionsAuditControlDetailPageComponent,
+    ReportCorrectionsAuditControlCreatePageComponent,
+    AuditControlIdentityComponent,
+    AuditControlStatusComponent,
   ],
   imports: [
     SharedModule,

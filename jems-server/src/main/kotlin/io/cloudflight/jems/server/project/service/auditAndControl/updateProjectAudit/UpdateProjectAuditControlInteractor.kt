@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.auditAndControl.updateProject
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControlUpdate
 
-interface UpdateProjectAuditInteractor {
+interface UpdateProjectAuditControlInteractor {
 
     fun updateAudit(projectId: Long, auditControlId: Long, auditControlData: ProjectAuditControlUpdate): ProjectAuditControl
 }
