@@ -323,6 +323,64 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             ),
         )
 
+        private fun expectedCurrentZeroResult(): ExpenditureCoFinancingBreakdown {
+            val result = expectedSubmittedResult()
+            return result.copy(
+                funds = result.funds.also {
+                    it[0].currentReport = BigDecimal.ZERO.setScale(2)
+                    it[0].currentReportReIncluded = BigDecimal.ZERO.setScale(2)
+                    it[0].totalReportedSoFar = BigDecimal.valueOf(4500, 2)
+                    it[0].totalReportedSoFarPercentage = BigDecimal.valueOf(3000, 2)
+                    it[0].remainingBudget = BigDecimal.valueOf(10500, 2)
+                    it[1].currentReport = BigDecimal.ZERO.setScale(2)
+                    it[1].currentReportReIncluded = BigDecimal.ZERO.setScale(2)
+                    it[1].totalReportedSoFar = BigDecimal.valueOf(7500, 2)
+                    it[1].totalReportedSoFarPercentage = BigDecimal.valueOf(3000, 2)
+                    it[1].remainingBudget = BigDecimal.valueOf(17500, 2)
+                    it[2].currentReport = BigDecimal.ZERO.setScale(2)
+                    it[2].currentReportReIncluded = BigDecimal.ZERO.setScale(2)
+                    it[2].totalReportedSoFar = BigDecimal.valueOf(22500, 2)
+                    it[2].totalReportedSoFarPercentage = BigDecimal.valueOf(3000, 2)
+                    it[2].remainingBudget = BigDecimal.valueOf(52500, 2)
+                },
+                partnerContribution = result.partnerContribution.copy(
+                    currentReport = BigDecimal.ZERO.setScale(2),
+                    currentReportReIncluded = BigDecimal.ZERO.setScale(2),
+                    totalReportedSoFar = BigDecimal.valueOf(200, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(22, 2),
+                    remainingBudget = BigDecimal.valueOf(89800, 2),
+                ),
+                publicContribution = result.publicContribution.copy(
+                    currentReport = BigDecimal.ZERO.setScale(2),
+                    currentReportReIncluded = BigDecimal.ZERO.setScale(2),
+                    totalReportedSoFar = BigDecimal.valueOf(300, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(150, 2),
+                    remainingBudget = BigDecimal.valueOf(19700, 2),
+                ),
+                automaticPublicContribution = result.automaticPublicContribution.copy(
+                    currentReport = BigDecimal.ZERO.setScale(2),
+                    currentReportReIncluded = BigDecimal.ZERO.setScale(2),
+                    totalReportedSoFar = BigDecimal.valueOf(400, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(133, 2),
+                    remainingBudget = BigDecimal.valueOf(29600, 2),
+                ),
+                privateContribution = result.privateContribution.copy(
+                    currentReport = BigDecimal.ZERO.setScale(2),
+                    currentReportReIncluded = BigDecimal.ZERO.setScale(2),
+                    totalReportedSoFar = BigDecimal.valueOf(500, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(125, 2),
+                    remainingBudget = BigDecimal.valueOf(39500, 2),
+                ),
+                total = result.total.copy(
+                    currentReport = BigDecimal.ZERO.setScale(2),
+                    currentReportReIncluded = BigDecimal.ZERO.setScale(2),
+                    totalReportedSoFar = BigDecimal.valueOf(600, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(60, 2),
+                    remainingBudget = BigDecimal.valueOf(99400, 2),
+                ),
+            )
+        }
+
         private val expectedDraftResult = ExpenditureCoFinancingBreakdown(
             funds = listOf(
                 ExpenditureCoFinancingBreakdownLine(
@@ -636,6 +694,25 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 reportId = reportId
             )
         ).isEqualTo(expectedSubmittedResult(zeroTotals = true))
+    }
+
+    @Test
+    fun `get - zero current`() {
+        val reportId = 76581L
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report(reportId, ReportStatus.Draft)
+        every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns coFinancing
+
+        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
+        every { currentCalculation.total } returns total.copy(
+            currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO,
+        )
+        every {
+            reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId)
+        } returns currentCalculation
+
+        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns partnerContribution
+        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedCurrentZeroResult())
     }
 
     @Test

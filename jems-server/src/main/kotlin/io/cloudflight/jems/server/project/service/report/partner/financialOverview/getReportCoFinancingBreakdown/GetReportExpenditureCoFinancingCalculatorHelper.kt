@@ -131,9 +131,6 @@ fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMod
     percentage.divide(BigDecimal.valueOf(100))
 ).setScale(2, roundingMode)
 
-fun BigDecimal.applyRatio(ratio: BigDecimal): BigDecimal =
-    this.multiply(ratio, MathContext(17, RoundingMode.DOWN))
-
 fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): List<DetailedSplit> {
     with(input) {
         val funds = fundsPercentages.map { (fundId, percentage) ->
@@ -144,7 +141,8 @@ fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): List<De
         val partnerContributionValue = currentTotal.minus(fundsTotal.value)
 
         return funds.map { fundShare ->
-            val partnerContributionFundPartRatio = fundShare.value.divide(fundsTotal.value, 17, RoundingMode.DOWN)
+            val partnerContributionFundPartRatio = if (fundsTotal.value.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
+                fundShare.value.divide(fundsTotal.value, 17, RoundingMode.DOWN)
             val partnerContributionFundPart = partnerContributionValue.multiply(partnerContributionFundPartRatio).setScale(2, RoundingMode.HALF_UP)
             val fund100Percent = partnerContributionFundPart.fromCurrentShareTo(partnerContributionPercentage, 100)
             DetailedSplit(
