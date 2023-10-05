@@ -102,6 +102,7 @@ class PaymentPersistenceProvider(
         }
     }
 
+    @Transactional(readOnly = true)
     override fun getAllPaymentToEcPayment(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToEcPayment> {
         return fetchPayments(pageable, filters).map {
             PaymentToEcPayment(
@@ -403,6 +404,7 @@ class PaymentPersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
     override fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long> {
         val specPayment = QPaymentEntity.paymentEntity
         val specPaymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity

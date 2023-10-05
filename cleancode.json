@@ -57,6 +57,14 @@
     {
       "hash": "faca5b06",
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
+    },
+    {
+      "hash": "6cea37d6",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "60b8c302",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }
   ]
 }
