@@ -27,6 +27,7 @@ export class PaymentToEcDetailPageComponent {
     paymentDetail: PaymentApplicationToEcDetailDTO;
     userCanEdit: boolean;
     finalizationDisabled: boolean;
+    userCanView: boolean;
   }>;
 
   constructor(public pageStore: PaymentsToEcDetailPageStore,
@@ -34,12 +35,14 @@ export class PaymentToEcDetailPageComponent {
     this.data$ = combineLatest([
       this.pageStore.paymentToEcDetail$,
       this.pageStore.updatedPaymentApplicationStatus$,
-      this.pageStore.userCanEdit$
+      this.pageStore.userCanEdit$,
+      this.pageStore.userCanView$,
     ]).pipe(
-        map(([paymentDetail, paymentStatus, userCanEdit]) => ({
+        map(([paymentDetail, paymentStatus, userCanEdit, userCanView]) => ({
               paymentDetail: this.getUpdatePayment(paymentDetail, paymentStatus),
               userCanEdit,
-              finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit)
+              finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit),
+              userCanView
             })
         )
     );

@@ -35,7 +35,8 @@
             </span>
         </div>
 
-    <mat-tab-group  *jemsHasPermission="PermissionEnum.PaymentsToEcRetrieve">
+
+    <mat-tab-group *ngIf="data.userCanView">
 
         <mat-tab label="{{'payments.to.ec.detail.summary.tab' | translate}}" id="summaryTab" >
             <jems-payments-application-to-ec-summary-tab jemsNoWidthLimit></jems-payments-application-to-ec-summary-tab>

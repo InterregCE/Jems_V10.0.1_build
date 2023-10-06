@@ -1,5 +1,5 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ChangeDetectionStrategy, Component, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {
   PagePaymentToEcLinkingDTO, PaymentApplicationToEcDetailDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO
@@ -24,7 +24,7 @@ import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FormService]
 })
-export class PaymentToEcFtlsTabComponent {
+export class PaymentToEcFtlsTabComponent implements OnInit {
 
   displayedColumns = [
     'select',
@@ -56,6 +56,7 @@ export class PaymentToEcFtlsTabComponent {
   dataSource: AbstractControl[];
   error$ = new BehaviorSubject<APIError | null>(null);
   editedRowIndex: number | null = null;
+  successfulUpdateMessage = false;
 
   constructor(
     public pageStore: PaymentToEcFtlsTabStoreService,
@@ -63,23 +64,34 @@ export class PaymentToEcFtlsTabComponent {
     private confirmDialog: MatDialog,
     private formBuilder: FormBuilder,
     public formService: FormService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
       this.pageStore.page$,
       this.detailPageStore.paymentToEcId$,
       this.detailPageStore.userCanEdit$,
-      this.detailPageStore.updatedPaymentApplicationStatus$
+      this.detailPageStore.updatedPaymentApplicationStatus$,
     ]).pipe(
-      tap(([ecFTLSs]) => {
-        this.initializeForm(ecFTLSs.content);
+      tap(([ecFTLSs ]) => {
+        if (ecFTLSs.content) {
+          this.initializeForm(ecFTLSs.content);
+        }
       }),
-      map(([ecFTLSs, ecId, userCanEdit, ecStatus]) => ({
+      map(([ecFTLSs, ecId, userCanEdit, ecStatus ]) => ({
         ecFTLSs,
         ecId,
         isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft
       })),
     );
     this.formService.init(this.form);
+  }
+
+  ngOnInit(): void {
+    this.pageStore.retrieveListError$.pipe(untilDestroyed(this)).subscribe(value => {
+      if (value) {
+        this.showErrorMessage(value);
+      }
+    });
   }
 
   selectionChanged(ecId: number, ftlsPaymentId: number, checked: boolean, event: MatCheckboxChange): void {
@@ -139,6 +151,14 @@ export class PaymentToEcFtlsTabComponent {
     return of(null);
   }
 
+  private showSuccessMessageAfterUpdate(): void {
+    this.successfulUpdateMessage = true;
+    setTimeout(() => {
+      this.successfulUpdateMessage = false;
+      this.changeDetectorRef.markForCheck();
+    }, 4000);
+  }
+
   editAmounts(rowIndex: number) {
     this.editedRowIndex = rowIndex;
   }
@@ -160,6 +180,7 @@ export class PaymentToEcFtlsTabComponent {
 
     this.pageStore.updateLinkedPayment(ftlsPaymentId, dataToUpdate).pipe(
       take(1),
+      tap(_ => this.showSuccessMessageAfterUpdate()),
       catchError(err => this.showErrorMessage(err.error)),
       untilDestroyed(this)
     ).subscribe();

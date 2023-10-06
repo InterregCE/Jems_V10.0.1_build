@@ -37,6 +37,7 @@ export class PaymentsToEcDetailPageStore {
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
   userCanEdit$: Observable<boolean>;
+  userCanView$: Observable<boolean>;
 
   constructor(private paymentApplicationToECService: PaymentApplicationToECService,
               private permissionService: PermissionService,
@@ -49,6 +50,7 @@ export class PaymentsToEcDetailPageStore {
     this.paymentToEcDetail$ = this.paymentDetail();
     this.userCanEdit$ = this.userCanEdit();
     this.programmeFunds$ = this.allFunds();
+    this.userCanView$ = this.userCanView();
   }
 
 
@@ -67,6 +69,13 @@ export class PaymentsToEcDetailPageStore {
     return  this.permissionService.hasPermission(PermissionsEnum.PaymentsToEcUpdate)
       .pipe(
         map((canUpdate) => canUpdate)
+      );
+  }
+
+  private userCanView(): Observable<boolean> {
+    return  this.permissionService.hasPermission(PermissionsEnum.PaymentsToEcRetrieve)
+      .pipe(
+        map((canView) => canView)
       );
   }
 
