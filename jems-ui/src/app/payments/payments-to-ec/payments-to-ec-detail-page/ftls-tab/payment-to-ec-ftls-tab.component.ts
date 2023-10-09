@@ -169,6 +169,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
       ftlsPublicContribution: ftls.publicContribution,
       ftlsPrivateContribution: ftls.privateContribution
     });
+    this.formService.setDirty(true);
   }
 
   submitAmountChanges(rowIndex: number, ecId: number, ftlsPaymentId: number) {
@@ -194,6 +195,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
       ftlsPrivateContribution: unchangedFtls.correctedPrivateContribution
     });
     this.editedRowIndex = null;
+    this.formService.setDirty(false);
   }
 
   private initializeForm(ecFTLSs: PaymentToEcLinkingDTO[]) {

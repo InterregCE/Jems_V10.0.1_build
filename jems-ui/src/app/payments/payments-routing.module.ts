@@ -18,6 +18,12 @@ import {
   PaymentToEcDetailPageComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {PermissionGuard} from '../security/permission.guard';
+import {
+  PaymentToEcFtlsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-ftls-tab.component';
+import {
+  PaymentToEcSummaryTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -135,6 +141,16 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcUpdate,
           ],
         },
+        children: [
+          {
+            path: '',
+            redirectTo: 'summary',
+          },
+          {
+            path: 'summary',
+            component: PaymentToEcSummaryTabComponent,
+          },
+        ]
       },
       {
         path: 'paymentApplicationsToEc/:paymentToEcId',
@@ -146,7 +162,21 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
           ],
-        }
+        },
+        children: [
+          {
+            path: '',
+            redirectTo: 'summary',
+          },
+          {
+            path: 'summary',
+            component: PaymentToEcSummaryTabComponent,
+          },
+          {
+            path: 'ftls',
+            component: PaymentToEcFtlsTabComponent,
+          },
+        ]
       },
     ]
   }

@@ -28,7 +28,6 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   Alert = Alert;
   constants = PaymentsToEcSummaryTabConstants;
   tableData: AbstractControl[] = [];
-  paymentId = this.activatedRoute.snapshot.params.paymentToEcId;
   summaryForm = this.formBuilder.group({
     id: '',
     programmeFund: this.formBuilder.control(''),
@@ -84,7 +83,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   }
 
   resetForm(paymentDetail: PaymentApplicationToEcDetailDTO) {
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(paymentDetail ? paymentDetail.id : null);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.programmeFund.id ?? '');
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.accountingYear.id ?? '');
 
@@ -116,34 +115,30 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   get summary(): FormGroup {
     return this.summaryForm;
   }
+
   updatePaymentApplicationToEc() {
     const dataToUpdate = this.prepareDataForSave(this.summaryForm.getRawValue());
 
-    if(dataToUpdate.id === null) {
-      this.paymentsToEcDetailPageStore.createPaymentToEc(dataToUpdate).pipe(
-        take(1),
-        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
-        tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
-        catchError(err => this.formService.setError(err)),
-        untilDestroyed(this)
-      ).subscribe();
-    } else {
+    if(dataToUpdate.id) {
       this.paymentsToEcDetailPageStore.updatePaymentToEcSummary(dataToUpdate).pipe(
         take(1),
         tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
         catchError(err => this.formService.setError(err)),
         untilDestroyed(this)
       ).subscribe();
+    } else {
+      this.paymentsToEcDetailPageStore.createPaymentToEc(dataToUpdate).pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
+        tap(data =>  this.redirectToPartnerDetailAfterCreate(data.id)),
+        catchError(err => this.formService.setError(err)),
+        untilDestroyed(this)
+      ).subscribe();
     }
   }
 
-  redirectToPartnerDetailAfterCreate(isCreate: boolean, paymentId: number) {
-    if(isCreate) {
-      this.router.navigate(
-        ['..', paymentId],
-        {relativeTo: this.activatedRoute}
-      );
-    }
+  redirectToPartnerDetailAfterCreate(paymentId: number) {
+    this.router.navigate(['/app/payments/paymentApplicationsToEc/', paymentId]);
   }
 
   prepareDataForSave(data: any): PaymentApplicationToEcSummaryUpdateDTO {
