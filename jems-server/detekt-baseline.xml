@@ -593,6 +593,7 @@
     <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
     <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
     <ID>ReturnCount:GetInstitutionPartnerAssignment.kt$GetInstitutionPartnerAssignment$private fun getAvailableInstitutionsForPartner( partnerDetails: InstitutionPartnerDetails, nuts3CodeToInstitutionsMap: Map&lt;String, List&lt;IdNamePair&gt;&gt;, countryCodeToInstitutionsMap: Map&lt;String, MutableSet&lt;IdNamePair&gt;&gt;, allInstitutions: List&lt;IdNamePair&gt; ): Set&lt;IdNamePair&gt;</ID>
+    <ID>ReturnCount:ProjectAuditControlAuthorization.kt$ProjectAuditControlAuthorization$fun canViewAuditAndControl(projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>

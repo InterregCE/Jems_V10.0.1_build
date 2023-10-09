@@ -53,7 +53,12 @@ export class ProjectApplicationFormSidenavService {
     map(advancePaymentsPage => !advancePaymentsPage?.empty),
   );
 
-  private readonly canSeeCorrections$: Observable<boolean> = this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorAuditAndControlView);
+  private readonly canSeeCorrections$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorAuditAndControlView),
+    this.projectStore.collaboratorLevel$,
+  ]).pipe(
+    map(([hasViewPermission, collaboratorLevel]) => hasViewPermission || !!collaboratorLevel)
+  );
 
   private readonly canSeeProjectManagement$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementView),

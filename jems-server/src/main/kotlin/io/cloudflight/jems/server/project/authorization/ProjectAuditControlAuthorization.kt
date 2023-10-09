@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -18,26 +19,30 @@ annotation class CanViewProjectAuditAndControl
 @PreAuthorize("@projectAuditControlAuthorization.hasPermission('ProjectMonitorAuditAndControlEdit', #projectId)")
 annotation class CanEditProjectAuditAndControl
 
-
 @Component
 class ProjectAuditControlAuthorization(
     override val securityService: SecurityService,
     private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository,
     private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : Authorization(securityService) {
 
-
-
     fun canViewAuditAndControl(projectId: Long): Boolean {
-
+        // monitor users
         if (hasPermission(UserRolePermission.ProjectMonitorAuditAndControlView, projectId)) {
             return true
         }
+
+        // partner collaborators and project collaborators
         val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(projectId).mapTo(HashSet()) { it.id.userId }
         val projectCollaborators = projectCollaboratorRepository.findAllByIdProjectId(projectId).mapTo(HashSet()) { it.id.userId }
         val collaborators = partnerCollaborators union projectCollaborators
+        if (isActiveUserIdEqualToOneOf(collaborators))
+            return true
 
-        return isActiveUserIdEqualToOneOf(collaborators)
+        // controllers
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
+        return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlView)
     }
 }
 
