@@ -35,7 +35,9 @@
 </jems-project-page-template>
 
 <ng-template #idCell let-auditControl>
-    {{auditControl.projectCustomIdentifier}}_AC_{{auditControl.number}}
+    <span class="id" [matTooltip]="auditControl.projectCustomIdentifier + '_AC_' + auditControl.number">
+        {{auditControl.projectCustomIdentifier}}_AC_{{auditControl.number}}
+    </span>
 </ng-template>
 
 <ng-template #statusCell let-auditControl>
