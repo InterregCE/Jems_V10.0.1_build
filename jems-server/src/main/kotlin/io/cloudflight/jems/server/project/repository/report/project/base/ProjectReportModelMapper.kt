@@ -201,6 +201,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherTotal = totalsFromAF.other,
         lumpSumTotal = totalsFromAF.lumpSum,
         unitCostTotal = totalsFromAF.unitCost,
+        spfCostTotal = totalsFromAF.spfCost,
         sumTotal = totalsFromAF.sum,
 
         staffCurrent = ZERO,

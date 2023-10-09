@@ -90,7 +90,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(485, 1),
                 unitCost = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(37041, 2),
+                spfCost = BigDecimal.valueOf(1942L, 2),
+                sum = BigDecimal.valueOf(38983, 2),
             ),
             currentlyReportedParked = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.ZERO,
@@ -102,21 +103,22 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(10, 0),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(1000, 2),
             )
         )
 
         private val expectedCoFin = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(5174, 2),
-                35L to BigDecimal.valueOf(23380, 2),
-                null to BigDecimal.valueOf(8487, 2),
+                29L to BigDecimal.valueOf(5445, 2),
+                35L to BigDecimal.valueOf(24606, 2),
+                null to BigDecimal.valueOf(8932, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(8487, 2),
-            publicContribution = BigDecimal.valueOf(2222, 2),
-            automaticPublicContribution = BigDecimal.valueOf(2963, 2),
-            privateContribution = BigDecimal.valueOf(3704, 2),
-            sum = BigDecimal.valueOf(37041, 2),
+            partnerContribution = BigDecimal.valueOf(8932, 2),
+            publicContribution = BigDecimal.valueOf(2338, 2),
+            automaticPublicContribution = BigDecimal.valueOf(3118, 2),
+            privateContribution = BigDecimal.valueOf(3898, 2),
+            sum = BigDecimal.valueOf(38983, 2),
         )
 
         private val expectedParkedCoFin = ReportExpenditureCoFinancingColumn(
@@ -294,7 +296,11 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                             originalExpenditureNumber = 3
                         ),
                         parked = true
-                    )
+                    ),
+                    expenditure1.copy(
+                        costCategory = ReportBudgetCategory.SpfCosts,
+                        certifiedAmount = BigDecimal.valueOf(1942L, 2),
+                    ),
                 )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
@@ -348,7 +354,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             mapOf(
                 Pair(
                     18L,
-                    ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(25448, 2), currentParked = BigDecimal.ZERO)
+                    ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(27390, 2), currentParked = BigDecimal.ZERO)
                 )
             )
         )
@@ -365,7 +371,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 Pair(
                     10L,
                     ExpenditureInvestmentCurrent(
-                        current = BigDecimal.valueOf(25448, 2),
+                        current = BigDecimal.valueOf(27390, 2),
                         currentParked = BigDecimal.ZERO
                     )
                 )

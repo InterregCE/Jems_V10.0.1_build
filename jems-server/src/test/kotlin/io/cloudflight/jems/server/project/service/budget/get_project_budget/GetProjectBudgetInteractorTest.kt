@@ -101,6 +101,10 @@ class GetProjectBudgetInteractorTest : UnitTest() {
             partner1Id to BigDecimal.ONE,
             partner2Id to BigDecimal.TEN,
         )
+        every { persistence.getSpfCosts(setOf(partner1Id, partner2Id), 1L) } returns listOf(
+            ProjectPartnerCost(partner1Id, BigDecimal.valueOf(70L)),
+            ProjectPartnerCost(partner2Id, BigDecimal.valueOf(80L)),
+        )
 
         every {
             budgetCalculator.calculateCosts(
@@ -111,7 +115,8 @@ class GetProjectBudgetInteractorTest : UnitTest() {
                 BigDecimal.ZERO,
                 300.0.toScaledBigDecimal(),
                 800.0.toScaledBigDecimal(),
-                50.0.toScaledBigDecimal()
+                50.0.toScaledBigDecimal(),
+                spfCosts = BigDecimal.valueOf(70L),
             )
         } returns BudgetCostsCalculationResult(
             1200.0.toScaledBigDecimal(),
@@ -130,7 +135,8 @@ class GetProjectBudgetInteractorTest : UnitTest() {
                 BigDecimal.ZERO,
                 300.0.toScaledBigDecimal(),
                 100.0.toScaledBigDecimal(),
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                spfCosts = BigDecimal.valueOf(80L),
             )
         } returns BudgetCostsCalculationResult(
             BigDecimal.ZERO, 100.0.toScaledBigDecimal(),
@@ -150,6 +156,7 @@ class GetProjectBudgetInteractorTest : UnitTest() {
                     officeAndAdministrationCosts = BigDecimal.ZERO,
                     otherCosts = BigDecimal.ZERO,
                     lumpSumContribution = BigDecimal.TEN,
+                    spfCosts = BigDecimal.valueOf(80L),
                     totalCosts = 1410.toScaledBigDecimal()
                 ),
                 PartnerBudget(
@@ -163,6 +170,7 @@ class GetProjectBudgetInteractorTest : UnitTest() {
                     otherCosts = BigDecimal.ZERO,
                     lumpSumContribution = BigDecimal.ONE,
                     unitCosts = 25.0.toScaledBigDecimal(),
+                    spfCosts = BigDecimal.valueOf(70L),
                     totalCosts = 1811.toScaledBigDecimal()
                 )
             )

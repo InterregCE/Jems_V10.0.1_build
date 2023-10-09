@@ -30,6 +30,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherCurrent), 0),
             COALESCE(SUM(report.lumpSumCurrent), 0),
             COALESCE(SUM(report.unitCostCurrent), 0),
+            CAST(0.0 AS big_decimal),
             COALESCE(SUM(report.sumCurrent), 0)
         )
         FROM #{#entityName} report
@@ -48,6 +49,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.lumpSumTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.unitCostTotalEligibleAfterControl), 0),
+            CAST(0.0 AS big_decimal),
             COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
         )
         FROM #{#entityName} report
@@ -66,6 +68,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherCurrentParked), 0),
             COALESCE(SUM(report.lumpSumCurrentParked), 0),
             COALESCE(SUM(report.unitCostCurrentParked), 0),
+            CAST(0.0 AS big_decimal),
             COALESCE(SUM(report.sumCurrentParked), 0)
         )
         FROM #{#entityName} report
@@ -84,6 +87,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.lumpSumTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.unitCostTotalEligibleAfterControl), 0),
+            CAST(0.0 AS big_decimal),
             COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
         )
         FROM #{#entityName} report

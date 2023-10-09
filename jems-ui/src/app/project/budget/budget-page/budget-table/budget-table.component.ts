@@ -47,6 +47,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   totalOtherCosts: number;
   totalLumpSums: number;
   totalUnitCosts: number;
+  totalSpfCosts: number;
   total: number;
   tableConfig: TableConfig[];
 
@@ -95,6 +96,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
     this.totalOtherCosts = NumberService.sum(budgets.map(budget => budget.otherCosts));
     this.totalLumpSums = NumberService.sum(budgets.map(budget => budget.lumpSumContribution));
     this.totalUnitCosts = NumberService.sum(budgets.map(budget => budget.unitCosts));
+    this.totalSpfCosts = NumberService.sum(budgets.map(budget => budget.spfCosts));
     this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
   }
 
@@ -145,6 +147,12 @@ export class BudgetTableComponent implements OnInit, OnChanges {
     }
     if (unitCosts?.find(cost => !cost.isOneCostCategory)) {
       columns.push('unitCosts');
+      this.tableConfig.push({minInRem: 7});
+    }
+    if (callSettings.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF) {
+      columns.push('totalWithoutSpf');
+      columns.push('spfCosts');
+      this.tableConfig.push({minInRem: 7});
       this.tableConfig.push({minInRem: 7});
     }
     columns.push('total');

@@ -15,6 +15,7 @@ interface ExpenditureCostWithCategory {
             ReportBudgetCategory.EquipmentCosts -> BudgetCostCategory.Equipment
             ReportBudgetCategory.InfrastructureCosts -> BudgetCostCategory.Infrastructure
             ReportBudgetCategory.Multiple -> BudgetCostCategory.UnitCost
+            ReportBudgetCategory.SpfCosts -> BudgetCostCategory.SpfCost
         }
     }
 

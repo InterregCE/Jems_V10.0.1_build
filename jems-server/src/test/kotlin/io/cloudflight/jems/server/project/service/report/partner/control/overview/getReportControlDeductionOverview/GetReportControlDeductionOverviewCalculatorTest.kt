@@ -70,7 +70,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(0L, 2),
                 lumpSum = BigDecimal.valueOf(0L, 2),
                 unitCost = BigDecimal.valueOf(0L, 2),
-                sum = BigDecimal.valueOf(957738L, 2),
+                spfCost = BigDecimal.valueOf(15000L, 2),
+                sum = BigDecimal.valueOf(972738L, 2),
             )
 
             every { it.currentlyReportedParked } returns BudgetCostsCalculationResultFull(
@@ -83,7 +84,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(110L, 2),
                 lumpSum = BigDecimal.valueOf(120L, 2),
                 unitCost = BigDecimal.valueOf(130L, 2),
-                sum = BigDecimal.valueOf(435451L, 2),
+                spfCost = BigDecimal.valueOf(140L, 2),
+                sum = BigDecimal.valueOf(435591L, 2),
             )
 
             // used when call open
@@ -97,7 +99,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(3),
                 lumpSum = BigDecimal.valueOf(2),
                 unitCost = BigDecimal.valueOf(1),
-                sum = BigDecimal.valueOf(45),
+                spfCost = BigDecimal.valueOf(10),
+                sum = BigDecimal.valueOf(55),
             )
         }
 

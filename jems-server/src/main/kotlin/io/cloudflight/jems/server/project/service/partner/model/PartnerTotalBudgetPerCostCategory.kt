@@ -16,4 +16,5 @@ data class PartnerTotalBudgetPerCostCategory(
     val travelCostTotal: BigDecimal,
     val staffCostTotal: BigDecimal,
     val lumpSumsTotal: BigDecimal,
+    val spfCostTotal: BigDecimal,
 )

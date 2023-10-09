@@ -52,18 +52,15 @@ class GetPartnerBudgetPerFundService(
         callType: CallType,
         partners: List<ProjectPartnerSummary>,
         version: String?
-    ): List<PartnerBudgetSpfCoFinancing?> {
+    ): List<PartnerBudgetSpfCoFinancing> {
         return if (callType == CallType.SPF) {
             partners.map {
-                if (it.id != null)
-                    PartnerBudgetSpfCoFinancing(
-                        partner = it,
-                        projectPartnerCoFinancingAndContribution =
-                        projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id, version),
-                        total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
-                    )
-                else
-                    null
+                PartnerBudgetSpfCoFinancing(
+                    partner = it,
+                    projectPartnerCoFinancingAndContribution =
+                    projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id!!, version),
+                    total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
+                )
             }
         } else emptyList()
     }

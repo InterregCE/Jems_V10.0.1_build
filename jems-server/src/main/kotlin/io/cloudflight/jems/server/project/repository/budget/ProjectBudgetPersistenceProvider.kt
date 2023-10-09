@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetSpfCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
@@ -34,6 +35,7 @@ class ProjectBudgetPersistenceProvider(
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val budgetSpfRepository: ProjectPartnerBudgetSpfCostRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
     private val projectPartnerLumpSumRepository: ProjectPartnerLumpSumRepository,
     private val projectVersionUtils: ProjectVersionUtils
@@ -97,6 +99,18 @@ class ProjectBudgetPersistenceProvider(
                 budgetInfrastructureRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
                     .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getSpfCosts(partnerIds: Set<Long>, projectId: Long, version: String?): List<ProjectPartnerCost> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                budgetSpfRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetSpfRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
+            },
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getLumpSumContributionPerPartner(

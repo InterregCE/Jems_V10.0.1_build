@@ -8,4 +8,5 @@ enum class BudgetCategoryDTO {
     EquipmentCosts,
     InfrastructureCosts,
     Multiple,
+    SpfCosts,
 }

@@ -46,6 +46,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.util.stream.Stream
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
@@ -235,6 +236,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = programmeFundEntity,
                 percentage = ONE,
+                percentageSpf = BigDecimal.valueOf(15),
                 total = ZERO,
                 current = ONE,
                 totalEligibleAfterControl = ZERO,
@@ -250,6 +252,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = null,
                 percentage = TEN,
+                percentageSpf = BigDecimal.valueOf(35),
                 total = TEN,
                 current = ZERO,
                 totalEligibleAfterControl = ZERO,

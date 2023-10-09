@@ -10,5 +10,6 @@ data class ExpenditureCostCategoryBreakdownDTO(
     val other: ExpenditureCostCategoryBreakdownLineDTO,
     val lumpSum: ExpenditureCostCategoryBreakdownLineDTO,
     val unitCost: ExpenditureCostCategoryBreakdownLineDTO,
+    val spfCost: ExpenditureCostCategoryBreakdownLineDTO,
     val total: ExpenditureCostCategoryBreakdownLineDTO,
 )

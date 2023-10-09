@@ -11,6 +11,7 @@ data class ProjectPartnerBudgetPerPeriodRowImpl(
     override val equipmentCostsPerPeriod: BigDecimal?,
     override val externalExpertiseAndServicesCostsPerPeriod: BigDecimal?,
     override val infrastructureAndWorksCostsPerPeriod: BigDecimal?,
-    override val unitCostsPerPeriod: BigDecimal?
+    override val unitCostsPerPeriod: BigDecimal?,
+    override val spfCostsPerPeriod: BigDecimal?,
 
 ) : ProjectPartnerBudgetPerPeriodRow

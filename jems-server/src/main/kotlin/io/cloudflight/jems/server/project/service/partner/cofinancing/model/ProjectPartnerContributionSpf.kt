@@ -12,4 +12,8 @@ data class ProjectPartnerContributionSpf(
     override val status: ProjectPartnerContributionStatusDTO? = null,
     override val amount: BigDecimal? = null
 
-): ProjectContribution
+): ProjectContribution {
+
+    override fun isNotPartner() = name != null
+
+}

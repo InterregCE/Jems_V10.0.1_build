@@ -31,7 +31,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             other = BigDecimal.valueOf(17L),
             lumpSum = BigDecimal.valueOf(18L),
             unitCost = BigDecimal.valueOf(19L),
-            sum = BigDecimal.valueOf(135L),
+            spfCost = BigDecimal.valueOf(20L),
+            sum = BigDecimal.valueOf(155L),
         )
         private val afterControl = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(21L),
@@ -43,7 +44,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             other = BigDecimal.valueOf(27L),
             lumpSum = BigDecimal.valueOf(28L),
             unitCost = BigDecimal.valueOf(29L),
-            sum = BigDecimal.valueOf(225L),
+            spfCost = BigDecimal.valueOf(30L),
+            sum = BigDecimal.valueOf(255L),
         )
 
         private val perPartner_15 = PerPartnerCostCategoryBreakdownLine(
@@ -116,7 +118,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.valueOf(34L),
                 lumpSum = BigDecimal.valueOf(36L),
                 unitCost = BigDecimal.valueOf(38L),
-                sum = BigDecimal.valueOf(270L),
+                spfCost = BigDecimal.valueOf(40L),
+                sum = BigDecimal.valueOf(310L),
             ),
             totalDeduction = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(42L),
@@ -128,7 +131,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.valueOf(54L),
                 lumpSum = BigDecimal.valueOf(56L),
                 unitCost = BigDecimal.valueOf(58L),
-                sum = BigDecimal.valueOf(450L),
+                spfCost = BigDecimal.valueOf(60L),
+                sum = BigDecimal.valueOf(510L),
             ),
         )
 
@@ -144,6 +148,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.ZERO,
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
             totalDeduction = BudgetCostsCalculationResultFull(
@@ -156,6 +161,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.ZERO,
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
         )

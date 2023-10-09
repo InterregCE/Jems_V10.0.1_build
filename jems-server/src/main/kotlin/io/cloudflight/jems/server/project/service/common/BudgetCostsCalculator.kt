@@ -18,7 +18,8 @@ class BudgetCostsCalculator : BudgetCostsCalculatorService {
         equipmentCosts: BigDecimal,
         infrastructureCosts: BigDecimal,
         travelCosts: BigDecimal,
-        staffCosts: BigDecimal
+        staffCosts: BigDecimal,
+        spfCosts: BigDecimal,
     ): BudgetCostsCalculationResult {
 
         val byCategory: Map<BudgetCostCategory, BigDecimal> = mapOf(
@@ -29,6 +30,7 @@ class BudgetCostsCalculator : BudgetCostsCalculatorService {
             BudgetCostCategory.Infrastructure to infrastructureCosts,
             BudgetCostCategory.LumpSum to lumpSumsCosts,
             BudgetCostCategory.UnitCost to unitCosts,
+            BudgetCostCategory.SpfCost to spfCosts,
         )
 
         return calculateBudget(

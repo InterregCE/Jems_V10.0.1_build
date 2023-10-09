@@ -344,6 +344,8 @@ class ProjectDataProviderImpl(
         else
             ZERO
 
+        val spfCosts = getBudgetCostsPersistence.getBudgetSpfCostTotal(partnerId, version)
+
         return budgetCostsCalculator.calculateCosts(
             budgetOptions,
             unitCostTotal,
@@ -352,7 +354,8 @@ class ProjectDataProviderImpl(
             equipmentCostTotal,
             infrastructureCostTotal,
             travelCostTotal,
-            staffCostTotal
+            staffCostTotal,
+            spfCosts,
         )
     }
 

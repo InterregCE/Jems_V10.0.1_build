@@ -231,6 +231,7 @@ fun List<PreviouslyReportedFund>.toEntity(
         id = ProjectPartnerReportCoFinancingIdEntity(reportEntity, index.plus(1)),
         programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
         percentage = fund.percentage,
+        percentageSpf = fund.percentageSpf,
         total = fund.total,
         current = ZERO,
         totalEligibleAfterControl = ZERO,
@@ -377,6 +378,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherTotal = totalsFromAF.other,
         lumpSumTotal = totalsFromAF.lumpSum,
         unitCostTotal = totalsFromAF.unitCost,
+        spfCostTotal = totalsFromAF.spfCost,
         sumTotal = totalsFromAF.sum,
 
         staffCurrent = ZERO,

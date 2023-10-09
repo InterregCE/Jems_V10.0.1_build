@@ -107,6 +107,7 @@ internal class SubmitProjectReportTest : UnitTest() {
             other = BigDecimal.valueOf(16),
             lumpSum = BigDecimal.valueOf(17),
             unitCost = BigDecimal.valueOf(18),
+            spfCost = BigDecimal.valueOf(185, 1),
             sum = BigDecimal.valueOf(19),
         )
 

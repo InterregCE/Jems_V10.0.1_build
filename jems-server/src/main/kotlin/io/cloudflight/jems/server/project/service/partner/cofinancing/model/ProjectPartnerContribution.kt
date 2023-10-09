@@ -15,5 +15,5 @@ data class ProjectPartnerContribution(
     val isPartner: Boolean
 
 ): ProjectContribution {
-    fun isNotPartner() = !isPartner
+    override fun isNotPartner() = !isPartner
 }

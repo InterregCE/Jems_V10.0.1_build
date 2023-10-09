@@ -864,6 +864,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(projectPartner.id)) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(projectPartner.id)) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetSpfCostTotal(projectPartner.id, null) } returns BigDecimal.valueOf(75L)
         every {
             budgetCostsCalculator.calculateCosts(
                 any(),
@@ -873,7 +874,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                spfCosts = BigDecimal.valueOf(75L),
             )
         } returns budgetCostsCalculationResult
         every {

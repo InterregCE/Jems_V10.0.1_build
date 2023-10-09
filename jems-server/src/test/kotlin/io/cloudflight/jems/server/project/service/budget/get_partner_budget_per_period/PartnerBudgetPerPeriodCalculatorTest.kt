@@ -30,7 +30,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
         null, null, null, null, null,
         BigDecimal.ZERO, 200.00.toScaledBigDecimal(), 300.00.toScaledBigDecimal(),
         BigDecimal.ZERO, BigDecimal.ZERO,
-        BigDecimal.ZERO, BigDecimal.ZERO
+        BigDecimal.ZERO, BigDecimal.ZERO, spfCostTotal = BigDecimal.valueOf(622L),
     )
 
 
@@ -52,7 +52,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 partnerTotal1.equipmentCostTotal,
                 partnerTotal1.infrastructureCostTotal,
                 partnerTotal1.travelCostTotal,
-                partnerTotal1.staffCostTotal
+                partnerTotal1.staffCostTotal,
+                partnerTotal1.spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(totalCosts = BigDecimal.ZERO)
 
@@ -75,7 +76,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                         totalPartnerBudget = BigDecimal.ZERO,
                         totalPartnerBudgetDetail = BudgetCostsDetail(
                             externalCosts = 300.00.toScaledBigDecimal(),
-                            equipmentCosts = 200.00.toScaledBigDecimal()
+                            equipmentCosts = 200.00.toScaledBigDecimal(),
+                            spfCosts = BigDecimal.valueOf(622L),
                         ),
                         costType = ProjectPartnerCostType.Management
                     )
@@ -124,7 +126,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 partnerTotal1.equipmentCostTotal,
                 partnerTotal1.infrastructureCostTotal,
                 partnerTotal1.travelCostTotal,
-                partnerTotal1.staffCostTotal
+                partnerTotal1.staffCostTotal,
+                partnerTotal1.spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 50.00.toScaledBigDecimal(),
@@ -138,7 +141,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 budgetOptions,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 133.33.toScaledBigDecimal(), 50.00.toScaledBigDecimal(),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 18.33.toScaledBigDecimal(),
@@ -152,7 +155,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 budgetOptions,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 100.00.toScaledBigDecimal(), 50.00.toScaledBigDecimal(),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 15.00.toScaledBigDecimal(),
@@ -212,7 +215,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                     travelCosts = 1.67.toScaledBigDecimal(),
                                     officeAndAdministrationCosts = 2.51.toBigDecimal(),
                                     externalCosts = 66.67.toScaledBigDecimal(),
-                                    equipmentCosts = 100.00.toScaledBigDecimal()
+                                    equipmentCosts = 100.00.toScaledBigDecimal(),
+                                    spfCosts = BigDecimal.valueOf(622L),
                                 ),
                                 false
                             ),
@@ -224,7 +228,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                             equipmentCosts = 200.00.toScaledBigDecimal(),
                             officeAndAdministrationCosts = 7.50.toScaledBigDecimal(),
                             travelCosts = 5.00.toScaledBigDecimal(),
-                            staffCosts = 50.00.toScaledBigDecimal()
+                            staffCosts = 50.00.toScaledBigDecimal(),
+                            spfCosts = BigDecimal.valueOf(622L),
                         ),
                         costType = ProjectPartnerCostType.Management
                     )
@@ -264,7 +269,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             partner1BudgetOptions.staffCostsFlatRate,
             partner1BudgetOptions.otherCostsOnStaffCostsFlatRate,
             50.46.toScaledBigDecimal(), 13.11.toBigDecimal(), 30.62.toScaledBigDecimal(), 33.3.toScaledBigDecimal(),
-            11.10.toScaledBigDecimal(), 62.91.toScaledBigDecimal(), 10.22.toScaledBigDecimal()
+            11.10.toScaledBigDecimal(), 62.91.toScaledBigDecimal(), 10.22.toScaledBigDecimal(),
+            spfCostTotal = BigDecimal.valueOf(43_62L, 2),
         )
         val p1LumpSumPeriod1 = ProjectLumpSum(
             orderNr = 1,
@@ -278,7 +284,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             staffCostsPerPeriod = 50.20.toScaledBigDecimal(),
             travelAndAccommodationCostsPerPeriod = 11.10.toScaledBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 20.32.toScaledBigDecimal(),
-            unitCostsPerPeriod = 25.01.toScaledBigDecimal()
+            unitCostsPerPeriod = 25.01.toScaledBigDecimal(),
+            spfCostsPerPeriod = BigDecimal.valueOf(17_24L, 2),
         )
         val p1budgetPeriod2 = ProjectPartnerBudget(
             id = partner1Id,
@@ -288,6 +295,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             unitCostsPerPeriod = 25.45.toScaledBigDecimal(),
             equipmentCostsPerPeriod = 13.11.toBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 10.30.toScaledBigDecimal(),
+            spfCostsPerPeriod = BigDecimal.valueOf(26_38L, 2),
         )
 
 
@@ -305,13 +313,14 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             partner2BudgetOptions.staffCostsFlatRate,
             partner2BudgetOptions.otherCostsOnStaffCostsFlatRate,
             BigDecimal.ZERO, BigDecimal.ZERO, 10.toScaledBigDecimal(), 2.toScaledBigDecimal(),
-            BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+            BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(112L),
         )
         val p2budgetPeriod1 = ProjectPartnerBudget(
             id = partner2Id,
             periodNumber = 1,
             externalExpertiseAndServicesCostsPerPeriod = 10.toScaledBigDecimal(),
-            infrastructureAndWorksCostsPerPeriod = 2.toScaledBigDecimal()
+            infrastructureAndWorksCostsPerPeriod = 2.toScaledBigDecimal(),
+            spfCostsPerPeriod = BigDecimal.valueOf(112L),
         )
 
 
@@ -324,7 +333,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 partnerTotal1.equipmentCostTotal,
                 partnerTotal1.infrastructureCostTotal,
                 partnerTotal1.travelCostTotal,
-                partnerTotal1.staffCostTotal
+                partnerTotal1.staffCostTotal,
+                partnerTotal1.spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 62.91.toScaledBigDecimal(), travelCosts = 11.1.toScaledBigDecimal(),
@@ -338,7 +348,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 p1budgetPeriod1.unitCostsPerPeriod, p1LumpSumPeriod1.lumpSumContributions.first().amount,
                 p1budgetPeriod1.externalExpertiseAndServicesCostsPerPeriod,
                 p1budgetPeriod1.equipmentCostsPerPeriod, p1budgetPeriod1.infrastructureAndWorksCostsPerPeriod,
-                p1budgetPeriod1.travelAndAccommodationCostsPerPeriod, p1budgetPeriod1.staffCostsPerPeriod
+                p1budgetPeriod1.travelAndAccommodationCostsPerPeriod, p1budgetPeriod1.staffCostsPerPeriod,
+                p1budgetPeriod1.spfCostsPerPeriod,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 50.2.toScaledBigDecimal(), travelCosts = 11.1.toScaledBigDecimal(),
@@ -355,7 +366,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 partnerTotal2.equipmentCostTotal,
                 partnerTotal2.infrastructureCostTotal,
                 partnerTotal2.travelCostTotal,
-                partnerTotal2.staffCostTotal
+                partnerTotal2.staffCostTotal,
+                partnerTotal2.spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCosts = 1.20.toScaledBigDecimal(),
@@ -408,7 +420,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                         officeAndAdministrationCosts = 5.02.toScaledBigDecimal(),
                                         travelCosts = 11.10.toScaledBigDecimal(),
                                         staffCosts = 50.20.toScaledBigDecimal(),
-                                        otherCosts = 2.51.toScaledBigDecimal()
+                                        otherCosts = 2.51.toScaledBigDecimal(),
+                                        spfCosts = BigDecimal.valueOf(17_24L, 2),
                                     )
                                 ),
                                 ProjectPeriodBudget(
@@ -426,8 +439,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                         officeAndAdministrationCosts = 1.27.toScaledBigDecimal(),
                                         travelCosts = 0.00.toScaledBigDecimal(),
                                         staffCosts = 12.71.toScaledBigDecimal(),
-                                        otherCosts = 0.63.toScaledBigDecimal()
-
+                                        otherCosts = 0.63.toScaledBigDecimal(),
+                                        spfCosts = BigDecimal.valueOf(26_38L, 2),
                                     )
                                 ),
                                 ProjectPeriodBudget(
@@ -449,7 +462,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                 officeAndAdministrationCosts = 6.29.toScaledBigDecimal(),
                                 travelCosts = 11.10.toScaledBigDecimal(),
                                 staffCosts = 62.91.toScaledBigDecimal(),
-                                otherCosts = 3.14.toScaledBigDecimal()
+                                otherCosts = 3.14.toScaledBigDecimal(),
+                                spfCosts = BigDecimal.valueOf(43_62L, 2),
                             ),
                             costType = ProjectPartnerCostType.Management
                         ),
@@ -475,7 +489,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                         externalCosts = 10.00.toScaledBigDecimal(),
                                         infrastructureCosts = 2.00.toScaledBigDecimal(),
                                         travelCosts = 0.18.toScaledBigDecimal(),
-                                        staffCosts = 1.20.toScaledBigDecimal()
+                                        staffCosts = 1.20.toScaledBigDecimal(),
+                                        spfCosts = BigDecimal.valueOf(112L),
                                     )
                                 ),
                                 ProjectPeriodBudget(
@@ -505,7 +520,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                 externalCosts = 10.00.toScaledBigDecimal(),
                                 infrastructureCosts = 2.00.toScaledBigDecimal(),
                                 travelCosts = 0.18.toScaledBigDecimal(),
-                                staffCosts = 1.20.toScaledBigDecimal()
+                                staffCosts = 1.20.toScaledBigDecimal(),
+                                spfCosts = BigDecimal.valueOf(112L),
                             ),
                             costType = ProjectPartnerCostType.Management
                         )

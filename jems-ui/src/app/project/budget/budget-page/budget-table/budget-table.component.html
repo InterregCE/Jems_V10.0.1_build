@@ -15,7 +15,9 @@
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('otherCosts')">{{ 'project.partner.budget.other' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('lumpSums')">{{ 'project.partner.budget.lumpSum' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('unitCosts')">{{ 'project.partner.budget.unitCosts' | translate }}</span>
-        <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | adaptTranslationKeyByCallType | async | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('totalWithoutSpf')" class="justify-end">{{ 'spf.project.partner.budget.table.total' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('spfCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('spfCosts')">{{ 'project.partner.budget.header.spf' | translate }}</span>
+        <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | translate }}</span>
     </div>
 
     <ng-container *ngFor="let budget of budgets">
@@ -34,6 +36,8 @@
             <span *ngIf="displayedColumns.includes('otherCosts')" class="justify-end">{{ budget.otherCosts | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('lumpSums')" class="justify-end">{{ budget.lumpSumContribution | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('unitCosts')" class="justify-end">{{ budget.unitCosts | asMoney }}</span>
+            <span *ngIf="displayedColumns.includes('totalWithoutSpf')" class="justify-end">{{ (budget.totalSum - budget.spfCosts) | asMoney }}</span>
+            <span *ngIf="displayedColumns.includes('spfCosts')" class="justify-end">{{ budget.spfCosts | asMoney }}</span>
             <span class="justify-end mat-body-strong">{{ budget.totalSum | asMoney }}</span>
         </div>
     </ng-container>
@@ -51,6 +55,8 @@
         <span *ngIf="displayedColumns.includes('otherCosts')" class="justify-end">{{ totalOtherCosts | asMoney }}</span>
         <span *ngIf="displayedColumns.includes('lumpSums')" class="justify-end">{{ totalLumpSums | asMoney }}</span>
         <span *ngIf="displayedColumns.includes('unitCosts')" class="justify-end">{{ totalUnitCosts | asMoney }}</span>
+        <span *ngIf="displayedColumns.includes('totalWithoutSpf')" class="justify-end">{{ (total - totalSpfCosts) | asMoney }}</span>
+        <span *ngIf="displayedColumns.includes('spfCosts')" class="justify-end">{{ totalSpfCosts | asMoney }}</span>
         <span class="justify-end">{{ total | asMoney }}</span>
     </div>
 </div>

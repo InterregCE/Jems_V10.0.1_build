@@ -37,6 +37,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val otherTotal: BigDecimal,
     @field:NotNull val lumpSumTotal: BigDecimal,
     @field:NotNull val unitCostTotal: BigDecimal,
+    @field:NotNull val spfCostTotal: BigDecimal,
     @field:NotNull val sumTotal: BigDecimal,
 
     @field:NotNull var staffCurrent: BigDecimal,

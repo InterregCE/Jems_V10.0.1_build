@@ -35,6 +35,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.ProjectPartnerReportContributionWithSpf
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
@@ -163,11 +164,11 @@ class ProjectPartnerReportCreatePersistenceProvider(
     }
 
     private fun persistContributionsToReport(
-        contributions: List<CreateProjectPartnerReportContribution>,
+        contributions: ProjectPartnerReportContributionWithSpf,
         report: ProjectPartnerReportEntity,
     ) =
         contributionRepository.saveAll(
-            contributions.map { it.toEntity(report, attachment = null) }
+            contributions.contributions.map { it.toEntity(report, attachment = null) }
         )
 
     private fun persistAvailableLumpSumsToReport(

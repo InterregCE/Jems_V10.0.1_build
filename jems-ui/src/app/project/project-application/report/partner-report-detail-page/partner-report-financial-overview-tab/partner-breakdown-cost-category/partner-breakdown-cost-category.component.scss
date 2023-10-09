@@ -8,6 +8,7 @@
   min-width: 5rem;
 }
 
-.remove-gap {
-  margin-left: -.2rem;
+// fix gap between 2 sticky columns https://github.com/angular/components/issues/18636
+.mat-table-sticky-border-elem-left {
+  position: absolute;
 }

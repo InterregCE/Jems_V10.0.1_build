@@ -133,6 +133,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             other = dummyLine,
             lumpSum = dummyLine,
             unitCost = dummyLine,
+            spfCost = dummyLine,
             total = dummyLine,
         )
 
@@ -262,6 +263,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             other = expectedDummyLine,
             lumpSum = expectedDummyLine,
             unitCost = expectedDummyLine,
+            spfCost = expectedDummyLine,
             total = expectedDummyLine,
         )
 

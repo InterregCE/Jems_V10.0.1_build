@@ -59,7 +59,8 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                 totalBudgetPerCostCategory.equipmentCostTotal,
                 totalBudgetPerCostCategory.infrastructureCostTotal,
                 totalBudgetPerCostCategory.travelCostTotal,
-                totalBudgetPerCostCategory.staffCostTotal
+                totalBudgetPerCostCategory.staffCostTotal,
+                spfCosts = totalBudgetPerCostCategory.spfCostTotal,
             ).let { totalBudgetCostsCalculationResult ->
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner,
@@ -80,7 +81,8 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                         officeAndAdministrationCosts = totalBudgetCostsCalculationResult.officeAndAdministrationCosts,
                         travelCosts = totalBudgetCostsCalculationResult.travelCosts,
                         staffCosts = totalBudgetCostsCalculationResult.staffCosts,
-                        otherCosts = totalBudgetCostsCalculationResult.otherCosts
+                        otherCosts = totalBudgetCostsCalculationResult.otherCosts,
+                        spfCosts = totalBudgetPerCostCategory.spfCostTotal,
                     ),
                     costType = ProjectPartnerCostType.Management
                 )
@@ -181,7 +183,8 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                 equipmentCosts = totalBudget.equipmentCostsPerPeriod,
                 infrastructureCosts = totalBudget.infrastructureAndWorksCostsPerPeriod,
                 travelCosts = totalBudget.travelAndAccommodationCostsPerPeriod,
-                staffCosts = totalBudget.staffCostsPerPeriod
+                staffCosts = totalBudget.staffCostsPerPeriod,
+                spfCosts = totalBudget.spfCostsPerPeriod,
             ).let { budgetCostsCalculationResultPerPeriod ->
                 ProjectPeriodBudget(
                     periodNumber = period.number,
@@ -197,7 +200,8 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                         officeAndAdministrationCosts = budgetCostsCalculationResultPerPeriod.officeAndAdministrationCosts,
                         travelCosts = budgetCostsCalculationResultPerPeriod.travelCosts,
                         staffCosts = budgetCostsCalculationResultPerPeriod.staffCosts,
-                        otherCosts = budgetCostsCalculationResultPerPeriod.otherCosts
+                        otherCosts = budgetCostsCalculationResultPerPeriod.otherCosts,
+                        spfCosts = totalBudget.spfCostsPerPeriod,
                     ),
                     lastPeriod = false,
                 )
@@ -240,6 +244,8 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                             .minus(periodBudgetsExcludingLastPeriod.sumOf { it.budgetPerPeriodDetail.staffCosts }),
                         otherCosts = budgetCostsCalculationResult.otherCosts
                             .minus(periodBudgetsExcludingLastPeriod.sumOf { it.budgetPerPeriodDetail.otherCosts }),
+                        spfCosts = totalBudgetPerCostCategory.spfCostTotal
+                            .minus(periodBudgetsExcludingLastPeriod.sumOf { it.budgetPerPeriodDetail.spfCosts }),
                     ),
                     lastPeriod = false
                 )

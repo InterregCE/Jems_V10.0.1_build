@@ -10,4 +10,5 @@ enum class BudgetCostCategory {
     Other,
     LumpSum,
     UnitCost,
+    SpfCost,
 }

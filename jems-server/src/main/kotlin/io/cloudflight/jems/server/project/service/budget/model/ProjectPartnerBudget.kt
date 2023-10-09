@@ -12,5 +12,6 @@ data class ProjectPartnerBudget(
     val externalExpertiseAndServicesCostsPerPeriod: BigDecimal = BigDecimal.ZERO,
     val infrastructureAndWorksCostsPerPeriod: BigDecimal = BigDecimal.ZERO,
     val unitCostsPerPeriod: BigDecimal = BigDecimal.ZERO,
+    val spfCostsPerPeriod: BigDecimal = BigDecimal.ZERO,
 
 )

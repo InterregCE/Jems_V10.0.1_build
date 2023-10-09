@@ -190,6 +190,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(3700L, 2),
             ),
             currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -202,6 +203,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(623L, 2),
             )
         )

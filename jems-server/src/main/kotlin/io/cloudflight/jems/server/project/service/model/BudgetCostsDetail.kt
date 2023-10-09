@@ -11,10 +11,11 @@ data class BudgetCostsDetail constructor(
     val officeAndAdministrationCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,
     val staffCosts: BigDecimal = BigDecimal.ZERO,
-    val otherCosts: BigDecimal = BigDecimal.ZERO
+    val otherCosts: BigDecimal = BigDecimal.ZERO,
+    val spfCosts: BigDecimal = BigDecimal.ZERO,
 ) {
     private constructor() : this(
         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
     )
 }
