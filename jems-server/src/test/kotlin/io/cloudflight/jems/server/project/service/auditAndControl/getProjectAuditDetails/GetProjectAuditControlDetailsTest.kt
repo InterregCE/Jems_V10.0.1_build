@@ -23,6 +23,7 @@ class GetProjectAuditControlDetailsTest: UnitTest() {
 
         val auditControl = ProjectAuditControl(
             id = 1,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -56,6 +57,7 @@ class GetProjectAuditControlDetailsTest: UnitTest() {
         assertThat(getProjectAuditControlDetails.getDetails(projectId = PROJECT_ID, auditId = AUDIT_CONTROL_ID)).isEqualTo(
             ProjectAuditControl(
                 id = 1,
+                number = 1,
                 projectId = PROJECT_ID,
                 projectCustomIdentifier = "01",
                 status = AuditStatus.Ongoing,

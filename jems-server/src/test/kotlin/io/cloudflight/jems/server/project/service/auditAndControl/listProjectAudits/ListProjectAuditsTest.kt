@@ -12,6 +12,8 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
 class ListProjectAuditsTest: UnitTest() {
@@ -23,6 +25,7 @@ class ListProjectAuditsTest: UnitTest() {
         val auditControls = listOf(
             ProjectAuditControl(
                 id = 1,
+                number = 1,
                 projectId = PROJECT_ID,
                 projectCustomIdentifier = "01",
                 status = AuditStatus.Ongoing,
@@ -47,11 +50,12 @@ class ListProjectAuditsTest: UnitTest() {
 
     @Test
     fun listProjectAudits() {
-        every { auditControlPersistence.findAllProjectAudits(PROJECT_ID) } returns auditControls
+        every { auditControlPersistence.findAllProjectAudits(PROJECT_ID, Pageable.unpaged()) } returns PageImpl(auditControls)
 
-        assertThat(listProjectAudits.listForProject(PROJECT_ID)).containsExactly(
+        assertThat(listProjectAudits.listForProject(PROJECT_ID, Pageable.unpaged())).containsExactly(
             ProjectAuditControl(
                 id = 1,
+                number = 1,
                 projectId = PROJECT_ID,
                 projectCustomIdentifier = "01",
                 status = AuditStatus.Ongoing,

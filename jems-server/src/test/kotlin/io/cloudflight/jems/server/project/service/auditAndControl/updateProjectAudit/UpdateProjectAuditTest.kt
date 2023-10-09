@@ -42,6 +42,7 @@ class UpdateProjectAuditTest: UnitTest() {
 
         val auditControl = ProjectAuditControl(
             id = 1,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -71,6 +72,7 @@ class UpdateProjectAuditTest: UnitTest() {
 
         val expectedAuditControl = ProjectAuditControl(
             id = 1,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,

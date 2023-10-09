@@ -55,11 +55,11 @@ export class ReportCorrectionsAuditControlDetailPageStore {
     return merge(initialAuditControl, this.updatedAuditControl$);
   }
 
-  saveAuditControl(id: number | undefined, auditControl: ProjectAuditControlUpdateDTO): Observable<AuditControlDTO> {
+  saveAuditControl(id: number | undefined, auditControlData: ProjectAuditControlUpdateDTO): Observable<AuditControlDTO> {
     return this.projectStore.projectId$.pipe(
       switchMap(projectId => id
-        ? this.auditControlService.updateProjectAudit(id, projectId, auditControl)
-        : this.auditControlService.createProjectAudit(projectId, auditControl)
+        ? this.auditControlService.updateProjectAudit(id, projectId, auditControlData)
+        : this.auditControlService.createProjectAudit(projectId, auditControlData)
       ),
       tap(() => this.reportCorrectionsOverviewStore.refreshAudits$.next()),
       tap(auditControl => this.updatedAuditControl$.next(auditControl)),

@@ -55,6 +55,7 @@ class CreateProjectAuditControlTest: UnitTest() {
 
         val auditControl = ProjectAuditControl(
             id = 1,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -102,6 +103,7 @@ class CreateProjectAuditControlTest: UnitTest() {
         assertThat(createProjectAuditControl.createAudit(PROJECT_ID, auditControlData)).isEqualTo(
             ProjectAuditControl(
                 id = 1,
+                number = 1,
                 projectId = PROJECT_ID,
                 projectCustomIdentifier = "01",
                 status = AuditStatus.Ongoing,
@@ -123,7 +125,7 @@ class CreateProjectAuditControlTest: UnitTest() {
                     customIdentifier = "01",
                     name = "project acronym",
                 ),
-                description = "Audit/control number A011 is created"
+                description = "Audit/control 01_AC_1 is created"
             )
         )
     }

@@ -12,6 +12,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -27,6 +29,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
         val auditControlEntity =  AuditControlEntity(
             id = 1,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -42,6 +45,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
         val auditControl  = ProjectAuditControl(
             id = 0L,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -57,6 +61,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
         val expectedAudit = ProjectAuditControl(
             id = 1L,
+            number = 1,
             projectId = PROJECT_ID,
             projectCustomIdentifier = "01",
             status = AuditStatus.Ongoing,
@@ -87,6 +92,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         assertThat(slot.captured).usingRecursiveComparison().isEqualTo(
             AuditControlEntity(
                 id = 0L,
+                number = 1,
                 projectId = PROJECT_ID,
                 projectCustomIdentifier = "01",
                 status = AuditStatus.Ongoing,
@@ -119,10 +125,10 @@ class AuditControlPersistenceProviderTest: UnitTest() {
     @Test
     fun `project audits are found and mapped`() {
         every {
-            auditControlRepository.findAllByProjectId(projectId = PROJECT_ID)
-        } returns listOf(auditControlEntity)
+            auditControlRepository.findAllByProjectId(projectId = PROJECT_ID, Pageable.unpaged())
+        } returns PageImpl(listOf(auditControlEntity))
 
-        assertThat(auditControlPersistenceProvider.findAllProjectAudits(projectId = PROJECT_ID)).containsExactly(
+        assertThat(auditControlPersistenceProvider.findAllProjectAudits(projectId = PROJECT_ID, Pageable.unpaged())).containsExactly(
             expectedAudit
         )
     }
