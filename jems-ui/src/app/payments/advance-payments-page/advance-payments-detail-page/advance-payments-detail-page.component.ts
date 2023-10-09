@@ -18,14 +18,12 @@ import {SecurityService} from '../../../security/security.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {Alert} from '@common/components/forms/alert';
-import {AdvancePaymentsPageStore} from '../advance-payments-page.store';
 import {AdvancePaymentsDetailPageStoreStore} from './advance-payments-detail-page-store.store';
 import {AdvancePaymentsDetailPageConstants} from './advance-payments-detail-page.constants';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {NumberService} from '@common/services/number.service';
-import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -50,15 +48,10 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   tableData: AbstractControl[] = [];
   paymentId = this.activatedRoute.snapshot.params.advancePaymentId;
   columnsToDisplay = ['partner', 'partnerName', 'amountApproved', 'addInstallment'];
-  projectCustomIdentifierSearchForm =  this.formBuilder.group(
-    {
-      projectCustomIdentifierSearch: this.formBuilder.control('')
-    }
-  );
 
   advancePaymentForm = this.formBuilder.group({
     id: '',
-    projectCustomIdentifier: this.formBuilder.control(''),
+    projectCustomIdentifier: this.formBuilder.control('', Validators.required),
     projectAcronym: this.formBuilder.control(''),
     partnerAbbreviation: this.formBuilder.control(''),
     selectedPartner: this.formBuilder.control(''),
@@ -98,16 +91,14 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private formBuilder: FormBuilder,
               private formService: FormService,
               private advancePaymentsDetailPageStore: AdvancePaymentsDetailPageStoreStore,
-              private advancePaymentsStore: AdvancePaymentsPageStore,
               private securityService: SecurityService,
               private localeDatePipe: LocaleDatePipe,
               private router: RoutingService,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef,
-              private paymentsPageSidenav: PaymentsPageSidenavService){
+              private changeDetectorRef: ChangeDetectorRef){
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
-    this.projectCustomIdentifierSearchForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch)?.valueChanges
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.valueChanges
     .pipe(
       debounceTime(150),
       tap((searchedAcronym) => this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym)),
@@ -408,14 +399,6 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     };
   }
 
-  getProjectToDisplay(attribute1: OutputProjectSimple, attribute2: OutputProjectSimple) {
-    if (attribute1?.id === attribute2?.id) {
-      return attribute1;
-    } else {
-      return '';
-    }
-  }
-
   getPartnerToDisplay(attribute1: ProjectPartnerPaymentSummaryDTO, attribute2: ProjectPartnerPaymentSummaryDTO) {
     if (attribute1?.partnerSummary?.id === attribute2?.partnerSummary?.id) {
       return attribute1;
@@ -543,7 +526,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return this.localeDatePipe.transform(value);
   }
 
-  loadPartnerAndFundsData(project: OutputProjectSimple) {
+  projectSelected(project: OutputProjectSimple) {
     this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project.id);
     this.resetFundsAndContributionData();
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
@@ -574,5 +557,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     const previouslySettledAmounts = this.settlementsArray.controls.map(control => control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.value);
     const amountPaid = this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
     return NumberService.minus(amountPaid, NumberService.sum(previouslySettledAmounts));
+  }
+
+  displayProjectIdentifier(project: OutputProjectSimple | null): string {
+    return project?.customIdentifier ?? '';
   }
 }

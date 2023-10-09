@@ -92,7 +92,6 @@ import {
   ContractingChecklistInstanceListComponent
 } from '@common/components/checklist/contracting-checklist-instance-list/contracting-checklist-instance-list.component';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
-import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {
   FileOperationsActionCellComponent
 } from '@common/components/file-list/file-list-table/file-operations-action-cell/file-operations-action-cell.component';
@@ -125,7 +124,6 @@ const modules = [
   MatBadgeModule,
   MatProgressSpinnerModule,
   MatSliderModule,
-  NgxMatSelectSearchModule
 ];
 
 const declarations = [

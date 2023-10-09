@@ -6,7 +6,7 @@
 
         <div class="add-advance-payment-button">
             <button *ngIf="userCanEdit$ | async"
-                    mat-stroked-button color="primary"
+                    mat-raised-button color="primary"
                     [routerLink]="'/app/payments/advancePayments/create'">
                 + {{'payments.advance.payment.add.button' | translate}}
             </button>
