@@ -7,6 +7,7 @@ export enum ColumnWidth {
     NarrowColumn,
     ChipColumn,
     MediumColumn,
+    MediumColumnNoLimit,
     SmallColumn,
     DeletionColumn
 }

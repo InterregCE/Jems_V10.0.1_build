@@ -89,6 +89,11 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView"),
     ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit"),
+
+    ProjectMonitorAuditAndControlView("ProjectMonitorAuditAndControlView"),
+    ProjectMonitorAuditAndControlEdit("ProjectMonitorAuditAndControlEdit"),
+    ProjectMonitorCloseAuditControl("ProjectMonitorCloseAuditControl"),
+    ProjectMonitorCloseAuditControlCorrection("ProjectMonitorCloseAuditControlCorrection"),
     // endregion Monitor
 
     // region top navigation
