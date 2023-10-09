@@ -1,5 +1,6 @@
 .border-cell-right {
   border-right: .0625rem solid var(--table-border-color);
+  height: inherit;
 }
 
 .mat-column-select {
@@ -17,8 +18,8 @@
 }
 
 .mat-column-projectAcronym {
-  margin-left: 0.5rem;
-  min-width: 8rem;
+  padding-left: .5rem;
+  min-width: 9rem;
 }
 
 .mat-column-maApprovalDate {
@@ -28,16 +29,24 @@
 .mat-column-claimNo {
   min-width: 3rem;
   max-width: 3rem;
+  padding-left: .5rem;
 }
 
 .mat-column-priorityAxis {
   min-width: 8rem;
+  padding-left: .5rem;
 }
 
-.mat-column-totalEligible,
 .mat-column-fundAmount,
 .mat-column-partnerContribution {
   min-width: 8rem;
+}
+
+.mat-column-totalEligible {
+  min-width: 8rem;
+  &.mat-cell {
+    padding-left: 1rem;
+  }
 }
 
 .mat-column-partnerContribution,
@@ -76,4 +85,8 @@ mat-table {
 
 .selected-button-cell {
   margin-top: 2rem;
+}
+
+.save-icon {
+  transform: scale(0.8);
 }

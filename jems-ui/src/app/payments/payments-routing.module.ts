@@ -83,7 +83,7 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
           ],
-        },
+        }
       },
       {
         path: 'paymentsToProjects/:paymentId',
@@ -146,7 +146,7 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
           ],
-        },
+        }
       },
     ]
   }

@@ -79,10 +79,10 @@
                                       [minRows]="5"
                                       [maxRows]="10">
             </jems-expandable-textarea>
-
         </div>
-
     </jems-form>
 
-    <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
+    <div class="mt-3">
+        <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
+    </div>
 </ng-container>
