@@ -2,11 +2,12 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {AuditControlDTO, ProjectAuditAndControlService, ProjectAuditControlUpdateDTO} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
-import {shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {Log} from '@common/utils/log';
 import {ReportCorrectionsOverviewStore} from '@project/project-application/report/report-corrections-overview/report-corrections-overview.store';
 import {UntilDestroy} from '@ngneat/until-destroy';
+import {ProjectPaths} from '@project/common/project-util';
 
 @UntilDestroy()
 @Injectable({
@@ -45,7 +46,12 @@ export class ReportCorrectionsAuditControlDetailPageStore {
     ]).pipe(
       switchMap(([projectId, auditControlId]) =>
         auditControlId
-          ? this.auditControlService.getAuditDetail(Number(auditControlId), projectId)
+          ? this.auditControlService.getAuditDetail(Number(auditControlId), projectId).pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
+              return of({} as AuditControlDTO);
+            })
+          )
           : of({} as AuditControlDTO)
       ),
       tap((auditControl) => Log.info('Fetched auditControl', this, auditControl)),

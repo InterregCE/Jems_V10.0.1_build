@@ -78,4 +78,31 @@ class ProjectAuditControlAuthorizationTest : UnitTest() {
         assertEquals(authorization.canViewAuditAndControl(PROJECT_ID), result)
     }
 
+    @ParameterizedTest(name = "canEditAuditControl - isMonitor: {0}, isPartnerCollaborator: {1}, isProjectCollaborator: {2}, isController: {3} - result {4}")
+    @CsvSource(
+        value = [
+            // Good cases
+            "true,false,false,false,true",
+            "false,false,false,true,true",
+            // Bad cases
+            "false,true,false,false,false",
+            "false,false,true,false,false",
+            "false,false,false,false,false",
+        ]
+    )
+    fun canEditAuditControl(isMonitor: Boolean, isPartnerCollaborator: Boolean, isProjectCollaborator: Boolean, isController: Boolean, result: Boolean) {
+        val monitorProjects = if (isMonitor) setOf(PROJECT_ID) else setOf()
+        every { securityService.getUserIdOrThrow() } returns USER_ID
+        every { securityService.currentUser } returns mockk {
+            every { hasPermission(UserRolePermission.ProjectRetrieve) } returns isMonitor
+            every { hasPermission(UserRolePermission.ProjectMonitorAuditAndControlEdit) } returns true
+            every { user.assignedProjects } returns monitorProjects
+        }
+
+        val controllers = if (isController) setOf(USER_ID) else emptySet()
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns controllers
+
+        assertEquals(authorization.canEditAuditAndControl(PROJECT_ID), result)
+    }
+
 }
