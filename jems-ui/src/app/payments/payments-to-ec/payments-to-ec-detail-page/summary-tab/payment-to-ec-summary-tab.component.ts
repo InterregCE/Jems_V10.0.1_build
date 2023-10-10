@@ -1,10 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  AccountingYearDTO, PaymentApplicationToEcCreateDTO,
-  PaymentApplicationToEcDetailDTO, PaymentApplicationToEcDTO,
+  AccountingYearDTO,
+  PaymentApplicationToEcDetailDTO,
   PaymentApplicationToEcSummaryUpdateDTO,
-  ProgrammeFundDTO
+  PaymentToEcAmountSummaryDTO,
+  ProgrammeFundDTO,
+  PaymentApplicationToEcCreateDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -43,6 +45,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   data$: Observable<{
     paymentDetail: PaymentApplicationToEcDetailDTO;
     programmeFunds: ProgrammeFundDTO[];
+    cumulativeSummary: PaymentToEcAmountSummaryDTO;
   }>;
 
   isCreate: boolean;
@@ -63,11 +66,13 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
       this.paymentsToEcDetailPageStore.paymentToEcDetail$,
       this.paymentsToEcDetailPageStore.programmeFunds$,
       this.paymentsToEcDetailPageStore.updatedPaymentApplicationStatus$,
+      this.paymentsToEcDetailPageStore.cumulativeForCurrentTab()
     ])
         .pipe(
-            map(([paymentDetail, programmeFunds, updatedPaymentStatus]: any) => ({
+            map(([paymentDetail, programmeFunds, updatedPaymentStatus, cumulativeSummary]: any) => ({
               paymentDetail: this.getUpdatePayment(paymentDetail, updatedPaymentStatus),
               programmeFunds,
+              cumulativeSummary
             })),
             tap((data) => this.initialPaymentToEcDetail = data.paymentDetail),
             tap(data => this.resetForm(data.paymentDetail)),

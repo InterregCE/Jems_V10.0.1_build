@@ -47,7 +47,7 @@
         </div>
 
     <nav mat-tab-nav-bar *ngIf="data.userCanView">
-        <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')">
+        <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')" (focusin)="pageStore.tabChanged$.next(true)">
             <span jemsText maxWidth="230">
                 {{'payments.to.ec.detail.summary.tab' | translate}}
             </span>

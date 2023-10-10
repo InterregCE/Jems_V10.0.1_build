@@ -32,6 +32,7 @@ import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payment
 import {
   PaymentToEcFtlsTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-ftls-tab.component';
+import { PaymentToEcCumulativeTableComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-cumulative-table/payment-to-ec-cumulative-table.component';
 
 @NgModule({
     declarations: [
@@ -46,7 +47,8 @@ import {
         PaymentsToProjectAttachmentsComponent,
         AdvancePaymentsDetailPageComponent,
         AdvancePaymentsAttachmentsComponent,
-        PaymentToEcSummaryAttachmentsComponent
+        PaymentToEcSummaryAttachmentsComponent,
+        PaymentToEcCumulativeTableComponent
     ],
     imports: [
         SharedModule,

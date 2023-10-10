@@ -1,4 +1,12 @@
 <ng-container>
+
+    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
+    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.1' | translate }}</p>
+    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.2' | translate }}</p>
+    <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
+        <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
+    </ng-container>
+
     <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.title' | translate }}</h3>
     <p>{{ 'payments.to.ec.detail.ftls.tab.description.1' | translate }}</p>
     <p>{{ 'payments.to.ec.detail.ftls.tab.description.2' | translate }}</p>

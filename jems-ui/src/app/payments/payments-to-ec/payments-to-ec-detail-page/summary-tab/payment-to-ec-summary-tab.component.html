@@ -76,9 +76,12 @@
         </div>
     </jems-form>
 
-    <div class="mt-3">
+  <h3>{{'payments.to.ec.detail.summary.tab.cumulative.amounts.header' | translate}}</h3>
+  <jems-payment-to-ec-cumulative-table [data]="data.cumulativeSummary"></jems-payment-to-ec-cumulative-table>
+
+  <div class="mt-3">
         <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
-    </div>
+  </div>
 </ng-container>
 
 

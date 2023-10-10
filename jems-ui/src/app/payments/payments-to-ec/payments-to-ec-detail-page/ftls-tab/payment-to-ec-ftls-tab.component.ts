@@ -2,7 +2,11 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {
-  PagePaymentToEcLinkingDTO, PaymentApplicationToEcDetailDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO
+  PagePaymentToEcLinkingDTO,
+  PaymentApplicationToEcDetailDTO,
+  PaymentToEcAmountSummaryDTO,
+  PaymentToEcLinkingDTO,
+  PaymentToEcLinkingUpdateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {PaymentToEcFtlsTabStoreService} from './payment-to-ec-ftls-tab-store.service';
@@ -50,6 +54,11 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     ecId: number;
     ecFTLSs: PagePaymentToEcLinkingDTO;
     isEditable: boolean;
+    // cumulativeForCurrentTab: PaymentToEcAmountSummaryDTO;
+  }>;
+
+  cumulativeForCurrentTab$: Observable<{
+    data: PaymentToEcAmountSummaryDTO;
   }>;
 
   Alert = Alert;
@@ -80,7 +89,14 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
       map(([ecFTLSs, ecId, userCanEdit, ecStatus ]) => ({
         ecFTLSs,
         ecId,
-        isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft
+        isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft,
+      })),
+    );
+
+    this.cumulativeForCurrentTab$ =
+      this.pageStore.cumulativeForCurrentTab().pipe(
+      map((cumulativeForCurrentTab) => ({
+        data: cumulativeForCurrentTab
       })),
     );
     this.formService.init(this.form);
