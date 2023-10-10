@@ -90,7 +90,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ (data.ecFTLSs.content[i].payment.amountApprovedPerFund + data.ecFTLSs.content[i].partnerContribution) | asMoney}}</span>
+                        <span class="right-aligned-text">{{ data.ecFTLSs.content[i].payment.totalEligibleAmount | asMoney}}</span>
                     </mat-cell>
                 </ng-container>
 

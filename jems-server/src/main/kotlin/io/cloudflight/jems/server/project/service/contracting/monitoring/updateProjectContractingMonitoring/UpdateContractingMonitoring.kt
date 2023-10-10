@@ -186,7 +186,7 @@ class UpdateContractingMonitoring(
                         partnerPayments.sumOf { it.amountApprovedPerPartner },
                         projectCustomIdentifier = projectOfCorrectVersion.customIdentifier,
                         projectAcronym = projectOfCorrectVersion.acronym,
-                        defaultPartnerContribution = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.value,
+                        defaultPartnerContribution = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.partnerContribution,
                         defaultOfWhichPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPublic,
                         defaultOfWhichAutoPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichAutoPublic,
                         defaultOfWhichPrivate = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPrivate,
