@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {PageAuditControlDTO, ProjectAuditAndControlService, UserRoleDTO} from '@cat/api';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {PageAuditControlDTO, ProjectAuditAndControlService, ProjectPartnerReportDTO, UserRoleDTO} from '@cat/api';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {Tables} from '@common/utils/tables';
 import {MatSort} from '@angular/material/sort';
+import {RoutingService} from '@common/services/routing.service';
+import {ProjectPaths} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 
@@ -27,6 +29,7 @@ export class ReportCorrectionsOverviewStore {
     private projectStore: ProjectStore,
     private auditControlService: ProjectAuditAndControlService,
     private permissionService: PermissionService,
+    private routingService: RoutingService,
   ) {
     this.auditControls$ = this.auditControls();
     this.canEdit$ = this.canEdit();
@@ -39,12 +42,18 @@ export class ReportCorrectionsOverviewStore {
       this.newPageSize$,
       this.newSort$.pipe(
         startWith(({active: undefined, direction: undefined}) as Partial<MatSort>),
-        map((sort: Partial<MatSort>)=> sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc')
+        map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc')
       ),
       this.refreshAudits$.pipe(startWith(null))
     ]).pipe(
       switchMap(([projectId, page, size, sort]) =>
-        this.auditControlService.listAuditsForProject(projectId, page,size,sort)),
+        this.auditControlService.listAuditsForProject(projectId, page, size, sort).pipe(
+          catchError(() => {
+            this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
+            return of({} as ProjectPartnerReportDTO);
+          })
+        )
+      ),
       tap((page: PageAuditControlDTO) => Log.info('Fetched auditControls', this, page.content)),
       shareReplay(1),
     );

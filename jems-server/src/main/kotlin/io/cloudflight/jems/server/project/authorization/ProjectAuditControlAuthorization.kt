@@ -16,7 +16,7 @@ annotation class CanViewProjectAuditAndControl
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuditControlAuthorization.hasPermission('ProjectMonitorAuditAndControlEdit', #projectId)")
+@PreAuthorize("@projectAuditControlAuthorization.canEditAuditAndControl(#projectId)")
 annotation class CanEditProjectAuditAndControl
 
 @Component
@@ -43,6 +43,17 @@ class ProjectAuditControlAuthorization(
         // controllers
         val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
         return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlView)
+    }
+
+    fun canEditAuditAndControl(projectId: Long): Boolean {
+        // monitor users
+        if (hasPermission(UserRolePermission.ProjectMonitorAuditAndControlEdit, projectId)) {
+            return true
+        }
+
+        // controllers
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
+        return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlEdit)
     }
 }
 
