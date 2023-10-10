@@ -367,7 +367,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                         BigDecimal.ONE,
                         "TSTCM",
                         "TCM",
-                        defaultPartnerContribution = BigDecimal.valueOf(15.06),
+                        defaultPartnerContribution = BigDecimal.valueOf(85.35),
                         defaultOfWhichPublic = BigDecimal.valueOf(25.13),
                         defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
                         defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
