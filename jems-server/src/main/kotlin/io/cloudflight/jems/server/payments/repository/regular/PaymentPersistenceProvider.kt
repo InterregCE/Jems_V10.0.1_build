@@ -118,7 +118,7 @@ class PaymentPersistenceProvider(
                 correctedAutoPublicContribution = it.paymentToEcExtensionEntity.correctedAutoPublicContribution,
                 privateContribution = it.paymentToEcExtensionEntity.privateContribution,
                 correctedPrivateContribution = it.paymentToEcExtensionEntity.correctedPrivateContribution,
-                priorityAxis = it.code!!,
+                priorityAxis = it.code ?: "N/A",
             )
         }
     }
