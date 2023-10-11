@@ -71,7 +71,7 @@ mat-card {
     .layout-wrapper{
       z-index: 5 !important;
     }
-    a, button, .mat-tooltip-trigger, .mat-form-field {
+    a, button, .mat-tooltip-trigger, .mat-form-field, .mat-checkbox {
       z-index: 5 !important;
     }
   }
