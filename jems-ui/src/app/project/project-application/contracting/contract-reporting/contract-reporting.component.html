@@ -23,17 +23,17 @@
                 <mat-form-field>
                     <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
                     <input [disabled]="true" matInput
-                           [value]="data.projectStartDate">
+                           value="{{data.projectStartDate | localeDate }}">
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
                     <input [disabled]="true" matInput
-                           [value]="data.projectEndDate">
+                           value="{{data.projectEndDate | localeDate}}">
                 </mat-form-field>
                 <mat-form-field jemsFormFieldWidth="large">
                     <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
                     <input [disabled]="true" matInput
-                           [value]="data.projectDuration">
+                           value="{{data.projectDuration | localeDate}}">
                 </mat-form-field>
             </div>
 
