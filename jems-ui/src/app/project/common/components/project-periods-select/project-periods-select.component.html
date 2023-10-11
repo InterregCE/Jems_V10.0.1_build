@@ -12,6 +12,7 @@
                 [required]="required"
                 #matSelect
                 [matTooltip]="matSelect.triggerValue">
+        <mat-option value="N/A" *ngIf="invalidPeriodSelected">{{ 'common.not.applicable.option' | translate }}</mat-option>
         <mat-option *ngFor="let period of periods" [value]="period.number">
             <ng-container *ngIf="period.number !== 255">
                 {{ ProjectUtil.getPeriodKey(period.startDate) | translate : ProjectUtil.getPeriodArguments(period) }}
