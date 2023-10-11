@@ -8,6 +8,8 @@ import {catchError, finalize, map, take} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
+import {RoutingService} from '@common/services/routing.service';
+import {ActivatedRoute} from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -31,6 +33,8 @@ export class PaymentToEcDetailPageComponent {
   }>;
 
   constructor(public pageStore: PaymentsToEcDetailPageStore,
+              private router: RoutingService,
+              private activatedRoute: ActivatedRoute,
               private paymentsPageSidenav: PaymentsPageSidenavService) {
     this.data$ = combineLatest([
       this.pageStore.paymentToEcDetail$,
@@ -79,5 +83,12 @@ export class PaymentToEcDetailPageComponent {
     return paymentStatus == this.paymentStatusEnum.Finished || !userCanEdit;
   }
 
+  activeTab(route: string): boolean {
+    return this.router.url?.includes(route);
+  }
+
+  routeTo(route: string): void {
+    this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
+  }
 
 }

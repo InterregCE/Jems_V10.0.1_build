@@ -143,7 +143,7 @@
                                         <input matInput formControlName="ftlsAutoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
                                     <div>
-                                        <button class="right-aligned-button" (click)="resetAmounts(i, data.ecFTLSs.content[i])" mat-stroked-button>
+                                        <button class="reset-button" (click)="resetAmounts(i, data.ecFTLSs.content[i])" mat-stroked-button>
                                             {{'payments.to.ec.detail.ftls.update.reset' | translate}}
                                         </button>
                                     </div>
