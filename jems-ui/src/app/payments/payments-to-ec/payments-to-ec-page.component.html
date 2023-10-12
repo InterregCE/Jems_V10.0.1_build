@@ -6,7 +6,7 @@
 
         <div class="add-payment-to-ec-button">
             <button *ngIf="userCanEdit$ | async"
-                    mat-stroked-button color="primary"
+                    mat-raised-button color="primary"
                     [routerLink]="'/app/payments/paymentApplicationsToEc/create'">
                 + {{'payments.to.ec.payment.add.button' | translate}}
             </button>
