@@ -104,8 +104,8 @@ class UpdateContractingReporting(
         if (deadlines.size > MAX_DEADLINES_AMOUNT)
             throw MaxAmountOfDeadlinesReached(MAX_DEADLINES_AMOUNT)
 
-        validatePeriods(deadlines, periods)
-        validateDates(deadlines, periods, startDate)
+        validatePeriods(deadlines.filter { it.linkedSubmittedProjectReportNumbers.isEmpty() }, periods)
+        validateDates(deadlines.filter { it.linkedSubmittedProjectReportNumbers.isEmpty() }, periods, startDate)
         validateComments(deadlines)
 
         val linkedDeadlines = projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId)

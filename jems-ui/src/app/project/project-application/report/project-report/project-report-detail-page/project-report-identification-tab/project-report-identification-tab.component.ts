@@ -74,6 +74,7 @@ export class ProjectReportIdentificationTabComponent {
   availablePeriods: ProjectPeriodDTO[] = [];
   availableDeadlines: ProjectContractingReportingScheduleDTO[] = [];
   displayReportTypeWarningMessage = false;
+  invalidPeriodSelected = false;
 
   constructor(public pageStore: ProjectReportDetailPageStore,
               public formService: FormService,
@@ -94,7 +95,8 @@ export class ProjectReportIdentificationTabComponent {
     ]).pipe(
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
           this.availablePeriods = availablePeriods;
-          this.availableDeadlines = reportingDeadlines;
+          this.availableDeadlines = reportingDeadlines.filter(d => availablePeriods.map(p => p.number).includes(d.periodNumber));
+          this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(projectReport.periodDetail.number)
       }),
       map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,
@@ -121,7 +123,7 @@ export class ProjectReportIdentificationTabComponent {
       this.selectedType = identification.type;
     }
     this.form.patchValue({
-      periodNumber: identification?.periodDetail?.number,
+      periodNumber: this.invalidPeriodSelected ? 'N/A' : identification?.periodDetail?.number,
     });
     if (identification?.deadlineId === null || !this.reportId) {
       this.form.get('deadlineId')?.patchValue(0);
