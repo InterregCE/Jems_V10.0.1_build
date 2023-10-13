@@ -17,3 +17,8 @@ class ProjectReportAlreadyClosed : ApplicationUnprocessableException(
     code = "$SUBMIT_PROJECT_REPORT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$SUBMIT_PROJECT_REPORT_ERROR_KEY_PREFIX.report.already.closed"),
 )
+
+class SubmissionNotAllowed : ApplicationUnprocessableException(
+    code = "$SUBMIT_PROJECT_REPORT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$SUBMIT_PROJECT_REPORT_ERROR_KEY_PREFIX.pre.submission.check.failed"),
+)

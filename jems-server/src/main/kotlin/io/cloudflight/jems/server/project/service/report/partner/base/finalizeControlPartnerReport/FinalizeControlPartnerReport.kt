@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
@@ -44,6 +45,7 @@ import java.time.ZonedDateTime
 @Service
 class FinalizeControlPartnerReport(
     private val reportPersistence: ProjectPartnerReportPersistence,
+    private val preSubmissionCheckService: RunPartnerReportPreSubmissionCheckService,
     private val partnerPersistence: PartnerPersistence,
     private val reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
@@ -65,6 +67,9 @@ class FinalizeControlPartnerReport(
     override fun finalizeControl(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsInControl(report)
+
+        if (!preSubmissionCheckService.preCheck(partnerId, reportId = reportId).isSubmissionAllowed)
+            throw SubmissionNotAllowed()
 
         val expenditures = reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
