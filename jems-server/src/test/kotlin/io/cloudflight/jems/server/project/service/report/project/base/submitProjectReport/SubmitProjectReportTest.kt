@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -129,6 +130,8 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
+    lateinit var preSubmissionCheckService: RunProjectReportPreSubmissionCheckService
+    @MockK
     lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
     @MockK
     lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
@@ -169,6 +172,7 @@ internal class SubmitProjectReportTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(reportPersistence)
+        clearMocks(preSubmissionCheckService)
         clearMocks(reportWorkPlanPersistence)
         clearMocks(auditPublisher)
     }
@@ -181,6 +185,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { report.id } returns REPORT_ID
         every { report.type } returns type
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
+        every { preSubmissionCheckService.preCheck(PROJECT_ID, REPORT_ID).isSubmissionAllowed } returns true
 
         if (type == ContractingDeadlineType.Finance) {
             every { reportWorkPlanPersistence.deleteWorkPlan(PROJECT_ID, REPORT_ID) } answers { }
@@ -249,6 +254,18 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
 
         assertThrows<ProjectReportAlreadyClosed> { submitReport.submit(PROJECT_ID, REPORT_ID) }
+        verify(exactly = 0) { reportPersistence.submitReport(any(), any(), any()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
+    }
+
+    @Test
+    fun `submit - report fails pre-check`() {
+        val report = mockk<ProjectReportModel>()
+        every { report.status } returns ProjectReportStatus.Draft
+        every { reportPersistence.getReportById(PROJECT_ID, 39L) } returns report
+        every { preSubmissionCheckService.preCheck(PROJECT_ID, 39L).isSubmissionAllowed } returns false
+
+        assertThrows<SubmissionNotAllowed> { submitReport.submit(PROJECT_ID, 39L) }
         verify(exactly = 0) { reportPersistence.submitReport(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
