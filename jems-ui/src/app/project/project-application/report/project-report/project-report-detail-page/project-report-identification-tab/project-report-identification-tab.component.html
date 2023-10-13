@@ -127,6 +127,7 @@
                         [periods]="data.periods"
                         [required]="availableDeadlines.length === 0"
                         [control]="form?.controls?.periodNumber"
+                        [invalidPeriodSelected]="invalidPeriodSelected"
                         label='project.application.project.report.reporting.period'
                         (selectionChanged)="formService.setDirty(true)">
                 </jems-project-periods-select>

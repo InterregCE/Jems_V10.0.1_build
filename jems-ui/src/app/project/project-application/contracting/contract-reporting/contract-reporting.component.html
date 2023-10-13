@@ -23,17 +23,17 @@
                 <mat-form-field>
                     <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
                     <input [disabled]="true" matInput
-                           value="{{data.projectStartDate | localeDate }}">
+                           [value]="data.projectStartDate | localeDate">
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
                     <input [disabled]="true" matInput
-                           value="{{data.projectEndDate | localeDate}}">
+                           [value]="data.projectEndDate | localeDate">
                 </mat-form-field>
                 <mat-form-field jemsFormFieldWidth="large">
                     <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
                     <input [disabled]="true" matInput
-                           value="{{data.projectDuration | localeDate}}">
+                           [value]="data.projectDuration">
                 </mat-form-field>
             </div>
 
@@ -94,8 +94,8 @@
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div jemsFormFieldWidth="xxx-large">
                             <jems-project-periods-select
-                                    [required]="true"
-                                    [label]="'project.application.contract.reporting.column.period'"
+                                    [required]="control.get('isDeadlineApplicable').value"
+                                    [label]="control.get('isDeadlineApplicable').value ? 'project.application.contract.reporting.column.period': 'common.not.applicable.option'"
                                     [periods]="data.periods"
                                     [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value"
                                     [control]="control.get('deadlinePeriod')"
@@ -117,7 +117,7 @@
                                    [min]="control.get('deadlinePeriodStartDate').value"
                                    [matDatepicker]="deadlineDate"
                                    [readonly]="control.get('deadlineAnyLinkedProjectReportSubmitted').value"
-                                   [required]="!control.get('deadlineAnyLinkedProjectReportSubmitted').value">
+                                   [required]="!control.get('deadlineAnyLinkedProjectReportSubmitted').value && control.get('isDeadlineApplicable').value">
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
                             <mat-datepicker [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value" #deadlineDate></mat-datepicker>
                         </mat-form-field>

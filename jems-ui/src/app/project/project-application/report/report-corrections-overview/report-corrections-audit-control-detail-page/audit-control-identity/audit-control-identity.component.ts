@@ -86,7 +86,7 @@ export class AuditControlIdentityComponent {
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.reporting.corrections.create.audit.success')),
-        tap((auditControl: AuditControlDTO) => this.isCreate && this.redirectToDetails(auditControl.id)),
+        tap((auditControl: AuditControlDTO) => !id && this.redirectToDetails(auditControl.id)),
         catchError(err => this.formService.setError(err))
       ).subscribe();
   }

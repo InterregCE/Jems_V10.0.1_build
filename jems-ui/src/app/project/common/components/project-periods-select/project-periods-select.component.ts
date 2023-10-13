@@ -27,6 +27,9 @@ export class ProjectPeriodsSelectComponent {
   required: boolean;
   @Input()
   disabled = false;
+  @Input()
+  invalidPeriodSelected = false;
+
 
   @Output()
   selectionChanged = new EventEmitter<void>();

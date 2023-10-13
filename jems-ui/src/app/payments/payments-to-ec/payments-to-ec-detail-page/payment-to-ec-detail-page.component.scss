@@ -20,3 +20,12 @@
   }
 }
 
+a:not(.mat-tab-label-active) {
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+a:hover {
+  transition: none !important;
+  box-shadow: none !important;
+}
