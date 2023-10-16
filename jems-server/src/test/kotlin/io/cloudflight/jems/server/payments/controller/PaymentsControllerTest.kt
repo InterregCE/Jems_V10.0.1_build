@@ -10,12 +10,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
-import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
-import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
-import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.*
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
@@ -96,7 +91,7 @@ class PaymentsControllerTest : UnitTest() {
             lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
 
-        private val regularPaymentToProject = PaymentToProject(
+        val regularPaymentToProject = PaymentToProject(
             id = regularPaymentId,
             paymentType = PaymentType.REGULAR,
             projectId = project.id,
@@ -275,6 +270,7 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateTo = currentDate.minusDays(1),
             availableForEcId = null,
             scoBasis = null,
+            ecStatus = null
         )
     }
 
@@ -357,6 +353,7 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateTo = null,
             availableForEcId = null,
             scoBasis = null,
+            ecStatus = null
         ))
     }
 

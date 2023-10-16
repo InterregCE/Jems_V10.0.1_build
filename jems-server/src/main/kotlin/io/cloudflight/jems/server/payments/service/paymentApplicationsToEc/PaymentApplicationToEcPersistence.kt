@@ -61,4 +61,5 @@ interface PaymentApplicationToEcPersistence {
         ecPaymentId: Long,
     ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
 
+    fun updatePaymentToEcFinalScoBasis(paymentIds: Set<Long>, finalScoBasis: PaymentSearchRequestScoBasis)
 }

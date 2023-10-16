@@ -234,7 +234,8 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
                 correctedPublicContribution = BigDecimal.valueOf(55.00),
                 privateContribution = BigDecimal.ZERO,
                 correctedPrivateContribution = BigDecimal.ZERO,
-                paymentApplicationToEc = paymentApplicationToEcEntity
+                paymentApplicationToEc = paymentApplicationToEcEntity,
+                finalScoBasis = null,
             )
 
         private val paymentToEcExtensionModel = PaymentToEcExtension(
@@ -597,6 +598,14 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
                 ecPaymentId = paymentApplicationsToEcId
             )
         ).isEqualTo(expectedPaymentsIncludedInPaymentsToEcMapped)
+    }
+
+    @Test
+    fun updatePaymentToEcFinalScoBasis() {
+        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        every { paymentToEcExtensionRepository.findAllById(setOf(99L)) } returns listOf(entity)
+        persistenceProvider.updatePaymentToEcFinalScoBasis(setOf(99L), PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
+        assertThat(entity.finalScoBasis).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
     }
 
 }

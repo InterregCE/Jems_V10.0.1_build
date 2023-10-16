@@ -202,11 +202,11 @@ class PaymentApplicationToEcPersistenceProvider(
             )
             .from(paymentToEcExtensionEntity)
             .leftJoin(paymentEntity)
-            .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
+                .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
             .leftJoin(priorityPolicy)
-            .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
+                .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(programmePriority)
-            .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
+                .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
             .where(paymentToEcExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId))
             .groupBy(programmePriority.id)
             .fetch()
@@ -260,5 +260,12 @@ class PaymentApplicationToEcPersistenceProvider(
             this.paymentToEcCumulativeAmountsRepository
                 .getAllByPaymentApplicationToEcIdAndType(ecPaymentId, it).toModel()
         }
+
+    @Transactional
+    override fun updatePaymentToEcFinalScoBasis(paymentIds: Set<Long>, finalScoBasis: PaymentSearchRequestScoBasis) {
+        paymentToEcExtensionRepository.findAllById(paymentIds).forEach {
+            it.finalScoBasis = finalScoBasis
+        }
+    }
 
 }

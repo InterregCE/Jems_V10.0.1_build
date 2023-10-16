@@ -54,6 +54,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.repository.report.project.verification.financialOverview.ProjectReportVerificationCertificateCoFinancingOverviewRepository
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
@@ -85,6 +86,7 @@ class PaymentPersistenceProvider(
     private val fileRepository: JemsProjectFileService,
     private val projectPartnerReportRepository: ProjectPartnerReportRepository,
     private val paymentToEcExtensionRepository: PaymentToEcExtensionRepository,
+    private val coFinancingOverviewRepository: ProjectReportVerificationCertificateCoFinancingOverviewRepository,
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentPersistence {
 
@@ -248,7 +250,8 @@ class PaymentPersistenceProvider(
                     privateContribution = toCreate.defaultOfWhichPrivate,
                     correctedPrivateContribution = toCreate.defaultOfWhichPrivate,
                     publicContribution = toCreate.defaultOfWhichPublic,
-                    correctedPublicContribution = toCreate.defaultOfWhichPublic
+                    correctedPublicContribution = toCreate.defaultOfWhichPublic,
+                    finalScoBasis = null
                 )
             )
         }
@@ -262,18 +265,38 @@ class PaymentPersistenceProvider(
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
                 .mapNotNull { it.programmeFund }.associateBy { it.id }
 
-        val paymentEntitiesByFundId = paymentRepository.saveAll(
+        val savedPayments = paymentRepository.saveAll(
             paymentsToBeSaved.map {
                 val fund = fundIdToFundEntity.getOrElse(it.fundId) { throw PaymentFinancingSourceNotFoundException() }
                 it.toRegularPaymentEntity(projectEntity, projectReportEntity, fund)
             }
-        ).associateBy { it.fund.id }
+        )
 
+        savedPayments.forEach { payment ->
+            val coFinancingOverview = coFinancingOverviewRepository.findAllByPartnerReportProjectReportIdAndProgrammeFundId(
+                projectReportId,
+                payment.fund.id
+            )
+            paymentToEcExtensionRepository.save(
+                PaymentToEcExtensionEntity(
+                    paymentId = payment.id,
+                    payment = payment,
+                    autoPublicContribution = coFinancingOverview.sumOf { it.automaticPublicContribution },
+                    correctedAutoPublicContribution = coFinancingOverview.sumOf { it.automaticPublicContribution },
+                    partnerContribution = coFinancingOverview.sumOf { it.partnerContribution },
+                    privateContribution = coFinancingOverview.sumOf { it.privateContribution },
+                    correctedPrivateContribution = coFinancingOverview.sumOf { it.privateContribution },
+                    publicContribution = coFinancingOverview.sumOf { it.publicContribution },
+                    correctedPublicContribution = coFinancingOverview.sumOf { it.publicContribution },
+                    finalScoBasis = null
+                )
+            )
+        }
 
         val paymentPartnerEntities = paymentsToBeSaved.flatMap { regular ->
             regular.partnerPayments.map {
                 PaymentPartnerEntity(
-                    payment = paymentEntitiesByFundId.get(regular.fundId)!!,
+                    payment = savedPayments.associateBy { it.fund.id }.get(regular.fundId)!!,
                     projectPartner = projectPartnerRepository.getById(it.partnerId),
                     partnerCertificate = projectPartnerReportRepository.getById(it.partnerReportId!!),
                     amountApprovedPerPartner = it.amountApprovedPerPartner,
@@ -412,8 +435,6 @@ class PaymentPersistenceProvider(
         val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
         val whereExpressions = mutableListOf<BooleanExpression>(
             specPayment.fund.id.eq(fundId),
-            // this will be removed with next story so also regular ones are linked automatically
-            specPayment.type.eq(PaymentType.FTLS),
             specPaymentToEcExtension.paymentApplicationToEc.isNull(),
         )
 

@@ -33,6 +33,9 @@ import {
   PaymentToEcFtlsTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-ftls-tab.component';
 import { PaymentToEcCumulativeTableComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-cumulative-table/payment-to-ec-cumulative-table.component';
+import {
+  RegularPaymentsNotFlagged9495Component
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/regular-payments-not-flagged-9495/regular-payments-not-flagged-9495.component';
 
 @NgModule({
     declarations: [
@@ -48,7 +51,8 @@ import { PaymentToEcCumulativeTableComponent } from './payments-to-ec/payments-t
         AdvancePaymentsDetailPageComponent,
         AdvancePaymentsAttachmentsComponent,
         PaymentToEcSummaryAttachmentsComponent,
-        PaymentToEcCumulativeTableComponent
+        PaymentToEcCumulativeTableComponent,
+        RegularPaymentsNotFlagged9495Component,
     ],
     imports: [
         SharedModule,

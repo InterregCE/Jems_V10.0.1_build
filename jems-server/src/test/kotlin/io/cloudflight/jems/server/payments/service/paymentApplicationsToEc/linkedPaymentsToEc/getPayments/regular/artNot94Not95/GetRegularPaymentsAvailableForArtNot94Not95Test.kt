@@ -1,8 +1,9 @@
-package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.regular.artNot94Not95
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
@@ -14,13 +15,13 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
+internal class GetRegularPaymentsAvailableForArtNot94Not95Test: UnitTest() {
 
     @MockK
     private lateinit var paymentToEcPersistence: PaymentApplicationToEcPersistence
@@ -28,7 +29,7 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
     private lateinit var paymentPersistence: PaymentPersistence
 
     @InjectMockKs
-    private lateinit var interactor: GetFtlsPaymentsAvailableForArtNot94Not95
+    private lateinit var interactor: GetRegularPaymentsAvailableForArtNot94Not95
 
     @BeforeEach
     fun reset() {
@@ -37,20 +38,21 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
 
     @Test
     fun getPaymentList() {
-        val payment = mockk<PaymentApplicationToEcDetail>()
-        every { payment.id } returns 28L
-        every { payment.paymentApplicationToEcSummary.programmeFund.id } returns 77L
-        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(28L) } returns payment
+        val paymentEc = mockk<PaymentApplicationToEcDetail>()
+        every { paymentEc.id } returns 28L
+        every { paymentEc.paymentApplicationToEcSummary.programmeFund.id } returns 77L
+        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(28L) } returns paymentEc
+        every { paymentEc.status } returns PaymentEcStatus.Draft
 
         val result = mockk<Page<PaymentToEcPayment>>()
         val slotFilter = slot<PaymentSearchRequest>()
         every { paymentPersistence.getAllPaymentToEcPayment(Pageable.unpaged(), capture(slotFilter)) } returns result
-        assertThat(interactor.getPaymentList(Pageable.unpaged(), 28L)).isEqualTo(result)
+        Assertions.assertThat(interactor.getPaymentList(Pageable.unpaged(), 28L)).isEqualTo(result)
 
-        assertThat(slotFilter.captured).isEqualTo(
+        Assertions.assertThat(slotFilter.captured).isEqualTo(
             PaymentSearchRequest(
                 paymentId = null,
-                paymentType = PaymentType.FTLS,
+                paymentType = PaymentType.REGULAR,
                 projectIdentifiers = emptySet(),
                 projectAcronym = null,
                 claimSubmissionDateFrom = null,
@@ -62,8 +64,8 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
                 lastPaymentDateTo = null,
                 availableForEcId = 28L,
                 scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ecStatus = PaymentEcStatus.Draft
             )
         )
     }
-
 }

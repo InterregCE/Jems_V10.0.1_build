@@ -15,10 +15,14 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -103,6 +107,15 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             )
         )
 
+        private fun contractMonitoring(projectId: Long, answer: ContractingMonitoringExtendedOption) = ProjectContractingMonitoring(
+            projectId = projectId,
+            addDates = listOf(),
+            dimensionCodes = listOf(),
+            typologyPartnership = mockk(),
+            typologyStrategic = mockk(),
+            typologyProv94 = answer,
+            typologyProv95 = answer
+        )
     }
 
     @MockK
@@ -113,6 +126,9 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
 
     @MockK
     lateinit var paymentPersistence: PaymentPersistence
+
+    @MockK
+    lateinit var contractingMonitoringPersistence : ContractingMonitoringPersistence
 
     @InjectMockKs
     lateinit var finalizePaymentApplicationToEc: FinalizePaymentApplicationToEc
@@ -153,13 +169,69 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             )
         } returns Unit
 
+        every { paymentPersistence.getPaymentDetails(14L) } returns PaymentDetail(
+            id = 14L,
+            amountApprovedPerFund = BigDecimal.valueOf(80L),
+            fundName = "",
+            projectId = 99L,
+            projectCustomIdentifier = "",
+            partnerPayments = mockk(),
+            paymentType = PaymentType.FTLS,
+            projectAcronym = ""
+        )
+        every { paymentPersistence.getPaymentDetails(15L) } returns PaymentDetail(
+            id = 15L,
+            amountApprovedPerFund = BigDecimal.valueOf(160L),
+            fundName = "",
+            projectId = 99L,
+            projectCustomIdentifier = "",
+            partnerPayments = mockk(),
+            paymentType = PaymentType.FTLS,
+            projectAcronym = ""
+        )
+        every { paymentPersistence.getPaymentDetails(16L) } returns PaymentDetail(
+            id = 16L,
+            amountApprovedPerFund = BigDecimal.valueOf(100L),
+            fundName = "",
+            projectId = 99L,
+            projectCustomIdentifier = "",
+            partnerPayments = mockk(),
+            paymentType = PaymentType.REGULAR,
+            projectAcronym = ""
+        )
+        every { paymentPersistence.getPaymentDetails(17L) } returns PaymentDetail(
+            id = 17L,
+            amountApprovedPerFund = BigDecimal.valueOf(200L),
+            fundName = "",
+            projectId = 100L,
+            projectCustomIdentifier = "",
+            partnerPayments = mockk(),
+            paymentType = PaymentType.FTLS,
+            projectAcronym = ""
+        )
+
+        every { contractingMonitoringPersistence.getContractingMonitoring(99L) } returns contractMonitoring(
+            projectId = 99L,
+            answer = ContractingMonitoringExtendedOption.No
+        )
+        every { contractingMonitoringPersistence.getContractingMonitoring(100L) } returns contractMonitoring(
+            projectId = 100L,
+            answer = ContractingMonitoringExtendedOption.Yes
+        )
+
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(programmeFund.id, accountingYear.id,) } returns false
 
+        val scoBasisSlots = mutableListOf<PaymentSearchRequestScoBasis>()
+        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(setOf(14L, 15L, 16L), capture(scoBasisSlots)) } returns Unit
+        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(setOf(17L), capture(scoBasisSlots)) } returns Unit
+
         assertThat(finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(PAYMENT_ID)).isEqualTo(
             paymentApplicationDetail(PaymentEcStatus.Finished, isAvailableToReOpen = true)
         )
+        assertThat(scoBasisSlots[0]).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
+        assertThat(scoBasisSlots[1]).isEqualTo(PaymentSearchRequestScoBasis.FallsUnderArticle94Or95)
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED,

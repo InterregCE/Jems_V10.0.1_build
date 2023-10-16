@@ -29,6 +29,7 @@ class GetFtlsPaymentsAvailableForArtNot94Not95(
             fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id,
             scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
             paymentType = PaymentType.FTLS,
+            ecStatus = ecPayment.status
         )
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)

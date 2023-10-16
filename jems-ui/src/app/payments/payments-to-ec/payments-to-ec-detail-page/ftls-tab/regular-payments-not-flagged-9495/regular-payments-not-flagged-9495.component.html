@@ -1,15 +1,9 @@
 <ng-container>
-
-    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.1' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.2' | translate }}</p>
-    <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
-        <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
-    </ng-container>
-
-    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.title' | translate }}</h3>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.description.1' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.description.2' | translate }}</p>
+    <h3 class="mt-4">{{ 'payments.to.ec.detail.regular.projects.regular.payments.title' | translate }}</h3>
+    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.1' | translate }}</p>
+    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.2' | translate }}</p>
+    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.3' | translate }}</p>
+    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.4' | translate }}</p>
 
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
@@ -18,32 +12,31 @@
     </jems-alert>
 
     <ng-container *ngIf="data$ | async as data">
-
         <jems-alert [show]="successfulUpdateMessage"
                     [type]="Alert.SUCCESS">
-            <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+            <p>{{'payments.to.ec.detail.regular.projects.regular.payments.update.save.message' | translate}}</p>
         </jems-alert>
 
-        <ng-container *ngIf="data.ecFTLSs.totalElements">
+        <ng-container *ngIf="data.ecRegularPayments.totalElements">
             <jems-paginator
-                    [length]="data.ecFTLSs.totalElements"
-                    [currentPageIndex]="data.ecFTLSs.pageable.pageNumber"
-                    [currentPageSize]="data.ecFTLSs.pageable.pageSize"
+                    [length]="data.ecRegularPayments.totalElements"
+                    [currentPageIndex]="data.ecRegularPayments.pageable.pageNumber"
+                    [currentPageSize]="data.ecRegularPayments.pageable.pageSize"
                     [confirmPageChange]="editedRowIndex !== null"
-                    (pageIndexChanged)="pageStore.ftlsNewPageIndex$.next($event)"
-                    (pageSizeChanged)="pageStore.ftlsNewPageSize$.next($event)">
+                    (pageIndexChanged)="pageStore.regularNewPageIndex$.next($event)"
+                    (pageSizeChanged)="pageStore.regularNewPageSize$.next($event)">
             </jems-paginator>
 
-            <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.ftlsNewSort$.next($event)"  [dataSource]="dataSource">
+            <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.regularNewSort$.next($event)" [dataSource]="dataSource">
 
                 <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef mat-sort-header="ecId" class="border-cell-right">
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.select' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">
-                        <mat-checkbox [checked]="data.ecFTLSs.content[i].paymentToEcId !== null"
+                        <mat-checkbox [checked]="data.ecRegularPayments.content[i].paymentToEcId !== null"
                                       [disabled]="!data.isEditable || editedRowIndex !== null"
-                                      (change)="selectionChanged(data.ecId, data.ecFTLSs.content[i].payment.id, data.ecFTLSs.content[i].paymentToEcId !== null, $event)">
+                                      (change)="selectionChanged(data.ecId, data.ecRegularPayments.content[i].payment.id, data.ecRegularPayments.content[i].paymentToEcId !== null, $event)">
                         </mat-checkbox>
                     </mat-cell>
                 </ng-container>
@@ -53,7 +46,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.id' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.projectCustomIdentifier}}</span>
+                        <span>{{data.ecRegularPayments.content[i].payment.projectCustomIdentifier}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -62,7 +55,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.acronym' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.projectAcronym}}</span>
+                        <span>{{data.ecRegularPayments.content[i].payment.projectAcronym}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -71,7 +64,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.priority.axis' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].priorityAxis}}</span>
+                        <span>{{data.ecRegularPayments.content[i].priorityAxis}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -80,7 +73,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.claim.no' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.paymentClaimNo}}</span>
+                        <span>{{'payments.to.ec.detail.regular.projects.regular.payments.table.claim.no' | translate : {number: data.ecRegularPayments.content[i].payment.paymentClaimNo} }}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -89,7 +82,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.ma.approval.date' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{ data.ecFTLSs.content[i].payment.paymentApprovalDate | localeDate: 'L'}}</span>
+                        <span>{{ data.ecRegularPayments.content[i].payment.paymentApprovalDate | localeDate: 'L'}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -98,7 +91,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ (data.ecFTLSs.content[i].payment.amountApprovedPerFund + data.ecFTLSs.content[i].partnerContribution) | asMoney}}</span>
+                        <span class="right-aligned-text">{{ (data.ecRegularPayments.content[i].payment.amountApprovedPerFund + data.ecRegularPayments.content[i].partnerContribution) | asMoney}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -107,7 +100,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecFTLSs.content[i].payment.amountApprovedPerFund | asMoney}}</span>
+                        <span class="right-aligned-text">{{ data.ecRegularPayments.content[i].payment.amountApprovedPerFund | asMoney}}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -116,23 +109,23 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecFTLSs.content[i].partnerContribution | asMoney}}</span>
+                        <span class="right-aligned-text">{{ data.ecRegularPayments.content[i].partnerContribution | asMoney}}</span>
                     </mat-cell>
                 </ng-container>
 
                 <form [formGroup]="form">
-                    <ng-container formArrayName="ecFTLSs">
+                    <ng-container formArrayName="ecRegularPayments">
                         <ng-container matColumnDef="publicContribution">
                             <mat-header-cell class="justify-end" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index">
+                            <mat-cell *matCellDef="let regularPayment; let i = index">
                                 <div *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ ftls.get('ftlsPublicContribution').value | asMoney}}
+                                    {{ regularPayment.get('regularPublicContribution').value | asMoney}}
                                 </div>
                                 <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="ftls">
-                                        <input  matInput formControlName="ftlsPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                                    <mat-form-field [formGroup]="regularPayment">
+                                        <input  matInput formControlName="regularPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
                                 </div>
                             </mat-cell>
@@ -142,16 +135,16 @@
                             <mat-header-cell class="justify-end" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.auto.public.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index" [formGroup]="ftls" [class.selected-button-cell] = "i === editedRowIndex">
+                            <mat-cell *matCellDef="let regularPayment; let i = index" [formGroup]="regularPayment" [class.selected-button-cell] = "i === editedRowIndex">
                                 <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ ftls.get('ftlsAutoPublicContribution').value | asMoney}}
+                                    {{ regularPayment.get('regularAutoPublicContribution').value | asMoney}}
                                 </span>
                                 <div *ngIf="i === editedRowIndex">
                                     <mat-form-field>
-                                        <input matInput formControlName="ftlsAutoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                                        <input matInput formControlName="regularAutoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
                                     <div>
-                                        <button class="reset-button" (click)="resetAmounts(i, data.ecFTLSs.content[i])" mat-stroked-button>
+                                        <button class="reset-button" (click)="resetAmounts(i, data.ecRegularPayments.content[i])" mat-stroked-button>
                                             {{'payments.to.ec.detail.ftls.update.reset' | translate}}
                                         </button>
                                     </div>
@@ -163,19 +156,19 @@
                             <mat-header-cell class="justify-end" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.private.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index" [class.selected-button-cell] = "i === editedRowIndex">
+                            <mat-cell *matCellDef="let regularPayment; let i = index" [class.selected-button-cell] = "i === editedRowIndex">
                                 <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ ftls.get('ftlsPrivateContribution').value | asMoney}}
+                                    {{ regularPayment.get('regularPrivateContribution').value | asMoney}}
                                 </span>
                                 <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="ftls">
-                                        <input matInput formControlName="ftlsPrivateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                                    <mat-form-field [formGroup]="regularPayment">
+                                        <input matInput formControlName="regularPrivateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
                                     <div>
-                                        <button (click)="discardChanges(i, data.ecFTLSs.content[i])" mat-stroked-button class="discard-button">
+                                        <button (click)="discardChanges(i, data.ecRegularPayments.content[i])" mat-stroked-button class="discard-button">
                                             {{'payments.to.ec.detail.ftls.update.discard' | translate}}
                                         </button>
-                                        <button (click)="submitAmountChanges(i, data.ecId, data.ecFTLSs.content[i].payment.id)" mat-raised-button type="submit" class="ml-2 save-button" color="primary">
+                                        <button (click)="submitAmountChanges(i, data.ecId, data.ecRegularPayments.content[i].payment.id)" mat-raised-button type="submit" class="ml-2 save-button" color="primary">
                                             <mat-icon class="save-icon">save</mat-icon> {{'payments.to.ec.detail.ftls.update.save' | translate}}
                                         </button>
                                     </div>
@@ -189,7 +182,7 @@
                     <mat-header-cell *matHeaderCellDef>
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.correct.amounts' | translate }}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let ftls;let i = index">
+                    <mat-cell *matCellDef="let regularPayment;let i = index">
                         <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
                                 [disabled]="!data.isEditable || editedRowIndex !== null"
                                 color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"
@@ -205,17 +198,17 @@
             </mat-table>
 
             <jems-paginator
-                    [length]="data.ecFTLSs.totalElements"
-                    [currentPageIndex]="data.ecFTLSs.pageable.pageNumber"
-                    [currentPageSize]="data.ecFTLSs.pageable.pageSize"
-                    (pageIndexChanged)="pageStore.ftlsNewPageIndex$.next($event)"
-                    (pageSizeChanged)="pageStore.ftlsNewPageSize$.next($event)">
+                    [length]="data.ecRegularPayments.totalElements"
+                    [currentPageIndex]="data.ecRegularPayments.pageable.pageNumber"
+                    [currentPageSize]="data.ecRegularPayments.pageable.pageSize"
+                    (pageIndexChanged)="pageStore.regularNewPageIndex$.next($event)"
+                    (pageSizeChanged)="pageStore.regularNewPageSize$.next($event)">
             </jems-paginator>
+
         </ng-container>
 
-        <jems-alert [show]="data.ecFTLSs.content?.length === 0" [type]="Alert.INFO">
-            <p>{{ 'payments.to.ec.detail.ftls.table.empty' | translate }}</p>
+        <jems-alert [show]="data.ecRegularPayments.content?.length === 0" [type]="Alert.INFO">
+            <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.table.empty' | translate }}</p>
         </jems-alert>
     </ng-container>
-    <jems-regular-payments-not-flagged-9495></jems-regular-payments-not-flagged-9495>
 </ng-container>

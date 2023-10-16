@@ -63,12 +63,14 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.verification.financialOverview.ProjectReportVerificationCertificateContributionOverviewEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.repository.report.project.verification.financialOverview.ProjectReportVerificationCertificateCoFinancingOverviewRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -89,6 +91,7 @@ import io.cloudflight.jems.server.utils.IPA_III_FUND
 import io.cloudflight.jems.server.utils.partner.CREATED_AT
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.utils.partner.legalStatusEntity
+import io.cloudflight.jems.server.utils.toEntity
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -142,6 +145,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
     private lateinit var projectPartnerReportRepository: ProjectPartnerReportRepository
     @MockK
     private lateinit var paymentToEcExtensionRepository: PaymentToEcExtensionRepository
+    @MockK
+    private lateinit var coFinancingOverviewRepository: ProjectReportVerificationCertificateCoFinancingOverviewRepository
     @MockK
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
@@ -420,6 +425,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             lastPaymentDateTo = currentDate.minusDays(1),
             availableForEcId = 693L,
             scoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+            ecStatus = PaymentEcStatus.Draft
         )
 
         private val expectedFtlsPayment = PaymentToProject(
@@ -507,8 +513,6 @@ class PaymentPersistenceProviderTest: UnitTest() {
                 amountApprovedPerFund = BigDecimal(180.00)
             )
         )
-
-
     }
 
     @BeforeEach
@@ -762,14 +766,39 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { projectPartnerReportRepository.getById(107L) } returns leadPartnerR1
         every { projectPartnerReportRepository.getById(108L) } returns leadPartnerR2
         every { projectPartnerReportRepository.getById(106L) } returns secondPartnerR3
+        every { coFinancingOverviewRepository.findAllByPartnerReportProjectReportIdAndProgrammeFundId(projectReportId, 1L) } returns
+            listOf(
+                ProjectReportVerificationCertificateContributionOverviewEntity(
+                    automaticPublicContribution = BigDecimal.valueOf(150L),
+                    partnerContribution = BigDecimal.valueOf(50L),
+                    partnerReport = mockk(),
+                    privateContribution = BigDecimal.valueOf(40L),
+                    programmeFund = mockk(),
+                    publicContribution = BigDecimal.valueOf(75L),
+                    total = BigDecimal.valueOf(100L)
+                )
+            )
+
+        every { coFinancingOverviewRepository.findAllByPartnerReportProjectReportIdAndProgrammeFundId(projectReportId, 4L) } returns
+            listOf(
+                ProjectReportVerificationCertificateContributionOverviewEntity(
+                    automaticPublicContribution = BigDecimal.valueOf(300L),
+                    partnerContribution = BigDecimal.valueOf(100L),
+                    partnerReport = mockk(),
+                    privateContribution = BigDecimal.valueOf(80L),
+                    programmeFund = mockk(),
+                    publicContribution = BigDecimal.valueOf(75L),
+                    total = BigDecimal.valueOf(200L)
+                )
+            )
+
+        val slotExtensions = mutableListOf<PaymentToEcExtensionEntity>()
+        every { paymentToEcExtensionRepository.save(capture(slotExtensions)) } returnsArgument 0
 
         val slotPartners = slot<List<PaymentPartnerEntity>>()
         every { paymentPartnerRepository.saveAll(capture(slotPartners)) } answers {slotPartners.captured}
 
-
         paymentPersistenceProvider.saveRegularPayments(projectReportId ,regularPayments)
-
-
 
         with(slotPayments.captured) {
             assertThat(get(0).id).isEqualTo(0L)
@@ -811,6 +840,29 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
             assertThat(get(4).partnerCertificate).isNotNull
             assertThat(get(4).partnerCertificate?.id).isEqualTo(108L)
+        }
+
+        with(slotExtensions[0]) {
+            assertThat(paymentId).isEqualTo(0L)
+            assertThat(paymentApplicationToEc).isNull()
+            assertThat(partnerContribution).isEqualTo(BigDecimal.valueOf(50))
+            assertThat(publicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(correctedPublicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(autoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
+            assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
+            assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(40))
+            assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(40))
+        }
+        with(slotExtensions[1]) {
+            assertThat(paymentId).isEqualTo(0L)
+            assertThat(paymentApplicationToEc).isNull()
+            assertThat(partnerContribution).isEqualTo(BigDecimal.valueOf(100))
+            assertThat(publicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(correctedPublicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(autoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
+            assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
+            assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(80))
+            assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(80))
         }
 
     }

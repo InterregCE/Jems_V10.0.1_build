@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
@@ -148,7 +149,7 @@ fun PaymentSearchRequest.transformToWhereClause(
             )
         )
 
-    if (scoBasis != null) {
+    if (scoBasis != null && ecStatus == PaymentEcStatus.Draft) {
         val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
             .and(specProjectContracting.typologyProv95.eq(No))
         when (scoBasis) {
@@ -190,6 +191,8 @@ fun PaymentSearchRequest.transformToWhereClauseForCumulativeAmounts(
             FallsUnderArticle94Or95 ->
                 expressions.add(scoBasisFilter.not())
         }
+    } else if (scoBasis != null && ecStatus == PaymentEcStatus.Finished) {
+        expressions.add(specPaymentToEcExtension.finalScoBasis.eq(scoBasis))
     }
 
     return expressions.joinWithAnd()

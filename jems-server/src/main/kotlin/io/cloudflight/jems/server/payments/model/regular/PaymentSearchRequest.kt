@@ -20,4 +20,5 @@ data class PaymentSearchRequest (
 
     val availableForEcId: Long?,
     val scoBasis: PaymentSearchRequestScoBasis?,
+    val ecStatus: PaymentEcStatus?,
 )

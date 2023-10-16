@@ -29,9 +29,8 @@ class CreatePaymentApplicationToEc(
         val fund = ecPayment.paymentApplicationToEcSummary.programmeFund
         val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 
-        val ftlsPaymentIdsWithoutEcPayment = paymentPersistence
-            .getPaymentIdsAvailableForEcPayments(fundId = fund.id, basis = basis)
-        paymentApplicationsToEcPersistence.selectPaymentToEcPayment(ftlsPaymentIdsWithoutEcPayment, ecPayment.id)
+        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fund.id, basis = basis)
+        paymentApplicationsToEcPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPayment.id)
 
         auditPublisher.publishEvent(paymentApplicationToEcCreated(context = this, ecPayment))
         return ecPayment

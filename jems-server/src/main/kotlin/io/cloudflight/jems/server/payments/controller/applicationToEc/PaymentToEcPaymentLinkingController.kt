@@ -8,6 +8,8 @@ import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.deselectPayment.DeselectPaymentFromEcInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getCumulativeAmountsForArtNot94Not95.GetCumulativeAmountsByTypeInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95.GetFtlsPaymentsAvailableForArtNot94Not95Interactor
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.ftls.artNot94Not95.GetFtlsPaymentsAvailableForArtNot94Not95Interactor
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.regular.artNot94Not95.GetRegularPaymentsAvailableForArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.selectPayment.SelectPaymentToEcInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.updatePayment.UpdateLinkedPaymentInteractor
 import io.cloudflight.jems.server.payments.service.toDto
@@ -19,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PaymentToEcPaymentLinkingController(
-    private val getPaymentsAvailableForArtNot94Not95: GetFtlsPaymentsAvailableForArtNot94Not95Interactor,
+    private val getFtlsPaymentsAvailableForArtNot94Not95: GetFtlsPaymentsAvailableForArtNot94Not95Interactor,
+    private val getRegularPaymentsAvailableForArtNot94Not95: GetRegularPaymentsAvailableForArtNot94Not95Interactor,
     private val deselectPaymentFromEc: DeselectPaymentFromEcInteractor,
     private val selectPaymentToEc: SelectPaymentToEcInteractor,
     private val updateLinkedPayment: UpdateLinkedPaymentInteractor,
@@ -27,7 +30,10 @@ class PaymentToEcPaymentLinkingController(
 ) : PaymentToEcPaymentLinkingApi {
 
     override fun getFTLSPaymentsLinkedWithEcForArtNot94Not95(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcLinkingDTO> =
-        getPaymentsAvailableForArtNot94Not95.getPaymentList(pageable, ecApplicationId).toPaymentToEcLinkingDTO()
+        getFtlsPaymentsAvailableForArtNot94Not95.getPaymentList(pageable, ecApplicationId).toPaymentToEcLinkingDTO()
+
+    override fun getRegularPaymentsLinkedWithEcForArtNot94Not95(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcLinkingDTO> =
+        getRegularPaymentsAvailableForArtNot94Not95.getPaymentList(pageable, ecApplicationId).toPaymentToEcLinkingDTO()
 
     override fun selectPaymentToEcPayment(ecApplicationId: Long, paymentId: Long) =
         selectPaymentToEc.selectPaymentToEcPayment(paymentId = paymentId, ecApplicationId)
