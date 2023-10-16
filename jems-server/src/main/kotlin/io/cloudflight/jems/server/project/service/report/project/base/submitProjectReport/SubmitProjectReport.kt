@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -32,6 +33,7 @@ import java.time.ZonedDateTime
 @Service
 class SubmitProjectReport(
     private val reportPersistence: ProjectReportPersistence,
+    private val preSubmissionCheckService: RunProjectReportPreSubmissionCheckService,
     private val reportCertificatePersistence: ProjectReportCertificatePersistence,
     private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence,
@@ -54,8 +56,12 @@ class SubmitProjectReport(
     @ExceptionWrapper(SubmitProjectReportException::class)
     override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId, reportId)
-        val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
         validateReportIsStillOpen(report)
+
+        if (!preSubmissionCheckService.preCheck(projectId, reportId = reportId).isSubmissionAllowed)
+            throw SubmissionNotAllowed()
+
+        val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
 
         if (report.status.isOpenForNumbersChanges()) {
             saveCurrentSpendingProfile(reportId)
