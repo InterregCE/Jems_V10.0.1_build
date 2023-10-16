@@ -41,6 +41,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLineWithCodes
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
@@ -1001,10 +1002,86 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
                             onlyResultWithoutOutputs = false,
+                        ),
+                        IndicatorOverviewLine(
+                            outputIndicatorId = 2L,
+                            outputIndicatorIdentifier = "outputIdentifier2",
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName2"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
+                            outputIndicatorTargetValueSumUp = BigDecimal.ONE,
+                            projectOutputNumber = "1.2",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
+                            projectOutputTargetValue = BigDecimal.ONE,
+                            resultIndicatorId = 3L,
+                            resultIndicatorIdentifier = "resultIdentifier2",
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName2"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false,
+                        )
+                    ),
+                    indicatorLinesWithCodes = listOf(
+                        IndicatorOverviewLineWithCodes(
+                            outputIndicatorId = 1L,
+                            outputIndicatorIdentifier = "outputIdentifier",
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
+                            outputIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            projectOutputNumber = "1.1",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
+                            projectOutputTargetValue = BigDecimal.TEN,
+                            resultIndicatorId = 2L,
+                            resultIndicatorIdentifier = "resultIdentifier",
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false,
                             outputIndicatorCode = "outputCode",
                             resultIndicatorCode = "resultCode"
                         ),
-                        IndicatorOverviewLine(
+                        IndicatorOverviewLineWithCodes(
                             outputIndicatorId = 2L,
                             outputIndicatorIdentifier = "outputIdentifier2",
                             outputIndicatorName = setOf(
@@ -1647,7 +1724,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     ),
                     projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
-                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
+                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList(), emptyList())
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
