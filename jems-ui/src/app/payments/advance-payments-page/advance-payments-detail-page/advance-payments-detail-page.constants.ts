@@ -42,5 +42,6 @@ export class AdvancePaymentsDetailPageConstants {
   public static inputErrorMessages = {
     min: 'payments.advance.payments.detail.amount.error',
     error: 'common.error.field.blank',
+    incorrect: 'payments.advance.payments.detail.project.id.incorrect',
   };
 }

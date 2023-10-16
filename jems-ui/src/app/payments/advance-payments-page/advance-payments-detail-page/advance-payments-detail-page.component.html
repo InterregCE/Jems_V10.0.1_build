@@ -43,7 +43,7 @@
                         <div class="column-project-id">
                             <mat-form-field class="w-100">
                                 <mat-label>{{'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate}}</mat-label>
-                                <input matInput name="projectCustomIdentifier"
+                                <input matInput required name="projectCustomIdentifier"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifier"
                                        [matAutocomplete]="projectCustomIdentifier">
                                 <mat-autocomplete #projectCustomIdentifier="matAutocomplete"
@@ -55,7 +55,8 @@
                                 </mat-autocomplete>
                                 <mat-error>
                                     <jems-form-field-errors
-                                            [errors]="this.advancePaymentForm.get(constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.errors">
+                                            [errors]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.errors"
+                                            [messages]="constants.inputErrorMessages">
                                     </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>

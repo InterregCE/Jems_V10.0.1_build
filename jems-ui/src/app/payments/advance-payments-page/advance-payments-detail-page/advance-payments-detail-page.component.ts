@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
-  AdvancePaymentDetailDTO, AdvancePaymentSettlementDTO,
+  AdvancePaymentDetailDTO,
+  AdvancePaymentSettlementDTO,
   AdvancePaymentUpdateDTO,
   OutputProjectSimple,
   OutputUser,
@@ -51,7 +52,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   advancePaymentForm = this.formBuilder.group({
     id: '',
-    projectCustomIdentifier: this.formBuilder.control('', Validators.required),
+    projectCustomIdentifier: this.formBuilder.control('', [Validators.required, AdvancePaymentsDetailPageComponent.requireMatch]),
     projectAcronym: this.formBuilder.control(''),
     partnerAbbreviation: this.formBuilder.control(''),
     selectedPartner: this.formBuilder.control(''),
@@ -95,21 +96,21 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private localeDatePipe: LocaleDatePipe,
               private router: RoutingService,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef){
+              private changeDetectorRef: ChangeDetectorRef) {
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.valueChanges
-    .pipe(
-      debounceTime(150),
-      tap((searchedAcronym) => this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym)),
-      untilDestroyed(this)
-    ).subscribe();
+      .pipe(
+        debounceTime(150),
+        tap((searchedAcronym) => this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym)),
+        untilDestroyed(this)
+      ).subscribe();
 
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.valueChanges
       .pipe(
         tap(selection => this.setSourceForAdvance(selection)),
         untilDestroyed(this)
-    ).subscribe();
+      ).subscribe();
   }
 
   ngOnInit(): void {
@@ -135,7 +136,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   loadData(paymentDetail: AdvancePaymentDetailDTO) {
-    if(paymentDetail?.id) {
+    if (paymentDetail?.id) {
       this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(paymentDetail.projectId);
     }
   }
@@ -160,7 +161,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   setSourceForAdvance(selection: any) {
-    if(selection) {
+    if (selection) {
       this.resetSourceForAdvance();
       switch (selection.type) {
         case 'fund':
@@ -206,7 +207,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue('');
 
     this.selectedProject$.pipe(tap(project => {
-        if(project) {
+        if (project) {
           this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project?.id);
           this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(project);
         }
@@ -214,11 +215,11 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     )).subscribe();
 
     this.selectedPartner$.pipe(tap(partner => {
-      if(partner) {
-        this.fundsAndContributions = partner;
-        this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue(partner);
-        this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue(this.getSourceValue(paymentDetail, partner));
-      }
+        if (partner) {
+          this.fundsAndContributions = partner;
+          this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue(partner);
+          this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue(this.getSourceValue(paymentDetail, partner));
+        }
       }
     )).subscribe();
 
@@ -240,16 +241,16 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(paymentDetail?.paymentConfirmedDate ? paymentDetail?.paymentConfirmedDate : null);
     this.settlementsArray.clear();
     paymentDetail.paymentSettlements?.forEach(settlement => {
-          this.settlementsArray.push(
-              this.formBuilder.group({
-                    id: settlement.id,
-                    number: settlement.number,
-                    amountSettled: settlement.amountSettled,
-                    settlementDate: settlement.settlementDate,
-                    comment: settlement.comment
-                  }
-              ));
-        }
+        this.settlementsArray.push(
+          this.formBuilder.group({
+              id: settlement.id,
+              number: settlement.number,
+              amountSettled: settlement.amountSettled,
+              settlementDate: settlement.settlementDate,
+              comment: settlement.comment
+            }
+          ));
+      }
     );
 
     this.setValidators();
@@ -263,7 +264,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   disableAllFields(userCanEdit: boolean) {
-    if(!userCanEdit) {
+    if (!userCanEdit) {
       this.advancePaymentForm.disable();
       this.settlementsArray.controls.forEach(control => control.disable());
     }
@@ -272,30 +273,35 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   setValidators() {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValidators([Validators.required]);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValidators([Validators.required]);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValidators([Validators.required]);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValidators([Validators.required, AdvancePaymentsDetailPageComponent.requireMatch]);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValidators([Validators.maxLength(500)]);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.setValidators([Validators.required, Validators.min(0.01)]);
     this.settlementsArray.controls.forEach(control => {
-          control.get(this.constants.FORM_CONTROL_NAMES.settlementDate)?.setValidators([Validators.required]);
-          control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.setValidators([Validators.required]);
-          control.get(this.constants.FORM_CONTROL_NAMES.settlementComment)?.setValidators([Validators.maxLength(500)]);
+        control.get(this.constants.FORM_CONTROL_NAMES.settlementDate)?.setValidators([Validators.required]);
+        control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.setValidators([Validators.required]);
+        control.get(this.constants.FORM_CONTROL_NAMES.settlementComment)?.setValidators([Validators.maxLength(500)]);
       }
     );
   }
 
   setFoundOrContribution(paymentDetail: AdvancePaymentDetailDTO) {
-    if(paymentDetail.programmeFund?.id) {
-      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({type: 'fund', data: paymentDetail.programmeFund });
-    } else if(paymentDetail.partnerContribution?.id) {
-      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({type: 'contribution', data:paymentDetail.partnerContribution});
-    }
-    else if(paymentDetail.partnerContributionSpf?.id) {
-      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({type: 'spfContribution', data:{id: paymentDetail.partnerContributionSpf.id, name: paymentDetail.partnerContributionSpf.name}});
+    if (paymentDetail.programmeFund?.id) {
+      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({type: 'fund', data: paymentDetail.programmeFund});
+    } else if (paymentDetail.partnerContribution?.id) {
+      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({
+        type: 'contribution',
+        data: paymentDetail.partnerContribution
+      });
+    } else if (paymentDetail.partnerContributionSpf?.id) {
+      this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue({
+        type: 'spfContribution',
+        data: {id: paymentDetail.partnerContributionSpf.id, name: paymentDetail.partnerContributionSpf.name}
+      });
     }
   }
 
-  disableAuthorizationCheckbox(paymentDetail: AdvancePaymentDetailDTO){
-    if(this.isPaymentAuthorisationDisabled() || !paymentDetail.projectId) {
+  disableAuthorizationCheckbox(paymentDetail: AdvancePaymentDetailDTO) {
+    if (this.isPaymentAuthorisationDisabled() || !paymentDetail.projectId) {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorized)?.disable();
     } else {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorized)?.enable();
@@ -303,7 +309,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   disableConfirmationCheckbox(settlements: AdvancePaymentSettlementDTO[]) {
-    if(!this.isPaymentAuthorised()) {
+    if (!this.isPaymentAuthorised()) {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
     } else {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.enable();
@@ -330,14 +336,14 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   addSettlement() {
     this.settlementsArray.push(
-        this.formBuilder.group({
-              id: null,
-              number: this.settlementsArray.length + 1,
-              amountSettled: this.getProposedSettlementAmount(),
-              settlementDate: ['', Validators.required],
-              comment: ['', Validators.maxLength(500)]
-            }
-        ));
+      this.formBuilder.group({
+          id: null,
+          number: this.settlementsArray.length + 1,
+          amountSettled: this.getProposedSettlementAmount(),
+          settlementDate: ['', Validators.required],
+          comment: ['', Validators.maxLength(500)]
+        }
+      ));
     this.formService.setDirty(true);
   }
 
@@ -355,7 +361,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentsDetailPageStore.updateAdvancePayment(dataToUpdate).pipe(
       take(1),
       tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
-      tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
+      tap(data => this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
       catchError(error => {
         const apiError = error.error as APIError;
         if (apiError?.formErrors) {
@@ -374,7 +380,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   redirectToPartnerDetailAfterCreate(isCreate: boolean, paymentId: number) {
-    if(isCreate) {
+    if (isCreate) {
       this.router.navigate(
         ['..', paymentId],
         {relativeTo: this.activatedRoute}
@@ -453,8 +459,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   disableFieldsIfPaymentIsConfirmed() {
     if (this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value) {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
-    }
-    else {
+    } else {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
     }
   }
@@ -477,7 +482,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   getFormattedCurrentLocaleDate() {
     const date = new Date();
-    return date.toISOString().substring(0,10);
+    return date.toISOString().substring(0, 10);
   }
 
   setConfirmPaymentDate(isChecked: boolean) {
@@ -485,7 +490,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(this.getFormattedCurrentLocaleDate());
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
 
-      if(!this.isPaymentDateEmpty()) {
+      if (!this.isPaymentDateEmpty()) {
         this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
       }
     } else {
@@ -519,7 +524,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   isPaymentAlreadyConfirmed(): boolean {
-    return  this.initialAdvancePaymentDetail.paymentConfirmed || false;
+    return this.initialAdvancePaymentDetail.paymentConfirmed || false;
   }
 
   getFormattedDate(value: string): any {
@@ -546,20 +551,31 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.fundsAndContributions = null;
   }
 
-  isPaymentValueValid(value: string): boolean{
+  isPaymentValueValid(value: string): boolean {
     return parseInt(value, 10) > 0;
   }
 
   toggleSettlements() {
     this.settlementsExpanded = !this.settlementsExpanded;
   }
+
   private getProposedSettlementAmount(): Number {
     const previouslySettledAmounts = this.settlementsArray.controls.map(control => control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.value);
     const amountPaid = this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
     return NumberService.minus(amountPaid, NumberService.sum(previouslySettledAmounts));
   }
 
-  displayProjectIdentifier(project: OutputProjectSimple | null): string {
-    return project?.customIdentifier ?? '';
+  displayProjectIdentifier(project: OutputProjectSimple | null): string | undefined {
+    return project?.customIdentifier ?? undefined;
   }
+
+  static requireMatch(control: AbstractControl): { [key: string]: any } | null {
+    const selection: any = control.value;
+    if (typeof selection === 'string' && selection !== '') {
+      return {incorrect: true};
+    }
+    return null;
+  }
+
 }
+
