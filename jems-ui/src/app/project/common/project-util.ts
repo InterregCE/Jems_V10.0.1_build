@@ -1,5 +1,5 @@
 import {ProjectDetailDTO, ProjectPeriodDTO, ProjectStatusDTO} from '@cat/api';
-import * as moment from 'moment/moment';
+import {LocaleDatePipeUtil} from "@common/utils/locale-date-pipe-util";
 
 export enum ProjectPaths {
   PROJECT_DETAIL_PATH = '/app/project/detail/',
@@ -80,8 +80,8 @@ export class ProjectUtil {
       periodNumber: period?.number,
       start: period?.start,
       end: period?.end,
-      startDate: moment(period?.startDate).format('MM/DD/YYYY'),
-      endDate: moment(period?.endDate).format('MM/DD/YYYY')
+      startDate: LocaleDatePipeUtil.transform(period?.startDate),
+      endDate: LocaleDatePipeUtil.transform(period?.endDate)
     };
   }
 
