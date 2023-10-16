@@ -1,5 +1,5 @@
-import moment, {LongDateFormatKey} from "moment";
-import {LocaleStore} from "@common/services/locale-store.service";
+import moment, {LongDateFormatKey} from 'moment';
+import {LocaleStore} from '@common/services/locale-store.service';
 
 export class LocaleDatePipeUtil {
 

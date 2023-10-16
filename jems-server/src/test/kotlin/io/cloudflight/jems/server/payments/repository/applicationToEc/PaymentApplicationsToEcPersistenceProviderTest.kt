@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEn
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
@@ -53,7 +54,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.*
+import java.util.Optional
 
 class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
 
@@ -109,7 +110,7 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         private val expectedAccountingYear =
             AccountingYear(expectedAccountingYearId, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
 
-        private val paymentApplicationToEcCreate = PaymentApplicationToEcSummaryUpdate(
+        private val paymentApplicationToEcCreate = PaymentApplicationToEcCreate(
             id = null,
             programmeFundId = programmeFund.id,
             accountingYearId = accountingYearId,
@@ -122,8 +123,6 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
 
         private val paymentApplicationToEcUpdate = PaymentApplicationToEcSummaryUpdate(
             id = paymentApplicationsToEcId,
-            programmeFundId = 11L,
-            accountingYearId = 4L,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
@@ -151,15 +150,6 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
             comment = "Comment"
         )
 
-        private val expectedUpdatedPaymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
-            programmeFund = expectedProgrammeFund,
-            accountingYear = expectedAccountingYear,
-            nationalReference = "National Reference",
-            technicalAssistanceEur = BigDecimal.valueOf(105.32),
-            submissionToSfcDate = submissionDate,
-            sfcNumber = "SFC number",
-            comment = "Comment"
-        )
 
         private val expectedPaymentApplicationsToEcCreateSummary = PaymentApplicationToEcSummary(
             programmeFund = programmeFund,
@@ -177,11 +167,6 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
             paymentApplicationToEcSummary = expectedPaymentApplicationsToEcCreateSummary
         )
 
-        private val expectedPaymentApplicationToEcUpdate = PaymentApplicationToEcDetail(
-            id = paymentApplicationsToEcId,
-            status = PaymentEcStatus.Draft,
-            paymentApplicationToEcSummary = expectedUpdatedPaymentApplicationsToEcSummary
-        )
 
         private val expectedPaymentApplicationToEc = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
@@ -351,12 +336,32 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun updatePaymentApplicationToEc() {
-        every { programmeFundRepository.getById(expectedProgrammeFundId) } returns expectedProgrammeFundEntity
-        every { accountingYearRepository.getById(expectedAccountingYearId) } returns expectedAccountingYearEntity
-        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
 
-        assertThat(persistenceProvider.updatePaymentApplicationToEc(paymentApplicationToEcUpdate)).isEqualTo(
-            expectedPaymentApplicationToEcUpdate
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns PaymentApplicationToEcEntity(
+            id = paymentApplicationsToEcId,
+            programmeFund = expectedProgrammeFundEntity,
+            accountingYear = expectedAccountingYearEntity,
+            status = PaymentEcStatus.Draft,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
+        )
+
+        assertThat(persistenceProvider.updatePaymentApplicationToEc(paymentApplicationsToEcId, paymentApplicationToEcUpdate)).isEqualTo(
+            PaymentApplicationToEcDetail(
+                id = paymentApplicationsToEcId, status = PaymentEcStatus.Draft, isAvailableToReOpen = false,
+                paymentApplicationToEcSummary =  PaymentApplicationToEcSummary(
+                    programmeFund = expectedProgrammeFund,
+                    accountingYear = expectedAccountingYear,
+                    nationalReference = "National Reference",
+                    technicalAssistanceEur = BigDecimal.valueOf(105.32),
+                    submissionToSfcDate = submissionDate,
+                    sfcNumber = "SFC number",
+                    comment = "Comment"
+                )
+            )
         )
     }
 
@@ -396,16 +401,17 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
     @Test
     fun finalizePaymentToEc() {
         every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
-        assertThat(persistenceProvider.finalizePaymentApplicationToEc(paymentApplicationsToEcId)).isEqualTo(
-            expectedPaymentApplicationToEcFinalized
-        )
+        assertThat(
+            persistenceProvider.updatePaymentApplicationToEcStatus(
+                paymentApplicationsToEcId,
+                PaymentEcStatus.Finished
+            )
+        ).isEqualTo(expectedPaymentApplicationToEcFinalized)
     }
 
     @Test
     fun getPaymentExtension() {
-        every { paymentToEcExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(
-            paymentApplicationToEcEntity
-        )
+        every { paymentToEcExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(paymentApplicationToEcEntity)
         assertThat(persistenceProvider.getPaymentExtension(99L)).isEqualTo(paymentToEcExtensionModel)
     }
 

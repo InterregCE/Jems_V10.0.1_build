@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {LongDateFormatKey} from 'moment/moment';
-import {LocaleDatePipeUtil} from "@common/utils/locale-date-pipe-util";
+import {LocaleDatePipeUtil} from '@common/utils/locale-date-pipe-util';
 
 @Pipe({name: 'localeDate'})
 export class LocaleDatePipe implements PipeTransform {

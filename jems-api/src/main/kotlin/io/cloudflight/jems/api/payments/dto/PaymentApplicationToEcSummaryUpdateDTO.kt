@@ -5,8 +5,6 @@ import java.time.LocalDate
 
 data class PaymentApplicationToEcSummaryUpdateDTO(
     val id: Long?,
-    val programmeFundId: Long,
-    val accountingYearId: Long,
     val nationalReference: String?,
     val technicalAssistanceEur: BigDecimal,
     val submissionToSfcDate: LocalDate?,

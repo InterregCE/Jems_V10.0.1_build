@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.crea
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcCreated
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
@@ -22,8 +22,9 @@ class CreatePaymentApplicationToEc(
     @CanUpdatePaymentApplicationsToEc
     @Transactional
     @ExceptionWrapper(CreatePaymentApplicationToEcException::class)
-    override fun createPaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
-        val ecPayment = paymentApplicationsToEcPersistence.createPaymentApplicationToEc(paymentApplicationToEcUpdate)
+    override fun createPaymentApplicationToEc(paymentApplicationToEc: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
+        validateFundAccountingYearPair(paymentApplicationToEc)
+        val ecPayment = paymentApplicationsToEcPersistence.createPaymentApplicationToEc(paymentApplicationToEc)
 
         val fund = ecPayment.paymentApplicationToEcSummary.programmeFund
         val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
@@ -34,6 +35,16 @@ class CreatePaymentApplicationToEc(
 
         auditPublisher.publishEvent(paymentApplicationToEcCreated(context = this, ecPayment))
         return ecPayment
+    }
+
+    fun validateFundAccountingYearPair(paymentApplicationToEc: PaymentApplicationToEcCreate) {
+        val existingEcPaymentApplication = paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(
+                paymentApplicationToEc.programmeFundId,
+                paymentApplicationToEc.accountingYearId
+            )
+        if (existingEcPaymentApplication) {
+            throw EcPaymentApplicationSameFundAccountingYearExistsException()
+        }
     }
 
 }

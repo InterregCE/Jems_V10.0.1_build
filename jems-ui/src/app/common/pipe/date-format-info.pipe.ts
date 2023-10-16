@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {LocaleDatePipeUtil} from "@common/utils/locale-date-pipe-util";
+import {LocaleDatePipeUtil} from '@common/utils/locale-date-pipe-util';
 
 @Pipe({name: 'dateFormatInfo'})
 export class DateFormatInfoPipe implements PipeTransform {

@@ -1,5 +1,5 @@
 import {ProjectDetailDTO, ProjectPeriodDTO, ProjectStatusDTO} from '@cat/api';
-import {LocaleDatePipeUtil} from "@common/utils/locale-date-pipe-util";
+import {LocaleDatePipeUtil} from '@common/utils/locale-date-pipe-util';
 
 export enum ProjectPaths {
   PROJECT_DETAIL_PATH = '/app/project/detail/',

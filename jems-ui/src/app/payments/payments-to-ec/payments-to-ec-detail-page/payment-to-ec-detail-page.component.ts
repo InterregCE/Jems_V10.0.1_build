@@ -21,15 +21,17 @@ import {ActivatedRoute} from '@angular/router';
 export class PaymentToEcDetailPageComponent {
   Alert = Alert;
   paymentStatusEnum = PaymentEcStatusEnum;
-  PermissionEnum = UserRoleDTO.PermissionsEnum;
   finalizeError$ = new BehaviorSubject<APIError | null>(null);
-  finalizationPending$ = new BehaviorSubject(false);
+  statusChangePending$ = new BehaviorSubject(false);
 
   data$: Observable<{
     paymentDetail: PaymentApplicationToEcDetailDTO;
+    userCanView: boolean;
     userCanEdit: boolean;
     finalizationDisabled: boolean;
-    userCanView: boolean;
+    canFinalize: boolean;
+    isAvailableToReOpen: boolean;
+    canReOpen: boolean;
   }>;
 
   constructor(public pageStore: PaymentsToEcDetailPageStore,
@@ -41,12 +43,16 @@ export class PaymentToEcDetailPageComponent {
       this.pageStore.updatedPaymentApplicationStatus$,
       this.pageStore.userCanEdit$,
       this.pageStore.userCanView$,
+      this.pageStore.paymentAvailableToReOpen$
     ]).pipe(
-        map(([paymentDetail, paymentStatus, userCanEdit, userCanView]) => ({
+        map(([paymentDetail, paymentStatus, userCanEdit, userCanView, availableToReOpen]) => ({
               paymentDetail: this.getUpdatePayment(paymentDetail, paymentStatus),
+              userCanView,
               userCanEdit,
               finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit),
-              userCanView
+              canFinalize: (paymentDetail.id && paymentDetail.status === PaymentEcStatusEnum.Draft && userCanEdit) || false,
+              isAvailableToReOpen: availableToReOpen && userCanEdit,
+              canReOpen: paymentDetail.status === PaymentEcStatusEnum.Finished && userCanEdit
             })
         )
     );
@@ -59,15 +65,28 @@ export class PaymentToEcDetailPageComponent {
   }
 
   finalizePaymentApplication(paymentId: number) {
-    this.finalizationPending$.next(true);
+    this.statusChangePending$.next(true);
 
     this.pageStore.finalizePaymentApplicationToEc(paymentId).pipe(
       take(1),
       catchError((err) =>
         this.showErrorMessage(err)
       ),
-      finalize(() => this.finalizationPending$.next(false)),
+      finalize(() => this.statusChangePending$.next(false)),
       untilDestroyed(this)
+    ).subscribe();
+  }
+
+  setPaymentApplicationBackToDraft(paymentId: number) {
+    this.statusChangePending$.next(true);
+
+    this.pageStore.reOpenFinalizedEcPaymentApplication(paymentId).pipe(
+        take(1),
+        catchError((err) =>
+            this.showErrorMessage(err)
+        ),
+        finalize(() => this.statusChangePending$.next(false)),
+        untilDestroyed(this)
     ).subscribe();
   }
 

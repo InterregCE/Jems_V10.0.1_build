@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlemen
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
@@ -225,24 +226,26 @@ fun paymentApplicationToEcCreated(
         .build()
 )
 
-fun paymentApplicationToEcFinalized(
+fun paymentApplicationToEcStatusChanged(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationToEcDetail,
+    updatedEcPaymentApplication: PaymentApplicationToEcDetail,
+    previousStatus: PaymentEcStatus,
     includedPayments: Map<Long, PaymentType>,
 ): AuditCandidateEvent {
     val ftlsPaymentIds = includedPayments.filterValues { it == PaymentType.FTLS }.keys
     val regularPaymentIds = includedPayments.filterValues { it == PaymentType.REGULAR }.keys
+    val newStatus = updatedEcPaymentApplication.status
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
             .description(
-                "Payment application to EC number ${paymentApplicationToEc.id} " +
-                        "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
-                        "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
-                        "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
-                            paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
-                        } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}" +
-                        " changes status from Draft to ${paymentApplicationToEc.status.name} " +
+                "Payment application to EC number ${updatedEcPaymentApplication.id} " +
+                        "created for Fund (${updatedEcPaymentApplication.paymentApplicationToEcSummary.programmeFund.id}, " +
+                        "${updatedEcPaymentApplication.paymentApplicationToEcSummary.programmeFund.type}) " +
+                        "for accounting Year ${computeYearNumber(updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                            updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.startDate
+                        } - ${updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.endDate}" +
+                        " changes status from ${previousStatus.name} to ${newStatus.name} " +
                         "and the following items were included:\n" +
                         "FTLS [${ftlsPaymentIds.joinToString(", ")}]\n" +
                         "Regular [${regularPaymentIds.joinToString(", ")}]"

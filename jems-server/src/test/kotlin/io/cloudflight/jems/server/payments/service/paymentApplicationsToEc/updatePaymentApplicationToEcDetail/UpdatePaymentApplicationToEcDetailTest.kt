@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.applicationToEc
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.updatePaymentApplicationToEcDetail
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummar
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetail
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class UpdatePaymentApplicationToEcTest : UnitTest() {
+class UpdatePaymentApplicationToEcDetailTest : UnitTest() {
 
     companion object {
         private const val paymentApplicationsToEcId = 1L
@@ -41,8 +40,6 @@ class UpdatePaymentApplicationToEcTest : UnitTest() {
 
         private val paymentApplicationsToEcUpdate = PaymentApplicationToEcSummaryUpdate(
             id = paymentApplicationsToEcId,
-            programmeFundId = fund.id,
-            accountingYearId = accountingYear.id,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
@@ -52,8 +49,6 @@ class UpdatePaymentApplicationToEcTest : UnitTest() {
 
         private val paymentApplicationsToEcUpdateWithErrors = PaymentApplicationToEcSummaryUpdate(
             id = paymentApplicationsToEcId,
-            programmeFundId = fund.id,
-            accountingYearId = accountingYear.id,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
@@ -80,20 +75,23 @@ class UpdatePaymentApplicationToEcTest : UnitTest() {
 
     @Test
     fun updatePaymentApplicationToEc() {
-        every { paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId) } returns paymentApplicationsToEcDetail
-
         every {
-            paymentApplicationsToEcPersistence.updatePaymentApplicationToEc(paymentApplicationsToEcUpdate)
+            paymentApplicationsToEcPersistence.updatePaymentApplicationToEc(
+                paymentApplicationsToEcId,
+                paymentApplicationsToEcUpdate
+            )
         } returns paymentApplicationsToEcDetail
-
-
-        assertThat(service.updatePaymentApplicationToEc(paymentApplicationsToEcUpdate))
-            .isEqualTo(paymentApplicationsToEcDetail)
+        assertThat(service.updatePaymentApplicationToEc(paymentApplicationsToEcId, paymentApplicationsToEcUpdate))
+            .isEqualTo(PaymentApplicationToEcDetail(
+                id = paymentApplicationsToEcId,
+                status = PaymentEcStatus.Draft,
+                paymentApplicationToEcSummary = paymentApplicationsToEcSummary
+            ))
     }
 
     @Test
     fun `updatePaymentApplicationToEcTest - length validation failed`() {
-        assertThrows<AppInputValidationException> { service.updatePaymentApplicationToEc(paymentApplicationsToEcUpdateWithErrors) }
+        assertThrows<AppInputValidationException> { service.updatePaymentApplicationToEc(paymentApplicationsToEcId, paymentApplicationsToEcUpdateWithErrors) }
     }
 }
 
