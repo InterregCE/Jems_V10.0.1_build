@@ -20,5 +20,5 @@ class ReportNotInControl : ApplicationUnprocessableException(
 
 class SubmissionNotAllowed : ApplicationUnprocessableException(
     code = "$FINALIZE_CONTROL_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$FINALIZE_CONTROL_PARTNER_REPORT_ERROR_CODE_PREFIX.pre.submission.check.failed"),
+    i18nMessage = I18nMessage("$FINALIZE_CONTROL_PARTNER_REPORT_ERROR_KEY_PREFIX.pre.submission.check.failed"),
 )
