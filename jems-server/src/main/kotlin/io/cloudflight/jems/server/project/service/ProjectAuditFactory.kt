@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
@@ -390,6 +391,39 @@ fun projectAuditControlCreated(
             .build()
     )
 }
+
+fun projectAuditControlCorrectionCreated(
+    context: Any,
+    projectSummary: ProjectSummary,
+    auditControl: ProjectAuditControl,
+    correction: ProjectAuditControlCorrection
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CREATED)
+            .project(projectSummary)
+            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created.")
+            .build()
+    )
+}
+
+fun projectAuditControlCorrectionDeleted(
+    context: Any,
+    projectSummary: ProjectSummary,
+    auditControl: ProjectAuditControl,
+    correction: ProjectAuditControlCorrection
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_DELETED)
+            .project(projectSummary)
+            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is deleted.")
+            .build()
+    )
+}
+
 
 fun projectAuditControlClosed(
     context: Any,
