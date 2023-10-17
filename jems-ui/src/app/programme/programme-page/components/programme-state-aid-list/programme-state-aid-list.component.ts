@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {ProgrammeStateAidDTO, ProgrammeStateAidUpdateDTO} from '@cat/api';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -39,7 +29,9 @@ export class ProgrammeStateAidListComponent extends ViewEditFormComponent implem
   isProgrammeSetupRestricted: boolean;
   toDeleteIds: number[] = [];
 
-  stateAidForm: FormGroup;
+  stateAidForm: FormGroup = this.formBuilder.group({
+    stateAids: this.formBuilder.array([]),
+  });
   measureRelations = this.programmeStateAidConstants.stateAidMeasures;
   initialSelectedMeasures: ProgrammeStateAidDTO.MeasureEnum[];
   filteredMeasureRelations: ProgrammeStateAidMeasureRelation[];
@@ -68,7 +60,10 @@ export class ProgrammeStateAidListComponent extends ViewEditFormComponent implem
     this.changeFormState$
       .pipe(
         untilDestroyed(this),
-      ).subscribe(state => this.tableConfig = [{minInRem: 19},{minInRem: 21},{minInRem: 21},{minInRem: 7},{minInRem: 6, maxInRem: 6},{minInRem: 8, maxInRem: 8},{minInRem: 40, maxInRem: 40}, ...state === FormState.EDIT ? [{maxInRem: 3, minInRem: 3}] : []]);
+      ).subscribe(state => this.tableConfig = [{minInRem: 19}, {minInRem: 21}, {minInRem: 21}, {minInRem: 7}, {minInRem: 6, maxInRem: 6}, {
+      minInRem: 8,
+      maxInRem: 8
+    }, {minInRem: 40, maxInRem: 40}, ...state === FormState.EDIT ? [{maxInRem: 3, minInRem: 3}] : []]);
   }
 
   get stateAidsForm(): FormArray {
@@ -119,14 +114,14 @@ export class ProgrammeStateAidListComponent extends ViewEditFormComponent implem
     this.saveStateAids.emit({
       toPersist: this.stateAidForm.getRawValue().stateAids
         .map((sa: any) => ({
-          id: sa.id,
-          measure: sa.measure.measure,
-          name: sa.name,
-          abbreviatedName: sa.abbreviatedName,
-          schemeNumber: sa.schemeNumber,
-          maxIntensity: sa.maxIntensity,
-          threshold: sa.threshold,
-          comments: sa.comments,
+            id: sa.id,
+            measure: sa.measure.measure,
+            name: sa.name,
+            abbreviatedName: sa.abbreviatedName,
+            schemeNumber: sa.schemeNumber,
+            maxIntensity: sa.maxIntensity,
+            threshold: sa.threshold,
+            comments: sa.comments,
           })
         ),
       toDeleteIds: this.toDeleteIds
@@ -191,8 +186,7 @@ export class ProgrammeStateAidListComponent extends ViewEditFormComponent implem
     let filterValue = '';
     if (typeof value === 'string') {
       filterValue = (value || '').toLowerCase();
-    }
-    else {
+    } else {
       filterValue = value?.measureDisplayValue || '';
     }
     if (filterValue === '') {
