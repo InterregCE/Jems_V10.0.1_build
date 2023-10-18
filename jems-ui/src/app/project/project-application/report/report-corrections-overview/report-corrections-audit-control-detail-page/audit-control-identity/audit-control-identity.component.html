@@ -31,7 +31,9 @@
         <div jemsMultiColumnRow stretch="1" class="mt-2">
             <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.audit.control.controllingBody' | translate}}</mat-label>
-                <mat-select formControlName="controllingBody" required>
+                <mat-select [formControlName]="constants.FORM_CONTROLS.controllingBody"
+                            [disabled]="!data.canEdit"
+                            required>
                     <mat-option *ngFor="let controllingBody of constants.CONTROLLING_BODY" [value]="controllingBody" role="option">
                         {{ 'project.application.reporting.corrections.audit.control.controllingBody.' + controllingBody | translate }}
                     </mat-option>
@@ -43,7 +45,9 @@
 
             <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.audit.control.controlType' | translate}}</mat-label>
-                <mat-select formControlName="controlType" required>
+                <mat-select [formControlName]="constants.FORM_CONTROLS.controlType"
+                            [disabled]="!data.canEdit"
+                            required>
                     <mat-option *ngFor="let controlType of constants.CONTROL_TYPES" [value]="controlType" role="option">
                         {{ 'project.application.reporting.corrections.audit.control.controlType.' + controlType | translate }}
                     </mat-option>
