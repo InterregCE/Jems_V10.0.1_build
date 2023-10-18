@@ -24,9 +24,9 @@ class FinalizePaymentApplicationToEc(
         val ecPayment = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentId)
         validatePaymentApplicationIsDraft(ecPayment)
 
-        val selectedPaymentTotals = paymentApplicationsToEcPersistence.getSelectedPaymentsToEcPayment(paymentId)
+        val selectedPaymentTotals = paymentApplicationsToEcPersistence.calculateAndGetTotals(paymentId)
             .sumUpProperColumns()
-        paymentApplicationsToEcPersistence.saveCumulativeAmountsByType(paymentId, selectedPaymentTotals)
+        paymentApplicationsToEcPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 
         return paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(paymentId).also {
             auditPublisher.publishEvent(paymentApplicationToEcFinalized(

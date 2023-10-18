@@ -136,13 +136,13 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             17L to PaymentType.FTLS,
         )
         every {
-            paymentApplicationsToEcPersistence.getSelectedPaymentsToEcPayment(
+            paymentApplicationsToEcPersistence.calculateAndGetTotals(
                 PAYMENT_ID
             )
         } returns paymentToEcAmountSummaryTmpMap
 
         every {
-            paymentApplicationsToEcPersistence.saveCumulativeAmountsByType(
+            paymentApplicationsToEcPersistence.saveTotalsWhenFinishingEcPayment(
                 ecPaymentId = PAYMENT_ID,
                 totals = paymentsIncludedInPaymentsToEcMapped
             )
@@ -160,7 +160,7 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     "and the following items were included:\nFTLS [14, 15, 17]\nRegular [16]"
             )
         )
-        verify(exactly = 1) {  paymentApplicationsToEcPersistence.saveCumulativeAmountsByType(
+        verify(exactly = 1) {  paymentApplicationsToEcPersistence.saveTotalsWhenFinishingEcPayment(
             ecPaymentId = PAYMENT_ID,
             totals = mapOf(Pair(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, paymentsIncludedInPaymentsToEc))
         ) }

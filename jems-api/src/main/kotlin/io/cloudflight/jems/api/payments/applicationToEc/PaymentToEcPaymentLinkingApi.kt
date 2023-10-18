@@ -30,7 +30,7 @@ interface PaymentToEcPaymentLinkingApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{ecApplicationId}/ftls/artNot94Not95")
+    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{ecApplicationId}/artNot94Not95/ftls")
     fun getFTLSPaymentsLinkedWithEcForArtNot94Not95(pageable: Pageable, @PathVariable ecApplicationId: Long): Page<PaymentToEcLinkingDTO>
 
     @ApiOperation("Select payment to ec")

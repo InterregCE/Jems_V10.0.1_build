@@ -40,14 +40,15 @@ interface PaymentApplicationToEcPersistence {
 
     fun updatePaymentToEcCorrectedAmounts(paymentId: Long, paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate)
 
-    fun getSelectedPaymentsToEcPayment(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>>
 
-    fun saveCumulativeAmountsByType(
+    fun calculateAndGetTotals(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>>
+
+    fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
         totals: Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>,
     )
 
-    fun getSavedCumulativeAmountsForPaymentsToEcByType(
+    fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
     ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
 

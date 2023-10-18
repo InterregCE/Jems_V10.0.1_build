@@ -24,9 +24,9 @@ class GetCumulativeAmountsByType(
         val ecPayment = paymentToEcPersistence.getPaymentApplicationToEcDetail(paymentToEcId)
 
         val selectedPaymentList = if (ecPayment.status == PaymentEcStatus.Finished)
-                paymentToEcPersistence.getSavedCumulativeAmountsForPaymentsToEcByType(paymentToEcId)
+                paymentToEcPersistence.getTotalsForFinishedEcPayment(paymentToEcId)
             else
-                paymentToEcPersistence.getSelectedPaymentsToEcPayment(paymentToEcId).sumUpProperColumns()
+                paymentToEcPersistence.calculateAndGetTotals(paymentToEcId).sumUpProperColumns()
 
         val selectedPaymentListOfType = if (type != null) selectedPaymentList[type]!! else selectedPaymentList.merge()
 

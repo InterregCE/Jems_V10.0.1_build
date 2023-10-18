@@ -135,7 +135,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
         every {
-            paymentApplicationToEcPersistence.getSelectedPaymentsToEcPayment(
+            paymentApplicationToEcPersistence.calculateAndGetTotals(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentToEcAmountSummaryTmpMap
@@ -158,7 +158,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
         every {
-            paymentApplicationToEcPersistence.getSelectedPaymentsToEcPayment(
+            paymentApplicationToEcPersistence.calculateAndGetTotals(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentToEcAmountSummaryTmpMap
@@ -182,7 +182,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
         every { paymentApplicationToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_TO_EC_ID) } returns ecPaymentDetail
         every {
-            paymentApplicationToEcPersistence.getSavedCumulativeAmountsForPaymentsToEcByType(
+            paymentApplicationToEcPersistence.getTotalsForFinishedEcPayment(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentsIncludedInPaymentsToEcMap
@@ -206,7 +206,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
         every { paymentApplicationToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_TO_EC_ID) } returns ecPaymentDetail
         every {
-            paymentApplicationToEcPersistence.getSavedCumulativeAmountsForPaymentsToEcByType(
+            paymentApplicationToEcPersistence.getTotalsForFinishedEcPayment(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentsIncludedInPaymentsToEcMap
