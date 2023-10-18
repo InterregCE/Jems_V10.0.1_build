@@ -96,8 +96,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     group by partner_id, period_number) as external_budget
                     ON external_budget.period_number = period.number AND partner.id = external_budget.partnerId
                 left join (
-                    SELECT externalCosts.partner_id as partnerId, spfCostsPeriod.period_number,
-                           sum(externalCostsPeriod.amount) as spfSum
+                    SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number,
+                           sum(spfCostsPeriod.amount) as spfSum
                     FROM project_partner_budget_spfcost_period AS spfCostsPeriod
                         LEFT JOIN project_partner_budget_spfcost AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
                     group by partner_id, period_number) as spf_budget
