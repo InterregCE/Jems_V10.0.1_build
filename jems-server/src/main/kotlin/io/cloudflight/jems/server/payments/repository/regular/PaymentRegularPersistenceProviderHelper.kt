@@ -11,11 +11,9 @@ import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
-import io.cloudflight.jems.server.payments.model.regular.PaymentToEcExtensionTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
@@ -72,17 +70,6 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
     pageable,
     total,
 )
-
-fun QueryResults<Tuple>.toExtensionResult(): List<PaymentToEcExtensionTmp> =
-    results.map { it: Tuple ->
-        PaymentToEcExtensionTmp(
-            payment = it.get(0, PaymentEntity::class.java)!!,
-            projectFallsUnderArticle94 = it.get(1, ContractingMonitoringExtendedOption::class.java),
-            projectFallsUnderArticle95 = it.get(2, ContractingMonitoringExtendedOption::class.java),
-            code = it.get(3, String::class.java),
-            paymentToEcExtensionEntity = it.get(4, PaymentToEcExtensionEntity::class.java)!!,
-        )
-    }
 
 fun PaymentSearchRequest.transformToWhereClause(
     qPayment: QPaymentEntity,
@@ -149,50 +136,20 @@ fun PaymentSearchRequest.transformToWhereClause(
             )
         )
 
-    if (scoBasis != null && ecStatus == PaymentEcStatus.Draft) {
-        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
+    if (scoBasis != null) {
+        val allAnswersNo = specProjectContracting.typologyProv94.eq(No)
             .and(specProjectContracting.typologyProv95.eq(No))
-        when (scoBasis) {
-            DoesNotFallUnderArticle94Nor95 ->
-                expressions.add(scoBasisFilter)
-
-            FallsUnderArticle94Or95 ->
-                expressions.add(scoBasisFilter.not())
+        val scoBasisFilter = when (scoBasis) {
+            DoesNotFallUnderArticle94Nor95 -> allAnswersNo
+            FallsUnderArticle94Or95 -> allAnswersNo.not()
         }
-    }
 
-    return expressions.joinWithAnd()
-}
-
-fun PaymentSearchRequest.transformToWhereClauseForCumulativeAmounts(
-    qPayment: QPaymentEntity,
-    specProjectContracting: QProjectContractingMonitoringEntity,
-    specPaymentToEcExtension: QPaymentToEcExtensionEntity,
-): BooleanExpression? {
-    val expressions = mutableListOf<BooleanExpression>()
-
-    if (this.paymentType != null)
-        expressions.add(qPayment.type.eq(this.paymentType))
-
-    if (availableForEcId != null)
+        // TODO test
         expressions.add(
-            specPaymentToEcExtension.paymentApplicationToEc.id.eq(
-                availableForEcId
+            specPaymentToEcExtension.finalScoBasis.eq(scoBasis).or(
+                specPaymentToEcExtension.finalScoBasis.isNull().and(scoBasisFilter)
             )
         )
-
-    if (scoBasis != null) {
-        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
-            .and(specProjectContracting.typologyProv95.eq(No))
-        when (scoBasis) {
-            DoesNotFallUnderArticle94Nor95 ->
-                expressions.add(scoBasisFilter)
-
-            FallsUnderArticle94Or95 ->
-                expressions.add(scoBasisFilter.not())
-        }
-    } else if (scoBasis != null && ecStatus == PaymentEcStatus.Finished) {
-        expressions.add(specPaymentToEcExtension.finalScoBasis.eq(scoBasis))
     }
 
     return expressions.joinWithAnd()

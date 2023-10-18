@@ -10,5 +10,4 @@ interface ProjectReportVerificationCertificateCoFinancingOverviewRepository :
 
     fun findAllByPartnerReportProjectReportId(projectReportId: Long): List<ProjectReportVerificationCertificateContributionOverviewEntity>
 
-    fun findAllByPartnerReportProjectReportIdAndProgrammeFundId(projectReportId: Long, programmeFundId: Long): List<ProjectReportVerificationCertificateContributionOverviewEntity>
 }

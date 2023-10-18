@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.regular.artNot94Not95
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95.regular
 
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import org.springframework.data.domain.Page

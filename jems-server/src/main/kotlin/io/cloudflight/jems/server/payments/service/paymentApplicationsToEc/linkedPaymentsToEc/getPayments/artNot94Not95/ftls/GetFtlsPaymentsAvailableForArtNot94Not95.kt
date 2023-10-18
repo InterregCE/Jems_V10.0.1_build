@@ -1,9 +1,10 @@
-package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95.ftls
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
-import io.cloudflight.jems.server.payments.model.regular.*
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.constructFilter
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
@@ -29,7 +30,6 @@ class GetFtlsPaymentsAvailableForArtNot94Not95(
             fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id,
             scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
             paymentType = PaymentType.FTLS,
-            ecStatus = ecPayment.status
         )
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)

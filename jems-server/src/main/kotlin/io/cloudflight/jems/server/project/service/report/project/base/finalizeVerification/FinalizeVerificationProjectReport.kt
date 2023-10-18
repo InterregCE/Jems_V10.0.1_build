@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.report.project.base.finalizeV
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -116,12 +116,11 @@ class FinalizeVerificationProjectReport(
     private fun createPaymentsForReport(
         certificateSplits: List<PartnerCertificateFundSplit>,
         projectReport: ProjectReportModel,
-    ): List<PaymentRegularToCreate> =
+    ) =
         certificateSplits.groupBy { it.fundId }
-            .map { (fundId, certificateFundSplits) ->
+            .mapValues { (_, certificateFundSplits) ->
                 PaymentRegularToCreate(
                     projectId = projectReport.projectId,
-                    fundId = fundId,
                     amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund(),
                     partnerPayments = certificateFundSplits.map {
                         PaymentPartnerToCreate(
@@ -129,7 +128,11 @@ class FinalizeVerificationProjectReport(
                             partnerReportId = it.partnerReportId,
                             amountApprovedPerPartner = it.value
                         )
-                    }
+                    },
+                    defaultPartnerContribution = certificateFundSplits.sumOf { it.defaultPartnerContribution },
+                    defaultOfWhichPublic = certificateFundSplits.sumOf { it.defaultOfWhichPublic },
+                    defaultOfWhichAutoPublic = certificateFundSplits.sumOf { it.defaultOfWhichAutoPublic },
+                    defaultOfWhichPrivate = certificateFundSplits.sumOf { it.defaultOfWhichPrivate },
                 )
             }
 

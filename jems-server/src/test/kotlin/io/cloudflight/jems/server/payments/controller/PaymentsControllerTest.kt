@@ -270,7 +270,6 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateTo = currentDate.minusDays(1),
             availableForEcId = null,
             scoBasis = null,
-            ecStatus = null
         )
     }
 
@@ -353,7 +352,6 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateTo = null,
             availableForEcId = null,
             scoBasis = null,
-            ecStatus = null
         ))
     }
 

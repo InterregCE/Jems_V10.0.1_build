@@ -11,14 +11,15 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentRow
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -133,7 +134,7 @@ fun PaymentRegularToCreate.toRegularPaymentEntity(
     amountApprovedPerFund = amountApprovedPerFund,
 )
 
-fun PaymentToCreate.toFTLSPaymentEntity(
+fun PaymentFtlsToCreate.toFTLSPaymentEntity(
     projectEntity: ProjectEntity,
     lumpSum: ProjectLumpSumEntity?,
     fundEntity: ProgrammeFundEntity,
@@ -332,4 +333,17 @@ fun AdvancePaymentSettlement.toEntity(advancePayment:AdvancePaymentEntity) = Adv
     amountSettled = amountSettled,
     settlementDate = settlementDate,
     comment = comment
+)
+
+fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntity(
+    paymentId = payment.id,
+    payment = payment,
+    autoPublicContribution = defaultOfWhichAutoPublic,
+    correctedAutoPublicContribution = defaultOfWhichAutoPublic,
+    partnerContribution = defaultPartnerContribution,
+    privateContribution = defaultOfWhichPrivate,
+    correctedPrivateContribution = defaultOfWhichPrivate,
+    publicContribution = defaultOfWhichPublic,
+    correctedPublicContribution = defaultOfWhichPublic,
+    finalScoBasis = null,
 )

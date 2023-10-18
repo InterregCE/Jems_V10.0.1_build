@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
@@ -174,7 +174,7 @@ class UpdateContractingMonitoring(
                 .getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, lumpSumOrderNrsToBeAdded)
                 .groupBy { PaymentGroupingId(it.orderNr, it.programmeFundId) }
                 .mapValues { (id, partnerPayments) ->
-                    PaymentToCreate(
+                    PaymentFtlsToCreate(
                         partnerPayments.first().programmeLumpSumId,
                         partnerPayments.map { o ->
                             PaymentPartnerToCreate(

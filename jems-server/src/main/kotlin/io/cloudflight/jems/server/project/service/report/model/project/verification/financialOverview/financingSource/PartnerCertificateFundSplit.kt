@@ -8,5 +8,10 @@ data class PartnerCertificateFundSplit(
     val fundId: Long,
     val value: BigDecimal,
 
+    val defaultPartnerContribution: BigDecimal,
+    val defaultOfWhichPublic: BigDecimal,
+    val defaultOfWhichAutoPublic: BigDecimal,
+    val defaultOfWhichPrivate: BigDecimal,
+
     val total: BigDecimal,
 )

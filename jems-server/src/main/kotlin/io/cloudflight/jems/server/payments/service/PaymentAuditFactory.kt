@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
@@ -226,33 +227,46 @@ fun paymentApplicationToEcCreated(
         .build()
 )
 
-fun paymentApplicationToEcStatusChanged(
+fun paymentApplicationToEcFinished(
     context: Any,
     updatedEcPaymentApplication: PaymentApplicationToEcDetail,
-    previousStatus: PaymentEcStatus,
-    includedPayments: Map<Long, PaymentType>,
+    includedPayments: Map<Long, PaymentInEcPaymentMetadata> = emptyMap(),
 ): AuditCandidateEvent {
-    val ftlsPaymentIds = includedPayments.filterValues { it == PaymentType.FTLS }.keys
-    val regularPaymentIds = includedPayments.filterValues { it == PaymentType.REGULAR }.keys
-    val newStatus = updatedEcPaymentApplication.status
+    val ftlsPayments = includedPayments.filter { it.value.type == PaymentType.FTLS }
+    val regularPayments = includedPayments.filter { it.value.type == PaymentType.REGULAR }
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
             .description(
-                "Payment application to EC number ${updatedEcPaymentApplication.id} " +
-                        "created for Fund (${updatedEcPaymentApplication.paymentApplicationToEcSummary.programmeFund.id}, " +
-                        "${updatedEcPaymentApplication.paymentApplicationToEcSummary.programmeFund.type}) " +
-                        "for accounting Year ${computeYearNumber(updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
-                            updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.startDate
-                        } - ${updatedEcPaymentApplication.paymentApplicationToEcSummary.accountingYear.endDate}" +
-                        " changes status from ${previousStatus.name} to ${newStatus.name} " +
+                updatedEcPaymentApplication
+                    .toDescription(previousStatus = PaymentEcStatus.Draft, newStatus = PaymentEcStatus.Finished) + " " +
                         "and the following items were included:\n" +
-                        "FTLS [${ftlsPaymentIds.joinToString(", ")}]\n" +
-                        "Regular [${regularPaymentIds.joinToString(", ")}]"
+                        "FTLS [${ftlsPayments.keys.joinToString(", ")}]\n" +
+                        "Regular [${regularPayments.keys.joinToString(", ")}]"
             )
             .build()
     )
 }
+
+fun paymentApplicationToEcReOpened(
+    context: Any,
+    updatedEcPaymentApplication: PaymentApplicationToEcDetail,
+) = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
+        .description(
+            updatedEcPaymentApplication
+                .toDescription(previousStatus = PaymentEcStatus.Draft, newStatus = PaymentEcStatus.Finished)
+        )
+        .build()
+    )
+
+private fun PaymentApplicationToEcDetail.toDescription(previousStatus: PaymentEcStatus, newStatus: PaymentEcStatus) =
+    "Payment application to EC number $id " +
+        "created for Fund (${paymentApplicationToEcSummary.programmeFund.id}, ${paymentApplicationToEcSummary.programmeFund.type}) " +
+        "for accounting Year ${computeYearNumber(paymentApplicationToEcSummary.accountingYear.startDate)}: " +
+        "${paymentApplicationToEcSummary.accountingYear.startDate} - ${paymentApplicationToEcSummary.accountingYear.endDate} " +
+        "changes status from ${previousStatus.name} to ${newStatus.name}"
 
 fun paymentApplicationToEcDeleted(
     context: Any,

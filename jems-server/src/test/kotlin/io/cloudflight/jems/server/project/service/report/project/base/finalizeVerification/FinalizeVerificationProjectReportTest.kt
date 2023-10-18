@@ -9,13 +9,12 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ProjectReportCertificateCostCategoryPersistenceProvider
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
@@ -218,19 +217,6 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             ),
             totalsFromAF = mockk(),
             currentlyReported = mockk(),
-//            currentlyReported = BudgetCostsCalculationResultFull( TODO unused?
-//                staff = BigDecimal.ZERO,
-//                office = BigDecimal.ZERO,
-//                travel = BigDecimal.ZERO,
-//                external = BigDecimal.ZERO,
-//                equipment = BigDecimal.ZERO,
-//                infrastructure = BigDecimal.ZERO,
-//                other = BigDecimal.ZERO,
-//                lumpSum = BigDecimal.valueOf(300),
-//                unitCost = BigDecimal.ZERO,
-//                spfCost = BigDecimal.ZERO,
-//                sum = BigDecimal.valueOf(300),
-//            ),
             totalEligibleAfterControl = mockk(),
             previouslyReported = mockk(),
             previouslyValidated = mockk(),
@@ -402,7 +388,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
         every { reportInvestmentPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
 
-        every { paymentPersistence.saveRegularPayments(PROJECT_REPORT_ID, emptyList()) } returns Unit
+        every { paymentPersistence.saveRegularPayments(PROJECT_REPORT_ID, emptyMap()) } returns Unit
 
 
         val auditSlot = slot<AuditCandidateEvent>()

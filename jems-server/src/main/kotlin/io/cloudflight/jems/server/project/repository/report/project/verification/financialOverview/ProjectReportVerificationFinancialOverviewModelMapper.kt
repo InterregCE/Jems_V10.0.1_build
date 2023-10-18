@@ -55,6 +55,12 @@ fun List<ProjectReportVerificationCertificateContributionOverviewEntity>.toModel
         partnerId = it.partnerReport.partnerId,
         fundId = it.programmeFund!!.id,
         value = it.fundValue!!,
-        total = it.total
+
+        defaultPartnerContribution = it.partnerContribution,
+        defaultOfWhichPublic = it.publicContribution,
+        defaultOfWhichAutoPublic = it.automaticPublicContribution,
+        defaultOfWhichPrivate = it.privateContribution,
+
+        total = it.total,
     )
 }
