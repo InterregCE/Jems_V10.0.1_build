@@ -1,0 +1,49 @@
+{
+  "controllerFormats": [
+    "Originals",
+    "Copy",
+    "Electronic"
+  ],
+  "type": "PartnerReport",
+  "designatedController": {
+    "controlInstitutionId": 11,
+    "controllingUserId": 46,
+    "controllingUserName": "Report Control User - Kevon_Rolfson98@yahoo.com",
+    "jobTitle": "API generated job title",
+    "divisionUnit": "API generated division/unit/department",
+    "address": "API generated address",
+    "country": "Chad (TD)",
+    "countryCode": "TD",
+    "telephone": "+0123456789",
+    "controllerReviewerId": 46,
+    "controllerReviewerName": "Report Control User - Kevon_Rolfson98@yahoo.com",
+    "controlInstitution": "agitated laboratory"
+  },
+  "reportVerification": {
+    "generalMethodologies": [
+      "AdministrativeVerification",
+      "OnTheSpotVerification"
+    ],
+    "administrativeVerification": true,
+    "onTheSpotVerification": true,
+    "riskBasedVerificationApplied": true,
+    "riskBasedVerificationDescription": "API generated risk-based verification",
+    "verificationInstances": [
+      {
+        "verificationFrom": "2023-10-18T00:00:00.000Z",
+        "verificationTo": "2023-10-19T00:00:00.000Z",
+        "premisesOfProjectPartner": true,
+        "projectEvent": true,
+        "placeOfProjectOutput": true,
+        "virtual": true,
+        "verificationFocus": "API generated on-the-spot verification",
+        "verificationLocations": [
+          "PremisesOfProjectPartner",
+          "ProjectEvent",
+          "PlaceOfPhysicalProjectOutput",
+          "Virtual"
+        ]
+      }
+    ]
+  }
+}

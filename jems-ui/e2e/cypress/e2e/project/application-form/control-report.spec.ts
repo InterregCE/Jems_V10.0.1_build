@@ -4,6 +4,7 @@ import application from '../../../fixtures/api/application/application.json';
 import approvalInfo from '../../../fixtures/api/application/modification/approval.info.json';
 import partnerReportIdentification from '../../../fixtures/api/partnerReport/partnerReportIdentification.json';
 import partnerReportExpenditures from '../../../fixtures/api/partnerReport/partnerReportExpenditures.json';
+import controlReportIdentification from '../../../fixtures/api/partnerControlReport/controlReportIdentification.json';
 import {faker} from "@faker-js/faker";
 import controllerUser from "../../../fixtures/api/users/controllerUser.json";
 import controllerRole from "../../../fixtures/api/roles/controllerRole.json";
@@ -253,7 +254,7 @@ context('Control report tests', () => {
     });
   });
 
-  it("TB-1083 Control report checklist instantiation after control work is finalized", () => {
+  it('TB-1083 Control report checklist instantiation after control work is finalized', () => {
     cy.fixture('project/application-form/control-reports/TB-1083.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
         cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
@@ -269,6 +270,7 @@ context('Control report tests', () => {
           testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
           testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
           cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            cy.wrap(institutionId).as(testData.controllerInstitution.name);
             testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
             testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
             cy.assignInstitution(testData.controllerAssignment);
@@ -285,6 +287,11 @@ context('Control report tests', () => {
 
           cy.loginByRequest(testData.controllerUser1.email);
           cy.startControlWork(partnerId, reportId);
+
+          controlReportIdentification.designatedController.controlInstitutionId = this[testData.controllerInstitution.name];
+          controlReportIdentification.designatedController.controllingUserId = testData.controllerUser1.id;
+          controlReportIdentification.designatedController.controllerReviewerId = testData.controllerUser1.id;
+          cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
 
           cy.startControlChecklist(partnerId, reportId, testData.checklist[0]);
           cy.startControlChecklist(partnerId, reportId, testData.checklist[1]).then(checklistId => {

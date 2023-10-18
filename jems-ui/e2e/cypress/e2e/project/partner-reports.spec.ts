@@ -1,14 +1,15 @@
 import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
-import call from "../../fixtures/api/call/1.step.call.json";
-import {loginByRequest} from "../../support/login.commands";
-import application from "../../fixtures/api/application/application.json";
-import partnerReportIdentification from "../../fixtures/api/partnerReport/partnerReportIdentification.json";
-import partnerReportExpenditures from "../../fixtures/api/partnerReport/partnerReportExpenditures.json";
-import partnerParkedExpenditures from "../../fixtures/api/partnerReport/partnerParkedExpenditures.json";
-import approvalInfo from "../../fixtures/api/application/modification/approval.info.json";
+import call from '../../fixtures/api/call/1.step.call.json';
+import {loginByRequest} from '../../support/login.commands';
+import application from '../../fixtures/api/application/application.json';
+import partnerReportIdentification from '../../fixtures/api/partnerReport/partnerReportIdentification.json';
+import partnerReportExpenditures from '../../fixtures/api/partnerReport/partnerReportExpenditures.json';
+import partnerParkedExpenditures from '../../fixtures/api/partnerReport/partnerParkedExpenditures.json';
+import approvalInfo from '../../fixtures/api/application/modification/approval.info.json';
 import partner from '../../fixtures/api/application/partner/partner.json';
-import {partnerReportPage} from "./partner-reports.pom";
+import {partnerReportPage} from './partner-reports.pom';
+import controlReportIdentification from '../../fixtures/api/partnerControlReport/controlReportIdentification.json';
 
 const costCategories = [
   'Travel and accommodation',
@@ -1360,7 +1361,7 @@ context('Partner reports tests', () => {
             //Group order 1
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
             partnerReportPage.verifyAmountsInTables(testData.expectedResults.group1); // TODO replace all amount verifications below with this method
-            
+
             //Group Order 2
             cy.loginByRequest(user.admin.email);
             cy.createTypologyOfErrors(testData.typologyOfErrors);
@@ -1813,7 +1814,7 @@ context('Partner reports tests', () => {
           .then(institutionId => {
             testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId1;
             testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
-
+            testData.controllerInstitution.id = institutionId;
             cy.assignInstitution(testData.controllerAssignment);
           });
       });
@@ -1833,11 +1834,16 @@ context('Partner reports tests', () => {
     cy.submitPartnerReport(partnerId, reportId);
   }
 
-  function performControlWork(testData, reportId, partnerId1) {
+  function performControlWork(testData, reportId, partnerId) {
     cy.loginByRequest(testData.controllerUser.email);
-    cy.startControlWork(partnerId1, reportId);
-    cy.setExpenditureItemsAsParked(partnerId1, reportId, partnerParkedExpenditures);
-    cy.finalizeControl(partnerId1, reportId);
+    cy.startControlWork(partnerId, reportId);
+
+    controlReportIdentification.designatedController.controlInstitutionId = testData.controllerInstitution.id;
+    controlReportIdentification.designatedController.controllingUserId = testData.controllerUser.id;
+    controlReportIdentification.designatedController.controllerReviewerId = testData.controllerUser.id;
+    cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
+    cy.setExpenditureItemsAsParked(partnerId, reportId, partnerParkedExpenditures);
+    cy.finalizeControl(partnerId, reportId);
   }
 
   function openListOfExpenditures(partnerId1, applicationId) {
@@ -2900,6 +2906,7 @@ context('Partner reports tests', () => {
     cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle input')
       .each((el) => cy.wrap(el).should('be.disabled'));
   }
+
   //endregion
 
   function formatAmount(amount) {
