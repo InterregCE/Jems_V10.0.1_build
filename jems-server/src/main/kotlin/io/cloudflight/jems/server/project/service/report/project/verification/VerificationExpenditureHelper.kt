@@ -45,6 +45,7 @@ fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.calculateCostCate
         other = BigDecimal.ZERO,
         lumpSum = BigDecimal.ZERO,
         unitCost = BigDecimal.ZERO,
+        spfCost = BigDecimal.ZERO,
         sum = BigDecimal.ZERO,
     )
     this.forEach{ (certificate,expenditures) ->
@@ -93,5 +94,6 @@ private fun BudgetCostsCalculationResultFull.plus(adder: BudgetCostsCalculationR
         other = other.plus(adder.other),
         lumpSum = lumpSum.plus(adder.lumpSum),
         unitCost = unitCost.plus(adder.unitCost),
+        spfCost = spfCost.plus(adder.spfCost),
         sum = sum.plus(adder.sum),
     )

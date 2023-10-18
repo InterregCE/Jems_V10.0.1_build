@@ -95,6 +95,13 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                         LEFT JOIN project_partner_budget_external AS externalCosts ON externalCosts.id = externalCostsPeriod.budget_id
                     group by partner_id, period_number) as external_budget
                     ON external_budget.period_number = period.number AND partner.id = external_budget.partnerId
+                left join (
+                    SELECT externalCosts.partner_id as partnerId, spfCostsPeriod.period_number,
+                           sum(externalCostsPeriod.amount) as spfSum
+                    FROM project_partner_budget_spfcost_period AS spfCostsPeriod
+                        LEFT JOIN project_partner_budget_spfcost AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
+                    group by partner_id, period_number) as spf_budget
+                    ON spf_budget.period_number = period.number AND partner.id = spf_budget.partnerId
             WHERE partner.id IN :ids
             GROUP BY partner.id, period.number
             """,
@@ -157,6 +164,14 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                         LEFT JOIN project_partner_budget_external FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS externalCosts ON externalCosts.id = externalCostsPeriod.budget_id
                     group by partner_id, period_number) as external_budget
                     ON external_budget.period_number = period.number AND partner.id = external_budget.partnerId
+                left join (
+                    SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number,
+                           sum(spfCostsPeriod.amount) as spfSum
+                    FROM project_partner_budget_spfcost_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCostsPeriod
+                        LEFT JOIN project_partner_budget_spfcost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCosts
+                            ON spfCosts.id = spfCostsPeriod.budget_id
+                    group by partner_id, period_number) as spf_budget
+                    ON spf_budget.period_number = period.number AND partner.id = spf_budget.partnerId
             WHERE partner.id IN :ids
             GROUP BY partner.id, period.number
             """,
@@ -450,6 +465,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     FROM project_partner_lump_sum
                     WHERE project_partner_id IN :partnerIds GROUP BY project_partner_id
                 ) AS lumpSum ON entity.id = lumpSum.partner_id
+                LEFT JOIN (
+                    SELECT partner_id, SUM(row_sum) AS row_sum
+                    FROM project_partner_budget_spfcost
+                    WHERE partner_id IN :partnerIds GROUP BY partner_id
+                ) AS spfCost ON entity.id = spfCost.partner_id
                 WHERE entity.id IN :partnerIds
                 GROUP BY entity.id
             """,
@@ -511,6 +531,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     FROM project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE project_partner_id IN :partnerIds GROUP BY project_partner_id
                 ) AS lumpSum ON entity.id = lumpSum.partner_id
+                LEFT JOIN (
+                    SELECT partner_id, SUM(row_sum) AS row_sum
+                    FROM project_partner_budget_spfcost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
+                    WHERE partner_id IN :partnerIds GROUP BY partner_id
+                ) AS spfCost ON entity.id = spfCost.partner_id
                 WHERE entity.id IN :partnerIds
                 GROUP BY entity.id
             """,

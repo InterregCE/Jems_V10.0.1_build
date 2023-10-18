@@ -46,9 +46,11 @@ class GetProjectBudget(
         val travelCostsPerPartner =
             persistence.getTravelCosts(partnersById.filter { options[it.key]?.travelAndAccommodationOnStaffCostsFlatRate == null }.keys, projectId, version)
                 .groupByPartnerId()
+        val spfCostsPerPartner = persistence.getSpfCosts(partnersById.keys, projectId, version).groupByPartnerId()
 
         return partnersById.map { (partnerId, partner) ->
             val unitCosts = unitCostsPerPartner[partnerId] ?: BigDecimal.ZERO
+            val spfCosts = spfCostsPerPartner[partnerId] ?: BigDecimal.ZERO
             val lumpSumsCosts = lumpSumContributionPerPartner[partnerId] ?: BigDecimal.ZERO
             val externalCosts = externalCostsPerPartner[partnerId] ?: BigDecimal.ZERO
             val equipmentCosts = equipmentCostsPerPartner[partnerId] ?: BigDecimal.ZERO
@@ -62,6 +64,7 @@ class GetProjectBudget(
                 infrastructureCosts = infrastructureCosts,
                 travelCosts = travelCostsPerPartner[partnerId] ?: BigDecimal.ZERO,
                 staffCosts = staffCostsPerPartner[partnerId] ?: BigDecimal.ZERO,
+                spfCosts = spfCosts,
             ).toPartnerBudget(
                 partner,
                 unitCosts = unitCosts,
@@ -69,6 +72,7 @@ class GetProjectBudget(
                 externalCosts = externalCosts,
                 equipmentCosts = equipmentCosts,
                 infrastructureCosts = infrastructureCosts,
+                spfCosts = spfCosts,
             )
         }
     }
@@ -81,7 +85,8 @@ class GetProjectBudget(
         lumpSumCosts: BigDecimal,
         externalCosts: BigDecimal,
         equipmentCosts: BigDecimal,
-        infrastructureCosts: BigDecimal
+        infrastructureCosts: BigDecimal,
+        spfCosts: BigDecimal,
     ) =
         PartnerBudget(
             partner = partner,
@@ -94,6 +99,7 @@ class GetProjectBudget(
             otherCosts = this.otherCosts,
             lumpSumContribution = lumpSumCosts,
             unitCosts = unitCosts,
+            spfCosts = spfCosts,
             totalCosts = this.totalCosts
         )
 }

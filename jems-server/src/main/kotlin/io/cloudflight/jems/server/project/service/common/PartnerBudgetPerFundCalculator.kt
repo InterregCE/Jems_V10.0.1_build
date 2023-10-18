@@ -27,24 +27,18 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
         partners: List<ProjectPartnerSummary>,
         projectFunds: List<ProgrammeFund>,
         coFinancing: List<PartnerBudgetCoFinancing>,
-        spfCoFinancing: List<PartnerBudgetSpfCoFinancing?>
+        spfCoFinancing: List<PartnerBudgetSpfCoFinancing>,
     ): List<ProjectPartnerBudgetPerFund> {
 
-        val totalEligibleBudgetManagement = coFinancing.sumOf { it.total!! }
-        val totalEligibleBudgetSum =
-            if (spfCoFinancing.any { it?.total != null }) {
-                totalEligibleBudgetManagement.add(
-                    spfCoFinancing
-                        .filter { it?.total != null }
-                        .sumOf { it?.total ?: BigDecimal.ZERO }
-                )
-            } else {
-                totalEligibleBudgetManagement
-            }
+        val coFinancingByPartner = coFinancing.associateBy { it.partner.id!! }
+        val coFinancingSpfByPartner = spfCoFinancing.associateBy { it.partner.id!! }
+
+        val totalEligibleBudgetSum = coFinancingByPartner.values.sumOf { it.total!! }
 
         // add partner lines - (management in case of SPF) costs
-        val tableRowsExceptTotal = coFinancing.map {
+        val tableRowsExceptTotal = coFinancingByPartner.map { (partnerId, it) ->
             val coFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+                .minus(coFinancingSpfByPartner[partnerId]?.total ?: BigDecimal.ZERO)
             val partnerContributions = it.projectPartnerCoFinancingAndContribution?.partnerContributions ?: emptyList()
             ProjectPartnerBudgetPerFund(
                 partner = it.partner,
@@ -63,13 +57,11 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
             )
         }.toMutableList()
 
-        // add lines for SPF costs
-        if (spfCoFinancing.any { it != null }) {
-            spfCoFinancing.forEach {
-                if (it != null) {
-                    val spfCoFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
-                    val partnerContributions = it.projectPartnerCoFinancingAndContribution.partnerContributions
-                    tableRowsExceptTotal.add(
+        // add lines for SPF costs if Call is of type SPF
+        coFinancingSpfByPartner.forEach { (_, it) ->
+            val spfCoFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+            val partnerContributions = it.projectPartnerCoFinancingAndContribution.partnerContributions
+            tableRowsExceptTotal.add(
                         ProjectPartnerBudgetPerFund(
                             partner = it.partner,
                             costType = ProjectPartnerCostType.Spf,
@@ -97,9 +89,7 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
                                 totalEligibleBudgetSum
                             )
                         )
-                    )
-                }
-            }
+            )
         }
 
         val totalBudgetsPerFundTotal = projectFunds.map { fund ->

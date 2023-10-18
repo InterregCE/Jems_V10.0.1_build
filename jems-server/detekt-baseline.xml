@@ -47,9 +47,10 @@
     <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
     <ID>LargeClass:ProjectReportDataProviderImplTest.kt$ProjectReportDataProviderImplTest$Companion</ID>
     <ID>LargeClass:ReportPartnerDataProviderImplTest.kt$ReportPartnerDataProviderImplTest$Companion</ID>
-    <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal )</ID>
+    <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal, spfCosts: BigDecimal, )</ID>
+    <ID>LongParameterList:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget$( coFinancing: PartnerReportCoFinancing, partnerTotal: BigDecimal, partnerSpf: BigDecimal, contributions: ProjectPartnerReportContributionWithSpf, previouslyReportedFastTrack: ReportExpenditureCoFinancingColumn, paymentPaid: Map&lt;Long, BigDecimal&gt;, )</ID>
     <ID>LongParameterList:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
-    <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
+    <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, spfCosts: BigDecimal, )</ID>
     <ID>LongParameterList:GetReportControlDeductionOverviewCalculatorTest.kt$GetReportControlDeductionOverviewCalculatorTest.Companion$( id: Long, partOfSample: Boolean, declaredAmount: BigDecimal, deductedAmount: BigDecimal, certified: BigDecimal, isParked: Boolean, costCategory: ReportBudgetCategory, typologyOfErrorId: Long?, lumpSumId: Long? = null, )</ID>
     <ID>LongParameterList:JemsFileAuditFactory.kt$( context: Any, fileMeta: JemsFileMetadata, location: String, oldValue: String, newValue: String, projectSummary: ProjectSummary, )</ID>
     <ID>LongParameterList:JemsFileAuditFactory.kt$( context: Any, id: Long, type: String, name: String, location: String, projectSummary: ProjectSummary, )</ID>
@@ -621,6 +622,7 @@
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
+    <ID>TooManyFunctions:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
     <ID>TooManyFunctions:JemsFilePersistence.kt$JemsFilePersistence</ID>

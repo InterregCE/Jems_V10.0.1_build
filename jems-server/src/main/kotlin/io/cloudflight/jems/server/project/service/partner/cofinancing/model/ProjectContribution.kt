@@ -13,4 +13,6 @@ interface ProjectContribution {
 
     val amount: BigDecimal?
 
+    fun isNotPartner(): Boolean
+
 }

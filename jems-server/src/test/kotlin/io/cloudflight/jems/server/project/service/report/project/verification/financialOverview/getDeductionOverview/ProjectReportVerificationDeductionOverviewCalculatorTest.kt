@@ -70,6 +70,7 @@ class ProjectReportVerificationDeductionOverviewCalculatorTest: UnitTest() {
                 other = BigDecimal.valueOf(0),
                 lumpSum = BigDecimal.valueOf(0),
                 unitCost = BigDecimal.valueOf(0),
+                spfCost = BigDecimal.valueOf(0),
                 sum = BigDecimal.valueOf(4250),
             )
         }
@@ -176,6 +177,7 @@ class ProjectReportVerificationDeductionOverviewCalculatorTest: UnitTest() {
                 other = BigDecimal.valueOf(0),
                 lumpSum = BigDecimal.valueOf(0),
                 unitCost = BigDecimal.valueOf(0),
+                spfCost = BigDecimal.valueOf(0),
                 sum = BigDecimal.valueOf(2500.00),
             )
         }

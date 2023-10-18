@@ -39,7 +39,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.valueOf(207L),
                 lumpSum = BigDecimal.valueOf(208L),
                 unitCost = BigDecimal.valueOf(209L),
-                sum = BigDecimal.valueOf(1845L),
+                spfCost = BigDecimal.valueOf(210L),
+                sum = BigDecimal.valueOf(2055L),
             ),
             currentlyReported = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(100L),
@@ -51,7 +52,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.valueOf(106L),
                 lumpSum = BigDecimal.valueOf(107L),
                 unitCost = BigDecimal.valueOf(108L),
-                sum = BigDecimal.valueOf(936L),
+                spfCost = BigDecimal.valueOf(109L),
+                sum = BigDecimal.valueOf(1045L),
             ),
             previouslyReported = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(20L),
@@ -63,7 +65,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.valueOf(26L),
                 lumpSum = BigDecimal.valueOf(27L),
                 unitCost = BigDecimal.valueOf(28L),
-                sum = BigDecimal.valueOf(216L),
+                spfCost = BigDecimal.valueOf(29L),
+                sum = BigDecimal.valueOf(245L),
             ),
             currentVerified = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.ZERO,
@@ -75,6 +78,7 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.ZERO,
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
             previouslyVerified = BudgetCostsCalculationResultFull(
@@ -87,7 +91,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.valueOf(26L),
                 lumpSum = BigDecimal.valueOf(27L),
                 unitCost = BigDecimal.valueOf(28L),
-                sum = BigDecimal.valueOf(216L),
+                spfCost = BigDecimal.valueOf(29L),
+                sum = BigDecimal.valueOf(245L),
             )
         )
 
@@ -182,15 +187,25 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 currentVerified = BigDecimal.ZERO,
                 previouslyVerified =  BigDecimal.valueOf(28L)
             ),
-            total = CertificateCostCategoryBreakdownLine(
-                totalEligibleBudget = BigDecimal.valueOf(1845L),
-                previouslyReported = BigDecimal.valueOf(216L),
-                currentReport = BigDecimal.valueOf(936L),
-                totalReportedSoFar = BigDecimal.valueOf(1152L),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(6244L, 2),
-                remainingBudget = BigDecimal.valueOf(693L),
+            spfCost = CertificateCostCategoryBreakdownLine(
+                totalEligibleBudget = BigDecimal.valueOf(210L),
+                previouslyReported = BigDecimal.valueOf(29L),
+                currentReport = BigDecimal.valueOf(109L),
+                totalReportedSoFar = BigDecimal.valueOf(138L),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(65_71L, 2),
+                remainingBudget = BigDecimal.valueOf(72L),
                 currentVerified = BigDecimal.ZERO,
-                previouslyVerified =  BigDecimal.valueOf(216L)
+                previouslyVerified =  BigDecimal.valueOf(29L),
+            ),
+            total = CertificateCostCategoryBreakdownLine(
+                totalEligibleBudget = BigDecimal.valueOf(2055L),
+                previouslyReported = BigDecimal.valueOf(245L),
+                currentReport = BigDecimal.valueOf(1045L),
+                totalReportedSoFar = BigDecimal.valueOf(1290L),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(6277L, 2),
+                remainingBudget = BigDecimal.valueOf(765L),
+                currentVerified = BigDecimal.ZERO,
+                previouslyVerified =  BigDecimal.valueOf(245L),
             ),
         )
 
@@ -285,15 +300,25 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 currentVerified = BigDecimal.ZERO,
                 previouslyVerified = BigDecimal.valueOf(28L)
             ),
-            total = CertificateCostCategoryBreakdownLine(
-                totalEligibleBudget = BigDecimal.valueOf(1845L),
-                previouslyReported = BigDecimal.valueOf(216L),
-                currentReport = BigDecimal.valueOf(486L),
-                totalReportedSoFar = BigDecimal.valueOf(702L),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(3805L, 2),
-                remainingBudget = BigDecimal.valueOf(1143L),
+            spfCost = CertificateCostCategoryBreakdownLine(
+                totalEligibleBudget = BigDecimal.valueOf(210L),
+                previouslyReported = BigDecimal.valueOf(29L),
+                currentReport = BigDecimal.valueOf(59L),
+                totalReportedSoFar = BigDecimal.valueOf(88L),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(41_90L, 2),
+                remainingBudget = BigDecimal.valueOf(122L),
                 currentVerified = BigDecimal.ZERO,
-                previouslyVerified = BigDecimal.valueOf(216L)
+                previouslyVerified = BigDecimal.valueOf(29L),
+            ),
+            total = CertificateCostCategoryBreakdownLine(
+                totalEligibleBudget = BigDecimal.valueOf(2055L),
+                previouslyReported = BigDecimal.valueOf(245L),
+                currentReport = BigDecimal.valueOf(545L),
+                totalReportedSoFar = BigDecimal.valueOf(790L),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(38_44L, 2),
+                remainingBudget = BigDecimal.valueOf(1265L),
+                currentVerified = BigDecimal.ZERO,
+                previouslyVerified = BigDecimal.valueOf(245L),
             ),
         )
 
@@ -353,7 +378,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 other = BigDecimal.valueOf(56L),
                 lumpSum = BigDecimal.valueOf(57L),
                 unitCost = BigDecimal.valueOf(58L),
-                sum = BigDecimal.valueOf(486L),
+                spfCost = BigDecimal.valueOf(59L),
+                sum = BigDecimal.valueOf(545L),
             )
 
         assertThat(service.getSubmittedOrCalculateCurrent(projectId = PROJECT_ID, REPORT_ID))

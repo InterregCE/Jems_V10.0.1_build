@@ -21,6 +21,8 @@ class ProjectPartnerReportCoFinancingEntity(
 
     @field:NotNull
     val percentage: BigDecimal,
+    @field:NotNull
+    val percentageSpf: BigDecimal,
 
     @field:NotNull
     val total: BigDecimal,

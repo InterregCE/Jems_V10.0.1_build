@@ -14,6 +14,7 @@ private fun emptyLine() = BudgetCostsCalculationResultFull(
     other = BigDecimal.ZERO,
     lumpSum = BigDecimal.ZERO,
     unitCost = BigDecimal.ZERO,
+    spfCost = BigDecimal.ZERO,
     sum = BigDecimal.ZERO,
 )
 
@@ -30,6 +31,7 @@ fun Iterable<PerPartnerCostCategoryBreakdownLine>.sumOf(selector: (PerPartnerCos
             other = resultingTotalLine.other.plus(row.other),
             lumpSum = resultingTotalLine.lumpSum.plus(row.lumpSum),
             unitCost = resultingTotalLine.unitCost.plus(row.unitCost),
+            spfCost = resultingTotalLine.spfCost.plus(row.spfCost),
             sum = resultingTotalLine.sum.plus(row.sum),
         )
     }

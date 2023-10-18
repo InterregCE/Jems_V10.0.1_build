@@ -14,6 +14,7 @@ interface BudgetCostsCalculatorService {
         equipmentCosts: BigDecimal,
         infrastructureCosts: BigDecimal,
         travelCosts: BigDecimal,
-        staffCosts: BigDecimal
+        staffCosts: BigDecimal,
+        spfCosts: BigDecimal,
     ): BudgetCostsCalculationResult
 }

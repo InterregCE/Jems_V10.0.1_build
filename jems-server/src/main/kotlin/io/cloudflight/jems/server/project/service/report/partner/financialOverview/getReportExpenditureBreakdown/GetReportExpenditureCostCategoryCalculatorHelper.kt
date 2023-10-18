@@ -106,6 +106,16 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         previouslyReportedParked = previouslyReportedParked.unitCost,
         previouslyValidated = previouslyValidated.unitCost,
     ),
+    spfCost = ExpenditureCostCategoryBreakdownLine(
+        flatRate = null,
+        totalEligibleBudget = totalsFromAF.spfCost,
+        previouslyReported = previouslyReported.spfCost,
+        currentReport = currentlyReported.spfCost,
+        totalEligibleAfterControl = totalEligibleAfterControl.spfCost,
+        currentReportReIncluded = currentlyReportedReIncluded.spfCost,
+        previouslyReportedParked = previouslyReportedParked.spfCost,
+        previouslyValidated = previouslyValidated.spfCost,
+    ),
     total = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
         totalEligibleBudget = totalsFromAF.sum,
@@ -128,6 +138,7 @@ fun ExpenditureCostCategoryBreakdown.fillInCurrent(current: BudgetCostsCalculati
     other.currentReport = current.other
     lumpSum.currentReport = current.lumpSum
     unitCost.currentReport = current.unitCost
+    spfCost.currentReport = current.spfCost
     total.currentReport = current.sum
 }
 
@@ -141,6 +152,7 @@ fun ExpenditureCostCategoryBreakdown.fillInCurrentReIncluded(currentReIncluded: 
     other.currentReportReIncluded = currentReIncluded.other
     lumpSum.currentReportReIncluded = currentReIncluded.lumpSum
     unitCost.currentReportReIncluded = currentReIncluded.unitCost
+    spfCost.currentReportReIncluded = currentReIncluded.spfCost
     total.currentReportReIncluded = currentReIncluded.sum
 }
 
@@ -154,6 +166,7 @@ fun ExpenditureCostCategoryBreakdown.fillInOverviewFields() = apply {
     other.fillInOverviewFields()
     lumpSum.fillInOverviewFields()
     unitCost.fillInOverviewFields()
+    spfCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
 

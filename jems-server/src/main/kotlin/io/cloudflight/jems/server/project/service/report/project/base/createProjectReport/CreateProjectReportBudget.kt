@@ -133,6 +133,7 @@ class CreateProjectReportBudget(
             other = ZERO,
             lumpSum = ZERO,
             unitCost = ZERO,
+            spfCost = ZERO,
             sum = ZERO,
         ),
 
@@ -148,6 +149,7 @@ class CreateProjectReportBudget(
         other = ZERO,
         lumpSum = ZERO,
         unitCost = ZERO,
+        spfCost = ZERO,
         sum = ZERO,
     )
 
@@ -279,6 +281,7 @@ class CreateProjectReportBudget(
             other = budget.sumOf { it.otherCosts },
             lumpSum = budget.sumOf { it.lumpSumContribution },
             unitCost = budget.sumOf { it.unitCosts },
+            spfCost = budget.sumOf { it.spfCosts },
             sum = budget.sumOf { it.totalCosts },
         )
     }

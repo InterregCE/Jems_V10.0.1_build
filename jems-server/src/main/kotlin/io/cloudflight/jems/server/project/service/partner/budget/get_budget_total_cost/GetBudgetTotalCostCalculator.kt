@@ -30,6 +30,7 @@ class GetBudgetTotalCostCalculator(
             fetchTravelCostsOrZero(partnerId, budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate, version)
 
         val staffCostTotal = fetchStaffCostsOrZero(partnerId, budgetOptions?.staffCostsFlatRate, version)
+        val spfCosts = budgetCostsPersistence.getBudgetSpfCostTotal(partnerId, version)
 
         return budgetCostsCalculator.calculateCosts(
             budgetOptions,
@@ -39,7 +40,8 @@ class GetBudgetTotalCostCalculator(
             equipmentCostTotal,
             infrastructureCostTotal,
             travelCostTotal,
-            staffCostTotal
+            staffCostTotal,
+            spfCosts = spfCosts,
         ).totalCosts
     }
 

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
+class GetPartnerBudgetPerPeriodTest : UnitTest() {
 
     private val partner1Id = 1L
     private val partner2Id = 2L
@@ -107,7 +107,8 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             BigDecimal.ZERO,
             BigDecimal.ZERO,
             BigDecimal.ZERO,
-            BigDecimal.ZERO
+            BigDecimal.ZERO,
+            spfCostTotal = BigDecimal.valueOf(478L),
         )
 
         val partnerTotal2 = PartnerTotalBudgetPerCostCategory(
@@ -123,7 +124,8 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             BigDecimal.ZERO,
             BigDecimal.ZERO,
             BigDecimal.ZERO,
-            BigDecimal.ZERO
+            BigDecimal.ZERO,
+            spfCostTotal = BigDecimal.valueOf(426L),
         )
         // partner 1
         val p1budgetPeriod1 = ProjectPartnerBudget(
@@ -259,7 +261,8 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             BigDecimal.ZERO,
             BigDecimal.ZERO,
             BigDecimal.ZERO,
-            BigDecimal.ZERO
+            BigDecimal.ZERO,
+            spfCostTotal = BigDecimal.valueOf(381L),
         )
 
         // partner 2

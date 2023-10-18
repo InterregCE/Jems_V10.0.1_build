@@ -477,7 +477,8 @@ fun ProjectPartnerBudgetPerPeriodRow.toModel() = ProjectPartnerBudget(
     equipmentCostsPerPeriod = equipmentCostsPerPeriod ?: BigDecimal.ZERO,
     externalExpertiseAndServicesCostsPerPeriod = externalExpertiseAndServicesCostsPerPeriod ?: BigDecimal.ZERO,
     infrastructureAndWorksCostsPerPeriod = infrastructureAndWorksCostsPerPeriod ?: BigDecimal.ZERO,
-    unitCostsPerPeriod = unitCostsPerPeriod ?: BigDecimal.ZERO
+    unitCostsPerPeriod = unitCostsPerPeriod ?: BigDecimal.ZERO,
+    spfCostsPerPeriod = spfCostsPerPeriod ?: BigDecimal.ZERO,
 )
 
 fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =

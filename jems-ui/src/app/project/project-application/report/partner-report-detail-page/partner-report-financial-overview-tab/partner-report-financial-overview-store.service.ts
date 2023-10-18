@@ -7,7 +7,7 @@ import {
   ExpenditureCostCategoryBreakdownDTO,
   ExpenditureInvestmentBreakdownDTO,
   ExpenditureLumpSumBreakdownDTO,
-  ExpenditureUnitCostBreakdownDTO,
+  ExpenditureUnitCostBreakdownDTO, ProjectCallSettingsDTO,
   ProjectPartnerReportExpenditureCostsService,
   ProjectPartnerReportFinancialOverviewService,
   ProjectPartnerReportUnitCostDTO,
@@ -141,8 +141,9 @@ export class PartnerReportFinancialOverviewStoreService {
           this.partnerReportExpenditureCostsService.getAvailableLumpSums(Number(partnerId), reportId),
           of(call.lumpSums),
           this.partnerReportExpenditureCostsService.getAvailableUnitCosts(Number(partnerId), reportId),
+          of(call.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF),
         ])),
-        map(([allowedRealCosts, flatRates, lumpSums, lumpSumsFromCall, unitCosts]) => {
+        map(([allowedRealCosts, flatRates, lumpSums, lumpSumsFromCall, unitCosts, isSpf]) => {
           const setting = new Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>();
 
           setting.set(CategoryEnum.StaffCosts,
@@ -161,6 +162,7 @@ export class PartnerReportFinancialOverviewStoreService {
             flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
           setting.set('LumpSum', !!lumpSums.length || !!lumpSumsFromCall.length);
           setting.set('UnitCost', !!unitCosts.length);
+          setting.set('SpfCosts', isSpf);
 
           return setting;
         }),

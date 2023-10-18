@@ -462,6 +462,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             other = dummyCostCategoryLine.copy(remainingBudget = BigDecimal.TEN),
             lumpSum = dummyCostCategoryLine.copy(totalEligibleBudget = BigDecimal.TEN),
             unitCost = dummyCostCategoryLine.copy(previouslyReported = BigDecimal.TEN),
+            spfCost = dummyCostCategoryLine.copy(totalEligibleBudget = BigDecimal.valueOf(15)),
             total = dummyCostCategoryLine.copy(currentReport = BigDecimal.TEN),
         )
 

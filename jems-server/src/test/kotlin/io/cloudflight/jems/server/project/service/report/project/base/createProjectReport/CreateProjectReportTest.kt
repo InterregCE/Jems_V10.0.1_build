@@ -261,6 +261,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(165),
                     lumpSum = BigDecimal.valueOf(175),
                     unitCost = BigDecimal.valueOf(185),
+                    spfCost = BigDecimal.valueOf(190),
                     sum = BigDecimal.valueOf(195),
                 ),
                 currentlyReported = BudgetCostsCalculationResultFull(
@@ -273,6 +274,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(191),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyReported = BudgetCostsCalculationResultFull(
@@ -285,6 +287,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(192),
                     sum = BigDecimal.valueOf(197),
                 ),
                 currentVerified = BudgetCostsCalculationResultFull(
@@ -297,6 +300,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(191),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyVerified = BudgetCostsCalculationResultFull(
@@ -309,6 +313,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(192),
                     sum = BigDecimal.valueOf(197),
                 )
             ),
@@ -508,6 +513,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(165),
                         lumpSum = BigDecimal.valueOf(175),
                         unitCost = BigDecimal.valueOf(185),
+                        spfCost = BigDecimal.valueOf(190),
                         sum = BigDecimal.valueOf(195),
                     ),
                     currentlyReported = BudgetCostsCalculationResultFull(
@@ -520,6 +526,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(166),
                         lumpSum = BigDecimal.valueOf(176),
                         unitCost = BigDecimal.valueOf(186),
+                        spfCost = BigDecimal.valueOf(191),
                         sum = BigDecimal.valueOf(196),
                     ),
                     previouslyReported = BudgetCostsCalculationResultFull(
@@ -532,6 +539,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(167),
                         lumpSum = BigDecimal.valueOf(177),
                         unitCost = BigDecimal.valueOf(187),
+                        spfCost = BigDecimal.valueOf(192),
                         sum = BigDecimal.valueOf(197),
                     ),
                     currentVerified = BudgetCostsCalculationResultFull(
@@ -544,6 +552,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(166),
                         lumpSum = BigDecimal.valueOf(176),
                         unitCost = BigDecimal.valueOf(186),
+                        spfCost = BigDecimal.valueOf(191),
                         sum = BigDecimal.valueOf(196),
                     ),
                     previouslyVerified = BudgetCostsCalculationResultFull(
@@ -556,6 +565,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(167),
                         lumpSum = BigDecimal.valueOf(177),
                         unitCost = BigDecimal.valueOf(187),
+                        spfCost = BigDecimal.valueOf(192),
                         sum = BigDecimal.valueOf(197),
                     )
                 ),

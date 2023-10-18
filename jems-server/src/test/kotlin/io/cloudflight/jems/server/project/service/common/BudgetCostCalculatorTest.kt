@@ -26,7 +26,8 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             externalCosts = 10000.toScaledBigDecimal(),
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
-            staffCosts = BigDecimal.ZERO
+            staffCosts = BigDecimal.ZERO,
+            spfCosts = BigDecimal.valueOf(999L),
         )
 
         Assertions.assertEquals(3000.toScaledBigDecimal(), result.staffCosts)
@@ -43,7 +44,8 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             externalCosts = 10000.toScaledBigDecimal(),
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
-            staffCosts = BigDecimal.ZERO
+            staffCosts = BigDecimal.ZERO,
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(3300.toScaledBigDecimal(), result.staffCosts)
     }
@@ -59,6 +61,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(434.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
@@ -74,6 +77,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(2820.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
@@ -90,6 +94,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
 
         Assertions.assertEquals(BigDecimal.ZERO, result.officeAndAdministrationCosts)
@@ -109,6 +114,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(2530.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
@@ -127,6 +133,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(2713.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
@@ -146,6 +153,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(), // 4000
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(2460.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
@@ -166,6 +174,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(BigDecimal.ZERO, result.otherCosts)
     }
@@ -181,6 +190,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 7500.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(900.toScaledBigDecimal(), result.otherCosts)
     }
@@ -196,6 +206,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(999L),
         )
         Assertions.assertEquals(BigDecimal.ZERO, result.otherCosts)
     }
@@ -211,6 +222,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
             equipmentCosts = 7500.toScaledBigDecimal(),
             infrastructureCosts = 2500.toScaledBigDecimal(),
             staffCosts = 6200.toScaledBigDecimal(),
+            spfCosts = BigDecimal.valueOf(100_33L, 2),
         )
         Assertions.assertEquals(
             BigDecimal.TEN
@@ -220,6 +232,7 @@ internal class BudgetCostCalculatorTest : UnitTest() {
                 .plus(7500.toScaledBigDecimal())
                 .plus(2500.toScaledBigDecimal())
                 .plus(6200.toScaledBigDecimal())
+                .plus(BigDecimal.valueOf(100_33L, 2))
             , result.totalCosts
         )
     }

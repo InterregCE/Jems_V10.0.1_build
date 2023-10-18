@@ -119,6 +119,7 @@ class GetReportControlDeductionOverviewCalculator(
         other = other.minus(subtractor.other),
         lumpSum = lumpSum.minus(subtractor.lumpSum),
         unitCost = unitCost.minus(subtractor.unitCost),
+        spfCost = spfCost.minus(subtractor.spfCost),
         sum = sum.minus(subtractor.sum),
     )
 }

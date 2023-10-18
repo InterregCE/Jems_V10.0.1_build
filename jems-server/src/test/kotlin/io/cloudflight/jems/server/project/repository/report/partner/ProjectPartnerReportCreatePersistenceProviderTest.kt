@@ -61,6 +61,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedFund
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.ProjectPartnerReportContributionWithSpf
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
@@ -94,6 +95,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         private const val DELIVERABLE_ID = 9225L
 
         private val HISTORY_CONTRIBUTION_UUID = UUID.randomUUID()
+        private val HISTORY_CONTRIBUTION_SPF_UUID = UUID.randomUUID()
 
         private val programmeFundEntity = ProgrammeFundEntity(
             id = 1L,
@@ -188,16 +190,30 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                 ),
             ),
             budget = PartnerReportBudget(
-                contributions = listOf(
-                    CreateProjectPartnerReportContribution(
-                        sourceOfContribution = "source text",
-                        legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
-                        idFromApplicationForm = 4L,
-                        historyIdentifier = HISTORY_CONTRIBUTION_UUID,
-                        createdInThisReport = false,
-                        amount = ONE,
-                        previouslyReported = ONE,
-                        currentlyReported = ZERO,
+                contributions = ProjectPartnerReportContributionWithSpf(
+                    contributions = listOf(
+                        CreateProjectPartnerReportContribution(
+                            sourceOfContribution = "source text",
+                            legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
+                            idFromApplicationForm = 4L,
+                            historyIdentifier = HISTORY_CONTRIBUTION_UUID,
+                            createdInThisReport = false,
+                            amount = ONE,
+                            previouslyReported = ONE,
+                            currentlyReported = ZERO,
+                        ),
+                    ),
+                    contributionsSpf = listOf(
+                        CreateProjectPartnerReportContribution(
+                            sourceOfContribution = "source text",
+                            legalStatus = ProjectPartnerContributionStatus.Private,
+                            idFromApplicationForm = 5L,
+                            historyIdentifier = HISTORY_CONTRIBUTION_SPF_UUID,
+                            createdInThisReport = false,
+                            amount = TEN,
+                            previouslyReported = ZERO,
+                            currentlyReported = ONE,
+                        ),
                     ),
                 ),
                 availableLumpSums = listOf(
@@ -245,6 +261,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(16),
                         lumpSum = valueOf(17),
                         unitCost = valueOf(18),
+                        spfCost = valueOf(185L, 1),
                         sum = valueOf(19),
                     ),
                     currentlyReported = BudgetCostsCalculationResultFull(
@@ -257,6 +274,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(26),
                         lumpSum = valueOf(27),
                         unitCost = valueOf(28),
+                        spfCost = valueOf(285L, 1),
                         sum = valueOf(29),
                     ),
                     currentlyReportedParked = BudgetCostsCalculationResultFull(
@@ -269,6 +287,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(76),
                         lumpSum = valueOf(77),
                         unitCost = valueOf(78),
+                        spfCost = valueOf(785L, 1),
                         sum = valueOf(79),
                     ),
                     currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -281,6 +300,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(56),
                         lumpSum = valueOf(57),
                         unitCost = valueOf(58),
+                        spfCost = valueOf(585L, 1),
                         sum = valueOf(59),
                     ),
                     totalEligibleAfterControl = BudgetCostsCalculationResultFull(
@@ -293,6 +313,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(46),
                         lumpSum = valueOf(47),
                         unitCost = valueOf(48),
+                        spfCost = valueOf(485L, 1),
                         sum = valueOf(49),
                     ),
                     previouslyReported = BudgetCostsCalculationResultFull(
@@ -305,6 +326,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(36),
                         lumpSum = valueOf(37),
                         unitCost = valueOf(38),
+                        spfCost = valueOf(385L, 1),
                         sum = valueOf(39),
                     ),
                     previouslyValidated = BudgetCostsCalculationResultFull(
@@ -317,6 +339,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(36),
                         lumpSum = valueOf(37),
                         unitCost = valueOf(38),
+                        spfCost = valueOf(385L, 1),
                         sum = valueOf(39),
                     ),
                     previouslyReportedParked = BudgetCostsCalculationResultFull(
@@ -329,20 +352,21 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         other = valueOf(66),
                         lumpSum = valueOf(67),
                         unitCost = valueOf(68),
+                        spfCost = valueOf(685L, 1),
                         sum = valueOf(69),
                     ),
                 ),
                 previouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
                     fundsSorted = listOf(
                         PreviouslyReportedFund(
-                            fundId = programmeFundEntity.id, percentage = TEN,
+                            fundId = programmeFundEntity.id, percentage = TEN, percentageSpf = valueOf(25L),
                             total = valueOf(100L), previouslyReported = valueOf(25),
                             previouslyPaid = valueOf(35), previouslyValidated = valueOf(16),
                             previouslyReportedParked = valueOf(100),
                             disabled = true,
                         ),
                         PreviouslyReportedFund(
-                            fundId = null, percentage = valueOf(90),
+                            fundId = null, percentage = valueOf(90), percentageSpf = valueOf(75L),
                             total = valueOf(900L), previouslyReported = valueOf(400),
                             previouslyPaid = valueOf(410), previouslyValidated = valueOf(19),
                             previouslyReportedParked = valueOf(100),

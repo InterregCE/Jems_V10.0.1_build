@@ -265,6 +265,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(165),
                     lumpSum = BigDecimal.valueOf(175),
                     unitCost = BigDecimal.valueOf(185),
+                    spfCost = BigDecimal.valueOf(1855L, 1),
                     sum = BigDecimal.valueOf(195),
                 ),
                 currentlyReported = BudgetCostsCalculationResultFull(
@@ -277,6 +278,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(1865L, 1),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyReported = BudgetCostsCalculationResultFull(
@@ -289,6 +291,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(1875L, 1),
                     sum = BigDecimal.valueOf(197),
                 ),
                 currentVerified = BudgetCostsCalculationResultFull(
@@ -301,6 +304,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(1865L, 1),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyVerified = BudgetCostsCalculationResultFull(
@@ -313,6 +317,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(1875L, 1),
                     sum = BigDecimal.valueOf(197),
                 )
             ),

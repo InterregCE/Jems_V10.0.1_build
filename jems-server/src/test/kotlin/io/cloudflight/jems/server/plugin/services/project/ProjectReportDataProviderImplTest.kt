@@ -636,6 +636,14 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             other = costCategoryLine,
             lumpSum = costCategoryLine,
             unitCost = costCategoryLine,
+            spfCost = CertificateCostCategoryBreakdownLine(
+                totalEligibleBudget = BigDecimal.valueOf(15),
+                previouslyReported = BigDecimal.valueOf(16),
+                currentReport = BigDecimal.valueOf(17),
+                totalReportedSoFar = BigDecimal.valueOf(18),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(19),
+                remainingBudget = BigDecimal.valueOf(20),
+            ),
             total = costCategoryLine
         )
         private val expectedCertificateCostCategoryBreakdown = CertificateCostCategoryBreakdownData(
@@ -648,6 +656,14 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             other = expectedCostCategoryLine,
             lumpSum = expectedCostCategoryLine,
             unitCost = expectedCostCategoryLine,
+            spfCost = CertificateCostCategoryBreakdownLineData(
+                totalEligibleBudget = BigDecimal.valueOf(15),
+                previouslyReported = BigDecimal.valueOf(16),
+                currentReport = BigDecimal.valueOf(17),
+                totalReportedSoFar = BigDecimal.valueOf(18),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(19),
+                remainingBudget = BigDecimal.valueOf(20),
+            ),
             total = expectedCostCategoryLine
         )
 
@@ -663,6 +679,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             other = BigDecimal.valueOf(13),
             lumpSum = BigDecimal.valueOf(12),
             unitCost = BigDecimal.valueOf(11),
+            spfCost = BigDecimal.valueOf(105, 1),
             sum = BigDecimal.valueOf(10),
         )
         private val deductedBudget = BudgetCostsCalculationResultFull(
@@ -675,6 +692,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             other = BigDecimal.valueOf(9),
             lumpSum = BigDecimal.valueOf(8),
             unitCost = BigDecimal.valueOf(7),
+            spfCost = BigDecimal.valueOf(65, 1),
             sum = BigDecimal.valueOf(6),
         )
 
@@ -737,9 +755,31 @@ class ProjectReportDataProviderImplTest : UnitTest() {
         )
 
         private val expectedPerPartnerCostCategoryBreakdown = CertificateCostCategoryBreakdownPerPartnerData(
-            partners = expectedPerPartnerCostCategoryBreakdownLines.sortedBy { it.partnerNumber },
-            totalCurrent = perPartnerCostCategoryBreakdownLines.sumOf { it.current }.toDataModel(),
-            totalDeduction = perPartnerCostCategoryBreakdownLines.sumOf { it.deduction }.toDataModel()
+            partners = expectedPerPartnerCostCategoryBreakdownLines,
+            totalCurrent = BudgetCostsCalculationResultFullData(
+                staff = BigDecimal.valueOf(19),
+                office = BigDecimal.valueOf(18),
+                travel = BigDecimal.valueOf(17),
+                external = BigDecimal.valueOf(16),
+                equipment = BigDecimal.valueOf(15),
+                infrastructure = BigDecimal.valueOf(14),
+                other = BigDecimal.valueOf(13),
+                lumpSum = BigDecimal.valueOf(12),
+                unitCost = BigDecimal.valueOf(11),
+                sum = BigDecimal.valueOf(10),
+            ),
+            totalDeduction = BudgetCostsCalculationResultFullData(
+                staff = BigDecimal.valueOf(10),
+                office = BigDecimal.valueOf(15),
+                travel = BigDecimal.valueOf(13),
+                external = BigDecimal.valueOf(14),
+                equipment = BigDecimal.valueOf(14),
+                infrastructure = BigDecimal.valueOf(12),
+                other = BigDecimal.valueOf(9),
+                lumpSum = BigDecimal.valueOf(8),
+                unitCost = BigDecimal.valueOf(7),
+                sum = BigDecimal.valueOf(6),
+            ),
         )
 
 //        Investment breakdown

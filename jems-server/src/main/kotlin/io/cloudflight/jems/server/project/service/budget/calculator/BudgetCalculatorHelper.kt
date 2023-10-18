@@ -41,6 +41,7 @@ fun calculateBudget(options: ProjectPartnerBudgetOptions, byCategory: Map<Budget
         other = sums.giveMe(BudgetCostCategory.Other),
         lumpSum = sums.giveMe(BudgetCostCategory.LumpSum),
         unitCost = sums.giveMe(BudgetCostCategory.UnitCost),
+        spfCost = sums.giveMe(BudgetCostCategory.SpfCost),
         sum = sums.values.sumOf { it },
     )
 }

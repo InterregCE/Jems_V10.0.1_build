@@ -23,7 +23,9 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -35,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBudget
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
@@ -144,6 +147,23 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             ),
         )
 
+        private val coFinancingSpf = listOf(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = ProgrammeFund(
+                    id = 7748L,
+                    selected = true,
+                    type = ProgrammeFundType.ERDF,
+                ),
+                percentage = BigDecimal.valueOf(15),
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                fund = null,
+                percentage = BigDecimal.valueOf(85),
+            ),
+        )
+
         private val contributions = listOf(
             ProjectPartnerContribution(
                 id = 200L,
@@ -151,6 +171,15 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 status = ProjectPartnerContributionStatusDTO.Private,
                 amount = BigDecimal.TEN,
                 isPartner = true,
+            ),
+        )
+
+        private val contributionsSpf = listOf(
+            ProjectPartnerContributionSpf(
+                id = 210L,
+                name = "private id=210 amount=15",
+                status = ProjectPartnerContributionStatusDTO.Private,
+                amount = BigDecimal.valueOf(15),
             ),
         )
 
@@ -361,7 +390,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { report.reportNumber } returns 7
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
         val coFinancingWrapper = ProjectPartnerCoFinancingAndContribution(coFinancing, contributions, "")
+        val coFinancingSpfWrapper = ProjectPartnerCoFinancingAndContributionSpf(coFinancingSpf, contributionsSpf)
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns coFinancingWrapper
+        every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "14.2.0") } returns coFinancingSpfWrapper
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
@@ -370,8 +401,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
         val investmentSlot = slot<List<PartnerReportInvestmentSummary>>()
+        val coFinancingSlot = slot<PartnerReportCoFinancing>()
         every { createProjectPartnerReportBudget
-            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", coFinancingWrapper, capture(investmentSlot))
+            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", capture(coFinancingSlot), capture(investmentSlot))
         } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
@@ -398,6 +430,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         )
 
         assertThat(partnerSummary.captured).isEqualTo(partnerSummary(partnerId))
+        assertThat(coFinancingSlot.captured).isEqualTo(PartnerReportCoFinancing(coFinancingWrapper, coFinancingSpfWrapper))
     }
 
     @Test
@@ -412,8 +445,12 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.reportNumber } returns 9
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
-        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns
-            ProjectPartnerCoFinancingAndContribution(coFinancing, emptyList(), "")
+
+        val coFin = mockk<ProjectPartnerCoFinancingAndContribution>()
+        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns coFin
+        val coFinSpf = mockk<ProjectPartnerCoFinancingAndContributionSpf>()
+        every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "14.2.0") } returns coFinSpf
+
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
@@ -422,8 +459,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
         val investmentSlot = slot<List<PartnerReportInvestmentSummary>>()
+        val slotCoFinancing = slot<PartnerReportCoFinancing>()
         every { createProjectPartnerReportBudget
-            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", any(), capture(investmentSlot))
+            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", capture(slotCoFinancing), capture(investmentSlot))
         } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
@@ -450,6 +488,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         )
 
         assertThat(partnerSummary.captured).isEqualTo(partnerSummary(partnerId))
+        assertThat(slotCoFinancing.captured).isEqualTo(PartnerReportCoFinancing(coFin, coFinSpf))
     }
 
     @ParameterizedTest(name = "cannot create report when status {0}")

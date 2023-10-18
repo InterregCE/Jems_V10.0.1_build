@@ -49,6 +49,8 @@ export class ProjectReportCostCategoryComponent implements OnChanges {
         [{ ...this.breakdown.lumpSum, translation: 'project.partner.budget.lumpSum'}] : []),
       ...(this.allowedCostCategories.get('UnitCost') ?
         [{ ...this.breakdown.unitCost, translation: 'project.partner.budget.unitCosts'}] : []),
+      ...(this.allowedCostCategories.get('SpfCosts') ?
+        [{ ...this.breakdown.spfCost, translation: 'project.partner.spf.cost.type.spf'}] : []),
     ];
     this.displayedColumns = [...this.columnsAvailable]
         .filter(column => this.isVerified || !this.verifiedColumns.includes(column));

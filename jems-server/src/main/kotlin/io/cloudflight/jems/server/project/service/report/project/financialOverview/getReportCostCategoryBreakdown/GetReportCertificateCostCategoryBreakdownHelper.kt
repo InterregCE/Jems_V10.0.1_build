@@ -71,6 +71,13 @@ fun ReportCertificateCostCategory.toLinesModel() = CertificateCostCategoryBreakd
         currentVerified = currentVerified.unitCost,
         previouslyVerified = previouslyVerified.unitCost
     ),
+    spfCost = CertificateCostCategoryBreakdownLine(
+        totalEligibleBudget = totalsFromAF.spfCost,
+        previouslyReported = previouslyReported.spfCost,
+        currentReport = currentlyReported.spfCost,
+        currentVerified = currentVerified.spfCost,
+        previouslyVerified = previouslyVerified.spfCost,
+    ),
     total = CertificateCostCategoryBreakdownLine(
         totalEligibleBudget = totalsFromAF.sum,
         previouslyReported = previouslyReported.sum,
@@ -90,6 +97,7 @@ fun CertificateCostCategoryBreakdown.fillInCurrent(current: BudgetCostsCalculati
     other.currentReport = current.other
     lumpSum.currentReport = current.lumpSum
     unitCost.currentReport = current.unitCost
+    spfCost.currentReport = current.spfCost
     total.currentReport = current.sum
 }
 
@@ -103,6 +111,7 @@ fun CertificateCostCategoryBreakdown.fillInOverviewFields() = apply {
     other.fillInOverviewFields()
     lumpSum.fillInOverviewFields()
     unitCost.fillInOverviewFields()
+    spfCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
 

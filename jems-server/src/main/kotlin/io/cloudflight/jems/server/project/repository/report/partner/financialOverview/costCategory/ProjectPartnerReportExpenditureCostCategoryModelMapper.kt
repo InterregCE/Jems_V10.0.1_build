@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.financialOvervie
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import java.math.BigDecimal
 
 fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpenditureCostCategory(
     options = ProjectPartnerBudgetOptions(
@@ -24,6 +25,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherTotal,
         lumpSum = lumpSumTotal,
         unitCost = unitCostTotal,
+        spfCost = spfCostTotal,
         sum = sumTotal,
     ),
     currentlyReported = BudgetCostsCalculationResultFull(
@@ -36,6 +38,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrent,
         lumpSum = lumpSumCurrent,
         unitCost = unitCostCurrent,
+        spfCost = BigDecimal.ZERO,
         sum = sumCurrent,
     ),
     currentlyReportedParked = BudgetCostsCalculationResultFull(
@@ -48,6 +51,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrentParked,
         lumpSum = lumpSumCurrentParked,
         unitCost = unitCostCurrentParked,
+        spfCost = BigDecimal.ZERO,
         sum = sumCurrentParked,
     ),
     currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -60,6 +64,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrentReIncluded,
         lumpSum = lumpSumCurrentReIncluded,
         unitCost = unitCostCurrentReIncluded,
+        spfCost = BigDecimal.ZERO,
         sum = sumCurrentReIncluded,
     ),
     totalEligibleAfterControl = BudgetCostsCalculationResultFull(
@@ -72,6 +77,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherTotalEligibleAfterControl,
         lumpSum = lumpSumTotalEligibleAfterControl,
         unitCost = unitCostTotalEligibleAfterControl,
+        spfCost = BigDecimal.ZERO,
         sum = sumTotalEligibleAfterControl,
     ),
     previouslyReported = BudgetCostsCalculationResultFull(
@@ -84,6 +90,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyReported,
         lumpSum = lumpSumPreviouslyReported,
         unitCost = unitCostPreviouslyReported,
+        spfCost = BigDecimal.ZERO,
         sum = sumPreviouslyReported,
     ),
     previouslyValidated = BudgetCostsCalculationResultFull(
@@ -96,6 +103,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyValidated,
         lumpSum = lumpSumPreviouslyValidated,
         unitCost = unitCostPreviouslyValidated,
+        spfCost = BigDecimal.ZERO,
         sum = sumPreviouslyValidated,
     ),
     previouslyReportedParked = BudgetCostsCalculationResultFull(
@@ -108,6 +116,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyReportedParked,
         lumpSum = lumpSumPreviouslyReportedParked,
         unitCost = unitCostPreviouslyReportedParked,
+        spfCost = BigDecimal.ZERO,
         sum = sumPreviouslyReportedParked,
     ),
 )
