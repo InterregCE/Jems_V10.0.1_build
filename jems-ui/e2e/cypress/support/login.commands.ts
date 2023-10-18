@@ -38,6 +38,7 @@ Cypress.Commands.add('createUser', (user, creatingUserEmail?: string) => {
       headers: {'Content-Type': 'application/json'},
       body: Cypress.env('defaultPassword')
     });
+    user.id = response.body.id;
     cy.wrap(response.body.id).as('userId');
   });
   if (creatingUserEmail) {
