@@ -87,7 +87,7 @@ class UpdateProjectAuditTest: UnitTest() {
         )
 
         every { projectAuditAndControlValidator.validateData(any()) } just Runs
-        every { auditControlPersistence.findByIdAndProjectId(auditControlId = AUDIT_CONTROL_ID, projectId = PROJECT_ID) } returns auditControl
+        every { auditControlPersistence.getByIdAndProjectId(auditControlId = AUDIT_CONTROL_ID, projectId = PROJECT_ID) } returns auditControl
 
         val auditControlSlot = slot<ProjectAuditControl>()
         every { auditControlPersistence.saveAuditControl(capture(auditControlSlot)) } returns expectedAuditControl

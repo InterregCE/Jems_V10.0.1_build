@@ -11,6 +11,8 @@ enum class JemsFileTypeDTO {
 
     Project,
       Report,
+        Corrections,
+          AuditControl,
         ProjectReport,
           ProjectResult,
           WorkPlanProjectReport,

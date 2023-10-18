@@ -48,7 +48,7 @@ class GetProjectAuditControlDetailsTest: UnitTest() {
     fun getProjectAuditDetails() {
 
         every {
-            auditControlPersistence.findByIdAndProjectId(
+            auditControlPersistence.getByIdAndProjectId(
                 auditControlId = AUDIT_CONTROL_ID,
                 projectId = PROJECT_ID
             )

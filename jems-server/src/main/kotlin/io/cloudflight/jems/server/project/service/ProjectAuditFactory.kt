@@ -391,6 +391,21 @@ fun projectAuditControlCreated(
     )
 }
 
+fun projectAuditControlClosed(
+    context: Any,
+    projectSummary: ProjectSummary,
+    auditControl: ProjectAuditControl
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CLOSED)
+            .project(projectSummary)
+            .description("Audit/control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed")
+            .build()
+    )
+}
+
+
 private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {
         if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"

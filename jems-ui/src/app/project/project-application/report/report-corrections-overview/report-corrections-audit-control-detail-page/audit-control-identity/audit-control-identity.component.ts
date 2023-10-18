@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {combineLatest, Observable, of} from 'rxjs';
-import {AuditControlDTO, ProjectAuditControlUpdateDTO} from '@cat/api';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {AuditControlDTO, ProjectAuditControlUpdateDTO, UserRoleCreateDTO, UserRoleDTO} from '@cat/api';
 import {
   ReportCorrectionsAuditControlDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.store';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
@@ -12,6 +12,9 @@ import {
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-identity/audit-control-identity.constants';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {Alert} from '@common/components/forms/alert';
+import {APIError} from '@common/models/APIError';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-audit-control-identity',
@@ -22,7 +25,11 @@ import {ActivatedRoute} from '@angular/router';
 export class AuditControlIdentityComponent {
 
   constants = AuditControlConstants;
+  Alert = Alert;
+  PermissionsEnum = PermissionsEnum;
 
+  pendingAction$ = new BehaviorSubject(false);
+  error$ = new BehaviorSubject<APIError | null>(null);
   data$: Observable<{
     projectId: number;
     auditControl: AuditControlDTO;
@@ -53,8 +60,9 @@ export class AuditControlIdentityComponent {
       pageStore.projectId$,
       pageStore.auditControl$,
       pageStore.canEdit$,
+      pageStore.canClose$,
     ]).pipe(
-      map(([projectId, auditControl, canEdit]) => ({projectId, auditControl, canEdit})),
+      map(([projectId, auditControl, canEdit, canClose]) => ({projectId, auditControl, canEdit, canClose})),
       tap(data => this.resetForm(data.auditControl, data.canEdit)),
       tap(data => {
         this.isCreate = !data.auditControl.id;
@@ -91,11 +99,32 @@ export class AuditControlIdentityComponent {
       ).subscribe();
   }
 
+  closeAuditControl(projectId: number, auditControlId: number) {
+    this.pendingAction$.next(true)
+    this.pageStore.closeAuditControl(projectId, auditControlId).pipe(
+      take(1),
+      tap(()=>this.redirectToCorrections(projectId)),
+      catchError(error => this.showErrorMessage(error.error$)),
+      finalize(() => this.pendingAction$.next(false)),
+    ).subscribe();
+  }
+
   redirectToCorrections(projectId: number) {
     this.router.navigate([`/app/project/detail/${projectId}/corrections`]);
   }
 
   redirectToDetails(id: number) {
     this.router.navigate([`../auditControl/${id}`], {relativeTo: this.activatedRoute});
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      if (this.error$.value?.id === error.id) {
+        this.error$.next(null);
+      }
+    }, 10000);
+
+    return of(null);
   }
 }

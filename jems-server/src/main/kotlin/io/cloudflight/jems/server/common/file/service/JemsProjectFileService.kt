@@ -29,6 +29,9 @@ class JemsProjectFileService(
             JemsFileType.PaymentAttachment,
             JemsFileType.PaymentAdvanceAttachment,
 
+            // Corrections
+            JemsFileType.AuditControl,
+
             // Project Report
             JemsFileType.ProjectReport,
             JemsFileType.ProjectResult,

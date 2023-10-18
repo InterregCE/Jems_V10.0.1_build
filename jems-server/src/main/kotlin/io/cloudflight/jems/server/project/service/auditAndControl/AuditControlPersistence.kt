@@ -9,11 +9,13 @@ interface AuditControlPersistence {
 
     fun saveAuditControl(auditControl: ProjectAuditControl): ProjectAuditControl
 
-    fun findByIdAndProjectId(auditControlId: Long, projectId: Long ): ProjectAuditControl
+    fun getByIdAndProjectId(auditControlId: Long, projectId: Long ): ProjectAuditControl
 
     fun findAllProjectAudits(projectId: Long, pageable: Pageable): Page<ProjectAuditControl>
 
     fun updateProjectAuditStatus( projectId: Long, auditControlId: Long, auditStatus: AuditStatus): ProjectAuditControl
 
     fun countAuditsForProject(projectId: Long): Long
+
+    fun existsByIdAndProjectId(auditControlId: Long, projectId: Long): Boolean
 }

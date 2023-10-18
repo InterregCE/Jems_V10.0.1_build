@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.common.validator
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate

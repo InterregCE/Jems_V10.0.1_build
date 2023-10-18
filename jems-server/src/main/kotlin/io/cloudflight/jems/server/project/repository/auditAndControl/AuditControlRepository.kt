@@ -11,7 +11,9 @@ interface AuditControlRepository: JpaRepository<AuditControlEntity, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<AuditControlEntity>
 
-    fun findByIdAndProjectId(auditControlId: Long, projectId: Long): AuditControlEntity
+    fun getByIdAndProjectId(auditControlId: Long, projectId: Long): AuditControlEntity
 
     fun countAllByProjectId(projectId: Long): Long
+
+    fun existsByIdAndProjectId(auditControlId: Long, projectId: Long): Boolean
 }

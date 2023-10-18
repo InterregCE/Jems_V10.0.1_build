@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.service.auditAndControl
 
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.createProjectAudit.MaxNumberOfAuditsReachedException
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControlUpdate
 import org.springframework.stereotype.Service
 
@@ -14,6 +17,11 @@ class ProjectAuditAndControlValidator(
         private const val AUDIT_COMMENT_MAX_LENGTH = 2000
     }
 
+    fun verifyAuditControlOngoing(auditControl: ProjectAuditControl) {
+        if (auditControl.status != AuditStatus.Ongoing) {
+            throw AuditControlNotOngoingException()
+        }
+    }
 
     fun validateMaxNumberOfAudits(numberOfExistingAudits: Long) {
         if (numberOfExistingAudits >= MAX_NUMBER_OF_AUDITS) {

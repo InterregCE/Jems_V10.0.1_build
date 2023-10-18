@@ -18,6 +18,13 @@
     <div class="mb-3 status-wrapper" *ngIf="!isCreate">
         <span class="status-label">{{'common.status' | translate}}</span>
         <span class="ml-2"><jems-audit-control-status [status]="data.auditControl.status"></jems-audit-control-status></span>
+        <jems-pending-button *ngIf="data.canEdit" class="ml-2"
+                             [pending]="pendingAction$ | async"
+                             [disabled]="!data.canClose"
+                             (clicked)="closeAuditControl(data.projectId, data.auditControl?.id)">
+            {{'project.application.reporting.corrections.close.audit' | translate}}
+        </jems-pending-button>
+        <jems-context-info *ngIf="!data.canClose" infoPosition="right" infoText="{{'project.application.reporting.corrections.close.audit.info' | translate}}"></jems-context-info>
     </div>
 
     <form [formGroup]="form" jemsFormLayout>
@@ -142,6 +149,12 @@
                                   label='Comment'>
         </jems-expandable-textarea>
     </form>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+    </jems-alert>
 
 </jems-form>
 

@@ -16,6 +16,6 @@ class GetProjectAuditControlDetails(
     @Transactional
     @ExceptionWrapper(GetProjectAuditDetailsException::class)
     override fun getDetails(projectId: Long, auditId: Long): ProjectAuditControl {
-        return auditControlPersistence.findByIdAndProjectId(projectId = projectId, auditControlId = auditId)
+        return auditControlPersistence.getByIdAndProjectId(projectId = projectId, auditControlId = auditId) ?: throw AuditControlNotFound()
     }
 }

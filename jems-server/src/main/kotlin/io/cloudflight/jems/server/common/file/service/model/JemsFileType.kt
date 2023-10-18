@@ -15,6 +15,9 @@ enum class JemsFileType(
 
     Project(null, true, "application"),
       Report(Project, false),
+        Corrections(Report, false),
+            AuditControl(Corrections, true),
+
         ProjectReport(Report, true),
           ProjectResult(ProjectReport, true),
           WorkPlanProjectReport(ProjectReport, false),

@@ -18,5 +18,7 @@ interface ProjectReportFilePersistence {
 
     fun saveVerificationCertificateFile(file: JemsFileCreate): JemsFile
 
+    fun saveAuditControlFile(file: JemsFileCreate): JemsFile
+
     fun countProjectReportVerificationCertificates(projectId: Long, reportId: Long): Long
 }

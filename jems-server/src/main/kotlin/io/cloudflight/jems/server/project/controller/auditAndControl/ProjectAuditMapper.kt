@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControlUpdate
@@ -36,3 +37,5 @@ fun ProjectAuditControl.toDto() = AuditControlDTO(
     totalCorrectionsAmount = totalCorrectionsAmount,
     comment = comment
 )
+
+fun AuditStatus.toDto() = AuditStatusDTO.valueOf(this.name)

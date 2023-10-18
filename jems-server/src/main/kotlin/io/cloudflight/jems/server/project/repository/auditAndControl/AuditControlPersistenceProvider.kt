@@ -21,8 +21,8 @@ class AuditControlPersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun findByIdAndProjectId(auditControlId: Long, projectId: Long): ProjectAuditControl =
-        auditControlRepository.findByIdAndProjectId(
+    override fun getByIdAndProjectId(auditControlId: Long, projectId: Long): ProjectAuditControl =
+        auditControlRepository.getByIdAndProjectId(
             auditControlId = auditControlId,
             projectId = projectId
         ).toModel()
@@ -34,7 +34,7 @@ class AuditControlPersistenceProvider(
 
     @Transactional
     override fun updateProjectAuditStatus(projectId: Long, auditControlId: Long, auditStatus: AuditStatus): ProjectAuditControl {
-        return auditControlRepository.findByIdAndProjectId(auditControlId = auditControlId, projectId = projectId).apply {
+        return auditControlRepository.getByIdAndProjectId(auditControlId = auditControlId, projectId = projectId).apply {
             status = auditStatus
         }.toModel()
     }
@@ -42,4 +42,8 @@ class AuditControlPersistenceProvider(
     @Transactional(readOnly = true)
     override fun countAuditsForProject(projectId: Long): Long =
         auditControlRepository.countAllByProjectId(projectId)
+
+    @Transactional(readOnly = true)
+    override fun existsByIdAndProjectId(auditControlId: Long, projectId: Long): Boolean =
+        auditControlRepository.existsByIdAndProjectId(auditControlId, projectId)
 }

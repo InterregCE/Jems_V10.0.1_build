@@ -595,6 +595,7 @@ import { ReportCorrectionsAuditControlDetailPageComponent } from './project-appl
 import { ReportCorrectionsAuditControlCreatePageComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-create-page/report-corrections-audit-control-create-page.component';
 import { AuditControlIdentityComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-identity/audit-control-identity.component';
 import { AuditControlStatusComponent } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-status/audit-control-status.component';
+import { AuditControlAttachmentsComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-attachments/audit-control-attachments.component';
 
 @NgModule({
   declarations: [
@@ -801,6 +802,7 @@ import { AuditControlStatusComponent } from '@project/project-application/report
     ReportCorrectionsAuditControlCreatePageComponent,
     AuditControlIdentityComponent,
     AuditControlStatusComponent,
+    AuditControlAttachmentsComponent,
   ],
   imports: [
     SharedModule,

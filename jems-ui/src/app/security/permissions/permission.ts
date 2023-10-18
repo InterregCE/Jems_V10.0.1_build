@@ -243,7 +243,7 @@ export class Permission {
           editPermissions: ['ProjectMonitorAuditAndControlEdit'],
         },
         {
-          name: 'project.application.reporting.corrections.close.audit.control',
+          name: 'project.application.reporting.corrections.close.audit',
           mode: PermissionMode.TOGGLE_EDIT,
           editPermissions: ['ProjectMonitorCloseAuditControl'],
         },
