@@ -73,6 +73,10 @@ class ProjectReportFilePersistenceProvider(
     override fun saveVerificationCertificateFile(file: JemsFileCreate): JemsFile =
         fileService.persistFile(file)
 
+    @Transactional
+    override fun saveAuditControlFile(file: JemsFileCreate): JemsFile =
+        fileService.persistFile(file)
+
     @Transactional(readOnly = true)
     override fun countProjectReportVerificationCertificates(projectId: Long, reportId: Long): Long {
         val pathPrefix = JemsFileType.ProjectReport.generatePath(projectId, reportId)

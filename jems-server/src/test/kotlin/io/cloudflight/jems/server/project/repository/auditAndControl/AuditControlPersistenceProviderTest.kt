@@ -111,13 +111,13 @@ class AuditControlPersistenceProviderTest: UnitTest() {
     @Test
     fun `project audit is found and mapped`() {
         every {
-            auditControlRepository.findByIdAndProjectId(
+            auditControlRepository.getByIdAndProjectId(
                 auditControlId = AUDIT_CONTROL_ID,
                 projectId = PROJECT_ID
             )
         } returns auditControlEntity
 
-        assertThat(auditControlPersistenceProvider.findByIdAndProjectId(
+        assertThat(auditControlPersistenceProvider.getByIdAndProjectId(
             auditControlId = AUDIT_CONTROL_ID,
             projectId = PROJECT_ID )).isEqualTo(expectedAudit)
     }

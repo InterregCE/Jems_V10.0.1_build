@@ -19,6 +19,10 @@ annotation class CanViewProjectAuditAndControl
 @PreAuthorize("@projectAuditControlAuthorization.canEditAuditAndControl(#projectId)")
 annotation class CanEditProjectAuditAndControl
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuditControlAuthorization.canCloseAuditAndControl(#projectId)")
+annotation class CanCloseProjectAuditAndControl
+
 @Component
 class ProjectAuditControlAuthorization(
     override val securityService: SecurityService,
@@ -54,6 +58,10 @@ class ProjectAuditControlAuthorization(
         // controllers
         val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
         return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlEdit)
+    }
+
+    fun canCloseAuditAndControl(projectId: Long): Boolean {
+        return canEditAuditAndControl(projectId) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorCloseAuditControl)
     }
 }
 

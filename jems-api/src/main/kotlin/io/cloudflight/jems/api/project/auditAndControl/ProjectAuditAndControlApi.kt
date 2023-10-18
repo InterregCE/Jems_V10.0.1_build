@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.auditAndControl
 
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditControlDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 interface ProjectAuditAndControlApi {
 
     companion object {
-        private const val ENDPOINT_API_PROJECT_AUDIT_CONTROL = "/api/project/{projectId}/audit"
+        const val ENDPOINT_API_PROJECT_AUDIT_CONTROL = "/api/project/{projectId}/audit"
     }
 
     @ApiOperation("Create new project audit/control")
@@ -51,4 +52,7 @@ interface ProjectAuditAndControlApi {
     @GetMapping("$ENDPOINT_API_PROJECT_AUDIT_CONTROL/{auditControlId}")
     fun getAuditDetail(@PathVariable projectId: Long, @PathVariable auditControlId: Long): AuditControlDTO
 
+    @ApiOperation("Close audit/control")
+    @PostMapping("$ENDPOINT_API_PROJECT_AUDIT_CONTROL/{auditControlId}/close")
+    fun closeAuditControl(@PathVariable projectId: Long, @PathVariable auditControlId: Long): AuditStatusDTO
 }

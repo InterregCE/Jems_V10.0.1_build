@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {PageAuditControlDTO, ProjectAuditAndControlService, ProjectPartnerReportDTO, UserRoleDTO} from '@cat/api';
+import {PageAuditControlDTO, ProjectAuditAndControlService, UserRoleDTO} from '@cat/api';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
@@ -50,7 +50,7 @@ export class ReportCorrectionsOverviewStore {
         this.auditControlService.listAuditsForProject(projectId, page, size, sort).pipe(
           catchError(() => {
             this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
-            return of({} as ProjectPartnerReportDTO);
+            return of({} as PageAuditControlDTO);
           })
         )
       ),

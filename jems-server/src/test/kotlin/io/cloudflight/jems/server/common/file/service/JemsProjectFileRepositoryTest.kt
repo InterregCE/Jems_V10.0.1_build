@@ -106,6 +106,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "AuditControl",
+
         "ProjectReport",
         "ProjectResult",
         "ActivityProjectReport",
@@ -183,6 +185,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     @EnumSource(value = JemsFileType::class, names = [
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
+
+        "AuditControl",
 
         "ProjectReport",
         "ProjectResult",

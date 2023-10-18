@@ -28,7 +28,7 @@ class UpdateProjectAuditControl(
         projectAuditAndControlValidator.validateData(auditControlData)
 
         val existingAuditControl =
-            auditControlPersistence.findByIdAndProjectId(auditControlId = auditControlId, projectId = projectId)
+            auditControlPersistence.getByIdAndProjectId(auditControlId = auditControlId, projectId = projectId)
         validateAuditControlStatus(existingAuditControl)
 
         return auditControlPersistence.saveAuditControl(
