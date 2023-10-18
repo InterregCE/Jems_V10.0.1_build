@@ -42,10 +42,11 @@
                     <div jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
                         <div class="column-project-id">
                             <mat-form-field class="w-100">
-                                <mat-label>{{'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate}}</mat-label>
                                 <input matInput required name="projectCustomIdentifier"
+                                       [placeholder]="'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifier"
                                        [matAutocomplete]="projectCustomIdentifier">
+
                                 <mat-autocomplete #projectCustomIdentifier="matAutocomplete"
                                                   [displayWith]="displayProjectIdentifier"
                                                   (optionSelected)="projectSelected($event.option?.value)">
@@ -59,6 +60,7 @@
                                             [messages]="constants.inputErrorMessages">
                                     </jems-form-field-errors>
                                 </mat-error>
+
                             </mat-form-field>
                         </div>
 
@@ -74,7 +76,8 @@
                                             (selectionChange)="setFundsAndContributionData($event.value)"
                                             [compareWith]="getPartnerToDisplay"
                                             [matTooltip]="partnerSelect.triggerValue"
-                                            placeholder="{{'payments.advance.payments.detail.partner.dropdown.placeholder' | translate}}">
+                                            [placeholder]="'payments.advance.payments.detail.partner.dropdown.placeholder' | translate">
+
                                     <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
                                         {{partner.partnerSummary.abbreviation}}
                                     </mat-option>
@@ -93,7 +96,7 @@
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
                                             [compareWith]="getSourceToDisplay"
                                             [matTooltip]="advanceSourceSelect.triggerValue"
-                                            placeholder="{{'payments.advance.payments.detail.source.dropdown.placeholder' | translate}}">
+                                            [placeholder]="'payments.advance.payments.detail.source.dropdown.placeholder' | translate">
 
                                     <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
                                                   label="{{'payments.advance.payments.detail.funds.label' | translate}}">

@@ -12,7 +12,7 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {catchError, debounceTime, map, take, tap} from 'rxjs/operators';
+import {catchError, debounceTime, filter, map, take, tap} from 'rxjs/operators';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FormService} from '@common/components/section/form/form.service';
 import {SecurityService} from '../../../security/security.service';
@@ -75,8 +75,6 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   });
   initialAdvancePaymentDetail: AdvancePaymentDetailDTO;
   currentUserDetails: UserDTO;
-  selectedProject$: Observable<OutputProjectSimple | undefined>;
-  selectedPartner$: Observable<ProjectPartnerPaymentSummaryDTO | undefined>;
   data$: Observable<{
     paymentDetail: AdvancePaymentDetailDTO;
     currentUser: UserDTO;
@@ -85,7 +83,6 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   contractedProjects$: Observable<OutputProjectSimple[]>;
   partnerData$: Observable<ProjectPartnerPaymentSummaryDTO[]>;
   fundsAndContributions: ProjectPartnerPaymentSummaryDTO | null;
-
   userCanEdit$: Observable<boolean>;
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -97,11 +94,13 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private router: RoutingService,
               private translateService: TranslateService,
               private changeDetectorRef: ChangeDetectorRef) {
+    this.formService.init(this.advancePaymentForm, of(true));
     this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.valueChanges
       .pipe(
         debounceTime(150),
+        map((searchTerm) => typeof searchTerm === 'string' ? searchTerm : searchTerm.customIdentifier),
         tap((searchedAcronym) => this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym)),
         untilDestroyed(this)
       ).subscribe();
@@ -128,31 +127,14 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         tap((data) => this.initialAdvancePaymentDetail = data.paymentDetail),
         tap(data => this.currentUserDetails = data.currentUser),
         tap(data => this.loadData(data.paymentDetail)),
-        tap(data => this.getSelectedProject(data.paymentDetail.projectCustomIdentifier)),
-        tap(data => this.getSelectedPartner(data.paymentDetail.partnerId)),
-        tap(data => this.resetForm(data.paymentDetail, data.userCanEdit))
+        tap(data => this.resetForm(data.paymentDetail, data.userCanEdit)),
       );
-    this.formService.init(this.advancePaymentForm, of(true));
   }
 
   loadData(paymentDetail: AdvancePaymentDetailDTO) {
     if (paymentDetail?.id) {
       this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(paymentDetail.projectId);
     }
-  }
-
-  getSelectedProject(identifier: string) {
-    this.selectedProject$ = this.contractedProjects$.pipe(
-      map((projects) => projects.find(item => item.customIdentifier === identifier)),
-      untilDestroyed(this)
-    );
-  }
-
-  getSelectedPartner(partnerId: number) {
-    this.selectedPartner$ = this.partnerData$.pipe(
-      map((partnerData) => partnerData.find(item => item.partnerSummary.id === partnerId)),
-      untilDestroyed(this)
-    );
   }
 
   resetSourceForAdvance() {
@@ -200,30 +182,15 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO, userCanEdit: boolean) {
-    this.advancePaymentsDetailPageStore.searchProjectsByName$.next(paymentDetail.projectCustomIdentifier ? paymentDetail.projectCustomIdentifier : ' ');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue('');
 
-    this.selectedProject$.pipe(tap(project => {
-        if (project) {
-          this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project?.id);
-          this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(project);
-        }
-      }
-    )).subscribe();
-
-    this.selectedPartner$.pipe(tap(partner => {
-        if (partner) {
-          this.fundsAndContributions = partner;
-          this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue(partner);
-          this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue(this.getSourceValue(paymentDetail, partner));
-        }
-      }
-    )).subscribe();
-
+    this.setSelectedProject(paymentDetail.projectCustomIdentifier);
+    this.setSelectedPartner(paymentDetail);
     this.setFoundOrContribution(paymentDetail);
+
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectAcronym)?.setValue(paymentDetail?.projectAcronym ? paymentDetail?.projectAcronym : '');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerNumber)?.setValue(paymentDetail?.partnerNumber ? paymentDetail?.partnerNumber : '');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerType)?.setValue(paymentDetail.partnerType ? paymentDetail.partnerType : '');
@@ -282,6 +249,28 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         control.get(this.constants.FORM_CONTROL_NAMES.settlementComment)?.setValidators([Validators.maxLength(500)]);
       }
     );
+  }
+
+  setSelectedProject(identifier: string) {
+    this.contractedProjects$.pipe(
+      take(1),
+      map(projects => projects.find(item => item.customIdentifier === identifier)),
+      filter(Boolean),
+      tap(project => this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(project)),
+    ).subscribe();
+  }
+
+  setSelectedPartner(paymentDetail: AdvancePaymentDetailDTO) {
+    this.partnerData$.pipe(
+      map((partnerData) => partnerData.find(item => item.partnerSummary.id === paymentDetail.partnerId)),
+      filter(Boolean),
+      tap((partner: ProjectPartnerPaymentSummaryDTO) => {
+        this.fundsAndContributions = partner;
+        this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue(partner);
+        this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue(this.getSourceValue(paymentDetail, partner));
+      }),
+      untilDestroyed(this)
+    ).subscribe();
   }
 
   setFoundOrContribution(paymentDetail: AdvancePaymentDetailDTO) {
@@ -565,8 +554,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return NumberService.minus(amountPaid, NumberService.sum(previouslySettledAmounts));
   }
 
-  displayProjectIdentifier(project: OutputProjectSimple | null): string | undefined {
-    return project?.customIdentifier ?? undefined;
+  displayProjectIdentifier(project: OutputProjectSimple | null): string | null {
+    return project?.customIdentifier ?? null;
   }
 
   static requireMatch(control: AbstractControl): { [key: string]: any } | null {
