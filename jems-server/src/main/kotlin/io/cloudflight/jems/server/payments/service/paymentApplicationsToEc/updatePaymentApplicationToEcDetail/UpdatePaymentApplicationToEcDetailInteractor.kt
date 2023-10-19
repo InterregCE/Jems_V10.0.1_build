@@ -5,6 +5,9 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummar
 
 interface UpdatePaymentApplicationToEcDetailInteractor {
 
-    fun updatePaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail
+    fun updatePaymentApplicationToEc(
+        paymentApplicationId: Long,
+        paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate
+    ): PaymentApplicationToEcDetail
 
 }

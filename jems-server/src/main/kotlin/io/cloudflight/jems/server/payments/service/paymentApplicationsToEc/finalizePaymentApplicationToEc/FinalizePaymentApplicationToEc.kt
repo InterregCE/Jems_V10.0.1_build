@@ -3,8 +3,9 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.fina
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinalized
+import io.cloudflight.jems.server.payments.service.paymentApplicationToEcStatusChanged
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.sumUpProperColumns
 import org.springframework.context.ApplicationEventPublisher
@@ -20,26 +21,36 @@ class FinalizePaymentApplicationToEc(
     @CanUpdatePaymentApplicationsToEc
     @Transactional
     @ExceptionWrapper(FinalizePaymentApplicationToEcException::class)
-    override fun finalizePaymentApplicationToEc(paymentId: Long): PaymentEcStatus {
-        val ecPayment = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentId)
-        validatePaymentApplicationIsDraft(ecPayment)
+    override fun finalizePaymentApplicationToEc(paymentId: Long): PaymentApplicationToEcDetail {
+        val paymentApplication = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentId)
+        validatePaymentApplicationIsDraft(paymentApplication.status)
 
         val selectedPaymentTotals = paymentApplicationsToEcPersistence.calculateAndGetTotals(paymentId)
             .sumUpProperColumns()
         paymentApplicationsToEcPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 
-        return paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(paymentId).also {
-            auditPublisher.publishEvent(paymentApplicationToEcFinalized(
-                context = this,
-                paymentApplicationToEc = it,
-                paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(paymentId),
-            ))
-        }.status
+        return paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(paymentId, PaymentEcStatus.Finished)
+            .apply {
+                this.isAvailableToReOpen = !existsDraftPaymentApplicationWithFundAndAccountingYear(this.paymentApplicationToEcSummary)
+            }.also {
+                auditPublisher.publishEvent(
+                    paymentApplicationToEcStatusChanged(
+                        context = this,
+                        updatedEcPaymentApplication = it,
+                        previousStatus = paymentApplication.status,
+                        paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(paymentId),
+                    )
+                )
+            }
     }
 
-    private fun validatePaymentApplicationIsDraft(payment: PaymentApplicationToEcDetail) {
-        if (payment.status != PaymentEcStatus.Draft)
+    private fun validatePaymentApplicationIsDraft(ecPaymentApplicationStatus: PaymentEcStatus) {
+        if (ecPaymentApplicationStatus != PaymentEcStatus.Draft)
             throw PaymentApplicationToEcNotInDraftException()
     }
 
+    private fun existsDraftPaymentApplicationWithFundAndAccountingYear(paymentApplicationToEcSummary: PaymentApplicationToEcSummary): Boolean =
+        paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(
+            paymentApplicationToEcSummary.programmeFund.id, paymentApplicationToEcSummary.accountingYear.id
+        )
 }

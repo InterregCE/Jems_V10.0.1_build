@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
 import {
   AccountingYearDTO,
-  AccountingYearService,
+  AccountingYearService, PaymentApplicationToEcCreateDTO,
   PaymentApplicationToEcDetailDTO,
   PaymentApplicationToEcDTO,
   PaymentApplicationToECService,
-  PaymentApplicationToEcSummaryUpdateDTO,
+  PaymentApplicationToEcSummaryUpdateDTO, PaymentEcStatusUpdateDTO,
   ProgrammeFundDTO,
   ProgrammeFundService,
   UserRoleCreateDTO,
@@ -31,6 +31,7 @@ export class PaymentsToEcDetailPageStore {
   paymentToEcDetail$: Observable<PaymentApplicationToEcDetailDTO>;
   savedPaymentToEcDetail$ = new Subject<PaymentApplicationToEcDetailDTO>();
   updatedPaymentApplicationStatus$ = new BehaviorSubject<PaymentApplicationToEcDetailDTO.StatusEnum>(PaymentEcStatusEnum.Draft);
+  paymentAvailableToReOpen$ =  new BehaviorSubject<boolean>(false);
   programmeFunds$: Observable<ProgrammeFundDTO[]>;
   accountingYears$: Observable<AccountingYearDTO[]>;
   newPageSize$ = new Subject<number>();
@@ -58,8 +59,9 @@ export class PaymentsToEcDetailPageStore {
     const initialPaymentDetail$ = this.paymentToEcId$
       .pipe(
         switchMap((paymentId: number) => paymentId ? this.paymentApplicationToECService.getPaymentApplicationToEcDetail(paymentId) : of({status: PaymentEcStatusEnum.Draft}) as Observable<PaymentApplicationToEcDetailDTO>),
-        tap(data => this.updatedPaymentApplicationStatus$.next(data.status)),
-        tap(data => Log.info('Fetched payment to ec detail', this, data))
+          tap(data => this.updatedPaymentApplicationStatus$.next(data.status)),
+          tap(data => this.paymentAvailableToReOpen$.next(data.availableToReOpen)),
+          tap(data => Log.info('Fetched payment to ec detail', this, data))
       );
 
     return merge(initialPaymentDetail$, this.savedPaymentToEcDetail$);
@@ -86,27 +88,45 @@ export class PaymentsToEcDetailPageStore {
       );
   }
 
+  getProgrammeFundAvailableAccountingYears(programmeFundId: number): Observable<AccountingYearDTO[]> {
+    return this.paymentApplicationToECService.getAvailableAccountingYearsForPaymentFund(programmeFundId)
+        .pipe(
+            tap(accountingYears => Log.info(`Fetched accounting years for programme fund ${programmeFundId}:`, this, accountingYears))
+        );
+  }
+
   updatePaymentToEcSummary(paymentToEcSummaryData: PaymentApplicationToEcSummaryUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
-    return this.paymentApplicationToECService.updatePaymentApplicationToEc(paymentToEcSummaryData).pipe(
+    return this.paymentApplicationToECService.updatePaymentApplicationToEc(paymentToEcSummaryData.id, paymentToEcSummaryData).pipe(
       tap(saved => Log.info('Payment to Ec summary data updated!', saved)),
       tap(data => this.savedPaymentToEcDetail$.next(data))
     );
   }
 
-  createPaymentToEc(paymentToEcSummaryData: PaymentApplicationToEcSummaryUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
-    return this.paymentApplicationToECService.createPaymentApplicationToEc(paymentToEcSummaryData).pipe(
+  createPaymentToEc(paymentApplication: PaymentApplicationToEcCreateDTO): Observable<PaymentApplicationToEcDetailDTO> {
+    return this.paymentApplicationToECService.createPaymentApplicationToEc(paymentApplication).pipe(
       tap(saved => Log.info('Payment to Ec created!', saved)),
       tap(data => this.savedPaymentToEcDetail$.next(data))
     );
   }
 
-  finalizePaymentApplicationToEc(paymentId: number): Observable<PaymentApplicationToEcDetailDTO.StatusEnum> {
+  finalizePaymentApplicationToEc(paymentId: number) {
     return this.paymentApplicationToECService.finalizePaymentApplicationToEc(paymentId)
       .pipe(
-        map(status => status as PaymentApplicationToEcDetailDTO.StatusEnum),
-        tap(status => this.updatedPaymentApplicationStatus$.next(status)),
-        tap(status => Log.info('Changed status for payment application to EC', paymentId, status))
+          tap(statusData => this.paymentAvailableToReOpen$.next(statusData.availableToReOpen)),
+          map(statusData => statusData.status as PaymentApplicationToEcDetailDTO.StatusEnum),
+          tap(status => this.updatedPaymentApplicationStatus$.next(status)),
+          tap(status => Log.info('Changed status for payment application to EC', paymentId, status))
       );
+  }
+
+  reOpenFinalizedEcPaymentApplication(paymentId: number): Observable<PaymentApplicationToEcDetailDTO.StatusEnum> {
+    return this.paymentApplicationToECService.reOpenFinalizedEcPaymentApplication(paymentId)
+        .pipe(
+            tap(statusData => this.paymentAvailableToReOpen$.next(statusData.availableToReOpen)),
+            map(statusData => statusData.status as PaymentApplicationToEcDetailDTO.StatusEnum),
+            tap(status => this.updatedPaymentApplicationStatus$.next(status)),
+            tap(status => Log.info('Changed status for payment application to EC', paymentId, status))
+        );
   }
 
    private allFunds(): Observable<ProgrammeFundDTO[]> {

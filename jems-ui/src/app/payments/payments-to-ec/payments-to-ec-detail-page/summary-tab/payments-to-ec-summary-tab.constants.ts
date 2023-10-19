@@ -2,8 +2,8 @@ export class PaymentsToEcSummaryTabConstants {
 
   public static FORM_CONTROL_NAMES = {
     id: 'id',
-    programmeFund: 'programmeFund',
-    accountingYear: 'accountingYear',
+    programmeFundId: 'programmeFundId',
+    accountingYearId: 'accountingYearId',
     paymentToEc: 'paymentToEc',
     nationalReference: 'nationalReference',
     technicalAssistanceEur: 'technicalAssistanceEur',

@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  AccountingYearDTO,
-  PaymentApplicationToEcDetailDTO,
+  AccountingYearDTO, PaymentApplicationToEcCreateDTO,
+  PaymentApplicationToEcDetailDTO, PaymentApplicationToEcDTO,
   PaymentApplicationToEcSummaryUpdateDTO,
   ProgrammeFundDTO
 } from '@cat/api';
@@ -30,22 +30,24 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   tableData: AbstractControl[] = [];
   summaryForm = this.formBuilder.group({
     id: '',
-    programmeFund: this.formBuilder.control(''),
-    accountingYear: this.formBuilder.control(''),
+    programmeFundId: this.formBuilder.control(''),
+    accountingYearId: this.formBuilder.control(''),
     nationalReference: this.formBuilder.control(''),
     technicalAssistanceEur: this.formBuilder.control(''),
     submissionToSFCDate: this.formBuilder.control(''),
     sfcNumber: this.formBuilder.control(''),
     comment: this.formBuilder.control(''),
   });
+
   initialPaymentToEcDetail: PaymentApplicationToEcDetailDTO;
   data$: Observable<{
     paymentDetail: PaymentApplicationToEcDetailDTO;
     programmeFunds: ProgrammeFundDTO[];
-    accountingYears: AccountingYearDTO[];
   }>;
 
+  isCreate: boolean;
   userCanEdit$: Observable<boolean>;
+  availableAccountingYearsForFund: AccountingYearDTO[] = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
@@ -60,18 +62,21 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     this.data$ = combineLatest([
       this.paymentsToEcDetailPageStore.paymentToEcDetail$,
       this.paymentsToEcDetailPageStore.programmeFunds$,
-      this.paymentsToEcDetailPageStore.accountingYears$,
-      this.paymentsToEcDetailPageStore.updatedPaymentApplicationStatus$
+      this.paymentsToEcDetailPageStore.updatedPaymentApplicationStatus$,
     ])
-      .pipe(
-        map(([paymentDetail, programmeFunds, accountingYears, updatedPaymentStatus]: any) => ({
-          paymentDetail: this.getUpdatePayment(paymentDetail, updatedPaymentStatus),
-          programmeFunds,
-          accountingYears,
-        })),
-        tap((data) => this.initialPaymentToEcDetail = data.paymentDetail),
-        tap(data => this.resetForm(data.paymentDetail))
-      );
+        .pipe(
+            map(([paymentDetail, programmeFunds, updatedPaymentStatus]: any) => ({
+              paymentDetail: this.getUpdatePayment(paymentDetail, updatedPaymentStatus),
+              programmeFunds,
+            })),
+            tap((data) => this.initialPaymentToEcDetail = data.paymentDetail),
+            tap(data => this.resetForm(data.paymentDetail)),
+            tap(data => {
+                  this.isCreate = !data.paymentDetail.id;
+                  this.formService.setCreation(this.isCreate);
+                }
+            ),
+        );
 
     this.formService.init(this.summaryForm, this.userCanEdit$);
   }
@@ -84,8 +89,8 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
 
   resetForm(paymentDetail: PaymentApplicationToEcDetailDTO) {
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(paymentDetail ? paymentDetail.id : null);
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.programmeFund.id ?? '');
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.accountingYear.id ?? '');
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.programmeFund.id ?? '');
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYearId)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.accountingYear.id ?? '');
 
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.nationalReference)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.nationalReference ?? null);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.technicalAssistanceEur)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.technicalAssistanceEur ?? 0.0);
@@ -98,15 +103,15 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   }
 
   private disableFieldsOnFinishStatus(paymentDetail: PaymentApplicationToEcDetailDTO) {
-    if(paymentDetail?.status == PaymentApplicationToEcDetailDTO.StatusEnum.Finished) {
-      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.disable();
-      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.disable();
+    if (paymentDetail?.status == PaymentApplicationToEcDetailDTO.StatusEnum.Finished) {
+      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.disable();
+      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYearId)?.disable();
     }
   }
 
   setValidators() {
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValidators([Validators.required]);
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValidators([Validators.required]);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.setValidators([Validators.required]);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYearId)?.setValidators([Validators.required]);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.nationalReference)?.setValidators([Validators.maxLength(50)]);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.sfcNumber)?.setValidators([Validators.maxLength(50)]);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValidators([Validators.maxLength(5000)]);
@@ -116,41 +121,61 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     return this.summaryForm;
   }
 
-  updatePaymentApplicationToEc() {
-    const dataToUpdate = this.prepareDataForSave(this.summaryForm.getRawValue());
+  savePaymentApplication() {
+    const formData = this.summaryForm.getRawValue();
 
-    if(dataToUpdate.id) {
+    if (formData.id) {
+      const dataToUpdate = this.prepareDataToUpdatePaymentApplication(formData);
       this.paymentsToEcDetailPageStore.updatePaymentToEcSummary(dataToUpdate).pipe(
-        take(1),
-        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
-        catchError(err => this.formService.setError(err)),
-        untilDestroyed(this)
+          take(1),
+          tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
+          catchError(err => this.formService.setError(err)),
+          untilDestroyed(this)
       ).subscribe();
     } else {
-      this.paymentsToEcDetailPageStore.createPaymentToEc(dataToUpdate).pipe(
-        take(1),
-        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
-        tap(data =>  this.redirectToPartnerDetailAfterCreate(data.id)),
-        catchError(err => this.formService.setError(err)),
-        untilDestroyed(this)
+      const dataToCreatePaymentApplication = this.prepareDataToCreatePaymentApplication(formData);
+      this.paymentsToEcDetailPageStore.createPaymentToEc(dataToCreatePaymentApplication).pipe(
+          take(1),
+          tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
+          tap(data => this.redirectToPartnerDetailAfterCreate(data.id)),
+          catchError(err => this.formService.setError(err)),
+          untilDestroyed(this)
       ).subscribe();
     }
   }
 
-  redirectToPartnerDetailAfterCreate(paymentId: number) {
-    this.router.navigate(['/app/payments/paymentApplicationsToEc/', paymentId]);
-  }
+    redirectToPartnerDetailAfterCreate(paymentId: number) {
+      this.router.navigate(['/app/payments/paymentApplicationsToEc/', paymentId]);
+    }
 
-  prepareDataForSave(data: any): PaymentApplicationToEcSummaryUpdateDTO {
-    return {
-      id: data.id,
-      programmeFundId: data.programmeFund,
-      accountingYearId: data.accountingYear,
-      nationalReference: data.nationalReference,
-      technicalAssistanceEur: data.technicalAssistanceEur,
-      submissionToSfcDate: data.submissionToSFCDate,
-      sfcNumber: data.sfcNumber,
-      comment: data.comment
-    };
+    prepareDataToUpdatePaymentApplication(data: any): PaymentApplicationToEcSummaryUpdateDTO {
+      return {
+        id: data.id,
+        nationalReference: data.nationalReference,
+        technicalAssistanceEur: data.technicalAssistanceEur,
+        submissionToSfcDate: data.submissionToSFCDate,
+        sfcNumber: data.sfcNumber,
+        comment: data.comment
+      };
+    }
+
+    prepareDataToCreatePaymentApplication(data: any): PaymentApplicationToEcCreateDTO {
+      return {
+        programmeFundId: data.programmeFundId,
+        accountingYearId: data.accountingYearId,
+        nationalReference: data.nationalReference,
+        technicalAssistanceEur: data.technicalAssistanceEur,
+        submissionToSfcDate: data.submissionToSFCDate,
+        sfcNumber: data.sfcNumber,
+        comment: data.comment
+      };
+    }
+
+  fetchAvailableAccountingYearsForFund(fund: any) {
+    const programmeFundId = fund.value;
+    return this.paymentsToEcDetailPageStore.getProgrammeFundAvailableAccountingYears(programmeFundId).pipe(
+        tap(data => this.availableAccountingYearsForFund = data),
+        untilDestroyed(this)
+    ).subscribe();
   }
 }

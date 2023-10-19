@@ -100,7 +100,7 @@ export class AuditControlIdentityComponent {
   }
 
   closeAuditControl(projectId: number, auditControlId: number) {
-    this.pendingAction$.next(true)
+    this.pendingAction$.next(true);
     this.pageStore.closeAuditControl(projectId, auditControlId).pipe(
       take(1),
       tap(()=>this.redirectToCorrections(projectId)),

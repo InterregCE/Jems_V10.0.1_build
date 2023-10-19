@@ -7,26 +7,26 @@ import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataReposit
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
-import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
+import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import org.springframework.data.domain.Page
@@ -49,7 +49,7 @@ class PaymentApplicationToEcPersistenceProvider(
 ) : PaymentApplicationToEcPersistence {
 
     @Transactional
-    override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
+    override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
         val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
         val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
 
@@ -68,13 +68,12 @@ class PaymentApplicationToEcPersistenceProvider(
     }
 
     @Transactional
-    override fun updatePaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
-        val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
-        val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
-        val existingEcPayment = paymentApplicationsToEcRepository.getById(paymentApplicationsToEcUpdate.id!!)
-
-        existingEcPayment.update(programmeFund, accountingYear, paymentApplicationsToEcUpdate)
-
+    override fun updatePaymentApplicationToEc(
+        paymentApplicationId: Long,
+        paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate
+    ): PaymentApplicationToEcDetail {
+        val existingEcPayment = paymentApplicationsToEcRepository.getById(paymentApplicationId)
+        existingEcPayment.update(paymentApplicationsToEcUpdate)
         return existingEcPayment.toDetailModel()
     }
 
@@ -87,13 +86,7 @@ class PaymentApplicationToEcPersistenceProvider(
         return existingEcPayment.toDetailModel()
     }
 
-    private fun PaymentApplicationToEcEntity.update(
-        programmeFundEntity: ProgrammeFundEntity,
-        accountingYearEntity: AccountingYearEntity,
-        newData: PaymentApplicationToEcSummaryUpdate
-    ): PaymentApplicationToEcEntity {
-        this.programmeFund = programmeFundEntity
-        this.accountingYear = accountingYearEntity
+    private fun PaymentApplicationToEcEntity.update(newData: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcEntity {
         this.nationalReference = newData.nationalReference
         this.technicalAssistanceEur = newData.technicalAssistanceEur
         this.submissionToSfcDate = newData.submissionToSfcDate
@@ -120,10 +113,14 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentApplicationsToEcRepository.findAll(pageable).toModel()
 
     @Transactional
-    override fun finalizePaymentApplicationToEc(paymentId: Long): PaymentApplicationToEcDetail =
+    override fun updatePaymentApplicationToEcStatus(
+        paymentId: Long,
+        status: PaymentEcStatus
+    ): PaymentApplicationToEcDetail =
         paymentApplicationsToEcRepository.getById(paymentId).apply {
-            this.status = PaymentEcStatus.Finished
+            this.status = status
         }.toDetailModel()
+
 
     @Transactional
     override fun deleteById(id: Long) {
@@ -178,6 +175,15 @@ class PaymentApplicationToEcPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun existsDraftByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Boolean =
+        paymentApplicationsToEcRepository.existsByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft)
+
+    @Transactional(readOnly = true)
+    override fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYear> =
+        paymentApplicationsToEcRepository.getAvailableAccountingYearForFund(programmeFundId).map { it.toModel() }
+
+
+    @Transactional(readOnly = true)
     override fun calculateAndGetTotals(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>> {
         val paymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val paymentEntity = QPaymentEntity.paymentEntity
@@ -196,11 +202,11 @@ class PaymentApplicationToEcPersistenceProvider(
             )
             .from(paymentToEcExtensionEntity)
             .leftJoin(paymentEntity)
-                .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
+            .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
             .leftJoin(priorityPolicy)
-                .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
+            .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(programmePriority)
-                .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
+            .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
             .where(paymentToEcExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId))
             .groupBy(programmePriority.id)
             .fetch()

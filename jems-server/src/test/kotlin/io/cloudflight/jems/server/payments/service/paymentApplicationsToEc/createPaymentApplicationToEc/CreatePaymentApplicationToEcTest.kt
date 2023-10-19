@@ -4,9 +4,9 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -18,7 +18,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
@@ -44,7 +43,7 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             comment = "Comment"
         )
 
-        private val paymentApplicationsToEcUpdate = PaymentApplicationToEcSummaryUpdate(
+        private val paymentApplicationsToEcToCreate = PaymentApplicationToEcCreate(
             id = null,
             programmeFundId = fund.id,
             accountingYearId = accountingYear.id,
@@ -78,7 +77,7 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
     @Test
     fun createPaymentApplicationToEc() {
         every {
-            paymentApplicationsToEcPersistence.createPaymentApplicationToEc(paymentApplicationsToEcUpdate)
+            paymentApplicationsToEcPersistence.createPaymentApplicationToEc(paymentApplicationsToEcToCreate)
         } returns paymentApplicationsToEcDetail
         every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) } returns
                 setOf(19L, 20L, 21L)
@@ -86,8 +85,9 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
+        every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id,) } returns false
 
-        assertThat(service.createPaymentApplicationToEc(paymentApplicationsToEcUpdate))
+        assertThat(service.createPaymentApplicationToEc(paymentApplicationsToEcToCreate))
             .isEqualTo(paymentApplicationsToEcDetail)
 
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(

@@ -1,14 +1,17 @@
 package io.cloudflight.jems.server.payments.controller.applicationToEc
 
 import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcCreateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusDTO
+import io.cloudflight.jems.api.payments.dto.PaymentEcStatusUpdateDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
@@ -17,8 +20,10 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.createPaymentApplicationToEc.CreatePaymentApplicationToEcInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.deletePaymentApplicationToEc.DeletePaymentApplicationToEcInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.finalizePaymentApplicationToEc.FinalizePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getAvailableAccountingYearsForPaymentFund.GetAvailableAccountingYearsForPaymentFundInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationToEcDetail.GetPaymentApplicationToEcDetailInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationsToEc.GetPaymentApplicationsToEcInteractor
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.reOpenFinalizedEcPaymentApplication.ReOpenFinalizedEcPaymentApplicationInteractor
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetailInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
@@ -42,6 +47,9 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
         private val fund = ProgrammeFund(id = 3L, selected = true)
         private val submissionDate = LocalDate.now()
 
+        private val startDate = LocalDate.now()
+        private val endDate = LocalDate.now().plusDays(5)
+
         private val paymentApplicationToEcDTO = PaymentApplicationToEcDTO(
             id = paymentApplicationsToEcId,
             programmeFund = fundDTO,
@@ -55,10 +63,20 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
 
-        private val paymentApplicationsToEcUpdate = PaymentApplicationToEcSummaryUpdate(
-            id = paymentApplicationsToEcId,
+
+        private val paymentApplicationsToEcCreate = PaymentApplicationToEcCreate(
+            id = null,
             programmeFundId = fund.id,
             accountingYearId = accountingYear.id,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
+        )
+
+        private val paymentApplicationsToEcUpdate = PaymentApplicationToEcSummaryUpdate(
+            id = paymentApplicationsToEcId,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
@@ -88,15 +106,22 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
         private val paymentApplicationsToEcDetailDTO = PaymentApplicationToEcDetailDTO(
             id = paymentApplicationsToEcId,
             status = PaymentEcStatusDTO.Draft,
+            availableToReOpen = false,
             paymentApplicationToEcSummary = paymentApplicationsToEcSummaryDTO
         )
 
-        private fun paymentApplicationsToEcDetail(status: PaymentEcStatus = PaymentEcStatus.Draft) =
+        private fun paymentApplicationsToEcDetail(status: PaymentEcStatus = PaymentEcStatus.Draft, isAvailableToReOpen: Boolean = false) =
             PaymentApplicationToEcDetail(
                 id = paymentApplicationsToEcId,
                 status = status,
+                isAvailableToReOpen = isAvailableToReOpen,
                 paymentApplicationToEcSummary = paymentApplicationsToEcSummary
             )
+
+        private fun paymentEcStatusUpdate(status: PaymentEcStatusDTO, isAvailableToReOpen: Boolean) = PaymentEcStatusUpdateDTO(
+            status = status,
+            availableToReOpen = isAvailableToReOpen
+        )
     }
 
     @MockK
@@ -116,6 +141,13 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
 
     @MockK
     lateinit var deletePaymentApplicationToEc: DeletePaymentApplicationToEcInteractor
+
+    @MockK
+    lateinit var reOpenFinalizedEcPaymentApplication: ReOpenFinalizedEcPaymentApplicationInteractor
+
+    @MockK
+    lateinit var getAvailableAccountingYearsForPaymentFund: GetAvailableAccountingYearsForPaymentFundInteractor
+
 
     @InjectMockKs
     private lateinit var controller: PaymentApplicationToEcController
@@ -146,8 +178,6 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
     fun updatePaymentApplicationToEcDetail() {
         val updateDTO = PaymentApplicationToEcSummaryUpdateDTO(
             id = paymentApplicationsToEcId,
-            programmeFundId = fund.id,
-            accountingYearId = accountingYear.id,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
@@ -155,30 +185,28 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
             comment = "Comment"
         )
         every {
-            updatePaymentApplicationToEcDetail.updatePaymentApplicationToEc(paymentApplicationsToEcUpdate)
+            updatePaymentApplicationToEcDetail.updatePaymentApplicationToEc(paymentApplicationsToEcId, paymentApplicationsToEcUpdate)
         } returns paymentApplicationsToEcDetail()
 
-        assertThat(controller.updatePaymentApplicationToEc(updateDTO)).isEqualTo(paymentApplicationsToEcDetailDTO)
+        assertThat(controller.updatePaymentApplicationToEc(paymentApplicationsToEcId, updateDTO)).isEqualTo(paymentApplicationsToEcDetailDTO)
     }
 
     @Test
     fun createPaymentApplicationToEc() {
-        val updateDTO = PaymentApplicationToEcSummaryUpdateDTO(
-            id = paymentApplicationsToEcId,
-            programmeFundId = fund.id,
-            accountingYearId = accountingYear.id,
+        val createDTO = PaymentApplicationToEcCreateDTO(
+            programmeFundId = fundDTO.id!!,
+            accountingYearId = accountingYearDTO.id,
             nationalReference = "National Reference",
             technicalAssistanceEur = BigDecimal.valueOf(105.32),
             submissionToSfcDate = submissionDate,
             sfcNumber = "SFC number",
             comment = "Comment"
         )
-
         every {
-            createPaymentApplicationToEc.createPaymentApplicationToEc(paymentApplicationsToEcUpdate)
+            createPaymentApplicationToEc.createPaymentApplicationToEc(paymentApplicationsToEcCreate)
         } returns paymentApplicationsToEcDetail()
 
-        assertThat(controller.createPaymentApplicationToEc(updateDTO)).isEqualTo(paymentApplicationsToEcDetailDTO)
+        assertThat(controller.createPaymentApplicationToEc(createDTO)).isEqualTo(paymentApplicationsToEcDetailDTO)
     }
 
     @Test
@@ -192,10 +220,46 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
 
     @Test
     fun finalizePaymentApplicationToEc() {
-        every { getPaymentApplicationToEcDetail.getPaymentApplicationToEcDetail(paymentApplicationsToEcId) } returns paymentApplicationsToEcDetail()
-        every { finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(paymentApplicationsToEcId) } returns PaymentEcStatus.Finished
+        every { finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(paymentApplicationsToEcId) } returns paymentApplicationsToEcDetail(
+            status = PaymentEcStatus.Finished,
+            isAvailableToReOpen = true
+        )
 
-        assertThat(controller.finalizePaymentApplicationToEc(paymentApplicationsToEcId)).isEqualTo(PaymentEcStatusDTO.Finished)
+        assertThat(controller.finalizePaymentApplicationToEc(paymentApplicationsToEcId)).isEqualTo(
+            paymentEcStatusUpdate(
+                PaymentEcStatusDTO.Finished,
+                true
+            )
+        )
+    }
+
+
+    @Test
+    fun reOpenFinalizedEcPaymentApplication() {
+        every { reOpenFinalizedEcPaymentApplication.reOpen(paymentApplicationsToEcId) } returns paymentApplicationsToEcDetail(
+            status = PaymentEcStatus.Draft,
+            isAvailableToReOpen = false
+        )
+        assertThat(controller.reOpenFinalizedEcPaymentApplication(paymentApplicationsToEcId)).isEqualTo(
+            paymentEcStatusUpdate(PaymentEcStatusDTO.Draft, false)
+        )
+    }
+
+    @Test
+    fun getAvailableAccountingYearsForPaymentFund() {
+        every { getAvailableAccountingYearsForPaymentFund.getAvailableAccountingYearsForPaymentFund(1L) } returns listOf(
+            AccountingYear(id = 1L, year = 2021, startDate = startDate, endDate = endDate)
+        )
+        assertThat(controller.getAvailableAccountingYearsForPaymentFund(1L)).isEqualTo(
+            listOf(
+                AccountingYearDTO(
+                    id = 1L,
+                    year = 2021,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            )
+        )
     }
 
 }

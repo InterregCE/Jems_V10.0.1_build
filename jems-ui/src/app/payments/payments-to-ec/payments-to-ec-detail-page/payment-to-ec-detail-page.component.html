@@ -24,13 +24,24 @@
                 </mat-chip-list>
             </span>
 
-            <span class="finish-button" *ngIf="data.paymentDetail.id">
+            <span class="finish-button" *ngIf="data.canFinalize">
                  <jems-pending-button
                          [confirm]="{title: 'payments.to.ec.table.action.finalize.dialog.title', message: 'payments.to.ec.table.action.finalize.dialog.message', warnMessage: 'payments.to.ec.table.action.finalize.dialog.warning'}"
                          [disabled]="data.finalizationDisabled"
-                         [pending]="finalizationPending$ | async"
+                         [pending]="statusChangePending$ | async"
                          (clicked)="finalizePaymentApplication(data.paymentDetail.id)">
                     {{'payments.to.ec.table.action.finalize.button' | translate}}
+                </jems-pending-button>
+            </span>
+
+            <span class="finish-button" *ngIf="data.canReOpen">
+                 <jems-pending-button
+                         [confirm]="{title: 'payments.to.ec.table.action.reopen.dialog.title', message: 'payments.to.ec.table.action.reopen.dialog.message', warnMessage: 'payments.to.ec.table.action.reopen.dialog.warning'}"
+                         [disabled]="!data.isAvailableToReOpen"
+                         matTooltip="{{!data.isAvailableToReOpen ? ('payments.to.ec.table.action.reopen.button.tooltip' | translate) : null}}"
+                         [pending]="statusChangePending$ | async"
+                         (clicked)="setPaymentApplicationBackToDraft(data.paymentDetail.id)">
+                    {{'payments.to.ec.table.action.reopen.button' | translate}}
                 </jems-pending-button>
             </span>
         </div>

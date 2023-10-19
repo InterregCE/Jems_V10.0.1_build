@@ -52,9 +52,11 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             comment = "Comment"
         )
 
-        private fun paymentApplicationDetail(status: PaymentEcStatus) = PaymentApplicationToEcDetail(
+
+        private fun paymentApplicationDetail(status: PaymentEcStatus, isAvailableToReOpen: Boolean = false) = PaymentApplicationToEcDetail(
             id = PAYMENT_ID,
             status = status,
+            isAvailableToReOpen = isAvailableToReOpen,
             paymentApplicationToEcSummary = expectedPaymentApplicationsToEcSummary
         )
 
@@ -123,12 +125,15 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
     @Test
     fun finalizePaymentApplicationToEc() {
         val finalizedPayment = paymentApplicationDetail(PaymentEcStatus.Finished)
-        val currentPayment = paymentApplicationDetail(
+        every {
+            paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(
+                PAYMENT_ID,
+                PaymentEcStatus.Finished
+            )
+        } returns finalizedPayment
+        every { paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_ID) } returns paymentApplicationDetail(
             PaymentEcStatus.Draft
         )
-
-        every { paymentApplicationsToEcPersistence.finalizePaymentApplicationToEc(PAYMENT_ID) } returns finalizedPayment
-        every { paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(PAYMENT_ID) } returns currentPayment
         every { paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(PAYMENT_ID) } returns mapOf(
             14L to PaymentType.FTLS,
             15L to PaymentType.FTLS,
@@ -150,8 +155,11 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(programmeFund.id, accountingYear.id,) } returns false
 
-        assertThat(finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(PAYMENT_ID)).isEqualTo(PaymentEcStatus.Finished)
+        assertThat(finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(PAYMENT_ID)).isEqualTo(
+            paymentApplicationDetail(PaymentEcStatus.Finished, isAvailableToReOpen = true)
+        )
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED,

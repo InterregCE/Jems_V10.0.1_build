@@ -1,11 +1,10 @@
-package io.cloudflight.jems.server.payments.service.applicationToEc
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationsToEc
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationsToEc.GetPaymentApplicationsToEc
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

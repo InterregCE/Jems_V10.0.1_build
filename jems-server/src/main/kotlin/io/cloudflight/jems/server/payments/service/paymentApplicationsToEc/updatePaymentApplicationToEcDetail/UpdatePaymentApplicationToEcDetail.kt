@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,15 +18,11 @@ class UpdatePaymentApplicationToEcDetail(
     @CanUpdatePaymentApplicationsToEc
     @Transactional
     @ExceptionWrapper(UpdatePaymentApplicationToEcDetailException::class)
-    override fun updatePaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
+    override fun updatePaymentApplicationToEc(paymentApplicationId: Long, paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate
+    ): PaymentApplicationToEcDetail {
+
         validateLengthOfFields(paymentApplicationToEcUpdate)
-
-        val paymentApplication = paymentApplicationToEcPersistence.getPaymentApplicationToEcDetail(paymentApplicationToEcUpdate.id!!)
-
-        return when (paymentApplication.status) {
-            PaymentEcStatus.Draft -> paymentApplicationToEcPersistence.updatePaymentApplicationToEc(paymentApplicationToEcUpdate)
-            PaymentEcStatus.Finished -> paymentApplicationToEcPersistence.updatePaymentToEcSummaryOtherSection(paymentApplicationToEcUpdate)
-        }
+        return paymentApplicationToEcPersistence.updatePaymentApplicationToEc(paymentApplicationId, paymentApplicationToEcUpdate)
     }
 
     private fun validateLengthOfFields(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate) {
