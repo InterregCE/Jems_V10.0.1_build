@@ -263,8 +263,8 @@ class CreateProjectReportBudget(
                 sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
             ),
             previouslyVerified = previouslyVerified.copy(
-                lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
-                sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
+                lumpSum = previouslyVerified.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyVerified.sum.plus(paymentReadyFastTrackLumpSums)
             )
         )
     }

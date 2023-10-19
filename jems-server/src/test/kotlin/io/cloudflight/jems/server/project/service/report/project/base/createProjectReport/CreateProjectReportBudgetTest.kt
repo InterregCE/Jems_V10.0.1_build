@@ -172,16 +172,16 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
             sum = BigDecimal(180),
         ),
         previouslyVerified = BudgetCostsCalculationResultFull(
-            staff = BigDecimal.valueOf(16),
-            office = BigDecimal.valueOf(17),
-            travel = BigDecimal.valueOf(18),
-            external = BigDecimal.valueOf(19),
-            equipment = BigDecimal.valueOf(20),
-            infrastructure = BigDecimal.valueOf(21),
-            other = BigDecimal.valueOf(22),
-            lumpSum = BigDecimal.valueOf(23),
-            unitCost = BigDecimal.valueOf(24),
-            sum = BigDecimal(180),
+            staff = BigDecimal.valueOf(21),
+            office = BigDecimal.valueOf(22),
+            travel = BigDecimal.valueOf(23),
+            external = BigDecimal.valueOf(24),
+            equipment = BigDecimal.valueOf(25),
+            infrastructure = BigDecimal.valueOf(26),
+            other = BigDecimal.valueOf(27),
+            lumpSum = BigDecimal.valueOf(28),
+            unitCost = BigDecimal.valueOf(29),
+            sum = BigDecimal(225),
         )
     )
 
@@ -347,16 +347,16 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
             sum = BigDecimal.ZERO,
         ),
         previouslyVerified =  BudgetCostsCalculationResultFull(
-            staff = BigDecimal.valueOf(16),
-            office = BigDecimal.valueOf(17),
-            travel = BigDecimal.valueOf(18),
-            external = BigDecimal.valueOf(19),
-            equipment = BigDecimal.valueOf(20),
-            infrastructure = BigDecimal.valueOf(21),
-            other = BigDecimal.valueOf(22),
-            lumpSum = BigDecimal.valueOf(10_002_023L),
-            unitCost = BigDecimal.valueOf(24),
-            sum = BigDecimal.valueOf(10_002_180L),
+            staff = BigDecimal.valueOf(21),
+            office = BigDecimal.valueOf(22),
+            travel = BigDecimal.valueOf(23),
+            external = BigDecimal.valueOf(24),
+            equipment = BigDecimal.valueOf(25),
+            infrastructure = BigDecimal.valueOf(26),
+            other = BigDecimal.valueOf(27),
+            lumpSum = BigDecimal.valueOf(10_002_028L),
+            unitCost = BigDecimal.valueOf(29),
+            sum = BigDecimal.valueOf(10_002_225L),
         )
     )
 
@@ -393,7 +393,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         numberOfUnits = BigDecimal.valueOf(1267L, 2),
         totalCost = BigDecimal.valueOf(1267L),
         previouslyReported = BigDecimal.valueOf(10),
-        previouslyVerified = BigDecimal.valueOf(10),
+        previouslyVerified = BigDecimal.valueOf(20),
     )
     private val expectedUnitCost_Multiple = ProjectReportUnitCostBase(
         unitCostId = unitCostId_Multiple,
@@ -410,7 +410,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         deactivated = false,
         total = BigDecimal.valueOf(542L),
         previouslyReported = BigDecimal.TEN,
-        previouslyVerified = BigDecimal.TEN,
+        previouslyVerified = BigDecimal.valueOf(15),
     )
 
     @MockK private lateinit var lumpSumPersistence: ProjectLumpSumPersistence
@@ -480,10 +480,10 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { paymentPersistence.getPaymentsByProjectId(projectId) } returns listOf(payment)
 
         every { reportCertificateUnitCostPersistence.getReportedUnitCostsCumulative(setOf(21L, 28L)) } returns mapOf(Pair(unitCostId, BigDecimal.TEN))
-        every { reportCertificateUnitCostPersistence.getVerifiedUnitCostsCumulative(setOf(28L)) } returns mapOf(Pair(unitCostId, BigDecimal.TEN))
+        every { reportCertificateUnitCostPersistence.getVerifiedUnitCostsCumulative(setOf(28L)) } returns mapOf(Pair(unitCostId, BigDecimal.valueOf(20)))
 
         every { reportInvestmentPersistence.getReportedInvestmentCumulative(setOf(21L, 28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
-        every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
+        every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.valueOf(15)))
 
         val result = service.retrieveBudgetDataFor(
             projectId = projectId,
