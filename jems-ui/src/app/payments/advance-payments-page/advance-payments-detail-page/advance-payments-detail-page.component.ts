@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
   AdvancePaymentSettlementDTO,
@@ -12,7 +12,7 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {catchError, debounceTime, filter, map, take, tap} from 'rxjs/operators';
+import {catchError, debounceTime, filter, map, shareReplay, startWith, take, tap} from 'rxjs/operators';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FormService} from '@common/components/section/form/form.service';
 import {SecurityService} from '../../../security/security.service';
@@ -80,7 +80,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     currentUser: UserDTO;
     userCanEdit: boolean;
   }>;
-  contractedProjects$: Observable<OutputProjectSimple[]>;
+  contractedProjects$ = new Subject<OutputProjectSimple[]>();
   partnerData$: Observable<ProjectPartnerPaymentSummaryDTO[]>;
   fundsAndContributions: ProjectPartnerPaymentSummaryDTO | null;
   userCanEdit$: Observable<boolean>;
@@ -95,7 +95,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
               private translateService: TranslateService,
               private changeDetectorRef: ChangeDetectorRef) {
     this.formService.init(this.advancePaymentForm, of(true));
-    this.contractedProjects$ = this.advancePaymentsDetailPageStore.getContractedProjects();
+    this.setContractedProjects();
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.valueChanges
       .pipe(
@@ -126,20 +126,22 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         })),
         tap((data) => this.initialAdvancePaymentDetail = data.paymentDetail),
         tap(data => this.currentUserDetails = data.currentUser),
-        tap(data => this.loadData(data.paymentDetail)),
         tap(data => this.resetForm(data.paymentDetail, data.userCanEdit)),
       );
-  }
-
-  loadData(paymentDetail: AdvancePaymentDetailDTO) {
-    if (paymentDetail?.id) {
-      this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(paymentDetail.projectId);
-    }
   }
 
   resetSourceForAdvance() {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributionId)?.setValue('');
+  }
+
+  setContractedProjects() {
+    this.advancePaymentsDetailPageStore.getContractedProjects()
+      .pipe(
+        startWith([]),
+        untilDestroyed(this)
+      )
+      .subscribe(this.contractedProjects$);
   }
 
   setSourceForAdvance(selection: any) {
@@ -256,7 +258,11 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       take(1),
       map(projects => projects.find(item => item.customIdentifier === identifier)),
       filter(Boolean),
-      tap(project => this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(project)),
+      tap((project: OutputProjectSimple) => {
+        this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project.id);
+        this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(project);
+      }),
+      shareReplay(1),
     ).subscribe();
   }
 
@@ -554,8 +560,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return NumberService.minus(amountPaid, NumberService.sum(previouslySettledAmounts));
   }
 
-  displayProjectIdentifier(project: OutputProjectSimple | null): string | null {
-    return project?.customIdentifier ?? null;
+  displayProjectIdentifier(project: any): string {
+    return project?.customIdentifier ?? '';
   }
 
   static requireMatch(control: AbstractControl): { [key: string]: any } | null {
