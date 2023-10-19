@@ -18,7 +18,7 @@ fun ReportCertificateCoFinancing.toLinesModel() = CertificateCoFinancingBreakdow
             currentVerified = currentVerified.funds.getOrDefault(it.key, BigDecimal.ZERO),
             previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
-    },
+    }.sortedWith(compareBy(nullsLast()) { it.fundId }),
     partnerContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.partnerContribution,
         previouslyReported = previouslyReported.partnerContribution,

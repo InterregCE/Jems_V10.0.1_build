@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.*
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
 
 fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdown(
@@ -26,7 +25,7 @@ fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdow
             previouslyValidated = previouslyValidated.funds.getOrDefault(it.key, BigDecimal.ZERO),
             previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
-    },
+    }.sortedWith(compareBy(nullsLast()) { it.fundId }),
     partnerContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.partnerContribution,
         previouslyReported = previouslyReported.partnerContribution,
