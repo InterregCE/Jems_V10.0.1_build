@@ -8,7 +8,7 @@
 
 
         <div class="summary-form" jemsMultiColumnRow>
-            <ng-container [ngTemplateOutlet]="data.isNewPaymentApplication ? selectFundAndAccountingYear : readOnlyFundAndAccountingYear"
+            <ng-container [ngTemplateOutlet]="isCreate ? selectFundAndAccountingYear : readOnlyFundAndAccountingYear"
                           [ngTemplateOutletContext]="{
                              fundId: summaryForm.get(constants.FORM_CONTROL_NAMES.programmeFundId),
                              accountingYearId: summaryForm.get(constants.FORM_CONTROL_NAMES.accountingYearId),
