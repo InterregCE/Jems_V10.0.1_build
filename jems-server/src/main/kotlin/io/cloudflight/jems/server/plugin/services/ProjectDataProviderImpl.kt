@@ -403,7 +403,18 @@ class ProjectDataProviderImpl(
                     .filter { it.programmeResultIndicatorId != null }
                     .groupBy { it.programmeResultIndicatorId }
                     .toMutableMap()
-            ).toIndicatorOverviewLines()
+            ).toIndicatorOverviewLines(),
+            indicatorLinesWithCodes = ResultOverviewCalculator.calculateProjectResultOverview(
+            projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
+            programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
+                .associateBy { it.id },
+            programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
+                .associateBy { it.id },
+            projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
+                .filter { it.programmeResultIndicatorId != null }
+                .groupBy { it.programmeResultIndicatorId }
+                .toMutableMap()
+            ).toIndicatorOverviewLinesWithCodes()
         )
     }
 }

@@ -69,6 +69,7 @@ import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifec
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLineWithCodes
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionSpfData
@@ -251,6 +252,29 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
 
 fun List<IndicatorOverviewLine>.toIndicatorOverviewLines() = map {
     io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine(
+        outputIndicatorId = it.outputIndicator?.id,
+        outputIndicatorIdentifier = it.outputIndicator?.identifier,
+        outputIndicatorName = it.outputIndicator?.name.toDataModel(),
+        outputIndicatorMeasurementUnit = it.outputIndicator?.measurementUnit.toDataModel(),
+        outputIndicatorTargetValueSumUp = it.outputIndicator?.targetValueSumUp,
+
+        projectOutputNumber = it.projectOutput?.projectOutputNumber,
+        projectOutputTitle = it.projectOutput?.projectOutputTitle.toDataModel(),
+        projectOutputTargetValue = it.projectOutput?.projectOutputTargetValue,
+
+        resultIndicatorId = it.resultIndicator?.id,
+        resultIndicatorIdentifier = it.resultIndicator?.identifier,
+        resultIndicatorName = it.resultIndicator?.name.toDataModel(),
+        resultIndicatorMeasurementUnit = it.resultIndicator?.measurementUnit.toDataModel(),
+        resultIndicatorBaseline = it.resultIndicator?.baseline,
+        resultIndicatorTargetValueSumUp = it.resultIndicator?.targetValueSumUp,
+
+        onlyResultWithoutOutputs = it.onlyResultWithoutOutputs
+    )
+}
+
+fun List<IndicatorOverviewLine>.toIndicatorOverviewLinesWithCodes() = map {
+    IndicatorOverviewLineWithCodes(
         outputIndicatorId = it.outputIndicator?.id,
         outputIndicatorIdentifier = it.outputIndicator?.identifier,
         outputIndicatorName = it.outputIndicator?.name.toDataModel(),
