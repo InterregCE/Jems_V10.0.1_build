@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.submitProj
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
@@ -217,6 +218,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
     private lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
+    private lateinit var preSubmissionCheckService: RunControlPartnerReportPreSubmissionCheckService
+
+    @MockK
     private lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
@@ -260,17 +264,18 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, partnerPersistence, reportControlExpenditurePersistence,
+        clearMocks(reportPersistence, preSubmissionCheckService, partnerPersistence, reportControlExpenditurePersistence,
             reportExpenditureCostCategoryPersistence, reportExpenditureCoFinancingPersistence, reportContributionPersistence,
             reportLumpSumPersistence, reportUnitCostPersistence, reportInvestmentPersistence, controlOverviewPersistence,
             auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence, projectPersistence)
     }
 
     @ParameterizedTest(name = "finalizeControl (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified"])
     fun finalizeControl(status: ReportStatus) {
         val report = report(42L, status)
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 42L) } returns report
+        every { preSubmissionCheckService.preCheck(PARTNER_ID, 42L).isSubmissionAllowed } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
 
         every {
@@ -375,6 +380,19 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 44L) } returns report
 
         assertThrows<ReportNotInControl> { interactor.finalizeControl(PARTNER_ID, 44L) }
+
+        verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
+    }
+
+    @ParameterizedTest(name = "finalizeControl - fails pre-check (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified"])
+    fun `finalizeControl - fails pre-check`(status: ReportStatus) {
+        val report = report(46L, status)
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 46L) } returns report
+        every { preSubmissionCheckService.preCheck(PARTNER_ID, 46L).isSubmissionAllowed } returns false
+
+        assertThrows<SubmissionNotAllowed> { interactor.finalizeControl(PARTNER_ID, 46L) }
 
         verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }

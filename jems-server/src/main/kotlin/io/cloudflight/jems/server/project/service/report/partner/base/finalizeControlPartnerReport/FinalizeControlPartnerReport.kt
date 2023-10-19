@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.service.report.partner.control.expendi
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.onlyParkedOnes
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
@@ -43,6 +44,7 @@ import java.time.ZonedDateTime
 @Service
 class FinalizeControlPartnerReport(
     private val reportPersistence: ProjectPartnerReportPersistence,
+    private val preSubmissionCheckService: RunControlPartnerReportPreSubmissionCheckService,
     private val partnerPersistence: PartnerPersistence,
     private val reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
@@ -64,6 +66,9 @@ class FinalizeControlPartnerReport(
     override fun finalizeControl(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsInControl(report)
+
+        if (!preSubmissionCheckService.preCheck(partnerId, reportId = reportId).isSubmissionAllowed)
+            throw SubmissionNotAllowed()
 
         val expenditures = reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
