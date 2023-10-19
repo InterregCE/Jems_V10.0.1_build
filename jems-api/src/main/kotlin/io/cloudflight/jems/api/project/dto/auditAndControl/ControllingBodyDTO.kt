@@ -7,7 +7,7 @@ enum class ControllingBodyDTO {
     JS,
     MA,
     NA,
-    GOA,
+    GoA,
     AA,
     EC,
     ECA,

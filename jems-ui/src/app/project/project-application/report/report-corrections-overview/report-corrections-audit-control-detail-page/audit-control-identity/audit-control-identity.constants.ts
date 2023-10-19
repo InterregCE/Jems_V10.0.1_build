@@ -8,7 +8,7 @@ export class AuditControlConstants {
     AuditControlDTO.ControllingBodyEnum.JS,
     AuditControlDTO.ControllingBodyEnum.MA,
     AuditControlDTO.ControllingBodyEnum.NA,
-    AuditControlDTO.ControllingBodyEnum.GOA,
+    AuditControlDTO.ControllingBodyEnum.GoA,
     AuditControlDTO.ControllingBodyEnum.AA,
     AuditControlDTO.ControllingBodyEnum.EC,
     AuditControlDTO.ControllingBodyEnum.ECA,
