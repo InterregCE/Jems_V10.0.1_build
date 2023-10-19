@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentAppli
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.*
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
+import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.constructFilter
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -32,26 +33,5 @@ class GetFtlsPaymentsAvailableForArtNot94Not95(
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)
     }
-
-    private fun constructFilter(
-        ecApplicationId: Long,
-        fundId: Long,
-        scoBasis: PaymentSearchRequestScoBasis,
-        paymentType: PaymentType,
-    ) = PaymentSearchRequest(
-        paymentId = null,
-        paymentType = paymentType,
-        projectIdentifiers = emptySet(),
-        projectAcronym = null,
-        claimSubmissionDateFrom = null,
-        claimSubmissionDateTo = null,
-        approvalDateFrom = null,
-        approvalDateTo = null,
-        fundIds = setOf(fundId),
-        lastPaymentDateFrom = null,
-        lastPaymentDateTo = null,
-        availableForEcId = ecApplicationId,
-        scoBasis = scoBasis,
-    )
 
 }

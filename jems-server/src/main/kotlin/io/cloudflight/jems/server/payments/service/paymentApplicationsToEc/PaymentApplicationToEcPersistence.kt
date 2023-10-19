@@ -3,8 +3,11 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -36,5 +39,17 @@ interface PaymentApplicationToEcPersistence {
     fun deselectPaymentFromEcPaymentAndResetFields(paymentId: Long)
 
     fun updatePaymentToEcCorrectedAmounts(paymentId: Long, paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate)
+
+
+    fun calculateAndGetTotals(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>>
+
+    fun saveTotalsWhenFinishingEcPayment(
+        ecPaymentId: Long,
+        totals: Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>,
+    )
+
+    fun getTotalsForFinishedEcPayment(
+        ecPaymentId: Long,
+    ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
 
 }

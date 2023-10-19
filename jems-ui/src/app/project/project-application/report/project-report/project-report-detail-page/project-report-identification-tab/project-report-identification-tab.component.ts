@@ -96,7 +96,7 @@ export class ProjectReportIdentificationTabComponent {
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
           this.availablePeriods = availablePeriods;
           this.availableDeadlines = reportingDeadlines.filter(d => availablePeriods.map(p => p.number).includes(d.periodNumber));
-          this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(projectReport.periodDetail.number)
+          this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(projectReport.periodDetail.number);
       }),
       map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,

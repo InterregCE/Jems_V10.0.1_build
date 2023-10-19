@@ -1,5 +1,7 @@
 package io.cloudflight.jems.api.payments.applicationToEc
 
+import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestScoBasisDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
 import io.swagger.annotations.Api
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Payment to EC Linking API")
 interface PaymentToEcPaymentLinkingApi {
@@ -27,7 +30,7 @@ interface PaymentToEcPaymentLinkingApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{ecApplicationId}/ftls/artNot94Not95")
+    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{ecApplicationId}/artNot94Not95/ftls")
     fun getFTLSPaymentsLinkedWithEcForArtNot94Not95(pageable: Pageable, @PathVariable ecApplicationId: Long): Page<PaymentToEcLinkingDTO>
 
     @ApiOperation("Select payment to ec")
@@ -44,4 +47,11 @@ interface PaymentToEcPaymentLinkingApi {
         @PathVariable paymentId: Long,
         @RequestBody paymentToEcLinkingUpdate: PaymentToEcLinkingUpdateDTO,
     )
+
+    @ApiOperation("Get cumulative amounts by type ")
+    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{paymentId}/cumulativeAmountsByType")
+    fun getPaymentApplicationToEcCumulativeAmountsByType(
+        @PathVariable paymentId: Long,
+        @RequestParam(required = false) type: PaymentSearchRequestScoBasisDTO? = null
+    ): PaymentToEcAmountSummaryDTO
 }
