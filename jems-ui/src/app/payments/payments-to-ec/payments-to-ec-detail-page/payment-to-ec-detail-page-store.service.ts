@@ -1,19 +1,19 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   AccountingYearDTO,
   AccountingYearService, PaymentApplicationToEcCreateDTO,
   PaymentApplicationToEcDetailDTO,
   PaymentApplicationToEcDTO,
-  PaymentApplicationToECService,
-  PaymentApplicationToEcSummaryUpdateDTO, PaymentEcStatusUpdateDTO,
+  PaymentApplicationToECService, PaymentEcStatusUpdateDTO,
+  PaymentApplicationToEcSummaryUpdateDTO, PaymentToEcAmountSummaryDTO, PaymentToECLinkingAPIService,
   ProgrammeFundDTO,
   ProgrammeFundService,
   UserRoleCreateDTO,
 } from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {UntilDestroy} from '@ngneat/until-destroy';
@@ -39,12 +39,14 @@ export class PaymentsToEcDetailPageStore {
   newSort$ = new Subject<Partial<MatSort>>();
   userCanEdit$: Observable<boolean>;
   userCanView$: Observable<boolean>;
+  tabChanged$ = new BehaviorSubject(true);
 
   constructor(private paymentApplicationToECService: PaymentApplicationToECService,
               private permissionService: PermissionService,
               private routingService: RoutingService,
               private programmeFundService: ProgrammeFundService,
-              private accountingYearsService: AccountingYearService
+              private accountingYearsService: AccountingYearService,
+              private paymentToECLinkingAPIService: PaymentToECLinkingAPIService
   ) {
     this.paymentToEcId$ = this.routingService.routeParameterChanges(PaymentsToEcDetailPageStore.PAYMENTS_TO_EC_PATH, 'paymentToEcId').pipe(map(Number));
     this.accountingYears$ = this.accountingYears();
@@ -65,6 +67,13 @@ export class PaymentsToEcDetailPageStore {
       );
 
     return merge(initialPaymentDetail$, this.savedPaymentToEcDetail$);
+  }
+
+  cumulativeForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
+    return combineLatest([this.paymentToEcId$, this.tabChanged$]).pipe(
+      switchMap(([paymentId]) => paymentId ? this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeAmountsByType(paymentId) : of({totals: {totalEligibleExpenditure: 0, totalUnionContribution: 0, totalPublicContribution: 0}}) as Observable<PaymentToEcAmountSummaryDTO>),
+      tap(data => Log.info('Fetched cumulative for summary tab', this, data))
+    );
   }
 
   private userCanEdit(): Observable<boolean> {

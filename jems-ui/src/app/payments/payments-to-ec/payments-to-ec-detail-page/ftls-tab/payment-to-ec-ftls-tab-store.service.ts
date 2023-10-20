@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
-  PagePaymentToEcLinkingDTO,
+  PagePaymentToEcLinkingDTO, PaymentApplicationToECService, PaymentToEcAmountSummaryDTO,
   PaymentToECLinkingAPIService,
   PaymentToEcLinkingUpdateDTO
 } from '@cat/api';
@@ -49,6 +49,16 @@ export class PaymentToEcFtlsTabStoreService {
           this.retrieveListError$.next(error.error);
           return of({} as PagePaymentToEcLinkingDTO);
         })
+    );
+  }
+
+  cumulativeForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
+    return combineLatest([
+      this.detailPageStore.paymentToEcId$,
+      this.refresh$.pipe(startWith(1))
+    ]).pipe(
+      switchMap(([paymentId]) => this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeAmountsByType(paymentId, 'DoesNotFallUnderArticle94Nor95')),
+      tap(data => Log.info('Fetched cumulative for FTLSArtNot94Not95s tab', this, data))
     );
   }
 
