@@ -5,6 +5,6 @@ import {LocaleDatePipeUtil} from '@common/utils/locale-date-pipe-util';
 @Pipe({name: 'localeDate'})
 export class LocaleDatePipe implements PipeTransform {
   transform(value?: Date | string | null, dateFormat?: LongDateFormatKey, timeFormat?: LongDateFormatKey): string {
-    return LocaleDatePipeUtil.transform(value);
+    return LocaleDatePipeUtil.transform(value, dateFormat, timeFormat);
   }
 }
