@@ -87,12 +87,11 @@
                     </ng-container>
 
                     <ng-container matColumnDef="pricePerUnit">
-                        <mat-header-cell *matHeaderCellDef>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
                             <span jemsText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field
-                                    jemsFormFieldWidth="full">
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-end">
+                            <mat-form-field jemsFormFieldWidth="full">
                                 <input [formControlName]="constants.SPF_FORM_CONTROL_NAMES.pricePerUnit"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        currencyMask matInput
