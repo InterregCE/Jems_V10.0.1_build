@@ -298,6 +298,12 @@ import {
 import {
   ReportCorrectionsAuditControlDetailPageBreadcrumbResolver
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page-breadcrumb.resolver';
+import {
+  AuditControlCorrectionDetailPageBreadcrumbResolver
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page-breadcrumb.resolver';
+import {
+  AuditControlCorrectionDetailComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 
 export const routes: Routes = [
   {
@@ -471,6 +477,12 @@ export const routes: Routes = [
                   {
                     path: '',
                     component: ReportCorrectionsAuditControlDetailPageComponent,
+                  },
+                  {
+                    path: 'correction/:correctionId',
+                    data: {dynamicBreadcrumb: true},
+                    resolve: {breadcrumb$: AuditControlCorrectionDetailPageBreadcrumbResolver},
+                    component: AuditControlCorrectionDetailComponent
                   }
                 ]
               }
