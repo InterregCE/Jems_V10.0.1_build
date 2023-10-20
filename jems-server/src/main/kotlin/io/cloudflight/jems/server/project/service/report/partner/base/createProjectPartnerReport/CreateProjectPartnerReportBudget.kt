@@ -408,9 +408,9 @@ class CreateProjectPartnerReportBudget(
                 percentage = ZERO,
                 percentageSpf = ZERO,
                 total = ZERO,
-                previouslyReported = previous.funds[fundId]!!,
-                previouslyReportedParked = previousParked.funds[fundId]!!,
-                previouslyValidated = previousValidated.funds[fundId]!!,
+                previouslyReported = previous.funds.getOrDefault(fundId, ZERO),
+                previouslyReportedParked = previousParked.funds.getOrDefault(fundId, ZERO),
+                previouslyValidated = previousValidated.funds.getOrDefault(fundId, ZERO),
                 previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO),
                 disabled = true,
             )
