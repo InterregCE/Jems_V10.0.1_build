@@ -92,10 +92,7 @@ class ReOpenFinalizedEcPaymentApplicationTest: UnitTest() {
             project=null,
             entityRelatedId=null,
             description="Payment application to EC number 3 created for Fund (1, ERDF) " +
-                    "for accounting Year 1: 2021-01-01 - 2022-06-30 changes status from Finished to Draft and " +
-                    "the following items were included:\n" +
-                    "FTLS []\n" +
-                    "Regular []"
+                    "for accounting Year 1: 2021-01-01 - 2022-06-30 changes status from Finished to Draft"
         )
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(expectedAuditCandidate)

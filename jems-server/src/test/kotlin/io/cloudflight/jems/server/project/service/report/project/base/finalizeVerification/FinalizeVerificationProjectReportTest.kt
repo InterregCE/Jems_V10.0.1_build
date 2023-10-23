@@ -256,47 +256,75 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     partnerId = 92,
                     fundId = 1,
                     value = BigDecimal(800.00),
-                    total = BigDecimal(1000.00)
+                    total = BigDecimal(1000.00),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ), PartnerCertificateFundSplit(
                     partnerReportId = 107,
                     partnerId = 91,
                     fundId = 1,
                     value = BigDecimal(400.00),
-                    total = BigDecimal(597.01)
+                    total = BigDecimal(597.01),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ), PartnerCertificateFundSplit(
                     partnerReportId = 108,
                     partnerId = 91,
                     fundId = 1,
                     value = BigDecimal(400.00),
-                    total = BigDecimal(597.01)
+                    total = BigDecimal(597.01),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 107,
                     partnerId = 91,
                     fundId = 4,
                     value = BigDecimal(180.00),
-                    total = BigDecimal(268.66)
+                    total = BigDecimal(268.66),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 108,
                     partnerId = 91,
                     fundId = 4,
                     value = BigDecimal(180.00),
-                    total = BigDecimal(268.66)
+                    total = BigDecimal(268.66),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 107,
                     partnerId = 91,
                     fundId = 5,
                     value = BigDecimal(90.00),
-                    total = BigDecimal(134.33)
+                    total = BigDecimal(134.33),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 108,
                     partnerId = 91,
                     fundId = 5,
                     value = BigDecimal(90.00),
-                    total = BigDecimal(134.33)
+                    total = BigDecimal(134.33),
+                    defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                    defaultOfWhichPrivate = BigDecimal.ZERO,
+                    defaultOfWhichPublic = BigDecimal.ZERO,
+                    defaultPartnerContribution = BigDecimal.ZERO
                 )
             )
     }
@@ -428,8 +456,8 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val reportId = 52L
         val report = report(InVerification)
 
-        val expectedPaymentsToSave = listOf(
-            PaymentRegularToCreate(
+        val expectedPaymentsToSave = mapOf(
+            1L to PaymentRegularToCreate(
                 projectId = PROJECT_ID,
                 partnerPayments = listOf(
                     PaymentPartnerToCreate(
@@ -446,9 +474,12 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                         amountApprovedPerPartner = BigDecimal(400.00)
                     )
                 ),
-                fundId = 1,
-                amountApprovedPerFund = BigDecimal(1600.00)
-            ), PaymentRegularToCreate(
+                amountApprovedPerFund = BigDecimal(1600.00),
+                defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                defaultOfWhichPrivate = BigDecimal.ZERO,
+                defaultOfWhichPublic = BigDecimal.ZERO,
+                defaultPartnerContribution = BigDecimal.ZERO
+            ), 4L to PaymentRegularToCreate(
                 projectId = PROJECT_ID,
                 partnerPayments = listOf(
                     PaymentPartnerToCreate(
@@ -461,9 +492,12 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                         amountApprovedPerPartner = BigDecimal(180.00)
                     )
                 ),
-                fundId = 4,
-                amountApprovedPerFund = BigDecimal(360.00)
-            ), PaymentRegularToCreate(
+                amountApprovedPerFund = BigDecimal(360.00),
+                defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                defaultOfWhichPrivate = BigDecimal.ZERO,
+                defaultOfWhichPublic = BigDecimal.ZERO,
+                defaultPartnerContribution = BigDecimal.ZERO
+            ), 5L to PaymentRegularToCreate(
                 projectId = PROJECT_ID,
                 partnerPayments = listOf(
                     PaymentPartnerToCreate(
@@ -476,8 +510,11 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                         amountApprovedPerPartner = BigDecimal(90.00)
                     )
                 ),
-                fundId = 5,
-                amountApprovedPerFund = BigDecimal(180.00)
+                amountApprovedPerFund = BigDecimal(180.00),
+                defaultOfWhichAutoPublic = BigDecimal.ZERO,
+                defaultOfWhichPrivate = BigDecimal.ZERO,
+                defaultOfWhichPublic = BigDecimal.ZERO,
+                defaultPartnerContribution = BigDecimal.ZERO
             )
         )
 
@@ -496,17 +533,24 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
 
         every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(reportId) } returns mockk()
-
+        every { partnerReportCoFinancingPersistence.getAvailableFunds(101L) } returns listOf(
+            ERDF
+        )
+        every {  reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(PARTNER_REPORT_ID)) } returns mapOf(PARTNER_REPORT_ID to partner_costs)
 
         every { projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, any()) } returns reportCertificatesOverviewPerFund
         every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportCertificateLumpSumPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportInvestmentPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
 
         val slotAudit = slot<ProjectReportStatusChanged>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } answers { }
         val slotStatusChanged = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotStatusChanged)) } answers { }
 
-        val paymentsToSaveSlot = slot<List<PaymentRegularToCreate>>()
+        val paymentsToSaveSlot = slot<Map<Long, PaymentRegularToCreate>>()
         every { paymentPersistence.saveRegularPayments(reportId, capture(paymentsToSaveSlot)) } returns Unit
 
         assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)

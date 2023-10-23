@@ -256,7 +256,7 @@ fun paymentApplicationToEcReOpened(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
         .description(
             updatedEcPaymentApplication
-                .toDescription(previousStatus = PaymentEcStatus.Draft, newStatus = PaymentEcStatus.Finished)
+                .toDescription(previousStatus = PaymentEcStatus.Finished, newStatus = PaymentEcStatus.Draft)
         )
         .build()
     )

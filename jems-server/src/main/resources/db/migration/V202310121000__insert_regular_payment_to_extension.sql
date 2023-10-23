@@ -19,14 +19,12 @@ SELECT
     SUM(cso.automatic_public_contribution) AS corrected_auto_public_contribution,
     SUM(cso.private_contribution) AS private_contribution,
     SUM(cso.private_contribution) AS corrected_private_contribution
-FROM payment p
-    INNER JOIN report_project_partner rpp
-    ON p.project_report_id = rpp.project_report_id
-    INNER JOIN report_project_verification_contribution_source_overview cso
-    ON rpp.id = cso.partner_report_id AND p.programme_fund_id = cso.fund_id
-WHERE p.type = 'REGULAR' AND cso.fund_id IS NOT NULL
-GROUP BY p.id;
+FROM report_project_verification_contribution_source_overview cso
+         LEFT JOIN report_project_partner rpp ON cso.partner_report_id = rpp.id
+         LEFT JOIN report_project rp ON rpp.project_report_id = rp.id
+         LEFT JOIN payment p ON rp.id = p.project_report_id AND cso.fund_id = p.programme_fund_id
+WHERE cso.fund_id IS NOT NULL
+GROUP BY rp.id, cso.fund_id;
 
 ALTER TABLE payment_to_ec_extension
     ADD COLUMN final_sco_basis ENUM('DoesNotFallUnderArticle94Nor95', 'FallsUnderArticle94Or95') DEFAULT NULL;
-

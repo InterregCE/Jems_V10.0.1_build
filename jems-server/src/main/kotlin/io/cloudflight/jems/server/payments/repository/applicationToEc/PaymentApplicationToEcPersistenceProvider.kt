@@ -152,7 +152,6 @@ class PaymentApplicationToEcPersistenceProvider(
             payment.id,
             payment.type,
             paymentToEcExtension.finalScoBasis,
-            payment.project,
             contractingMonitoring.typologyProv94,
             contractingMonitoring.typologyProv95,
         )

@@ -65,7 +65,6 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
                 lastPaymentDateTo = null,
                 availableForEcId = 28L,
                 scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-                ecStatus = PaymentEcStatus.Draft
             )
         )
     }

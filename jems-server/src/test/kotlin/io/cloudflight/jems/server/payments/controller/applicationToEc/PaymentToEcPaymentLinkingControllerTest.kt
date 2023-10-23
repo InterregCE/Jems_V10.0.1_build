@@ -38,9 +38,8 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
     companion object {
         private const val paymentApplicationsToEcId = 45L
-        private val payment = PaymentToEcPayment(
-            payment = ftlsPaymentToProject,
-// TODO            payment = if (type == PaymentType.FTLS) ftlsPaymentToProject else regularPaymentToProject,
+        private fun payment(type: PaymentType) = PaymentToEcPayment(
+            payment = if (type == PaymentType.FTLS) ftlsPaymentToProject else regularPaymentToProject,
             paymentToEcId = 45L,
             partnerContribution = BigDecimal.valueOf(4),
             publicContribution = BigDecimal.valueOf(5),
@@ -52,17 +51,15 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             priorityAxis = "code",
         )
 
-        private val expectedPayment = PaymentToEcLinkingDTO(
+        private fun expectedPayment(type: PaymentTypeDTO) = PaymentToEcLinkingDTO(
             payment = PaymentToProjectDTO(
-                id = 1L,
-                paymentType = PaymentTypeDTO.FTLS,
+                id = if (type == PaymentTypeDTO.FTLS) 1L else 11L,
+                paymentType = type,
                 projectId = 2L,
                 projectCustomIdentifier = "T1000",
                 projectAcronym = "project",
-                paymentClaimId = null,
-                paymentClaimNo = 0,
-// TODO                paymentClaimId = if (type == PaymentTypeDTO.FTLS) null else 5L,
-// TODO                paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
+                paymentClaimId = if (type == PaymentTypeDTO.FTLS) null else 5L,
+                paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
                 fundName = "OTHER",
                 amountApprovedPerFund = BigDecimal.TEN,
                 amountPaidPerFund = BigDecimal.ZERO,
@@ -160,7 +157,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 PageImpl(listOf(payment(PaymentType.FTLS)))
 
         assertThat(controller.getFTLSPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), 45L))
-            .containsExactly(paymentDTO(PaymentTypeDTO.FTLS))
+            .containsExactly(expectedPayment(PaymentTypeDTO.FTLS))
     }
 
     @Test
@@ -169,7 +166,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             PageImpl(listOf(payment(PaymentType.REGULAR)))
 
         assertThat(controller.getRegularPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), 45L))
-            .containsExactly(paymentDTO(PaymentTypeDTO.REGULAR))
+            .containsExactly(expectedPayment(PaymentTypeDTO.REGULAR))
     }
 
     @Test

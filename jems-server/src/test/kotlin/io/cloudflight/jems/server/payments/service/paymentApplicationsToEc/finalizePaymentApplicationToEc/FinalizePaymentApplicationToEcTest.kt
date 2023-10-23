@@ -4,10 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.ec.*
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -151,10 +148,34 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             PaymentEcStatus.Draft
         )
         every { paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(PAYMENT_ID) } returns mapOf(
-            14L to PaymentType.FTLS,
-            15L to PaymentType.FTLS,
-            16L to PaymentType.REGULAR,
-            17L to PaymentType.FTLS,
+            14L to PaymentInEcPaymentMetadata(
+                14L,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            15L to PaymentInEcPaymentMetadata(
+                15L,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            16L to PaymentInEcPaymentMetadata(
+                16L,
+                PaymentType.REGULAR,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            17L to PaymentInEcPaymentMetadata(
+                17,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+                ContractingMonitoringExtendedOption.Yes,
+                ContractingMonitoringExtendedOption.No
+            ),
         )
         every {
             paymentApplicationsToEcPersistence.calculateAndGetTotals(
@@ -169,47 +190,6 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             )
         } returns Unit
 
-        every { paymentPersistence.getPaymentDetails(14L) } returns PaymentDetail(
-            id = 14L,
-            amountApprovedPerFund = BigDecimal.valueOf(80L),
-            fundName = "",
-            projectId = 99L,
-            projectCustomIdentifier = "",
-            partnerPayments = mockk(),
-            paymentType = PaymentType.FTLS,
-            projectAcronym = ""
-        )
-        every { paymentPersistence.getPaymentDetails(15L) } returns PaymentDetail(
-            id = 15L,
-            amountApprovedPerFund = BigDecimal.valueOf(160L),
-            fundName = "",
-            projectId = 99L,
-            projectCustomIdentifier = "",
-            partnerPayments = mockk(),
-            paymentType = PaymentType.FTLS,
-            projectAcronym = ""
-        )
-        every { paymentPersistence.getPaymentDetails(16L) } returns PaymentDetail(
-            id = 16L,
-            amountApprovedPerFund = BigDecimal.valueOf(100L),
-            fundName = "",
-            projectId = 99L,
-            projectCustomIdentifier = "",
-            partnerPayments = mockk(),
-            paymentType = PaymentType.REGULAR,
-            projectAcronym = ""
-        )
-        every { paymentPersistence.getPaymentDetails(17L) } returns PaymentDetail(
-            id = 17L,
-            amountApprovedPerFund = BigDecimal.valueOf(200L),
-            fundName = "",
-            projectId = 100L,
-            projectCustomIdentifier = "",
-            partnerPayments = mockk(),
-            paymentType = PaymentType.FTLS,
-            projectAcronym = ""
-        )
-
         every { contractingMonitoringPersistence.getContractingMonitoring(99L) } returns contractMonitoring(
             projectId = 99L,
             answer = ContractingMonitoringExtendedOption.No
@@ -223,15 +203,17 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(programmeFund.id, accountingYear.id,) } returns false
 
-        val scoBasisSlots = mutableListOf<PaymentSearchRequestScoBasis>()
-        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(setOf(14L, 15L, 16L), capture(scoBasisSlots)) } returns Unit
-        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(setOf(17L), capture(scoBasisSlots)) } returns Unit
+        val toUpdate = mapOf(
+            14L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            15L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            16L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            17L to PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+        )
+        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(toUpdate) } returns Unit
 
         assertThat(finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(PAYMENT_ID)).isEqualTo(
             paymentApplicationDetail(PaymentEcStatus.Finished, isAvailableToReOpen = true)
         )
-        assertThat(scoBasisSlots[0]).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
-        assertThat(scoBasisSlots[1]).isEqualTo(PaymentSearchRequestScoBasis.FallsUnderArticle94Or95)
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED,
