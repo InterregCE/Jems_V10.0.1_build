@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.payments.entity
 
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import java.math.BigDecimal
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -40,4 +43,8 @@ class PaymentToEcExtensionEntity (
     val privateContribution: BigDecimal,
     @field:NotNull
     var correctedPrivateContribution: BigDecimal,
+
+    @Enumerated(EnumType.STRING)
+    var finalScoBasis: PaymentSearchRequestScoBasis?,
+
 )

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.model.regular
+package io.cloudflight.jems.server.payments.model.regular.toCreate
 
 import java.math.BigDecimal
 

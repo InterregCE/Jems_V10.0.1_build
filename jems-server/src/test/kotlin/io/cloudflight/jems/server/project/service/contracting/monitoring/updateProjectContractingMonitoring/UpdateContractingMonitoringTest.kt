@@ -8,10 +8,11 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -282,7 +283,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
-        val payments = slot<Map<PaymentGroupingId, PaymentToCreate>>()
+        val payments = slot<Map<PaymentGroupingId, PaymentFtlsToCreate>>()
         every { paymentPersistence.saveFTLSPayments(projectId, capture(payments)) } answers { }
         every { getProjectBudget.getBudget(projectId, version) } returns listOf(
             partnerBudget(partnerId = 52L, BigDecimal.valueOf(150L)),
@@ -361,17 +362,17 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
             mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                    PaymentToCreate(
-                        2L,
-                        listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
-                        BigDecimal.ONE,
-                        "TSTCM",
-                        "TCM",
-                        defaultPartnerContribution = BigDecimal.valueOf(85.35),
-                        defaultOfWhichPublic = BigDecimal.valueOf(25.13),
-                        defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
-                        defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
-                    )
+                PaymentFtlsToCreate(
+                    programmeLumpSumId = 2L,
+                    partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
+                    amountApprovedPerFund = BigDecimal.ONE,
+                    projectCustomIdentifier = "TSTCM",
+                    projectAcronym = "TCM",
+                    defaultPartnerContribution = BigDecimal.valueOf(85.35),
+                    defaultOfWhichPublic = BigDecimal.valueOf(25.13),
+                    defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
+                    defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
+                )
             )
         )
         assertThat(payContribs.captured).containsExactly(

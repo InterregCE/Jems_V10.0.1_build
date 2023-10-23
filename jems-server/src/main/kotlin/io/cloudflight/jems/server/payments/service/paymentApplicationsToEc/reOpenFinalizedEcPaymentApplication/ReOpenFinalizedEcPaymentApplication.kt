@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplica
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.service.paymentApplicationToEcStatusChanged
+import io.cloudflight.jems.server.payments.service.paymentApplicationToEcReOpened
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.createPaymentApplicationToEc.EcPaymentApplicationSameFundAccountingYearExistsException
 import org.springframework.context.ApplicationEventPublisher
@@ -28,14 +28,7 @@ class ReOpenFinalizedEcPaymentApplication(
         validateFundAccountingYearPair(paymentApplicationToReOpen.paymentApplicationToEcSummary)
 
         return paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(ecPaymentApplicationId, PaymentEcStatus.Draft).also {
-            auditPublisher.publishEvent(
-                paymentApplicationToEcStatusChanged(
-                    context = this,
-                    updatedEcPaymentApplication = it,
-                    previousStatus = paymentApplicationToReOpen.status,
-                    paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(ecPaymentApplicationId),
-                )
-            )
+            auditPublisher.publishEvent(paymentApplicationToEcReOpened(context = this, it))
         }
     }
 

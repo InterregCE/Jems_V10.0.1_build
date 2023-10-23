@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
@@ -29,6 +30,8 @@ import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
+import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -140,9 +143,37 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentToEcExtensionRepository.getById(paymentId).toModel()
 
     @Transactional(readOnly = true)
-    override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentType> =
-        paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(ecPaymentId = ecPaymentId)
-            .associate { Pair(it.paymentId, it.payment.type) }
+    override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentInEcPaymentMetadata> {
+        val paymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+        val payment = QPaymentEntity.paymentEntity
+        val contractingMonitoring = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+
+        val results = jpaQueryFactory.select(
+            payment.id,
+            payment.type,
+            paymentToEcExtension.finalScoBasis,
+            contractingMonitoring.typologyProv94,
+            contractingMonitoring.typologyProv95,
+        )
+            .from(paymentToEcExtension)
+            .leftJoin(payment)
+                .on(payment.id.eq(paymentToEcExtension.payment.id))
+            .leftJoin(contractingMonitoring)
+                .on(payment.project.id.eq(contractingMonitoring.projectId))
+            .where(paymentToEcExtension.paymentApplicationToEc.id.eq(ecPaymentId))
+            .fetch()
+            .map { it: Tuple ->
+                PaymentInEcPaymentMetadata(
+                    paymentId = it.get(0, Long::class.java)!!,
+                    type = it.get(1, PaymentType::class.java)!!,
+                    finalScoBasis = it.get(2, PaymentSearchRequestScoBasis::class.java),
+                    typologyProv94 = it.get(3, ContractingMonitoringExtendedOption::class.java)!!,
+                    typologyProv95 = it.get(4, ContractingMonitoringExtendedOption::class.java)!!,
+                )
+            }
+
+        return results.associateBy { it.paymentId }
+    }
 
     @Transactional
     override fun selectPaymentToEcPayment(paymentIds: Set<Long>, ecPaymentId: Long) {
@@ -202,11 +233,11 @@ class PaymentApplicationToEcPersistenceProvider(
             )
             .from(paymentToEcExtensionEntity)
             .leftJoin(paymentEntity)
-            .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
+                .on(paymentEntity.id.eq(paymentToEcExtensionEntity.payment.id))
             .leftJoin(priorityPolicy)
-            .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
+                .on(priorityPolicy.programmeObjectivePolicy.eq(paymentEntity.project.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(programmePriority)
-            .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
+                .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
             .where(paymentToEcExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId))
             .groupBy(programmePriority.id)
             .fetch()
@@ -260,5 +291,12 @@ class PaymentApplicationToEcPersistenceProvider(
             this.paymentToEcCumulativeAmountsRepository
                 .getAllByPaymentApplicationToEcIdAndType(ecPaymentId, it).toModel()
         }
+
+    @Transactional
+    override fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>) {
+        paymentToEcExtensionRepository.findAllById(toUpdate.keys).forEach {
+            it.finalScoBasis = toUpdate[it.paymentId]!!
+        }
+    }
 
 }

@@ -1,34 +1,33 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
   PagePaymentToEcLinkingDTO,
   PaymentApplicationToEcDetailDTO,
-  PaymentToEcAmountSummaryDTO,
   PaymentToEcLinkingDTO,
   PaymentToEcLinkingUpdateDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {PaymentToEcFtlsTabStoreService} from './payment-to-ec-ftls-tab-store.service';
+import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
+import {APIError} from '@common/models/APIError';
+import {PaymentToEcFtlsTabStoreService} from '../payment-to-ec-ftls-tab-store.service';
+import {PaymentsToEcDetailPageStore} from '../../payment-to-ec-detail-page-store.service';
+import {MatDialog} from '@angular/material/dialog';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {MatCheckboxChange} from '@angular/material/checkbox';
-import {PaymentsToEcDetailPageStore} from '../payment-to-ec-detail-page-store.service';
-import {MatCheckbox} from '@angular/material/checkbox/checkbox';
-import {Forms} from '@common/utils/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
-import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
+import {MatCheckbox} from "@angular/material/checkbox/checkbox";
+import {Forms} from "@common/utils/forms";
 
 @UntilDestroy()
 @Component({
-  selector: 'jems-payments-application-to-ec-ftls-tab',
-  templateUrl: './payment-to-ec-ftls-tab.component.html',
-  styleUrls: ['./payment-to-ec-ftls-tab.component.scss'],
+  selector: 'jems-regular-payments-not-flagged-9495',
+  templateUrl: './regular-payments-not-flagged-9495.component.html',
+  styleUrls: ['./regular-payments-not-flagged-9495.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FormService]
 })
-export class PaymentToEcFtlsTabComponent implements OnInit {
+export class RegularPaymentsNotFlagged9495Component implements OnInit {
 
   displayedColumns = [
     'select',
@@ -47,18 +46,13 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
   ];
 
   form = this.formBuilder.group({
-    ecFTLSs: this.formBuilder.array([]),
+    ecRegularPayments: this.formBuilder.array([]),
   });
 
   data$: Observable<{
     ecId: number;
-    ecFTLSs: PagePaymentToEcLinkingDTO;
+    ecRegularPayments: PagePaymentToEcLinkingDTO;
     isEditable: boolean;
-    // cumulativeForCurrentTab: PaymentToEcAmountSummaryDTO;
-  }>;
-
-  cumulativeForCurrentTab$: Observable<{
-    data: PaymentToEcAmountSummaryDTO;
   }>;
 
   Alert = Alert;
@@ -76,50 +70,43 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
-      this.pageStore.ftlsPage$,
+      this.pageStore.regularPage$,
       this.detailPageStore.paymentToEcId$,
       this.detailPageStore.userCanEdit$,
       this.detailPageStore.updatedPaymentApplicationStatus$,
     ]).pipe(
-      tap(([ecFTLSs ]) => {
-        if (ecFTLSs.content) {
-          this.initializeForm(ecFTLSs.content);
+      tap(([ecRegularPayments ]) => {
+        if (ecRegularPayments.content) {
+          this.initializeForm(ecRegularPayments.content);
         }
       }),
-      map(([ecFTLSs, ecId, userCanEdit, ecStatus ]) => ({
-        ecFTLSs,
+      map(([ecRegularPayments, ecId, userCanEdit, ecStatus ]) => ({
+        ecRegularPayments,
         ecId,
-        isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft,
-      })),
-    );
-
-    this.cumulativeForCurrentTab$ =
-      this.pageStore.cumulativeForCurrentTab().pipe(
-      map((cumulativeForCurrentTab) => ({
-        data: cumulativeForCurrentTab
+        isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft
       })),
     );
     this.formService.init(this.form);
   }
 
   ngOnInit(): void {
-    this.pageStore.ftlsRetrieveListError$.pipe(untilDestroyed(this)).subscribe(value => {
+    this.pageStore.regularRetrieveListError$.pipe(untilDestroyed(this)).subscribe(value => {
       if (value) {
         this.showErrorMessage(value);
       }
     });
   }
 
-  selectionChanged(ecId: number, ftlsPaymentId: number, checked: boolean, event: MatCheckboxChange): void {
+  selectionChanged(ecId: number, regularPaymentId: number, checked: boolean, event: MatCheckboxChange): void {
     event.source.checked = checked;
     if (checked) {
-      this.deselectEcFTLSArtNot94Not95(ecId, ftlsPaymentId, event.source);
+      this.deselectEcRegularArtNot94Not95(ecId, regularPaymentId, event.source);
     } else {
-      this.selectEcFTLSArtNot94Not95(ecId, ftlsPaymentId, event.source);
+      this.selectEcRegularArtNot94Not95(ecId, regularPaymentId, event.source);
     }
   }
 
-  private selectEcFTLSArtNot94Not95(ecId: number, ftlsPaymentId: number, checkbox: MatCheckbox) {
+  private selectEcRegularArtNot94Not95(ecId: number, regularPaymentId: number, checkbox: MatCheckbox) {
     Forms.confirm(
       this.confirmDialog,
       {
@@ -130,7 +117,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
       }).pipe(
       take(1),
       filter(Boolean),
-      switchMap(() => this.pageStore.selectPaymentToEc(ecId, ftlsPaymentId)
+      switchMap(() => this.pageStore.selectPaymentToEc(ecId, regularPaymentId)
         .pipe(
           tap(() => checkbox.checked = true),
           catchError((error) => this.showErrorMessage(error.error))
@@ -138,7 +125,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     ).subscribe();
   }
 
-  private deselectEcFTLSArtNot94Not95(ecId: number, ftlsPaymentId: number, checkbox: MatCheckbox) {
+  private deselectEcRegularArtNot94Not95(ecId: number, regularPaymentId: number, checkbox: MatCheckbox) {
     Forms.confirm(
       this.confirmDialog,
       {
@@ -149,7 +136,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
       }).pipe(
       take(1),
       filter(Boolean),
-      switchMap(() => this.pageStore.deselectPaymentFromEc(ftlsPaymentId)
+      switchMap(() => this.pageStore.deselectPaymentFromEc(regularPaymentId)
         .pipe(
           tap(() => checkbox.checked = false),
           catchError((error) => this.showErrorMessage(error.error))
@@ -179,23 +166,23 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     this.editedRowIndex = rowIndex;
   }
 
-  resetAmounts(rowIndex: number, ftls: PaymentToEcLinkingDTO) {
-    this.ecFTLSs.at(rowIndex).patchValue({
-      ftlsAutoPublicContribution: ftls.autoPublicContribution,
-      ftlsPublicContribution: ftls.publicContribution,
-      ftlsPrivateContribution: ftls.privateContribution
+  resetAmounts(rowIndex: number, regularPayment: PaymentToEcLinkingDTO) {
+    this.ecRegularPayments.at(rowIndex).patchValue({
+      regularAutoPublicContribution: regularPayment.autoPublicContribution,
+      regularPublicContribution: regularPayment.publicContribution,
+      regularPrivateContribution: regularPayment.privateContribution
     });
     this.formService.setDirty(true);
   }
 
-  submitAmountChanges(rowIndex: number, ecId: number, ftlsPaymentId: number) {
+  submitAmountChanges(rowIndex: number, ecId: number, regularPaymentId: number) {
     const dataToUpdate = {
-      correctedPublicContribution: this.ecFTLSs.at(rowIndex).get('ftlsPublicContribution')?.value,
-      correctedAutoPublicContribution: this.ecFTLSs.at(rowIndex).get('ftlsAutoPublicContribution')?.value,
-      correctedPrivateContribution: this.ecFTLSs.at(rowIndex).get('ftlsPrivateContribution')?.value
+      correctedPublicContribution: this.ecRegularPayments.at(rowIndex).get('regularPublicContribution')?.value,
+      correctedAutoPublicContribution: this.ecRegularPayments.at(rowIndex).get('regularAutoPublicContribution')?.value,
+      correctedPrivateContribution: this.ecRegularPayments.at(rowIndex).get('regularPrivateContribution')?.value
     } as PaymentToEcLinkingUpdateDTO;
 
-    this.pageStore.updateLinkedPayment(ftlsPaymentId, dataToUpdate).pipe(
+    this.pageStore.updateLinkedPayment(regularPaymentId, dataToUpdate).pipe(
       take(1),
       tap(_ => this.showSuccessMessageAfterUpdate()),
       catchError(err => this.showErrorMessage(err.error)),
@@ -204,34 +191,34 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     this.editedRowIndex = null;
   }
 
-  discardChanges(rowIndex: number, unchangedFtls: PaymentToEcLinkingDTO) {
-    this.ecFTLSs.at(rowIndex).patchValue({
-      ftlsAutoPublicContribution: unchangedFtls.correctedAutoPublicContribution,
-      ftlsPublicContribution: unchangedFtls.correctedPublicContribution,
-      ftlsPrivateContribution: unchangedFtls.correctedPrivateContribution
+  discardChanges(rowIndex: number, unchangedRegularPayment: PaymentToEcLinkingDTO) {
+    this.ecRegularPayments.at(rowIndex).patchValue({
+      regularAutoPublicContribution: unchangedRegularPayment.correctedAutoPublicContribution,
+      regularPublicContribution: unchangedRegularPayment.correctedPublicContribution,
+      regularPrivateContribution: unchangedRegularPayment.correctedPrivateContribution
     });
     this.editedRowIndex = null;
     this.formService.setDirty(false);
   }
 
-  private initializeForm(ecFTLSs: PaymentToEcLinkingDTO[]) {
-    this.ecFTLSs.clear();
-    ecFTLSs.forEach(e => this.addFTLS(e));
+  private initializeForm(ecRegularPayments: PaymentToEcLinkingDTO[]) {
+    this.ecRegularPayments.clear();
+    ecRegularPayments.forEach(e => this.addRegularPayment(e));
     this.formService.setEditable(true);
     this.formService.resetEditable();
-    this.dataSource = [...this.ecFTLSs.controls];
+    this.dataSource = [...this.ecRegularPayments.controls];
   }
 
-  get ecFTLSs(): FormArray {
-    return this.form.get('ecFTLSs') as FormArray;
+  get ecRegularPayments(): FormArray {
+    return this.form.get('ecRegularPayments') as FormArray;
   }
 
-  addFTLS(ftls: PaymentToEcLinkingDTO) {
+  addRegularPayment(regularPayment: PaymentToEcLinkingDTO) {
     const item = this.formBuilder.group({
-      ftlsAutoPublicContribution: this.formBuilder.control(ftls.correctedAutoPublicContribution),
-      ftlsPublicContribution: this.formBuilder.control(ftls.correctedPublicContribution),
-      ftlsPrivateContribution: this.formBuilder.control(ftls.correctedPrivateContribution),
+      regularAutoPublicContribution: this.formBuilder.control(regularPayment.correctedAutoPublicContribution),
+      regularPublicContribution: this.formBuilder.control(regularPayment.correctedPublicContribution),
+      regularPrivateContribution: this.formBuilder.control(regularPayment.correctedPrivateContribution),
     });
-    this.ecFTLSs.push(item);
+    this.ecRegularPayments.push(item);
   }
 }

@@ -1,0 +1,93 @@
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+  height: inherit;
+}
+
+.mat-column-select {
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 4rem;
+  max-width: 4rem;
+  justify-content: center;
+}
+
+.mat-column-projectId {
+  margin-left: 0.5rem;
+  max-width: 8rem;
+  min-width: 8rem;
+}
+
+.mat-column-projectAcronym {
+  padding-left: .5rem;
+  min-width: 8rem;
+}
+
+.mat-column-maApprovalDate {
+  min-width: 6rem;
+  padding-left: 2rem;
+}
+
+.mat-column-claimNo {
+  min-width: 4rem;
+  max-width: 4rem;
+  padding-left: .5rem;
+}
+
+.mat-column-priorityAxis {
+  min-width: 8rem;
+  padding-left: .5rem;
+}
+
+.mat-column-fundAmount,
+.mat-column-partnerContribution {
+  min-width: 8rem;
+}
+
+.mat-column-totalEligible {
+  min-width: 8rem;
+  &.mat-cell {
+    padding-left: 1rem;
+  }
+}
+
+.mat-column-partnerContribution,
+.mat-column-privateContribution,
+.mat-column-autoPublicContribution,
+.mat-column-publicContribution {
+  min-width: 13rem;
+}
+
+.mat-column-correction {
+  padding-left: 1rem;
+  min-width: 4rem;
+}
+
+mat-table {
+  overflow-x: auto;
+}
+
+.edited-row {
+  height: 10rem;
+  width: fit-content;
+}
+
+.reset-button {
+  float: right;
+}
+
+.right-aligned-text {
+  margin: auto 1rem auto auto;
+}
+
+.discard-button,
+.save-button {
+  min-width: 6rem;
+}
+
+.selected-button-cell {
+  margin-top: 2rem;
+}
+
+.save-icon {
+  transform: scale(0.8);
+}

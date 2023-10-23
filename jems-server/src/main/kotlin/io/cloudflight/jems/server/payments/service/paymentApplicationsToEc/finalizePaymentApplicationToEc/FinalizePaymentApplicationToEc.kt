@@ -4,8 +4,10 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.service.paymentApplicationToEcStatusChanged
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinished
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.sumUpProperColumns
 import org.springframework.context.ApplicationEventPublisher
@@ -29,19 +31,17 @@ class FinalizePaymentApplicationToEc(
             .sumUpProperColumns()
         paymentApplicationsToEcPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 
-        return paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(paymentId, PaymentEcStatus.Finished)
-            .apply {
-                this.isAvailableToReOpen = !existsDraftPaymentApplicationWithFundAndAccountingYear(this.paymentApplicationToEcSummary)
-            }.also {
-                auditPublisher.publishEvent(
-                    paymentApplicationToEcStatusChanged(
-                        context = this,
-                        updatedEcPaymentApplication = it,
-                        previousStatus = paymentApplication.status,
-                        paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(paymentId),
-                    )
-                )
-            }
+        val linkedPayments = paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(paymentId)
+
+        val finalScoBasisPerPayment = linkedPayments.toFinalScoBasisChanges()
+        paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(finalScoBasisPerPayment)
+
+        val updatedModel = paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(paymentId, PaymentEcStatus.Finished)
+        updatedModel.fillInFlagForReOpening()
+
+        return updatedModel.also {
+            auditPublisher.publishEvent(paymentApplicationToEcFinished(context = this, it, linkedPayments))
+        }
     }
 
     private fun validatePaymentApplicationIsDraft(ecPaymentApplicationStatus: PaymentEcStatus) {
@@ -49,8 +49,24 @@ class FinalizePaymentApplicationToEc(
             throw PaymentApplicationToEcNotInDraftException()
     }
 
-    private fun existsDraftPaymentApplicationWithFundAndAccountingYear(paymentApplicationToEcSummary: PaymentApplicationToEcSummary): Boolean =
-        paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(
-            paymentApplicationToEcSummary.programmeFund.id, paymentApplicationToEcSummary.accountingYear.id
+    private fun Map<Long, PaymentInEcPaymentMetadata>.toFinalScoBasisChanges() = mapValues { (_, paymentMetadata) ->
+        with (paymentMetadata) {
+            when {
+                finalScoBasis != null -> finalScoBasis
+                typologyProv94.isNo() && typologyProv94.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                else -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+            }
+        }
+    }
+
+    private fun noOtherDraftEcPaymentExistsFor(paymentToEc: PaymentApplicationToEcSummary): Boolean =
+        !paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(
+            programmeFundId = paymentToEc.programmeFund.id,
+            accountingYearId = paymentToEc.accountingYear.id,
         )
+
+    private fun PaymentApplicationToEcDetail.fillInFlagForReOpening() = apply {
+        this.isAvailableToReOpen = status.isFinished() && noOtherDraftEcPaymentExistsFor(paymentApplicationToEcSummary)
+    }
+
 }

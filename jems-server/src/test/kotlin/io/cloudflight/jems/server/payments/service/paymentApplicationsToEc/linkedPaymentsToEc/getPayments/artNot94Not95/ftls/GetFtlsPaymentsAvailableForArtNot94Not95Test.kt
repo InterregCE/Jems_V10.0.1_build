@@ -1,8 +1,9 @@
-package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95
+package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.linkedPaymentsToEc.getPayments.artNot94Not95.ftls
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
@@ -36,10 +37,11 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
     }
 
     @Test
-    fun getPaymentList() {
+    fun `getPaymentList - Draft`() {
         val payment = mockk<PaymentApplicationToEcDetail>()
         every { payment.id } returns 28L
         every { payment.paymentApplicationToEcSummary.programmeFund.id } returns 77L
+        every { payment.status } returns PaymentEcStatus.Draft
         every { paymentToEcPersistence.getPaymentApplicationToEcDetail(28L) } returns payment
 
         val result = mockk<Page<PaymentToEcPayment>>()
@@ -60,7 +62,39 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
                 fundIds = setOf(77L),
                 lastPaymentDateFrom = null,
                 lastPaymentDateTo = null,
-                availableForEcId = 28L,
+                ecPaymentIds = setOf(null, 28L),
+                scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            )
+        )
+    }
+
+    @Test
+    fun `getPaymentList - Finished`() {
+        val payment = mockk<PaymentApplicationToEcDetail>()
+        every { payment.id } returns 29L
+        every { payment.paymentApplicationToEcSummary.programmeFund.id } returns 78L
+        every { payment.status } returns PaymentEcStatus.Finished
+        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(29L) } returns payment
+
+        val result = mockk<Page<PaymentToEcPayment>>()
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { paymentPersistence.getAllPaymentToEcPayment(Pageable.unpaged(), capture(slotFilter)) } returns result
+        assertThat(interactor.getPaymentList(Pageable.unpaged(), 29L)).isEqualTo(result)
+
+        assertThat(slotFilter.captured).isEqualTo(
+            PaymentSearchRequest(
+                paymentId = null,
+                paymentType = PaymentType.FTLS,
+                projectIdentifiers = emptySet(),
+                projectAcronym = null,
+                claimSubmissionDateFrom = null,
+                claimSubmissionDateTo = null,
+                approvalDateFrom = null,
+                approvalDateTo = null,
+                fundIds = emptySet(),
+                lastPaymentDateFrom = null,
+                lastPaymentDateTo = null,
+                ecPaymentIds = setOf(29L),
                 scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
             )
         )

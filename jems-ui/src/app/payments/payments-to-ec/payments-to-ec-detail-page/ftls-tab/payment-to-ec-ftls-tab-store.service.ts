@@ -15,27 +15,34 @@ import {APIError} from '@common/models/APIError';
 @Injectable({providedIn: 'root'})
 export class PaymentToEcFtlsTabStoreService {
 
-  page$: Observable<PagePaymentToEcLinkingDTO>;
+  ftlsPage$: Observable<PagePaymentToEcLinkingDTO>;
+  regularPage$: Observable<PagePaymentToEcLinkingDTO>;
   refresh$ = new Subject<void>();
 
   constructor(
     private detailPageStore: PaymentsToEcDetailPageStore,
     private paymentToECLinkingAPIService: PaymentToECLinkingAPIService
   ) {
-    this.page$ = this.getEcFTLSArtNot94Not95s();
+    this.ftlsPage$ = this.getEcFTLSArtNot94Not95s();
+    this.regularPage$ = this.getEcRegularArtNot94Not95s();
   }
 
-  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
-  newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
-  newSort$ = new Subject<Partial<MatSort>>();
-  retrieveListError$ = new Subject<APIError | null>();
+  ftlsNewPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  ftlsNewPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
+  ftlsNewSort$ = new Subject<Partial<MatSort>>();
+  ftlsRetrieveListError$ = new Subject<APIError | null>();
+
+  regularNewPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  regularNewPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
+  regularNewSort$ = new Subject<Partial<MatSort>>();
+  regularRetrieveListError$ = new Subject<APIError | null>();
 
   public getEcFTLSArtNot94Not95s(): Observable<PagePaymentToEcLinkingDTO> {
     return combineLatest([
       this.detailPageStore.paymentToEcId$,
-      this.newPageIndex$,
-      this.newPageSize$,
-      this.newSort$.pipe(
+      this.ftlsNewPageIndex$,
+      this.ftlsNewPageSize$,
+      this.ftlsNewSort$.pipe(
         startWith(({ active: undefined, direction: undefined }) as Partial<MatSort>),
         map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc'),
       ),
@@ -44,11 +51,33 @@ export class PaymentToEcFtlsTabStoreService {
     ]).pipe(
       switchMap(([ecId, page, size, sort]) =>
         this.paymentToECLinkingAPIService.getFTLSPaymentsLinkedWithEcForArtNot94Not95(ecId, page, size, sort)),
-        tap(data => Log.info('Fetched ec FTLS articles not 94/95', this, data)),
+        tap(data => Log.info('Fetched ec FTLS payments with articles not 94/95', this, data)),
         catchError(error => {
-          this.retrieveListError$.next(error.error);
+          this.ftlsRetrieveListError$.next(error.error);
           return of({} as PagePaymentToEcLinkingDTO);
         })
+    );
+  }
+
+  public getEcRegularArtNot94Not95s(): Observable<PagePaymentToEcLinkingDTO> {
+    return combineLatest([
+      this.detailPageStore.paymentToEcId$,
+      this.regularNewPageIndex$,
+      this.regularNewPageSize$,
+      this.regularNewSort$.pipe(
+        startWith(({ active: undefined, direction: undefined }) as Partial<MatSort>),
+        map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc'),
+      ),
+      this.refresh$.pipe(startWith(1)),
+      this.detailPageStore.paymentToEcDetail$
+    ]).pipe(
+      switchMap(([ecId, page, size, sort]) =>
+        this.paymentToECLinkingAPIService.getRegularPaymentsLinkedWithEcForArtNot94Not95(ecId, page, size, sort)),
+      tap(data => Log.info('Fetched ec regular payments with articles not 94/95', this, data)),
+      catchError(error => {
+        this.regularRetrieveListError$.next(error.error);
+        return of({} as PagePaymentToEcLinkingDTO);
+      })
     );
   }
 

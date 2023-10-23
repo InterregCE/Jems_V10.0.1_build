@@ -4,10 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.ec.*
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -15,10 +12,14 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -103,6 +104,15 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             )
         )
 
+        private fun contractMonitoring(projectId: Long, answer: ContractingMonitoringExtendedOption) = ProjectContractingMonitoring(
+            projectId = projectId,
+            addDates = listOf(),
+            dimensionCodes = listOf(),
+            typologyPartnership = mockk(),
+            typologyStrategic = mockk(),
+            typologyProv94 = answer,
+            typologyProv95 = answer
+        )
     }
 
     @MockK
@@ -113,6 +123,9 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
 
     @MockK
     lateinit var paymentPersistence: PaymentPersistence
+
+    @MockK
+    lateinit var contractingMonitoringPersistence : ContractingMonitoringPersistence
 
     @InjectMockKs
     lateinit var finalizePaymentApplicationToEc: FinalizePaymentApplicationToEc
@@ -135,10 +148,34 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             PaymentEcStatus.Draft
         )
         every { paymentApplicationsToEcPersistence.getPaymentsLinkedToEcPayment(PAYMENT_ID) } returns mapOf(
-            14L to PaymentType.FTLS,
-            15L to PaymentType.FTLS,
-            16L to PaymentType.REGULAR,
-            17L to PaymentType.FTLS,
+            14L to PaymentInEcPaymentMetadata(
+                14L,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            15L to PaymentInEcPaymentMetadata(
+                15L,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            16L to PaymentInEcPaymentMetadata(
+                16L,
+                PaymentType.REGULAR,
+                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                ContractingMonitoringExtendedOption.No,
+                ContractingMonitoringExtendedOption.No
+            ),
+            17L to PaymentInEcPaymentMetadata(
+                17,
+                PaymentType.FTLS,
+                PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+                ContractingMonitoringExtendedOption.Yes,
+                ContractingMonitoringExtendedOption.No
+            ),
         )
         every {
             paymentApplicationsToEcPersistence.calculateAndGetTotals(
@@ -153,9 +190,26 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             )
         } returns Unit
 
+        every { contractingMonitoringPersistence.getContractingMonitoring(99L) } returns contractMonitoring(
+            projectId = 99L,
+            answer = ContractingMonitoringExtendedOption.No
+        )
+        every { contractingMonitoringPersistence.getContractingMonitoring(100L) } returns contractMonitoring(
+            projectId = 100L,
+            answer = ContractingMonitoringExtendedOption.Yes
+        )
+
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(programmeFund.id, accountingYear.id,) } returns false
+
+        val toUpdate = mapOf(
+            14L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            15L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            16L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            17L to PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+        )
+        every { paymentApplicationsToEcPersistence.updatePaymentToEcFinalScoBasis(toUpdate) } returns Unit
 
         assertThat(finalizePaymentApplicationToEc.finalizePaymentApplicationToEc(PAYMENT_ID)).isEqualTo(
             paymentApplicationDetail(PaymentEcStatus.Finished, isAvailableToReOpen = true)

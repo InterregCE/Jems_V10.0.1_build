@@ -34,15 +34,15 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -63,12 +63,14 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.verification.financialOverview.ProjectReportVerificationCertificateContributionOverviewEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.repository.report.project.verification.financialOverview.ProjectReportVerificationCertificateCoFinancingOverviewRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -354,18 +356,20 @@ class PaymentPersistenceProviderTest: UnitTest() {
             )
         )
 
-        private val paymentFTLSToCreateMap = mapOf(Pair(
-            PaymentGroupingId(7, fundId),
-            PaymentToCreate(lumpSumId, listOf(
-                PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35)),
-                PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65)),
-            ), amountApprovedPerFund = BigDecimal.valueOf(100), "proj-iden", "proj-acr",
-                defaultPartnerContribution = BigDecimal.valueOf(32),
-                defaultOfWhichPublic = BigDecimal.valueOf(33),
-                defaultOfWhichAutoPublic = BigDecimal.valueOf(34),
-                defaultOfWhichPrivate = BigDecimal.valueOf(35),
-            ),
-        ))
+        private val paymentFTLSToCreateMap = mapOf(
+            PaymentGroupingId(7, fundId) to
+            PaymentFtlsToCreate(
+                lumpSumId,
+                listOf(
+                    PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35)),
+                    PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65)),
+                ), amountApprovedPerFund = BigDecimal.valueOf(100), "proj-iden", "proj-acr",
+                    defaultPartnerContribution = BigDecimal.valueOf(32),
+                    defaultOfWhichPublic = BigDecimal.valueOf(33),
+                    defaultOfWhichAutoPublic = BigDecimal.valueOf(34),
+                    defaultOfWhichPrivate = BigDecimal.valueOf(35),
+                ),
+        )
 
         private val expectedPayments = PaymentToProject(
             id = paymentId,
@@ -418,7 +422,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             fundIds = setOf(511L, 512L),
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
-            availableForEcId = 693L,
+            ecPaymentIds = setOf(null, 693L),
             scoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
         )
 
@@ -469,8 +473,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
         // regular payments
 
-        val regularPayments =  listOf(
-            PaymentRegularToCreate(
+        val regularPayments =  mapOf(
+            1L to PaymentRegularToCreate(
                 projectId = projectId,
                 partnerPayments = listOf(
                     PaymentPartnerToCreate(
@@ -487,10 +491,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
                         amountApprovedPerPartner = BigDecimal(400.00)
                     )
                 ),
-                fundId = 1,
-                amountApprovedPerFund = BigDecimal(1600.00)
+                defaultPartnerContribution = BigDecimal.valueOf(50),
+                defaultOfWhichPublic = BigDecimal.valueOf(75),
+                defaultOfWhichAutoPublic = BigDecimal.valueOf(150),
+                defaultOfWhichPrivate = BigDecimal.valueOf(40),
+                amountApprovedPerFund = BigDecimal(90)
             ),
-            PaymentRegularToCreate(
+            4L to PaymentRegularToCreate(
                 projectId = projectId,
                 partnerPayments = listOf(
                     PaymentPartnerToCreate(
@@ -503,12 +510,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
                         amountApprovedPerPartner = BigDecimal(90.00)
                     )
                 ),
-                fundId = 4,
-                amountApprovedPerFund = BigDecimal(180.00)
+                defaultPartnerContribution = BigDecimal.valueOf(100),
+                defaultOfWhichPublic = BigDecimal.valueOf(75),
+                defaultOfWhichAutoPublic = BigDecimal.valueOf(300),
+                defaultOfWhichPrivate = BigDecimal.valueOf(80),
+                amountApprovedPerFund = BigDecimal(180)
             )
         )
-
-
     }
 
     @BeforeEach
@@ -583,7 +591,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
                 "&& containsIc(paymentEntity.projectAcronym,acr-filter) " +
                 "&& paymentEntity.fund.id in [511, 512] " +
                 "&& (paymentToEcExtensionEntity.paymentApplicationToEc is null || paymentToEcExtensionEntity.paymentApplicationToEc.id = 693) " +
-                "&& !(projectContractingMonitoringEntity.typologyProv94 = No && projectContractingMonitoringEntity.typologyProv95 = No)")
+                "&& (paymentToEcExtensionEntity.finalScoBasis = FallsUnderArticle94Or95 || paymentToEcExtensionEntity.finalScoBasis is null " +
+                "&& !(projectContractingMonitoringEntity.typologyProv94 = No && projectContractingMonitoringEntity.typologyProv95 = No))")
         assertThat(slotHaving.captured.toString()).isEqualTo("max(paymentPartnerInstallmentEntity.paymentDate) >= 2023-07-10 " +
                 "&& max(paymentPartnerInstallmentEntity.paymentDate) <= 2023-07-10")
         assertThat(slotOffset.captured).isEqualTo(0L)
@@ -762,14 +771,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { projectPartnerReportRepository.getById(107L) } returns leadPartnerR1
         every { projectPartnerReportRepository.getById(108L) } returns leadPartnerR2
         every { projectPartnerReportRepository.getById(106L) } returns secondPartnerR3
+        val slotExtensions = mutableListOf<PaymentToEcExtensionEntity>()
+        every { paymentToEcExtensionRepository.save(capture(slotExtensions)) } returnsArgument 0
 
         val slotPartners = slot<List<PaymentPartnerEntity>>()
         every { paymentPartnerRepository.saveAll(capture(slotPartners)) } answers {slotPartners.captured}
 
-
-        paymentPersistenceProvider.saveRegularPayments(projectReportId ,regularPayments)
-
-
+        paymentPersistenceProvider.saveRegularPayments(projectReportId, regularPayments)
 
         with(slotPayments.captured) {
             assertThat(get(0).id).isEqualTo(0L)
@@ -780,7 +788,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             assertThat(get(0).projectLumpSum).isNull()
             assertThat(get(0).projectReport).isNotNull
             assertThat(get(0).fund).isEqualTo(fundERDFEntity)
-            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal(1600.00))
+            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal(90.00))
         }
         with(slotPayments.captured) {
             assertThat(get(1).id).isEqualTo(0L)
@@ -794,23 +802,37 @@ class PaymentPersistenceProviderTest: UnitTest() {
             assertThat(get(1).amountApprovedPerFund).isEqualTo(BigDecimal(180.00))
         }
 
-        assertThat(slotPartners.captured.size).isEqualTo(5)
+        assertThat(slotPartners.captured.size).isEqualTo(2)
         with(slotPartners.captured) {
 
             assertThat(get(0).partnerCertificate).isNotNull
-            assertThat(get(0).partnerCertificate?.id).isEqualTo(106L)
+            assertThat(get(0).partnerCertificate?.id).isEqualTo(107L)
 
             assertThat(get(1).partnerCertificate).isNotNull
-            assertThat(get(1).partnerCertificate?.id).isEqualTo(107L)
+            assertThat(get(1).partnerCertificate?.id).isEqualTo(108L)
+        }
 
-            assertThat(get(2).partnerCertificate).isNotNull
-            assertThat(get(2).partnerCertificate?.id).isEqualTo(108L)
-
-            assertThat(get(3).partnerCertificate).isNotNull
-            assertThat(get(3).partnerCertificate?.id).isEqualTo(107L)
-
-            assertThat(get(4).partnerCertificate).isNotNull
-            assertThat(get(4).partnerCertificate?.id).isEqualTo(108L)
+        with(slotExtensions[0]) {
+            assertThat(paymentId).isEqualTo(0L)
+            assertThat(paymentApplicationToEc).isNull()
+            assertThat(partnerContribution).isEqualTo(BigDecimal.valueOf(50))
+            assertThat(publicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(correctedPublicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(autoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
+            assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
+            assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(40))
+            assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(40))
+        }
+        with(slotExtensions[1]) {
+            assertThat(paymentId).isEqualTo(0L)
+            assertThat(paymentApplicationToEc).isNull()
+            assertThat(partnerContribution).isEqualTo(BigDecimal.valueOf(100))
+            assertThat(publicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(correctedPublicContribution).isEqualTo(BigDecimal.valueOf(75))
+            assertThat(autoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
+            assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
+            assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(80))
+            assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(80))
         }
 
     }

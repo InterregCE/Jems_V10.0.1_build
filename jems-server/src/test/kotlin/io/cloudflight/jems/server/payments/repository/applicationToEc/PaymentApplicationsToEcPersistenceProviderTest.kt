@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.repository.applicationToEc
 
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
+import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -19,15 +20,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.*
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -39,6 +32,7 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -234,7 +228,8 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
                 correctedPublicContribution = BigDecimal.valueOf(55.00),
                 privateContribution = BigDecimal.ZERO,
                 correctedPrivateContribution = BigDecimal.ZERO,
-                paymentApplicationToEc = paymentApplicationToEcEntity
+                paymentApplicationToEc = paymentApplicationToEcEntity,
+                finalScoBasis = null,
             )
 
         private val paymentToEcExtensionModel = PaymentToEcExtension(
@@ -419,10 +414,34 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
     fun getPaymentsLinkedToEcPayment() {
         every { paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } returns
             listOf(paymentToEcExtensionEntity(paymentApplicationToEcEntity))
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any()) } returns query
+        every { query.from(any()) } returns query
+        every { query.leftJoin(any<EntityPath<Any>>()) } returns query
+        every { query.on(any()) } returns query
+        val slotWhere = slot<Predicate>()
+        every { query.where(capture(slotWhere)) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, Long::class.java) } returns 1L
+        every { tuple.get(1, PaymentType::class.java) } returns PaymentType.REGULAR
+        every { tuple.get(2, PaymentSearchRequestScoBasis::class.java) } returns PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+        every { tuple.get(3, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.No
+        every { tuple.get(4, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.No
+
+        val result = mockk<List<Tuple>>()
+        every { result.size } returns 1
+        every { query.fetch() } returns listOf(tuple)
 
         assertThat(persistenceProvider.getPaymentsLinkedToEcPayment(paymentApplicationsToEcId)).isEqualTo(
             mapOf(
-                99L to PaymentType.FTLS
+                1L to PaymentInEcPaymentMetadata(
+                    paymentId = 1,
+                    type = PaymentType.REGULAR,
+                    finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                    typologyProv94 = ContractingMonitoringExtendedOption.No,
+                    typologyProv95 = ContractingMonitoringExtendedOption.No
+                )
             )
         )
     }
@@ -597,6 +616,14 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
                 ecPaymentId = paymentApplicationsToEcId
             )
         ).isEqualTo(expectedPaymentsIncludedInPaymentsToEcMapped)
+    }
+
+    @Test
+    fun updatePaymentToEcFinalScoBasis() {
+        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        every { paymentToEcExtensionRepository.findAllById(setOf(99L)) } returns listOf(entity)
+        persistenceProvider.updatePaymentToEcFinalScoBasis(mapOf(99L to PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95))
+        assertThat(entity.finalScoBasis).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
     }
 
 }

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
@@ -38,7 +39,7 @@ interface PaymentApplicationToEcPersistence {
 
     fun getPaymentExtension(paymentId: Long): PaymentToEcExtension
 
-    fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentType>
+    fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentInEcPaymentMetadata>
 
     fun selectPaymentToEcPayment(paymentIds: Set<Long>, ecPaymentId: Long)
 
@@ -60,5 +61,7 @@ interface PaymentApplicationToEcPersistence {
     fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
     ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
+
+    fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
 }

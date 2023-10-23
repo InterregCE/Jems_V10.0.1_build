@@ -8,8 +8,6 @@ import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataReposit
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
@@ -22,14 +20,14 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
@@ -217,7 +215,7 @@ class PaymentPersistenceProvider(
             .toListModel()
 
     @Transactional
-    override fun saveFTLSPayments(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentToCreate>) {
+    override fun saveFTLSPayments(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentFtlsToCreate>) {
         val projectEntity = projectRepository.getById(projectId)
         val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
             model.toFTLSPaymentEntity(
@@ -238,49 +236,38 @@ class PaymentPersistenceProvider(
                     )
                 }
             )
-            paymentToEcExtensionRepository.save(
-                PaymentToEcExtensionEntity(
-                    paymentId = entity.id,
-                    payment = entity,
-                    autoPublicContribution = toCreate.defaultOfWhichAutoPublic,
-                    correctedAutoPublicContribution = toCreate.defaultOfWhichAutoPublic,
-                    partnerContribution = toCreate.defaultPartnerContribution,
-                    privateContribution = toCreate.defaultOfWhichPrivate,
-                    correctedPrivateContribution = toCreate.defaultOfWhichPrivate,
-                    publicContribution = toCreate.defaultOfWhichPublic,
-                    correctedPublicContribution = toCreate.defaultOfWhichPublic
-                )
-            )
+            paymentToEcExtensionRepository.save(toCreate.toEntity(entity))
         }
     }
 
     @Transactional
-    override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: List<PaymentRegularToCreate>) {
+    override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: Map<Long, PaymentRegularToCreate>) {
         val projectReportEntity = projectReportRepository.getById(projectReportId)
         val projectEntity = projectRepository.getById(projectReportEntity.projectId)
         val fundIdToFundEntity =
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
                 .mapNotNull { it.programmeFund }.associateBy { it.id }
 
-        val paymentEntitiesByFundId = paymentRepository.saveAll(
-            paymentsToBeSaved.map {
-                val fund = fundIdToFundEntity.getOrElse(it.fundId) { throw PaymentFinancingSourceNotFoundException() }
-                it.toRegularPaymentEntity(projectEntity, projectReportEntity, fund)
+        val paymentEntities = paymentRepository.saveAll(
+            paymentsToBeSaved.map { (fundId, toCreate) ->
+                val fund = fundIdToFundEntity.getOrElse(fundId) { throw PaymentFinancingSourceNotFoundException() }
+                toCreate.toRegularPaymentEntity(projectEntity, projectReportEntity, fund)
             }
         ).associateBy { it.fund.id }
 
-
-        val paymentPartnerEntities = paymentsToBeSaved.flatMap { regular ->
-            regular.partnerPayments.map {
-                PaymentPartnerEntity(
-                    payment = paymentEntitiesByFundId.get(regular.fundId)!!,
-                    projectPartner = projectPartnerRepository.getById(it.partnerId),
-                    partnerCertificate = projectPartnerReportRepository.getById(it.partnerReportId!!),
-                    amountApprovedPerPartner = it.amountApprovedPerPartner,
-                )
-            }
+        paymentEntities.forEach { (fundId, entity) ->
+            val toCreate = paymentsToBeSaved[fundId]!!
+            paymentPartnerRepository.saveAll(
+                toCreate.partnerPayments.map {
+                    it.toEntity(
+                        paymentEntity = entity,
+                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
+                        partnerReportEntity = projectPartnerReportRepository.getById(it.partnerReportId!!),
+                    )
+                }
+            )
+            paymentToEcExtensionRepository.save(toCreate.toEntity(entity))
         }
-        paymentPartnerRepository.saveAll(paymentPartnerEntities)
     }
 
     @Transactional(readOnly = true)
@@ -412,8 +399,6 @@ class PaymentPersistenceProvider(
         val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
         val whereExpressions = mutableListOf<BooleanExpression>(
             specPayment.fund.id.eq(fundId),
-            // this will be removed with next story so also regular ones are linked automatically
-            specPayment.type.eq(PaymentType.FTLS),
             specPaymentToEcExtension.paymentApplicationToEc.isNull(),
         )
 
