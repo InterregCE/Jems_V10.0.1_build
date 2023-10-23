@@ -30,7 +30,6 @@ class PaymentToEcCumulativeAmountsEntity(
     val type: PaymentSearchRequestScoBasis,
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "priority_axis_id")
     val priorityAxis: ProgrammePriorityEntity?,
 
     @field:NotNull

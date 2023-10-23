@@ -2,6 +2,7 @@
     <jems-form  (discard)="resetForm(data.paymentDetail)"
                 (save)="savePaymentApplication()"
                [formGroup]="summaryForm">
+    <div jemsFormLayout>
 
         <h3>{{'payments.to.ec.detail.summary.tab.header' | translate}}</h3>
         <p>{{'payments.to.ec.detail.summary.tab.subheader' | translate}}</p>
@@ -65,7 +66,7 @@
                 </mat-form-field>
             </div>
 
-            <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="two-thirds"
+            <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="full"
                                       [control]="summaryForm.controls.comment"
                                       [errors]="summaryForm?.get(constants.FORM_CONTROL_NAMES.comment)?.errors"
                                       label="payments.to.ec.detail.summary.tab.other.details.comment.label"
@@ -74,14 +75,17 @@
                                       [maxRows]="10">
             </jems-expandable-textarea>
         </div>
+    </div>
     </jems-form>
 
-  <h3>{{'payments.to.ec.detail.summary.tab.cumulative.amounts.header' | translate}}</h3>
-  <jems-payment-to-ec-cumulative-table [data]="data.cumulativeSummary"></jems-payment-to-ec-cumulative-table>
+    <mat-card jemsFormLayout class="mt-3">
+        <h3>{{'payments.to.ec.detail.summary.tab.cumulative.amounts.header' | translate}}</h3>
+        <jems-payment-to-ec-cumulative-table [data]="data.cumulativeSummary"></jems-payment-to-ec-cumulative-table>
+    </mat-card>
 
-  <div class="mt-3">
+    <div class="mt-3">
         <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
-  </div>
+    </div>
 </ng-container>
 
 

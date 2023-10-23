@@ -15,7 +15,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Page
@@ -37,19 +37,19 @@ internal class GetRegularPaymentsAvailableForArtNot94Not95Test: UnitTest() {
     }
 
     @Test
-    fun getPaymentList() {
+    fun `getPaymentList - Draft`() {
         val paymentEc = mockk<PaymentApplicationToEcDetail>()
         every { paymentEc.id } returns 28L
         every { paymentEc.paymentApplicationToEcSummary.programmeFund.id } returns 77L
-        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(28L) } returns paymentEc
         every { paymentEc.status } returns PaymentEcStatus.Draft
+        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(28L) } returns paymentEc
 
         val result = mockk<Page<PaymentToEcPayment>>()
         val slotFilter = slot<PaymentSearchRequest>()
         every { paymentPersistence.getAllPaymentToEcPayment(Pageable.unpaged(), capture(slotFilter)) } returns result
-        Assertions.assertThat(interactor.getPaymentList(Pageable.unpaged(), 28L)).isEqualTo(result)
+        assertThat(interactor.getPaymentList(Pageable.unpaged(), 28L)).isEqualTo(result)
 
-        Assertions.assertThat(slotFilter.captured).isEqualTo(
+        assertThat(slotFilter.captured).isEqualTo(
             PaymentSearchRequest(
                 paymentId = null,
                 paymentType = PaymentType.REGULAR,
@@ -62,9 +62,42 @@ internal class GetRegularPaymentsAvailableForArtNot94Not95Test: UnitTest() {
                 fundIds = setOf(77L),
                 lastPaymentDateFrom = null,
                 lastPaymentDateTo = null,
-                availableForEcId = 28L,
+                ecPaymentIds = setOf(null, 28L),
                 scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
             )
         )
     }
+
+    @Test
+    fun `getPaymentList - Finished`() {
+        val paymentEc = mockk<PaymentApplicationToEcDetail>()
+        every { paymentEc.id } returns 29L
+        every { paymentEc.paymentApplicationToEcSummary.programmeFund.id } returns 78L
+        every { paymentEc.status } returns PaymentEcStatus.Finished
+        every { paymentToEcPersistence.getPaymentApplicationToEcDetail(29L) } returns paymentEc
+
+        val result = mockk<Page<PaymentToEcPayment>>()
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { paymentPersistence.getAllPaymentToEcPayment(Pageable.unpaged(), capture(slotFilter)) } returns result
+        assertThat(interactor.getPaymentList(Pageable.unpaged(), 29L)).isEqualTo(result)
+
+        assertThat(slotFilter.captured).isEqualTo(
+            PaymentSearchRequest(
+                paymentId = null,
+                paymentType = PaymentType.REGULAR,
+                projectIdentifiers = emptySet(),
+                projectAcronym = null,
+                claimSubmissionDateFrom = null,
+                claimSubmissionDateTo = null,
+                approvalDateFrom = null,
+                approvalDateTo = null,
+                fundIds = emptySet(),
+                lastPaymentDateFrom = null,
+                lastPaymentDateTo = null,
+                ecPaymentIds = setOf(29L),
+                scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+            )
+        )
+    }
+
 }

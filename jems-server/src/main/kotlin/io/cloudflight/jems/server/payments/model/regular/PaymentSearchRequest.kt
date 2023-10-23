@@ -18,6 +18,6 @@ data class PaymentSearchRequest (
     val lastPaymentDateFrom: LocalDate?,
     val lastPaymentDateTo: LocalDate?,
 
-    val availableForEcId: Long?,
+    val ecPaymentIds: Set<Long?>,
     val scoBasis: PaymentSearchRequestScoBasis?,
 )

@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
@@ -186,10 +187,23 @@ fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
 private val mapper = Mappers.getMapper(PaymentMapper::class.java)
 
 fun AdvancePaymentSearchRequestDTO.toModel(): AdvancePaymentSearchRequest = mapper.map(this)
-fun PaymentSearchRequestDTO.toModel(): PaymentSearchRequest = mapper.map(this)
+fun PaymentSearchRequestDTO.toModel() = PaymentSearchRequest(
+    paymentId = paymentId,
+    paymentType = paymentType?.let { PaymentType.valueOf(it.name) },
+    projectIdentifiers = projectIdentifiers,
+    projectAcronym = projectAcronym,
+    claimSubmissionDateFrom = claimSubmissionDateFrom,
+    claimSubmissionDateTo = claimSubmissionDateTo,
+    approvalDateFrom = approvalDateFrom,
+    approvalDateTo = approvalDateTo,
+    fundIds = fundIds,
+    lastPaymentDateFrom = lastPaymentDateFrom,
+    lastPaymentDateTo = lastPaymentDateTo,
+    ecPaymentIds = emptySet(),
+    scoBasis = null,
+)
 
 @Mapper
 interface PaymentMapper {
     fun map(dto: AdvancePaymentSearchRequestDTO): AdvancePaymentSearchRequest
-    fun map(dto: PaymentSearchRequestDTO): PaymentSearchRequest
 }

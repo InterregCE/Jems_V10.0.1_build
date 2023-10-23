@@ -422,7 +422,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             fundIds = setOf(511L, 512L),
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
-            availableForEcId = 693L,
+            ecPaymentIds = setOf(null, 693L),
             scoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
         )
 

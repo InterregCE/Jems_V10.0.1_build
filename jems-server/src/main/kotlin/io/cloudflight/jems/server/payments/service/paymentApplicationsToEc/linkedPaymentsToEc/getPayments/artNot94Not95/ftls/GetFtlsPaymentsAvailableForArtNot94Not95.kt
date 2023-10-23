@@ -24,15 +24,21 @@ class GetFtlsPaymentsAvailableForArtNot94Not95(
     @ExceptionWrapper(GetFtlsPaymentsAvailableForArtNot94Not95Exception::class)
     override fun getPaymentList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcPayment> {
         val ecPayment = paymentToEcPersistence.getPaymentApplicationToEcDetail(ecApplicationId)
+        val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
-        val filter = constructFilter(
-            ecApplicationId = ecPayment.id,
-            fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id,
-            scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-            paymentType = PaymentType.FTLS,
-        )
+        val filter = if (ecPayment.status.isFinished())
+            filterFtls(ecPaymentIds = setOf(ecPayment.id))
+        else
+            filterFtls(ecPaymentIds = setOf(null, ecPayment.id), fundId = fundId)
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)
     }
+
+    private fun filterFtls(ecPaymentIds: Set<Long?>, fundId: Long? = null) = constructFilter(
+        ecPaymentIds = ecPaymentIds,
+        fundId = fundId,
+        scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+        paymentType = PaymentType.FTLS,
+    )
 
 }

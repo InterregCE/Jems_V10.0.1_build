@@ -1,15 +1,20 @@
-<ng-container>
-
+<div jemsFormLayout>
     <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.1' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.2' | translate }}</p>
+    <div>
+        <div>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.1' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.2' | translate }}</div>
+    </div>
     <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
         <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
     </ng-container>
+</div>
 
-    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.title' | translate }}</h3>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.description.1' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.ftls.tab.description.2' | translate }}</p>
+<div class="mt-5">
+    <h3>{{ 'payments.to.ec.detail.ftls.tab.title' | translate }}</h3>
+    <div class="mb-2">
+        <div>{{ 'payments.to.ec.detail.ftls.tab.description.1' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.ftls.tab.description.2' | translate }}</div>
+    </div>
 
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
@@ -25,15 +30,6 @@
         </jems-alert>
 
         <ng-container *ngIf="data.ecFTLSs.totalElements">
-            <jems-paginator
-                    [length]="data.ecFTLSs.totalElements"
-                    [currentPageIndex]="data.ecFTLSs.pageable.pageNumber"
-                    [currentPageSize]="data.ecFTLSs.pageable.pageSize"
-                    [confirmPageChange]="editedRowIndex !== null"
-                    (pageIndexChanged)="pageStore.ftlsNewPageIndex$.next($event)"
-                    (pageSizeChanged)="pageStore.ftlsNewPageSize$.next($event)">
-            </jems-paginator>
-
             <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.ftlsNewSort$.next($event)"  [dataSource]="dataSource">
 
                 <ng-container matColumnDef="select">
@@ -218,4 +214,4 @@
         </jems-alert>
     </ng-container>
     <jems-regular-payments-not-flagged-9495></jems-regular-payments-not-flagged-9495>
-</ng-container>
+</div>

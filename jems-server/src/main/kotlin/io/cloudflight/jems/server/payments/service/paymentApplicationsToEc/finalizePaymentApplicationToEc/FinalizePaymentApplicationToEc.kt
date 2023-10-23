@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinished
-import io.cloudflight.jems.server.payments.service.paymentApplicationToEcReOpened
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.sumUpProperColumns
 import org.springframework.context.ApplicationEventPublisher

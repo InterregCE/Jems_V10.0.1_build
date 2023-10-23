@@ -268,7 +268,7 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = setOf(511L, 512L),
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
-            availableForEcId = null,
+            ecPaymentIds = emptySet(),
             scoBasis = null,
         )
     }
@@ -350,7 +350,7 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = emptySet(),
             lastPaymentDateFrom = null,
             lastPaymentDateTo = null,
-            availableForEcId = null,
+            ecPaymentIds = emptySet(),
             scoBasis = null,
         ))
     }

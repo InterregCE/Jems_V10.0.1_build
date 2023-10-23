@@ -1,3 +1,6 @@
+ALTER TABLE payment_application_to_ec_cumulative_amounts
+    MODIFY COLUMN priority_axis_id INT UNSIGNED DEFAULT NULL;
+
 INSERT INTO payment_to_ec_extension(
     payment_id,
     payment_application_to_ec_id,
@@ -27,4 +30,5 @@ WHERE cso.fund_id IS NOT NULL
 GROUP BY rp.id, cso.fund_id;
 
 ALTER TABLE payment_to_ec_extension
-    ADD COLUMN final_sco_basis ENUM('DoesNotFallUnderArticle94Nor95', 'FallsUnderArticle94Or95') DEFAULT NULL;
+    ADD COLUMN final_sco_basis ENUM('DoesNotFallUnderArticle94Nor95', 'FallsUnderArticle94Or95') DEFAULT NULL
+        AFTER payment_application_to_ec_id;

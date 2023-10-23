@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page
 private val mapper = Mappers.getMapper(PaymentApplicationToEcModelMapper::class.java)
 
 fun PaymentApplicationToEcEntity.toModel(): PaymentApplicationToEc = mapper.map(this)
-fun PaymentApplicationToEc.toEntity(): PaymentApplicationToEcEntity = mapper.map(this)
 fun Page<PaymentApplicationToEcEntity>.toModel() = map { it.toModel() }
 
 fun PaymentToEcExtensionEntity.toModel() = PaymentToEcExtension(
@@ -84,7 +83,6 @@ interface PaymentApplicationToEcModelMapper {
 
     @Mapping(source = "programmeFund", target = "programmeFund", qualifiedByName = ["toFundModel"])
     fun map(entity: PaymentApplicationToEcEntity): PaymentApplicationToEc
-    fun map(model: PaymentApplicationToEc): PaymentApplicationToEcEntity
 
     @Mappings(
         Mapping(source = "priorityAxis.code", target = "priorityAxis"),

@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import java.math.BigDecimal
 
 fun constructFilter(
-    ecApplicationId: Long,
-    fundId: Long,
+    ecPaymentIds: Set<Long?>,
+    fundId: Long? = null,
     scoBasis: PaymentSearchRequestScoBasis?,
     paymentType: PaymentType?,
 ) = PaymentSearchRequest(
@@ -21,10 +21,10 @@ fun constructFilter(
     claimSubmissionDateTo = null,
     approvalDateFrom = null,
     approvalDateTo = null,
-    fundIds = setOf(fundId),
+    fundIds = if (fundId != null) setOf(fundId) else emptySet(),
     lastPaymentDateFrom = null,
     lastPaymentDateTo = null,
-    availableForEcId = ecApplicationId,
+    ecPaymentIds = ecPaymentIds,
     scoBasis = scoBasis,
 )
 

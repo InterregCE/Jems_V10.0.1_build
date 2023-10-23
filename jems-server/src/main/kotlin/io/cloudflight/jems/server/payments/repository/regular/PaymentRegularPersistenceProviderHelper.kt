@@ -127,14 +127,20 @@ fun PaymentSearchRequest.transformToWhereClause(
     if (fundIds.isNotEmpty())
         expressions.add(qPayment.fund.id.`in`(this.fundIds))
 
-    if (availableForEcId != null)
-        expressions.add(
-            specPaymentToEcExtension.paymentApplicationToEc.isNull.or(
-                specPaymentToEcExtension.paymentApplicationToEc.id.eq(
-                    availableForEcId
-                )
+    if (ecPaymentIds.isNotEmpty()) {
+        val ids = ecPaymentIds.filterNotNull()
+        if (ids.isEmpty())
+            expressions.add(specPaymentToEcExtension.paymentApplicationToEc.isNull)
+        else if (ecPaymentIds.size == ids.size)
+            expressions.add(specPaymentToEcExtension.paymentApplicationToEc.id.`in`(ids))
+        else
+            expressions.add(
+                listOf(
+                    specPaymentToEcExtension.paymentApplicationToEc.isNull,
+                    specPaymentToEcExtension.paymentApplicationToEc.id.`in`(ids),
+                ).joinWithOr()
             )
-        )
+    }
 
     if (scoBasis != null) {
         val allAnswersNo = specProjectContracting.typologyProv94.eq(No)
@@ -144,7 +150,6 @@ fun PaymentSearchRequest.transformToWhereClause(
             FallsUnderArticle94Or95 -> allAnswersNo.not()
         }
 
-        // TODO test
         expressions.add(
             specPaymentToEcExtension.finalScoBasis.eq(scoBasis).or(
                 specPaymentToEcExtension.finalScoBasis.isNull().and(scoBasisFilter)
