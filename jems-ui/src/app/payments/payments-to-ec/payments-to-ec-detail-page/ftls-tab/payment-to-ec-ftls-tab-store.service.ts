@@ -39,7 +39,7 @@ export class PaymentToEcFtlsTabStoreService {
 
   public getEcFTLSArtNot94Not95s(): Observable<PagePaymentToEcLinkingDTO> {
     return combineLatest([
-      this.detailPageStore.paymentToEcId$,
+      this.detailPageStore.paymentToEcDetail$,
       this.ftlsNewPageIndex$,
       this.ftlsNewPageSize$,
       this.ftlsNewSort$.pipe(
@@ -47,10 +47,10 @@ export class PaymentToEcFtlsTabStoreService {
         map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc'),
       ),
       this.refresh$.pipe(startWith(1)),
-      this.detailPageStore.paymentToEcDetail$
+      this.detailPageStore.updatedPaymentApplicationStatus$, // to refresh list on status change
     ]).pipe(
-      switchMap(([ecId, page, size, sort]) =>
-        this.paymentToECLinkingAPIService.getFTLSPaymentsLinkedWithEcForArtNot94Not95(ecId, page, size, sort)),
+      switchMap(([ecPayment, page, size, sort]) =>
+        this.paymentToECLinkingAPIService.getFTLSPaymentsLinkedWithEcForArtNot94Not95(ecPayment.id, page, size, sort)),
         tap(data => Log.info('Fetched ec FTLS payments with articles not 94/95', this, data)),
         catchError(error => {
           this.ftlsRetrieveListError$.next(error.error);
@@ -61,7 +61,7 @@ export class PaymentToEcFtlsTabStoreService {
 
   public getEcRegularArtNot94Not95s(): Observable<PagePaymentToEcLinkingDTO> {
     return combineLatest([
-      this.detailPageStore.paymentToEcId$,
+      this.detailPageStore.paymentToEcDetail$,
       this.regularNewPageIndex$,
       this.regularNewPageSize$,
       this.regularNewSort$.pipe(
@@ -69,10 +69,10 @@ export class PaymentToEcFtlsTabStoreService {
         map((sort: Partial<MatSort>) => sort?.direction ? `${sort.active},${sort.direction}` : 'id,desc'),
       ),
       this.refresh$.pipe(startWith(1)),
-      this.detailPageStore.paymentToEcDetail$
+      this.detailPageStore.updatedPaymentApplicationStatus$, // to refresh list on status change
     ]).pipe(
-      switchMap(([ecId, page, size, sort]) =>
-        this.paymentToECLinkingAPIService.getRegularPaymentsLinkedWithEcForArtNot94Not95(ecId, page, size, sort)),
+      switchMap(([ecPayment, page, size, sort]) =>
+        this.paymentToECLinkingAPIService.getRegularPaymentsLinkedWithEcForArtNot94Not95(ecPayment.id, page, size, sort)),
       tap(data => Log.info('Fetched ec regular payments with articles not 94/95', this, data)),
       catchError(error => {
         this.regularRetrieveListError$.next(error.error);

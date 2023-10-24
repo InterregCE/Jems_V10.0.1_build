@@ -13,14 +13,16 @@ interface PaymentApplicationsToEcRepository: JpaRepository<PaymentApplicationToE
     fun existsByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId: Long, accountingYearId: Long, status: PaymentEcStatus): Boolean
 
 
-    @Query(
-        """
-       SELECT acc_year FROM accounting_years acc_year
-        WHERE acc_year.id NOT IN 
-            ( SELECT patec.accountingYear.id FROM payment_applications_to_ec patec 
-                WHERE patec.programmeFund.id=:programmeFundId AND patec.status != 'Finished') 
-        ORDER BY acc_year.year ASC 
-    """
-    )
-    fun getAvailableAccountingYearForFund(programmeFundId: Long): Set<AccountingYearEntity>
+    @Query("""
+        SELECT new kotlin.Pair(
+            accYear,
+            COUNT(ecPayment)
+        ) FROM accounting_years accYear
+            LEFT JOIN payment_applications_to_ec ecPayment
+                ON accYear.id = ecPayment.accountingYear.id AND ecPayment.programmeFund.id = :programmeFundId
+        GROUP BY accYear.id
+        ORDER BY accYear.id
+    """)
+    fun getAvailableAccountingYearForFund(programmeFundId: Long): List<Pair<AccountingYearEntity, Int>>
+
 }

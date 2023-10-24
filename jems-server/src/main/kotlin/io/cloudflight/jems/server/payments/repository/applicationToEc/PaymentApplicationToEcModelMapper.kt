@@ -4,12 +4,10 @@ import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -17,7 +15,6 @@ import io.cloudflight.jems.server.programme.repository.fund.toEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
-import org.mapstruct.Mappings
 import org.mapstruct.Named
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -27,12 +24,6 @@ private val mapper = Mappers.getMapper(PaymentApplicationToEcModelMapper::class.
 
 fun PaymentApplicationToEcEntity.toModel(): PaymentApplicationToEc = mapper.map(this)
 fun Page<PaymentApplicationToEcEntity>.toModel() = map { it.toModel() }
-
-fun PaymentToEcExtensionEntity.toModel() = PaymentToEcExtension(
-    paymentId = paymentId,
-    ecPaymentId = paymentApplicationToEc?.id,
-    ecPaymentStatus = paymentApplicationToEc?.status,
-)
 
 fun PaymentApplicationToEcEntity.toDetailModel() = PaymentApplicationToEcDetail(
     id = id,
@@ -74,8 +65,6 @@ fun PaymentToEcAmountSummaryLine.toEntity(
         totalPublicContribution = totalPublicContribution
     )
 
-fun List<PaymentToEcCumulativeAmountsEntity>.toModel() = map { mapper.map(it) }
-
 @Mapper
 interface PaymentApplicationToEcModelMapper {
     @Named("toFundModel")
@@ -83,9 +72,4 @@ interface PaymentApplicationToEcModelMapper {
 
     @Mapping(source = "programmeFund", target = "programmeFund", qualifiedByName = ["toFundModel"])
     fun map(entity: PaymentApplicationToEcEntity): PaymentApplicationToEc
-
-    @Mappings(
-        Mapping(source = "priorityAxis.code", target = "priorityAxis"),
-    )
-    fun map(entity: PaymentToEcCumulativeAmountsEntity): PaymentToEcAmountSummaryLine
 }

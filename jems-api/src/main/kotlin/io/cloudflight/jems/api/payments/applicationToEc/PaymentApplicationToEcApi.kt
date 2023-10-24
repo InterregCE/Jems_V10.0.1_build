@@ -1,11 +1,11 @@
 package io.cloudflight.jems.api.payments.applicationToEc
 
-import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcCreateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusUpdateDTO
+import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearAvailabilityDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -27,7 +27,7 @@ interface PaymentApplicationToEcApi {
     }
 
     @ApiOperation("Create payment applications to ec")
-    @PostMapping("$ENDPOINT_API_EC_PAYMENTS", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_EC_PAYMENTS, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createPaymentApplicationToEc(
         @RequestBody paymentApplication: PaymentApplicationToEcCreateDTO
     ): PaymentApplicationToEcDetailDTO
@@ -70,6 +70,6 @@ interface PaymentApplicationToEcApi {
 
     @ApiOperation("Returns the available accounting years for the payment application programme fund")
     @GetMapping("$ENDPOINT_API_EC_PAYMENTS/programmeFund/{programmeFundId}/accountingYears")
-    fun getAvailableAccountingYearsForPaymentFund(@PathVariable programmeFundId: Long): List<AccountingYearDTO>
+    fun getAvailableAccountingYearsForPaymentFund(@PathVariable programmeFundId: Long): List<AccountingYearAvailabilityDTO>
 
 }

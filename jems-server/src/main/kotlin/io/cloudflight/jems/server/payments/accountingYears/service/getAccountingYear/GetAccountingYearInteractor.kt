@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.payments.accountingYears.service.getAccountingYear
 
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 
 interface GetAccountingYearInteractor {
 

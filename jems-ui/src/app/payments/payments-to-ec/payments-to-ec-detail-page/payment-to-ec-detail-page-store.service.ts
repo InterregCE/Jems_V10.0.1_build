@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   AccountingYearDTO,
+  AccountingYearAvailabilityDTO,
   AccountingYearService, PaymentApplicationToEcCreateDTO,
   PaymentApplicationToEcDetailDTO,
   PaymentApplicationToEcDTO,
-  PaymentApplicationToECService, PaymentEcStatusUpdateDTO,
+  PaymentApplicationToECService,
   PaymentApplicationToEcSummaryUpdateDTO, PaymentToEcAmountSummaryDTO, PaymentToECLinkingAPIService,
   ProgrammeFundDTO,
   ProgrammeFundService,
@@ -70,7 +71,7 @@ export class PaymentsToEcDetailPageStore {
   }
 
   cumulativeForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
-    return combineLatest([this.paymentToEcId$, this.tabChanged$]).pipe(
+    return combineLatest([this.paymentToEcId$, this.tabChanged$, this.updatedPaymentApplicationStatus$]).pipe(
       switchMap(([paymentId]) => paymentId ? this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeAmountsByType(paymentId) : of({totals: {totalEligibleExpenditure: 0, totalUnionContribution: 0, totalPublicContribution: 0}}) as Observable<PaymentToEcAmountSummaryDTO>),
       tap(data => Log.info('Fetched cumulative for summary tab', this, data))
     );
@@ -97,7 +98,7 @@ export class PaymentsToEcDetailPageStore {
       );
   }
 
-  getProgrammeFundAvailableAccountingYears(programmeFundId: number): Observable<AccountingYearDTO[]> {
+  getProgrammeFundAvailableAccountingYears(programmeFundId: number): Observable<AccountingYearAvailabilityDTO[]> {
     return this.paymentApplicationToECService.getAvailableAccountingYearsForPaymentFund(programmeFundId)
         .pipe(
             tap(accountingYears => Log.info(`Fetched accounting years for programme fund ${programmeFundId}:`, this, accountingYears))

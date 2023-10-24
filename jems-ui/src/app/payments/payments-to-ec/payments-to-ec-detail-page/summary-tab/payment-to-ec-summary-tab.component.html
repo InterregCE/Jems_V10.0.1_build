@@ -132,7 +132,8 @@
     <mat-form-field jemsFormFieldWidth="xx-large">
         <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
         <mat-select [formControl]="accountingYearId" required>
-            <mat-option *ngFor="let accountingYear of availableAccountingYearsForFund" [value]="accountingYear.id" role="option">
+            <mat-option *ngFor="let accountingYear of availableAccountingYearsForFund"
+                        [value]="accountingYear.id" role="option" [disabled]="!accountingYear.available">
                         <span>{{ ('accounting.year.' + accountingYear.year) | translate }}:
                             {{ accountingYear.startDate | localeDate }} - {{ accountingYear.endDate | localeDate }}</span>
             </mat-option>

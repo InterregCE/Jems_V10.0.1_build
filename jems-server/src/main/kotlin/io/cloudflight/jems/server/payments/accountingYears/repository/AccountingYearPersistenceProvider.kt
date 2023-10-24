@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.accountingYears.repository
 
 import io.cloudflight.jems.server.payments.accountingYears.service.AccountingYearPersistence
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

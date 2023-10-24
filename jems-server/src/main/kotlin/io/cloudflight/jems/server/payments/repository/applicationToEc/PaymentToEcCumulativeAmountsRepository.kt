@@ -10,6 +10,6 @@ interface PaymentToEcCumulativeAmountsRepository: JpaRepository<PaymentToEcCumul
 
     fun getAllByPaymentApplicationToEcIdAndType(id: Long, type: PaymentSearchRequestScoBasis): List<PaymentToEcCumulativeAmountsEntity>
 
-    fun getAllByPaymentApplicationToEcId(id: Long): List<PaymentToEcCumulativeAmountsEntity>
+    fun deleteAllByPaymentApplicationToEcId(ecPaymentId: Long)
 
 }

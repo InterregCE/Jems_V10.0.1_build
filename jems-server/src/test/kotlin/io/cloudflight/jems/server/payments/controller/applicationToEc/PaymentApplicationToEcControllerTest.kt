@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.payments.controller.applicationToEc
 
-import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
+import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcCreateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusUpdateDTO
+import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearAvailabilityDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
@@ -15,16 +16,17 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYearAvailability
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.createPaymentApplicationToEc.CreatePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.deletePaymentApplicationToEc.DeletePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.finalizePaymentApplicationToEc.FinalizePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getAvailableAccountingYearsForPaymentFund.GetAvailableAccountingYearsForPaymentFundInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationToEcDetail.GetPaymentApplicationToEcDetailInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationsToEc.GetPaymentApplicationsToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.reOpenFinalizedEcPaymentApplication.ReOpenFinalizedEcPaymentApplicationInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetailInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.createPaymentApplicationToEc.CreatePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.deletePaymentApplicationToEc.DeletePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.finalizePaymentApplicationToEc.FinalizePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getAvailableAccountingYearsForPaymentFund.GetAvailableAccountingYearsForPaymentFundInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getPaymentApplicationToEcDetail.GetPaymentApplicationToEcDetailInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getPaymentApplicationToEcList.GetPaymentApplicationToEcListInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.reOpenFinalizedEcPaymentApplication.ReOpenFinalizedEcPaymentApplicationInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetailInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -125,7 +127,7 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
     }
 
     @MockK
-    lateinit var getPaymentApplicationsToEc: GetPaymentApplicationsToEcInteractor
+    lateinit var getPaymentApplicationsToEc: GetPaymentApplicationToEcListInteractor
 
     @MockK
     lateinit var getPaymentApplicationToEcDetail: GetPaymentApplicationToEcDetailInteractor
@@ -247,17 +249,15 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
 
     @Test
     fun getAvailableAccountingYearsForPaymentFund() {
-        every { getAvailableAccountingYearsForPaymentFund.getAvailableAccountingYearsForPaymentFund(1L) } returns listOf(
-            AccountingYear(id = 1L, year = 2021, startDate = startDate, endDate = endDate)
-        )
-        assertThat(controller.getAvailableAccountingYearsForPaymentFund(1L)).isEqualTo(
-            listOf(
-                AccountingYearDTO(
-                    id = 1L,
-                    year = 2021,
-                    startDate = startDate,
-                    endDate = endDate
-                )
+        every { getAvailableAccountingYearsForPaymentFund.getAvailableAccountingYearsForPaymentFund(1L) } returns
+                listOf(AccountingYearAvailability(id = 1L, year = 2021, startDate = startDate, endDate = endDate, true))
+        assertThat(controller.getAvailableAccountingYearsForPaymentFund(1L)).containsExactly(
+            AccountingYearAvailabilityDTO(
+                id = 1L,
+                year = 2021,
+                startDate = startDate,
+                endDate = endDate,
+                available = true,
             )
         )
     }
