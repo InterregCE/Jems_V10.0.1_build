@@ -25,14 +25,14 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPa
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import java.sql.Timestamp
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 
 @Repository
 class PartnerPersistenceProvider(
@@ -105,8 +105,8 @@ class PartnerPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary> {
-        val lastVersion = projectVersionPersistenceProvider.getLatestVersionOrNull(projectId)
-        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, (version ?: lastVersion)!!)
+        val lastVersion = projectVersionPersistenceProvider.getLatestApprovedOrCurrent(projectId)
+        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, version ?: lastVersion)
 
         return projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId, timestamp!!)
             .toProjectPartnerPaymentSummaryList()
