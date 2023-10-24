@@ -26,7 +26,7 @@ FROM report_project_verification_contribution_source_overview cso
          LEFT JOIN report_project_partner rpp ON cso.partner_report_id = rpp.id
          LEFT JOIN report_project rp ON rpp.project_report_id = rp.id
          LEFT JOIN payment p ON rp.id = p.project_report_id AND cso.fund_id = p.programme_fund_id
-WHERE cso.fund_id IS NOT NULL
+WHERE cso.fund_id IS NOT NULL AND p.type = 'REGULAR'
 GROUP BY rp.id, cso.fund_id;
 
 ALTER TABLE payment_to_ec_extension
