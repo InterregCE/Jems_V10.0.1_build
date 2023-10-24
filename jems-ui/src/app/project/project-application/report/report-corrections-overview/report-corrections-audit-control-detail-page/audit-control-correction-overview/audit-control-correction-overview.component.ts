@@ -2,10 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {PageProjectAuditControlCorrectionLineDTO} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {
-  ReportCorrectionsOverviewStore
-} from '@project/project-application/report/report-corrections-overview/report-corrections-overview.store';
-import {catchError, finalize, map, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {
@@ -18,6 +15,8 @@ import {RoutingService} from "@common/services/routing.service";
 import {ActivatedRoute} from "@angular/router";
 import {APIError} from "@common/models/APIError";
 import { Alert } from '@common/components/forms/alert';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-audit-control-correction-overview',
@@ -31,6 +30,8 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   actionPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
+
+  canEdit: boolean = true;
 
   @ViewChild('idCell', {static: true})
   idCell: TemplateRef<any>;
@@ -59,24 +60,25 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   tableConfiguration: TableConfiguration;
 
   constructor(
-    public overviewStore: ReportCorrectionsOverviewStore,
     public correctionsOverviewStore: AuditControlCorrectionStore,
     public router: RoutingService,
     private detailStore: ReportCorrectionsAuditControlDetailPageStore,
     private activatedRoute: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     this.data$ = combineLatest([
       correctionsOverviewStore.corrections$,
       detailStore.projectId$,
       detailStore.auditControlId$,
-      overviewStore.canEdit$,
+      detailStore.canEdit$,
     ]).pipe(
       map(([page, projectId, auditControlId, canEdit]) => ({
         page,
         projectId,
         auditControlId: Number(auditControlId),
         canEdit
-      })));
+      })),
+      tap(data => this.canEdit = data.canEdit));
   }
 
   ngOnInit() {
@@ -200,5 +202,18 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
       this.error$.next(null);
     }, 4000);
     return of(null);
+  }
+
+  delete(correctionId: number): void {
+    Forms.confirm(
+      this.dialog, {
+        title:  'project.application.reporting.corrections.audit.control.correction.table.action.delete.confirmation.title',
+        message: 'project.application.reporting.corrections.audit.control.correction.table.action.delete.confirmation.message'
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        switchMap(() => this.correctionsOverviewStore.deleteCorrection(correctionId)),
+      ).subscribe();
   }
 }

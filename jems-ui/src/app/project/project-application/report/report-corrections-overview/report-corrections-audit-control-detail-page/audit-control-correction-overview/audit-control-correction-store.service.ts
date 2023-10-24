@@ -57,8 +57,8 @@ export class AuditControlCorrectionStore {
     );
   }
 
-  deleteCorrection(correctionId: number): void {
-    combineLatest([
+  deleteCorrection(correctionId: number): Observable<void> {
+    return combineLatest([
       this.reportCorrectionsAuditControlDetailPageStore.projectId$,
       this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
     ]).pipe(
@@ -66,6 +66,6 @@ export class AuditControlCorrectionStore {
       switchMap(([projectId, auditControlId]) => this.projectAuditControlCorrectionService.deleteProjectAuditCorrection(Number(auditControlId), correctionId, projectId)),
       tap(() => this.refreshCorrections$.next()),
       tap(() => Log.info('Deleted correction: ', this, correctionId))
-    ).subscribe();
+    );
   }
 }
