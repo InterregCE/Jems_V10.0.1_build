@@ -1,0 +1,22 @@
+<jems-project-page-template titleKey="project.application.reporting.title"
+                            subTitleKey="project.breadcrumb.applicationForm.reporting.overview.corrections"
+                            [isVersionedData]="false">
+  <mat-card *ngIf="data$ | async as data">
+    <h3 jemsMultiColumnRow>
+      <button color="primary" class="mr-1" mat-icon-button
+              [matTooltip]="'programme.indicator.back.to.list' | translate"
+              (click)="redirectToCorrectionsOverview(data.projectId, data.auditControlId)">
+        <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+      </button>
+
+      <span >{{'project.application.reporting.corrections.audit.control.correction.title' | translate:
+          {auditControlNumber: data.correction?.auditControlNumber, correctionNumber: data.correction?.correction?.orderNr} }}</span>
+    </h3>
+
+    <p>{{'project.application.reporting.corrections.audit.control.detail.one' | translate}}</p>
+    <p>{{'project.application.reporting.corrections.audit.control.detail.two' | translate}}</p>
+    <p>{{'project.application.reporting.corrections.audit.control.detail.three' | translate}}</p>
+    <p>{{'project.application.reporting.corrections.audit.control.detail.four' | translate}}</p>
+    <p>{{'project.application.reporting.corrections.audit.control.detail.five' | translate}}</p>
+  </mat-card>
+</jems-project-page-template>

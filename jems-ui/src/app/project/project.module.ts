@@ -596,6 +596,9 @@ import { ReportCorrectionsAuditControlCreatePageComponent } from './project-appl
 import { AuditControlIdentityComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-identity/audit-control-identity.component';
 import { AuditControlStatusComponent } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-status/audit-control-status.component';
 import { AuditControlAttachmentsComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-attachments/audit-control-attachments.component';
+import { AuditControlCorrectionOverviewComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-overview.component';
+import { AuditControlCorrectionStatusComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-status/audit-control-correction-status.component';
+import { AuditControlCorrectionDetailComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 
 @NgModule({
   declarations: [
@@ -802,7 +805,10 @@ import { AuditControlAttachmentsComponent } from './project-application/report/r
     ReportCorrectionsAuditControlCreatePageComponent,
     AuditControlIdentityComponent,
     AuditControlStatusComponent,
+    AuditControlCorrectionOverviewComponent,
+    AuditControlCorrectionStatusComponent,
     AuditControlAttachmentsComponent,
+    AuditControlCorrectionDetailComponent,
   ],
   imports: [
     SharedModule,
