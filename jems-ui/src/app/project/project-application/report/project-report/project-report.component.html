@@ -73,7 +73,7 @@
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.reporting.period' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
-                    <span *ngIf="projectReport.periodDetail"
+                    <span *ngIf="projectReport.periodDetail && availablePeriodNumbers.includes(projectReport.periodDetail.number)"
                           matTooltip="{{ 'project.application.project.report.table.reporting.period.tooltip' | translate }} {{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
                         {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
                         periodNumber: projectReport.periodDetail.number,
@@ -81,6 +81,7 @@
                         end: projectReport.periodDetail.end
                     } }}
                     </span>
+                    <span *ngIf="projectReport.periodDetail && !availablePeriodNumbers.includes(projectReport.periodDetail.number)"> {{ 'common.not.applicable.option' | translate }} </span>
                 </mat-cell>
             </ng-container>
 
