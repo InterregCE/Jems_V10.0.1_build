@@ -35,12 +35,12 @@ SELECT
     p.id AS payment_id,
     null AS payment_application_to_ec_id,
     p.amount_approved_per_fund AS partner_contribution,
-    ROUND(partnerContrib.sumPublicContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS public_contribution,
-    ROUND(partnerContrib.sumPublicContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_public_contribution,
-    ROUND(partnerContrib.sumAutomaticPublicContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS auto_public_contribution,
-    ROUND(partnerContrib.sumAutomaticPublicContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_auto_public_contribution,
-    ROUND(partnerContrib.sumPrivateContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS private_contribution,
-    ROUND(partnerContrib.sumPrivateContribution * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_private_contribution
+    ROUND(COALESCE(partnerContrib.sumPublicContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS public_contribution,
+    ROUND(COALESCE(partnerContrib.sumPublicContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_public_contribution,
+    ROUND(COALESCE(partnerContrib.sumAutomaticPublicContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS auto_public_contribution,
+    ROUND(COALESCE(partnerContrib.sumAutomaticPublicContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_auto_public_contribution,
+    ROUND(COALESCE(partnerContrib.sumPrivateContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS private_contribution,
+    ROUND(COALESCE(partnerContrib.sumPrivateContribution, 0) * (p.amount_approved_per_fund / fundSums.sum), 2) AS corrected_private_contribution
 FROM payment p
          LEFT JOIN (
     SELECT
@@ -74,5 +74,3 @@ ALTER TABLE project_contracting_monitoring
     MODIFY COLUMN typology_prov_95      ENUM ('Yes', 'No', 'Partly') NOT NULL DEFAULT 'No',
     MODIFY COLUMN typology_strategic    ENUM ('Yes', 'No') NOT NULL DEFAULT 'No' ,
     MODIFY COLUMN typology_partnership  ENUM ('Yes', 'No') NOT NULL DEFAULT 'No';
-
-
