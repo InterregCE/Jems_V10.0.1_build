@@ -398,12 +398,14 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             programmePriority2
         )
         every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+        every { ecPaymentCumulativeAmountsRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } answers { }
         every { ecPaymentCumulativeAmountsRepository.saveAll(capture(entitySlot)) } returnsArgument 0
 
         persistenceProvider.saveTotalsWhenFinishingEcPayment(
             ecPaymentId = paymentApplicationsToEcId,
             totals = mapOf(Pair(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, paymentsToSave))
         )
+        verify(exactly = 1) { ecPaymentCumulativeAmountsRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) }
         verify(exactly = 1) { ecPaymentCumulativeAmountsRepository.saveAll(entitySlot.captured) }
     }
 

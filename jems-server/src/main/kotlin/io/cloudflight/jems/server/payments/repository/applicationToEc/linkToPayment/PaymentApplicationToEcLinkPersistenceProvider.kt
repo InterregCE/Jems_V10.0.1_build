@@ -155,7 +155,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         val priorityByCode = programmePriorityRepository.getAllByCodeIn(priorityAxisCodes).associateBy { it.code }
         val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
 
-        this.ecPaymentCumulativeAmountsRepository.saveAll(
+        ecPaymentCumulativeAmountsRepository.deleteAllByPaymentApplicationToEcId(ecPaymentId)
+        ecPaymentCumulativeAmountsRepository.saveAll(
             totals.flatMap { (type, perAxisList) ->
                 perAxisList.map { perAxis ->
                     PaymentToEcCumulativeAmountsEntity(
@@ -176,7 +177,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         ecPaymentId: Long,
     ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>> =
         PaymentSearchRequestScoBasis.values().associateWith {
-            this.ecPaymentCumulativeAmountsRepository
+            ecPaymentCumulativeAmountsRepository
                 .getAllByPaymentApplicationToEcIdAndType(ecPaymentId, it).toModel()
         }
 
