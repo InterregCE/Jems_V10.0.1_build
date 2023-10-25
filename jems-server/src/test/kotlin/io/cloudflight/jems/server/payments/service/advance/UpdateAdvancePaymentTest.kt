@@ -6,7 +6,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
@@ -23,7 +22,6 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,7 +37,6 @@ class UpdateAdvancePaymentTest : UnitTest() {
         private const val paymentId = 1L
         private const val partnerId = 2L
         private const val projectId = 3L
-        private const val currentUserId = 7L
         private const val fundId = 4L
         private const val userId = 6L
         private const val version = "1.0"
@@ -66,8 +63,6 @@ class UpdateAdvancePaymentTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "random comment",
-            paymentAuthorized = true,
-            paymentConfirmed = true,
             paymentSettlements = listOf(paymentSettlement)
         )
         private val paymentDetail = AdvancePaymentDetail(
@@ -98,9 +93,6 @@ class UpdateAdvancePaymentTest : UnitTest() {
     lateinit var paymentPersistence: PaymentAdvancePersistence
 
     @MockK
-    lateinit var securityService: SecurityService
-
-    @MockK
     lateinit var validator: AdvancePaymentValidator
 
     @RelaxedMockK
@@ -116,11 +108,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
 
     @Test
     fun `update advance payment new created`() {
-        val newPayment = paymentUpdate.copy(
-            id = null,
-            paymentAuthorized = false,
-            paymentConfirmed = false
-        )
+        val newPayment = paymentUpdate.copy(id = null)
         val savedPayment = paymentDetail.copy(
             paymentAuthorized = false,
             paymentAuthorizedDate = null,
@@ -131,7 +119,6 @@ class UpdateAdvancePaymentTest : UnitTest() {
         )
 
         every { validator.validateDetail(newPayment, null) } returns Unit
-        every { securityService.getUserIdOrThrow() } returns currentUserId
         val toSaveSlot = slot<AdvancePaymentUpdate>()
         every { paymentPersistence.updatePaymentDetail(capture(toSaveSlot)) } returns savedPayment
 
@@ -141,13 +128,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
         assertThat(updateAdvancePayment.updateDetail(newPayment)).isEqualTo(savedPayment)
         assertThat(toSaveSlot.captured).isEqualTo(
             paymentUpdate.copy(
-            id = null,
-            paymentAuthorized = false,
-            paymentAuthorizedUserId = null,
-            paymentAuthorizedDate = null,
-            paymentConfirmed = false,
-            paymentConfirmedUserId = null,
-            paymentConfirmedDate = null
+            id = null
         ))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_IS_CREATED)
         assertThat(auditSlot.captured.auditCandidate.description)
@@ -162,7 +143,6 @@ class UpdateAdvancePaymentTest : UnitTest() {
         )
         every { paymentPersistence.getPaymentDetail(paymentId) } returns paymentSaved
         every { validator.validateDetail(paymentUpdate, paymentSaved) } returns Unit
-        every { securityService.getUserIdOrThrow() } returns currentUserId
         val result = mockk<AdvancePaymentDetail>()
         every { result.id } returns paymentId
         every { result.projectId } returns projectId
@@ -177,29 +157,8 @@ class UpdateAdvancePaymentTest : UnitTest() {
             paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
         } returns result
 
-        val auditSlot = mutableListOf<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
-
         assertThat(updateAdvancePayment.updateDetail(paymentUpdate)).isEqualTo(result)
-        assertThat(toUpdateSlot.captured).isEqualTo(
-            paymentUpdate.copy(
-            paymentAuthorized = true,
-            paymentAuthorizedUserId = currentUserId,
-            paymentAuthorizedDate = currentDate,
-            paymentConfirmed = true,
-            paymentConfirmedUserId = currentUserId,
-            paymentConfirmedDate = currentDate
-        ))
-
-        verify(exactly = 1) { auditPublisher.publishEvent(auditSlot[0]) }
-        verify(exactly = 1) { auditPublisher.publishEvent(auditSlot[1]) }
-
-        assertThat(auditSlot[0].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
-        assertThat(auditSlot[0].auditCandidate.description)
-            .isEqualTo("Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are authorised")
-        assertThat(auditSlot[1].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
-        assertThat(auditSlot[1].auditCandidate.description)
-            .isEqualTo("Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are confirmed")
+        assertThat(toUpdateSlot.captured).isEqualTo(paymentUpdate)
     }
 
     @Test
@@ -212,86 +171,5 @@ class UpdateAdvancePaymentTest : UnitTest() {
         assertThrows<I18nValidationException> {
             updateAdvancePayment.updateDetail(paymentUpdate)
         }
-    }
-
-
-    @Test
-    fun `update advance payment - unconfirm payment should not display audit log`() {
-        val paymentUnconfirmed = paymentUpdate.copy(
-            paymentConfirmed = false
-        )
-        every { paymentPersistence.getPaymentDetail(paymentId) } returns paymentDetail
-        every { validator.validateDetail(paymentUnconfirmed, paymentDetail) } returns Unit
-        every { securityService.getUserIdOrThrow() } returns currentUserId
-        val result = mockk<AdvancePaymentDetail>()
-        every { result.id } returns paymentId
-        every { result.projectId } returns projectId
-        every { result.projectCustomIdentifier } returns paymentDetail.projectCustomIdentifier
-        every { result.projectAcronym } returns paymentDetail.projectAcronym
-        every { result.partnerId } returns partnerId
-        every { result.partnerType } returns paymentDetail.partnerType
-        every { result.partnerNumber } returns paymentDetail.partnerNumber
-        every { result.paymentSettlements } returns paymentDetail.paymentSettlements
-        val toUpdateSlot = slot<AdvancePaymentUpdate>()
-        every {
-            paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
-        } returns result
-
-        val auditSlot = mutableListOf<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
-
-        assertThat(updateAdvancePayment.updateDetail(paymentUnconfirmed)).isEqualTo(result)
-        assertThat(toUpdateSlot.captured).isEqualTo(paymentUnconfirmed.copy(
-            paymentAuthorized = true,
-            paymentAuthorizedUserId = userId,
-            paymentAuthorizedDate = currentDate.minusDays(3),
-            paymentConfirmed = false,
-            paymentConfirmedUserId = null,
-            paymentConfirmedDate = null
-        ))
-
-        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
-    }
-
-    @Test
-    fun `update advance payment - unauthorise payment should not display audit log`() {
-        val paymentUnconfirmed = paymentUpdate.copy(
-            paymentAuthorized = false,
-            paymentAuthorizedUserId = null,
-            paymentAuthorizedDate = null,
-            paymentConfirmed = false,
-            paymentConfirmedUserId = null,
-            paymentConfirmedDate = null
-            )
-        every { paymentPersistence.getPaymentDetail(paymentId) } returns paymentDetail
-        every { validator.validateDetail(paymentUnconfirmed, paymentDetail) } returns Unit
-        every { securityService.getUserIdOrThrow() } returns currentUserId
-        val result = mockk<AdvancePaymentDetail>()
-        every { result.id } returns paymentId
-        every { result.projectId } returns projectId
-        every { result.projectCustomIdentifier } returns paymentDetail.projectCustomIdentifier
-        every { result.projectAcronym } returns paymentDetail.projectAcronym
-        every { result.partnerId } returns partnerId
-        every { result.partnerType } returns paymentDetail.partnerType
-        every { result.partnerNumber } returns paymentDetail.partnerNumber
-        val toUpdateSlot = slot<AdvancePaymentUpdate>()
-        every {
-            paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
-        } returns result
-
-        val auditSlot = mutableListOf<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
-
-        assertThat(updateAdvancePayment.updateDetail(paymentUnconfirmed)).isEqualTo(result)
-        assertThat(toUpdateSlot.captured).isEqualTo(paymentUnconfirmed.copy(
-            paymentAuthorized = false,
-            paymentAuthorizedUserId = null,
-            paymentAuthorizedDate = null,
-            paymentConfirmed = false,
-            paymentConfirmedUserId = null,
-            paymentConfirmedDate = null
-        ))
-
-        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 }

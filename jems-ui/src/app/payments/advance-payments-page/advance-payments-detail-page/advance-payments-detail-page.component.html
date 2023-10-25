@@ -156,10 +156,9 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox
-                                        [disabled]="isPaymentAuthorisationDisabled()"
-                                        (change)="setPaymentAuthorised($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
+                                <mat-checkbox [disabled]="isPaymentAuthorisationDisabled() || (formService.dirty$ | async)"
+                                              [checked]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true"
+                                              (change)="setPaymentAuthorised($event.checked, data.paymentDetail.id)">
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
@@ -187,8 +186,9 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox (change)="setConfirmPaymentDate($event.checked)"
-                                              [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
+                                <mat-checkbox [disabled]="isPaymentDateEmpty() || (formService.dirty$ | async)"
+                                              [checked]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value === true"
+                                              (change)="setConfirmPaymentDate($event.checked, data.paymentDetail.id)">
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>

@@ -256,12 +256,6 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate.minusDays(3),
                 comment = "comment",
-                paymentAuthorized = true,
-                paymentAuthorizedUserId = paymentAuthorizedUser.id,
-                paymentAuthorizedDate = currentDate.minusDays(3),
-                paymentConfirmed = true,
-                paymentConfirmedUserId = paymentConfirmedUser.id,
-                paymentConfirmedDate = currentDate.minusDays(2),
                 paymentSettlements = listOf(paymentSettlement)
            )
 
@@ -393,15 +387,17 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate.minusDays(3),
                 comment = "comment",
-                paymentAuthorized = true,
-                paymentAuthorizedUserId = paymentAuthorizedUser.id,
-                paymentAuthorizedDate = currentDate.minusDays(3),
-                paymentConfirmed = true,
-                paymentConfirmedUserId = paymentConfirmedUser.id,
-                paymentConfirmedDate = currentDate.minusDays(2),
                 paymentSettlements = listOf(paymentSettlement)
             )
-        )).isEqualTo(advancePaymentDetail.copy(id = 0L))
+        )).isEqualTo(advancePaymentDetail.copy(
+            id = 0,
+            paymentAuthorized = null,
+            paymentAuthorizedDate = null,
+            paymentAuthorizedUser = null,
+            paymentConfirmed = null,
+            paymentConfirmedDate = null,
+            paymentConfirmedUser = null
+        ))
     }
 
     @Test

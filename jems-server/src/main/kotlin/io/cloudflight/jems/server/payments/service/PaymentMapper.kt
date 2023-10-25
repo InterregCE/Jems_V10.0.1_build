@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
@@ -147,8 +149,6 @@ fun AdvancePaymentUpdateDTO.toModel() = AdvancePaymentUpdate(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,
-    paymentAuthorized = paymentAuthorized,
-    paymentConfirmed = paymentConfirmed,
     paymentSettlements = paymentSettlements.map { it.toModel() }
 )
 
@@ -183,6 +183,8 @@ fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
     settlementDate = settlementDate,
     comment = comment
 )
+
+fun AdvancePaymentStatusUpdateDTO.toModel() = AdvancePaymentStatus.valueOf(this.status.name)
 
 private val mapper = Mappers.getMapper(PaymentMapper::class.java)
 
