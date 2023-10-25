@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {
   PagePaymentToEcLinkingDTO,
   PaymentApplicationToEcDetailDTO,
-  PaymentToEcAmountSummaryDTO,
+  PaymentToEcAmountSummaryDTO, PaymentToEcAmountSummaryLineDTO,
   PaymentToEcLinkingDTO,
   PaymentToEcLinkingUpdateDTO
 } from '@cat/api';
@@ -19,6 +19,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
+import {MatTableDataSource} from "@angular/material/table";
 
 @UntilDestroy()
 @Component({
@@ -30,7 +31,8 @@ import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
 })
 export class PaymentToEcFtlsTabComponent implements OnInit {
 
-  displayedColumns = [
+  displayedColumns: string[] = [];
+  displayedColumnsAll = [
     'select',
     'projectId',
     'projectAcronym',
@@ -54,7 +56,6 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     ecId: number;
     ecFTLSs: PagePaymentToEcLinkingDTO;
     isEditable: boolean;
-    // cumulativeForCurrentTab: PaymentToEcAmountSummaryDTO;
   }>;
 
   cumulativeForCurrentTab$: Observable<{
@@ -62,7 +63,8 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
   }>;
 
   Alert = Alert;
-  dataSource: AbstractControl[];
+  dataSource: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
+
   error$ = new BehaviorSubject<APIError | null>(null);
   editedRowIndex: number | null = null;
   successfulUpdateMessage = false;
@@ -91,6 +93,10 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
         ecId,
         isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft,
       })),
+      tap(data => {
+        this.displayedColumns = data.isEditable ? this.displayedColumnsAll :
+          this.displayedColumnsAll.filter(col => !['select', 'correction'].includes(col));
+      }),
     );
 
     this.cumulativeForCurrentTab$ =
@@ -219,7 +225,7 @@ export class PaymentToEcFtlsTabComponent implements OnInit {
     ecFTLSs.forEach(e => this.addFTLS(e));
     this.formService.setEditable(true);
     this.formService.resetEditable();
-    this.dataSource = [...this.ecFTLSs.controls];
+    this.dataSource.data = [...this.ecFTLSs.controls];
   }
 
   get ecFTLSs(): FormArray {

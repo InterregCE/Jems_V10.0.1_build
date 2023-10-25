@@ -1,21 +1,21 @@
 package io.cloudflight.jems.server.payments.controller.applicationToEc
 
-import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
 import io.cloudflight.jems.api.payments.applicationToEc.PaymentApplicationToEcApi
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcCreateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusUpdateDTO
-import io.cloudflight.jems.server.payments.accountingYears.service.toDto
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.createPaymentApplicationToEc.CreatePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.deletePaymentApplicationToEc.DeletePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.finalizePaymentApplicationToEc.FinalizePaymentApplicationToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getAvailableAccountingYearsForPaymentFund.GetAvailableAccountingYearsForPaymentFundInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationToEcDetail.GetPaymentApplicationToEcDetailInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.getPaymentApplicationsToEc.GetPaymentApplicationsToEcInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.reOpenFinalizedEcPaymentApplication.ReOpenFinalizedEcPaymentApplicationInteractor
-import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetailInteractor
+import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearAvailabilityDTO
+import io.cloudflight.jems.server.payments.accountingYears.service.toAvailabilityDto
+import io.cloudflight.jems.server.payments.service.ecPayment.createPaymentApplicationToEc.CreatePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.deletePaymentApplicationToEc.DeletePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.finalizePaymentApplicationToEc.FinalizePaymentApplicationToEcInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getAvailableAccountingYearsForPaymentFund.GetAvailableAccountingYearsForPaymentFundInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getPaymentApplicationToEcDetail.GetPaymentApplicationToEcDetailInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.getPaymentApplicationToEcList.GetPaymentApplicationToEcListInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.reOpenFinalizedEcPaymentApplication.ReOpenFinalizedEcPaymentApplicationInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.updatePaymentApplicationToEcDetail.UpdatePaymentApplicationToEcDetailInteractor
 import io.cloudflight.jems.server.payments.service.toDto
 import io.cloudflight.jems.server.payments.service.toModel
 import io.cloudflight.jems.server.payments.service.toStatusUpdateDto
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 class PaymentApplicationToEcController(
     private val createPaymentApplicationsToEc: CreatePaymentApplicationToEcInteractor,
     private val updatePaymentApplicationToEc: UpdatePaymentApplicationToEcDetailInteractor,
-    private val getPaymentApplicationsToEc: GetPaymentApplicationsToEcInteractor,
+    private val getPaymentApplicationsToEc: GetPaymentApplicationToEcListInteractor,
     private val deletePaymentApplicationToEc: DeletePaymentApplicationToEcInteractor,
     private val getPaymentApplicationToEcDetail: GetPaymentApplicationToEcDetailInteractor,
     private val finalizePaymentApplicationToEc: FinalizePaymentApplicationToEcInteractor,
@@ -60,6 +60,7 @@ class PaymentApplicationToEcController(
     override fun reOpenFinalizedEcPaymentApplication(paymentId: Long): PaymentEcStatusUpdateDTO =
         reOpenFinalizedEcPaymentApplication.reOpen(paymentId).toStatusUpdateDto()
 
-    override fun getAvailableAccountingYearsForPaymentFund(programmeFundId: Long): List<AccountingYearDTO> =
-        getAvailableAccountingYearsForPaymentFund.getAvailableAccountingYearsForPaymentFund(programmeFundId).map { it.toDto() }
+    override fun getAvailableAccountingYearsForPaymentFund(programmeFundId: Long): List<AccountingYearAvailabilityDTO> =
+        getAvailableAccountingYearsForPaymentFund.getAvailableAccountingYearsForPaymentFund(programmeFundId).toAvailabilityDto()
+
 }

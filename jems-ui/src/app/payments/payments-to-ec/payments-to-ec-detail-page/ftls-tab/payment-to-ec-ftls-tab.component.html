@@ -30,10 +30,10 @@
         </jems-alert>
 
         <ng-container *ngIf="data.ecFTLSs.totalElements">
-            <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.ftlsNewSort$.next($event)"  [dataSource]="dataSource">
+            <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.ftlsNewSort$.next($event)" [dataSource]="dataSource">
 
-                <ng-container matColumnDef="select">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="ecId" class="border-cell-right">
+                <ng-container matColumnDef="select" sticky>
+                    <mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.select' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">
@@ -49,7 +49,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.id' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.projectCustomIdentifier}}</span>
+                        {{data.ecFTLSs.content[i].payment.projectCustomIdentifier}}
                     </mat-cell>
                 </ng-container>
 
@@ -58,7 +58,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.acronym' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.projectAcronym}}</span>
+                        {{data.ecFTLSs.content[i].payment.projectAcronym}}
                     </mat-cell>
                 </ng-container>
 
@@ -67,7 +67,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.priority.axis' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].priorityAxis}}</span>
+                        {{data.ecFTLSs.content[i].priorityAxis}}
                     </mat-cell>
                 </ng-container>
 
@@ -76,7 +76,7 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.claim.no' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecFTLSs.content[i].payment.paymentClaimNo}}</span>
+                        {{data.ecFTLSs.content[i].payment.paymentClaimNo}}
                     </mat-cell>
                 </ng-container>
 
@@ -85,70 +85,75 @@
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.ma.approval.date' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let i = index">
-                        <span>{{ data.ecFTLSs.content[i].payment.paymentApprovalDate | localeDate: 'L'}}</span>
+                        {{ data.ecFTLSs.content[i].payment.paymentApprovalDate | localeDate: 'L'}}
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="totalEligible">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
+                    <mat-header-cell class="text-right" *matHeaderCellDef>
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible' | translate }}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ (data.ecFTLSs.content[i].payment.amountApprovedPerFund + data.ecFTLSs.content[i].partnerContribution) | asMoney}}</span>
+                    <mat-cell *matCellDef="let i = index" class="text-right">
+                        {{ (data.ecFTLSs.content[i].payment.amountApprovedPerFund + data.ecFTLSs.content[i].partnerContribution) | asMoney}}
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="fundAmount">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
+                    <mat-header-cell class="text-right" *matHeaderCellDef>
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecFTLSs.content[i].payment.amountApprovedPerFund | asMoney}}</span>
+                    <mat-cell *matCellDef="let i = index" class="text-right">
+                        {{ data.ecFTLSs.content[i].payment.amountApprovedPerFund | asMoney}}
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="partnerContribution">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
+                    <mat-header-cell class="text-right" *matHeaderCellDef>
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecFTLSs.content[i].partnerContribution | asMoney}}</span>
+                    <mat-cell *matCellDef="let i = index" class="text-right">
+                        {{ data.ecFTLSs.content[i].partnerContribution | asMoney}}
                     </mat-cell>
                 </ng-container>
 
                 <form [formGroup]="form">
                     <ng-container formArrayName="ecFTLSs">
                         <ng-container matColumnDef="publicContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
+                            <mat-header-cell class="text-right" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index">
-                                <div *ngIf="i !== editedRowIndex" class="right-aligned-text">
+                            <mat-cell *matCellDef="let ftls; let i = index" class="text-right">
+                                <div *ngIf="i !== editedRowIndex">
                                     {{ ftls.get('ftlsPublicContribution').value | asMoney}}
                                 </div>
                                 <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="ftls">
+                                    <mat-form-field [formGroup]="ftls" class="limit-input-width">
                                         <input  matInput formControlName="ftlsPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
+                                    <div  class="limit-input-width">
+                                        <button class="w-100" (click)="resetAmounts(i, data.ecFTLSs.content[i])" mat-stroked-button>
+                                            {{ 'payments.to.ec.detail.ftls.update.reset' | translate }}
+                                        </button>
+                                    </div>
                                 </div>
                             </mat-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="autoPublicContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
+                            <mat-header-cell class="text-right" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.auto.public.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index" [formGroup]="ftls" [class.selected-button-cell] = "i === editedRowIndex">
-                                <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
+                            <mat-cell *matCellDef="let ftls; let i = index" [formGroup]="ftls" class="text-right">
+                                <span *ngIf="i !== editedRowIndex">
                                     {{ ftls.get('ftlsAutoPublicContribution').value | asMoney}}
                                 </span>
                                 <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field>
+                                    <mat-form-field  class="limit-input-width">
                                         <input matInput formControlName="ftlsAutoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
-                                    <div>
-                                        <button class="reset-button" (click)="resetAmounts(i, data.ecFTLSs.content[i])" mat-stroked-button>
-                                            {{'payments.to.ec.detail.ftls.update.reset' | translate}}
+                                    <div class="limit-input-width">
+                                        <button (click)="discardChanges(i, data.ecFTLSs.content[i])" class="w-100" mat-stroked-button>
+                                            {{'payments.to.ec.detail.ftls.update.discard' | translate}}
                                         </button>
                                     </div>
                                 </div>
@@ -156,22 +161,19 @@
                         </ng-container>
 
                         <ng-container matColumnDef="privateContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
+                            <mat-header-cell class="text-right" *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.private.contribution' | translate }}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let ftls; let i = index" [class.selected-button-cell] = "i === editedRowIndex">
-                                <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
+                            <mat-cell *matCellDef="let ftls; let i = index" class="text-right">
+                                <span *ngIf="i !== editedRowIndex">
                                     {{ ftls.get('ftlsPrivateContribution').value | asMoney}}
                                 </span>
                                 <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="ftls">
+                                    <mat-form-field [formGroup]="ftls" class="limit-input-width">
                                         <input matInput formControlName="ftlsPrivateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                                     </mat-form-field>
-                                    <div>
-                                        <button (click)="discardChanges(i, data.ecFTLSs.content[i])" mat-stroked-button class="discard-button">
-                                            {{'payments.to.ec.detail.ftls.update.discard' | translate}}
-                                        </button>
-                                        <button (click)="submitAmountChanges(i, data.ecId, data.ecFTLSs.content[i].payment.id)" mat-raised-button type="submit" class="ml-2 save-button" color="primary">
+                                    <div class="limit-input-width">
+                                        <button (click)="submitAmountChanges(i, data.ecId, data.ecFTLSs.content[i].payment.id)" mat-flat-button type="submit" color="primary" class="w-100">
                                             <mat-icon class="save-icon">save</mat-icon> {{'payments.to.ec.detail.ftls.update.save' | translate}}
                                         </button>
                                     </div>
@@ -182,10 +184,10 @@
                 </form>
 
                 <ng-container matColumnDef="correction">
-                    <mat-header-cell *matHeaderCellDef>
+                    <mat-header-cell *matHeaderCellDef class="text-center border-cell-left">
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.correct.amounts' | translate }}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let ftls;let i = index">
+                    <mat-cell *matCellDef="let ftls;let i = index" class="text-center border-cell-left">
                         <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
                                 [disabled]="!data.isEditable || editedRowIndex !== null"
                                 color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"

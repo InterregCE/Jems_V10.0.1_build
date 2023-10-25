@@ -11,22 +11,6 @@
   ],
   "suppressedIssues": [
     {
-      "hash": "22c774bb",
-      "reason": "fill-range has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "b86cbd6a",
-      "reason": "is-absolute has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "6290d4c9",
-      "reason": "micromatch has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "985635b9",
-      "reason": "plugin calls should take place inside the scope of a transaction even if the plugin's method is not annotated with @Transactional"
-    },
-    {
       "hash": "5d77d119",
       "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
     },
@@ -51,10 +35,6 @@
       "reason": "an indirect npm dependency fails because of it"
     },
     {
-      "hash": "07ecb7ae",
-      "reason": "No classes should throw generic exceptions, but this one is in mapstruct generated Java class"
-    },
-    {
       "hash": "faca5b06",
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
     },
@@ -67,7 +47,7 @@
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
-      "hash": "24816018",
+      "hash": "3159aa01",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
@@ -75,7 +55,7 @@
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
     },
     {
-      "hash": "ecab4b95",
+      "hash": "fe90b98c",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }
   ]

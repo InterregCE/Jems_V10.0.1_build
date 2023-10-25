@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  AccountingYearDTO,
+  AccountingYearAvailabilityDTO,
   PaymentApplicationToEcDetailDTO,
   PaymentApplicationToEcSummaryUpdateDTO,
   PaymentToEcAmountSummaryDTO,
@@ -50,7 +50,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
 
   isCreate: boolean;
   userCanEdit$: Observable<boolean>;
-  availableAccountingYearsForFund: AccountingYearDTO[] = [];
+  availableAccountingYearsForFund: AccountingYearAvailabilityDTO[] = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,

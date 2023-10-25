@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.payments.service.accountingYear
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.accountingYears.service.AccountingYearPersistence
 import io.cloudflight.jems.server.payments.accountingYears.service.getAccountingYear.GetAccountingYears
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
