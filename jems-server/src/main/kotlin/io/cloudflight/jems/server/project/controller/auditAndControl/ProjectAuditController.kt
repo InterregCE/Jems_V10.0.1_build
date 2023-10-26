@@ -4,7 +4,9 @@ import io.cloudflight.jems.api.project.auditAndControl.ProjectAuditAndControlApi
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditControlDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionAvailablePartnerDTO
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.CloseProjectAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.getPartnerAndPartnerReportData.GetPartnerAndPartnerReportDataInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.createProjectAudit.CreateProjectAuditControlInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.getProjectAuditDetails.GetProjectAuditControlDetailsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.listProjectAudits.ListProjectAuditsIntetractor
@@ -20,7 +22,8 @@ class ProjectAuditController(
     private val listProjectAuditsInteractor: ListProjectAuditsIntetractor,
     private val getAuditDetailsInteractor: GetProjectAuditControlDetailsInteractor,
     private val closeProjectAuditControlInteractor: CloseProjectAuditControlInteractor,
-): ProjectAuditAndControlApi {
+    private val partnerDataInteractor: GetPartnerAndPartnerReportDataInteractor,
+    ): ProjectAuditAndControlApi {
 
     override fun createProjectAudit(projectId: Long, auditData: ProjectAuditControlUpdateDTO): AuditControlDTO {
        return  createAuditControlInteractor.createAudit(projectId, auditData.toModel()).toDto()
@@ -46,5 +49,10 @@ class ProjectAuditController(
 
     override fun closeAuditControl(projectId: Long, auditControlId: Long): AuditStatusDTO =
         closeProjectAuditControlInteractor.closeAuditControl(projectId = projectId, auditControlId = auditControlId).toDto()
+
+    override fun getPartnerAndPartnerReportData(
+        projectId: Long,
+    ): List<CorrectionAvailablePartnerDTO> =
+        partnerDataInteractor.getPartnerAndPartnerReportData(projectId).map { it.toDto() }
 
 }

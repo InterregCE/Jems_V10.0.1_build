@@ -1,8 +1,12 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl
 
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionAvailablePartnerDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionExtendedDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionAvailablePartner
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionExtended
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionLine
@@ -19,6 +23,9 @@ fun ProjectAuditControlCorrectionLineDTO.toModel() = mapper.map(this)
 fun ProjectAuditControlCorrectionExtended.toDto() = mapper.map(this)
 fun ProjectAuditControlCorrectionExtendedDTO.toModel() = mapper.map(this)
 
+fun CorrectionAvailablePartner.toDto() = mapper.map(this)
+
+fun CorrectionStatus.toDto() = mapper.map(this)
 
 @Mapper
 interface ProjectAuditCorrectionMapper {
@@ -28,4 +35,7 @@ interface ProjectAuditCorrectionMapper {
     fun map(model: ProjectAuditControlCorrectionLine): ProjectAuditControlCorrectionLineDTO
     fun map(model: ProjectAuditControlCorrectionExtended): ProjectAuditControlCorrectionExtendedDTO
     fun map(dto: ProjectAuditControlCorrectionExtendedDTO): ProjectAuditControlCorrectionExtended
+    fun map(model: CorrectionAvailablePartner): CorrectionAvailablePartnerDTO
+    fun map(model: CorrectionStatus): CorrectionStatusDTO
+
 }

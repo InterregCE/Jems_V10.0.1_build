@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.mod
 
 interface GetProjectAuditControlCorrectionInteractor {
 
-    fun getProjectAuditCorrection(projectId: Long, auditControlId: Long, correctionId: Long): ProjectAuditControlCorrectionExtended
+    fun getProjectAuditCorrection(correctionId: Long): ProjectAuditControlCorrectionExtended
 
 }

@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEnt
 import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
-import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
@@ -65,9 +64,7 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
         )
 
         private val extendedCorrection = ProjectAuditControlCorrectionExtended(
-            correction = correction,
-            auditControlNumber = 20,
-            projectCustomIdentifier = projectSummary.customIdentifier
+            correction = correction, auditControlNumber = 20, projectCustomIdentifier = projectSummary.customIdentifier
         )
 
         private val correctionEntity = ProjectAuditControlCorrectionEntity(
@@ -89,28 +86,16 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
     lateinit var auditControlCorrectionPersistenceProvider: AuditControlCorrectionPersistenceProvider
 
     @Test
-    fun saveCorrection() {
-        val correctionEntity = correction.toEntity { projectAuditControlEntity }
-
-        every { auditControlRepository.getById(AUDIT_CONTROL_ID) } returns projectAuditControlEntity
-        every { auditControlCorrectionRepository.save(any()) } returns correctionEntity
-
-        assertThat(auditControlCorrectionPersistenceProvider.saveCorrection(correction)).isEqualTo(correction)
-    }
-
-    @Test
     fun getAllCorrectionsByAuditControlId() {
         every {
             auditControlCorrectionRepository.findAllByAuditControlEntityId(
-                AUDIT_CONTROL_ID,
-                Pageable.unpaged()
+                AUDIT_CONTROL_ID, Pageable.unpaged()
             )
         } returns PageImpl(listOf(correctionEntity))
 
         assertThat(
             auditControlCorrectionPersistenceProvider.getAllCorrectionsByAuditControlId(
-                AUDIT_CONTROL_ID,
-                Pageable.unpaged()
+                AUDIT_CONTROL_ID, Pageable.unpaged()
             ).content
         ).isEqualTo(listOf(correction))
     }
@@ -140,9 +125,13 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getLastCorrectionIdByAuditControlId() {
-        every { auditControlCorrectionRepository.findFirstByAuditControlEntityIdOrderByOrderNrDesc(AUDIT_CONTROL_ID) } returns correctionEntity
+        every {
+            auditControlCorrectionRepository.getFirstByAuditControlEntityIdAndStatusOrderByOrderNrDesc(
+                AUDIT_CONTROL_ID, CorrectionStatus.Ongoing
+            )
+        } returns correctionEntity
 
-        assertThat(auditControlCorrectionPersistenceProvider.getLastCorrectionIdByAuditControlId(AUDIT_CONTROL_ID)).isEqualTo(1)
+        assertThat(auditControlCorrectionPersistenceProvider.getLastCorrectionOngoingId(AUDIT_CONTROL_ID)).isEqualTo(1)
     }
 
 }

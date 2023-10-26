@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlPersistenceProvider
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearMocks
@@ -48,6 +49,9 @@ class CloseProjectAuditControlTest : UnitTest() {
     @MockK
     lateinit var projectPersistenceProvider: ProjectPersistenceProvider
 
+    @MockK
+    lateinit var correctionPersistence: AuditControlCorrectionPersistence
+
     var generalValidator: GeneralValidatorService = GeneralValidatorDefaultImpl()
 
     @InjectMockKs
@@ -66,6 +70,7 @@ class CloseProjectAuditControlTest : UnitTest() {
         every { auditControlPersistence.getByIdAndProjectId(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID) } returns
                 mockk { every { status } returns AuditStatus.Ongoing }
         every { projectPersistenceProvider.getProjectSummary(projectId = PROJECT_ID) } returns PROJECT_SUMMARY
+        every { correctionPersistence.getOngoingCorrectionsByAuditControlId(AUDIT_CONTROL_ID) } returns emptyList()
         every {
             auditControlPersistence.updateProjectAuditStatus(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID, auditStatus = AuditStatus.Closed)
         } returns mockk {
@@ -86,10 +91,22 @@ class CloseProjectAuditControlTest : UnitTest() {
 
     @Test
     fun `closeAuditControl - status closed`() {
+        every { correctionPersistence.getOngoingCorrectionsByAuditControlId(AUDIT_CONTROL_ID) } returns emptyList()
         every { auditControlPersistence.getByIdAndProjectId(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID) } returns mockk {
             every { status } returns AuditStatus.Closed
         }
 
         assertThrows<AuditControlNotOngoingException> { interactor.closeAuditControl(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID) }
+    }
+
+    @Test
+    fun `closeAuditControl - corrections not closed`() {
+        every { correctionPersistence.getOngoingCorrectionsByAuditControlId(AUDIT_CONTROL_ID) } returns listOf(mockk{})
+        every { auditControlPersistence.getByIdAndProjectId(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditStatus.Ongoing
+        }
+
+
+        assertThrows<CorrectionsStillOpenException> { interactor.closeAuditControl(projectId = PROJECT_ID, auditControlId = AUDIT_CONTROL_ID) }
     }
 }

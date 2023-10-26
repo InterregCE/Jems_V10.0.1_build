@@ -28,7 +28,7 @@ class ProjectAuditControlCorrectionEntity (
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val status: CorrectionStatus,
+    var status: CorrectionStatus,
 
     @field:NotNull
     val linkedToInvoice: Boolean

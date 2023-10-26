@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -87,6 +88,9 @@ class UploadAuditControlFileTest : UnitTest() {
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var correctionPersistence: AuditControlCorrectionPersistence
 
     var generalValidatorService: GeneralValidatorDefaultImpl = GeneralValidatorDefaultImpl()
 

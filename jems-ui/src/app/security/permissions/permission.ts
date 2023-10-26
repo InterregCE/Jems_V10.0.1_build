@@ -237,7 +237,7 @@ export class Permission {
       name: 'project.application.reporting.corrections.title',
       children: [
         {
-          name: 'project.application.reporting.corrections.title',
+          name: 'project.application.reporting.corrections.subtitle',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: ['ProjectMonitorAuditAndControlView'],
           editPermissions: ['ProjectMonitorAuditAndControlEdit'],

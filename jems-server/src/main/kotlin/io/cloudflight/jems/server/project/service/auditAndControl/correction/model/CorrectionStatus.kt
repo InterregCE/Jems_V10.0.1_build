@@ -5,4 +5,6 @@ enum class CorrectionStatus(val key: String) {
     Closed("Closed");
 
     fun isOngoing() = this == Ongoing
+
+    fun isClosed() = this == Closed
 }

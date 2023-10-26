@@ -6,10 +6,13 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAud
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.controller.auditAndControl.correction.ProjectAuditCorrectionController
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeProjectAuditCorrection.CloseProjectAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.createProjectAuditCorrection.CreateProjectAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.deleteProjectAuditCorrection.DeleteProjectAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.getProjectAuditCorrection.GetProjectAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.getPartnerAndPartnerReportData.GetPartnerAndPartnerReportDataInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.listProjectAuditCorrection.ListProjectAuditControlCorrectionsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
@@ -57,7 +60,6 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
             linkedToInvoice = true,
         )
 
-
         private val extendedCorrection = ProjectAuditControlCorrectionExtended(
             correction = correction,
             auditControlNumber = 20,
@@ -92,6 +94,7 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
 
                 partnerRoleDTO = ProjectPartnerRoleDTO.PARTNER,
                 partnerNumber = 1,
+                partnerDisabled = false,
                 partnerReport = "",
                 initialAuditNUmber = 1,
                 initialCorrectionNumber = 1,
@@ -105,6 +108,7 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
                 scenario = 1
             )
         )
+
     }
 
     @MockK
@@ -118,6 +122,12 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
 
     @MockK
     lateinit var deleteProjectAuditCorrection: DeleteProjectAuditControlCorrectionInteractor
+
+    @MockK
+    lateinit var closeProjectCorrection: CloseProjectAuditControlCorrectionInteractor
+
+    @MockK
+    lateinit var partnerDataInteractor: GetPartnerAndPartnerReportDataInteractor
 
     @InjectMockKs
     lateinit var projectAuditCorrectionController: ProjectAuditCorrectionController
@@ -164,8 +174,6 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
     fun getProjectAuditCorrection() {
         every {
             getProjectAuditCorrection.getProjectAuditCorrection(
-                PROJECT_ID,
-                AUDIT_CONTROL_ID,
                 CORRECTION_ID
             )
         } returns extendedCorrection
@@ -177,6 +185,25 @@ class ProjectAuditCorrectionControllerTest: UnitTest() {
                 CORRECTION_ID
             )
         ).isEqualTo(expectedExtendedCorrection)
+    }
+
+    @Test
+    fun closeProjectCorrection() {
+        every {
+            closeProjectCorrection.closeProjectAuditCorrection(
+                PROJECT_ID,
+                AUDIT_CONTROL_ID,
+                CORRECTION_ID
+            )
+        } returns CorrectionStatus.Closed
+
+        assertThat(
+            projectAuditCorrectionController.closeProjectCorrection(
+                PROJECT_ID,
+                AUDIT_CONTROL_ID,
+                CORRECTION_ID
+            )
+        ).isEqualTo(CorrectionStatusDTO.Closed)
     }
 
 }

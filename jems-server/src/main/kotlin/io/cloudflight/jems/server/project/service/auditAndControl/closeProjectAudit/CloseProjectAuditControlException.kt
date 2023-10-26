@@ -19,3 +19,9 @@ class AuditControlNotOngoingException: ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$CLOSE_AUDIT_CONTROL_ERROR_KEY_PREFIX.status.not.ongoing"),
     cause = null
 )
+
+class CorrectionsStillOpenException: ApplicationUnprocessableException(
+    code = "$CLOSE_AUDIT_CONTROL_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$CLOSE_AUDIT_CONTROL_ERROR_KEY_PREFIX.not.all.corrections.closed"),
+    cause = null
+)

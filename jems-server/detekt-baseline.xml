@@ -629,7 +629,6 @@
     <ID>TooManyFunctions:JemsFilePersistenceProvider.kt$JemsFilePersistenceProvider : JemsFilePersistence</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
-    <ID>TooManyFunctions:PaymentApplicationToEcPersistenceProvider.kt$PaymentApplicationToEcPersistenceProvider : PaymentApplicationToEcPersistence</ID>
     <ID>TooManyFunctions:PaymentModelMapper.kt$io.cloudflight.jems.server.payments.repository.PaymentModelMapper.kt</ID>
     <ID>TooManyFunctions:PaymentPersistence.kt$PaymentPersistence</ID>
     <ID>TooManyFunctions:PaymentPersistenceProvider.kt$PaymentPersistenceProvider : PaymentPersistence</ID>
@@ -649,6 +648,7 @@
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
+    <ID>TooManyFunctions:ReportStatus.kt$ReportStatus</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
@@ -668,6 +668,7 @@
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$isProjectCollaborator: Boolean</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
+    <ID>UnusedPrivateMember:ProjectPartnerReportPersistenceProviderTest.kt$ProjectPartnerReportPersistenceProviderTest$@MockK private lateinit var jpaQueryFactory: JPAQueryFactory</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
     <ID>UnusedPrivateMember:SelectCertificateTest.kt$SelectCertificateTest$private fun provideStatusesInWhichSelectIsNotAllowed(): Stream&lt;Arguments&gt;</ID>

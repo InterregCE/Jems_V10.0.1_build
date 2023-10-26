@@ -15,7 +15,6 @@ class GetProjectAuditCorrectionTest: UnitTest() {
 
     companion object {
         private const val AUDIT_CONTROL_ID = 1L
-        private const val PROJECT_ID = 2L
         private const val CORRECTION_ID = 3L
 
         private val correction = ProjectAuditControlCorrection(
@@ -43,6 +42,6 @@ class GetProjectAuditCorrectionTest: UnitTest() {
     @Test
     fun `getProjectAuditCorrectionTest - return correct correction`() {
         every { correctionPersistence.getExtendedByCorrectionId(correctionId = CORRECTION_ID) } returns extendedCorrection
-        assertThat(getProjectAuditControlCorrection.getProjectAuditCorrection(PROJECT_ID, AUDIT_CONTROL_ID, CORRECTION_ID)).isEqualTo(extendedCorrection)
+        assertThat(getProjectAuditControlCorrection.getProjectAuditCorrection(CORRECTION_ID)).isEqualTo(extendedCorrection)
     }
 }

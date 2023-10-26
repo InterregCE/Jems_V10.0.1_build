@@ -32,16 +32,18 @@ class ListProjectAuditControlCorrections(
             auditControlId,
             pageable
         )
+        val lastOngoingCorrectionId = correctionPersistence.getLastCorrectionOngoingId(auditControlId)
+
         return correctionList.map {
             it.toLineModel(
                 auditControlNumber = auditControl.number,
-                canBeDeleted = checkCorrectionCanBeDeleted(it, correctionList.totalElements)
+                canBeDeleted = checkCorrectionCanBeDeleted(it, lastOngoingCorrectionId)
             )
         }
     }
 
-    private fun checkCorrectionCanBeDeleted(correction: ProjectAuditControlCorrection, elementsNumber: Long): Boolean {
-        return correction.status.isOngoing() && correction.orderNr.toLong() == elementsNumber
-    }
+    private fun checkCorrectionCanBeDeleted(correction: ProjectAuditControlCorrection, lastOngoingCorrectionId: Long?): Boolean =
+         correction.id == lastOngoingCorrectionId
+
 
 }

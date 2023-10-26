@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   AuditControlCorrectionDetailPageStore
-} from "@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store";
-import {combineLatest, Observable} from "rxjs";
-import {ProjectAuditControlCorrectionExtendedDTO} from "@cat/api";
-import {map} from "rxjs/operators";
-import {RoutingService} from "@common/services/routing.service";
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store';
+import {combineLatest, Observable} from 'rxjs';
+import {ProjectAuditControlCorrectionExtendedDTO} from '@cat/api';
+import {map} from 'rxjs/operators';
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   selector: 'jems-audit-control-correction-detail',
@@ -15,11 +15,11 @@ import {RoutingService} from "@common/services/routing.service";
 })
 export class AuditControlCorrectionDetailComponent {
 
-  data$:Observable<{
+  data$: Observable<{
     projectId: number;
     auditControlId: number;
     correction: ProjectAuditControlCorrectionExtendedDTO;
-  }>
+  }>;
 
   constructor(
     public router: RoutingService,
