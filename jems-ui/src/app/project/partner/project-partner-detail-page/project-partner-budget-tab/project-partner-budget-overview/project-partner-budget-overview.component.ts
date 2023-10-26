@@ -97,7 +97,7 @@ export class ProjectPartnerBudgetOverviewComponent {
         totalSum: total,
         lumpSumContribution: lumpSumTotal,
         unitCosts: budgets.unitCosts.total,
-        spfCosts: spfCosts,
+        spfCosts,
       } as ProjectPartnerBudgetDTO
     ];
   }

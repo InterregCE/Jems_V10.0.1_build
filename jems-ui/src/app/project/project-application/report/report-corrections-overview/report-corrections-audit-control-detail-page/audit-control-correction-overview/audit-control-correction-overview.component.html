@@ -10,14 +10,14 @@
                                icon="add"
                                [pending]="actionPending"
                                (clicked)="createCorrection(data.projectId, data.auditControlId, true)"
-                               [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS">
+                               [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS || !data.canEdit">
             {{'project.application.reporting.corrections.audit.control.add.correction.linked' | translate}}
           </jems-pending-button>
           <jems-pending-button jemsText class="action-button"
                                icon="add"
                                [pending]="actionPending"
                                (clicked)="createCorrection(data.projectId, data.auditControlId, false)"
-                               [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS">
+                               [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS || !data.canEdit">
             {{'project.application.reporting.corrections.audit.control.add.correction.not.linked' | translate}}
           </jems-pending-button>
         </p>
@@ -28,6 +28,10 @@
           <jems-api-error-content [error]="error"></jems-api-error-content>
         </jems-alert>
       </ng-container>
+
+      <jems-alert [show]="!data.page.numberOfElements" [type]="Alert.INFO">
+        <p>{{'project.application.reporting.corrections.audit.control.correction.table.correction.empty' | translate}}</p>
+      </jems-alert>
 
       <jems-table *ngIf="data.page.numberOfElements"
                   [disableTopPaginator]="true"
@@ -79,7 +83,7 @@
 </ng-template>
 
 <ng-template #actionCell let-correction>
-  <button *ngIf="correction.canBeDeleted" (click)="correctionsOverviewStore.deleteCorrection(correction.id)"
+  <button *ngIf="correction.canBeDeleted && canEdit" (click)="delete(correction.id)"
           color="accent" mat-icon-button
           aria-label="delete">
     <mat-icon>delete</mat-icon>
