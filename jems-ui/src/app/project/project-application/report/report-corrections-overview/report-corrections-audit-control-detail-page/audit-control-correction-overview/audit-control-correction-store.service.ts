@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {
-  PageProjectAuditControlCorrectionLineDTO, ProjectAuditControlCorrectionDTO,
+  PageProjectAuditControlCorrectionLineDTO,
+  ProjectAuditControlCorrectionDTO,
   ProjectCorrectionService,
 } from '@cat/api';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -16,17 +17,19 @@ import {
   providedIn: 'root'
 })
 export class AuditControlCorrectionStore {
-  private refreshCorrections$ = new Subject<void>();
+  refreshCorrections$ = new Subject<void>();
   corrections$: Observable<PageProjectAuditControlCorrectionLineDTO>;
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
+  correctionsUnpaged$: Observable<PageProjectAuditControlCorrectionLineDTO>;
 
   constructor(
     private projectAuditControlCorrectionService: ProjectCorrectionService,
     private reportCorrectionsAuditControlDetailPageStore: ReportCorrectionsAuditControlDetailPageStore,
     ) {
     this.corrections$ = this.corrections();
+    this.correctionsUnpaged$ = this.correctionsUnpaged();
   }
 
   createEmptyCorrection(projectId: number, auditControlId: number, linking: boolean): Observable<ProjectAuditControlCorrectionDTO> {
@@ -66,6 +69,18 @@ export class AuditControlCorrectionStore {
       switchMap(([projectId, auditControlId]) => this.projectAuditControlCorrectionService.deleteProjectAuditCorrection(Number(auditControlId), correctionId, projectId)),
       tap(() => this.refreshCorrections$.next()),
       tap(() => Log.info('Deleted correction: ', this, correctionId))
+    );
+  }
+
+  private correctionsUnpaged(): Observable<PageProjectAuditControlCorrectionLineDTO> {
+    return combineLatest([
+      this.reportCorrectionsAuditControlDetailPageStore.projectId$,
+      this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
+      this.refreshCorrections$.pipe(startWith(null))
+    ]).pipe(
+      switchMap(([projectId, auditControlId]) =>
+          (!!projectId && !!auditControlId) ? this.projectAuditControlCorrectionService.listProjectAuditCorrections(Number(auditControlId), Number(projectId)) : of({} as PageProjectAuditControlCorrectionLineDTO)),
+      tap(corrections => Log.info('Fetched the corrections unpaged:', this, corrections)),
     );
   }
 }

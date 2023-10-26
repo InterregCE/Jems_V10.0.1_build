@@ -1,7 +1,8 @@
 <jems-project-page-template titleKey="project.application.reporting.title"
                             subTitleKey="project.breadcrumb.applicationForm.reporting.overview.corrections"
                             [isVersionedData]="false">
-  <mat-card *ngIf="data$ | async as data">
+
+  <ng-container *ngIf="data$ | async as data">
     <h3 jemsMultiColumnRow>
       <button color="primary" class="mr-1" mat-icon-button
               [matTooltip]="'programme.indicator.back.to.list' | translate"
@@ -13,10 +14,33 @@
           {auditControlNumber: data.correction?.auditControlNumber, correctionNumber: data.correction?.correction?.orderNr} }}</span>
     </h3>
 
+    <div class="mb-3 status-wrapper">
+      <span class="status-label">{{'common.status' | translate}}</span>
+      <span class="ml-2"><jems-audit-control-correction-status [status]="data?.correction?.correction?.status"></jems-audit-control-correction-status></span>
+      <jems-pending-button *ngIf="data.canEdit" class="ml-2"
+                           [pending]="pendingAction$ | async"
+                           [disabled]="!data.canClose"
+                           (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction.correction.id)">
+        {{'project.application.reporting.corrections.close.correction' | translate}}
+      </jems-pending-button>
+      <jems-context-info *ngIf="!data.canClose" infoPosition="right" infoText="{{'project.application.reporting.corrections.close.correction.info' | translate}}"></jems-context-info>
+    </div>
+
     <p>{{'project.application.reporting.corrections.audit.control.detail.one' | translate}}</p>
     <p>{{'project.application.reporting.corrections.audit.control.detail.two' | translate}}</p>
     <p>{{'project.application.reporting.corrections.audit.control.detail.three' | translate}}</p>
     <p>{{'project.application.reporting.corrections.audit.control.detail.four' | translate}}</p>
     <p>{{'project.application.reporting.corrections.audit.control.detail.five' | translate}}</p>
-  </mat-card>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+      <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+    </jems-alert>
+
+    <jems-audit-control-correction-detail-identity
+        [auditControlNumber]="data.correction?.auditControlNumber"
+        [correctionPartnerData]="data.correctionPartnerData"
+    ></jems-audit-control-correction-detail-identity>
+  </ng-container>
 </jems-project-page-template>

@@ -20,7 +20,7 @@
         <span class="ml-2"><jems-audit-control-status [status]="data.auditControl.status"></jems-audit-control-status></span>
         <jems-pending-button *ngIf="data.canEdit" class="ml-2"
                              [pending]="pendingAction$ | async"
-                             [disabled]="!data.canClose"
+                             [disabled]="!data.canClose || !data.isClosingAllowed"
                              (clicked)="closeAuditControl(data.projectId, data.auditControl?.id)">
             {{'project.application.reporting.corrections.close.audit' | translate}}
         </jems-pending-button>
@@ -32,7 +32,7 @@
             <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.audit.control.controllingBody' | translate}}</mat-label>
                 <mat-select [formControlName]="constants.FORM_CONTROLS.controllingBody"
-                            [disabled]="!data.canEdit"
+                            [disabled]="!data.canEdit || data.isControllerDisabled"
                             required>
                     <mat-option *ngFor="let controllingBody of constants.CONTROLLING_BODY" [value]="controllingBody" role="option">
                         {{ 'project.application.reporting.corrections.audit.control.controllingBody.' + controllingBody | translate }}

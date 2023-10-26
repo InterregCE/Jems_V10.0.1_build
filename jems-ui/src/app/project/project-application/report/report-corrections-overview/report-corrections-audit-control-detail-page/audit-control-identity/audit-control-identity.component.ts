@@ -1,6 +1,12 @@
 import {Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {AuditControlDTO, ProjectAuditControlUpdateDTO, UserRoleCreateDTO, UserRoleDTO} from '@cat/api';
+import {
+  AuditControlDTO,
+  PageProjectAuditControlCorrectionLineDTO, ProjectAuditControlCorrectionLineDTO,
+  ProjectAuditControlUpdateDTO,
+  UserRoleCreateDTO,
+  UserRoleDTO
+} from '@cat/api';
 import {
   ReportCorrectionsAuditControlDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.store';
@@ -15,6 +21,9 @@ import {ActivatedRoute} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {APIError} from '@common/models/APIError';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {
+  AuditControlCorrectionStore
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-store.service';
 
 @Component({
   selector: 'jems-audit-control-identity',
@@ -34,6 +43,9 @@ export class AuditControlIdentityComponent {
     projectId: number;
     auditControl: AuditControlDTO;
     canEdit: boolean;
+    unpagedCorrections: PageProjectAuditControlCorrectionLineDTO;
+    isControllerDisabled: boolean;
+    isClosingAllowed: boolean;
   }>;
 
   inputErrorMessages = {
@@ -55,14 +67,24 @@ export class AuditControlIdentityComponent {
     private formService: FormService,
     public router: RoutingService,
     private activatedRoute: ActivatedRoute,
+    private correctionsOverviewStore: AuditControlCorrectionStore,
   ) {
     this.data$ = combineLatest([
       pageStore.projectId$,
       pageStore.auditControl$,
       pageStore.canEdit$,
       pageStore.canClose$,
+      this.correctionsOverviewStore.correctionsUnpaged$
     ]).pipe(
-      map(([projectId, auditControl, canEdit, canClose]) => ({projectId, auditControl, canEdit, canClose})),
+      map(([projectId, auditControl, canEdit, canClose, unpagedCorrections]) => ({
+        projectId,
+        auditControl,
+        canEdit,
+        canClose,
+        unpagedCorrections,
+        isControllerDisabled: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Closed).length > 0 : false,
+        isClosingAllowed: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Ongoing).length === 0 : true,
+      })),
       tap(data => this.resetForm(data.auditControl, data.canEdit)),
       tap(data => {
         this.isCreate = !data.auditControl.id;
