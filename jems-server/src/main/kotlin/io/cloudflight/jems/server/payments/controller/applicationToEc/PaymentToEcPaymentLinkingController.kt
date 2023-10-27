@@ -6,7 +6,8 @@ import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.deselectPayment.DeselectPaymentFromEcInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetCumulativeAmountsByTypeInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeOverview.GetCumulativeOverviewInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.ftls.GetFtlsPaymentsAvailableForArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.regular.GetRegularPaymentsAvailableForArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.selectPayment.SelectPaymentToEcInteractor
@@ -25,7 +26,8 @@ class PaymentToEcPaymentLinkingController(
     private val deselectPaymentFromEc: DeselectPaymentFromEcInteractor,
     private val selectPaymentToEc: SelectPaymentToEcInteractor,
     private val updateLinkedPayment: UpdateLinkedPaymentInteractor,
-    private val getCumulativeAmountsSummaryInteractor: GetCumulativeAmountsByTypeInteractor
+    private val getCumulativeAmountsSummaryInteractor: GetOverviewByTypeInteractor,
+    private val getCumulativeOverview: GetCumulativeOverviewInteractor
 ) : PaymentToEcPaymentLinkingApi {
 
     override fun getFTLSPaymentsLinkedWithEcForArtNot94Not95(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcLinkingDTO> =
@@ -45,6 +47,9 @@ class PaymentToEcPaymentLinkingController(
         paymentToEcLinkingUpdate: PaymentToEcLinkingUpdateDTO,
     ) =  updateLinkedPayment.updateLinkedPayment(paymentId, paymentToEcLinkingUpdate.toModel())
 
-    override fun getPaymentApplicationToEcCumulativeAmountsByType(paymentId: Long, type: PaymentSearchRequestScoBasisDTO?): PaymentToEcAmountSummaryDTO =
-        getCumulativeAmountsSummaryInteractor.getCumulativeAmountsByType(paymentId, type?.toModel()).toDto()
+    override fun getPaymentApplicationToEcOverviewAmountsByType(paymentId: Long, type: PaymentSearchRequestScoBasisDTO?): PaymentToEcAmountSummaryDTO =
+        getCumulativeAmountsSummaryInteractor.getOverviewAmountsByType(paymentId, type?.toModel()).toDto()
+
+    override fun getPaymentApplicationToEcCumulativeOverview(paymentId: Long): PaymentToEcAmountSummaryDTO =
+        getCumulativeOverview.getCumulativeOverview(paymentId).toDto()
 }

@@ -1,34 +1,35 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsByType
+package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getOverviewAmountsByType
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.regular.*
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetCumulativeAmountsByTypeInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
-class GetCumulativeAmountsByType(
+class GetOverviewAmountsByType(
     private val ecPaymentPersistence: PaymentApplicationToEcPersistence,
     private val ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence,
-) : GetCumulativeAmountsByTypeInteractor {
+) : GetOverviewByTypeInteractor {
 
     @CanRetrievePaymentApplicationsToEc
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetCumulativeAmountsByTypeException::class)
-    override fun getCumulativeAmountsByType(paymentToEcId: Long, type: PaymentSearchRequestScoBasis?): PaymentToEcAmountSummary {
+    @ExceptionWrapper(GetOverviewAmountsByTypeException::class)
+    override fun getOverviewAmountsByType(paymentToEcId: Long, type: PaymentSearchRequestScoBasis?): PaymentToEcAmountSummary {
         val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentToEcId)
 
         val selectedPaymentList = if (ecPayment.status == PaymentEcStatus.Finished)
                 ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(paymentToEcId)
             else
-                ecPaymentLinkPersistence.calculateAndGetTotals(paymentToEcId).sumUpProperColumns()
+                ecPaymentLinkPersistence.calculateAndGetOverview(paymentToEcId).sumUpProperColumns()
 
         val selectedPaymentListOfType = if (type != null) selectedPaymentList[type]!! else selectedPaymentList.merge()
 

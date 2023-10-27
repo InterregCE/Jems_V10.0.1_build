@@ -11,15 +11,19 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
-import io.cloudflight.jems.server.payments.model.ec.*
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcCumulativeAmountsRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
@@ -49,7 +53,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
     private lateinit var ecPaymentExtensionRepository: PaymentToEcExtensionRepository
 
     @MockK
-    private lateinit var ecPaymentCumulativeAmountsRepository: PaymentToEcCumulativeAmountsRepository
+    private lateinit var ecPaymentCumulativeAmountsRepository: PaymentToEcPriorityAxisOverviewRepository
 
     @MockK
     private lateinit var programmePriorityRepository: ProgrammePriorityRepository
@@ -150,7 +154,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         )
 
         private val selectedPaymentsToEcEntitiesNotArticle = listOf(
-            PaymentToEcCumulativeAmountsEntity(
+            PaymentToEcPriorityAxisOverviewEntity(
                 id = 1L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority1,
@@ -159,7 +163,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(102)
             ),
-            PaymentToEcCumulativeAmountsEntity(
+            PaymentToEcPriorityAxisOverviewEntity(
                 id = 2L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority2,
@@ -171,7 +175,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         )
 
         private val selectedPaymentsToEcEntitiesArticle = listOf(
-            PaymentToEcCumulativeAmountsEntity(
+            PaymentToEcPriorityAxisOverviewEntity(
                 id = 3L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority3,
@@ -180,7 +184,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(302),
             ),
-            PaymentToEcCumulativeAmountsEntity(
+            PaymentToEcPriorityAxisOverviewEntity(
                 id = 4L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority4,
@@ -357,7 +361,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { query.fetch() } returns listOf(tuple)
 
         assertThat(
-            persistenceProvider.calculateAndGetTotals(15L)
+            persistenceProvider.calculateAndGetOverview(15L)
         ).containsExactlyInAnyOrderEntriesOf(mapOf(
             PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to expectedPaymentsToEcTmp,
             PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to emptyList(),
@@ -392,7 +396,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 totalPublicContribution = BigDecimal(202)
             )
         )
-        val entitySlot = slot<List<PaymentToEcCumulativeAmountsEntity>>()
+        val entitySlot = slot<List<PaymentToEcPriorityAxisOverviewEntity>>()
         every { programmePriorityRepository.getAllByCodeIn(listOf("PO1", "PO2")) } returns listOf(
             programmePriority1,
             programmePriority2

@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.deselectPayment.DeselectPaymentFromEcInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetCumulativeAmountsByTypeInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.ftls.GetFtlsPaymentsAvailableForArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.regular.GetRegularPaymentsAvailableForArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.selectPayment.SelectPaymentToEcInteractor
@@ -146,7 +146,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
     @MockK
     private lateinit var updateLinkedPayment: UpdateLinkedPaymentInteractor
     @MockK
-    lateinit var getCumulativeAmountsSummaryInteractor: GetCumulativeAmountsByTypeInteractor
+    lateinit var getCumulativeAmountsSummaryInteractor: GetOverviewByTypeInteractor
 
     @InjectMockKs
     private lateinit var controller: PaymentToEcPaymentLinkingController
@@ -211,14 +211,14 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
         val summary = cumulativeAmountsSummary()
 
         every {
-            getCumulativeAmountsSummaryInteractor.getCumulativeAmountsByType(
+            getCumulativeAmountsSummaryInteractor.getOverviewAmountsByType(
                 paymentApplicationsToEcId,
                 PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             )
         } returns summary
 
         assertThat(
-            controller.getPaymentApplicationToEcCumulativeAmountsByType(
+            controller.getPaymentApplicationToEcOverviewAmountsByType(
                 paymentApplicationsToEcId,
                 PaymentSearchRequestScoBasisDTO.DoesNotFallUnderArticle94Nor95
             )
@@ -231,14 +231,14 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
         val summary = cumulativeAmountsSummary()
 
         every {
-            getCumulativeAmountsSummaryInteractor.getCumulativeAmountsByType(
+            getCumulativeAmountsSummaryInteractor.getOverviewAmountsByType(
                 paymentApplicationsToEcId,
                 null
             )
         } returns summary
 
         assertThat(
-            controller.getPaymentApplicationToEcCumulativeAmountsByType(
+            controller.getPaymentApplicationToEcOverviewAmountsByType(
                 paymentApplicationsToEcId,
                 null
             )

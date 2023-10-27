@@ -78,12 +78,17 @@
     </div>
     </jems-form>
 
-    <mat-card jemsFormLayout class="mt-3">
-        <h3>{{'payments.to.ec.detail.summary.tab.cumulative.amounts.header' | translate}}</h3>
-        <jems-payment-to-ec-cumulative-table [data]="data.cumulativeSummary"></jems-payment-to-ec-cumulative-table>
+    <mat-card jemsFormLayout class="mt-4">
+        <h3>{{'payments.to.ec.detail.summary.tab.overview.amounts.header' | translate}}</h3>
+        <jems-payment-to-ec-cumulative-table [data]="data.overviewPerPriorityAxis"></jems-payment-to-ec-cumulative-table>
     </mat-card>
 
-    <div class="mt-3">
+    <mat-card jemsFormLayout class="mt-4">
+        <h3>{{'payments.to.ec.detail.summary.tab.cumulative.overview.amounts.header' | translate}}</h3>
+        <jems-payment-to-ec-cumulative-table [data]="data.cumulativeOverviewPerPriorityAxis"></jems-payment-to-ec-cumulative-table>
+    </mat-card>
+
+    <div class="mt-4">
         <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
     </div>
 </ng-container>

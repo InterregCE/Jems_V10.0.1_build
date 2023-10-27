@@ -70,10 +70,23 @@ export class PaymentsToEcDetailPageStore {
     return merge(initialPaymentDetail$, this.savedPaymentToEcDetail$);
   }
 
-  cumulativeForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
+  overviewForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
     return combineLatest([this.paymentToEcId$, this.tabChanged$, this.updatedPaymentApplicationStatus$]).pipe(
-      switchMap(([paymentId]) => paymentId ? this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeAmountsByType(paymentId) : of({totals: {totalEligibleExpenditure: 0, totalUnionContribution: 0, totalPublicContribution: 0}}) as Observable<PaymentToEcAmountSummaryDTO>),
-      tap(data => Log.info('Fetched cumulative for summary tab', this, data))
+      switchMap(([paymentId]) => paymentId ? this.paymentToECLinkingAPIService.getPaymentApplicationToEcOverviewAmountsByType(paymentId) : of({totals: {totalEligibleExpenditure: 0, totalUnionContribution: 0, totalPublicContribution: 0}}) as Observable<PaymentToEcAmountSummaryDTO>),
+      tap(data => Log.info('Fetched overview for summary tab', this, data))
+    );
+  }
+
+  cumulativeOverviewForCurrentTab(): Observable<PaymentToEcAmountSummaryDTO> {
+    return combineLatest([this.paymentToEcId$, this.tabChanged$, this.updatedPaymentApplicationStatus$]).pipe(
+        switchMap(([paymentId]) => paymentId ? this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeOverview(paymentId) : of({
+          totals: {
+            totalEligibleExpenditure: 0,
+            totalUnionContribution: 0,
+            totalPublicContribution: 0
+          }
+        }) as Observable<PaymentToEcAmountSummaryDTO>),
+        tap(data => Log.info('Fetched overview for summary tab', this, data))
     );
   }
 

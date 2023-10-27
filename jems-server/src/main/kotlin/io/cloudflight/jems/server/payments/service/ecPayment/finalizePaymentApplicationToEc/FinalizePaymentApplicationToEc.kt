@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummar
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinished
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
+import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinished
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,7 +29,7 @@ class FinalizePaymentApplicationToEc(
         val paymentApplication = ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentId)
         validatePaymentApplicationIsDraft(paymentApplication.status)
 
-        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetTotals(paymentId)
+        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetOverview(paymentId)
             .sumUpProperColumns()
         ecPaymentLinkPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 

@@ -162,7 +162,7 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             ),
         )
         every {
-            ecPaymentLinkPersistence.calculateAndGetTotals(
+            ecPaymentLinkPersistence.calculateAndGetOverview(
                 PAYMENT_ID
             )
         } returns paymentToEcAmountSummaryTmpMap

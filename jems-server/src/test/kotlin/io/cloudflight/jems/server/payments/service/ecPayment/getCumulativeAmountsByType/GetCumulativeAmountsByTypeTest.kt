@@ -11,8 +11,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsByType.GetCumulativeAmountsByType
-import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getOverviewAmountsByType.GetOverviewAmountsByType
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -122,7 +121,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
     lateinit var ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence
 
     @InjectMockKs
-    lateinit var getCumulativeAmountsByType: GetCumulativeAmountsByType
+    lateinit var getCumulativeAmountsByType: GetOverviewAmountsByType
 
     @Test
     fun `getCumulativeAmountsByType - notArt9495`() {
@@ -135,13 +134,13 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
         every {
-            ecPaymentLinkPersistence.calculateAndGetTotals(
+            ecPaymentLinkPersistence.calculateAndGetOverview(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentToEcAmountSummaryTmpMap
 
         assertThat(
-            getCumulativeAmountsByType.getCumulativeAmountsByType(
+            getCumulativeAmountsByType.getOverviewAmountsByType(
                 paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
@@ -158,13 +157,13 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
         every {
-            ecPaymentLinkPersistence.calculateAndGetTotals(
+            ecPaymentLinkPersistence.calculateAndGetOverview(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentToEcAmountSummaryTmpMap
 
         assertThat(
-            getCumulativeAmountsByType.getCumulativeAmountsByType(
+            getCumulativeAmountsByType.getOverviewAmountsByType(
                 paymentToEcId = PAYMENT_TO_EC_ID, type = null
             )
         ).isEqualTo(expectedSummary)
@@ -188,7 +187,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
         } returns paymentsIncludedInPaymentsToEcMap
 
         assertThat(
-            getCumulativeAmountsByType.getCumulativeAmountsByType(
+            getCumulativeAmountsByType.getOverviewAmountsByType(
                 paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
@@ -212,7 +211,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
         } returns paymentsIncludedInPaymentsToEcMap
 
         assertThat(
-            getCumulativeAmountsByType.getCumulativeAmountsByType(
+            getCumulativeAmountsByType.getOverviewAmountsByType(
                 paymentToEcId = PAYMENT_TO_EC_ID, type = null
             )
         ).isEqualTo(expectedSummary)
