@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -29,33 +30,33 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
                 fundType = ProgrammeFundType.ERDF,
                 fundAbbreviation = emptySet(),
                 fundingAmount = BigDecimal.valueOf(120_00L, 2),
-                coFinancingRate = BigDecimal.valueOf(100_00L, 2),
-                autoPublicContribution = BigDecimal.ZERO,
+                coFinancingRate = BigDecimal.valueOf(75_00L, 2),
+                autoPublicContribution = BigDecimal.valueOf(40L),
                 otherPublicContribution = BigDecimal.ZERO,
-                totalPublicContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal.valueOf(40L),
                 privateContribution = BigDecimal.ZERO,
-                totalContribution = BigDecimal.ZERO,
-                totalFundAndContribution = BigDecimal.valueOf(120_00L, 2),
+                totalContribution = BigDecimal.valueOf(40L),
+                totalFundAndContribution = BigDecimal.valueOf(160_00L, 2),
             )
         ),
         totalFundingAmount = BigDecimal.valueOf(120_00L, 2),
         totalEuFundingAmount = BigDecimal.valueOf(120_00L, 2),
         averageCoFinancingRate = BigDecimal.valueOf(60_00L, 2),
-        averageEuFinancingRate = BigDecimal.valueOf(100_00L, 2),
+        averageEuFinancingRate = BigDecimal.valueOf(75_00L, 2),
 
-        totalAutoPublicContribution = BigDecimal.ZERO,
-        totalEuAutoPublicContribution = BigDecimal.ZERO,
+        totalAutoPublicContribution = BigDecimal.valueOf(40L),
+        totalEuAutoPublicContribution = BigDecimal.valueOf(40L),
         totalOtherPublicContribution = BigDecimal.ZERO,
         totalEuOtherPublicContribution = BigDecimal.ZERO,
-        totalPublicContribution = BigDecimal.ZERO,
-        totalEuPublicContribution = BigDecimal.ZERO,
+        totalPublicContribution = BigDecimal.valueOf(40L),
+        totalEuPublicContribution = BigDecimal.valueOf(40L),
         totalPrivateContribution = BigDecimal.ZERO,
         totalEuPrivateContribution = BigDecimal.ZERO,
-        totalContribution = BigDecimal.ZERO,
-        totalEuContribution = BigDecimal.ZERO,
+        totalContribution = BigDecimal.valueOf(40L),
+        totalEuContribution = BigDecimal.valueOf(40L),
 
         totalFundAndContribution = BigDecimal.valueOf(200_00L, 2),
-        totalEuFundAndContribution = BigDecimal.valueOf(120_00L, 2),
+        totalEuFundAndContribution = BigDecimal.valueOf(160_00L, 2),
     )
     private val expectedSpf = ProjectCoFinancingCategoryOverview(
         fundOverviews = listOf(
@@ -125,7 +126,11 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
                     fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                     fund = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF),
                     percentage = BigDecimal(60)
-                )
+                ),
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                    percentage = BigDecimal(40)
+                ),
             ),
             partnerContributions = listOf(
                 ProjectPartnerContributionSpf(amount = BigDecimal(30))
@@ -145,10 +150,15 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
                     fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                     fund = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.OTHER),
                     percentage = BigDecimal(30)
-                )
+                ),
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                    percentage = BigDecimal.valueOf(10),
+                ),
             ),
             partnerContributions = listOf(
-                ProjectPartnerContribution(isPartner = true, amount = BigDecimal(20))
+                ProjectPartnerContribution(isPartner = true, amount = BigDecimal(20)),
+                ProjectPartnerContribution(isPartner = false, status = ProjectPartnerContributionStatusDTO.AutomaticPublic, amount = BigDecimal(40)),
             ),
             partnerAbbreviation = "test"
         )
@@ -156,9 +166,9 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
         val overview = getProjectCoFinancingOverviewCalculatorService.getProjectCoFinancingOverview(1, "v1.0")
         Assertions.assertThat(overview.projectManagementCoFinancing.totalFundingAmount).isEqualTo(120.toScaledBigDecimal())
         Assertions.assertThat(overview.projectManagementCoFinancing.totalFundAndContribution).isEqualTo(200.toScaledBigDecimal())
-        Assertions.assertThat(overview.projectManagementCoFinancing.totalEuFundAndContribution).isEqualTo(120.toScaledBigDecimal())
+        Assertions.assertThat(overview.projectManagementCoFinancing.totalEuFundAndContribution).isEqualTo(160.toScaledBigDecimal())
         Assertions.assertThat(overview.projectManagementCoFinancing.averageCoFinancingRate).isEqualTo(60.toScaledBigDecimal())
-        Assertions.assertThat(overview.projectManagementCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
+        Assertions.assertThat(overview.projectManagementCoFinancing.averageEuFinancingRate).isEqualTo(75.toScaledBigDecimal())
         Assertions.assertThat(overview.projectSpfCoFinancing.totalFundingAmount).isEqualTo(60.toScaledBigDecimal())
         Assertions.assertThat(overview.projectSpfCoFinancing.totalFundAndContribution).isEqualTo(100.toScaledBigDecimal())
         Assertions.assertThat(overview.projectSpfCoFinancing.totalEuFundAndContribution).isEqualTo(60.toScaledBigDecimal())
