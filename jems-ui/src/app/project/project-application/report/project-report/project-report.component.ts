@@ -17,6 +17,9 @@ import {PageProjectReportSummaryDTO, ProjectReportSummaryDTO, UserRoleDTO} from 
 import {Alert} from '@common/components/forms/alert';
 import {ProjectReportPageStore} from './project-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-project-report',
@@ -36,6 +39,7 @@ export class ProjectReportComponent {
     'lastSubmission', 'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete', 'anchor'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
   MAX_PROJECT_REPORTS_ALLOWED = 100;
+  availablePeriodNumbers: number[] = [];
 
   data$: Observable<{
     projectReports: PageProjectReportSummaryDTO;
@@ -53,18 +57,21 @@ export class ProjectReportComponent {
     private translateService: TranslateService,
     private multiLanguageGlobalService: MultiLanguageGlobalService,
     private dialog: MatDialog,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private projectStore: ProjectStore
   ) {
     this.data$ = combineLatest([
       pageStore.projectReports$,
       pageStore.userCanEditReport$,
-      pageStore.userCanViewVerification$
+      pageStore.userCanViewVerification$,
+      projectStore.projectPeriods$
     ]).pipe(
-      tap(([projectReports, _, viewVerification]) => {
+      tap(([projectReports, _, viewVerification, projectPeriods]) => {
         if (!viewVerification) {
           this.displayedColumns = this.displayedColumns.filter(column => column !== 'verification');
         }
         this.dataSource.data = projectReports.content;
+        this.availablePeriodNumbers = projectPeriods.map(p => p.number);
       }),
       map(([projectReports, isEditable, viewVerification]) => ({
         projectReports,

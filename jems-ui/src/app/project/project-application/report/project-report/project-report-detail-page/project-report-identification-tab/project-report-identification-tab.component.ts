@@ -96,7 +96,6 @@ export class ProjectReportIdentificationTabComponent {
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
           this.availablePeriods = availablePeriods;
           this.availableDeadlines = reportingDeadlines.filter(d => availablePeriods.map(p => p.number).includes(d.periodNumber));
-          this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(projectReport.periodDetail.number);
       }),
       map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,
@@ -122,9 +121,13 @@ export class ProjectReportIdentificationTabComponent {
       this.form.patchValue(identification);
       this.selectedType = identification.type;
     }
+    if (identification?.periodDetail) {
+      this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(identification.periodDetail.number);
+    }
     this.form.patchValue({
       periodNumber: this.invalidPeriodSelected ? 'N/A' : identification?.periodDetail?.number,
     });
+
     if (identification?.deadlineId === null || !this.reportId) {
       this.form.get('deadlineId')?.patchValue(0);
     } else if (identification?.deadlineId) {
