@@ -21,7 +21,7 @@ class GetProjectCoFinancingOverviewCalculatorService(
 
         val managementCoFinancingOverview = CoFinancingOverviewCalculator.calculateCoFinancingOverview(
             partnerIds = partnerIds,
-            getBudgetTotalCost = { getBudgetTotalCostCalculator.getBudgetTotalCost(it, version) },
+            getBudgetTotalCost = { getBudgetTotalCostCalculator.getBudgetTotalManagementCost(it, version) },
             getCoFinancingAndContributions = { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(it, version) },
             funds = funds,
         )

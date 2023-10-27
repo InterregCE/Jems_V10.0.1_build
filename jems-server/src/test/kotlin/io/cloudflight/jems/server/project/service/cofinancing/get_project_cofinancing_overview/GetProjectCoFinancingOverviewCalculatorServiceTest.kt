@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostCalculator
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.*
 import io.cloudflight.jems.server.toScaledBigDecimal
@@ -14,10 +16,82 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
 internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
+
+    private val expectedManagement = ProjectCoFinancingCategoryOverview(
+        fundOverviews = listOf(
+            ProjectCoFinancingByFundOverview(
+                fundId = 1L,
+                fundType = ProgrammeFundType.ERDF,
+                fundAbbreviation = emptySet(),
+                fundingAmount = BigDecimal.valueOf(120_00L, 2),
+                coFinancingRate = BigDecimal.valueOf(100_00L, 2),
+                autoPublicContribution = BigDecimal.ZERO,
+                otherPublicContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                totalContribution = BigDecimal.ZERO,
+                totalFundAndContribution = BigDecimal.valueOf(120_00L, 2),
+            )
+        ),
+        totalFundingAmount = BigDecimal.valueOf(120_00L, 2),
+        totalEuFundingAmount = BigDecimal.valueOf(120_00L, 2),
+        averageCoFinancingRate = BigDecimal.valueOf(60_00L, 2),
+        averageEuFinancingRate = BigDecimal.valueOf(100_00L, 2),
+
+        totalAutoPublicContribution = BigDecimal.ZERO,
+        totalEuAutoPublicContribution = BigDecimal.ZERO,
+        totalOtherPublicContribution = BigDecimal.ZERO,
+        totalEuOtherPublicContribution = BigDecimal.ZERO,
+        totalPublicContribution = BigDecimal.ZERO,
+        totalEuPublicContribution = BigDecimal.ZERO,
+        totalPrivateContribution = BigDecimal.ZERO,
+        totalEuPrivateContribution = BigDecimal.ZERO,
+        totalContribution = BigDecimal.ZERO,
+        totalEuContribution = BigDecimal.ZERO,
+
+        totalFundAndContribution = BigDecimal.valueOf(200_00L, 2),
+        totalEuFundAndContribution = BigDecimal.valueOf(120_00L, 2),
+    )
+    private val expectedSpf = ProjectCoFinancingCategoryOverview(
+        fundOverviews = listOf(
+            ProjectCoFinancingByFundOverview(
+                fundId = 1L,
+                fundType = ProgrammeFundType.ERDF,
+                fundAbbreviation = emptySet(),
+                fundingAmount = BigDecimal.valueOf(60_00L, 2),
+                coFinancingRate = BigDecimal.valueOf(100_00L, 2),
+                autoPublicContribution = BigDecimal.ZERO,
+                otherPublicContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                totalContribution = BigDecimal.ZERO,
+                totalFundAndContribution = BigDecimal.valueOf(60_00L, 2),
+            )
+        ),
+        totalFundingAmount = BigDecimal.valueOf(60_00L, 2),
+        totalEuFundingAmount = BigDecimal.valueOf(60_00L, 2),
+        averageCoFinancingRate = BigDecimal.valueOf(60_00L, 2),
+        averageEuFinancingRate = BigDecimal.valueOf(100_00L, 2),
+
+        totalAutoPublicContribution = BigDecimal.ZERO,
+        totalEuAutoPublicContribution = BigDecimal.ZERO,
+        totalOtherPublicContribution = BigDecimal.ZERO,
+        totalEuOtherPublicContribution = BigDecimal.ZERO,
+        totalPublicContribution = BigDecimal.ZERO,
+        totalEuPublicContribution = BigDecimal.ZERO,
+        totalPrivateContribution = BigDecimal.ZERO,
+        totalEuPrivateContribution = BigDecimal.ZERO,
+        totalContribution = BigDecimal.ZERO,
+        totalEuContribution = BigDecimal.ZERO,
+
+        totalFundAndContribution = BigDecimal.valueOf(100_00L, 2),
+        totalEuFundAndContribution = BigDecimal.valueOf(60_00L, 2),
+    )
 
     @MockK
     lateinit var projectBudgetPersistence: ProjectBudgetPersistence
@@ -41,7 +115,7 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
             )
 
         every { getBudgetTotalCostCalculator.getBudgetTotalSpfCost(1L, "v1.0") } returns 100.toScaledBigDecimal()
-        every { getBudgetTotalCostCalculator.getBudgetTotalCost(1L, "v1.0") } returns 200.toScaledBigDecimal()
+        every { getBudgetTotalCostCalculator.getBudgetTotalManagementCost(1L, "v1.0") } returns 200.toScaledBigDecimal()
 
         every {
             projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(any(), "v1.0")
@@ -90,6 +164,8 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
         Assertions.assertThat(overview.projectSpfCoFinancing.totalEuFundAndContribution).isEqualTo(60.toScaledBigDecimal())
         Assertions.assertThat(overview.projectSpfCoFinancing.averageCoFinancingRate).isEqualTo(60.toScaledBigDecimal())
         Assertions.assertThat(overview.projectSpfCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
+        assertThat(overview.projectManagementCoFinancing).isEqualTo(expectedManagement)
+        assertThat(overview.projectSpfCoFinancing).isEqualTo(expectedSpf)
     }
 
 }
