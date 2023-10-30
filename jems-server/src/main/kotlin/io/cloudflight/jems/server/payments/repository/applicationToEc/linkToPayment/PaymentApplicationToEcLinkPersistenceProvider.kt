@@ -190,7 +190,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun getCumulativeOverviewForFundAndYear(fundId: Long, accountingYearId: Long): List<PaymentToEcAmountSummaryLine> {
+    override fun getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fundId: Long, accountingYearId: Long): List<PaymentToEcAmountSummaryLine> {
         val ecPaymentApplication = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
         val ecPaymentOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
 
@@ -199,8 +199,9 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             ecPaymentOverview.totalEligibleExpenditure.sum(),
             ecPaymentOverview.totalUnionContribution.sum(),
             ecPaymentOverview.totalPublicContribution.sum(),
-        ).from(ecPaymentOverview).leftJoin(ecPaymentApplication)
-            .on(ecPaymentApplication.id.eq(ecPaymentOverview.paymentApplicationToEc.id))
+        ).from(ecPaymentOverview)
+            .leftJoin(ecPaymentApplication)
+                .on(ecPaymentApplication.id.eq(ecPaymentOverview.paymentApplicationToEc.id))
             .where(
                 ecPaymentApplication.status.eq(PaymentEcStatus.Finished)
                     .and(ecPaymentApplication.programmeFund.id.eq(fundId))

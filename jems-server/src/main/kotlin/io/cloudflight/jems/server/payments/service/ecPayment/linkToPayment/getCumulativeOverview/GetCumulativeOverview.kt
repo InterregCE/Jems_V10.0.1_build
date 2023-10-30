@@ -35,7 +35,7 @@ class GetCumulativeOverview(
         val cumulativeOverviewForFinishedEcPayments = ecPaymentLinkPersistence.getCumulativeTotalForEcPayment(ecPaymentId)
             .associateBy { it.priorityAxis!! }
 
-        val cumulativeOverviewLines = currentOverview.addPreviouslyFinishedCumulativeAmounts(cumulativeOverviewForFinishedEcPayments)
+        val cumulativeOverviewLines = currentOverview.addCumulativeAmounts(cumulativeOverviewForFinishedEcPayments)
         return PaymentToEcAmountSummary(
             amountsGroupedByPriority = cumulativeOverviewLines,
             totals = cumulativeOverviewLines.sumUp()
@@ -44,7 +44,7 @@ class GetCumulativeOverview(
     }
 
 
-    fun List<PaymentToEcAmountSummaryLine>.addPreviouslyFinishedCumulativeAmounts(
+    fun List<PaymentToEcAmountSummaryLine>.addCumulativeAmounts(
         cumulativeAmounts: Map<String, PaymentToEcAmountSummaryLine>
     ): List<PaymentToEcAmountSummaryLine> =
 

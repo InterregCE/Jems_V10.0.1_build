@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
@@ -35,7 +36,10 @@ class CreatePaymentApplicationToEc(
         val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fund.id, basis = basis)
         ecPaymentLinkPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPayment.id)
 
-        saveCumulativeAmountsForPreviousFinishedFundAndAccountingYear(ecPayment.id, fund.id, accountingYear.id)
+        storeSnapshotOfCumulativeAmountsPerPriorityAxis(
+            ecPaymentId = ecPayment.id,
+            cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fund.id, accountingYear.id)
+        )
 
         auditPublisher.publishEvent(paymentApplicationToEcCreated(context = this, ecPayment))
         return ecPayment
@@ -52,9 +56,10 @@ class CreatePaymentApplicationToEc(
     }
 
 
-    fun saveCumulativeAmountsForPreviousFinishedFundAndAccountingYear(ecPaymentId: Long, programmeFundId: Long, accountingYearId: Long) {
-        val cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeOverviewForFundAndYear(programmeFundId, accountingYearId)
-        ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
-    }
+    fun storeSnapshotOfCumulativeAmountsPerPriorityAxis(
+        ecPaymentId: Long,
+        cumulativeAmounts: List<PaymentToEcAmountSummaryLine>
+    ) = ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
+
 
 }

@@ -4,10 +4,11 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
@@ -61,6 +62,21 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
+        private val cumulativeAmountsForFunAndYear = listOf(
+            PaymentToEcAmountSummaryLine(
+                priorityAxis = "PO1",
+                totalEligibleExpenditure = BigDecimal(101),
+                totalUnionContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal(102)
+            ),
+            PaymentToEcAmountSummaryLine(
+                priorityAxis = "PO2",
+                totalEligibleExpenditure = BigDecimal(201),
+                totalUnionContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal(202)
+            ),
+        )
+
     }
 
     @MockK
@@ -90,6 +106,13 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
         every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id,) } returns false
+        every {
+            ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(
+                fund.id,
+                accountingYear.id
+            )
+        } returns cumulativeAmountsForFunAndYear
+        every { ecPaymentLinkPersistence.saveCumulativeAmounts( any(), any()) } returns Unit
 
         assertThat(service.createPaymentApplicationToEc(paymentApplicationsToEcToCreate))
             .isEqualTo(paymentApplicationsToEcDetail)
@@ -101,5 +124,7 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             )
         )
         verify(exactly = 1) { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) }
+        verify(exactly = 1) { ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fund.id, accountingYear.id) }
+        verify(exactly = 1) { ecPaymentLinkPersistence.saveCumulativeAmounts(paymentApplicationsToEcId, cumulativeAmountsForFunAndYear) }
     }
 }

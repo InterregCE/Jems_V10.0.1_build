@@ -3,16 +3,16 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.merge
+import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class GetOverviewAmountsByType(
@@ -38,21 +38,4 @@ class GetOverviewAmountsByType(
             totals = selectedPaymentListOfType.sumUp()
         )
     }
-
-    private fun Collection<PaymentToEcAmountSummaryLine>.sumUp() = PaymentToEcAmountSummaryLine (
-        priorityAxis = if (allAxesSame()) firstOrNull()?.priorityAxis else null,
-        totalEligibleExpenditure = sumOf { it.totalEligibleExpenditure },
-        totalUnionContribution = BigDecimal.ZERO,
-        totalPublicContribution = sumOf { it.totalPublicContribution }
-    )
-
-    private fun Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>.merge(): List<PaymentToEcAmountSummaryLine> =
-        values
-            .flatten()
-            .groupBy { it.priorityAxis }
-            .mapValues { (_, values) -> values.sumUp() }
-            .values.toList()
-
-    private fun Collection<PaymentToEcAmountSummaryLine>.allAxesSame() = mapTo(HashSet()) { it.priorityAxis }.size == 1
-
 }

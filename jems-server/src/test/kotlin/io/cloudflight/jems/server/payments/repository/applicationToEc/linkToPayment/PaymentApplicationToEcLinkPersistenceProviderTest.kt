@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
@@ -23,8 +24,9 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisCumulativeOverviewRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
@@ -53,7 +55,10 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
     private lateinit var ecPaymentExtensionRepository: PaymentToEcExtensionRepository
 
     @MockK
-    private lateinit var ecPaymentCumulativeAmountsRepository: PaymentToEcPriorityAxisOverviewRepository
+    private lateinit var ecPaymentPriorityAxisOverviewRepository: PaymentToEcPriorityAxisOverviewRepository
+
+    @MockK
+    private lateinit var ecPaymentPriorityAxisCumulativeOverviewRepository: PaymentToEcPriorityAxisCumulativeOverviewRepository
 
     @MockK
     private lateinit var programmePriorityRepository: ProgrammePriorityRepository
@@ -233,8 +238,10 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(ecPaymentRepository, ecPaymentExtensionRepository, ecPaymentCumulativeAmountsRepository,
-            programmePriorityRepository, jpaQueryFactory)
+        clearMocks(ecPaymentRepository, ecPaymentExtensionRepository,
+            ecPaymentPriorityAxisOverviewRepository, ecPaymentPriorityAxisCumulativeOverviewRepository,
+            programmePriorityRepository, jpaQueryFactory
+        )
     }
 
     @Test
@@ -402,27 +409,27 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             programmePriority2
         )
         every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
-        every { ecPaymentCumulativeAmountsRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } answers { }
-        every { ecPaymentCumulativeAmountsRepository.saveAll(capture(entitySlot)) } returnsArgument 0
+        every { ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } answers { }
+        every { ecPaymentPriorityAxisOverviewRepository.saveAll(capture(entitySlot)) } returnsArgument 0
 
         persistenceProvider.saveTotalsWhenFinishingEcPayment(
             ecPaymentId = paymentApplicationsToEcId,
             totals = mapOf(Pair(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, paymentsToSave))
         )
-        verify(exactly = 1) { ecPaymentCumulativeAmountsRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) }
-        verify(exactly = 1) { ecPaymentCumulativeAmountsRepository.saveAll(entitySlot.captured) }
+        verify(exactly = 1) { ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) }
+        verify(exactly = 1) { ecPaymentPriorityAxisOverviewRepository.saveAll(entitySlot.captured) }
     }
 
     @Test
     fun getTotalsForFinishedEcPayment() {
         every {
-            ecPaymentCumulativeAmountsRepository.getAllByPaymentApplicationToEcIdAndType(
+            ecPaymentPriorityAxisOverviewRepository.getAllByPaymentApplicationToEcIdAndType(
                 paymentApplicationsToEcId,
                 PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             )
         } returns selectedPaymentsToEcEntitiesNotArticle
         every {
-            ecPaymentCumulativeAmountsRepository.getAllByPaymentApplicationToEcIdAndType(
+            ecPaymentPriorityAxisOverviewRepository.getAllByPaymentApplicationToEcIdAndType(
                 paymentApplicationsToEcId,
                 PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
             )
@@ -431,6 +438,49 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         val result = persistenceProvider.getTotalsForFinishedEcPayment(ecPaymentId = paymentApplicationsToEcId)
         assertThat(result.keys).containsExactlyInAnyOrderElementsOf(PaymentSearchRequestScoBasis.values().toList())
         assertThat(result).isEqualTo(expectedPaymentsIncludedInPaymentsToEcMapped)
+    }
+
+    @Test
+    fun getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear() {
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any(), any(), any()) } returns query
+        every { query.from(any()) } returns query
+        val slotLeftJoin = mutableListOf<EntityPath<Any>>()
+        every { query.leftJoin(capture(slotLeftJoin)) } returns query
+        val slotLeftJoinOn = mutableListOf<BooleanOperation>()
+        every { query.on(capture(slotLeftJoinOn)) } returns query
+        val slotWhere = slot<BooleanOperation>()
+        every { query.where(capture(slotWhere)) } returns query
+        every { query.groupBy(any()) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, String::class.java) } returns "PO1"
+        every { tuple.get(1, BigDecimal::class.java) } returns BigDecimal.valueOf(100)
+        every { tuple.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(0)
+        every { tuple.get(3, BigDecimal::class.java) } returns BigDecimal.valueOf(300)
+
+        val result = mockk<List<Tuple>>()
+        every { result.size } returns 1
+        every { query.fetch() } returns listOf(tuple)
+
+        assertThat(
+            persistenceProvider.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(programmeFundId, accountingYearId)
+        ).containsExactly(
+            PaymentToEcAmountSummaryLine(
+                priorityAxis = "PO1",
+                totalEligibleExpenditure = BigDecimal.valueOf(100),
+                totalUnionContribution = BigDecimal.valueOf(0),
+                totalPublicContribution = BigDecimal.valueOf(300),
+            )
+        )
+        assertThat(slotLeftJoin).hasSize(1)
+        assertThat(slotLeftJoin[0]).isInstanceOf(QPaymentApplicationToEcEntity::class.java)
+        assertThat(slotLeftJoinOn[0].toString())
+            .isEqualTo("paymentApplicationToEcEntity.id = paymentToEcPriorityAxisOverviewEntity.paymentApplicationToEc.id")
+        assertThat(slotWhere.captured.toString())
+            .isEqualTo("paymentApplicationToEcEntity.status = Finished && " +
+                    "paymentApplicationToEcEntity.programmeFund.id = 10 && paymentApplicationToEcEntity.accountingYear.id = 3")
     }
 
 }

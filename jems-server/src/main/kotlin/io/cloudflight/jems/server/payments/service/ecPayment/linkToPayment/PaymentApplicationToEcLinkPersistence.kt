@@ -36,7 +36,7 @@ interface PaymentApplicationToEcLinkPersistence {
     ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
 
 
-    fun getCumulativeOverviewForFundAndYear(
+    fun getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(
         fundId: Long,
         accountingYearId: Long
     ): List<PaymentToEcAmountSummaryLine>

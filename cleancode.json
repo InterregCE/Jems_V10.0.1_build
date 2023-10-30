@@ -63,7 +63,7 @@
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
-      "hash": "5444aa45",
+      "hash": "e3a39aa4",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }
   ]
