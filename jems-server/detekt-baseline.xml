@@ -607,7 +607,7 @@
     <ID>ReturnCount:StateAidHelper.kt$fun stateAidSectionShouldBeDisplayed(partnerStateAid: ProjectPartnerStateAid): Boolean</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
-    <ID>ThrowsCount:AdvancePaymentValidator.kt$AdvancePaymentValidator$fun validateDetail(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?)</ID>
+    <ID>ThrowsCount:AdvancePaymentValidator.kt$AdvancePaymentValidator$fun validateStatus(status: AdvancePaymentStatus, saved: AdvancePaymentDetail)</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>

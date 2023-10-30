@@ -56,11 +56,6 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.math.BigDecimal
-import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -68,6 +63,11 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.util.Optional
 
 class PartnerPersistenceProviderTest {
 
@@ -545,7 +545,7 @@ class PartnerPersistenceProviderTest {
         every { partnerWithContributionsRow2.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
         every { partnerWithContributionsRow2.partnerContributionSpfAmount } returns BigDecimal(150)
 
-        every { projectVersionPersistenceProvider.getLatestVersionOrNull(PROJECT_ID)} returns version
+        every { projectVersionPersistenceProvider.getLatestApprovedOrCurrent(PROJECT_ID)} returns version
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
 
         every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(1L, any()) } returns listOf(

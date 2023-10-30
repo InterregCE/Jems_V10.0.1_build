@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import org.springframework.stereotype.Service
 
@@ -20,37 +21,25 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
     }
 
     fun validateDetail(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?) {
-
-        validateCheckboxStates(update)
-
-        if (isInstallmentAuthorized(saved) && update.paymentAuthorized == false) {
+        if (isInstallmentAuthorized(saved) && saved?.paymentAuthorized == false) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY)
         }
 
-        if (paymentConfirmationRemoved(update, saved) && saved.hasSettlements()) {
-            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY)
-        }
-
-        if (update.hasSettlements() && update.paymentConfirmed == false) {
+        if (update.hasSettlements() && saved?.paymentConfirmed == false) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY)
         }
 
         validator.throwIfAnyIsInvalid(
-            *validateDetails(update).toTypedArray()
+            *validateDetails(update, saved).toTypedArray()
         )
         validateContributionSource(update)
     }
 
-
-    fun paymentConfirmationRemoved(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?) =
-        saved?.paymentConfirmed == true && update.paymentConfirmed == false
-
-
-    private fun validateDetails(update: AdvancePaymentUpdate): List<Map<String, I18nMessage>> {
+    private fun validateDetails(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?): List<Map<String, I18nMessage>> {
         val feedback = mutableListOf<Map<String, I18nMessage>>()
-        feedback.add(validator.notNull(update.projectId, "projectId"))
-        feedback.add(validator.notNull(update.partnerId, "partnerId"))
-        if (update.paymentConfirmed == true) {
+        feedback.add(validator.notNullOrZero(update.projectId, "projectId"))
+        feedback.add(validator.notNullOrZero(update.partnerId, "partnerId"))
+        if (saved?.paymentConfirmed == true) {
             feedback.add(validator.notNull(update.paymentDate, "paymentDate"))
         }
         feedback.add(validator.maxLength(update.comment, 500, "comment"))
@@ -73,19 +62,33 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
         }
     }
 
-    fun validateCheckboxStates(it: AdvancePaymentUpdate) {
-        if (it.paymentAuthorized != true && it.paymentConfirmed == true) {
+    fun validateStatus(status: AdvancePaymentStatus, saved: AdvancePaymentDetail) {
+        if (status == AdvancePaymentStatus.CONFIRMED) {
+            validator.throwIfAnyIsInvalid(validator.notNull(saved.paymentDate, "paymentDate"))
+        }
+
+        if (saved.paymentAuthorized == false && status == AdvancePaymentStatus.CONFIRMED) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_SAVE_ERROR_KEY)
+        }
+
+        if (saved.paymentConfirmed == true && status == AdvancePaymentStatus.DRAFT) {
+            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY)
+        }
+
+        if (status == AdvancePaymentStatus.AUTHORIZED && saved.hasSettlements()) {
+            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY)
         }
     }
 
     fun validateContributionSource(it: AdvancePaymentUpdate) {
-        if (isNotSet(it.programmeFundId)
-            && isNotSet(it.partnerContributionId)
-            && isNotSet(it.partnerContributionSpfId)) {
-                throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY)
+        if (isNotSet(it.programmeFundId) &&
+            isNotSet(it.partnerContributionId) &&
+            isNotSet(it.partnerContributionSpfId)
+        ) {
+            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY)
         }
     }
+
     private fun isNotSet(id: Long?): Boolean =
         id == null || id <= 0
 
