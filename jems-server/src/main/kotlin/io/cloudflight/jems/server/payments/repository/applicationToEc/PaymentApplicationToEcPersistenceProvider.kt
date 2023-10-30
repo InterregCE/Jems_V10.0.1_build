@@ -6,11 +6,11 @@ import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
+import io.cloudflight.jems.server.payments.model.ec.AccountingYearAvailability
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
-import io.cloudflight.jems.server.payments.model.ec.AccountingYearAvailability
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository

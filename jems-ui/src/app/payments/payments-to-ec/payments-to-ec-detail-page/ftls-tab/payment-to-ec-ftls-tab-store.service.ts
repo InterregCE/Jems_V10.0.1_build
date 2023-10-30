@@ -86,7 +86,7 @@ export class PaymentToEcFtlsTabStoreService {
       this.detailPageStore.paymentToEcId$,
       this.refresh$.pipe(startWith(1))
     ]).pipe(
-      switchMap(([paymentId]) => this.paymentToECLinkingAPIService.getPaymentApplicationToEcCumulativeAmountsByType(paymentId, 'DoesNotFallUnderArticle94Nor95')),
+      switchMap(([paymentId]) => this.paymentToECLinkingAPIService.getPaymentApplicationToEcOverviewAmountsByType(paymentId, 'DoesNotFallUnderArticle94Nor95')),
       tap(data => Log.info('Fetched cumulative for FTLSArtNot94Not95s tab', this, data))
     );
   }

@@ -4,13 +4,11 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
@@ -27,8 +25,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -57,21 +53,6 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
             paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
-        private val expectedFilter = PaymentSearchRequest(
-            paymentId = null,
-            paymentType = null,
-            projectIdentifiers = emptySet(),
-            projectAcronym = null,
-            claimSubmissionDateFrom = null,
-            claimSubmissionDateTo = null,
-            approvalDateFrom = null,
-            approvalDateTo = null,
-            fundIds = emptySet(),
-            lastPaymentDateFrom = null,
-            lastPaymentDateTo = null,
-            ecPaymentIds = setOf(paymentApplicationsToEcId),
-            scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-        )
 
     }
 
@@ -101,12 +82,9 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
             ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)
         } returns paymentApplicationsToEcDetail(PaymentEcStatus.Draft)
 
-        val paymentLinked = mockk<PaymentToProject>()
-        every { paymentLinked.id } returns 74L
-
-        val slotFilter = slot<PaymentSearchRequest>()
-        every { paymentPersistence.getAllPaymentToProject(Pageable.unpaged(), capture(slotFilter)) } returns
-                PageImpl(listOf(paymentLinked))
+        val paymentExtension = mockk<PaymentToEcExtension>()
+        every { paymentExtension.paymentId } returns 74L
+        every {  paymentPersistence.getPaymentsLinkedToEcPayment(paymentApplicationsToEcId) } returns listOf(paymentExtension)
 
         val slotUnLinkedPaymentIds = slot<Set<Long>>()
         every { ecPaymentLinkPersistence.deselectPaymentFromEcPaymentAndResetFields(capture(slotUnLinkedPaymentIds)) } answers { }
@@ -127,7 +105,6 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
                 description = "Payment application to EC number 1 created for Fund (3, OTHER) for accounting Year 1: 2021-01-01 - 2022-06-30 was deleted"
             )
         )
-        assertThat(slotFilter.captured).isEqualTo(expectedFilter)
         assertThat(slotUnLinkedPaymentIds.captured).containsExactly(74L)
     }
 

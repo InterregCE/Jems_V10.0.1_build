@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getC
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 
-interface GetCumulativeAmountsByTypeInteractor {
+interface GetOverviewByTypeInteractor {
 
-    fun getCumulativeAmountsByType(paymentToEcId: Long, type: PaymentSearchRequestScoBasis?): PaymentToEcAmountSummary
+    fun getOverviewAmountsByType(paymentToEcId: Long, type: PaymentSearchRequestScoBasis?): PaymentToEcAmountSummary
 
 }

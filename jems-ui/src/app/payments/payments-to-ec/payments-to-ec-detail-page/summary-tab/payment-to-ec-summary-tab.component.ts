@@ -45,7 +45,8 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   data$: Observable<{
     paymentDetail: PaymentApplicationToEcDetailDTO;
     programmeFunds: ProgrammeFundDTO[];
-    cumulativeSummary: PaymentToEcAmountSummaryDTO;
+    overviewPerPriorityAxis: PaymentToEcAmountSummaryDTO;
+    cumulativeOverviewPerPriorityAxis: PaymentToEcAmountSummaryDTO;
   }>;
 
   isCreate: boolean;
@@ -66,13 +67,15 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
       this.paymentsToEcDetailPageStore.paymentToEcDetail$,
       this.paymentsToEcDetailPageStore.programmeFunds$,
       this.paymentsToEcDetailPageStore.updatedPaymentApplicationStatus$,
-      this.paymentsToEcDetailPageStore.cumulativeForCurrentTab()
+      this.paymentsToEcDetailPageStore.overviewForCurrentTab(),
+      this.paymentsToEcDetailPageStore.cumulativeOverviewForCurrentTab()
     ])
         .pipe(
-            map(([paymentDetail, programmeFunds, updatedPaymentStatus, cumulativeSummary]: any) => ({
+            map(([paymentDetail, programmeFunds, updatedPaymentStatus, overviewPerPriorityAxis, cumulativeOverviewPerPriorityAxis]: any) => ({
               paymentDetail: this.getUpdatePayment(paymentDetail, updatedPaymentStatus),
               programmeFunds,
-              cumulativeSummary
+              overviewPerPriorityAxis,
+              cumulativeOverviewPerPriorityAxis
             })),
             tap((data) => this.initialPaymentToEcDetail = data.paymentDetail),
             tap(data => this.resetForm(data.paymentDetail)),

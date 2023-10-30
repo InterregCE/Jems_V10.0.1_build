@@ -57,10 +57,14 @@ interface PaymentToEcPaymentLinkingApi {
         @RequestBody paymentToEcLinkingUpdate: PaymentToEcLinkingUpdateDTO,
     )
 
-    @ApiOperation("Get cumulative amounts by type ")
-    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{paymentId}/cumulativeAmountsByType")
-    fun getPaymentApplicationToEcCumulativeAmountsByType(
+    @ApiOperation("Get current overview amounts by type")
+    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{paymentId}/overviewByType")
+    fun getPaymentApplicationToEcOverviewAmountsByType(
         @PathVariable paymentId: Long,
         @RequestParam(required = false) type: PaymentSearchRequestScoBasisDTO? = null
     ): PaymentToEcAmountSummaryDTO
+
+    @ApiOperation("Get cumulative overview amounts per priority axis")
+    @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{paymentId}/cumulativeOverview")
+    fun getPaymentApplicationToEcCumulativeOverview(@PathVariable paymentId: Long,): PaymentToEcAmountSummaryDTO
 }

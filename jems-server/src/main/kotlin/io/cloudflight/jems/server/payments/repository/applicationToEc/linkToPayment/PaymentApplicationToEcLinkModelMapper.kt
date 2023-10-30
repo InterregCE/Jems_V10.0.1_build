@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment
 
-import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisCumulativeOverviewEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import org.mapstruct.Mapper
@@ -18,7 +19,10 @@ fun PaymentToEcExtensionEntity.toModel() = PaymentToEcExtension(
     ecPaymentStatus = paymentApplicationToEc?.status,
 )
 
-fun List<PaymentToEcCumulativeAmountsEntity>.toModel() = map { mapper.map(it) }
+fun List<PaymentToEcPriorityAxisOverviewEntity>.toModel() = map { mapper.map(it) }
+
+fun List<PaymentToEcPriorityAxisCumulativeOverviewEntity>.toOverviewModels() = map { mapper.map(it) }
+
 
 @Mapper
 interface PaymentApplicationToEcLinkModelMapper {
@@ -26,5 +30,12 @@ interface PaymentApplicationToEcLinkModelMapper {
     @Mappings(
         Mapping(source = "priorityAxis.code", target = "priorityAxis"),
     )
-    fun map(entity: PaymentToEcCumulativeAmountsEntity): PaymentToEcAmountSummaryLine
+    fun map(entity: PaymentToEcPriorityAxisOverviewEntity): PaymentToEcAmountSummaryLine
+
+    @Mappings(
+        Mapping(source = "id.priorityAxis.code", target = "priorityAxis"),
+    )
+    fun map(entity: PaymentToEcPriorityAxisCumulativeOverviewEntity): PaymentToEcAmountSummaryLine
+
+
 }

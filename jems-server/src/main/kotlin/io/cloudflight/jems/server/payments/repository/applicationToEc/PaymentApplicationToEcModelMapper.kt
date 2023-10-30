@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.payments.repository.applicationToEc
 import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToEcCumulativeAmountsEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
@@ -56,7 +56,7 @@ fun PaymentToEcAmountSummaryLine.toEntity(
     programmePriority: ProgrammePriorityEntity,
     type: PaymentSearchRequestScoBasis
 ) =
-    PaymentToEcCumulativeAmountsEntity(
+    PaymentToEcPriorityAxisOverviewEntity(
         paymentApplicationToEc = paymentToEc,
         priorityAxis = programmePriority,
         type = type,

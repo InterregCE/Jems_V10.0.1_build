@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.payments.service.regular
 
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
@@ -74,5 +75,7 @@ interface PaymentPersistence {
     fun getFtlsCumulativeForProject(projectId: Long): PaymentCumulativeData
 
     fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long>
+
+    fun getPaymentsLinkedToEcPayment(ecPaymentId: Long):  List<PaymentToEcExtension>
 
 }

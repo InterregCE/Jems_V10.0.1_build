@@ -39,3 +39,19 @@ fun Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>>.sum
             )
         }
     }
+
+ fun Collection<PaymentToEcAmountSummaryLine>.sumUp() = PaymentToEcAmountSummaryLine (
+    priorityAxis = if (allAxesSame()) firstOrNull()?.priorityAxis else null,
+    totalEligibleExpenditure = sumOf { it.totalEligibleExpenditure },
+    totalUnionContribution = BigDecimal.ZERO,
+    totalPublicContribution = sumOf { it.totalPublicContribution }
+)
+
+ fun Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>.merge(): List<PaymentToEcAmountSummaryLine> =
+    values
+        .flatten()
+        .groupBy { it.priorityAxis }
+        .mapValues { (_, values) -> values.sumUp() }
+        .values.toList()
+
+ fun Collection<PaymentToEcAmountSummaryLine>.allAxesSame() = mapTo(HashSet()) { it.priorityAxis }.size == 1

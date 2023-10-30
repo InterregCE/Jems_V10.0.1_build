@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
@@ -20,7 +21,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
@@ -28,6 +28,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
@@ -148,25 +149,25 @@ class PaymentPersistenceProvider(
             )
             .from(specPayment)
             .leftJoin(specPaymentPartner)
-                .on(specPaymentPartner.payment.id.eq(specPayment.id))
+            .on(specPaymentPartner.payment.id.eq(specPayment.id))
             .leftJoin(specPaymentPartnerInstallment)
-                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
+            .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
             .leftJoin(specPartnerReportCertificateCoFin)
-                .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
+            .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
-                .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
+            .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
             .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
-                .on(specProjectReport.id.eq(specPayment.projectReport.id))
+            .on(specProjectReport.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectContracting)
-                .on(specProjectContracting.projectId.eq(specPayment.project.id))
+            .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .leftJoin(specProjectEntity)
-                .on(specProjectEntity.id.eq(specPayment.project.id))
+            .on(specProjectEntity.id.eq(specPayment.project.id))
             .leftJoin(specProgrammeSpecificObjectiveEntity)
-                .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(specProgrammePriorityEntity)
-                .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
             .leftJoin(specPaymentToEcExtensionEntity)
-                .on(specPaymentPartner.payment.id.eq(specPaymentToEcExtensionEntity.paymentId))
+            .on(specPaymentPartner.payment.id.eq(specPaymentToEcExtensionEntity.paymentId))
             .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
             .groupBy(specPayment)
             .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
@@ -419,6 +420,11 @@ class PaymentPersistenceProvider(
                 .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .where(whereExpressions.joinWithAnd())
             .fetch().toSet()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): List<PaymentToEcExtension> {
+        return paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(ecPaymentId).toModelList()
     }
 
     private fun getUserOrNull(userId: Long?): UserEntity? =

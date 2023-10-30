@@ -13,8 +13,8 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
-@Entity(name = "payment_application_to_ec_cumulative_amounts")
-class PaymentToEcCumulativeAmountsEntity(
+@Entity(name = "payment_application_to_ec_priority_axis_overview")
+class PaymentToEcPriorityAxisOverviewEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
