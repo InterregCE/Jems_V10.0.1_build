@@ -1,28 +1,32 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectCorrectionFinancialDescriptionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectCorrectionIdentificationEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlRepository
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.financialDescription.ProjectCorrectionFinancialDescriptionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.identification.CorrectionIdentificationRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCreateCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionFollowUpType
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 
 @Repository
 class CreateCorrectionPersistenceProvider(
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val auditControlRepository: AuditControlRepository,
-    private val auditControlCorrectionIdentificationRepository: CorrectionIdentificationRepository
+    private val auditControlCorrectionIdentificationRepository: CorrectionIdentificationRepository,
+    private val projectCorrectionFinancialDescriptionRepository: ProjectCorrectionFinancialDescriptionRepository
 ) : AuditControlCreateCorrectionPersistence {
 
     @Transactional
     override fun createCorrection(correction: ProjectAuditControlCorrection): ProjectAuditControlCorrection {
         val correctionEntity = persistCorrection(correction)
         persistIdentification(correctionEntity)
-
+        persistFinancialDescription(correctionEntity)
         return correctionEntity.toModel()
     }
 
@@ -45,6 +49,27 @@ class CreateCorrectionPersistenceProvider(
                 partnerId = null,
                 partnerReportId = null,
                 programmeFundId = null
+            )
+        )
+    }
+
+    private fun persistFinancialDescription(correction: ProjectAuditControlCorrectionEntity) {
+        projectCorrectionFinancialDescriptionRepository.save(
+            ProjectCorrectionFinancialDescriptionEntity(
+                correctionId = correction.id,
+                correction = correction,
+                deduction = true,
+                fundAmount = BigDecimal.ZERO,
+                autoPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.ZERO,
+                infoSentBeneficiaryComment = null,
+                infoSentBeneficiaryDate = null,
+                correctionType = null,
+                clericalTechnicalMistake = false,
+                goldPlating = false,
+                suspectedFraud = false,
+                correctionComment = null
             )
         )
     }

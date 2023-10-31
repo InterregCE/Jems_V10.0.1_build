@@ -1,0 +1,38 @@
+p {
+  max-width: 100% !important;
+}
+
+.plus-sign {
+  font-size: 1.5rem;
+  color: gray;
+}
+
+.minus-sign {
+  font-size: 2rem;
+  color: gray;
+}
+
+.mat-column-fundContribution,
+.mat-column-privateContribution,
+.mat-column-autoPublicContribution,
+.mat-column-total,
+.mat-column-publicContribution {
+  min-width: 13rem;
+  padding-left: 0rem;
+}
+
+mat-table {
+  overflow-x: auto;
+}
+
+.correction-type-text-size {
+  font-size: inherit;
+}
+
+.toggle-parent {
+  display: flex;
+}
+
+.toggle-question {
+  width: 25rem;
+}

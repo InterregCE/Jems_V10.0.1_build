@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.mod
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionExtended
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionLine
 
-
 fun ProjectAuditControlCorrectionEntity.toModel() = ProjectAuditControlCorrection(
     id = id,
     auditControlId = auditControlEntity.id,
@@ -39,6 +38,4 @@ fun ProjectAuditControlCorrection.toEntity(auditControlResolver: (Long) -> Audit
     status = status,
     linkedToInvoice = linkedToInvoice
 )
-
-
 

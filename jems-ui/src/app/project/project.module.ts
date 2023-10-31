@@ -600,6 +600,12 @@ import { AuditControlCorrectionOverviewComponent } from './project-application/r
 import { AuditControlCorrectionStatusComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-status/audit-control-correction-status.component';
 import { AuditControlCorrectionDetailComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 import { AuditControlCorrectionDetailIdentityComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-identity/audit-control-correction-detail-identity.component';
+import {
+  CorrectionDetailFinancialDescriptionComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/correction-detail-financial-description/correction-detail-financial-description.component';
+import {
+  CorrectionTypeOrderPipePipe
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/correction-detail-financial-description/correction-type-order-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -811,6 +817,8 @@ import { AuditControlCorrectionDetailIdentityComponent } from './project-applica
     AuditControlAttachmentsComponent,
     AuditControlCorrectionDetailComponent,
     AuditControlCorrectionDetailIdentityComponent,
+    CorrectionDetailFinancialDescriptionComponent,
+    CorrectionTypeOrderPipePipe
   ],
   imports: [
     SharedModule,
