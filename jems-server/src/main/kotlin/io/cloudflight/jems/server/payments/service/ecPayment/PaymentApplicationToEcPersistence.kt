@@ -24,6 +24,8 @@ interface PaymentApplicationToEcPersistence {
 
     fun findAll(pageable: Pageable): Page<PaymentApplicationToEc>
 
+    fun getIdsFinishedForYearAndFund(accountingYearId: Long, fundId: Long): Set<Long>
+
     fun updatePaymentApplicationToEcStatus(paymentId: Long, status: PaymentEcStatus): PaymentApplicationToEcDetail
 
     fun deleteById(id: Long)

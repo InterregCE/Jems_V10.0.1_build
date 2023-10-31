@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
@@ -18,10 +18,12 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -62,21 +64,6 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
-        private val cumulativeAmountsForFunAndYear = listOf(
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO1",
-                totalEligibleExpenditure = BigDecimal(101),
-                totalUnionContribution = BigDecimal.ZERO,
-                totalPublicContribution = BigDecimal(102)
-            ),
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO2",
-                totalEligibleExpenditure = BigDecimal(201),
-                totalUnionContribution = BigDecimal.ZERO,
-                totalPublicContribution = BigDecimal(202)
-            ),
-        )
-
     }
 
     @MockK
@@ -96,23 +83,24 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
 
     @Test
     fun createPaymentApplicationToEc() {
+        every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id) } returns false
+
         every {
             ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationsToEcToCreate)
         } returns paymentApplicationsToEcDetail
+
         every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) } returns
                 setOf(19L, 20L, 21L)
         every { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) } answers { }
 
+        every { ecPaymentPersistence.getIdsFinishedForYearAndFund(accountingYear.id, fundId = fund.id) } returns
+                setOf(514L, 515L)
+        val cumulativeValues = mockk<Map<Long?, EcPaymentSummaryLine>>()
+        every { ecPaymentLinkPersistence.getCumulativeAmounts(setOf(514L, 515L)) } returns cumulativeValues
+        every { ecPaymentLinkPersistence.saveCumulativeAmounts(paymentApplicationsToEcId, cumulativeValues) } answers { }
+
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
-        every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id,) } returns false
-        every {
-            ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(
-                fund.id,
-                accountingYear.id
-            )
-        } returns cumulativeAmountsForFunAndYear
-        every { ecPaymentLinkPersistence.saveCumulativeAmounts( any(), any()) } returns Unit
 
         assertThat(service.createPaymentApplicationToEc(paymentApplicationsToEcToCreate))
             .isEqualTo(paymentApplicationsToEcDetail)
@@ -124,7 +112,23 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             )
         )
         verify(exactly = 1) { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) }
-        verify(exactly = 1) { ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fund.id, accountingYear.id) }
-        verify(exactly = 1) { ecPaymentLinkPersistence.saveCumulativeAmounts(paymentApplicationsToEcId, cumulativeAmountsForFunAndYear) }
+        verify(exactly = 1) { ecPaymentLinkPersistence.saveCumulativeAmounts(paymentApplicationsToEcId, cumulativeValues) }
     }
+
+    @Test
+    fun `createPaymentApplicationToEc - other open exists`() {
+        every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(
+            programmeFundId = 74L,
+            accountingYearId = 88L,
+        ) } returns true
+
+        val toCreate = mockk<PaymentApplicationToEcCreate>()
+        every { toCreate.programmeFundId } returns 74L
+        every { toCreate.accountingYearId } returns 88L
+
+        assertThrows<EcPaymentApplicationSameFundAccountingYearExistsException> {
+            service.createPaymentApplicationToEc(toCreate)
+        }
+    }
+
 }

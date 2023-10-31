@@ -29,8 +29,7 @@ class FinalizePaymentApplicationToEc(
         val paymentApplication = ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentId)
         validatePaymentApplicationIsDraft(paymentApplication.status)
 
-        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetOverview(paymentId)
-            .sumUpProperColumns()
+        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetOverview(paymentId).sumUpProperColumns()
         ecPaymentLinkPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 
         val linkedPayments = ecPaymentLinkPersistence.getPaymentsLinkedToEcPayment(paymentId)

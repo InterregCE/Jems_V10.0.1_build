@@ -2,10 +2,8 @@ package io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPay
 
 import com.querydsl.core.Tuple
 import com.querydsl.jpa.impl.JPAQueryFactory
-import io.cloudflight.jems.server.payments.entity.PaymentEcCumulativeId
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisCumulativeOverviewEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
@@ -14,7 +12,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
@@ -109,8 +107,15 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         }
     }
 
+    @Transactional
+    override fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>) {
+        ecPaymentExtensionRepository.findAllById(toUpdate.keys).forEach {
+            it.finalScoBasis = toUpdate[it.paymentId]!!
+        }
+    }
+
     @Transactional(readOnly = true)
-    override fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>> {
+    override fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLineTmp>> {
         val paymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val paymentEntity = QPaymentEntity.paymentEntity
         val priorityPolicy = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
@@ -138,6 +143,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             .fetch()
             .map { it: Tuple ->
                 PaymentToEcAmountSummaryLineTmp(
+                    priorityId = it.get(0, Long::class.java),
                     priorityAxis = it.get(1, String::class.java),
                     fundAmount = it.get(2, BigDecimal::class.java)!!,
                     partnerContribution = it.get(3, BigDecimal::class.java)!!,
@@ -147,32 +153,32 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             }
 
         return mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to results,
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to emptyList(),
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to results.associateBy { it.priorityId },
+            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to emptyMap(),
         )
     }
 
     @Transactional
     override fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
-        totals: Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>,
+        totals: Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>,
     ) {
-        val priorityAxisCodes = totals.values.flatMap { it.mapNotNull { it.priorityAxis } }
+        val priorityAxisIds = totals.values.flatMapTo(HashSet()) { it.keys.mapNotNull { it } }
 
-        val priorityByCode = programmePriorityRepository.getAllByCodeIn(priorityAxisCodes).associateBy { it.code }
+        val priorityById = programmePriorityRepository.findAllById(priorityAxisIds).associateBy { it.id }
         val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
 
         ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(ecPaymentId)
         ecPaymentPriorityAxisOverviewRepository.saveAll(
             totals.flatMap { (type, perAxisList) ->
-                perAxisList.map { perAxis ->
+                perAxisList.map { (priorityId, summaryLine) ->
                     PaymentToEcPriorityAxisOverviewEntity(
                         paymentApplicationToEc = ecPaymentEntity,
                         type = type,
-                        priorityAxis = perAxis.priorityAxis?.let { code -> priorityByCode[code]!! },
-                        totalEligibleExpenditure = perAxis.totalEligibleExpenditure,
-                        totalUnionContribution = perAxis.totalUnionContribution,
-                        totalPublicContribution = perAxis.totalPublicContribution,
+                        priorityAxis = priorityById[priorityId],
+                        totalEligibleExpenditure = summaryLine.totalEligibleExpenditure,
+                        totalUnionContribution = summaryLine.totalUnionContribution,
+                        totalPublicContribution = summaryLine.totalPublicContribution,
                     )
                 }
             }
@@ -182,7 +188,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
-    ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>> =
+    ): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>> =
         PaymentSearchRequestScoBasis.values().associateWith {
             ecPaymentPriorityAxisOverviewRepository
                 .getAllByPaymentApplicationToEcIdAndType(ecPaymentId, it).toModel()
@@ -190,66 +196,52 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fundId: Long, accountingYearId: Long): List<PaymentToEcAmountSummaryLine> {
-        val ecPaymentApplication = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+    override fun getCumulativeAmounts(finishedEcPaymentIds: Set<Long>): Map<Long?, EcPaymentSummaryLine> {
         val ecPaymentOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
 
         return jpaQueryFactory.select(
-            ecPaymentOverview.priorityAxis.code,
+            ecPaymentOverview.priorityAxis.id,
             ecPaymentOverview.totalEligibleExpenditure.sum(),
             ecPaymentOverview.totalUnionContribution.sum(),
             ecPaymentOverview.totalPublicContribution.sum(),
-        ).from(ecPaymentOverview)
-            .leftJoin(ecPaymentApplication)
-                .on(ecPaymentApplication.id.eq(ecPaymentOverview.paymentApplicationToEc.id))
-            .where(
-                ecPaymentApplication.status.eq(PaymentEcStatus.Finished)
-                    .and(ecPaymentApplication.programmeFund.id.eq(fundId))
-                    .and(ecPaymentApplication.accountingYear.id.eq(accountingYearId))
-            )
+        )
+            .from(ecPaymentOverview)
+            .where(ecPaymentOverview.paymentApplicationToEc.id.`in`(finishedEcPaymentIds))
             .groupBy(ecPaymentOverview.priorityAxis)
-            .fetch().map {
-                PaymentToEcAmountSummaryLine(
-                    priorityAxis = it.get(0, String::class.java),
-                    totalEligibleExpenditure = it.get(1, BigDecimal::class.java)!!,
-                    totalUnionContribution = it.get(2, BigDecimal::class.java)!!,
-                    totalPublicContribution = it.get(3, BigDecimal::class.java)!!,
+            .fetch().associate {
+                Pair(
+                    it.get(0, Long::class.java),
+                    EcPaymentSummaryLine(
+                        totalEligibleExpenditure = it.get(1, BigDecimal::class.java)!!,
+                        totalUnionContribution = it.get(2, BigDecimal::class.java)!!,
+                        totalPublicContribution = it.get(3, BigDecimal::class.java)!!,
+                    ),
                 )
             }
-
     }
 
     @Transactional
-    override fun saveCumulativeAmounts(ecPaymentId: Long, totals: List<PaymentToEcAmountSummaryLine>) {
+    override fun saveCumulativeAmounts(ecPaymentId: Long, totals: Map<Long?, EcPaymentSummaryLine>) {
         val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
-        val priorityAxisCodes = totals.mapNotNull { it.priorityAxis }
-        val priorityByCode = programmePriorityRepository.getAllByCodeIn(priorityAxisCodes).associateBy { it.code }
+        val priorityById = programmePriorityRepository.findAllById(totals.keys.mapNotNullTo(HashSet()) { it }).associateBy { it.id }
 
-       ecPaymentPriorityAxisCumulativeOverviewRepository.saveAll(
-            totals.map {
+        val toSave = totals.mapKeys { (id, _) -> priorityById[id] }
+
+        ecPaymentPriorityAxisCumulativeOverviewRepository.saveAll(
+            toSave.map { (priority, summaryLine) ->
                 PaymentToEcPriorityAxisCumulativeOverviewEntity(
-                    id = PaymentEcCumulativeId(
-                        paymentApplicationToEc = ecPaymentEntity,
-                        priorityAxis = priorityByCode[it.priorityAxis]!!
-                    ),
-                    totalEligibleExpenditure = it.totalEligibleExpenditure,
-                    totalUnionContribution = it.totalUnionContribution,
-                    totalPublicContribution = it.totalPublicContribution
+                    paymentApplicationToEc = ecPaymentEntity,
+                    priorityAxis = priority,
+                    totalEligibleExpenditure = summaryLine.totalEligibleExpenditure,
+                    totalUnionContribution = summaryLine.totalUnionContribution,
+                    totalPublicContribution = summaryLine.totalPublicContribution,
                 )
             }
         )
     }
 
     @Transactional(readOnly = true)
-    override fun getCumulativeTotalForEcPayment(ecPaymentId: Long): List<PaymentToEcAmountSummaryLine> =
-        ecPaymentPriorityAxisCumulativeOverviewRepository.getAllByIdPaymentApplicationToEcId(ecPaymentId).toOverviewModels()
-
-
-    @Transactional
-    override fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>) {
-        ecPaymentExtensionRepository.findAllById(toUpdate.keys).forEach {
-            it.finalScoBasis = toUpdate[it.paymentId]!!
-        }
-    }
+    override fun getCumulativeTotalForEcPayment(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLine> =
+        ecPaymentPriorityAxisCumulativeOverviewRepository.getAllByPaymentApplicationToEcId(ecPaymentId).toOverviewModels()
 
 }

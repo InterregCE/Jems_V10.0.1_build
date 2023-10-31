@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface PaymentToEcPriorityAxisCumulativeOverviewRepository: JpaRepository<PaymentToEcPriorityAxisCumulativeOverviewEntity, Long> {
 
-    fun getAllByIdPaymentApplicationToEcId(ecPaymentId: Long): List<PaymentToEcPriorityAxisCumulativeOverviewEntity>
+    fun getAllByPaymentApplicationToEcId(ecPaymentId: Long): List<PaymentToEcPriorityAxisCumulativeOverviewEntity>
 
 }

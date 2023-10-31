@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
@@ -26,26 +25,20 @@ class CreatePaymentApplicationToEc(
     @Transactional
     @ExceptionWrapper(CreatePaymentApplicationToEcException::class)
     override fun createPaymentApplicationToEc(paymentApplicationToEc: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
-        validateFundAccountingYearPair(paymentApplicationToEc)
+        validateNoOtherDraftExist(paymentApplicationToEc)
         val ecPayment = ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationToEc)
 
-        val fund = ecPayment.paymentApplicationToEcSummary.programmeFund
-        val accountingYear = ecPayment.paymentApplicationToEcSummary.accountingYear
-        val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+        val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
+        val yearId = ecPayment.paymentApplicationToEcSummary.accountingYear.id
 
-        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fund.id, basis = basis)
-        ecPaymentLinkPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPayment.id)
-
-        storeSnapshotOfCumulativeAmountsPerPriorityAxis(
-            ecPaymentId = ecPayment.id,
-            cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(fund.id, accountingYear.id)
-        )
+        preSelectAllAvailablePayments(ecPayment.id, fundId = fundId)
+        storeCumulativeValues(ecPayment.id, fundId = fundId, yearId = yearId)
 
         auditPublisher.publishEvent(paymentApplicationToEcCreated(context = this, ecPayment))
         return ecPayment
     }
 
-    fun validateFundAccountingYearPair(paymentApplicationToEc: PaymentApplicationToEcCreate) {
+    fun validateNoOtherDraftExist(paymentApplicationToEc: PaymentApplicationToEcCreate) {
         val existingEcPaymentApplication = ecPaymentPersistence.existsDraftByFundAndAccountingYear(
                 paymentApplicationToEc.programmeFundId,
                 paymentApplicationToEc.accountingYearId
@@ -55,11 +48,16 @@ class CreatePaymentApplicationToEc(
         }
     }
 
+    fun preSelectAllAvailablePayments(ecPaymentId: Long, fundId: Long) {
+        val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fundId, basis = basis)
+        ecPaymentLinkPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPaymentId)
+    }
 
-    fun storeSnapshotOfCumulativeAmountsPerPriorityAxis(
-        ecPaymentId: Long,
-        cumulativeAmounts: List<PaymentToEcAmountSummaryLine>
-    ) = ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
-
+    fun storeCumulativeValues(ecPaymentId: Long, fundId: Long, yearId: Long) {
+        val finishedEcPaymentIds = ecPaymentPersistence.getIdsFinishedForYearAndFund(yearId, fundId = fundId)
+        val cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeAmounts(finishedEcPaymentIds)
+        ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
+    }
 
 }
