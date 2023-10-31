@@ -963,7 +963,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         totalContribution = BigDecimal.ZERO,
                         totalEuContribution = BigDecimal.ZERO,
 
-                        totalFundAndContribution = BigDecimal.TEN,
+                        totalFundAndContribution = BigDecimal.valueOf(10_00L, 2),
                         totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
                     ),
                     projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
