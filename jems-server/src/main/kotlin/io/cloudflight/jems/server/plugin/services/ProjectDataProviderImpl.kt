@@ -371,7 +371,10 @@ class ProjectDataProviderImpl(
         val managementCoFinancingOverview = CoFinancingOverviewCalculator.calculateCoFinancingOverview(
             partnerIds = partnersByIds.keys,
             getBudgetTotalCost = { partnerId ->
-                partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+                val spfTotal = partnersByIds[partnerId]?.budget?.projectPartnerSpfBudgetTotalCost ?: ZERO
+                val total = partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+                val managementTotal = total.minus(spfTotal)
+                managementTotal
             },
             getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
             funds = funds,
