@@ -7,8 +7,8 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.MapsId
-import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_audit_correction_identification")
@@ -18,7 +18,7 @@ class ProjectCorrectionIdentificationEntity (
     val correctionId: Long = 0,
 
     @MapsId
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "correction_id")
     @field:NotNull
     val correctionEntity: ProjectAuditControlCorrectionEntity,

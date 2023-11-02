@@ -7,5 +7,7 @@ data class CorrectionAvailablePartnerReport(
     val reportNumber: Int,
     val projectReport: CorrectionProjectReport?,
 
-    val availableFunds: List<ProgrammeFund>
+    val availableReportFunds: List<ProgrammeFund>,
+
+    val availablePayments: List<CorrectionAvailablePayment>
 )

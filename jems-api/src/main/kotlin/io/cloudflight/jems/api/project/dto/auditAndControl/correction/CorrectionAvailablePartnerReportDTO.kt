@@ -7,5 +7,7 @@ data class CorrectionAvailablePartnerReportDTO(
     val reportNumber: Int,
     val projectReport: CorrectionProjectReportDTO?,
 
-    val availableFunds: List<ProgrammeFundDTO>
+    val availableReportFunds: List<ProgrammeFundDTO>,
+
+    val availablePayments: List<CorrectionAvailablePaymentDTO>,
 )

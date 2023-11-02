@@ -3,5 +3,4 @@ package io.cloudflight.jems.server.project.service.auditAndControl.correction.mo
 data class CorrectionProjectReport(
     val id: Long,
     val number: Int,
-    val ecPayment: CorrectionEcPayment?
 )
