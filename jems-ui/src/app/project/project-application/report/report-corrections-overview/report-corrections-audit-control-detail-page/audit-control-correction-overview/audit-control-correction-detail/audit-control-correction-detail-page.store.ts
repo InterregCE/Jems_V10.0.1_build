@@ -66,7 +66,7 @@ export class AuditControlCorrectionDetailPageStore {
     this.auditControlId$ = this.reportCorrectionsAuditControlDetailPageStore.auditControlId$;
     this.correctionId$ = this.correctionId();
     this.correction$ = this.correction();
-    this.canEdit$ = this.reportCorrectionsAuditControlDetailPageStore.canEdit$;
+    this.canEdit$ = this.canEdit();
     this.correctionPartnerData$ = this.correctionPartnerData();
     this.correctionIdentification$ = this.correctionIdentification();
     this.pastCorrections$ = this.pastCorrections();
@@ -136,6 +136,16 @@ export class AuditControlCorrectionDetailPageStore {
     );
 
     return initialCorrection;
+  }
+
+  private canEdit(): Observable<boolean> {
+    return combineLatest([
+      this.reportCorrectionsAuditControlDetailPageStore.canEdit$,
+      this.correction$.pipe(map(correction => correction.correction.status))
+    ]).pipe(
+      map(([canEditAuditControl, status]) =>
+        canEditAuditControl && status !== ProjectAuditControlCorrectionDTO.StatusEnum.Closed)
+    );
   }
 
   private correctionIdentification(): Observable<ProjectCorrectionIdentificationDTO> {

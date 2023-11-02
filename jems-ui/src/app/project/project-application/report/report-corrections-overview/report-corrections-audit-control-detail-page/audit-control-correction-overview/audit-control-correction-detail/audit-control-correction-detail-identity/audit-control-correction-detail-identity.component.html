@@ -1,6 +1,6 @@
 <jems-form *ngIf="data$ | async as data"
-           (discard)="resetForm(data.correctionIdentification, data.canEdit)"
-           (save)="save(data.correctionId)">
+           (discard)="resetForm(data.correctionIdentification, data.correctionPartnerData, data.canEdit)"
+           (save)="save(data?.correctionIdentification?.correctionId)">
 
   <h4>{{'project.application.reporting.corrections.identification.title' | translate}}</h4>
   <p>{{'project.application.reporting.corrections.identification.subtitle' | translate}}</p>
@@ -13,7 +13,7 @@
                     [disabled]="!data.canEdit">
           <mat-option [value]="null" role="option">{{'common.not.applicable.option' | translate}}</mat-option>
           <mat-option *ngFor="let correction of data.pastCorrections" [value]="correction.id" role="option">
-            AC{{auditControlNumber}}.{{correction.orderNr}}
+            AC{{data.correction.auditControlNumber}}.{{correction.orderNr}}
           </mat-option>
         </mat-select>
         <mat-error>
@@ -95,27 +95,23 @@
         <mat-label>{{'project.application.reporting.corrections.identification.partner.id' | translate}}</mat-label>
         <mat-select formControlName="partnerId"
                     [disabled]="!data.canEdit"
-                    (selectionChange)="selectPartner($event.value)"
+                    (selectionChange)="selectPartner(data.correctionPartnerData, $event.value)"
                     class="placeholder-required"
                     placeholder="{{'common.not.applicable.option' | translate}}"
                     required>
           <mat-select-trigger>
-            <mat-icon *ngIf="getPartnerForIdValue()?.partnerDisabled">person_off</mat-icon>
-            <span
-                *ngIf="getPartnerForIdValue()?.partnerRole === 'LEAD_PARTNER'">
-              {{('common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: getPartnerForIdValue()?.partnerNumber})}}, {{getPartnerForIdValue()?.partnerAbbreviation}}</span>
-            <span
-                *ngIf="getPartnerForIdValue()?.partnerRole !== 'LEAD_PARTNER'">
-              {{('common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: getPartnerForIdValue()?.partnerNumber})}}, {{getPartnerForIdValue()?.partnerAbbreviation}}</span>
+            <ng-container *ngIf="getPartner(data.correctionPartnerData, form.controls?.partnerId?.value) as partner">
+                <mat-icon *ngIf="partner.partnerDisabled">person_off</mat-icon>
+                <span>
+                  {{(('common.label.project.partner.role.shortcut.' + partner.partnerRole) | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}
+                </span>
+            </ng-container>
           </mat-select-trigger>
-          <mat-option *ngFor="let partner of correctionPartnerData" [value]="partner.partnerId" role="option">
+          <mat-option *ngFor="let partner of data.correctionPartnerData" [value]="partner.partnerId" role="option">
             <mat-icon *ngIf="partner.partnerDisabled">person_off</mat-icon>
-            <span
-                *ngIf="partner.partnerRole === 'LEAD_PARTNER'">
-              {{('common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}</span>
-            <span
-                *ngIf="partner.partnerRole !== 'LEAD_PARTNER'">
-              {{('common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}</span>
+            <span>
+              {{('common.label.project.partner.role.shortcut.' + partner.partnerRole | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}
+            </span>
           </mat-option>
         </mat-select>
         <mat-error>
@@ -147,7 +143,7 @@
     </div>
 
     <div>
-      <mat-form-field jemsFormFieldWidth="xxx-large">
+      <mat-form-field jemsFormFieldWidth="full">
         <mat-label>{{'project.application.reporting.corrections.identification.partner.report.fund' | translate}}</mat-label>
         <mat-select formControlName="programmeFundId"
                     [disabled]="funds && funds?.length === 0"

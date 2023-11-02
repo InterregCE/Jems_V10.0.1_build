@@ -1,12 +1,15 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
-  ProgrammeFundDTO, ProjectAuditControlCorrectionDTO,
-  ProjectCorrectionIdentificationDTO, ProjectCorrectionIdentificationUpdateDTO,
+  ProgrammeFundDTO,
+  ProjectAuditControlCorrectionDTO,
+  ProjectAuditControlCorrectionExtendedDTO,
+  ProjectCorrectionIdentificationDTO,
+  ProjectCorrectionIdentificationUpdateDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -23,20 +26,14 @@ import {
   providers: [FormService]
 })
 export class AuditControlCorrectionDetailIdentityComponent {
-  @Input()
-  auditControlNumber: number;
-
-  @Input()
-  correctionPartnerData: CorrectionAvailablePartnerDTO[];
 
   Alert = Alert;
   CorrectionFollowUpTypeEnum = ProjectCorrectionIdentificationDTO.CorrectionFollowUpTypeEnum;
   error$ = new BehaviorSubject<APIError | null>(null);
   data$: Observable<{
-    projectId: number;
-    auditControlId: number;
-    correctionId: number;
+    correction: ProjectAuditControlCorrectionExtendedDTO;
     correctionIdentification: ProjectCorrectionIdentificationDTO;
+    correctionPartnerData: CorrectionAvailablePartnerDTO[];
     canEdit: boolean;
     canClose: boolean;
     pastCorrections: ProjectAuditControlCorrectionDTO[];
@@ -59,58 +56,52 @@ export class AuditControlCorrectionDetailIdentityComponent {
     private pageStore: AuditControlCorrectionDetailPageStore,
   ) {
     this.data$ = combineLatest([
-      pageStore.projectId$,
-      pageStore.auditControlId$,
-      pageStore.correctionId$,
       pageStore.canEdit$,
       pageStore.canClose$,
+      pageStore.correction$,
       pageStore.correctionIdentification$,
+      pageStore.correctionPartnerData$,
       pageStore.pastCorrections$
     ]).pipe(
       map(([
-             projectId,
-             auditControlId,
-             correctionId,
              canEdit,
              canClose,
+             correction,
              correctionIdentification,
+             correctionPartnerData,
              pastCorrections
-           ]: any) => ({
-        projectId,
-        auditControlId: Number(auditControlId),
-        correctionId: Number(correctionId),
+           ]) => ({
         canEdit,
         canClose,
+        correction,
         correctionIdentification,
+        correctionPartnerData,
         pastCorrections
       })),
       tap(data => this.resetForm(
         data.correctionIdentification,
+        data.correctionPartnerData,
         data.canEdit
       )),
     );
   }
 
-  resetForm(
-    correctionIdentification: ProjectCorrectionIdentificationDTO,
-    editable: boolean
-  ) {
-    const partner = this.correctionPartnerData.filter(partnerToFilter => partnerToFilter.partnerId === correctionIdentification.partnerId)[0];
-    const report = partner?.availableReports.filter(reportToFilter => reportToFilter.id === correctionIdentification.partnerReportId)[0];
-    const fund = report?.availableReportFunds.filter(fundToFilter => fundToFilter.id === correctionIdentification.programmeFundId)[0];
-    if (partner)
-    {
+  resetForm(correctionIdentification: ProjectCorrectionIdentificationDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
+    const partner = correctionPartnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === correctionIdentification.partnerId);
+    const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === correctionIdentification.partnerReportId);
+    const fund = report?.availableReportFunds.find((it: ProgrammeFundDTO) => it.id === correctionIdentification.programmeFundId);
+    if (partner) {
       this.partnerReports = partner.availableReports;
     }
     this.form = this.formBuilder.group({
-      followUpOfCorrectionId: [correctionIdentification.followUpOfCorrectionId ? correctionIdentification.followUpOfCorrectionId : null],
+      followUpOfCorrectionId: [correctionIdentification.followUpOfCorrectionId],
       correctionFollowUp: correctionIdentification.correctionFollowUpType,
       repaymentFrom: correctionIdentification.repaymentFrom,
       lateRepaymentTo: correctionIdentification.lateRepaymentTo,
-      partnerId: [partner ? partner.partnerId : null, Validators.required],
-      partnerReportId: [report ? report.id : null, Validators.required],
+      partnerId: [partner?.partnerId, Validators.required],
+      partnerReportId: [report?.id, Validators.required],
       projectReportNumber: [report?.projectReport?.id ? ('PR.' + report.projectReport.number) : 'N/A'],
-      programmeFundId: [fund ? fund.id : 'N/A', Validators.required],
+      programmeFundId: [fund?.id ?? 'N/A', Validators.required],
     });
     this.formService.init(this.form, of(editable));
     this.form.controls?.projectReportNumber?.disable();
@@ -121,27 +112,32 @@ export class AuditControlCorrectionDetailIdentityComponent {
     }
   }
 
-  selectPartner($event: any): void {
-    if ($event !== null) {
-      this.partnerReports = this.correctionPartnerData.filter(partner => partner.partnerId === $event)[0]?.availableReports;
-      return;
-    }
-    this.partnerReports = [];
+  getPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): CorrectionAvailablePartnerDTO | undefined {
+    return correctionPartnerData.find((partner: CorrectionAvailablePartnerDTO) => partner.partnerId === partnerId);
   }
 
-  selectReport($event: any): void {
-    if ($event !== null) {
-      const report = this.partnerReports.filter(reportToFilter => reportToFilter.id === $event)[0];
-      if (report.projectReport) {
-        this.form.controls?.projectReportNumber?.setValue('PR.' + report.projectReport.number);
+  selectPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): void {
+    this.partnerReports = this.getPartner(correctionPartnerData, partnerId)?.availableReports ?? [];
+    this.form.controls?.projectReportNumber?.setValue(null);
+    this.form.controls?.programmeFundId?.setValue(null);
+    this.form.updateValueAndValidity();
+    this.funds = [];
+  }
+
+  selectReport(partnerReportId: number): void {
+    if (partnerReportId) {
+      const report = this.partnerReports.find(it => it.id === partnerReportId);
+      if (report?.projectReport) {
+        this.form.controls?.projectReportNumber?.setValue('PR.' + report?.projectReport.number);
       } else {
         this.form.controls?.projectReportNumber?.setValue('N/A');
       }
-      this.funds = report?.availableReportFunds;
+      this.funds = report?.availableReportFunds ?? [];
       return;
     }
     this.form.controls?.projectReportNumber?.setValue('N/A');
     this.form.controls?.programmeFundId?.setValue(null);
+    this.form.updateValueAndValidity();
     this.funds = [];
   }
 
@@ -163,7 +159,4 @@ export class AuditControlCorrectionDetailIdentityComponent {
       ).subscribe();
   }
 
-  getPartnerForIdValue(): CorrectionAvailablePartnerDTO {
-    return this.correctionPartnerData.filter(partner => partner.partnerId === this.form.controls.partnerId.value)[0];
-  }
 }
