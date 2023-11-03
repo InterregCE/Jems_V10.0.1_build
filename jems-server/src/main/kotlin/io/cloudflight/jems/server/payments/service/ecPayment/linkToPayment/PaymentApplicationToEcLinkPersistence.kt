@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 
 interface PaymentApplicationToEcLinkPersistence {
@@ -24,27 +25,22 @@ interface PaymentApplicationToEcLinkPersistence {
     fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
 
-    fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLineTmp>>
+    fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLineTmp>>
 
     fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
-        totals: Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>,
+        totals: Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>,
     )
 
     fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
-    ): Map<PaymentSearchRequestScoBasis, List<PaymentToEcAmountSummaryLine>>
+    ): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>
 
 
-    fun getCumulativeAmountsOfFinishedEcPaymentsByFundAndAccountingYear(
-        fundId: Long,
-        accountingYearId: Long
-    ): List<PaymentToEcAmountSummaryLine>
+    fun getCumulativeAmounts(finishedEcPaymentIds: Set<Long>): Map<Long?, EcPaymentSummaryLine>
 
+    fun saveCumulativeAmounts(ecPaymentId: Long, totals: Map<Long?, EcPaymentSummaryLine>)
 
-    fun saveCumulativeAmounts(ecPaymentId: Long, totals: List<PaymentToEcAmountSummaryLine>)
-
-
-    fun getCumulativeTotalForEcPayment(ecPaymentId: Long,): List<PaymentToEcAmountSummaryLine>
+    fun getCumulativeTotalForEcPayment(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLine>
 
 }

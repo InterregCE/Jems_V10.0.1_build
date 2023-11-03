@@ -58,45 +58,43 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             paymentApplicationToEcSummary = expectedPaymentApplicationsToEcSummary
         )
 
-        private val paymentsIncludedInPaymentsToEc = listOf(
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO1",
-                totalEligibleExpenditure = BigDecimal(302),
-                totalUnionContribution = BigDecimal(0),
-                totalPublicContribution = BigDecimal(803)
-            ),
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO2",
-                totalEligibleExpenditure = BigDecimal(304),
-                totalUnionContribution = BigDecimal(0),
-                totalPublicContribution = BigDecimal(806)
-            ),
+        private val includedInP01 = PaymentToEcAmountSummaryLine(
+            priorityAxis = "PO1",
+            totalEligibleExpenditure = BigDecimal(302),
+            totalUnionContribution = BigDecimal(0),
+            totalPublicContribution = BigDecimal(803),
+        )
+        private val includedInP02 = PaymentToEcAmountSummaryLine(
+            priorityAxis = "PO2",
+            totalEligibleExpenditure = BigDecimal(304),
+            totalUnionContribution = BigDecimal(0),
+            totalPublicContribution = BigDecimal(806),
         )
 
         private val paymentsIncludedInPaymentsToEcMapped = mapOf(
-            Pair(
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-                paymentsIncludedInPaymentsToEc
-            )
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLine>(
+                25L to includedInP01,
+                26L to includedInP02,
+            ),
         )
 
         private val paymentToEcAmountSummaryTmpMap = mapOf(
-            Pair(
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, listOf(
-                    PaymentToEcAmountSummaryLineTmp(
-                        priorityAxis = "PO1",
-                        fundAmount = BigDecimal.valueOf(101),
-                        partnerContribution = BigDecimal(201),
-                        ofWhichPublic = BigDecimal(301),
-                        ofWhichAutoPublic = BigDecimal(401)
-                    ),
-                    PaymentToEcAmountSummaryLineTmp(
-                        priorityAxis = "PO2",
-                        fundAmount = BigDecimal.valueOf(102),
-                        partnerContribution = BigDecimal(202),
-                        ofWhichPublic = BigDecimal(302),
-                        ofWhichAutoPublic = BigDecimal(402)
-                    )
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+                25L to PaymentToEcAmountSummaryLineTmp(
+                    priorityId = 25L,
+                    priorityAxis = "PO1",
+                    fundAmount = BigDecimal.valueOf(101),
+                    partnerContribution = BigDecimal(201),
+                    ofWhichPublic = BigDecimal(301),
+                    ofWhichAutoPublic = BigDecimal(401),
+                ),
+                26L to PaymentToEcAmountSummaryLineTmp(
+                    priorityId = 26L,
+                    priorityAxis = "PO2",
+                    fundAmount = BigDecimal.valueOf(102),
+                    partnerContribution = BigDecimal(202),
+                    ofWhichPublic = BigDecimal(302),
+                    ofWhichAutoPublic = BigDecimal(402),
                 )
             )
         )
@@ -199,7 +197,7 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
         )
         verify(exactly = 1) {  ecPaymentLinkPersistence.saveTotalsWhenFinishingEcPayment(
             ecPaymentId = PAYMENT_ID,
-            totals = mapOf(Pair(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, paymentsIncludedInPaymentsToEc))
+            totals = paymentsIncludedInPaymentsToEcMapped,
         ) }
     }
 

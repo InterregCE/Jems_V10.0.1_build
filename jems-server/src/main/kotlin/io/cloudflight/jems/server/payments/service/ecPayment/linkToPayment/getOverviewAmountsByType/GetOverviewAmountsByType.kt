@@ -3,12 +3,11 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.merge
+import io.cloudflight.jems.server.payments.service.ecPayment.mergeBothScoBases
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import org.springframework.stereotype.Service
@@ -26,16 +25,16 @@ class GetOverviewAmountsByType(
     override fun getOverviewAmountsByType(paymentToEcId: Long, type: PaymentSearchRequestScoBasis?): PaymentToEcAmountSummary {
         val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentToEcId)
 
-        val selectedPaymentList = if (ecPayment.status == PaymentEcStatus.Finished)
+        val currentOverview = if (ecPayment.status.isFinished())
                 ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(paymentToEcId)
             else
                 ecPaymentLinkPersistence.calculateAndGetOverview(paymentToEcId).sumUpProperColumns()
 
-        val selectedPaymentListOfType = if (type != null) selectedPaymentList[type]!! else selectedPaymentList.merge()
+        val currentOverviewOfType = if (type != null) currentOverview[type]!! else currentOverview.mergeBothScoBases()
 
         return PaymentToEcAmountSummary(
-            amountsGroupedByPriority = selectedPaymentListOfType,
-            totals = selectedPaymentListOfType.sumUp()
+            amountsGroupedByPriority = currentOverviewOfType.values.toList(),
+            totals = currentOverviewOfType.values.sumUp()
         )
     }
 }

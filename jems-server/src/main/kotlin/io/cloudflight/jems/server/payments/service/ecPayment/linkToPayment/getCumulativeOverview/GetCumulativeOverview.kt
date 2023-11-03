@@ -4,8 +4,10 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
+import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.merge
+import io.cloudflight.jems.server.payments.service.ecPayment.mergeBothScoBases
+import io.cloudflight.jems.server.payments.service.ecPayment.plus
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import org.springframework.stereotype.Service
@@ -14,53 +16,30 @@ import java.math.BigDecimal
 
 @Service
 class GetCumulativeOverview(
+    private val ecPaymentPersistence: PaymentApplicationToEcPersistence,
     private val ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence,
 ): GetCumulativeOverviewInteractor {
-
-    companion object {
-        private val ZERO_SUMMARY_LINE = PaymentToEcAmountSummaryLine(
-            priorityAxis = null,
-            totalEligibleExpenditure = BigDecimal.ZERO,
-            totalUnionContribution = BigDecimal.ZERO,
-            totalPublicContribution = BigDecimal.ZERO,
-        )
-    }
 
     @CanRetrievePaymentApplicationsToEc
     @Transactional
     @ExceptionWrapper(GetCumulativeOverviewException::class)
     override fun getCumulativeOverview(ecPaymentId: Long): PaymentToEcAmountSummary {
+        val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecPaymentId)
 
-        val currentOverview = ecPaymentLinkPersistence.calculateAndGetOverview(ecPaymentId).sumUpProperColumns().merge()
-        val cumulativeOverviewForFinishedEcPayments = ecPaymentLinkPersistence.getCumulativeTotalForEcPayment(ecPaymentId)
-            .associateBy { it.priorityAxis!! }
+        val cumulativeOverviewForThisEcPayment = ecPaymentLinkPersistence.getCumulativeTotalForEcPayment(ecPaymentId)
 
-        val cumulativeOverviewLines = currentOverview.addCumulativeAmounts(cumulativeOverviewForFinishedEcPayments)
+        val currentOverview = (if (ecPayment.status.isFinished())
+            ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(ecPaymentId)
+        else
+            ecPaymentLinkPersistence.calculateAndGetOverview(ecPaymentId).sumUpProperColumns()
+        ).mergeBothScoBases()
+
+        val cumulativeOverviewLines = currentOverview.plus(cumulativeOverviewForThisEcPayment)
         return PaymentToEcAmountSummary(
-            amountsGroupedByPriority = cumulativeOverviewLines,
-            totals = cumulativeOverviewLines.sumUp()
+            amountsGroupedByPriority = cumulativeOverviewLines.values.toList(),
+            totals = cumulativeOverviewLines.values.sumUp(),
         )
 
     }
-
-
-    fun List<PaymentToEcAmountSummaryLine>.addCumulativeAmounts(
-        cumulativeAmounts: Map<String, PaymentToEcAmountSummaryLine>
-    ): List<PaymentToEcAmountSummaryLine> =
-
-         this.map { current ->
-             val cumulativeValue = cumulativeAmounts.getOrDefault(current.priorityAxis, ZERO_SUMMARY_LINE)
-             current.plus(cumulativeValue)
-         }
-
-
-
-    fun PaymentToEcAmountSummaryLine.plus(other: PaymentToEcAmountSummaryLine): PaymentToEcAmountSummaryLine =
-        PaymentToEcAmountSummaryLine(
-            priorityAxis = this.priorityAxis,
-            totalEligibleExpenditure = this.totalEligibleExpenditure.plus(other.totalEligibleExpenditure),
-            totalUnionContribution = this.totalUnionContribution.plus(other.totalUnionContribution),
-            totalPublicContribution = this.totalPublicContribution.plus(other.totalPublicContribution)
-        )
 
 }

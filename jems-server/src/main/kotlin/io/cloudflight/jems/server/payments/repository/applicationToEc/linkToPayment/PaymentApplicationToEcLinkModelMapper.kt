@@ -19,9 +19,11 @@ fun PaymentToEcExtensionEntity.toModel() = PaymentToEcExtension(
     ecPaymentStatus = paymentApplicationToEc?.status,
 )
 
-fun List<PaymentToEcPriorityAxisOverviewEntity>.toModel() = map { mapper.map(it) }
+fun List<PaymentToEcPriorityAxisOverviewEntity>.toModel() =
+    associate { Pair(it.priorityAxis?.id, mapper.map(it)) }
 
-fun List<PaymentToEcPriorityAxisCumulativeOverviewEntity>.toOverviewModels() = map { mapper.map(it) }
+fun List<PaymentToEcPriorityAxisCumulativeOverviewEntity>.toOverviewModels() =
+    associate { Pair(it.priorityAxis?.id, mapper.map(it)) }
 
 
 @Mapper
@@ -33,7 +35,7 @@ interface PaymentApplicationToEcLinkModelMapper {
     fun map(entity: PaymentToEcPriorityAxisOverviewEntity): PaymentToEcAmountSummaryLine
 
     @Mappings(
-        Mapping(source = "id.priorityAxis.code", target = "priorityAxis"),
+        Mapping(source = "priorityAxis.code", target = "priorityAxis"),
     )
     fun map(entity: PaymentToEcPriorityAxisCumulativeOverviewEntity): PaymentToEcAmountSummaryLine
 

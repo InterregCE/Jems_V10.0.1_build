@@ -50,21 +50,6 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             paymentApplicationToEcSummary = expectedPaymentApplicationsToEcSummary
         )
 
-        private val paymentsIncludedInPaymentsToEc = listOf(
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO1",
-                totalEligibleExpenditure = BigDecimal(302),
-                totalUnionContribution = BigDecimal.ZERO,
-                totalPublicContribution = BigDecimal(803)
-            ),
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = "PO2",
-                totalEligibleExpenditure = BigDecimal(304),
-                totalUnionContribution = BigDecimal.ZERO,
-                totalPublicContribution = BigDecimal(806)
-            ),
-        )
-
         private val expectedPaymentsIncludedInPaymentsToEc = listOf(
             PaymentToEcAmountSummaryLine(
                 priorityAxis = "PO1",
@@ -80,23 +65,35 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             )
         )
 
-        private val paymentsIncludedInPaymentsToEcMap =
-            mapOf(Pair(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95, paymentsIncludedInPaymentsToEc))
-
-        private val paymentsIncludedInPaymentsToEcTmp = listOf(
-            PaymentToEcAmountSummaryLineTmp(
+        private val expectedPaymentsIncludedInPaymentsToEcFinished = listOf(
+            PaymentToEcAmountSummaryLine(
                 priorityAxis = "PO1",
-                fundAmount = BigDecimal.valueOf(101),
-                partnerContribution = BigDecimal(201),
-                ofWhichPublic = BigDecimal(301),
-                ofWhichAutoPublic = BigDecimal(401)
+                totalEligibleExpenditure = BigDecimal(302),
+                totalUnionContribution = BigDecimal.valueOf(502),
+                totalPublicContribution = BigDecimal(802),
             ),
-            PaymentToEcAmountSummaryLineTmp(
+            PaymentToEcAmountSummaryLine(
                 priorityAxis = "PO2",
-                fundAmount = BigDecimal.valueOf(102),
-                partnerContribution = BigDecimal(202),
-                ofWhichPublic = BigDecimal(302),
-                ofWhichAutoPublic = BigDecimal(402)
+                totalEligibleExpenditure = BigDecimal(304),
+                totalUnionContribution = BigDecimal.valueOf(504),
+                totalPublicContribution = BigDecimal(804),
+            )
+        )
+
+        private val paymentsIncludedInPaymentsToEcMap = mapOf(
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLine>(
+                105L to PaymentToEcAmountSummaryLine(
+                    priorityAxis = "PO1",
+                    totalEligibleExpenditure = BigDecimal(302),
+                    totalUnionContribution = BigDecimal.valueOf(502),
+                    totalPublicContribution = BigDecimal(802)
+                ),
+                106L to PaymentToEcAmountSummaryLine(
+                    priorityAxis = "PO2",
+                    totalEligibleExpenditure = BigDecimal(304),
+                    totalUnionContribution = BigDecimal.valueOf(504),
+                    totalPublicContribution = BigDecimal(804)
+                ),
             ),
         )
 
@@ -104,14 +101,35 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             priorityAxis = null,
             totalEligibleExpenditure = BigDecimal(606),
             totalUnionContribution = BigDecimal.ZERO,
-            totalPublicContribution = BigDecimal(1609)
+            totalPublicContribution = BigDecimal(1609),
+        )
+
+        private val expectedTotalFinished = PaymentToEcAmountSummaryLine(
+            priorityAxis = null,
+            totalEligibleExpenditure = BigDecimal(606),
+            totalUnionContribution = BigDecimal.valueOf(1006),
+            totalPublicContribution = BigDecimal(1606),
         )
 
         private val paymentToEcAmountSummaryTmpMap = mapOf(
-            Pair(
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-                paymentsIncludedInPaymentsToEcTmp
-            )
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+                105L to PaymentToEcAmountSummaryLineTmp(
+                    priorityId = 105L,
+                    priorityAxis = "PO1",
+                    fundAmount = BigDecimal.valueOf(101),
+                    partnerContribution = BigDecimal(201),
+                    ofWhichPublic = BigDecimal(301),
+                    ofWhichAutoPublic = BigDecimal(401)
+                ),
+                106L to PaymentToEcAmountSummaryLineTmp(
+                    priorityId = 106L,
+                    priorityAxis = "PO2",
+                    fundAmount = BigDecimal.valueOf(102),
+                    partnerContribution = BigDecimal(202),
+                    ofWhichPublic = BigDecimal(302),
+                    ofWhichAutoPublic = BigDecimal(402)
+                ),
+            ),
         )
     }
 
@@ -125,19 +143,12 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
     @Test
     fun `getCumulativeAmountsByType - notArt9495`() {
-       val expectedSummary = PaymentToEcAmountSummary(
-            amountsGroupedByPriority = expectedPaymentsIncludedInPaymentsToEc,
-            totals = expectedTotal
-        )
-
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(PAYMENT_TO_EC_ID) } returns paymentApplicationDetail(
             status = PaymentEcStatus.Draft
         )
-        every {
-            ecPaymentLinkPersistence.calculateAndGetOverview(
-                PAYMENT_TO_EC_ID
-            )
-        } returns paymentToEcAmountSummaryTmpMap
+        every { ecPaymentLinkPersistence.calculateAndGetOverview(PAYMENT_TO_EC_ID) } returns paymentToEcAmountSummaryTmpMap
+
+        val expectedSummary = PaymentToEcAmountSummary(expectedPaymentsIncludedInPaymentsToEc, expectedTotal)
 
         assertThat(
             getCumulativeAmountsByType.getOverviewAmountsByType(
@@ -173,8 +184,8 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
     fun `getCumulativeAmountsByType - ArtNot94Not95 - status finished`() {
 
         val expectedSummary = PaymentToEcAmountSummary(
-            amountsGroupedByPriority = expectedPaymentsIncludedInPaymentsToEc,
-            totals = expectedTotal
+            amountsGroupedByPriority = expectedPaymentsIncludedInPaymentsToEcFinished,
+            totals = expectedTotalFinished,
         )
         val ecPaymentDetail = paymentApplicationDetail(status = PaymentEcStatus.Finished)
 
@@ -196,24 +207,16 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
     @Test
     fun `getCumulativeAmountsByType - summary - status finished`() {
-
         val expectedSummary = PaymentToEcAmountSummary(
-            amountsGroupedByPriority = expectedPaymentsIncludedInPaymentsToEc,
-            totals = expectedTotal
+            amountsGroupedByPriority = expectedPaymentsIncludedInPaymentsToEcFinished,
+            totals = expectedTotalFinished,
         )
         val ecPaymentDetail = paymentApplicationDetail(status = PaymentEcStatus.Finished)
 
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(PAYMENT_TO_EC_ID) } returns ecPaymentDetail
-        every {
-            ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(
-                PAYMENT_TO_EC_ID
-            )
-        } returns paymentsIncludedInPaymentsToEcMap
+        every { ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(PAYMENT_TO_EC_ID) } returns paymentsIncludedInPaymentsToEcMap
 
-        assertThat(
-            getCumulativeAmountsByType.getOverviewAmountsByType(
-                paymentToEcId = PAYMENT_TO_EC_ID, type = null
-            )
-        ).isEqualTo(expectedSummary)
+        assertThat(getCumulativeAmountsByType.getOverviewAmountsByType(PAYMENT_TO_EC_ID, type = null))
+            .isEqualTo(expectedSummary)
     }
 }

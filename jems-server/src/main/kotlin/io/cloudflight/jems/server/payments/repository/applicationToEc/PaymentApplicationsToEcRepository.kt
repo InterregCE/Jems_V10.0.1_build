@@ -19,11 +19,17 @@ interface PaymentApplicationsToEcRepository: JpaRepository<PaymentApplicationToE
             COUNT(ecPayment)
         ) FROM accounting_years accYear
             LEFT JOIN payment_applications_to_ec ecPayment
-                ON accYear.id = ecPayment.accountingYear.id AND ecPayment.programmeFund.id = :programmeFundId 
+                ON accYear.id = ecPayment.accountingYear.id AND ecPayment.programmeFund.id = :programmeFundId
                     AND ecPayment.status != 'Finished'
         GROUP BY accYear.id
         ORDER BY accYear.id
     """)
     fun getAvailableAccountingYearForFund(programmeFundId: Long): List<Pair<AccountingYearEntity, Int>>
+
+    fun findAllByStatusAndAccountingYearIdAndProgrammeFundId(
+        status: PaymentEcStatus,
+        accountingYearId: Long,
+        programmeFundId: Long,
+    ): List<PaymentApplicationToEcEntity>
 
 }
