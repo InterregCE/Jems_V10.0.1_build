@@ -1,7 +1,8 @@
+DROP INDEX constraint_unique_id_payment_id_priority_axis
+    ON payment_application_to_ec_priority_axis_overview;
+
 ALTER TABLE payment_application_to_ec_priority_axis_overview
-    DROP CONSTRAINT constraint_unique_id_payment_id_priority_axis,
-    ADD CONSTRAINT unq_overview_payment_and_priority
-        UNIQUE (payment_application_to_ec_id, priority_axis_id);
+    ADD UNIQUE (payment_application_to_ec_id, priority_axis_id);
 
 DROP TABLE payment_application_to_ec_priority_axis_cumulative_overview;
 
