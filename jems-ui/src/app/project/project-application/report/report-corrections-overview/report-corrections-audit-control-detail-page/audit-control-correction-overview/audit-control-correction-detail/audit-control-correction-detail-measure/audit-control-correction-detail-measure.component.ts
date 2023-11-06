@@ -31,6 +31,7 @@ export class AuditControlCorrectionDetailMeasureComponent {
     partnerData: CorrectionAvailablePartnerDTO[];
     identification: ProjectCorrectionIdentificationDTO;
     programmeMeasure: ProjectCorrectionProgrammeMeasureDTO;
+    canEdit: boolean;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -69,9 +70,10 @@ export class AuditControlCorrectionDetailMeasureComponent {
       programmeMeasureStore.correctionPartnerData$,
       programmeMeasureStore.correctionIdentity$,
       programmeMeasureStore.programmeMeasure$,
+      programmeMeasureStore.canEdit$,
     ]).pipe(
-      map(([partnerData, identification, programmeMeasure]) => ({
-        partnerData, identification, programmeMeasure,
+      map(([partnerData, identification, programmeMeasure, canEdit]) => ({
+        partnerData, identification, programmeMeasure, canEdit
       })),
       tap(data => this.resetForm(data.partnerData, data.identification, data.programmeMeasure)),
     );

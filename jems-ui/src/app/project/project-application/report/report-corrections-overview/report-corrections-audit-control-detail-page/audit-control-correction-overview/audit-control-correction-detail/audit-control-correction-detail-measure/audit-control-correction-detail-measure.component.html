@@ -31,7 +31,9 @@
 
             <h4>{{'project.application.reporting.corrections.programme.measure.scenario' | translate}}</h4>
 
-            <mat-radio-group required (change)="scenarioChanged($event.value)">
+            <mat-radio-group required
+                             [disabled]="!data.canEdit"
+                             (change)="scenarioChanged($event.value)">
                 <mat-radio-button *ngFor="let option of scenarios" [value]="option">
                     <div class="title">{{('project.application.reporting.corrections.programme.measure.scenario.' + option) | translate}}</div>
                     <p>{{('project.application.reporting.corrections.programme.measure.scenario.' + option + '.description') | translate}}</p>
