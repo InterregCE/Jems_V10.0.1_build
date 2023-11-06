@@ -1,0 +1,173 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.correctionIdentification, data.canEdit)"
+           (save)="save(data.correctionId)">
+
+  <h4>{{'project.application.reporting.corrections.identification.title' | translate}}</h4>
+  <p>{{'project.application.reporting.corrections.identification.subtitle' | translate}}</p>
+
+  <form [formGroup]="form" jemsFormLayout>
+    <div jemsMultiColumnRow stretch="1" class="mt-2">
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.correction.id' | translate}}</mat-label>
+        <mat-select formControlName="followUpOfCorrectionId"
+                    [disabled]="!data.canEdit">
+          <mat-option [value]="null" role="option">{{'common.not.applicable.option' | translate}}</mat-option>
+          <mat-option *ngFor="let correction of data.pastCorrections" [value]="correction.id" role="option">
+            AC{{auditControlNumber}}.{{correction.orderNr}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <jems-form-field-errors [errors]="form.controls?.followUpOfCorrectionId?.errors"></jems-form-field-errors>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <p>{{'project.application.reporting.corrections.identification.correction.related.to' | translate}}</p>
+
+    <div jemsMultiColumnRow stretch="1" class="mt-2">
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.correction.follow.up' | translate}}</mat-label>
+        <mat-select formControlName="correctionFollowUp"
+                    [disabled]="!data.canEdit">
+          <mat-option [value]="CorrectionFollowUpTypeEnum.No" role="option">
+            {{'project.application.reporting.corrections.identification.correction.follow.up.No' | translate}}
+          </mat-option>
+          <mat-option [value]="CorrectionFollowUpTypeEnum.CourtProcedure" role="option">
+            {{'project.application.reporting.corrections.identification.correction.follow.up.CourtProcedure' | translate}}
+          </mat-option>
+          <mat-option [value]="CorrectionFollowUpTypeEnum.Interest" role="option">
+            {{'project.application.reporting.corrections.identification.correction.follow.up.Interest' | translate}}
+          </mat-option>
+          <mat-option [value]="CorrectionFollowUpTypeEnum.LateRePayment" role="option">
+            {{'project.application.reporting.corrections.identification.correction.follow.up.LateRePayment' | translate}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <jems-form-field-errors [errors]="form.controls?.correctionFollowUp?.errors"></jems-form-field-errors>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div jemsMultiColumnRow stretch="1" class="mt-2">
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.correction.repayment.date' | translate}}</mat-label>
+        <input matInput
+               name="repaymentFrom"
+               [matDatepicker]="repaymentFrom"
+               formControlName="repaymentFrom">
+        <mat-datepicker-toggle [disabled]="false" [for]="repaymentFrom" matSuffix>
+        </mat-datepicker-toggle>
+        <mat-datepicker #repaymentFrom></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.correction.late.repayment' | translate}}</mat-label>
+        <input matInput
+               name="lateRepaymentTo"
+               [min]="form?.controls?.repaymentFrom?.value"
+               [matDatepicker]="lateRepaymentTo"
+               formControlName="lateRepaymentTo">
+        <mat-datepicker-toggle [disabled]="false" [for]="lateRepaymentTo" matSuffix>
+        </mat-datepicker-toggle>
+        <mat-datepicker #lateRepaymentTo></mat-datepicker>
+
+        <mat-error>
+          <jems-form-field-errors
+              [args]="dateNameArgs"
+              [errors]="form?.controls?.lateRepaymentTo?.errors"
+              [messages]="inputErrorMessages">
+          </jems-form-field-errors>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <h4>{{'project.application.reporting.corrections.identification.correction.define.scope' | translate}}</h4>
+    <p>{{'project.application.reporting.corrections.identification.correction.define.scope.one' | translate}}</p>
+    <p>{{'project.application.reporting.corrections.identification.correction.define.scope.two' | translate}}</p>
+
+    <jems-alert [show]="true" [type]="Alert.INFO">
+      <p>{{'project.application.reporting.corrections.identification.correction.define.scope.info.one' | translate}}</p>
+      <p>{{'project.application.reporting.corrections.identification.correction.define.scope.info.two' | translate}}</p>
+    </jems-alert>
+
+    <div jemsMultiColumnRow stretch="1" class="mt-2">
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.partner.id' | translate}}</mat-label>
+        <mat-select formControlName="partnerId"
+                    [disabled]="!data.canEdit"
+                    (selectionChange)="selectPartner($event.value)"
+                    class="placeholder-required"
+                    placeholder="{{'common.not.applicable.option' | translate}}"
+                    required>
+          <mat-select-trigger>
+            <mat-icon *ngIf="getPartnerForIdValue()?.partnerDisabled">person_off</mat-icon>
+            <span
+                *ngIf="getPartnerForIdValue()?.partnerRole === 'LEAD_PARTNER'">
+              {{('common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: getPartnerForIdValue()?.partnerNumber})}}, {{getPartnerForIdValue()?.partnerAbbreviation}}</span>
+            <span
+                *ngIf="getPartnerForIdValue()?.partnerRole !== 'LEAD_PARTNER'">
+              {{('common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: getPartnerForIdValue()?.partnerNumber})}}, {{getPartnerForIdValue()?.partnerAbbreviation}}</span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let partner of correctionPartnerData" [value]="partner.partnerId" role="option">
+            <mat-icon *ngIf="partner.partnerDisabled">person_off</mat-icon>
+            <span
+                *ngIf="partner.partnerRole === 'LEAD_PARTNER'">
+              {{('common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}</span>
+            <span
+                *ngIf="partner.partnerRole !== 'LEAD_PARTNER'">
+              {{('common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: partner.partnerNumber})}}, {{partner.partnerAbbreviation}}</span>
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <jems-form-field-errors [errors]="form.controls?.partnerId?.errors"></jems-form-field-errors>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.partner.report.id' | translate}}</mat-label>
+        <mat-select formControlName="partnerReportId"
+                    [disabled]="!data.canEdit || partnerReports?.length === 0"
+                    (selectionChange)="selectReport($event.value)"
+                    class="placeholder-required"
+                    placeholder="{{'common.not.applicable.option' | translate}}"
+                    required>
+          <mat-option *ngFor="let report of partnerReports" [value]="report.id" role="option">
+            R.{{report.reportNumber}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <jems-form-field-errors [errors]="form.controls?.partnerReportId?.errors"></jems-form-field-errors>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{'project.application.reporting.corrections.identification.project.report' | translate}}</mat-label>
+        <input formControlName="projectReportNumber" matInput disabled>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field jemsFormFieldWidth="xxx-large">
+        <mat-label>{{'project.application.reporting.corrections.identification.partner.report.fund' | translate}}</mat-label>
+        <mat-select formControlName="programmeFundId"
+                    [disabled]="funds && funds?.length === 0"
+                    class="placeholder-required"
+                    placeholder="{{'common.not.applicable.option' | translate}}"
+                    required>
+          <mat-option *ngFor="let fund of funds"
+                      [value]="fund.id">
+            {{fund.abbreviation | translateBySystemLanguage | async}}
+          </mat-option>
+          <mat-option *ngIf="funds?.length === 0" [value]="'N/A'">{{'common.not.applicable.option' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <jems-alert *ngIf="error$ | async as error"
+              [show]="!!error.i18nMessage?.i18nKey"
+              [type]="Alert.ERROR">
+    <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+  </jems-alert>
+
+</jems-form>

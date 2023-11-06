@@ -58,6 +58,7 @@
 </ng-template>
 
 <ng-template #partnerRoleCell let-correction>
+  <mat-icon *ngIf="correction?.partnerDisabled">person_off</mat-icon>
   <span
       *ngIf="correction.partnerRoleDTO === 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: correction.partnerNumber} }}</span>
   <span

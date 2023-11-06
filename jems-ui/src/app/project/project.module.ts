@@ -599,6 +599,7 @@ import { AuditControlAttachmentsComponent } from './project-application/report/r
 import { AuditControlCorrectionOverviewComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-overview.component';
 import { AuditControlCorrectionStatusComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-status/audit-control-correction-status.component';
 import { AuditControlCorrectionDetailComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
+import { AuditControlCorrectionDetailIdentityComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-identity/audit-control-correction-detail-identity.component';
 
 @NgModule({
   declarations: [
@@ -809,6 +810,7 @@ import { AuditControlCorrectionDetailComponent } from './project-application/rep
     AuditControlCorrectionStatusComponent,
     AuditControlAttachmentsComponent,
     AuditControlCorrectionDetailComponent,
+    AuditControlCorrectionDetailIdentityComponent,
   ],
   imports: [
     SharedModule,

@@ -414,15 +414,20 @@ export class UserRoleDetailPageComponent {
   private adaptCloseCorrectionPermissions(): void {
     const correctionPermission = this.treeControlInspect?.dataNodes
       ?.find(node => node.name === 'project.application.reporting.corrections.subtitle') as any;
-    const correctionClosingPermission = this.treeControlInspect?.dataNodes
+    const correctionAuditPermission = this.treeControlInspect?.dataNodes
       ?.find(node => node.name === 'project.application.reporting.corrections.close.audit') as any;
+    const correctionClosingPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.close.correction') as any;
     const correctionPermissionValue = this.state(correctionPermission.form)?.value;
 
     if(correctionPermissionValue === PermissionState.HIDDEN ||  correctionPermissionValue == PermissionState.VIEW) {
       this.state(correctionClosingPermission.form)?.setValue(PermissionState.HIDDEN);
+      this.state(correctionAuditPermission.form)?.setValue(PermissionState.HIDDEN);
       correctionClosingPermission.disabled = true;
+      correctionAuditPermission.disabled = true;
     } else {
       correctionClosingPermission.disabled = false;
+      correctionAuditPermission.disabled = false;
     }
   }
 

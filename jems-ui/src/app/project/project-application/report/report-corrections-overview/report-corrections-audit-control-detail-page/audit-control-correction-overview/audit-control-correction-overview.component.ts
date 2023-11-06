@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {PageProjectAuditControlCorrectionLineDTO} from '@cat/api';
+import {PageProjectAuditControlCorrectionLineDTO, ProjectAuditControlCorrectionLineDTO} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {ColumnWidth} from '@common/components/table/model/column-width';
@@ -76,9 +76,10 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
         page,
         projectId,
         auditControlId: Number(auditControlId),
-        canEdit
-      })),
-      tap(data => this.canEdit = data.canEdit));
+        canEdit})),
+      tap(data => this.canEdit = data.canEdit),
+      tap(data => this.canEdit = data.canEdit),
+      );
   }
 
   ngOnInit() {
