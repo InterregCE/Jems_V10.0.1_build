@@ -3,12 +3,18 @@ import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {RoutingService} from '@common/services/routing.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {
-  AuditControlDTO,
   CorrectionAvailablePartnerDTO,
-  ProgrammeFundDTO, ProjectAuditAndControlService, ProjectAuditControlCorrectionDTO,
-  ProjectAuditControlCorrectionExtendedDTO, ProjectAuditControlUpdateDTO, ProjectCorrectionIdentificationDTO,
-  ProjectCorrectionIdentificationService, ProjectCorrectionIdentificationUpdateDTO,
-  ProjectCorrectionService, UserRoleDTO
+  ProgrammeFundDTO,
+  ProjectAuditAndControlService,
+  ProjectAuditControlCorrectionDTO,
+  ProjectAuditControlCorrectionExtendedDTO,
+  ProjectCorrectionIdentificationDTO,
+  ProjectCorrectionIdentificationService,
+  ProjectCorrectionIdentificationUpdateDTO,
+  ProjectCorrectionService,
+  UserRoleDTO,
+  ProjectCorrectionFinancialDescriptionDTO,
+  ProjectCorrectionFinancialDescriptionUpdateDTO, ProjectCorrectionFinancialDescriptionService,
 } from '@cat/api';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
@@ -43,6 +49,8 @@ export class AuditControlCorrectionDetailPageStore {
   updatedCorrection$ = new Subject<ProjectCorrectionIdentificationDTO>();
   updatedCorrectionStatus$ = new Subject<ProjectAuditControlCorrectionDTO.StatusEnum>();
   correctionStatus$: Observable<ProjectAuditControlCorrectionDTO.StatusEnum>;
+  financialDescription$: Observable<ProjectCorrectionFinancialDescriptionDTO>;
+  savedFinancialDescription$ = new Subject<ProjectCorrectionFinancialDescriptionDTO>();
 
   constructor(
     private routingService: RoutingService,
@@ -51,8 +59,9 @@ export class AuditControlCorrectionDetailPageStore {
     private projectCorrectionIdentificationService: ProjectCorrectionIdentificationService,
     private permissionService: PermissionService,
     private auditControlCorrectionStore: AuditControlCorrectionStore,
-    private projectAuditAndControlService: ProjectAuditAndControlService
-      ) {
+    private projectAuditAndControlService: ProjectAuditAndControlService,
+    private projectCorrectionFinancialDescriptionService: ProjectCorrectionFinancialDescriptionService
+  ) {
     this.projectId$ = this.reportCorrectionsAuditControlDetailPageStore.projectId$;
     this.auditControlId$ = this.reportCorrectionsAuditControlDetailPageStore.auditControlId$;
     this.correctionId$ = this.correctionId();
@@ -63,6 +72,7 @@ export class AuditControlCorrectionDetailPageStore {
     this.pastCorrections$ = this.pastCorrections();
     this.correctionStatus$ = this.correctionStatus();
     this.canClose$ = this.canClose();
+    this.financialDescription$ = this.financialDescription();
   }
 
   saveCorrection(id: number, correctionData: ProjectCorrectionIdentificationUpdateDTO): Observable<ProjectCorrectionIdentificationDTO> {
@@ -180,5 +190,28 @@ export class AuditControlCorrectionDetailPageStore {
     );
   }
 
+  private financialDescription(): Observable<ProjectCorrectionFinancialDescriptionDTO> {
+    const initialData$ = combineLatest([this.projectId$, this.auditControlId$, this.correctionId$])
+      .pipe(
+        switchMap(([projectId, controlId, correctionId]) => this.projectCorrectionFinancialDescriptionService.getCorrectionFinancialDescription(controlId as number, correctionId as number, projectId)),
+      );
+    return merge(initialData$, this.savedFinancialDescription$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
+
+  saveFinancialDescription(correctionId: number, financialDescriptionData: ProjectCorrectionFinancialDescriptionUpdateDTO): Observable<ProjectCorrectionFinancialDescriptionDTO> {
+    return combineLatest([
+      this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
+      this.reportCorrectionsAuditControlDetailPageStore.projectId$,
+    ]).pipe(
+      switchMap(([auditControlId, projectId]) =>
+        this.projectCorrectionFinancialDescriptionService.updateCorrectionFinancialDescription(Number(auditControlId), correctionId, projectId, financialDescriptionData)
+      ),
+      tap(financialDescription => this.savedFinancialDescription$.next(financialDescription)),
+      tap(financialDescription => Log.info('Updated correction financial description', this, financialDescription))
+    );
+  }
 
 }

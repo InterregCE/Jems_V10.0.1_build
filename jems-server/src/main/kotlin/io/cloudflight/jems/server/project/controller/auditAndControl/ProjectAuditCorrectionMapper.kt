@@ -1,15 +1,13 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl
 
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionAvailablePartnerDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionStatusDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionExtendedDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.*
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionAvailablePartner
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionExtended
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionLine
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescriptionUpdate
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -26,6 +24,10 @@ fun ProjectAuditControlCorrectionExtendedDTO.toModel() = mapper.map(this)
 fun CorrectionAvailablePartner.toDto() = mapper.map(this)
 
 fun CorrectionStatus.toDto() = mapper.map(this)
+fun ProjectCorrectionFinancialDescription.toDto() = mapper.map(this)
+fun ProjectCorrectionFinancialDescriptionDTO.toModel() = mapper.map(this)
+fun ProjectCorrectionFinancialDescriptionUpdateDTO.toModel() = mapper.map(this)
+
 
 @Mapper
 interface ProjectAuditCorrectionMapper {
@@ -37,5 +39,8 @@ interface ProjectAuditCorrectionMapper {
     fun map(dto: ProjectAuditControlCorrectionExtendedDTO): ProjectAuditControlCorrectionExtended
     fun map(model: CorrectionAvailablePartner): CorrectionAvailablePartnerDTO
     fun map(model: CorrectionStatus): CorrectionStatusDTO
+    fun map(model: ProjectCorrectionFinancialDescription): ProjectCorrectionFinancialDescriptionDTO
+    fun map(dto: ProjectCorrectionFinancialDescriptionDTO): ProjectCorrectionFinancialDescription
+    fun map(dto: ProjectCorrectionFinancialDescriptionUpdateDTO): ProjectCorrectionFinancialDescriptionUpdate
 
 }

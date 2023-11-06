@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.repository.auditAndControl
 
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectCorrectionFinancialDescriptionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectCorrectionIdentificationEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.CreateCorrectionPersistenceProvider
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.financialDescription.ProjectCorrectionFinancialDescriptionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.identification.CorrectionIdentificationRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionFollowUpType
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
@@ -12,6 +14,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.mod
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
+import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.updateProjectAudit.UpdateProjectAuditTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,6 +22,7 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class CreateCorrectionPersistenceProviderTest {
 
@@ -26,6 +30,7 @@ class CreateCorrectionPersistenceProviderTest {
         private const val AUDIT_CONTROL_ID = 1L
         private const val PROJECT_ID = 2L
         private const val CORRECTION_ID = 1L
+        private val today = LocalDate.now()
 
         private val projectAuditControlEntity = AuditControlEntity(
             id = AUDIT_CONTROL_ID,
@@ -70,6 +75,23 @@ class CreateCorrectionPersistenceProviderTest {
             partnerReportId = null,
             programmeFundId = null
         )
+
+        private val financialDescriptionEntity = ProjectCorrectionFinancialDescriptionEntity(
+            correctionId = CORRECTION_ID,
+            correction = correctionEntity,
+            deduction = true,
+            fundAmount = BigDecimal.TEN,
+            publicContribution = BigDecimal(100),
+            autoPublicContribution = BigDecimal(101),
+            privateContribution = BigDecimal(102),
+            infoSentBeneficiaryDate = today,
+            infoSentBeneficiaryComment = "BENEFICIARY COMMENT",
+            correctionType = CorrectionType.Ref10Dot1,
+            clericalTechnicalMistake = true,
+            goldPlating = true,
+            suspectedFraud = true,
+            correctionComment = "CORRECTION COMMENT"
+        )
     }
 
     @MockK
@@ -81,6 +103,9 @@ class CreateCorrectionPersistenceProviderTest {
     @MockK
     lateinit var auditControlCorrectionIdentificationRepository: CorrectionIdentificationRepository
 
+    @MockK
+    lateinit var projectCorrectionFinancialDescriptionRepository: ProjectCorrectionFinancialDescriptionRepository
+
     @InjectMockKs
     lateinit var createCorrectionPersistenceProvider: CreateCorrectionPersistenceProvider
 
@@ -89,6 +114,7 @@ class CreateCorrectionPersistenceProviderTest {
         every { auditControlRepository.getById(AUDIT_CONTROL_ID) } returns projectAuditControlEntity
         every { auditControlCorrectionRepository.save(any()) } returns correctionEntity
         every { auditControlCorrectionIdentificationRepository.save(any()) } returns correctionIdentificationEntity
+        every { projectCorrectionFinancialDescriptionRepository.save(any()) } returns financialDescriptionEntity
 
         assertThat(createCorrectionPersistenceProvider.createCorrection(correction)).isEqualTo(correction)
     }
