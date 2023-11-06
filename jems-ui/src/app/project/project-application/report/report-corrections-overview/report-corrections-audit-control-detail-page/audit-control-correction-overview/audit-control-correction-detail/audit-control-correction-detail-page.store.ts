@@ -8,13 +8,14 @@ import {
   ProjectAuditAndControlService,
   ProjectAuditControlCorrectionDTO,
   ProjectAuditControlCorrectionExtendedDTO,
+  ProjectCorrectionFinancialDescriptionDTO,
+  ProjectCorrectionFinancialDescriptionService,
+  ProjectCorrectionFinancialDescriptionUpdateDTO,
   ProjectCorrectionIdentificationDTO,
   ProjectCorrectionIdentificationService,
   ProjectCorrectionIdentificationUpdateDTO,
   ProjectCorrectionService,
   UserRoleDTO,
-  ProjectCorrectionFinancialDescriptionDTO,
-  ProjectCorrectionFinancialDescriptionUpdateDTO, ProjectCorrectionFinancialDescriptionService,
 } from '@cat/api';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
@@ -23,10 +24,10 @@ import {
   ReportCorrectionsAuditControlDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.store';
 import {PermissionService} from '../../../../../../../security/permissions/permission.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   AuditControlCorrectionStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Injectable({
@@ -66,11 +67,11 @@ export class AuditControlCorrectionDetailPageStore {
     this.auditControlId$ = this.reportCorrectionsAuditControlDetailPageStore.auditControlId$;
     this.correctionId$ = this.correctionId();
     this.correction$ = this.correction();
-    this.canEdit$ = this.canEdit();
     this.correctionPartnerData$ = this.correctionPartnerData();
     this.correctionIdentification$ = this.correctionIdentification();
     this.pastCorrections$ = this.pastCorrections();
     this.correctionStatus$ = this.correctionStatus();
+    this.canEdit$ = this.canEdit();
     this.canClose$ = this.canClose();
     this.financialDescription$ = this.financialDescription();
   }
@@ -138,16 +139,6 @@ export class AuditControlCorrectionDetailPageStore {
     return initialCorrection;
   }
 
-  private canEdit(): Observable<boolean> {
-    return combineLatest([
-      this.reportCorrectionsAuditControlDetailPageStore.canEdit$,
-      this.correction$.pipe(map(correction => correction.correction.status))
-    ]).pipe(
-      map(([canEditAuditControl, status]) =>
-        canEditAuditControl && status !== ProjectAuditControlCorrectionDTO.StatusEnum.Closed)
-    );
-  }
-
   private correctionIdentification(): Observable<ProjectCorrectionIdentificationDTO> {
     const initialCorrectionIdentification = combineLatest([
       this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
@@ -178,15 +169,24 @@ export class AuditControlCorrectionDetailPageStore {
     );
   }
 
+  private canEdit(): Observable<boolean> {
+    return combineLatest([
+      this.reportCorrectionsAuditControlDetailPageStore.canEdit$,
+      this.correctionStatus$,
+    ]).pipe(
+      map(([canEditAuditControl, status]) =>
+        canEditAuditControl && status !== ProjectAuditControlCorrectionDTO.StatusEnum.Closed)
+    );
+  }
+
   private canClose(): Observable<boolean> {
     return combineLatest([
-      this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorAuditAndControlEdit),
+      this.canEdit$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCloseAuditControlCorrection),
-      this.correctionStatus$,
       this.correctionIdentification$
     ]).pipe(
-      map(([canEdit, canClose, status, identification]) =>
-        canEdit && canClose && status === ProjectAuditControlCorrectionDTO.StatusEnum.Ongoing && (identification.partnerId !== null) && (identification.partnerReportId !== null)
+      map(([canEdit, canClose, identification]) =>
+        canEdit && canClose && !!identification.partnerId && !!identification.partnerReportId && !!identification.programmeFundId
       )
     );
   }
