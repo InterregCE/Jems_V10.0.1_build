@@ -198,6 +198,7 @@ export class UserRoleDetailPageComponent {
     this.adaptLimitedControllerInstitutionPermissions();
     this.adaptLimitedControllerInstitutionAssignmentsPermissions();
     this.adaptFinalizeReportVerificationPermissions();
+    this.adaptCloseCorrectionPermissions();
 
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
@@ -210,6 +211,8 @@ export class UserRoleDetailPageComponent {
       this.adaptLimitedControllerInstitutionPermissions();
       this.adaptLimitedControllerInstitutionAssignmentsPermissions();
       this.adaptFinalizeReportVerificationPermissions();
+      this.adaptCloseCorrectionPermissions();
+
       this.formChanged();
     }
   }
@@ -405,6 +408,21 @@ export class UserRoleDetailPageComponent {
       limitInstitutionsPermission.disabled = true;
     } else {
       limitInstitutionsPermission.disabled = false;
+    }
+  }
+
+  private adaptCloseCorrectionPermissions(): void {
+    const correctionPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.subtitle') as any;
+    const correctionClosingPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.close.audit') as any;
+    const correctionPermissionValue = this.state(correctionPermission.form)?.value;
+
+    if(correctionPermissionValue === PermissionState.HIDDEN ||  correctionPermissionValue == PermissionState.VIEW) {
+      this.state(correctionClosingPermission.form)?.setValue(PermissionState.HIDDEN);
+      correctionClosingPermission.disabled = true;
+    } else {
+      correctionClosingPermission.disabled = false;
     }
   }
 

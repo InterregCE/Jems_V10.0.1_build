@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.service.auditAndControl
 
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.CorrectionsStillOpenException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.createProjectAudit.MaxNumberOfAuditsReachedException
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class ProjectAuditAndControlValidator(
     private val generalValidator: GeneralValidatorService,
+    private val correctionPersistence: AuditControlCorrectionPersistence
 ) {
     companion object {
         private const val MAX_NUMBER_OF_AUDITS = 100
@@ -26,6 +29,14 @@ class ProjectAuditAndControlValidator(
     fun validateMaxNumberOfAudits(numberOfExistingAudits: Long) {
         if (numberOfExistingAudits >= MAX_NUMBER_OF_AUDITS) {
             throw MaxNumberOfAuditsReachedException()
+        }
+    }
+
+    fun validateAllCorrectionsAreClosed(auditControlId: Long) {
+        val ongoingCorrections = correctionPersistence.getOngoingCorrectionsByAuditControlId(auditControlId)
+
+        if (ongoingCorrections.isNotEmpty()) {
+            throw CorrectionsStillOpenException()
         }
     }
 

@@ -8,17 +8,22 @@ import org.springframework.data.domain.Pageable
 
 interface AuditControlCorrectionPersistence {
 
-    fun saveCorrection(correction: ProjectAuditControlCorrection): ProjectAuditControlCorrection
-
     fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<ProjectAuditControlCorrection>
+
+    fun getPreviousClosedCorrections(auditControlId: Long, correctionId: Long): List<ProjectAuditControlCorrection>
 
     fun getByCorrectionId(correctionId: Long): ProjectAuditControlCorrection
 
     fun getExtendedByCorrectionId(correctionId: Long): ProjectAuditControlCorrectionExtended
 
-    fun getLastCorrectionIdByAuditControlId(auditControlId: Long): Long?
-
     fun getLastUsedOrderNr(auditControlId: Long): Int?
 
     fun deleteCorrectionById(id: Long)
+
+    fun closeCorrection(correctionId: Long): ProjectAuditControlCorrection
+
+    fun getOngoingCorrectionsByAuditControlId(auditControlId: Long): List<ProjectAuditControlCorrection>
+
+    fun getLastCorrectionOngoingId(auditControlId: Long): Long?
+
 }

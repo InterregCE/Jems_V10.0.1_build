@@ -25,6 +25,7 @@ class CloseProjectAuditControl(
     override fun closeAuditControl(projectId: Long, auditControlId: Long): AuditStatus {
         val auditControl = auditControlPersistence.getByIdAndProjectId(projectId = projectId, auditControlId = auditControlId)
         auditControlValidator.verifyAuditControlOngoing(auditControl)
+        auditControlValidator.validateAllCorrectionsAreClosed(auditControlId)
 
         val projectSummary = projectPersistenceProvider.getProjectSummary(projectId)
         return auditControlPersistence.updateProjectAuditStatus(

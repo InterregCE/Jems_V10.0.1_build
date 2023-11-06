@@ -4,7 +4,9 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectAuditAndControl
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCreateCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
@@ -16,14 +18,15 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CreateProjectAuditControlCorrection(
     private val correctionPersistence: AuditControlCorrectionPersistence,
+    private val createCorrectionPersistence: AuditControlCreateCorrectionPersistence,
     private val auditControlPersistence: AuditControlPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectPersistence: ProjectPersistence
+    private val projectPersistence: ProjectPersistence,
 ): CreateProjectAuditControlCorrectionInteractor {
 
     @CanEditProjectAuditAndControl
     @Transactional
-    @ExceptionWrapper(CrateProjectAuditControlCorrectionException::class)
+    @ExceptionWrapper(CreateProjectAuditControlCorrectionException::class)
     override fun createProjectAuditCorrection(
         projectId: Long,
         auditControlId: Long,
@@ -37,7 +40,7 @@ class CreateProjectAuditControlCorrection(
 
         val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-        return correctionPersistence.saveCorrection(
+        return createCorrectionPersistence.createCorrection(
             ProjectAuditControlCorrection(
                 id = 0,
                 auditControlId = auditControlId,
@@ -59,7 +62,7 @@ class CreateProjectAuditControlCorrection(
 
     private fun validateAuditControlStatus(auditControl: ProjectAuditControl) {
         if (auditControl.status.isClosed())
-            throw AuditControlIsInStatusClosedException()
+            throw AuditControlNotOngoingException()
     }
 
     private fun validateCorrectionsNumber(lastCorrectionNumber: Int) {

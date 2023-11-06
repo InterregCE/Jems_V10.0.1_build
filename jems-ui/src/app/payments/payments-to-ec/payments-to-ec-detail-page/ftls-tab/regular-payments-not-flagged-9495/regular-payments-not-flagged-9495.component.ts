@@ -16,8 +16,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {Alert} from '@common/components/forms/alert';
-import {MatCheckbox} from "@angular/material/checkbox/checkbox";
-import {Forms} from "@common/utils/forms";
+import {MatCheckbox} from '@angular/material/checkbox/checkbox';
+import {Forms} from '@common/utils/forms';
 
 @UntilDestroy()
 @Component({

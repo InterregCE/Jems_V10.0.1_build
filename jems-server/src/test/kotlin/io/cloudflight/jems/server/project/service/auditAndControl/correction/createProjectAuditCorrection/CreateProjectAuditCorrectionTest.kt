@@ -8,7 +8,9 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCreateCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
@@ -71,6 +73,9 @@ class CreateProjectAuditCorrectionTest: UnitTest() {
     lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence
 
     @MockK
+    lateinit var createCorrectionPersistence: AuditControlCreateCorrectionPersistence
+
+    @MockK
     lateinit var auditControlPersistence: AuditControlPersistence
 
     @MockK
@@ -89,7 +94,7 @@ class CreateProjectAuditCorrectionTest: UnitTest() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Ongoing)
         every { auditControlCorrectionPersistence.getLastUsedOrderNr(AUDIT_CONTROL_ID) } returns 1
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { auditControlCorrectionPersistence.saveCorrection(correctionToBeSaved) } returns correctionToBeSaved
+        every { createCorrectionPersistence.createCorrection(correctionToBeSaved) } returns correctionToBeSaved
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { applicationEventPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -115,7 +120,7 @@ class CreateProjectAuditCorrectionTest: UnitTest() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Ongoing)
         every { auditControlCorrectionPersistence.getLastUsedOrderNr(AUDIT_CONTROL_ID) } returns 100
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { auditControlCorrectionPersistence.saveCorrection(correctionToBeSaved) } returns correctionToBeSaved
+        every { createCorrectionPersistence.createCorrection(correctionToBeSaved) } returns correctionToBeSaved
 
         assertThrows<MaximumNumberOfCorrectionsException> {
             createProjectAuditControlCorrection.createProjectAuditCorrection(
@@ -135,9 +140,9 @@ class CreateProjectAuditCorrectionTest: UnitTest() {
         )
         every { auditControlCorrectionPersistence.getLastUsedOrderNr(AUDIT_CONTROL_ID) } returns 1
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { auditControlCorrectionPersistence.saveCorrection(correctionToBeSaved) } returns correctionToBeSaved
+        every { createCorrectionPersistence.createCorrection(correctionToBeSaved) } returns correctionToBeSaved
 
-        assertThrows<AuditControlIsInStatusClosedException> {
+        assertThrows<AuditControlNotOngoingException> {
             createProjectAuditControlCorrection.createProjectAuditCorrection(
                 PROJECT_ID,
                 AUDIT_CONTROL_ID,

@@ -1,5 +1,7 @@
-package io.cloudflight.jems.api.project.auditAndControl
+package io.cloudflight.jems.api.project.auditAndControl.corrections
 
+import io.cloudflight.jems.api.project.auditAndControl.ProjectAuditAndControlApi
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionExtendedDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam
 interface ProjectAuditControlCorrectionApi {
 
     companion object {
-        private const val ENDPOINT_API_PROJECT_CORRECTION =
+        const val ENDPOINT_API_PROJECT_CORRECTION =
             "${ProjectAuditAndControlApi.ENDPOINT_API_PROJECT_AUDIT_CONTROL}/{auditControlId}/corrections"
     }
 
@@ -44,13 +46,14 @@ interface ProjectAuditControlCorrectionApi {
         pageable: Pageable,
     ): Page<ProjectAuditControlCorrectionLineDTO>
 
-    @ApiOperation("List all corrections in an audit/control")
+    @ApiOperation("Get correction for an audit/control")
     @GetMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}")
     fun getProjectAuditCorrection(
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,
         @PathVariable correctionId: Long,
     ): ProjectAuditControlCorrectionExtendedDTO
+
 
     @ApiOperation("Delete last correction from audit/control")
     @DeleteMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}")
@@ -59,4 +62,13 @@ interface ProjectAuditControlCorrectionApi {
         @PathVariable auditControlId: Long,
         @PathVariable correctionId: Long,
     )
+
+    @ApiOperation("Close correction")
+    @PostMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}/close")
+    fun closeProjectCorrection(
+        @PathVariable projectId: Long,
+        @PathVariable auditControlId: Long,
+        @PathVariable correctionId: Long,
+    ): CorrectionStatusDTO
+
 }

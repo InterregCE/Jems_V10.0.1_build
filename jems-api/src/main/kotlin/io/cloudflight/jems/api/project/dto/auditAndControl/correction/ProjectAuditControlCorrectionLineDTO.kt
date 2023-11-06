@@ -15,6 +15,7 @@ data class ProjectAuditControlCorrectionLineDTO(
     //These will be updated in the following stories
     val partnerRoleDTO: ProjectPartnerRoleDTO,
     val partnerNumber: Int,
+    val partnerDisabled: Boolean,
     val partnerReport: String,
     val initialAuditNUmber: Int,
     val initialCorrectionNumber: Int,

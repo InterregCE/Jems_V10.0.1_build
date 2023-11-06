@@ -1,12 +1,29 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
+import com.querydsl.core.Tuple
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
+import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
+import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QAccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
+import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.entity.report.control.overview.QPartnerReportControlOverviewEntity
+import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionAvailableReportTmp
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.data.domain.Page
@@ -21,6 +38,7 @@ class ProjectPartnerReportPersistenceProvider(
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository,
     private val partnerRepository: ProjectPartnerRepository,
+    private val jpaQueryFactory: JPAQueryFactory
 ) : ProjectPartnerReportPersistence {
 
     @Transactional
@@ -142,4 +160,64 @@ class ProjectPartnerReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getReportStatusById(reportId: Long): ReportStatus =
         partnerReportRepository.getById(reportId).status
+
+    @Transactional(readOnly = true)
+    override fun getAvailableReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>): List<CorrectionAvailableReportTmp> {
+        val reportPartner = QProjectPartnerReportEntity.projectPartnerReportEntity
+        val reportProject = QProjectReportEntity.projectReportEntity
+        val payment = QPaymentEntity.paymentEntity
+        val programmeFund = QProgrammeFundEntity.programmeFundEntity
+        val ecExtensionPayment = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+        val ecPayment = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+        val accountingYear = QAccountingYearEntity.accountingYearEntity
+        val partnerControlOverview = QPartnerReportControlOverviewEntity.partnerReportControlOverviewEntity
+
+        val fundsPerReportId = partnerReportCoFinancingRepository.findAllByIdReportPartnerIdIn(partnerIds)
+            .groupBy { it.id.report.id }
+            .mapValues { it.value.mapNotNull { it.programmeFund?.toModel() } }
+
+        return jpaQueryFactory.select(
+            reportPartner.partnerId,
+            reportPartner.id,
+            reportPartner.number,
+            reportProject.id,
+            reportProject.number,
+            programmeFund,
+            ecPayment.id,
+            ecPayment.status,
+            accountingYear,
+        )
+            .from(reportPartner)
+            .leftJoin(reportProject).on(reportProject.id.eq(reportPartner.projectReport.id))
+            .leftJoin(payment).on(payment.projectReport.id.eq(reportProject.id))
+            .leftJoin(programmeFund).on(programmeFund.id.eq(payment.fund.id))
+            .leftJoin(ecExtensionPayment).on(ecExtensionPayment.payment.id.eq(payment.id))
+            .leftJoin(ecPayment).on(ecPayment.id.eq(ecExtensionPayment.paymentId))
+            .leftJoin(accountingYear).on(accountingYear.id.eq(ecPayment.accountingYear.id))
+            .leftJoin(partnerControlOverview).on(partnerControlOverview.partnerReportId.eq(reportPartner.id))
+            .where(
+                reportPartner.partnerId.`in`(partnerIds)
+                    .and(partnerControlOverview.endDate.isNotNull)
+            )
+            .fetch()
+            .map { it.toTmpModel { fundsPerReportId[it]!! } }
+    }
+
+    private fun Tuple.toTmpModel(fundResolver: (Long) -> List<ProgrammeFund>): CorrectionAvailableReportTmp {
+        val id = get(1, Long::class.java)!!
+        return CorrectionAvailableReportTmp(
+            partnerId = get(0, Long::class.java)!!,
+            id = id,
+            reportNumber = get(2, Int::class.java)!!,
+            projectReportId = get(3, Long::class.java),
+            projectReportNumber = get(4, Int::class.java),
+            availableReportFunds = fundResolver(id),
+
+            paymentFund = get(5, ProgrammeFundEntity::class.java)?.toModel(),
+
+            ecPaymentId = get(6, Long::class.java),
+            ecPaymentStatus = get(7, PaymentEcStatus::class.java),
+            ecPaymentAccountingYear = get(8, AccountingYearEntity::class.java)?.toModel(),
+        )
+    }
 }

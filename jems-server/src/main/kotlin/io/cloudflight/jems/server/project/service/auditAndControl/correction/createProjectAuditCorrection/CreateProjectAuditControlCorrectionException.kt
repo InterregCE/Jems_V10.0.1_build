@@ -7,19 +7,14 @@ import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableExcep
 private const val CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX = "S-CPACC"
 private const val CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX = "use.case.create.project.audit.control.correction"
 
-class CrateProjectAuditControlCorrectionException(cause: Throwable): ApplicationException(
+class CreateProjectAuditControlCorrectionException(cause: Throwable): ApplicationException(
     code = "$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.failed"),
     cause = cause
 )
 
-class AuditControlIsInStatusClosedException: ApplicationUnprocessableException(
-    code =  "$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.status.is.closed"),
-)
-
 class MaximumNumberOfCorrectionsException: ApplicationUnprocessableException(
-    code =  "$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-003",
+    code =  "$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$CREATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.maximum.number.reached"),
 )
 

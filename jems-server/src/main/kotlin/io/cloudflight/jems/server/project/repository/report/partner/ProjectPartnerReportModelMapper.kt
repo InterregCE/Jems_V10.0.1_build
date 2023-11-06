@@ -170,7 +170,6 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
         )
     )
 
-
 fun PartnerReportIdentification.toEntity() = PartnerReportIdentificationEntity(
     projectIdentifier = projectIdentifier,
     projectAcronym = projectAcronym,

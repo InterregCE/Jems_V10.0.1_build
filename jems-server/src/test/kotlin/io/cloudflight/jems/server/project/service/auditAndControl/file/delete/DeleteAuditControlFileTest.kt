@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearMocks
@@ -70,6 +71,9 @@ class DeleteAuditControlFileTest : UnitTest() {
 
     @MockK
     lateinit var generalValidator: GeneralValidatorDefaultImpl
+
+    @MockK
+    lateinit var correctionPersistence: AuditControlCorrectionPersistence
 
     @InjectMockKs
     lateinit var auditAndControlValidator: ProjectAuditAndControlValidator

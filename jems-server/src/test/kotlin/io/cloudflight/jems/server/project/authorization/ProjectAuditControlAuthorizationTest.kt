@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerCollaboratorEntity
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -36,6 +37,9 @@ class ProjectAuditControlAuthorizationTest : UnitTest() {
 
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
+    lateinit var correctionRepository: AuditControlCorrectionRepository
 
     @InjectMockKs
     lateinit var authorization: ProjectAuditControlAuthorization

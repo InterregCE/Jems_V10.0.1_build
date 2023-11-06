@@ -11,9 +11,9 @@ import {
 import {
   ReportCorrectionsAuditControlDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.store';
-import {RoutingService} from "@common/services/routing.service";
-import {ActivatedRoute} from "@angular/router";
-import {APIError} from "@common/models/APIError";
+import {RoutingService} from '@common/services/routing.service';
+import {ActivatedRoute} from '@angular/router';
+import {APIError} from '@common/models/APIError';
 import { Alert } from '@common/components/forms/alert';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -31,7 +31,7 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
 
-  canEdit: boolean = true;
+  canEdit = true;
 
   @ViewChild('idCell', {static: true})
   idCell: TemplateRef<any>;
@@ -52,8 +52,8 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
 
   data$: Observable<{
     page: PageProjectAuditControlCorrectionLineDTO;
-    projectId: number,
-    auditControlId: number,
+    projectId: number;
+    auditControlId: number;
     canEdit: boolean;
   }>;
 

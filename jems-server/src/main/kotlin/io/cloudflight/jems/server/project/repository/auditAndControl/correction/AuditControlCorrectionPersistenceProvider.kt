@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
-import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionExtended
 import org.springframework.data.domain.Page
@@ -13,17 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class AuditControlCorrectionPersistenceProvider(
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
-    private val auditControlRepository: AuditControlRepository
 ) : AuditControlCorrectionPersistence {
-
-    @Transactional
-    override fun saveCorrection(correction: ProjectAuditControlCorrection): ProjectAuditControlCorrection {
-        return auditControlCorrectionRepository.save(correction.toEntity(auditControlResolver = {
-            auditControlRepository.getById(
-                it
-            )
-        })).toModel()
-    }
 
     @Transactional(readOnly = true)
     override fun getAllCorrectionsByAuditControlId(
@@ -32,6 +22,18 @@ class AuditControlCorrectionPersistenceProvider(
     ): Page<ProjectAuditControlCorrection> =
         auditControlCorrectionRepository.findAllByAuditControlEntityId(auditControlId, pageable)
             .map { it.toModel() }
+
+    @Transactional(readOnly = true)
+    override fun getPreviousClosedCorrections(auditControlId: Long, correctionId: Long): List<ProjectAuditControlCorrection> {
+        val currentCorrection = auditControlCorrectionRepository.getById(correctionId)
+
+        return auditControlCorrectionRepository.getAllByAuditControlEntityIdAndStatusAndOrderNrBefore(
+            auditControlId,
+            CorrectionStatus.Closed,
+            currentCorrection.orderNr
+        ).map { it.toModel() }
+    }
+
 
     @Transactional(readOnly = true)
     override fun getByCorrectionId(correctionId: Long): ProjectAuditControlCorrection =
@@ -46,12 +48,26 @@ class AuditControlCorrectionPersistenceProvider(
     override fun getLastUsedOrderNr(auditControlId: Long): Int? =
         auditControlCorrectionRepository.findFirstByAuditControlEntityIdOrderByOrderNrDesc(auditControlId)?.orderNr
 
-    @Transactional(readOnly = true)
-    override fun getLastCorrectionIdByAuditControlId(auditControlId: Long): Long? =
-        auditControlCorrectionRepository.findFirstByAuditControlEntityIdOrderByOrderNrDesc(auditControlId)?.id
-
     @Transactional
     override fun deleteCorrectionById(id: Long) =
         auditControlCorrectionRepository.deleteById(id)
+
+    @Transactional
+    override fun closeCorrection(correctionId: Long): ProjectAuditControlCorrection =
+        auditControlCorrectionRepository.getById(correctionId).apply {
+            status = CorrectionStatus.Closed
+        }.toModel()
+
+    @Transactional(readOnly = true)
+    override fun getOngoingCorrectionsByAuditControlId(auditControlId: Long): List<ProjectAuditControlCorrection> =
+        auditControlCorrectionRepository.getAllByAuditControlEntityIdAndStatus(auditControlId, CorrectionStatus.Ongoing)
+            .map { it.toModel() }
+
+    @Transactional(readOnly = true)
+    override fun getLastCorrectionOngoingId(auditControlId: Long): Long? =
+        auditControlCorrectionRepository.getFirstByAuditControlEntityIdAndStatusOrderByOrderNrDesc(
+            auditControlId,
+            CorrectionStatus.Ongoing
+        )?.id
 
 }

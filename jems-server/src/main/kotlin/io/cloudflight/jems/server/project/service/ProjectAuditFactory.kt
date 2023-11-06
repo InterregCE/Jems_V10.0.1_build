@@ -408,6 +408,22 @@ fun projectAuditControlCorrectionCreated(
     )
 }
 
+fun projectAuditControlCorrectionClosed(
+    context: Any,
+    projectSummary: ProjectSummary,
+    auditControl: ProjectAuditControl,
+    correction: ProjectAuditControlCorrection
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CLOSED)
+            .project(projectSummary)
+            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed.")
+            .build()
+    )
+}
+
 fun projectAuditControlCorrectionDeleted(
     context: Any,
     projectSummary: ProjectSummary,

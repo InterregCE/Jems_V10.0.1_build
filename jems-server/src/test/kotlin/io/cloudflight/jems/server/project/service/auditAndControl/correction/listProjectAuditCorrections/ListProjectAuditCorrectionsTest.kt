@@ -81,6 +81,7 @@ class ListProjectAuditCorrectionsTest: UnitTest() {
             AUDIT_CONTROL_ID,
             Pageable.unpaged()
         ) } returns PageImpl(listOf(correction))
+        every { correctionPersistence.getLastCorrectionOngoingId(AUDIT_CONTROL_ID) } returns CORRECTION_ID
 
         assertThat(
             listProjectAuditControlCorrections.listProjectAuditCorrections(

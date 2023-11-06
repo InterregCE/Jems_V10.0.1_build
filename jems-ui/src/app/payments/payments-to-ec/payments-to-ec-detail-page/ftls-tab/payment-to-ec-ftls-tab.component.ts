@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {
   PagePaymentToEcLinkingDTO,
   PaymentApplicationToEcDetailDTO,
-  PaymentToEcAmountSummaryDTO, PaymentToEcAmountSummaryLineDTO,
+  PaymentToEcAmountSummaryDTO,
   PaymentToEcLinkingDTO,
   PaymentToEcLinkingUpdateDTO
 } from '@cat/api';
@@ -19,7 +19,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
-import {MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from '@angular/material/table';
 
 @UntilDestroy()
 @Component({

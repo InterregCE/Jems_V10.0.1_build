@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
 import io.mockk.clearMocks
 import io.mockk.every
@@ -38,6 +39,9 @@ class UpdateDescriptionAuditControlFileTest : UnitTest() {
 
     @MockK
     lateinit var auditControlPersistence: AuditControlPersistence
+
+    @MockK
+    lateinit var correctionPersistence: AuditControlCorrectionPersistence
 
     var generalValidator: GeneralValidatorDefaultImpl = GeneralValidatorDefaultImpl()
 

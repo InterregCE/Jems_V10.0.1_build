@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.createProjectAuditCorrection.AuditControlIsInStatusClosedException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
@@ -93,7 +93,7 @@ class DeleteProjectAuditCorrectionTest: UnitTest() {
     @Test
     fun `deleteProjectAuditCorrectionTest - correction should be deleted`() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Ongoing)
-        every { correctionPersistence.getLastCorrectionIdByAuditControlId(AUDIT_CONTROL_ID) } returns 1L
+        every { correctionPersistence.getLastCorrectionOngoingId(AUDIT_CONTROL_ID) } returns 1L
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { correctionPersistence.getByCorrectionId(CORRECTION_ID) } returns correction
         every { correctionPersistence.deleteCorrectionById(CORRECTION_ID) } returns Unit
@@ -124,20 +124,20 @@ class DeleteProjectAuditCorrectionTest: UnitTest() {
     @Test
     fun `deleteProjectAuditCorrectionTest - audit control is closed exception`() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Closed)
-        every { correctionPersistence.getLastCorrectionIdByAuditControlId(AUDIT_CONTROL_ID) } returns CORRECTION_ID
+        every { correctionPersistence.getLastCorrectionOngoingId(AUDIT_CONTROL_ID) } returns CORRECTION_ID
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { correctionPersistence.getByCorrectionId(1) } returns correction
         every { correctionPersistence.deleteCorrectionById(1) } returns Unit
 
 
-        assertThrows<AuditControlIsInStatusClosedException> { deleteProjectAuditControlCorrection.deleteProjectAuditCorrection(
+        assertThrows<AuditControlNotOngoingException> { deleteProjectAuditControlCorrection.deleteProjectAuditCorrection(
             PROJECT_ID, AUDIT_CONTROL_ID, 1) }
     }
 
     @Test
     fun `deleteProjectAuditCorrectionTest - no saved corrections exception`() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Ongoing)
-        every { correctionPersistence.getLastCorrectionIdByAuditControlId(AUDIT_CONTROL_ID) } returns null
+        every { correctionPersistence.getLastCorrectionOngoingId(AUDIT_CONTROL_ID) } returns null
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { correctionPersistence.getByCorrectionId(1) } returns correction
         every { correctionPersistence.deleteCorrectionById(1) } returns Unit
@@ -150,7 +150,7 @@ class DeleteProjectAuditCorrectionTest: UnitTest() {
     @Test
     fun `deleteProjectAuditCorrectionTest - correction is not last`() {
         every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(AuditStatus.Ongoing)
-        every { correctionPersistence.getLastCorrectionIdByAuditControlId(AUDIT_CONTROL_ID) } returns 2
+        every { correctionPersistence.getLastCorrectionOngoingId(AUDIT_CONTROL_ID) } returns 2
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { correctionPersistence.getByCorrectionId(1) } returns correction
         every { correctionPersistence.deleteCorrectionById(1) } returns Unit

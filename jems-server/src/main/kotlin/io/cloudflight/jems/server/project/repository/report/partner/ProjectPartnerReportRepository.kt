@@ -62,6 +62,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     )
     fun findAllByPartnerIdInAndStatusIn(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ReportSummary>
 
+    fun getAllByPartnerIdInAndStatusIn(partnerIds: Set<Long>, statuses: Set<ReportStatus>): List<ProjectPartnerReportEntity>
+
     @Query(
         """
         SELECT new io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData(

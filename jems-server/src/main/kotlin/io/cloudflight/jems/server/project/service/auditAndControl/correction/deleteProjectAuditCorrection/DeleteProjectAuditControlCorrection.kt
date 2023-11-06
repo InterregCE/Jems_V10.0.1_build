@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectAuditAndControl
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.createProjectAuditCorrection.AuditControlIsInStatusClosedException
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
 import io.cloudflight.jems.server.project.service.projectAuditControlCorrectionDeleted
 import org.springframework.context.ApplicationEventPublisher
@@ -32,7 +32,7 @@ class DeleteProjectAuditControlCorrection(
         val auditControl = auditControlPersistence.getByIdAndProjectId(auditControlId, projectId)
         validateAuditControlStatus(auditControl)
 
-        val lastCorrectionId = correctionPersistence.getLastCorrectionIdByAuditControlId(auditControlId)
+        val lastCorrectionId = correctionPersistence.getLastCorrectionOngoingId(auditControlId)
         validateIsAtLeastOneCorrectionSaved(lastCorrectionId)
         validateIsLastCorrection(lastCorrectionId!!, correctionToBeDeletedId)
 
@@ -53,7 +53,7 @@ class DeleteProjectAuditControlCorrection(
 
     private fun validateAuditControlStatus(auditControl: ProjectAuditControl) {
         if (auditControl.status.isClosed())
-            throw AuditControlIsInStatusClosedException()
+            throw AuditControlNotOngoingException()
     }
 
     private fun validateIsLastCorrection(lastCorrectionId: Long, correctionToBeDeletedId: Long) {
