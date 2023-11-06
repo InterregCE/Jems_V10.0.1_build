@@ -63,16 +63,13 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.verification.financialOverview.ProjectReportVerificationCertificateContributionOverviewEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
-import io.cloudflight.jems.server.project.repository.report.project.verification.financialOverview.ProjectReportVerificationCertificateCoFinancingOverviewRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -529,7 +526,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @Test
     fun getAllPaymentToProject() {
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(),
+            any(), any(), any(), any(), any(), any(), any(), any()) } returns query
         val slotFrom = slot<EntityPath<Any>>()
         every { query.from(capture(slotFrom)) } returns query
         val slotLeftJoin = mutableListOf<EntityPath<Any>>()
@@ -554,10 +552,16 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { tupleFtls.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(22) // amount authorized
         every { tupleFtls.get(3, LocalDate::class.java) } returns currentDate.plusDays(1)
         every { tupleFtls.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
-        every { tupleFtls.get(5, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.Partly
-        every { tupleFtls.get(6, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.Yes
-        every { tupleFtls.get(7, String::class.java) } returns "PO4"
-        every { tupleFtls.get(8, PaymentToEcExtensionEntity::class.java) } returns null
+        every { tupleFtls.get(5, String::class.java) } returns "PO4"
+
+        every { tupleFtls.get(6, Long::class.java) } returns 14L
+        every { tupleFtls.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(21)
+        every { tupleFtls.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(22)
+        every { tupleFtls.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
+        every { tupleFtls.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
+        every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
+        every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
+        every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
 
         val tupleRegular = mockk<Tuple>()
         every { tupleRegular.get(0, PaymentEntity::class.java) } returns paymentRegularEntity()
@@ -565,10 +569,16 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { tupleRegular.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(12) // amount authorized
         every { tupleRegular.get(3, LocalDate::class.java) } returns currentDate
         every { tupleRegular.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(13)
-        every { tupleRegular.get(5, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.No
-        every { tupleRegular.get(6, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.Partly
-        every { tupleRegular.get(7, String::class.java) } returns "SO15"
-        every { tupleRegular.get(8, PaymentToEcExtensionEntity::class.java) } returns null
+        every { tupleRegular.get(5, String::class.java) } returns "SO15"
+
+        every { tupleRegular.get(6, Long::class.java) } returns null
+        every { tupleRegular.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(31)
+        every { tupleRegular.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(32)
+        every { tupleRegular.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(33)
+        every { tupleRegular.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(34)
+        every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
+        every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
+        every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 2

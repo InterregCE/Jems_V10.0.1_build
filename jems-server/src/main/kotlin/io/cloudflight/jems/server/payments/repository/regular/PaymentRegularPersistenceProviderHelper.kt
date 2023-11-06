@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+import io.cloudflight.jems.server.payments.model.regular.PaymentToEcExtensionTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
@@ -61,10 +62,17 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
             amountAuthorized = it.get(2, BigDecimal::class.java),
             lastPaymentDate = it.get(3, LocalDate::class.java),
             totalEligibleForRegular = it.get(4, BigDecimal::class.java),
-            projectFallsUnderArticle94 = it.get(5, ContractingMonitoringExtendedOption::class.java),
-            projectFallsUnderArticle95 = it.get(6, ContractingMonitoringExtendedOption::class.java),
-            code = it.get(7, String::class.java),
-            paymentToEcExtensionEntity = it.get(8, PaymentToEcExtensionEntity::class.java),
+            code = it.get(5, String::class.java),
+            paymentToEcExtension = PaymentToEcExtensionTmp(
+                paymentToEcId = it.get(6, Long::class.java),
+                partnerContribution = it.get(7, BigDecimal::class.java)!!,
+                publicContribution = it.get(8, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(9, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(10, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(11, BigDecimal::class.java)!!,
+                privateContribution = it.get(12, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(13, BigDecimal::class.java)!!,
+            ),
         )
     },
     pageable,

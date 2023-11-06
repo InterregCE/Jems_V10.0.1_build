@@ -109,14 +109,14 @@ class PaymentPersistenceProvider(
                     PaymentType.REGULAR -> it.toRegularPaymentModel()
                     PaymentType.FTLS -> it.toFTLSPaymentModel()
                 },
-                paymentToEcId = it.paymentToEcExtensionEntity!!.paymentApplicationToEc?.id,
-                partnerContribution = it.paymentToEcExtensionEntity.partnerContribution,
-                publicContribution = it.paymentToEcExtensionEntity.publicContribution,
-                correctedPublicContribution = it.paymentToEcExtensionEntity.correctedPublicContribution,
-                autoPublicContribution = it.paymentToEcExtensionEntity.autoPublicContribution,
-                correctedAutoPublicContribution = it.paymentToEcExtensionEntity.correctedAutoPublicContribution,
-                privateContribution = it.paymentToEcExtensionEntity.privateContribution,
-                correctedPrivateContribution = it.paymentToEcExtensionEntity.correctedPrivateContribution,
+                paymentToEcId = it.paymentToEcExtension.paymentToEcId,
+                partnerContribution = it.paymentToEcExtension.partnerContribution,
+                publicContribution = it.paymentToEcExtension.publicContribution,
+                correctedPublicContribution = it.paymentToEcExtension.correctedPublicContribution,
+                autoPublicContribution = it.paymentToEcExtension.autoPublicContribution,
+                correctedAutoPublicContribution = it.paymentToEcExtension.correctedAutoPublicContribution,
+                privateContribution = it.paymentToEcExtension.privateContribution,
+                correctedPrivateContribution = it.paymentToEcExtension.correctedPrivateContribution,
                 priorityAxis = it.code ?: "N/A",
             )
         }
@@ -142,32 +142,38 @@ class PaymentPersistenceProvider(
                 specPaymentPartnerInstallment.amountAuthorized(),
                 specPaymentPartnerInstallment.paymentDate.max(),
                 specPartnerReportCertificateCoFin.sumCurrentVerified,
-                specProjectContracting.typologyProv94,
-                specProjectContracting.typologyProv95,
                 specProgrammePriorityEntity.code,
-                specPaymentToEcExtensionEntity,
+
+                specPaymentToEcExtensionEntity.paymentApplicationToEc.id,
+                specPaymentToEcExtensionEntity.partnerContribution,
+                specPaymentToEcExtensionEntity.publicContribution,
+                specPaymentToEcExtensionEntity.correctedPublicContribution,
+                specPaymentToEcExtensionEntity.autoPublicContribution,
+                specPaymentToEcExtensionEntity.correctedAutoPublicContribution,
+                specPaymentToEcExtensionEntity.privateContribution,
+                specPaymentToEcExtensionEntity.correctedPrivateContribution,
             )
             .from(specPayment)
             .leftJoin(specPaymentPartner)
-            .on(specPaymentPartner.payment.id.eq(specPayment.id))
+                .on(specPaymentPartner.payment.id.eq(specPayment.id))
             .leftJoin(specPaymentPartnerInstallment)
-            .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
+                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
             .leftJoin(specPartnerReportCertificateCoFin)
-            .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
+                .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
-            .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
+                .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
             .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
-            .on(specProjectReport.id.eq(specPayment.projectReport.id))
+                .on(specProjectReport.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectContracting)
-            .on(specProjectContracting.projectId.eq(specPayment.project.id))
+                .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .leftJoin(specProjectEntity)
-            .on(specProjectEntity.id.eq(specPayment.project.id))
+                .on(specProjectEntity.id.eq(specPayment.project.id))
             .leftJoin(specProgrammeSpecificObjectiveEntity)
-            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+                .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(specProgrammePriorityEntity)
-            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+                .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
             .leftJoin(specPaymentToEcExtensionEntity)
-            .on(specPaymentPartner.payment.id.eq(specPaymentToEcExtensionEntity.paymentId))
+                .on(specPaymentToEcExtensionEntity.payment.id.eq(specPayment.id))
             .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
             .groupBy(specPayment)
             .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
