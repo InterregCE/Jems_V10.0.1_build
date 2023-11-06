@@ -24,6 +24,8 @@ class PaymentToEcExtensionEntity (
     val payment: PaymentEntity,
 
     @ManyToOne(optional = true)
+    @JoinColumn(name = "payment_application_to_ec_id")
+    @MapsId
     var paymentApplicationToEc: PaymentApplicationToEcEntity? = null,
 
     @field:NotNull

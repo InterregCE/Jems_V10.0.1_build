@@ -6,3 +6,12 @@
   display:flex;
   align-items: center;
 }
+
+mat-card {
+  padding: 0;
+
+  mat-card-content {
+    padding: 1.5rem;
+    margin-bottom: 0;
+  }
+}

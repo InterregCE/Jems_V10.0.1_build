@@ -17,17 +17,16 @@ import org.springframework.transaction.annotation.Transactional
 annotation class CanViewProjectAuditAndControl
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuditControlAuthorization.canEditAuditAndControl(#projectId)")
+annotation class CanEditProjectAuditAndControl
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuditControlAuthorization.canViewProjectCorrection(#correctionId)")
 annotation class CanViewProjectCorrection
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuditControlAuthorization.canEditProjectCorrection(#correctionId)")
 annotation class CanEditProjectCorrection
-
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuditControlAuthorization.canEditAuditAndControl(#projectId)")
-annotation class CanEditProjectAuditAndControl
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuditControlAuthorization.canCloseAuditAndControl(#projectId)")
@@ -64,6 +63,17 @@ class ProjectAuditControlAuthorization(
         return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlView)
     }
 
+    fun canEditAuditAndControl(projectId: Long): Boolean {
+        // monitor users
+        if (hasPermission(UserRolePermission.ProjectMonitorAuditAndControlEdit, projectId)) {
+            return true
+        }
+
+        // controllers
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
+        return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlEdit)
+    }
+
     @Transactional(readOnly = true)
     fun canViewProjectCorrection(correctionId: Long): Boolean {
         val correctionEntity = correctionRepository.getById(correctionId)
@@ -74,17 +84,6 @@ class ProjectAuditControlAuthorization(
     fun canEditProjectCorrection(correctionId: Long): Boolean {
         val correctionEntity = correctionRepository.getById(correctionId)
         return canEditAuditAndControl(correctionEntity.auditControlEntity.projectId)
-    }
-
-    fun canEditAuditAndControl(projectId: Long): Boolean {
-        // monitor users
-        if (hasPermission(UserRolePermission.ProjectMonitorAuditAndControlEdit, projectId)) {
-            return true
-        }
-
-        // controllers
-        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
-        return isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectMonitorAuditAndControlEdit)
     }
 
     fun canCloseAuditAndControl(projectId: Long): Boolean {

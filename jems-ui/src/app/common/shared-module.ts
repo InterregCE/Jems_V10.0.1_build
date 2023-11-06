@@ -111,6 +111,7 @@ import {ProjectReportListComponent} from '@common/components/project-report-list
 import {
   ProjectReportStatusComponent
 } from '@project/project-application/report/project-report/project-report-status/project-report-status.component';
+import {AccountingYearPipe} from '@common/pipe/accounting-year.pipe';
 
 const modules = [
   CommonModule,
@@ -144,6 +145,7 @@ const declarations = [
   PercentagePipe,
   LocaleDatePipe,
   DateFormatInfoPipe,
+  AccountingYearPipe,
   MultiLanguageContainerComponent,
   BreadcrumbComponent,
   AlertComponent,
@@ -203,7 +205,8 @@ const providers = [
   MoneyPipe,
   LocaleDatePipe,
   DateFormatInfoPipe,
-  CustomTranslatePipe
+  CustomTranslatePipe,
+  AccountingYearPipe,
 ];
 
 @NgModule({

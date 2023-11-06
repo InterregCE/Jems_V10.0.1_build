@@ -31,8 +31,7 @@
 </ng-template>
 
 <ng-template #accountingYearCell let-payment>
-    <span>{{ ('accounting.year.' + payment.accountingYear.year) | translate }}:
-        {{ payment.accountingYear.startDate | localeDate }} - {{ payment.accountingYear.endDate | localeDate }}</span>
+    <span>{{ payment.accountingYear | asAccountingYear }}</span>
 </ng-template>
 <ng-template #deleteButtonCell let-payment>
     <button *ngIf="payment.status === paymentStatusEnum.Draft && (userCanEdit$ | async)"
