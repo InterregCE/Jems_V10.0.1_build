@@ -169,6 +169,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
 
         ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(ecPaymentId)
+        ecPaymentPriorityAxisOverviewRepository.flush()
         ecPaymentPriorityAxisOverviewRepository.saveAll(
             totals.flatMap { (type, perAxisList) ->
                 perAxisList.map { (priorityId, summaryLine) ->

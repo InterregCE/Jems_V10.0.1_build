@@ -408,6 +408,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         )
         every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
         every { ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } answers { }
+        every { ecPaymentPriorityAxisOverviewRepository.flush() } answers { }
         every { ecPaymentPriorityAxisOverviewRepository.saveAll(capture(entitySlot)) } returnsArgument 0
 
         persistenceProvider.saveTotalsWhenFinishingEcPayment(
