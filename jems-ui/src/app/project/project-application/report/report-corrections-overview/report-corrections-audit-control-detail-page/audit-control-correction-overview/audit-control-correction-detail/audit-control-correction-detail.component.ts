@@ -8,6 +8,7 @@ import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'jems-audit-control-correction-detail',
@@ -31,7 +32,9 @@ export class AuditControlCorrectionDetailComponent {
   }>;
 
   constructor(
-    public router: RoutingService,
+    private router: Router,
+    private routingService: RoutingService,
+    private activatedRoute: ActivatedRoute,
     private auditControlCorrectionDetailPageStore: AuditControlCorrectionDetailPageStore
   ) {
     this.data$ = combineLatest([
@@ -41,33 +44,34 @@ export class AuditControlCorrectionDetailComponent {
       this.auditControlCorrectionDetailPageStore.canEdit$,
       this.auditControlCorrectionDetailPageStore.canClose$,
       this.auditControlCorrectionDetailPageStore.correctionPartnerData$,
-    ])
-      .pipe(map(([projectId, auditControlId, correction, canEdit, canClose, correctionPartnerData]) => (
-        {
+    ]).pipe(
+      map(([projectId, auditControlId, correction, canEdit, canClose, correctionPartnerData]) =>
+        ({
           projectId,
-          auditControlId: Number(auditControlId),
+          auditControlId,
           correction,
           canEdit,
           canClose,
           correctionPartnerData
         })
-      ));
+      )
+    );
   }
 
-  redirectToCorrectionsOverview(projectId: number, auditControlId: number) {
+  redirectToCorrectionsOverview(projectId: number, auditControlId: number): void {
     this.router.navigate([`/app/project/detail/${projectId}/corrections/auditControl/${auditControlId}`]);
   }
 
   closeCorrection(projectId: number, auditControlId: number, correctionId: number) {
     this.pendingAction$.next(true);
-    this.auditControlCorrectionDetailPageStore.closeCorrection(projectId, auditControlId, correctionId).pipe(
-      take(1),
-      tap(()=>this.redirectToCorrectionsOverview(projectId, auditControlId)),
-      catchError(error => this.showErrorMessage(error.error$)),
-      finalize(() => this.pendingAction$.next(false)),
-    ).subscribe();
+    this.auditControlCorrectionDetailPageStore.closeCorrection(projectId, auditControlId, correctionId)
+      .pipe(
+        take(1),
+        tap(() => this.redirectToCorrectionsOverview(projectId, auditControlId)),
+        catchError(error => this.showErrorMessage(error.error$)),
+        finalize(() => this.pendingAction$.next(false)),
+      ).subscribe();
   }
-
 
   private showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);

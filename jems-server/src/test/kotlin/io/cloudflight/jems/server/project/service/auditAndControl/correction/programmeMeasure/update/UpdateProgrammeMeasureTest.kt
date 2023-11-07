@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.update
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.programmeMeasure.CorrectionProgrammeMeasurePersistenceProvider
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
@@ -28,6 +29,9 @@ class UpdateProgrammeMeasureTest : UnitTest() {
 
     @MockK
     lateinit var programmeMeasurePersistenceProvider: CorrectionProgrammeMeasurePersistenceProvider
+
+    @InjectMockKs
+    lateinit var generalValidatorService: GeneralValidatorDefaultImpl
 
     @InjectMockKs
     lateinit var interactor: UpdateProgrammeMeasure
