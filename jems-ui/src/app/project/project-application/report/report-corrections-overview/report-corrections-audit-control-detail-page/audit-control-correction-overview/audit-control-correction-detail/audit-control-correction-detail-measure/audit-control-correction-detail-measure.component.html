@@ -2,8 +2,10 @@
            (discard)="resetForm(data.partnerData, data.identification, data.programmeMeasure)"
            (save)="update()">
 
-    <h3>{{'project.application.reporting.corrections.programme.measure' | translate}}</h3>
-    <p>{{'project.application.reporting.corrections.programme.measure.description' | translate}}</p>
+    <div jemsFormLayout>
+        <h3>{{'project.application.reporting.corrections.programme.measure' | translate}}</h3>
+        <p>{{'project.application.reporting.corrections.programme.measure.description' | translate}}</p>
+    </div>
 
     <form [formGroup]="form" jemsFormLayout>
         <div jemsMultiColumnRow stretch="1">
@@ -33,6 +35,7 @@
 
         <mat-radio-group required
                          [disabled]="!data.canEdit"
+                         [value]="form.get(constants.FORM_CONTROLS.scenario)?.value"
                          (change)="scenarioChanged($event.value)">
             <mat-radio-button *ngFor="let option of scenarios" [value]="option">
                 <div class="title">{{('project.application.reporting.corrections.programme.measure.scenario.' + option) | translate}}</div>
@@ -43,7 +46,7 @@
             <jems-form-field-errors [errors]="form.get(constants.FORM_CONTROLS.scenario)?.errors"></jems-form-field-errors>
         </mat-error>
 
-        <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="two-thirds"
+        <jems-expandable-textarea jemsMultiColumnRow
                                   [control]="form.controls.comment"
                                   [errors]="form.controls.comment?.errors"
                                   [label]="'project.application.reporting.corrections.programme.measure.comment'"

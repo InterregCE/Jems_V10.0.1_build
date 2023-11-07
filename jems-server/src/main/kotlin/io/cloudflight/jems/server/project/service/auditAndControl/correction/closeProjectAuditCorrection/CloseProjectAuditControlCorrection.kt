@@ -66,8 +66,8 @@ class CloseProjectAuditControlCorrection(
     }
 
     private fun validatePartnerAndReportAreSelected(correctionIdentification: ProjectCorrectionIdentification) {
-        if (correctionIdentification.partnerId == null || correctionIdentification.partnerReportId == null)
-            throw PartnerOrReportNotSelectedException()
+        if (listOf(correctionIdentification.partnerId, correctionIdentification.partnerReportId, correctionIdentification.programmeFundId).any { it == null })
+            throw PartnerOrReportOrFundNotSelectedException()
 
     }
 

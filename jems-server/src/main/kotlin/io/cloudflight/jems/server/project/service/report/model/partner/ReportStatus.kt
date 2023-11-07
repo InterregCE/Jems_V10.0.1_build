@@ -25,8 +25,6 @@ enum class ReportStatus {
 
     fun isFinalized() = this == Certified
 
-    fun isNotCertified() = this !in CERTIFIED_STATUSES
-
     fun submitStatus(hasControlReopenedBefore: Boolean) = when (this) {
         Draft, ReOpenSubmittedLast, ReOpenSubmittedLimited -> Submitted
         ReOpenInControlLimited, ReOpenInControlLast -> if (hasControlReopenedBefore) ReOpenCertified else InControl
@@ -39,7 +37,6 @@ enum class ReportStatus {
         private val CONTROL_STATUSES = setOf(InControl,ReOpenInControlLast, ReOpenInControlLimited, ReOpenCertified, Certified)
         private val CAN_BE_OPENED_STATUSES = setOf(Submitted, InControl, ReOpenCertified)
         val ARE_LAST_OPEN_STATUSES = setOf(ReOpenSubmittedLast, ReOpenInControlLast)
-        val CERTIFIED_STATUSES = listOf(Certified, ReOpenCertified)
     }
 
 }

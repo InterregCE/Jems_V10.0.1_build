@@ -18,9 +18,9 @@ class ProjectCorrectionIsInStatusClosedException: ApplicationUnprocessableExcept
     i18nMessage = I18nMessage("$CLOSE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.status.is.closed"),
 )
 
-class PartnerOrReportNotSelectedException: ApplicationUnprocessableException(
+class PartnerOrReportOrFundNotSelectedException: ApplicationUnprocessableException(
     code =  "$CLOSE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-003",
-    i18nMessage = I18nMessage("$CLOSE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.partner.or.report.not.selected"),
+    i18nMessage = I18nMessage("$CLOSE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.partner.or.report.or.fund.not.selected"),
 )
 
 

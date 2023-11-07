@@ -61,16 +61,17 @@ class CloseProjectAuditCorrectionTest : UnitTest() {
             linkedToInvoice = true,
         )
 
-        private fun correctionIdentification(status: CorrectionStatus, partnerId: Long?, reportId: Long?) = ProjectCorrectionIdentification(
-            correction = correction(status),
-            followUpOfCorrectionId = null,
-            correctionFollowUpType = CorrectionFollowUpType.No,
-            repaymentFrom = null,
-            lateRepaymentTo = null,
-            partnerId = partnerId,
-            partnerReportId = reportId,
-            programmeFundId = null
-        )
+        private fun correctionIdentification(status: CorrectionStatus, partnerId: Long?, reportId: Long?, programmeFundId: Long?) =
+            ProjectCorrectionIdentification(
+                correction = correction(status),
+                followUpOfCorrectionId = null,
+                correctionFollowUpType = CorrectionFollowUpType.No,
+                repaymentFrom = null,
+                lateRepaymentTo = null,
+                partnerId = partnerId,
+                partnerReportId = reportId,
+                programmeFundId = programmeFundId,
+            )
 
         private val projectSummary = ProjectSummary(
             id = PROJECT_ID,
@@ -113,7 +114,8 @@ class CloseProjectAuditCorrectionTest : UnitTest() {
         } returns correctionIdentification(
             status = CorrectionStatus.Ongoing,
             partnerId = 1L,
-            reportId = 2L
+            reportId = 2L,
+            programmeFundId = 3L,
         )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { correctionPersistence.closeCorrection(CORRECTION_ID) } returns correction(CorrectionStatus.Closed)
@@ -156,7 +158,8 @@ class CloseProjectAuditCorrectionTest : UnitTest() {
         } returns correctionIdentification(
             status = CorrectionStatus.Closed,
             partnerId = 1L,
-            reportId = 2L
+            reportId = 2L,
+            programmeFundId = 3L,
         )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
@@ -180,7 +183,8 @@ class CloseProjectAuditCorrectionTest : UnitTest() {
         } returns correctionIdentification(
             status = CorrectionStatus.Ongoing,
             partnerId = 1L,
-            reportId = 2L
+            reportId = 2L,
+            programmeFundId = 3L,
         )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
@@ -203,11 +207,12 @@ class CloseProjectAuditCorrectionTest : UnitTest() {
         } returns correctionIdentification(
             status = CorrectionStatus.Ongoing,
             partnerId = null,
-            reportId = null
+            reportId = null,
+            programmeFundId = null,
         )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
-        assertThrows<PartnerOrReportNotSelectedException> {
+        assertThrows<PartnerOrReportOrFundNotSelectedException> {
             closeProjectAuditControlCorrection.closeProjectAuditCorrection(
                 PROJECT_ID, AUDIT_CONTROL_ID, CORRECTION_ID
             )

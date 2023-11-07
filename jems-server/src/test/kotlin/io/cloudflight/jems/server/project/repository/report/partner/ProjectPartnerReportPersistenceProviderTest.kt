@@ -308,7 +308,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         )
 
         private val expectedCorrectionAvailableReportTmp = CorrectionAvailableReportTmp(
-           partnerId = PARTNER_ID,
+            partnerId = PARTNER_ID,
             id = PARTNER_REPORT_ID,
             reportNumber = 1,
             projectReportId = PROJECT_REPORT_ID,
@@ -456,7 +456,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(id = 35L)
         every { partnerReportRepository.findByIdAndPartnerId(35L, 10L) } returns report
         every { partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(35L) } returns
-            coFinancingEntities(report)
+                coFinancingEntities(report)
 
         assertThat(persistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 35L))
             .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing))
@@ -484,12 +484,14 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun listPartnerReports() {
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
-        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(
-            setOf(PARTNER_ID),
-            ReportStatus.values().toSet(),
-            Pageable.unpaged()
-        ) } returns
-            PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
+        every {
+            partnerReportRepository.findAllByPartnerIdInAndStatusIn(
+                setOf(PARTNER_ID),
+                ReportStatus.values().toSet(),
+                Pageable.unpaged()
+            )
+        } returns
+                PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
 
         assertThat(persistence.listPartnerReports(setOf(PARTNER_ID), ReportStatus.values().toSet(), Pageable.unpaged()).content)
             .containsExactly(reportSummaryModel(id = 18L, createdAt = twoWeeksAgo, status = ReportStatus.Draft, partnerId = 99L))
@@ -500,13 +502,18 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         val partnerIds = setOf(99L, 100L)
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
-        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(partnerIds,
-            ReportStatus.FINANCIALLY_CLOSED_STATUSES,
-            Pageable.unpaged())
-        } returns PageImpl(listOf(
-            reportSummary(101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
-            reportSummary(102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
-        ))
+        every {
+            partnerReportRepository.findAllByPartnerIdInAndStatusIn(
+                partnerIds,
+                ReportStatus.FINANCIALLY_CLOSED_STATUSES,
+                Pageable.unpaged()
+            )
+        } returns PageImpl(
+            listOf(
+                reportSummary(101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
+                reportSummary(102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
+            )
+        )
 
         assertThat(persistence.listPartnerReports(partnerIds, ReportStatus.FINANCIALLY_CLOSED_STATUSES, Pageable.unpaged()).content)
             .containsExactly(
@@ -530,7 +537,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { certificate.projectReportNumber } returns 15
 
         every { partnerReportRepository.findAllCertificates(partnerIds = setOf(PARTNER_ID), Pageable.unpaged()) } returns
-            PageImpl(listOf(certificate))
+                PageImpl(listOf(certificate))
 
         assertThat(persistence.listCertificates(setOf(PARTNER_ID), Pageable.unpaged())).containsExactly(
             PartnerReportCertificate(
@@ -553,16 +560,19 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { report18.id } returns 18L
         every { report18.status } returns ReportStatus.InControl
         every { report18.applicationFormVersion } returns "AFv2"
-        every { partnerReportRepository
-            .findAllByPartnerIdAndStatusInOrderByNumberDesc(PARTNER_ID, setOf(
-                // it's important to verify those statuses, as they are considered as "closed" financially-wise
-                ReportStatus.Submitted,
-                ReportStatus.ReOpenSubmittedLimited,
-                ReportStatus.InControl,
-                ReportStatus.ReOpenInControlLimited,
-                ReportStatus.Certified,
-                ReportStatus.ReOpenCertified,
-            ))
+        every {
+            partnerReportRepository
+                .findAllByPartnerIdAndStatusInOrderByNumberDesc(
+                    PARTNER_ID, setOf(
+                        // it's important to verify those statuses, as they are considered as "closed" financially-wise
+                        ReportStatus.Submitted,
+                        ReportStatus.ReOpenSubmittedLimited,
+                        ReportStatus.InControl,
+                        ReportStatus.ReOpenInControlLimited,
+                        ReportStatus.Certified,
+                        ReportStatus.ReOpenCertified,
+                    )
+                )
         } returns listOf(report18)
         assertThat(persistence.getSubmittedPartnerReports(PARTNER_ID)).containsExactly(
             ProjectPartnerReportStatusAndVersion(18L, ReportStatus.InControl, "AFv2")
@@ -634,15 +644,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { result.size } returns 1
         every { query.fetch() } returns listOf(tuple)
 
-        assertThat(
-            persistence.getAvailableReports(
-                setOf(PARTNER_ID, PARTNER_ID_2),
-                setOf(ReportStatus.Certified, ReportStatus.ReOpenCertified)
-            )
-        )
-            .isEqualTo(
-                listOf(expectedCorrectionAvailableReportTmp)
-            )
+        assertThat(persistence.getAvailableReports(setOf(PARTNER_ID, PARTNER_ID_2)))
+            .isEqualTo(listOf(expectedCorrectionAvailableReportTmp))
 
         assertThat(slotFrom.captured).isInstanceOf(QProjectPartnerReportEntity::class.java)
         assertThat(slotLeftJoin[0]).isInstanceOf(QProjectReportEntity::class.java)
@@ -654,11 +657,13 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         assertThat(slotLeftJoin[3]).isInstanceOf(QPaymentToEcExtensionEntity::class.java)
         assertThat(slotLeftJoinOn[3].toString()).isEqualTo("paymentToEcExtensionEntity.payment.id = paymentEntity.id")
         assertThat(slotLeftJoin[4]).isInstanceOf(QPaymentApplicationToEcEntity::class.java)
-        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("paymentApplicationToEcEntity.id = paymentToEcExtensionEntity.paymentId")
+        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("paymentApplicationToEcEntity.id = paymentToEcExtensionEntity.paymentApplicationToEc.id")
         assertThat(slotLeftJoin[5]).isInstanceOf(QAccountingYearEntity::class.java)
         assertThat(slotLeftJoinOn[5].toString()).isEqualTo("accountingYearEntity.id = paymentApplicationToEcEntity.accountingYear.id")
-        assertThat(slotWhere.captured.toString()).isEqualTo("projectPartnerReportEntity.partnerId in [10, 11] &&" +
-            " partnerReportControlOverviewEntity.endDate is not null")
+        assertThat(slotWhere.captured.toString()).isEqualTo(
+            "projectPartnerReportEntity.partnerId in [10, 11] &&" +
+                    " projectPartnerReportEntity.controlEnd is not null"
+        )
 
     }
 }

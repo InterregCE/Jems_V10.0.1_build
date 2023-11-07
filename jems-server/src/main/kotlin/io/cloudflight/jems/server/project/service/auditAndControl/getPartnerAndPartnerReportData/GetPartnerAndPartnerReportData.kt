@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.getPartnerAndP
 import io.cloudflight.jems.server.project.service.auditAndControl.getPartnerAndPartnerReportData.GetPartnerAndPartnerReportException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,7 +35,6 @@ class GetPartnerAndPartnerReportData(
 
         return partnerReportPersistence.getAvailableReports(
             partnersById.keys,
-            setOf(ReportStatus.Certified, ReportStatus.ReOpenCertified)
         ).toCorrectionPartner(partnersById)
     }
 
