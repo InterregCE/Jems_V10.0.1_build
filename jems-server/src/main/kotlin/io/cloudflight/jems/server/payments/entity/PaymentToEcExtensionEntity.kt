@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull
 class PaymentToEcExtensionEntity (
 
     @Id
-    val paymentId: Long = 0,
+    val paymentId: Long,
 
     @ManyToOne
     @JoinColumn(name = "payment_id")
@@ -24,8 +24,6 @@ class PaymentToEcExtensionEntity (
     val payment: PaymentEntity,
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "payment_application_to_ec_id")
-    @MapsId
     var paymentApplicationToEc: PaymentApplicationToEcEntity? = null,
 
     @field:NotNull
