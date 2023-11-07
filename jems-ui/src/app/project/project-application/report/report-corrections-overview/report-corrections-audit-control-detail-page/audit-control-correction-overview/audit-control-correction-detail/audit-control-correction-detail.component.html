@@ -16,9 +16,9 @@
                 </h3>
 
                 <div class="mb-3 status-wrapper">
-                    <span class="status-label">{{'common.status' | translate}}</span>
-                    <span class="ml-2"><jems-audit-control-correction-status
-                            [status]="data?.correction?.correction?.status"></jems-audit-control-correction-status></span>
+                    <span class="status-label mr-2">{{'common.status' | translate}}</span>
+                    <jems-audit-control-correction-status
+                            [status]="data?.correction?.correction?.status"></jems-audit-control-correction-status>
                     <jems-pending-button *ngIf="data.canEdit" class="ml-2"
                                          [pending]="pendingAction$ | async"
                                          [disabled]="!data.canClose"

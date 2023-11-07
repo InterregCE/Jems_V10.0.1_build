@@ -1,4 +1,6 @@
 export class AuditControlCorrectionDetailMeasureConstants {
+  public static COMMENT_LENGTH = 2000;
+
   public static FORM_CONTROLS = {
     correctionId: 'correctionId',
     declaredToEc: 'declaredToEc',

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {
   AuditControlCorrectionDetailMeasureConstants
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-measure/audit-control-correction-detail-measure.constants';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
@@ -46,8 +46,8 @@ export class AuditControlCorrectionDetailMeasureComponent {
         endDate: new Date() as unknown as string
       }, disabled: true
     }),
-    scenario: this.formBuilder.control(null),
-    comment: this.formBuilder.control(null),
+    scenario: this.formBuilder.control(null, Validators.required),
+    comment: this.formBuilder.control(null, Validators.maxLength(this.constants.COMMENT_LENGTH)),
     includedInAccountingYear: this.formBuilder.control({value: null, disabled: true}),
   });
 
