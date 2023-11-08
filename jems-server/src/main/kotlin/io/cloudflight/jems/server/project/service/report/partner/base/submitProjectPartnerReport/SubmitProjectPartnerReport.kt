@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -63,7 +62,6 @@ class SubmitProjectPartnerReport(
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
     private val reportExpenditureVerificationPersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectPersistence: ProjectPersistence,
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val callPersistence: CallPersistence,
 ) : SubmitProjectPartnerReportInteractor {
@@ -97,9 +95,8 @@ class SubmitProjectPartnerReport(
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { partnerReportSummary ->
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, partnerReportSummary.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, partnerReportSummary, report.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, partnerReportSummary, report.status))
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,

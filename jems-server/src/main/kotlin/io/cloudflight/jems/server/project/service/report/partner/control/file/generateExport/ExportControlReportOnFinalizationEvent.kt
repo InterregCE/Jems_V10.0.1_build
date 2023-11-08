@@ -25,7 +25,7 @@ class ExportControlReportOnFinalizationEvent(
     fun generateStandardControlExport(event: PartnerReportStatusChanged) {
         val reportId = event.partnerReportSummary.id
         val partnerId = event.partnerReportSummary.partnerId
-        val projectId = event.projectSummary.id
+        val projectId = event.projectId
         if (event.partnerReportSummary.status == ReportStatus.Certified) {
             try {
                 val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)

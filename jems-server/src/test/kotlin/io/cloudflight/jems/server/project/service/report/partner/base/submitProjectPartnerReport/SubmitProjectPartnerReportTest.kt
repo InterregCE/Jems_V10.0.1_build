@@ -313,9 +313,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var projectPersistence: ProjectPersistence
-
-    @MockK
     private lateinit var jemsPluginRegistry: JemsPluginRegistry
 
     @MockK
@@ -394,7 +391,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             every { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedNewStatus, null, capture(submissionTime), null) } returns mockedResult
 
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -502,7 +498,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

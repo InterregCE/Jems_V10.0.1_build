@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanReOpenCertifiedReport
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
@@ -19,7 +18,6 @@ class ReOpenControlPartnerReport(
     private val reportPersistence: ProjectPartnerReportPersistence,
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectPersistence: ProjectPersistence,
 ): ReOpenControlPartnerReportInteractor {
 
     @CanReOpenCertifiedReport
@@ -36,8 +34,7 @@ class ReOpenControlPartnerReport(
         return reportPersistence.updateStatusAndTimes(
             partnerId, reportId, ReportStatus.ReOpenCertified, lastControlReopening = ZonedDateTime.now()
         ).also {
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, reportControlToReOpen.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, it, reportControlToReOpen.status))
             auditPublisher.publishEvent(partnerReportControlReOpened(this, projectId, it))
         }.status
     }

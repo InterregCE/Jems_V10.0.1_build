@@ -7,8 +7,6 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
@@ -75,8 +73,6 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
     private lateinit var projectPartnerRepository: ProjectPartnerRepository
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
-    @MockK
-    private lateinit var projectPersistence: ProjectPersistence
 
     @InjectMockKs
     private lateinit var interactor: ReOpenControlPartnerReport
@@ -109,9 +105,6 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
             )
         } returns mockResult
 
-        val projectSummary = mockk<ProjectSummary>()
-        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-
         val eventAudit = slot<AuditCandidateEvent>()
         val eventNotif = slot<PartnerReportStatusChanged>()
         every { auditPublisher.publishEvent(capture(eventAudit)) } answers { }
@@ -126,7 +119,7 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
                 description = "[LP75] Partner report R.4 was reopened"
             )
         )
-        assertThat(eventNotif.captured.projectSummary).isEqualTo(projectSummary)
+        assertThat(eventNotif.captured.projectId).isEqualTo(projectId)
         assertThat(eventNotif.captured.partnerReportSummary).isEqualTo(mockResult)
     }
 

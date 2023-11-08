@@ -6,8 +6,6 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
-import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -52,14 +50,13 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
     @MockK private lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK private lateinit var partnerPersistence: PartnerPersistence
     @MockK private lateinit var auditPublisher: ApplicationEventPublisher
-    @MockK private lateinit var projectPersistence: ProjectPersistence
 
     @InjectMockKs
     private lateinit var interactor: ReOpenProjectPartnerReport
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(reportPersistence, partnerPersistence, auditPublisher, projectPersistence)
+        clearMocks(reportPersistence, partnerPersistence, auditPublisher)
     }
 
     @ParameterizedTest(name = "reOpen - cannot be reopened {0}")
@@ -91,8 +88,6 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId = 18L) } returns latestReport
 
         every { partnerPersistence.getProjectIdForPartnerId(id = 18L, "V7.4") } returns 886L
-        val projectSummary = mockk<ProjectSummary>()
-        every { projectPersistence.getProjectSummary(886L) } returns projectSummary
 
         val newStatus = slot<ReportStatus>()
         val mockResult = mockResult(expectedStatus)
@@ -114,7 +109,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
                 description = "[LP75] Partner report R.7 was reopened",
             )
         )
-        assertThat(eventNotif.captured.projectSummary).isEqualTo(projectSummary)
+        assertThat(eventNotif.captured.projectId).isEqualTo(886L)
         assertThat(eventNotif.captured.partnerReportSummary).isEqualTo(mockResult)
     }
 

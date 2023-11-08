@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -16,7 +15,6 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
@@ -247,9 +245,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
     @MockK
     private lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 
-    @MockK
-    private lateinit var projectPersistence: ProjectPersistence
-
     @InjectMockKs
     private lateinit var interactor: FinalizeControlPartnerReport
 
@@ -258,7 +253,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         clearMocks(reportPersistence, preSubmissionCheckService, partnerPersistence, reportControlExpenditurePersistence,
             reportExpenditureCostCategoryPersistence, reportExpenditureCoFinancingPersistence, reportContributionPersistence,
             reportLumpSumPersistence, reportUnitCostPersistence, reportInvestmentPersistence, controlOverviewPersistence,
-            auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence, projectPersistence)
+            auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence)
     }
 
     @ParameterizedTest(name = "finalizeControl (status {0})")
@@ -319,7 +314,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         } answers { }
 
         every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
