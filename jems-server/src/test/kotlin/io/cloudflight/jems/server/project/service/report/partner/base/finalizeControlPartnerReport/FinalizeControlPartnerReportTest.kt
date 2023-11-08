@@ -196,17 +196,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partOfSampleLocked = false
         )
 
-        private val controlOverview = ControlOverview(
-            startDate = LocalDate.now(),
-            requestsForClarifications = "test",
-            receiptOfSatisfactoryAnswers = "test",
-            endDate = LocalDate.now(),
-            findingDescription = "test",
-            followUpMeasuresFromLastReport = "test",
-            conclusion = "test",
-            followUpMeasuresForNextReport = "test"
-        )
-
         private val controllerInstitution = ControllerInstitutionList(
             id = 1,
             name = "Test institution",
@@ -304,7 +293,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
-        every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
+        val slotToday = slot<LocalDate>()
+        every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, capture(slotToday)) } answers { }
 
         val slotCostCategory = slot<BudgetCostsCurrentValuesWrapper>()
         every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
@@ -338,6 +328,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         assertThat(interactor.finalizeControl(PARTNER_ID, 42L)).isEqualTo(ReportStatus.Certified)
 
         verify(exactly = 1) { reportPersistence.finalizeControlOnReportById(PARTNER_ID, 42L, any()) }
+        verify(exactly = 1) { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, any()) }
+        assertThat(slotToday.captured).isToday()
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())

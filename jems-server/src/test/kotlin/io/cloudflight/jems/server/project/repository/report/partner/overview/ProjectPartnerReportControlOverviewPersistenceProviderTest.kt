@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.partner.control.overview.ProjectPartnerReportControlOverviewRepository
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,65 +20,45 @@ internal class ProjectPartnerReportControlOverviewPersistenceProviderTest: UnitT
 
     companion object {
         private const val REPORT_ID = 256L
-        private const val PARTNER_ID = 581L
-
-        private val test = ProjectPartnerReportEntity(
-            id = REPORT_ID,
-            partnerId = PARTNER_ID,
-            number = 1,
-            status = ReportStatus.InControl,
-            applicationFormVersion = "v1.0",
-            identification = mockk(),
-            controlEnd = null,
-            firstSubmission = mockk(),
-            lastReSubmission = mockk(),
-            projectReport = mockk(),
-            lastControlReopening = null
-        )
 
         private val entity = PartnerReportControlOverviewEntity(
-            partnerReport = test,
+            partnerReportId = REPORT_ID,
+            partnerReport = mockk(),
             startDate = LocalDate.of(2022, 5, 15),
-            findingDescription = "test",
-            requestsForClarifications = "test requests"
-        )
-
-        private val entitySaved = PartnerReportControlOverviewEntity(
-            partnerReport = test,
-            startDate = LocalDate.of(2022, 5, 15),
-            findingDescription = "test",
-            requestsForClarifications = "test requests"
-        )
-
-        private val controlOverview = ControlOverview(
-            startDate = LocalDate.of(2022, 5, 15),
+            lastCertifiedReportIdWhenCreation = 54L,
             requestsForClarifications = "test requests",
+            receiptOfSatisfactoryAnswers = "test receipt",
+            endDate = LocalDate.of(2023, 11, 7),
+            findingDescription = "finding desc",
+            followUpMeasuresFromLastReport = "from last",
+            conclusion = "conclusion test",
+            followUpMeasuresForNextReport = "next report",
+        )
+
+        private val expectedEntitySaved = ControlOverview(
+            startDate = LocalDate.now(),
+            requestsForClarifications = null,
             receiptOfSatisfactoryAnswers = null,
             endDate = null,
-            findingDescription = "test",
+            findingDescription = null,
             followUpMeasuresFromLastReport = null,
             conclusion = null,
-            followUpMeasuresForNextReport = null
+            followUpMeasuresForNextReport = null,
+            lastCertifiedReportIdWhenCreation = 22L,
         )
 
-        private val entityWithEndDate = PartnerReportControlOverviewEntity(
-            partnerReport = test,
+        private val expectedEntity = ControlOverview(
             startDate = LocalDate.of(2022, 5, 15),
-            findingDescription = "test",
             requestsForClarifications = "test requests",
-            endDate = LocalDate.of(2022, 5, 25)
+            receiptOfSatisfactoryAnswers = "test receipt",
+            endDate = LocalDate.of(2023, 11, 7),
+            findingDescription = "finding desc",
+            followUpMeasuresFromLastReport = "from last",
+            conclusion = "conclusion test",
+            followUpMeasuresForNextReport = "next report",
+            lastCertifiedReportIdWhenCreation = 54L,
         )
 
-        private val controlOverviewWithEndDate = ControlOverview(
-            startDate = LocalDate.of(2022, 5, 15),
-            requestsForClarifications = "test requests",
-            receiptOfSatisfactoryAnswers = null,
-            endDate = LocalDate.of(2022, 5, 25),
-            findingDescription = "test",
-            followUpMeasuresFromLastReport = null,
-            conclusion = null,
-            followUpMeasuresForNextReport = null
-        )
     }
 
     @MockK
@@ -92,43 +71,98 @@ internal class ProjectPartnerReportControlOverviewPersistenceProviderTest: UnitT
     private lateinit var persistence: ProjectPartnerReportControlOverviewPersistenceProvider
 
     @Test
-    fun `get report control overview`() {
-        every { controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(PARTNER_ID, REPORT_ID) } returns
-            entity
-        assertThat(persistence.getPartnerControlReportOverview(PARTNER_ID, REPORT_ID)).isEqualTo(controlOverview)
+    fun getPartnerControlReportOverview() {
+        every { controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(584L, REPORT_ID) } returns entity
+        assertThat(persistence.getPartnerControlReportOverview(584L, REPORT_ID)).isEqualTo(expectedEntity)
     }
 
     @Test
-    fun `create report control overview`() {
+    fun createPartnerControlReportOverview() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 85L
         val entityCapturingSlot = slot<PartnerReportControlOverviewEntity>()
-        every { reportRepository.findByIdAndPartnerId(REPORT_ID, PARTNER_ID) } returns test
-        every { controlOverviewRepository.save(capture(entityCapturingSlot)) } returns entitySaved
-        val savedControlOverview = persistence.createPartnerControlReportOverview(PARTNER_ID, REPORT_ID, null)
+        every { reportRepository.findByIdAndPartnerId(85L, 583L) } returns report
+        every { controlOverviewRepository.save(capture(entityCapturingSlot)) } returnsArgument 0
 
-        assertThat(savedControlOverview).isNotNull
-        assertThat(savedControlOverview).isEqualTo(controlOverview)
+        assertThat(persistence.createPartnerControlReportOverview(583L, 85L, 22L))
+            .isEqualTo(expectedEntitySaved)
+
+        assertThat(entityCapturingSlot.captured.partnerReportId).isEqualTo(85L)
+        assertThat(entityCapturingSlot.captured.partnerReport).isEqualTo(report)
+        assertThat(entityCapturingSlot.captured.startDate).isNotNull()
+        assertThat(entityCapturingSlot.captured.lastCertifiedReportIdWhenCreation).isEqualTo(22L)
     }
 
     @Test
-    fun `update report control overview`() {
-        val entityCapturingSlot = slot<PartnerReportControlOverviewEntity>()
-        every { reportRepository.findByIdAndPartnerId(REPORT_ID, PARTNER_ID) } returns test
-        every { controlOverviewRepository.save(capture(entityCapturingSlot)) } returns entitySaved
-        val savedControlOverview = persistence.updatePartnerControlReportOverview(PARTNER_ID, REPORT_ID, controlOverview)
+    fun updatePartnerControlReportOverview() {
+        val entity = PartnerReportControlOverviewEntity(
+            partnerReportId = REPORT_ID,
+            partnerReport = mockk(),
+            startDate = LocalDate.of(1992, 4, 24),
+            lastCertifiedReportIdWhenCreation = 96L,
+            requestsForClarifications = "test requests old",
+            receiptOfSatisfactoryAnswers = "test receipt old",
+            endDate = LocalDate.of(1993, 12, 27),
+            findingDescription = "finding desc old",
+            followUpMeasuresFromLastReport = "from last old",
+            conclusion = "conclusion test old",
+            followUpMeasuresForNextReport = "next report old",
+        )
+        every { controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(582L, REPORT_ID) } returns entity
 
-        assertThat(savedControlOverview).isNotNull
-        assertThat(savedControlOverview).isEqualTo(controlOverview)
+        val changes = ControlOverview(
+            startDate = LocalDate.of(2056, 1, 18),
+            requestsForClarifications = "req new",
+            receiptOfSatisfactoryAnswers = "rec new",
+            endDate = null,
+            findingDescription = "finding new",
+            followUpMeasuresFromLastReport = "from last new",
+            conclusion = "concl new",
+            followUpMeasuresForNextReport = "for next new"
+        )
+
+        persistence.updatePartnerControlReportOverview(582L, REPORT_ID, changes)
+
+        assertThat(entity.requestsForClarifications).isEqualTo("req new")
+        assertThat(entity.receiptOfSatisfactoryAnswers).isEqualTo("rec new")
+        assertThat(entity.findingDescription).isEqualTo("finding new")
+        assertThat(entity.followUpMeasuresFromLastReport).isEqualTo("from last new")
+        assertThat(entity.followUpMeasuresForNextReport).isEqualTo("for next new")
+        assertThat(entity.conclusion).isEqualTo("concl new")
+
+        assertThat(entity.endDate).isEqualTo(LocalDate.of(1993, 12, 27)) // no change
     }
 
     @Test
-    fun `update report control overview end date`() {
-        val entityCapturingSlot = slot<PartnerReportControlOverviewEntity>()
-        every { reportRepository.findByIdAndPartnerId(REPORT_ID, PARTNER_ID) } returns test
-        every { controlOverviewRepository.save(capture(entityCapturingSlot)) } returns entityWithEndDate
-        every { controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(PARTNER_ID, REPORT_ID) } returns entitySaved
-        val savedControlOverview = persistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, REPORT_ID, LocalDate.of(2022, 5, 15))
+    fun updatePartnerControlReportOverviewEndDate() {
+        val entity = PartnerReportControlOverviewEntity(
+            partnerReportId = REPORT_ID,
+            partnerReport = mockk(),
+            startDate = LocalDate.of(1992, 4, 24),
+            lastCertifiedReportIdWhenCreation = 96L,
+            requestsForClarifications = "test requests old",
+            receiptOfSatisfactoryAnswers = "test receipt old",
+            endDate = LocalDate.of(1993, 12, 27),
+            findingDescription = "finding desc old",
+            followUpMeasuresFromLastReport = "from last old",
+            conclusion = "conclusion test old",
+            followUpMeasuresForNextReport = "next report old",
+        )
+        every { controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(581L, REPORT_ID) } returns entity
 
-        assertThat(savedControlOverview).isNotNull
-        assertThat(savedControlOverview).isEqualTo(controlOverviewWithEndDate)
+        val newEnd = LocalDate.of(2023, 12, 24)
+        persistence.updatePartnerControlReportOverviewEndDate(581L, REPORT_ID, newEnd)
+
+        // no changes
+        assertThat(entity.requestsForClarifications).isEqualTo("test requests old")
+        assertThat(entity.receiptOfSatisfactoryAnswers).isEqualTo("test receipt old")
+        assertThat(entity.findingDescription).isEqualTo("finding desc old")
+        assertThat(entity.followUpMeasuresFromLastReport).isEqualTo("from last old")
+        assertThat(entity.followUpMeasuresForNextReport).isEqualTo("next report old")
+        assertThat(entity.conclusion).isEqualTo("conclusion test old")
+
+        // change only
+        assertThat(entity.endDate).isEqualTo(newEnd)
     }
+
 }
