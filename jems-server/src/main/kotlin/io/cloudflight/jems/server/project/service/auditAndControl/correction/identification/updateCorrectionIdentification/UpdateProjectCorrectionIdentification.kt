@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.authorization.CanEditProjectCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeProjectAuditCorrection.PartnerOrReportNotSelectedException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeProjectAuditCorrection.PartnerOrReportOrFundNotSelectedException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.ProjectCorrectionIdentificationPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionIdentification
@@ -37,9 +37,10 @@ class UpdateProjectCorrectionIdentification(
     ): ProjectCorrectionIdentification {
         val auditControl = auditControlPersistence.getByIdAndProjectId(auditControlId, projectId)
         val correction = correctionPersistence.getByCorrectionId(correctionId)
-        validatePartnerAndReport(correctionIdentificationUpdate)
         validateAuditControlStatus(auditControl)
         validateCorrectionStatus(correction)
+        validateMandatoryFields(correctionIdentificationUpdate)
+        validatePartnerReportCertified(correctionIdentificationUpdate.partnerReportId!!)
 
         return correctionIdentificationPersistence.updateCorrectionIdentification(
             correctionId, correctionIdentificationUpdate
@@ -56,16 +57,17 @@ class UpdateProjectCorrectionIdentification(
             throw CorrectionIsInStatusClosedException()
     }
 
-    private fun validatePartnerAndReport(newData: ProjectCorrectionIdentificationUpdate) {
-        if (newData.partnerReportId == null || newData.partnerId == null) {
-            throw PartnerOrReportNotSelectedException()
+    private fun validateMandatoryFields(newData: ProjectCorrectionIdentificationUpdate) {
+        if (listOf(newData.partnerId, newData.partnerReportId, newData.programmeFundId).any { it == null }) {
+            throw PartnerOrReportOrFundNotSelectedException()
         }
+    }
 
-        val partnerReport = partnerReportPersistence.getPartnerReportByIdUnsecured(newData.partnerReportId)
+    private fun validatePartnerReportCertified(partnerReportId: Long) {
+        val partnerReport = partnerReportPersistence.getPartnerReportByIdUnsecured(partnerReportId)
 
-        if (partnerReport.status.isNotCertified()) {
+        if (partnerReport.controlEnd == null) {
             throw PartnerReportNotValidException()
         }
-
     }
 }

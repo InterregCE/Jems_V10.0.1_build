@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.repository.auditAndControl.AuditContro
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeProjectAuditCorrection.PartnerOrReportNotSelectedException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeProjectAuditCorrection.PartnerOrReportOrFundNotSelectedException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.ProjectCorrectionIdentificationPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.updateCorrectionIdentification.UpdateProjectCorrectionIdentification
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionFollowUpType
@@ -165,7 +165,7 @@ class UpdateProjectCorrectionIdentificationTest : UnitTest() {
             )
         } returns correctionIdentification(null, null, null, CorrectionStatus.Ongoing)
 
-        assertThrows<PartnerOrReportNotSelectedException> {
+        assertThrows<PartnerOrReportOrFundNotSelectedException> {
             updateProjectCorrectionIdentification.updateProjectAuditCorrection(
                 PROJECT_ID,
                 AUDIT_CONTROL_ID,
@@ -181,7 +181,7 @@ class UpdateProjectCorrectionIdentificationTest : UnitTest() {
             AuditStatus.Ongoing
         )
         every { correctionPersistence.getByCorrectionId(CORRECTION_ID) } returns correction(CorrectionStatus.Ongoing)
-        every { partnerReportPersistence.getPartnerReportByIdUnsecured(REPORT_ID) } returns partnerReport(ReportStatus.Submitted)
+        every { partnerReportPersistence.getPartnerReportByIdUnsecured(REPORT_ID) } returns partnerReport(ReportStatus.Submitted).copy(controlEnd = null)
         every {
             correctionIdentificationPersistence.updateCorrectionIdentification(
                 CORRECTION_ID, correctionIdentificationUpdate(PARTNER_ID, REPORT_ID, PROGRAMME_FUND_ID)

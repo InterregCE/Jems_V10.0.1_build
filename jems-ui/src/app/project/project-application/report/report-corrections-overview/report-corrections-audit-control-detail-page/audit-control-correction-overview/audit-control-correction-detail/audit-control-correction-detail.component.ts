@@ -8,7 +8,6 @@ import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'jems-audit-control-correction-detail',
@@ -32,9 +31,7 @@ export class AuditControlCorrectionDetailComponent {
   }>;
 
   constructor(
-    private router: Router,
-    private routingService: RoutingService,
-    private activatedRoute: ActivatedRoute,
+    private router: RoutingService,
     private auditControlCorrectionDetailPageStore: AuditControlCorrectionDetailPageStore
   ) {
     this.data$ = combineLatest([

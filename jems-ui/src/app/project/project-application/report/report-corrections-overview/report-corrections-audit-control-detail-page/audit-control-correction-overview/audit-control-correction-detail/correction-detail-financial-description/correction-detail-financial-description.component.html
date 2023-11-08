@@ -3,74 +3,93 @@
 
         <form jemsFormLayout [formGroup]="financialDescriptionForm" jemsNoWidthLimit>
 
-            <h4>{{'project.application.reporting.corrections.audit.control.detail.financial.description.title' | translate}}</h4>
-            <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.1' | translate}}</p>
-            <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.2' | translate}}</p>
-            <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.3' | translate}}</p>
-            <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.4' | translate}}</p>
-
-            <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.deduction' | translate}}</p>
-            <div>
-                <span class="plus-sign">+</span>
-                <mat-slide-toggle color="primary" class="ml-2 mr-2"
-                                  [disabled]="false"
-                                  formControlName="deduction">
-                </mat-slide-toggle>
-                <span class="minus-sign">-</span>
+            <div jemsFormLayout>
+                <h3>{{'project.application.reporting.corrections.audit.control.detail.financial.description.title' | translate}}</h3>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.1' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.2' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.3' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.financial.description.info.4' | translate}}</p>
             </div>
 
-            <mat-table jemsNoWidthLimit [dataSource]="tableData" formArrayName="amounts">
+            <p class="mt-3">{{'project.application.reporting.corrections.audit.control.detail.financial.description.deduction' | translate}}</p>
+
+            <mat-table jemsNoWidthLimit [dataSource]="tableData">
+                <ng-container matColumnDef="deduct">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText maxLines="2">
+                            {{'project.application.reporting.corrections.audit.control.detail.financial.description.deduct' | translate}}
+                        </span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control">
+                        <span class="plus-minus">+</span>
+                        <mat-slide-toggle color="primary"
+                                          class="ml-2 mr-2"
+                                          [disabled]="false"
+                                          formControlName="deduction">
+                        </mat-slide-toggle>
+                        <span class="plus-minus">-</span>
+                    </mat-cell>
+                </ng-container>
 
                 <ng-container matColumnDef="fundAmount">
                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                        <span jemsText maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.fund' | translate}}</span>
+                        <span jemsText maxLines="2">
+                            {{'project.application.reporting.corrections.audit.control.detail.financial.description.fund' | translate}}
+                        </span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control; let i = index" class="text-right">
-                        <mat-form-field [formGroup]="control">
+                    <mat-cell *matCellDef="let control" class="text-right">
+                        <mat-form-field>
                             <input formControlName="fundAmount" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
 
-               <ng-container matColumnDef="publicContribution">
+                <ng-container matColumnDef="publicContribution">
                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                        <span jemsText maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.public.contribution' | translate}}</span>
+                        <span jemsText maxLines="2">
+                            {{'project.application.reporting.corrections.audit.control.detail.financial.description.public.contribution' | translate}}
+                        </span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control; let i = index" class="text-right">
-                        <mat-form-field [formGroup]="control">
+                    <mat-cell *matCellDef="let control" class="text-right">
+                        <mat-form-field>
                             <input formControlName="publicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
-               </ng-container>
+                </ng-container>
 
-               <ng-container matColumnDef="autoPublicContribution">
+                <ng-container matColumnDef="autoPublicContribution">
                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                        <span jemsText maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.auto.public.contribution' | translate}}</span>
+                                            <span jemsText
+                                                  maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.auto.public.contribution' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control; let i = index" class="text-right">
-                        <mat-form-field [formGroup]="control">
+                    <mat-cell *matCellDef="let control" class="text-right">
+                        <mat-form-field>
                             <input formControlName="autoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
-               </ng-container>
+                </ng-container>
 
                 <ng-container matColumnDef="privateContribution">
-                   <mat-header-cell *matHeaderCellDef class="justify-end">
-                       <span jemsText maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.private.contribution' | translate}}</span>
-                   </mat-header-cell>
-                   <mat-cell *matCellDef="let control; let i = index" class="text-right">
-                       <mat-form-field [formGroup]="control">
-                           <input formControlName="privateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
-                       </mat-form-field>
-                   </mat-cell>
+                    <mat-header-cell *matHeaderCellDef class="justify-end">
+                                            <span jemsText
+                                                  maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.private.contribution' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control" class="text-right">
+                        <mat-form-field>
+                            <input formControlName="privateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                        </mat-form-field>
+                    </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="total">
                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                        <span jemsText maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.total' | translate}}</span>
+                                            <span jemsText
+                                                  maxLines="2">{{'project.application.reporting.corrections.audit.control.detail.financial.description.total' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control; let i = index" class="text-right">
-                        {{ getAmountSum() | asMoney}}
+                    <mat-cell *matCellDef="let control" class="text-right">
+                        <mat-form-field>
+                            <input [value]="getAmountSum() | asMoney" [options]="{align: 'right'}" currencyMask matInput type="decimal" disabled readonly>
+                        </mat-form-field>
                     </mat-cell>
                 </ng-container>
 
@@ -105,43 +124,44 @@
                 <input name="correctionType" formControlName="correctionTypeText" matInput required
                        [matAutocomplete]="correctionType" [matTooltip]="financialDescriptionForm.controls.correctionTypeText.value"
                        (focusin)="initializeTypeDropdown()"
-                       (focusout)="correctionTypeUnfocused($event)" >
+                       (focusout)="correctionTypeUnfocused($event)">
                 <mat-autocomplete #correctionType="matAutocomplete"
                                   (optionSelected)="correctionTypeChanged($event.option?.id)">
-                    <mat-option *ngFor="let type of filteredCorrectionType | async  | keyvalue | correctionTypeOrderPipe" [id]="type.key" [value]="type.value" [matTooltip]="type.value" class="correction-type-text-size">
+                    <mat-option *ngFor="let type of filteredCorrectionType | async  | keyvalue | correctionTypeOrderPipe" [id]="type.key" [value]="type.value"
+                                [matTooltip]="type.value" class="correction-type-text-size">
                         {{type.value}}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
 
             <div class="toggle-parent">
-                <span class="toggle-question">{{'project.application.reporting.corrections.audit.control.detail.financial.clerical.technical.mistake' | translate}}</span>
                 <span>{{'common.no' | translate}}</span>
                 <mat-slide-toggle color="primary" class="ml-2 mr-2"
                                   [disabled]="false"
                                   formControlName="clericalTechnicalMistake">
                 </mat-slide-toggle>
                 <span>{{'common.yes' | translate}}</span>
+                <span class="ml-3">{{'project.application.reporting.corrections.audit.control.detail.financial.clerical.technical.mistake' | translate}}</span>
             </div>
 
             <div class="toggle-parent">
-                <span class="toggle-question">{{'project.application.reporting.corrections.audit.control.detail.financial.gold.plating' | translate}}</span>
                 <span>{{'common.no' | translate}}</span>
                 <mat-slide-toggle color="primary" class="ml-2 mr-2"
                                   [disabled]="false"
                                   formControlName="goldPlating">
                 </mat-slide-toggle>
                 <span>{{'common.yes' | translate}}</span>
+                <span class="ml-3">{{'project.application.reporting.corrections.audit.control.detail.financial.gold.plating' | translate}}</span>
             </div>
 
             <div class="toggle-parent">
-                <span class="toggle-question">{{'project.application.reporting.corrections.audit.control.detail.financial.suspected.fraud' | translate}}</span>
                 <span>{{'common.no' | translate}}</span>
                 <mat-slide-toggle color="primary" class="ml-2 mr-2"
                                   [disabled]="false"
                                   formControlName="suspectedFraud">
                 </mat-slide-toggle>
                 <span>{{'common.yes' | translate}}</span>
+                <span class="ml-3">{{'project.application.reporting.corrections.audit.control.detail.financial.suspected.fraud' | translate}}</span>
             </div>
 
             <jems-expandable-textarea [control]="financialDescriptionForm.controls.correctionComment"

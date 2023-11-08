@@ -65,5 +65,5 @@ interface ProjectPartnerReportPersistence {
 
     fun getReportStatusById(reportId: Long): ReportStatus
 
-    fun getAvailableReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>): List<CorrectionAvailableReportTmp>
+    fun getAvailableReports(partnerIds: Set<Long>): List<CorrectionAvailableReportTmp>
 }

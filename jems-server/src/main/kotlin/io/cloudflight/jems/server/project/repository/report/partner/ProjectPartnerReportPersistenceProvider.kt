@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.project.entity.report.control.overview.QPartnerReportControlOverviewEntity
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -162,7 +161,7 @@ class ProjectPartnerReportPersistenceProvider(
         partnerReportRepository.getById(reportId).status
 
     @Transactional(readOnly = true)
-    override fun getAvailableReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>): List<CorrectionAvailableReportTmp> {
+    override fun getAvailableReports(partnerIds: Set<Long>): List<CorrectionAvailableReportTmp> {
         val reportPartner = QProjectPartnerReportEntity.projectPartnerReportEntity
         val reportProject = QProjectReportEntity.projectReportEntity
         val payment = QPaymentEntity.paymentEntity
@@ -170,7 +169,6 @@ class ProjectPartnerReportPersistenceProvider(
         val ecExtensionPayment = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val ecPayment = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
         val accountingYear = QAccountingYearEntity.accountingYearEntity
-        val partnerControlOverview = QPartnerReportControlOverviewEntity.partnerReportControlOverviewEntity
 
         val fundsPerReportId = partnerReportCoFinancingRepository.findAllByIdReportPartnerIdIn(partnerIds)
             .groupBy { it.id.report.id }
@@ -192,12 +190,11 @@ class ProjectPartnerReportPersistenceProvider(
             .leftJoin(payment).on(payment.projectReport.id.eq(reportProject.id))
             .leftJoin(programmeFund).on(programmeFund.id.eq(payment.fund.id))
             .leftJoin(ecExtensionPayment).on(ecExtensionPayment.payment.id.eq(payment.id))
-            .leftJoin(ecPayment).on(ecPayment.id.eq(ecExtensionPayment.paymentId))
+            .leftJoin(ecPayment).on(ecPayment.id.eq(ecExtensionPayment.paymentApplicationToEc.id))
             .leftJoin(accountingYear).on(accountingYear.id.eq(ecPayment.accountingYear.id))
-            .leftJoin(partnerControlOverview).on(partnerControlOverview.partnerReportId.eq(reportPartner.id))
             .where(
                 reportPartner.partnerId.`in`(partnerIds)
-                    .and(partnerControlOverview.endDate.isNotNull)
+                    .and(reportPartner.controlEnd.isNotNull)
             )
             .fetch()
             .map { it.toTmpModel { fundsPerReportId[it]!! } }

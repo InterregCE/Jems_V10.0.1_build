@@ -32,7 +32,7 @@ export class CorrectionDetailFinancialDescriptionComponent {
   }>;
   financialDescriptionForm: FormGroup;
   tableData: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
-  displayedColumns: string[] = ['fundAmount', 'publicContribution', 'autoPublicContribution', 'privateContribution', 'total'];
+  displayedColumns: string[] = ['deduct', 'fundAmount', 'publicContribution', 'autoPublicContribution', 'privateContribution', 'total'];
   filteredCorrectionType: Observable<Map<CorrectionTypeEnum, string>>;
   correctionTypeTranslations$: Observable<Map<CorrectionTypeEnum, string>> = this.loadCorrectionTypeTranslations();
   correctionTypeTranslations = new Map<CorrectionTypeEnum, string>();
@@ -67,35 +67,31 @@ export class CorrectionDetailFinancialDescriptionComponent {
 
   resetForm(financialDescription: ProjectCorrectionFinancialDescriptionDTO) {
     this.financialDescriptionForm.controls.deduction.setValue(financialDescription.deduction);
-    this.amounts.at(0).get('fundAmount')?.setValue(financialDescription.fundAmount);
-    this.amounts.at(0).get('publicContribution')?.setValue(financialDescription.publicContribution);
-    this.amounts.at(0).get('autoPublicContribution')?.setValue(financialDescription.autoPublicContribution);
-    this.amounts.at(0).get('privateContribution')?.setValue(financialDescription.privateContribution);
+    this.financialDescriptionForm.controls.fundAmount.setValue(financialDescription.fundAmount);
+    this.financialDescriptionForm.controls.publicContribution.setValue(financialDescription.publicContribution);
+    this.financialDescriptionForm.controls.autoPublicContribution.setValue(financialDescription.autoPublicContribution);
+    this.financialDescriptionForm.controls.privateContribution.setValue(financialDescription.privateContribution);
     this.financialDescriptionForm.controls.infoSentBeneficiaryDate.setValue(financialDescription.infoSentBeneficiaryDate);
     this.financialDescriptionForm.controls.infoSentBeneficiaryComment.setValue(financialDescription.infoSentBeneficiaryComment);
-    this.financialDescriptionForm.controls.correctionTypeCode.setValue(financialDescription.correctionType);
+    this.financialDescriptionForm.controls.correctionType.setValue(financialDescription.correctionType);
     this.financialDescriptionForm.controls.correctionTypeText.setValue(this.correctionTypeTranslations.get(financialDescription.correctionType));
     this.financialDescriptionForm.controls.clericalTechnicalMistake.setValue(financialDescription.clericalTechnicalMistake);
     this.financialDescriptionForm.controls.goldPlating.setValue(financialDescription.goldPlating);
     this.financialDescriptionForm.controls.suspectedFraud.setValue(financialDescription.suspectedFraud);
     this.financialDescriptionForm.controls.correctionComment.setValue(financialDescription.correctionComment);
-    this.tableData.data = this.amounts.controls;
+    this.tableData.data = this.formBuilder.array([this.financialDescriptionForm.controls]).controls;
   }
 
   private initForm(isEditable: boolean): void {
     this.financialDescriptionForm = this.formBuilder.group({
       deduction: [true, Validators.required],
-      amounts: this.formBuilder.array([
-        this.formBuilder.group({
-          fundAmount: this.formBuilder.control( 0),
-          publicContribution: this.formBuilder.control(0),
-          autoPublicContribution: this.formBuilder.control(0),
-          privateContribution: this.formBuilder.control(0),
-        })
-      ]),
+      fundAmount: this.formBuilder.control(0),
+      publicContribution: this.formBuilder.control(0),
+      autoPublicContribution: this.formBuilder.control(0),
+      privateContribution: this.formBuilder.control(0),
       infoSentBeneficiaryDate: [''],
       infoSentBeneficiaryComment: ['', Validators.maxLength(2000)],
-      correctionTypeCode: ['', Validators.required],
+      correctionType: ['', Validators.required],
       correctionTypeText: ['', Validators.required],
       clericalTechnicalMistake: [false, Validators.required],
       goldPlating: [false, Validators.required],
@@ -106,10 +102,10 @@ export class CorrectionDetailFinancialDescriptionComponent {
   }
 
   getAmountSum(): number {
-    return this.amounts.at(0).get('fundAmount')?.value +
-      this.amounts.at(0).get('publicContribution')?.value +
-      this.amounts.at(0).get('autoPublicContribution')?.value +
-      this.amounts.at(0).get('privateContribution')?.value;
+    return this.financialDescriptionForm.controls.fundAmount?.value +
+      this.financialDescriptionForm.controls.publicContribution?.value +
+      this.financialDescriptionForm.controls.autoPublicContribution?.value +
+      this.financialDescriptionForm.controls.privateContribution?.value;
   }
 
   get amounts(): FormArray {
@@ -145,13 +141,13 @@ export class CorrectionDetailFinancialDescriptionComponent {
     }
     const validSelection = [...this.correctionTypeTranslations.values()].includes(this.financialDescriptionForm.controls.correctionTypeText.value);
     if (!validSelection) {
-      this.financialDescriptionForm.controls.correctionTypeCode.patchValue('');
+      this.financialDescriptionForm.controls.correctionType.patchValue('');
       this.financialDescriptionForm.controls.correctionTypeText.patchValue('');
     }
   }
 
   correctionTypeChanged(selectedCorrectionType: string): void {
-    this.financialDescriptionForm.controls.correctionTypeCode.patchValue(selectedCorrectionType);
+    this.financialDescriptionForm.controls.correctionType.patchValue(selectedCorrectionType);
     this.financialDescriptionForm.controls.correctionTypeText.patchValue(this.correctionTypeTranslations.get(selectedCorrectionType as CorrectionTypeEnum));
   }
 
@@ -163,20 +159,7 @@ export class CorrectionDetailFinancialDescriptionComponent {
   }
 
   save(correctionId: number) {
-    const data = {
-      deduction: this.financialDescriptionForm.controls?.deduction.value,
-      fundAmount: this.amounts.at(0).get('fundAmount')?.value,
-      publicContribution: this.amounts.at(0).get('publicContribution')?.value,
-      autoPublicContribution: this.amounts.at(0).get('autoPublicContribution')?.value,
-      privateContribution: this.amounts.at(0).get('privateContribution')?.value,
-      infoSentBeneficiaryDate: this.financialDescriptionForm.controls?.infoSentBeneficiaryDate.value,
-      infoSentBeneficiaryComment: this.financialDescriptionForm.controls?.infoSentBeneficiaryComment.value,
-      correctionType: this.financialDescriptionForm.controls?.correctionTypeCode.value,
-      clericalTechnicalMistake: this.financialDescriptionForm.controls?.clericalTechnicalMistake.value,
-      goldPlating: this.financialDescriptionForm.controls?.goldPlating.value,
-      suspectedFraud: this.financialDescriptionForm.controls?.suspectedFraud.value,
-      correctionComment: this.financialDescriptionForm.controls?.correctionComment.value,
-    } as ProjectCorrectionFinancialDescriptionUpdateDTO;
+    const data = this.financialDescriptionForm.getRawValue() as ProjectCorrectionFinancialDescriptionUpdateDTO;
     this.pageStore.saveFinancialDescription(correctionId, data)
       .pipe(
         take(1),
