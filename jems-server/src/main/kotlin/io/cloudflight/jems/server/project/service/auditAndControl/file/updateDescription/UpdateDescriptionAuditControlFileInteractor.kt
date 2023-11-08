@@ -2,6 +2,6 @@ package io.cloudflight.jems.server.project.service.auditAndControl.file.updateDe
 
 interface UpdateDescriptionAuditControlFileInteractor {
 
-    fun updateDescription(projectId: Long, auditControlId: Long, fileId: Long, description: String)
+    fun updateDescription(auditControlId: Long, fileId: Long, description: String)
 }
 

@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable
 
 interface ListAuditControlFileInteractor {
 
-    fun list(projectId: Long, auditControlId: Long, pageable: Pageable): Page<JemsFile>
+    fun list(auditControlId: Long, pageable: Pageable): Page<JemsFile>
 }

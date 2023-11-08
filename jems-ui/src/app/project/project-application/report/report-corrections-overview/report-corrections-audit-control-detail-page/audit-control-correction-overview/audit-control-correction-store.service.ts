@@ -33,8 +33,11 @@ export class AuditControlCorrectionStore {
   }
 
   createEmptyCorrection(projectId: number, auditControlId: number, linking: boolean): Observable<ProjectAuditControlCorrectionDTO> {
-    return this.projectAuditControlCorrectionService.createProjectAuditCorrection(Number(auditControlId), linking, projectId)
-      .pipe(
+    return this.projectAuditControlCorrectionService
+      .createProjectAuditCorrection(Number(auditControlId), projectId, linking
+        ? ProjectAuditControlCorrectionDTO.TypeEnum.LinkedToInvoice
+        : ProjectAuditControlCorrectionDTO.TypeEnum.LinkedToCostOption
+      ).pipe(
         tap(() => this.refreshCorrections$.next()),
         tap(created => Log.info('Created correction:', this, created)),
       );

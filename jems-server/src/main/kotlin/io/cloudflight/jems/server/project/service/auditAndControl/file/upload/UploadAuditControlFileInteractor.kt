@@ -5,5 +5,5 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 
 interface UploadAuditControlFileInteractor {
 
-    fun upload(projectId: Long, auditControlId: Long, file: ProjectFile): JemsFileMetadata
+    fun upload(auditControlId: Long, file: ProjectFile): JemsFileMetadata
 }

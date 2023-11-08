@@ -12,17 +12,17 @@
                     </button>
 
                     <span>{{'project.application.reporting.corrections.audit.control.correction.title' | translate:
-                        {auditControlNumber: data.correction?.auditControlNumber, correctionNumber: data.correction?.correction?.orderNr} }}</span>
+                        {auditControlNumber: data.correction?.auditControlNumber, correctionNumber: data.correction?.orderNr} }}</span>
                 </h3>
 
                 <div class="mb-3 status-wrapper">
                     <span class="status-label mr-2">{{'common.status' | translate}}</span>
                     <jems-audit-control-correction-status
-                            [status]="data?.correction?.correction?.status"></jems-audit-control-correction-status>
+                            [status]="data?.correction?.status"></jems-audit-control-correction-status>
                     <jems-pending-button *ngIf="data.canEdit" class="ml-2"
                                          [pending]="pendingAction$ | async"
                                          [disabled]="!data.canClose"
-                                         (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction.correction.id)">
+                                         (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction.id)">
                         {{'project.application.reporting.corrections.close.correction' | translate}}
                     </jems-pending-button>
                     <jems-context-info *ngIf="!data.canClose" infoPosition="right"

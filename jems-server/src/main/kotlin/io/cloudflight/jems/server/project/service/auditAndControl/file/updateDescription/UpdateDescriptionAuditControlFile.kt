@@ -5,9 +5,9 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditProjectAuditAndControl
+import io.cloudflight.jems.server.project.authorization.CanEditAuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.ProjectAuditAndControlValidator.Companion.verifyAuditControlOngoing
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,20 +17,20 @@ class UpdateDescriptionAuditControlFile(
     private val fileService: JemsProjectFileService,
     private val filePersistence: JemsFilePersistence,
     private val auditControlPersistence: AuditControlPersistence,
-    private val auditAndControlValidator: ProjectAuditAndControlValidator,
 ) : UpdateDescriptionAuditControlFileInteractor {
 
-    @CanEditProjectAuditAndControl
+    @CanEditAuditControl
     @Transactional
     @ExceptionWrapper(UpdateDescriptionAuditControlFileException::class)
-    override fun updateDescription(projectId: Long, auditControlId: Long, fileId: Long, description: String) {
+    override fun updateDescription(auditControlId: Long, fileId: Long, description: String) {
         validateDescription(description)
 
-        if (!filePersistence.existsFile(exactPath = JemsFileType.AuditControl.generatePath(projectId, auditControlId), fileId = fileId))
-            throw FileNotFound()
+        val auditControl = auditControlPersistence.getById(auditControlId = auditControlId)
+        verifyAuditControlOngoing(auditControl)
 
-        val auditControl = auditControlPersistence.getByIdAndProjectId(auditControlId = auditControlId, projectId = projectId)
-        auditAndControlValidator.verifyAuditControlOngoing(auditControl)
+        val filePath = JemsFileType.AuditControl.generatePath(auditControl.projectId, auditControlId)
+        if (!filePersistence.existsFile(exactPath = filePath, fileId = fileId))
+            throw FileNotFound()
 
         fileService.setDescription(fileId = fileId, description = description)
     }

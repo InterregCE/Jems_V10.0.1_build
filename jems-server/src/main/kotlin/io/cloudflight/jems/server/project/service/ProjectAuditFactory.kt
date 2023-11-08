@@ -15,8 +15,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
@@ -380,29 +379,25 @@ fun projectContractingPartnerDocumentsLocationChanged(
 
 fun projectAuditControlCreated(
     context: Any,
-    projectSummary: ProjectSummary,
-    auditControl: ProjectAuditControl
-): AuditCandidateEvent {
-    return AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
-            .project(projectSummary)
-            .description("Audit/control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created")
-            .build()
-    )
-}
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created")
+        .build()
+)
 
 fun projectAuditControlCorrectionCreated(
     context: Any,
-    projectSummary: ProjectSummary,
-    auditControl: ProjectAuditControl,
-    correction: ProjectAuditControlCorrection
+    auditControl: AuditControl,
+    correctionNr: Int,
 ): AuditCandidateEvent {
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CREATED)
-            .project(projectSummary)
-            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+            .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+            .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
                 "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created.")
             .build()
     )
@@ -410,15 +405,14 @@ fun projectAuditControlCorrectionCreated(
 
 fun projectAuditControlCorrectionClosed(
     context: Any,
-    projectSummary: ProjectSummary,
-    auditControl: ProjectAuditControl,
-    correction: ProjectAuditControlCorrection
+    auditControl: AuditControl,
+    correctionNr: Int,
 ): AuditCandidateEvent {
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CLOSED)
-            .project(projectSummary)
-            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+            .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+            .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
                 "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed.")
             .build()
     )
@@ -426,35 +420,28 @@ fun projectAuditControlCorrectionClosed(
 
 fun projectAuditControlCorrectionDeleted(
     context: Any,
-    projectSummary: ProjectSummary,
-    auditControl: ProjectAuditControl,
-    correction: ProjectAuditControlCorrection
-): AuditCandidateEvent {
-    return AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_DELETED)
-            .project(projectSummary)
-            .description("Correction AC${auditControl.number}.${correction.orderNr} for Audit/control number " +
+    auditControl: AuditControl,
+    correctionNr: Int,
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_DELETED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
                 "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is deleted.")
-            .build()
+        .build()
     )
-}
 
 
 fun projectAuditControlClosed(
     context: Any,
-    projectSummary: ProjectSummary,
-    auditControl: ProjectAuditControl
-): AuditCandidateEvent {
-    return AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CLOSED)
-            .project(projectSummary)
-            .description("Audit/control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed")
-            .build()
-    )
-}
-
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CLOSED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed")
+        .build()
+)
 
 private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {

@@ -99,19 +99,19 @@ class ProjectAuditFileControllerTest : UnitTest() {
 
     @Test
     fun list() {
-        every { listAuditControlFileInteractor.list(PROJECT_ID, AUDIT_CONTROL_ID, Pageable.unpaged()) } returns PageImpl(listOf(
+        every { listAuditControlFileInteractor.list(AUDIT_CONTROL_ID, Pageable.unpaged()) } returns PageImpl(listOf(
             auditControlFile
         ))
 
         assertThat(controller.list(PROJECT_ID, AUDIT_CONTROL_ID, Pageable.unpaged()).content)
             .containsExactly(auditControlFileDto)
-        verify { listAuditControlFileInteractor.list(PROJECT_ID, AUDIT_CONTROL_ID, Pageable.unpaged()) }
+        verify { listAuditControlFileInteractor.list(AUDIT_CONTROL_ID, Pageable.unpaged()) }
     }
 
     @Test
     fun upload() {
         val slotFile = slot<ProjectFile>()
-        every { uploadAuditControlFileInteractor.upload(PROJECT_ID, AUDIT_CONTROL_ID, capture(slotFile)) } returns dummyFile
+        every { uploadAuditControlFileInteractor.upload(AUDIT_CONTROL_ID, capture(slotFile)) } returns dummyFile
 
         assertThat(controller.upload(PROJECT_ID, AUDIT_CONTROL_ID, dummyMultipartFile()))
             .isEqualTo(dummyFileDto)
@@ -120,10 +120,10 @@ class ProjectAuditFileControllerTest : UnitTest() {
 
     @Test
     fun updateDescription() {
-        every { updateDescriptionAuditControlFileInteractor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, "new desc") } answers { }
+        every { updateDescriptionAuditControlFileInteractor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, "new desc") } answers { }
 
         assertDoesNotThrow { controller.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, "new desc") }
-        verify { updateDescriptionAuditControlFileInteractor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, "new desc") }
+        verify { updateDescriptionAuditControlFileInteractor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, "new desc") }
     }
 
     @Test

@@ -1,8 +1,0 @@
-package io.cloudflight.jems.server.project.repository.auditAndControl.correction.financialDescription
-
-import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectCorrectionFinancialDescriptionEntity
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
-
-@Repository
-interface ProjectCorrectionFinancialDescriptionRepository: JpaRepository<ProjectCorrectionFinancialDescriptionEntity, Long>

@@ -1,27 +1,28 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
-import io.cloudflight.jems.server.project.entity.auditAndControl.ProjectAuditControlCorrectionEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.CorrectionStatus
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface AuditControlCorrectionRepository: JpaRepository<ProjectAuditControlCorrectionEntity, Long> {
+interface AuditControlCorrectionRepository: JpaRepository<AuditControlCorrectionEntity, Long> {
 
-    fun findAllByAuditControlEntityId(auditControlId: Long, pageable: Pageable): Page<ProjectAuditControlCorrectionEntity>
+    fun findAllByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrectionEntity>
 
-    fun findFirstByAuditControlEntityIdOrderByOrderNrDesc(auditControlId: Long): ProjectAuditControlCorrectionEntity?
+    fun findFirstByAuditControlIdOrderByOrderNrDesc(auditControlId: Long): AuditControlCorrectionEntity?
 
-    fun getAllByAuditControlEntityIdAndStatusAndOrderNrBefore(
-        auditControlId: Long,
-        status: CorrectionStatus,
+    fun getAllByAuditControlAndStatusAndOrderNrBefore(
+        auditControl: AuditControlEntity,
+        status: AuditControlStatus,
         orderNr: Int
-    ): List<ProjectAuditControlCorrectionEntity>
+    ): List<AuditControlCorrectionEntity>
 
-    fun getAllByAuditControlEntityIdAndStatus(auditControlId: Long, status: CorrectionStatus): List<ProjectAuditControlCorrectionEntity>
+    fun getAllByAuditControlIdAndStatus(auditControlId: Long, status: AuditControlStatus): List<AuditControlCorrectionEntity>
 
-    fun getFirstByAuditControlEntityIdAndStatusOrderByOrderNrDesc(auditControlId: Long, status: CorrectionStatus): ProjectAuditControlCorrectionEntity?
+    fun getFirstByAuditControlIdAndStatusOrderByOrderNrDesc(auditControlId: Long, status: AuditControlStatus): AuditControlCorrectionEntity?
 
 }

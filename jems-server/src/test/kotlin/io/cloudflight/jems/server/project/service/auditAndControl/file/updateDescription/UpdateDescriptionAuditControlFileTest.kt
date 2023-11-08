@@ -3,14 +3,12 @@ package io.cloudflight.jems.server.project.service.auditAndControl.file.updateDe
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
-import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.ProjectAuditAndControlValidator
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.AuditControlNotOngoingException
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,8 +26,9 @@ class UpdateDescriptionAuditControlFileTest : UnitTest() {
         const val PROJECT_ID = 85L
         const val AUDIT_CONTROL_ID = 87L
         const val FILE_ID = 89L
-        fun filePath() = JemsFileType.AuditControl.generatePath(PROJECT_ID, AUDIT_CONTROL_ID)
     }
+
+    var generalValidator: GeneralValidatorDefaultImpl = GeneralValidatorDefaultImpl()
 
     @MockK
     lateinit var fileService: JemsProjectFileService
@@ -39,11 +38,6 @@ class UpdateDescriptionAuditControlFileTest : UnitTest() {
 
     @MockK
     lateinit var auditControlPersistence: AuditControlPersistence
-
-    @MockK
-    lateinit var correctionPersistence: AuditControlCorrectionPersistence
-
-    var generalValidator: GeneralValidatorDefaultImpl = GeneralValidatorDefaultImpl()
 
     @InjectMockKs
     lateinit var auditAndControlValidator: ProjectAuditAndControlValidator
@@ -59,37 +53,42 @@ class UpdateDescriptionAuditControlFileTest : UnitTest() {
     @Test
     fun updateDescription() {
         val description = "description"
-        every { filePersistence.existsFile(exactPath = filePath(), fileId = FILE_ID) } returns true
-        every { fileService.setDescription(fileId = FILE_ID, description = description) } returns Unit
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Ongoing
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
         }
+        every { filePersistence.existsFile(exactPath = "Project/000085/Report/Corrections/AuditControl/000087/", fileId = FILE_ID) } returns true
+        every { fileService.setDescription(fileId = FILE_ID, description = description) } returns Unit
 
-        assertDoesNotThrow { interactor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, description) }
+        assertDoesNotThrow { interactor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, description) }
     }
 
     @Test
     fun `updateDescription - FileNotFound`() {
-        every { filePersistence.existsFile(exactPath = filePath(), fileId = FILE_ID) } returns false
-        assertThrows<FileNotFound> { interactor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, "description") }
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
+        }
+        every { filePersistence.existsFile(exactPath = "Project/000085/Report/Corrections/AuditControl/000087/", fileId = FILE_ID) } returns false
+        assertThrows<FileNotFound> { interactor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, "description") }
     }
 
     @Test
     fun `updateDescription - too long`() {
         val description = "A".repeat(251)
 
-        assertThrows<AppInputValidationException> { interactor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, description) }
+        assertThrows<AppInputValidationException> { interactor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, description) }
     }
 
     @Test
     fun `updateDescription - NotOngoing`() {
         val description = "description"
-        every { filePersistence.existsFile(exactPath = filePath(), fileId = FILE_ID) } returns true
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Closed
+        every { filePersistence.existsFile(exactPath = "", fileId = FILE_ID) } returns true
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Closed
         }
 
-        assertThrows<AuditControlNotOngoingException> { interactor.updateDescription(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID, description) }
+        assertThrows<AuditControlNotOngoingException> { interactor.updateDescription(AUDIT_CONTROL_ID, FILE_ID, description) }
     }
 
 }

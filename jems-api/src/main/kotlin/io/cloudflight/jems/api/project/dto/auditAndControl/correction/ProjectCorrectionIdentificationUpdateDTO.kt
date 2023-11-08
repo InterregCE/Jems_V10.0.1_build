@@ -8,7 +8,6 @@ data class ProjectCorrectionIdentificationUpdateDTO(
     val repaymentFrom: ZonedDateTime?,
     val lateRepaymentTo: ZonedDateTime?,
 
-    val partnerId: Long?,
-    val partnerReportId: Long?,
-    val programmeFundId: Long?
+    val partnerReportId: Long,
+    val programmeFundId: Long,
 )

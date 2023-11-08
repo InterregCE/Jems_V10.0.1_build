@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.project.entity.auditAndControl
 
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -11,27 +12,27 @@ import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
-@Entity(name = "project_audit_control")
+@Entity(name = "audit_control")
 class AuditControlEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @ManyToOne(optional = false)
+    @field:NotNull
+    val project: ProjectEntity,
+
     @field:NotNull
     val number: Int,
 
-    @field:NotNull
-    val projectId: Long,
-
-    @field:NotNull
-    val projectCustomIdentifier: String,
-
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    var status: AuditStatus,
+    var status: AuditControlStatus,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

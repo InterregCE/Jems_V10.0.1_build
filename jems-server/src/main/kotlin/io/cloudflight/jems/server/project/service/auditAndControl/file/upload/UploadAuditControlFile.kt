@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.notification.handler.FileChangeAction
 import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
-import io.cloudflight.jems.server.project.authorization.CanEditProjectAuditAndControl
+import io.cloudflight.jems.server.project.authorization.CanEditAuditControl
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.ProjectAuditAndControlValidator.Companion.verifyAuditControlOngoing
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.report.project.file.ProjectReportFilePersistence
@@ -25,25 +25,25 @@ class UploadAuditControlFile(
     private val securityService: SecurityService,
     private val projectPersistence: ProjectPersistence,
     private val auditControlPersistence: AuditControlPersistence,
-    private val auditAndControlValidator: ProjectAuditAndControlValidator,
     private val auditPublisher: ApplicationEventPublisher
 ) : UploadAuditControlFileInteractor {
 
-    @CanEditProjectAuditAndControl
+    @CanEditAuditControl
     @Transactional
     @ExceptionWrapper(UploadAuditControlFileException::class)
-    override fun upload(projectId: Long, auditControlId: Long, file: ProjectFile): JemsFileMetadata {
+    override fun upload(auditControlId: Long, file: ProjectFile): JemsFileMetadata {
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
 
+        val auditControl = auditControlPersistence.getById(auditControlId = auditControlId)
+        val projectId = auditControl.projectId
+        verifyAuditControlOngoing(auditControl)
+
         with(JemsFileType.AuditControl) {
-            val location = generatePath(projectId, auditControlId)
+            val location = generatePath(auditControl.projectId, auditControlId)
 
             if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists(file.name)
-
-            val auditControl = auditControlPersistence.getByIdAndProjectId(auditControlId = auditControlId, projectId = projectId)
-            auditAndControlValidator.verifyAuditControlOngoing(auditControl)
 
             return projectReportFilePersistence.saveAuditControlFile(
                 file = file.getFileMetadata(projectId, null, location, type = this, securityService.getUserIdOrThrow())

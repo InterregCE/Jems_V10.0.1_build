@@ -1,29 +1,30 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction
 
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrectionExtended
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 
 interface AuditControlCorrectionPersistence {
 
-    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<ProjectAuditControlCorrection>
+    fun getProjectIdForCorrection(correctionId: Long): Long
 
-    fun getPreviousClosedCorrections(auditControlId: Long, correctionId: Long): List<ProjectAuditControlCorrection>
+    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrection>
 
-    fun getByCorrectionId(correctionId: Long): ProjectAuditControlCorrection
+    fun getPreviousClosedCorrections(correctionId: Long): List<AuditControlCorrection>
 
-    fun getExtendedByCorrectionId(correctionId: Long): ProjectAuditControlCorrectionExtended
+    fun getByCorrectionId(correctionId: Long): AuditControlCorrectionDetail
 
     fun getLastUsedOrderNr(auditControlId: Long): Int?
 
     fun deleteCorrectionById(id: Long)
 
-    fun closeCorrection(correctionId: Long): ProjectAuditControlCorrection
+    fun closeCorrection(correctionId: Long): AuditControlCorrection
 
-    fun getOngoingCorrectionsByAuditControlId(auditControlId: Long): List<ProjectAuditControlCorrection>
+    fun getOngoingCorrectionsByAuditControlId(auditControlId: Long): List<AuditControlCorrection>
 
-    fun getLastCorrectionOngoingId(auditControlId: Long): Long?
+    fun updateCorrection(correctionId: Long, data: AuditControlCorrectionUpdate): AuditControlCorrectionDetail
 
 }

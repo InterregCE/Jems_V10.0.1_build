@@ -16,7 +16,7 @@ export class AuditControlCorrectionDetailPageBreadcrumbResolver implements Resol
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<string>> {
     return of(this.pageStore.correction$.pipe(
       map(correction => this.translateService.instant('project.application.reporting.corrections.audit.control.correction.title',
-        {auditControlNumber: correction?.auditControlNumber, correctionNumber: correction?.correction?.orderNr}))
+        {auditControlNumber: correction?.auditControlNumber, correctionNumber: correction?.orderNr}))
     ));
   }
 

@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction
 
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectAuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 
 interface AuditControlCreateCorrectionPersistence {
 
-    fun createCorrection(correction: ProjectAuditControlCorrection): ProjectAuditControlCorrection
+    fun createCorrection(auditControlId: Long, correction: AuditControlCorrectionCreate): AuditControlCorrectionDetail
 
 }
