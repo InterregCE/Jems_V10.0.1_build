@@ -24,3 +24,11 @@
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>
+
+<ng-template #copyCell let-checklist>
+    <button mat-icon-button color="accent"
+            (click)="copy(checklist); $event.stopPropagation();"
+            matTooltip="{{'common.copy.entry.tooltip' | translate}}">
+        <mat-icon>file_copy</mat-icon>
+    </button>
+</ng-template>

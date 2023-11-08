@@ -3,7 +3,7 @@ import {ProgrammeChecklistDetailDTO, ProgrammeChecklistDTO, ProgrammeChecklistSe
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
-import {map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
@@ -45,7 +45,7 @@ export class ProgrammeChecklistDetailPageStore {
       .pipe(
         switchMap(checklistId => checklistId
           ? this.programmeChecklistService.getProgrammeChecklistDetail(checklistId as number)
-          : of({} as ProgrammeChecklistDetailDTO)
+          : this.copyChecklist
         ),
         tap(checklist => Log.info('Fetched checklist', this, checklist)),
         withLatestFrom(this.programmeEditableStateStore.hasEditPermission$),
@@ -56,6 +56,36 @@ export class ProgrammeChecklistDetailPageStore {
     return merge(initialChecklist$, this.savedChecklist$);
   }
 
+  private get copyChecklist(): Observable<ProgrammeChecklistDetailDTO> {
+    return this.routingService.routeParameterChanges(
+      ProgrammeChecklistDetailPageStore.CHECKLIST_DETAIL_PATH + 'copy', 'copyId'
+    )
+      .pipe(
+        mergeMap((id: string | number | null) => id
+          ? this.modifyChecklist(id as number)
+          : of({} as ProgrammeChecklistDetailDTO)
+        )
+      )
+  }
+
+  private modifyChecklist(id: number): Observable<ProgrammeChecklistDetailDTO> {
+    return this.programmeChecklistService.getProgrammeChecklistDetail(id)
+      .pipe(
+        map((checklist) => (
+          {
+            type: checklist.type,
+            minScore: checklist.minScore,
+            maxScore: checklist.maxScore,
+            allowsDecimalScore: checklist.allowsDecimalScore,
+            name: checklist.name + '-copy',
+            components: checklist.components.map(it => {
+              const { id, ...rest } = it
+              return rest
+            }),
+          } as ProgrammeChecklistDetailDTO)
+        )
+      )
+  }
 
   private checkListId(): Observable<any> {
     return this.routingService.routeParameterChanges(ProgrammeChecklistDetailPageStore.CHECKLIST_DETAIL_PATH, 'checklistId');

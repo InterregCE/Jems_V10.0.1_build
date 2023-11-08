@@ -11,6 +11,7 @@ import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProgrammeChecklistDetailDTO} from '@cat/api';
+import {RoutingService} from "@common/services/routing.service";
 
 @Component({
   selector: 'jems-programme-checklist-list-page',
@@ -28,8 +29,12 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
 
+  @ViewChild('copyCell', {static: true})
+  copyCell: TemplateRef<any>;
+
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
               public pageStore: ProgrammeChecklistListPageStore,
+              private routingService: RoutingService,
               private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -51,6 +56,19 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
         filter(answer => !!answer),
         switchMap(() => this.pageStore.deleteChecklist(checklist.id)),
       ).subscribe();
+  }
+
+  copy(checklist: ProgrammeChecklistDetailDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: 'programme.checklists.copy.dialog.header',
+        message: {i18nKey: 'programme.checklists.copy.confirm', i18nArguments: {name: checklist.name}}
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        tap(() => this.routingService.navigate(['/app/programme/checklists/copy/' + checklist.id])),
+      ).subscribe()
   }
 
   private initializeTableConfiguration(canEditProgramme: boolean): void {
@@ -83,7 +101,12 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
           columnWidth: ColumnWidth.IdColumn
-        }] : []
+        }] : [],
+        {
+          displayedColumn: 'common.copy.entry',
+          customCellTemplate: this.copyCell,
+          columnWidth: ColumnWidth.IdColumn,
+        },
       ]
     });
   }

@@ -287,6 +287,10 @@ export const routes: Routes = [
             data: {breadcrumb: 'programme.checklists.detail.title'},
           },
           {
+            path: 'copy/:copyId',
+            component: ProgrammeChecklistDetailPageComponent,
+          },
+          {
             path: ':checklistId',
             data: {breadcrumb: 'programme.checklists.detail.title'},
             component: ProgrammeChecklistDetailPageComponent,
