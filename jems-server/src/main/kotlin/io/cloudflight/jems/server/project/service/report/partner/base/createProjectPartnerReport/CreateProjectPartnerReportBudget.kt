@@ -399,10 +399,12 @@ class CreateProjectPartnerReportBudget(
             )
         }
 
+        val previousFundIds = previous.funds.mapNotNullTo(HashSet()) { it.key } union
+                previouslyReportedFastTrack.funds.mapNotNullTo(HashSet()) { it.key }
+        val currentFundIds = currentFunds.mapNotNullTo(HashSet()) { it.fundId }
+
         // in case in modification some funds have been removed, we still need it in reporting
-        val removedFunds = previous.funds.mapNotNullTo(LinkedHashSet()) { it.key }.minus(
-            currentFunds.mapNotNullTo(HashSet()) { it.fundId }
-        ).map { fundId ->
+        val removedFunds = previousFundIds.minus(currentFundIds).map { fundId ->
             PreviouslyReportedFund(
                 fundId = fundId,
                 percentage = ZERO,
