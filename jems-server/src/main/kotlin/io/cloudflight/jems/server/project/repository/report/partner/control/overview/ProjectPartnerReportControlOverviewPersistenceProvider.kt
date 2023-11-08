@@ -26,55 +26,40 @@ class ProjectPartnerReportControlOverviewPersistenceProvider(
     override fun createPartnerControlReportOverview(partnerId: Long, reportId: Long, lastCertifiedReportId: Long?): ControlOverview {
         return controlOverviewRepository.save(
             PartnerReportControlOverviewEntity(
-                startDate = LocalDate.now(),
+                partnerReportId = reportId,
                 partnerReport = reportRepository.findByIdAndPartnerId(reportId, partnerId),
-                lastCertifiedReportIdWhenCreation = lastCertifiedReportId
+                startDate = LocalDate.now(),
+                lastCertifiedReportIdWhenCreation = lastCertifiedReportId,
+                requestsForClarifications = null,
+                receiptOfSatisfactoryAnswers = null,
+                endDate = null,
+                findingDescription = null,
+                followUpMeasuresFromLastReport = null,
+                conclusion = null,
+                followUpMeasuresForNextReport = null,
             )
         ).toModel()
     }
 
     @Transactional
-    override fun updatePartnerControlReportOverview(
-        partnerId: Long,
-        reportId: Long,
-        controlOverview: ControlOverview
-    ): ControlOverview {
-        return controlOverviewRepository.save(
-            PartnerReportControlOverviewEntity(
-                partnerReportId = reportId,
-                startDate = controlOverview.startDate,
-                partnerReport = reportRepository.findByIdAndPartnerId(reportId, partnerId),
-                requestsForClarifications = controlOverview.requestsForClarifications,
-                receiptOfSatisfactoryAnswers = controlOverview.receiptOfSatisfactoryAnswers,
-                endDate = controlOverview.endDate,
-                findingDescription = controlOverview.findingDescription,
-                followUpMeasuresForNextReport = controlOverview.followUpMeasuresForNextReport,
-                followUpMeasuresFromLastReport = controlOverview.followUpMeasuresFromLastReport,
-                conclusion = controlOverview.conclusion
-            )
-        ).toModel()
-    }
+    override fun updatePartnerControlReportOverview(partnerId: Long, reportId: Long, controlOverview: ControlOverview) =
+        controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(partnerId, reportId = reportId).apply {
+            requestsForClarifications = controlOverview.requestsForClarifications
+            receiptOfSatisfactoryAnswers = controlOverview.receiptOfSatisfactoryAnswers
+            findingDescription = controlOverview.findingDescription
+            followUpMeasuresFromLastReport = controlOverview.followUpMeasuresFromLastReport
+            followUpMeasuresForNextReport = controlOverview.followUpMeasuresForNextReport
+            conclusion = controlOverview.conclusion
+        }.toModel()
 
     @Transactional
     override fun updatePartnerControlReportOverviewEndDate(
         partnerId: Long,
         reportId: Long,
         endDate: LocalDate
-    ): ControlOverview {
-        val controlOverview = controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(partnerId, reportId).toModel()
-        return controlOverviewRepository.save(
-            PartnerReportControlOverviewEntity(
-                partnerReportId = reportId,
-                startDate = controlOverview.startDate,
-                partnerReport = reportRepository.findByIdAndPartnerId(reportId, partnerId),
-                requestsForClarifications = controlOverview.requestsForClarifications,
-                receiptOfSatisfactoryAnswers = controlOverview.receiptOfSatisfactoryAnswers,
-                endDate = endDate,
-                findingDescription = controlOverview.findingDescription,
-                followUpMeasuresForNextReport = controlOverview.followUpMeasuresForNextReport,
-                followUpMeasuresFromLastReport = controlOverview.followUpMeasuresFromLastReport,
-                conclusion = controlOverview.conclusion
-            )
-        ).toModel()
+    ) {
+        val controlReport = controlOverviewRepository.findByPartnerReportPartnerIdAndPartnerReportId(partnerId, reportId)
+        controlReport.endDate = endDate
     }
+
 }
