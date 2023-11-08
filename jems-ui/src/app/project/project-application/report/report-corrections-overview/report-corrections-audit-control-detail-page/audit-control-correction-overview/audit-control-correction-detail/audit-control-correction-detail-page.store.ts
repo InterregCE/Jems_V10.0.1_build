@@ -46,8 +46,6 @@ export class AuditControlCorrectionDetailPageStore {
   correctionPartnerData$: Observable<CorrectionAvailablePartnerDTO[]>;
   pastCorrections$: Observable<ProjectAuditControlCorrectionDTO[]>;
   updatedCorrection$ = new Subject<ProjectCorrectionIdentificationDTO>();
-  updatedCorrectionStatus$ = new Subject<ProjectAuditControlCorrectionDTO.StatusEnum>();
-  correctionStatus$: Observable<ProjectAuditControlCorrectionDTO.StatusEnum>;
   financialDescription$: Observable<ProjectCorrectionFinancialDescriptionDTO>;
   savedFinancialDescription$ = new Subject<ProjectCorrectionFinancialDescriptionDTO>();
 
@@ -68,7 +66,6 @@ export class AuditControlCorrectionDetailPageStore {
     this.correctionPartnerData$ = this.correctionPartnerData();
     this.correctionIdentification$ = this.correctionIdentification();
     this.pastCorrections$ = this.pastCorrections();
-    this.correctionStatus$ = this.correctionStatus();
     this.financialDescription$ = this.financialDescription();
     this.canEdit$ = this.canEdit();
     this.canClose$ = this.canClose();
@@ -159,13 +156,6 @@ export class AuditControlCorrectionDetailPageStore {
     return merge(initialCorrectionIdentification, this.updatedCorrection$);
   }
 
-  private correctionStatus(): Observable<ProjectAuditControlCorrectionDTO.StatusEnum> {
-    return merge(
-      this.correction$.pipe(map(correction => correction?.correction?.status)),
-      this.updatedCorrectionStatus$
-    );
-  }
-
   private financialDescription(): Observable<ProjectCorrectionFinancialDescriptionDTO> {
     const initialData$ = combineLatest([
       this.projectId$,
@@ -197,7 +187,7 @@ export class AuditControlCorrectionDetailPageStore {
   private canEdit(): Observable<boolean> {
     return combineLatest([
       this.reportCorrectionsAuditControlDetailPageStore.canEdit$,
-      this.correctionStatus$,
+      this.correction$.pipe(map(correction => correction?.correction?.status)),
     ]).pipe(
       map(([canEditAuditControl, status]) =>
         canEditAuditControl && status !== ProjectAuditControlCorrectionDTO.StatusEnum.Closed)
@@ -225,7 +215,6 @@ export class AuditControlCorrectionDetailPageStore {
   closeCorrection(projectId: number, auditControlId: number, correctionId: number): Observable<ProjectAuditControlCorrectionDTO.StatusEnum> {
     return this.projectAuditControlCorrectionService.closeProjectCorrection(auditControlId, correctionId, projectId).pipe(
       map(status => status as ProjectAuditControlCorrectionDTO.StatusEnum),
-      tap(status => this.updatedCorrectionStatus$.next(status)),
       tap(status => this.auditControlCorrectionStore.refreshCorrections$.next()),
       tap(status => Log.info('Changed status for correction', this, correctionId, status)),
     );
