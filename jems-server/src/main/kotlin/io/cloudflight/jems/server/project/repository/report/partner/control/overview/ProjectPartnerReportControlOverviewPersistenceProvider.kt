@@ -26,7 +26,7 @@ class ProjectPartnerReportControlOverviewPersistenceProvider(
     override fun createPartnerControlReportOverview(partnerId: Long, reportId: Long, lastCertifiedReportId: Long?): ControlOverview {
         return controlOverviewRepository.save(
             PartnerReportControlOverviewEntity(
-                partnerReportId = reportId,
+                partnerReportId = 0L,
                 partnerReport = reportRepository.findByIdAndPartnerId(reportId, partnerId),
                 startDate = LocalDate.now(),
                 lastCertifiedReportIdWhenCreation = lastCertifiedReportId,

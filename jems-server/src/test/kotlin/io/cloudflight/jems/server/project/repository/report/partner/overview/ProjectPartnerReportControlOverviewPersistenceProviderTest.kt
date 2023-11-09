@@ -87,7 +87,7 @@ internal class ProjectPartnerReportControlOverviewPersistenceProviderTest: UnitT
         assertThat(persistence.createPartnerControlReportOverview(583L, 85L, 22L))
             .isEqualTo(expectedEntitySaved)
 
-        assertThat(entityCapturingSlot.captured.partnerReportId).isEqualTo(85L)
+        assertThat(entityCapturingSlot.captured.partnerReportId).isEqualTo(0L) // because of OneToOne
         assertThat(entityCapturingSlot.captured.partnerReport).isEqualTo(report)
         assertThat(entityCapturingSlot.captured.startDate).isNotNull()
         assertThat(entityCapturingSlot.captured.lastCertifiedReportIdWhenCreation).isEqualTo(22L)
