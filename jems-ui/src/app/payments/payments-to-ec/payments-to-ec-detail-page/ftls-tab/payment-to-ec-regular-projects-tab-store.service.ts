@@ -1,10 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {
-  PagePaymentToEcLinkingDTO, PaymentApplicationToECService, PaymentToEcAmountSummaryDTO,
-  PaymentToECLinkingAPIService,
-  PaymentToEcLinkingUpdateDTO
-} from '@cat/api';
+import {PagePaymentToEcLinkingDTO, PaymentToEcAmountSummaryDTO, PaymentToECLinkingAPIService, PaymentToEcLinkingUpdateDTO} from '@cat/api';
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Log} from '@common/utils/log';
@@ -13,7 +9,7 @@ import {Tables} from '@common/utils/tables';
 import {APIError} from '@common/models/APIError';
 
 @Injectable({providedIn: 'root'})
-export class PaymentToEcFtlsTabStoreService {
+export class PaymentToEcRegularProjectsTabStoreService {
 
   ftlsPage$: Observable<PagePaymentToEcLinkingDTO>;
   regularPage$: Observable<PagePaymentToEcLinkingDTO>;

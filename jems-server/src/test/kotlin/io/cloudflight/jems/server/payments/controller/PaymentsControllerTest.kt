@@ -10,7 +10,12 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
-import io.cloudflight.jems.server.payments.model.regular.*
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
@@ -80,6 +85,7 @@ class PaymentsControllerTest : UnitTest() {
             projectAcronym = project.acronym,
             paymentClaimId = null,
             paymentClaimNo = 0,
+            paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
@@ -99,6 +105,7 @@ class PaymentsControllerTest : UnitTest() {
             projectAcronym = project.acronym,
             paymentClaimId = paymentClaimId,
             paymentClaimNo = projectReportNumber,
+            paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
@@ -300,6 +307,7 @@ class PaymentsControllerTest : UnitTest() {
                 projectAcronym = ftlsPaymentToProject.projectAcronym,
                 paymentClaimId = null,
                 paymentClaimNo = ftlsPaymentToProject.paymentClaimNo,
+                paymentToEcId = ftlsPaymentToProject.paymentToEcId,
                 paymentClaimSubmissionDate = ftlsPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = ftlsPaymentToProject.totalEligibleAmount,
@@ -318,6 +326,7 @@ class PaymentsControllerTest : UnitTest() {
                 projectAcronym = regularPaymentToProject.projectAcronym,
                 paymentClaimId = regularPaymentToProject.paymentClaimId,
                 paymentClaimNo = regularPaymentToProject.paymentClaimNo,
+                paymentToEcId = regularPaymentToProject.paymentToEcId,
                 paymentClaimSubmissionDate = regularPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = regularPaymentToProject.totalEligibleAmount,

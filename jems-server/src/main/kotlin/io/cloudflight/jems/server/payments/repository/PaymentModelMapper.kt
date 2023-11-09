@@ -1,7 +1,12 @@
 package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.payments.entity.*
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
+import io.cloudflight.jems.server.payments.entity.PaymentEntity
+import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
@@ -11,15 +16,15 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentRow
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentToCreate
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -57,6 +62,7 @@ fun PaymentEntity.toDetailModel(
     paymentClaimId = if (type == PaymentType.FTLS) null else projectReport!!.id,
     paymentClaimNo = if (type == PaymentType.FTLS) 0 else projectReport!!.number,
     paymentClaimSubmissionDate = project.contractedDecision?.updated,
+    paymentToEcId = null,
     lumpSumId = lumpSum?.programmeLumpSum?.id,
     orderNr = lumpSum?.id?.orderNr,
     paymentApprovalDate = lumpSum?.paymentEnabledDate,
@@ -79,6 +85,7 @@ fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
     paymentClaimId = payment.projectReport!!.id,
     paymentClaimNo = payment.projectReport!!.number,
     paymentClaimSubmissionDate = payment.projectReport?.firstSubmission,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = null,
     orderNr = null,
     paymentApprovalDate = payment.projectReport?.verificationEndDate,
@@ -101,6 +108,7 @@ fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
     paymentClaimId = null,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = payment.projectLumpSum?.programmeLumpSum?.id,
     orderNr = payment.projectLumpSum?.id?.orderNr,
     paymentApprovalDate = payment.projectLumpSum?.paymentEnabledDate,

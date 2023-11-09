@@ -38,10 +38,10 @@ import java.math.BigDecimal
 class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
     companion object {
-        private const val paymentApplicationsToEcId = 45L
+        private const val PAYMENT_TO_EC_ID = 45L
         private fun payment(type: PaymentType) = PaymentToEcPayment(
-            payment = if (type == PaymentType.FTLS) ftlsPaymentToProject else regularPaymentToProject,
-            paymentToEcId = 45L,
+            payment = paymentByType(type),
+            paymentToEcId = PAYMENT_TO_EC_ID,
             partnerContribution = BigDecimal.valueOf(4),
             publicContribution = BigDecimal.valueOf(5),
             correctedPublicContribution = BigDecimal.valueOf(6),
@@ -52,6 +52,10 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             priorityAxis = "code",
         )
 
+        private fun paymentByType(type: PaymentType) =
+            if (type == PaymentType.FTLS) ftlsPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
+            else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
+
         private fun expectedPayment(type: PaymentTypeDTO) = PaymentToEcLinkingDTO(
             payment = PaymentToProjectDTO(
                 id = if (type == PaymentTypeDTO.FTLS) 1L else 11L,
@@ -61,6 +65,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 projectAcronym = "project",
                 paymentClaimId = if (type == PaymentTypeDTO.FTLS) null else 5L,
                 paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
+                paymentToEcId = PAYMENT_TO_EC_ID,
                 fundName = "OTHER",
                 amountApprovedPerFund = BigDecimal.TEN,
                 amountPaidPerFund = BigDecimal.ZERO,
@@ -70,7 +75,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 totalEligibleAmount = BigDecimal.TEN,
                 lastApprovedVersionBeforeReadyForPayment = "v1.0",
             ),
-            paymentToEcId = paymentApplicationsToEcId,
+            paymentToEcId = PAYMENT_TO_EC_ID,
             partnerContribution = BigDecimal.valueOf(4),
             publicContribution = BigDecimal.valueOf(5),
             correctedPublicContribution = BigDecimal.valueOf(6),
@@ -118,7 +123,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             totalPublicContribution = BigDecimal(400)
         )
 
-        private val expectedTotals =   PaymentToEcAmountSummaryLineDTO(
+        private val expectedTotals = PaymentToEcAmountSummaryLineDTO(
             priorityAxis = null,
             totalEligibleExpenditure = BigDecimal(300),
             totalUnionContribution = BigDecimal.ZERO,
@@ -138,16 +143,22 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getFtlsPaymentsAvailableForArtNot94Not95: GetFtlsPaymentsAvailableForArtNot94Not95Interactor
+
     @MockK
     private lateinit var getRegularPaymentsAvailableForArtNot94Not95: GetRegularPaymentsAvailableForArtNot94Not95Interactor
+
     @MockK
     private lateinit var deselectPaymentFromEc: DeselectPaymentFromEcInteractor
+
     @MockK
     private lateinit var selectPaymentToEc: SelectPaymentToEcInteractor
+
     @MockK
     private lateinit var updateLinkedPayment: UpdateLinkedPaymentInteractor
+
     @MockK
     private lateinit var getOverviewByTypeInteractor: GetOverviewByTypeInteractor
+
     @MockK
     private lateinit var getCumulativeOverviewInteractor: GetCumulativeOverviewInteractor
 
@@ -156,19 +167,19 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
     @Test
     fun getFTLSPaymentsLinkedWithEcForArtNot94Not95() {
-        every { getFtlsPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), 45L) } returns
+        every { getFtlsPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID) } returns
                 PageImpl(listOf(payment(PaymentType.FTLS)))
 
-        assertThat(controller.getFTLSPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), 45L))
+        assertThat(controller.getFTLSPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), PAYMENT_TO_EC_ID))
             .containsExactly(expectedPayment(PaymentTypeDTO.FTLS))
     }
 
     @Test
     fun getRegularPaymentsLinkedWithEcForArtNot94Not95() {
-        every { getRegularPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), 45L) } returns
-            PageImpl(listOf(payment(PaymentType.REGULAR)))
+        every { getRegularPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID) } returns
+                PageImpl(listOf(payment(PaymentType.REGULAR)))
 
-        assertThat(controller.getRegularPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), 45L))
+        assertThat(controller.getRegularPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), PAYMENT_TO_EC_ID))
             .containsExactly(expectedPayment(PaymentTypeDTO.REGULAR))
     }
 
@@ -215,14 +226,14 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
         every {
             getOverviewByTypeInteractor.getOverviewAmountsByType(
-                paymentApplicationsToEcId,
+                PAYMENT_TO_EC_ID,
                 PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             )
         } returns summary
 
         assertThat(
             controller.getPaymentApplicationToEcOverviewAmountsByType(
-                paymentApplicationsToEcId,
+                PAYMENT_TO_EC_ID,
                 PaymentSearchRequestScoBasisDTO.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
@@ -235,14 +246,14 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
         every {
             getOverviewByTypeInteractor.getOverviewAmountsByType(
-                paymentApplicationsToEcId,
+                PAYMENT_TO_EC_ID,
                 null
             )
         } returns summary
 
         assertThat(
             controller.getPaymentApplicationToEcOverviewAmountsByType(
-                paymentApplicationsToEcId,
+                PAYMENT_TO_EC_ID,
                 null
             )
         ).isEqualTo(expectedSummary)
@@ -256,11 +267,11 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
         val cumulativeSummary = cumulativeAmountsSummary()
 
         every {
-            getCumulativeOverviewInteractor.getCumulativeOverview(paymentApplicationsToEcId)
+            getCumulativeOverviewInteractor.getCumulativeOverview(PAYMENT_TO_EC_ID)
         } returns cumulativeSummary
 
         assertThat(
-            controller.getPaymentApplicationToEcCumulativeOverview(paymentApplicationsToEcId)
+            controller.getPaymentApplicationToEcCumulativeOverview(PAYMENT_TO_EC_ID)
         ).isEqualTo(expectedSummary)
     }
 

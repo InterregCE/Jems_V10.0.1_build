@@ -13,6 +13,7 @@ data class PaymentToProject(
     val paymentClaimId: Long?,
     val paymentClaimNo: Int = 0,
     val paymentClaimSubmissionDate: ZonedDateTime?,
+    val paymentToEcId: Long?,
     val lumpSumId: Long? = null,
     val orderNr: Int? = null,
     val paymentApprovalDate: ZonedDateTime?,
