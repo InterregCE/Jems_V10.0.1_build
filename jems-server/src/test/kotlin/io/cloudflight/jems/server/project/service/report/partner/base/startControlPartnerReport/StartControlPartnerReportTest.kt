@@ -10,8 +10,6 @@ import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstit
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
-import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -109,9 +107,6 @@ internal class StartControlPartnerReportTest : UnitTest() {
     @MockK
     lateinit var callPersistence: CallPersistence
 
-    @MockK
-    lateinit var projectPersistence: ProjectPersistence
-
 
     @InjectMockKs
     lateinit var interactor: StartControlPartnerReport
@@ -144,7 +139,6 @@ internal class StartControlPartnerReportTest : UnitTest() {
         val plugin = mockk<ControlReportSamplingCheckPlugin>()
         every { plugin.check(PARTNER_ID, 37L) } returns ControlReportSamplingCheckResult(setOf(21L))
         every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "pluginKey")} returns plugin
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -58,7 +57,6 @@ class FinalizeControlPartnerReport(
     private val auditPublisher: ApplicationEventPublisher,
     private val controlInstitutionPersistence: ControllerInstitutionPersistence,
     private val reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
-    private val projectPersistence: ProjectPersistence,
 ) : FinalizeControlPartnerReportInteractor {
 
     @CanEditPartnerControlReport
@@ -101,8 +99,7 @@ class FinalizeControlPartnerReport(
             controlEnd = ZonedDateTime.now(),
         ).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, report.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, it, report.status))
             auditPublisher.publishEvent(
                 partnerReportControlFinalized(context = this, projectId = projectId, report = it, parked = currentlyReportedParked)
             )
