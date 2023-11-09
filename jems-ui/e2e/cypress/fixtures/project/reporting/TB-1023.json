@@ -1,0 +1,174 @@
+{
+  "workPlansUpdate": [
+    {
+      "id": "reportId",
+      "completed": true,
+      "specificStatus": "Fully",
+      "specificExplanation": [
+        {
+          "translation": "test 1",
+          "language": "DE"
+        },
+        {
+          "translation": "",
+          "language": "EN"
+        }
+      ],
+      "communicationStatus": "Partly",
+      "communicationExplanation": [
+        {
+          "translation": "test 2",
+          "language": "DE"
+        },
+        {
+          "translation": "",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "progress done",
+          "language": "DE"
+        },
+        {
+          "translation": "",
+          "language": "EN"
+        }
+      ],
+      "activities": [
+        {
+          "id": "activityId",
+          "status": "Fully",
+          "progress": [
+            {
+              "translation": "activity",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ],
+          "deliverables": [
+            {
+              "id": "deliverableId",
+              "currentReport": 50,
+              "progress": [
+                {
+                  "translation": "progress d1.1.1",
+                  "language": "DE"
+                },
+                {
+                  "translation": "",
+                  "language": "EN"
+                }
+              ]
+            },
+            {
+              "id": "deliverableId",
+              "currentReport": 99,
+              "progress": [
+                {
+                  "translation": "progress d1.1.2",
+                  "language": "DE"
+                },
+                {
+                  "translation": "",
+                  "language": "EN"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "activityId",
+          "status": "Not",
+          "progress": [],
+          "deliverables": [
+            {
+              "id": "deliverableId",
+              "currentReport": 0,
+              "progress": []
+            },
+            {
+              "id": "deliverableId",
+              "currentReport": 0,
+              "progress": []
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "id": "outputId",
+          "currentReport": 80,
+          "progress": [
+            {
+              "translation": "Output progress 1.1",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ]
+        },
+        {
+          "id": "outputId",
+          "currentReport": 80,
+          "progress": [
+            {
+              "translation": "Output progress 1.2",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ]
+        }
+      ],
+      "investments": [
+        {
+          "id": "investmentId",
+          "progress": [
+            {
+              "translation": "Investment 1.1",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ]
+        },
+        {
+          "id": "investmentId",
+          "progress": [
+            {
+              "translation": "Investment 1.2",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ]
+        },
+        {
+          "id": "investmentId",
+          "progress": [
+            {
+              "translation": "Investment 1.3",
+              "language": "DE"
+            },
+            {
+              "translation": "",
+              "language": "EN"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
