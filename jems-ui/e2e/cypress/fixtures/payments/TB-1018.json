@@ -150,6 +150,10 @@
     },
     "afterModification": {
       "co-financing": {
+        "ERDF": {
+          "previouslyReported": "1.199,99 parked 0,00",
+          "previouslyPaid": "1.199,99"
+        },
         "Neighbourhood CBC": {
           "previouslyReported": "0,00 parked 0,00",
           "previouslyPaid": "0,00"
@@ -176,7 +180,7 @@
         },
         "Total": {
           "previouslyReported": "1.999,99 parked 0,00",
-          "previouslyPaid": "0,00"
+          "previouslyPaid": "1.199,99"
         }
       }
     },
