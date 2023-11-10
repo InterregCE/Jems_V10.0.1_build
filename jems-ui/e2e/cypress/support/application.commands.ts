@@ -80,6 +80,10 @@ declare global {
 
       createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
 
+      getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
+
+      updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
+
       findInputContaining(selectorForInput, textToFind: string)
     }
   }
@@ -348,6 +352,14 @@ Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: strin
   findInputContaining(selectorForInput, textToFind);
 });
 
+Cypress.Commands.add('updateProjectReportWorkPlanProgress', (applicationId: number, reportId: number, workPlans: any[]) => {
+  updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans);
+});
+
+Cypress.Commands.add('getProjectReportWorkPlanProgress', (applicationId: number, reportId: number) => {
+  getProjectReportWorkPlanProgress(applicationId, reportId);
+});
+
 function createApplication(applicationDetails) {
   applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   return cy.request({
@@ -613,6 +625,21 @@ function createReportingDeadlines(applicationId, reportingDeadlines) {
     url: `api/project/${applicationId}/contracting/reporting`,
     body: reportingDeadlines
   });
+}
+
+function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
+    body: workPlans
+  });
+}
+
+function getProjectReportWorkPlanProgress(applicationId, reportId) {
+  cy.request({
+    method: 'GET',
+    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
+  }).then((response) => response.body);
 }
 
 export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
