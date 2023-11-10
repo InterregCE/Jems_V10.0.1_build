@@ -120,12 +120,12 @@
       </mat-form-field>
 
       <mat-form-field>
-        <mat-label>{{'project.application.reporting.corrections.identification.partner.report.id' | translate}}</mat-label>
+        <mat-label *ngIf="data.canEdit && partnerReports?.length > 0">{{'project.application.reporting.corrections.identification.partner.report.id' | translate}}</mat-label>
         <mat-select formControlName="partnerReportId"
                     [disabled]="!data.canEdit || partnerReports?.length === 0"
                     (selectionChange)="selectReport($event.value)"
                     class="placeholder-required"
-                    placeholder="{{'common.not.applicable.option' | translate}}"
+                    placeholder="{{'project.application.reporting.corrections.identification.partner.report.id' | translate}}"
                     required>
           <mat-option *ngFor="let report of partnerReports" [value]="report.id" role="option">
             R.{{report.reportNumber}}
@@ -144,17 +144,16 @@
 
     <div>
       <mat-form-field jemsFormFieldWidth="full">
-        <mat-label>{{'project.application.reporting.corrections.identification.partner.report.fund' | translate}}</mat-label>
+        <mat-label *ngIf="funds?.length > 0">{{'project.application.reporting.corrections.identification.partner.report.fund' | translate}}</mat-label>
         <mat-select formControlName="programmeFundId"
-                    [disabled]="funds && funds?.length === 0"
+                    [disabled]="funds?.length === 0"
                     class="placeholder-required"
-                    placeholder="{{'common.not.applicable.option' | translate}}"
+                    placeholder="{{'project.application.reporting.corrections.identification.partner.report.fund.not.available' | translate}}"
                     required>
-          <mat-option *ngFor="let fund of funds"
+            <mat-option *ngFor="let fund of funds"
                       [value]="fund.id">
-            {{fund.abbreviation | translateBySystemLanguage | async}}
-          </mat-option>
-          <mat-option *ngIf="funds?.length === 0" [value]="'N/A'">{{'common.not.applicable.option' | translate}}</mat-option>
+                {{fund.abbreviation | translateBySystemLanguage | async}}
+            </mat-option>
         </mat-select>
       </mat-form-field>
     </div>

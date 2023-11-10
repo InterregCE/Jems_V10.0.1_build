@@ -27,6 +27,7 @@ import {
 })
 export class AuditControlCorrectionDetailIdentityComponent {
 
+  naString:string = "N/A";
   Alert = Alert;
   CorrectionFollowUpTypeEnum = ProjectCorrectionIdentificationDTO.CorrectionFollowUpTypeEnum;
   error$ = new BehaviorSubject<APIError | null>(null);
@@ -100,8 +101,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
       lateRepaymentTo: correctionIdentification.lateRepaymentTo,
       partnerId: [partner?.partnerId, Validators.required],
       partnerReportId: [report?.id, Validators.required],
-      projectReportNumber: [report?.projectReport?.id ? ('PR.' + report.projectReport.number) : 'N/A'],
-      programmeFundId: [fund?.id ?? 'N/A', Validators.required],
+      projectReportNumber: [report?.projectReport?.id ? ('PR.' + report.projectReport.number) : this.naString],
+      programmeFundId: [fund?.id ?? this.naString, Validators.required],
     });
     this.formService.init(this.form, of(editable));
     this.form.controls?.projectReportNumber?.disable();
@@ -118,7 +119,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
 
   selectPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): void {
     this.partnerReports = this.getPartner(correctionPartnerData, partnerId)?.availableReports ?? [];
-    this.form.controls?.projectReportNumber?.setValue(null);
+    this.form.controls?.projectReportNumber?.setValue(this.naString);
     this.form.controls?.programmeFundId?.setValue(null);
     this.form.updateValueAndValidity();
     this.funds = [];
@@ -130,12 +131,12 @@ export class AuditControlCorrectionDetailIdentityComponent {
       if (report?.projectReport) {
         this.form.controls?.projectReportNumber?.setValue('PR.' + report?.projectReport.number);
       } else {
-        this.form.controls?.projectReportNumber?.setValue('N/A');
+        this.form.controls?.projectReportNumber?.setValue(this.naString);
       }
       this.funds = report?.availableReportFunds ?? [];
       return;
     }
-    this.form.controls?.projectReportNumber?.setValue('N/A');
+    this.form.controls?.projectReportNumber?.setValue(this.naString);
     this.form.controls?.programmeFundId?.setValue(null);
     this.form.updateValueAndValidity();
     this.funds = [];
@@ -149,7 +150,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       lateRepaymentTo: this.form.controls?.lateRepaymentTo.value,
       partnerId: this.form.controls?.partnerId.value,
       partnerReportId: this.form.controls?.partnerReportId.value,
-      programmeFundId: this.form.controls?.programmeFundId.value !== 'N/A' ? this.form.controls?.programmeFundId.value : null
+      programmeFundId: this.form.controls?.programmeFundId.value !== this.naString ? this.form.controls?.programmeFundId.value : null
     } as ProjectCorrectionIdentificationUpdateDTO;
     this.pageStore.saveCorrection(id, data)
       .pipe(
