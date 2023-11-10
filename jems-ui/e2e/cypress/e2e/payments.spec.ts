@@ -254,7 +254,7 @@ context('Payments tests', () => {
             // group order 6
             cy.addPartnerReport(partnerId).then(partnerReportId => {
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
-              partnerReportPage.verifyAmountsInTables(testData.expectedResults.afterModification); // TODO affected by bug MP2-4073
+              partnerReportPage.verifyAmountsInTables(testData.expectedResults.afterModification);
             });
 
             // group order 7
