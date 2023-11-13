@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisCumulativeOverviewEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
@@ -12,6 +13,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
@@ -23,6 +25,9 @@ import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.Payme
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
+import io.cloudflight.jems.server.project.entity.QProjectEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.stereotype.Repository
@@ -115,13 +120,20 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLineTmp>> {
+    override fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>> =
+        mapOf(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to calculateForPayments(ecPaymentId),
+            PaymentToEcOverviewType.FallsUnderArticle94Or95 to emptyMap(),
+            PaymentToEcOverviewType.Correction to calculateForCorrections(ecPaymentId),
+        )
+
+    private fun calculateForPayments(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLineTmp> {
         val paymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val paymentEntity = QPaymentEntity.paymentEntity
         val priorityPolicy = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
         val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
 
-        val results = jpaQueryFactory
+         return jpaQueryFactory
             .select(
                 programmePriority.id,
                 programmePriority.code,
@@ -150,18 +162,60 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     ofWhichPublic = it.get(4, BigDecimal::class.java)!!,
                     ofWhichAutoPublic = it.get(5, BigDecimal::class.java)!!,
                 )
-            }
-
-        return mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to results.associateBy { it.priorityId },
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to emptyMap(),
-        )
+            }.associateBy { it.priorityId }
     }
 
+    private fun calculateForCorrections(ecPaymentId: Long):  Map<Long?, PaymentToEcAmountSummaryLineTmp> {
+        val paymentToEcCorrectionExtensionEntity = QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
+        val correctionEntity = QAuditControlCorrectionEntity.auditControlCorrectionEntity
+        val priorityPolicy = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
+        val specProjectAuditControl = QAuditControlEntity.auditControlEntity
+        val specProjectEntity = QProjectEntity.projectEntity
+
+        return jpaQueryFactory
+            .select(
+                programmePriority.id,
+                programmePriority.code,
+                paymentToEcCorrectionExtensionEntity.fundAmount.sum(),
+                paymentToEcCorrectionExtensionEntity.correctedPublicContribution.sum(),
+                paymentToEcCorrectionExtensionEntity.correctedAutoPublicContribution.sum(),
+                paymentToEcCorrectionExtensionEntity.correctedPrivateContribution.sum(),
+                paymentToEcCorrectionExtensionEntity.publicContribution.sum(),
+                paymentToEcCorrectionExtensionEntity.autoPublicContribution.sum(),
+                paymentToEcCorrectionExtensionEntity.privateContribution.sum(),
+            )
+            .from(paymentToEcCorrectionExtensionEntity)
+            .leftJoin(correctionEntity)
+                .on(correctionEntity.id.eq(paymentToEcCorrectionExtensionEntity.correctionId))
+            .leftJoin(specProjectAuditControl)
+                .on(specProjectAuditControl.id.eq(correctionEntity.auditControl.id))
+            .leftJoin(specProjectEntity)
+                .on(specProjectEntity.id.eq(specProjectAuditControl.project.id))
+            .leftJoin(priorityPolicy)
+                .on(priorityPolicy.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .leftJoin(programmePriority)
+                .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
+            .where(paymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId))
+            .groupBy(programmePriority.id)
+            .fetch()
+            .map { it: Tuple ->
+                PaymentToEcAmountSummaryLineTmp(
+                    priorityId = it.get(0, Long::class.java),
+                    priorityAxis = it.get(1, String::class.java),
+                    fundAmount = it.get(2, BigDecimal::class.java)!!,
+                    partnerContribution = it.get(6, BigDecimal::class.java)!! +
+                        it.get(7, BigDecimal::class.java)!! +
+                        it.get(8, BigDecimal::class.java)!!,
+                    ofWhichPublic = it.get(3, BigDecimal::class.java)!!,
+                    ofWhichAutoPublic = it.get(4, BigDecimal::class.java)!!,
+                )
+            }.associateBy { it.priorityId }
+    }
     @Transactional
     override fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
-        totals: Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>,
+        totals: Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>,
     ) {
         val priorityAxisIds = totals.values.flatMapTo(HashSet()) { it.keys.mapNotNull { it } }
 
@@ -189,8 +243,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
-    ): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>> =
-        PaymentSearchRequestScoBasis.values().associateWith {
+    ): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>> =
+        PaymentToEcOverviewType.values().associateWith {
             ecPaymentPriorityAxisOverviewRepository
                 .getAllByPaymentApplicationToEcIdAndType(ecPaymentId, it).toModel()
         }

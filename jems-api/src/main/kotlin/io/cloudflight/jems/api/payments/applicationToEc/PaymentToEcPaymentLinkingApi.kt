@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.payments.applicationToEc
 
-import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestScoBasisDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcOverviewTypeDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -61,7 +61,7 @@ interface PaymentToEcPaymentLinkingApi {
     @GetMapping("$ENDPOINT_API_PAYMENT_TO_EC_LINKING/{paymentId}/overviewByType")
     fun getPaymentApplicationToEcOverviewAmountsByType(
         @PathVariable paymentId: Long,
-        @RequestParam(required = false) type: PaymentSearchRequestScoBasisDTO? = null
+        @RequestParam(required = false) type: PaymentToEcOverviewTypeDTO? = null
     ): PaymentToEcAmountSummaryDTO
 
     @ApiOperation("Get cumulative overview amounts per priority axis")

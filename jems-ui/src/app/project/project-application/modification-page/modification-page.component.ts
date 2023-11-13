@@ -122,6 +122,6 @@ export class ModificationPageComponent {
       ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED,
       ProjectStatusDTO.StatusEnum.INMODIFICATION,
       ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
-    ].includes(currentStatus)
+    ].includes(currentStatus);
   }
 }

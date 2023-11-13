@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import java.math.BigDecimal
 import javax.persistence.Entity
@@ -27,7 +27,7 @@ class PaymentToEcPriorityAxisOverviewEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: PaymentSearchRequestScoBasis,
+    val type: PaymentToEcOverviewType,
 
     @ManyToOne(optional = true)
     val priorityAxis: ProgrammePriorityEntity?,

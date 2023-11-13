@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.payments.service.ecPayment.getCumulativeAmountsByType
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.ec.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getOverviewAmountsByType.GetOverviewAmountsByType
@@ -81,7 +81,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
         )
 
         private val paymentsIncludedInPaymentsToEcMap = mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLine>(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLine>(
                 105L to PaymentToEcAmountSummaryLine(
                     priorityAxis = "PO1",
                     totalEligibleExpenditure = BigDecimal(302),
@@ -112,7 +112,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
         )
 
         private val paymentToEcAmountSummaryTmpMap = mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
                 105L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 105L,
                     priorityAxis = "PO1",
@@ -152,7 +152,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
         assertThat(
             getCumulativeAmountsByType.getOverviewAmountsByType(
-                paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
     }
@@ -199,7 +199,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
 
         assertThat(
             getCumulativeAmountsByType.getOverviewAmountsByType(
-                paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                paymentToEcId = PAYMENT_TO_EC_ID, type = PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
 

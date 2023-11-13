@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.controller.applicationToEc
 
 import io.cloudflight.jems.api.payments.applicationToEc.PaymentToEcPaymentLinkingApi
-import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestScoBasisDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcOverviewTypeDTO
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.deselectPayment.DeselectPaymentFromEcInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeOverview.GetCumulativeOverviewInteractor
@@ -47,7 +47,7 @@ class PaymentToEcPaymentLinkingController(
         paymentToEcLinkingUpdate: PaymentToEcLinkingUpdateDTO,
     ) =  updateLinkedPayment.updateLinkedPayment(paymentId, paymentToEcLinkingUpdate.toModel())
 
-    override fun getPaymentApplicationToEcOverviewAmountsByType(paymentId: Long, type: PaymentSearchRequestScoBasisDTO?): PaymentToEcAmountSummaryDTO =
+    override fun getPaymentApplicationToEcOverviewAmountsByType(paymentId: Long, type: PaymentToEcOverviewTypeDTO?): PaymentToEcAmountSummaryDTO =
         getCumulativeAmountsSummaryInteractor.getOverviewAmountsByType(paymentId, type?.toModel()).toDto()
 
     override fun getPaymentApplicationToEcCumulativeOverview(paymentId: Long): PaymentToEcAmountSummaryDTO =

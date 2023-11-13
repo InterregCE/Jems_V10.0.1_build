@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
@@ -15,9 +16,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.RoundingMode
-import java.time.LocalDate
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
@@ -231,6 +230,7 @@ fun paymentApplicationToEcFinished(
     context: Any,
     updatedEcPaymentApplication: PaymentApplicationToEcDetail,
     includedPayments: Map<Long, PaymentInEcPaymentMetadata> = emptyMap(),
+    includedCorrections: Map<Long, CorrectionInEcPaymentMetadata> = emptyMap(),
 ): AuditCandidateEvent {
     val ftlsPayments = includedPayments.filter { it.value.type == PaymentType.FTLS }
     val regularPayments = includedPayments.filter { it.value.type == PaymentType.REGULAR }
@@ -242,7 +242,8 @@ fun paymentApplicationToEcFinished(
                     .toDescription(previousStatus = PaymentEcStatus.Draft, newStatus = PaymentEcStatus.Finished) + " " +
                         "and the following items were included:\n" +
                         "FTLS [${ftlsPayments.keys.joinToString(", ")}]\n" +
-                        "Regular [${regularPayments.keys.joinToString(", ")}]"
+                        "Regular [${regularPayments.keys.joinToString(", ")}]\n" +
+                        "Correction [${includedCorrections.formCorrectionId().joinToString(", ")}]"
             )
             .build()
     )
@@ -260,13 +261,6 @@ fun paymentApplicationToEcReOpened(
         )
         .build()
     )
-
-private fun PaymentApplicationToEcDetail.toDescription(previousStatus: PaymentEcStatus, newStatus: PaymentEcStatus) =
-    "Payment application to EC number $id " +
-        "created for Fund (${paymentApplicationToEcSummary.programmeFund.id}, ${paymentApplicationToEcSummary.programmeFund.type}) " +
-        "for accounting Year ${computeYearNumber(paymentApplicationToEcSummary.accountingYear.startDate)}: " +
-        "${paymentApplicationToEcSummary.accountingYear.startDate} - ${paymentApplicationToEcSummary.accountingYear.endDate} " +
-        "changes status from ${previousStatus.name} to ${newStatus.name}"
 
 fun paymentApplicationToEcDeleted(
     context: Any,
@@ -303,11 +297,3 @@ private fun getFundingSourceName(paymentDetail: AdvancePaymentDetail): String {
         else -> ""
     }
 }
-
-private fun computeYearNumber(startingDate: LocalDate) =
-    startingDate.year - 2020
-
-private fun getPartnerName(partnerRole: ProjectPartnerRole, partnerNumber: Int?): String =
-    partnerRole.isLead.let {
-        if (it) "LP${partnerNumber}" else "PP${partnerNumber}"
-    }

@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.authorization.CanCloseAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
@@ -17,6 +20,9 @@ class CloseAuditControlCorrection(
     private val auditControlPersistence: AuditControlPersistence,
     private val auditControlCorrectionPersistence: AuditControlCorrectionPersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val correctionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence,
+    private val auditControlCorrectionFinancePersistence: AuditControlCorrectionFinancePersistence,
+    private val auditControlCorrectionMeasurePersistence: AuditControlCorrectionMeasurePersistence
 ): CloseAuditControlCorrectionInteractor {
 
     @CanCloseAuditControlCorrection
@@ -29,6 +35,13 @@ class CloseAuditControlCorrection(
         validateAuditControlNotClosed(auditControl)
         validateAuditControlCorrectionNotClosed(correction)
         validateReportAndFundAreAlreadySelected(correction)
+
+        val correctionMeasure = auditControlCorrectionMeasurePersistence.getProgrammeMeasure(correctionId)
+        if (correctionMeasure.scenario.scenarioAllowsLinkingToEcPayment()) {
+            val correctionFinance =
+                auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(correctionId)
+            correctionExtensionLinkingPersistence.createCorrectionExtension(correctionFinance)
+        }
 
         return auditControlCorrectionPersistence.closeCorrection(correctionId).also {
             auditPublisher.publishEvent(

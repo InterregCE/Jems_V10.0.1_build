@@ -5,19 +5,27 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.base.updateAuditControl.UpdateAuditControlTest
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
+import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,7 +38,30 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     companion object {
         private const val AUDIT_CONTROL_ID = 1L
         private const val PROJECT_ID = 2L
-        private const val CORRECTION_ID = 3L
+        private const val CORRECTION_ID = 170L
+
+        private val programmeMeasureModel = ProjectCorrectionProgrammeMeasure(
+            correctionId = CORRECTION_ID,
+            scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
+            comment = "comment",
+            includedInAccountingYear = null,
+        )
+
+        private val financialDescription = ProjectCorrectionFinancialDescription(
+            correctionId =  CORRECTION_ID,
+            deduction = true,
+            fundAmount = BigDecimal.TEN,
+            publicContribution = BigDecimal.ZERO,
+            autoPublicContribution = BigDecimal.ONE,
+            privateContribution = BigDecimal.ZERO,
+            infoSentBeneficiaryDate = null,
+            infoSentBeneficiaryComment = "sample comment",
+            correctionType = CorrectionType.Ref1Dot15,
+            clericalTechnicalMistake = false,
+            goldPlating = false,
+            suspectedFraud = true,
+            correctionComment = null
+        )
 
         private fun projectAuditControl(auditStatus: AuditControlStatus) = AuditControl(
             id = AUDIT_CONTROL_ID,
@@ -74,19 +105,29 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    private lateinit var correctionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence
+
+    @MockK
+    private lateinit var auditControlCorrectionFinancePersistence: AuditControlCorrectionFinancePersistence
+
+    @MockK
+    private lateinit var auditControlCorrectionMeasurePersistence: AuditControlCorrectionMeasurePersistence
+
     @InjectMockKs
     lateinit var closeProjectAuditControlCorrection: CloseAuditControlCorrection
 
     @Test
     fun closeCorrection() {
-        val auditControlId = 17L
-        val correctionId = 170L
-        every { auditControlCorrectionPersistence.getByCorrectionId(correctionId) } returns
-                correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, programmeFundId = 60L, id = auditControlId)
-        every { auditControlPersistence.getById(auditControlId) } returns
-                projectAuditControl(AuditControlStatus.Ongoing).copy(id = auditControlId)
+        every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
+            correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, programmeFundId = 60L, id = AUDIT_CONTROL_ID)
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
+                projectAuditControl(AuditControlStatus.Ongoing).copy(id = AUDIT_CONTROL_ID)
+        every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel
+        every { auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(CORRECTION_ID) } returns financialDescription
+        every { correctionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) } returns Unit
 
-        every { auditControlCorrectionPersistence.closeCorrection(correctionId) } returns mockk {
+        every { auditControlCorrectionPersistence.closeCorrection(CORRECTION_ID) } returns mockk {
             every { orderNr } returns 4
             every { status } returns AuditControlStatus.Closed
         }
@@ -94,14 +135,16 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
-        assertThat(closeProjectAuditControlCorrection.closeCorrection(correctionId))
+        assertThat(closeProjectAuditControlCorrection.closeCorrection(CORRECTION_ID))
             .isEqualTo(AuditControlStatus.Closed)
+
+        verify(exactly = 1) { correctionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) }
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.CORRECTION_IS_CLOSED,
                 project = AuditProject(id = "2", customIdentifier = "01", name = "01 acr"),
-                entityRelatedId = auditControlId,
+                entityRelatedId = AUDIT_CONTROL_ID,
                 description = "Correction AC1.4 for Audit/Control number 01_AC_1 is closed."
             )
         )

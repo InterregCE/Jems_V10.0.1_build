@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.controller.applicationToEc
 
-import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestScoBasisDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcAmountSummaryLineDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcOverviewTypeDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.server.UnitTest
@@ -14,8 +14,8 @@ import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Com
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.deselectPayment.DeselectPaymentFromEcInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
@@ -227,14 +227,14 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
         every {
             getOverviewByTypeInteractor.getOverviewAmountsByType(
                 PAYMENT_TO_EC_ID,
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95
             )
         } returns summary
 
         assertThat(
             controller.getPaymentApplicationToEcOverviewAmountsByType(
                 PAYMENT_TO_EC_ID,
-                PaymentSearchRequestScoBasisDTO.DoesNotFallUnderArticle94Nor95
+                PaymentToEcOverviewTypeDTO.DoesNotFallUnderArticle94Nor95
             )
         ).isEqualTo(expectedSummary)
     }
