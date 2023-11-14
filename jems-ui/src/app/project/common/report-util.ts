@@ -13,13 +13,10 @@ export class ReportUtil {
     ].includes(status);
   }
 
-  static isPartnerReportSubmittedOrAfter(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+  static isReportOpenInitially(status: ProjectPartnerReportDTO.StatusEnum): boolean {
     return [
-      ProjectPartnerReportDTO.StatusEnum.Submitted,
-      ProjectPartnerReportDTO.StatusEnum.InControl,
-      ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
-      ProjectPartnerReportDTO.StatusEnum.Certified,
-    ].includes(status)
+      ProjectPartnerReportDTO.StatusEnum.Draft,
+    ].includes(status);
   }
 
   static isControlReportExists(status: ProjectPartnerReportDTO.StatusEnum): boolean {

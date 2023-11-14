@@ -27,11 +27,11 @@ import io.cloudflight.jems.server.project.service.report.partner.control.expendi
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.toChanges
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
@@ -79,7 +79,7 @@ class SubmitProjectPartnerReport(
         }
 
         val newStatus = report.status.submitStatus(report.hasControlReopenedBefore())
-        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId, newStatus)
+        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId, newStatus, oldStatus = report.status)
         val needsRecalculation = report.status.isOpenForNumbersChanges()
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
@@ -141,6 +141,7 @@ class SubmitProjectPartnerReport(
         partnerId: Long,
         reportId: Long,
         newStatus: ReportStatus,
+        oldStatus: ReportStatus,
     ): List<ProjectPartnerReportExpenditureCost> {
         val expenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
         val usedCurrencies = expenditures.mapTo(HashSet()) { it.currencyCode }
@@ -156,7 +157,7 @@ class SubmitProjectPartnerReport(
 
         return reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(
             reportId = reportId,
-            newRates = expenditures.fillCurrencyRates(rates).toChanges(),
+            newRates = expenditures.fillCurrencyRates(oldStatus, ratesResolver = { rates }).toChanges(),
             whatToDoWithVerification = if (newStatus.controlNotFullyOpen()) ClearDeductions else UpdateCertified,
         )
     }
