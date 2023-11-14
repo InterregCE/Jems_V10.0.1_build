@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
@@ -50,6 +52,8 @@ fun Page<AuditControlCorrectionLine>.toDto() = map {
     )
 }
 
+fun Page<CorrectionCostItem>.toCorrectionCostItemDTO() = map { mapper.map(it) }
+
 @Mapper
 interface AuditControlCorrectionMapper {
     @Mapping(source = "auditControlNr", target = "auditControlNumber")
@@ -57,4 +61,5 @@ interface AuditControlCorrectionMapper {
     fun map(model: ProjectCorrectionIdentificationUpdateDTO): AuditControlCorrectionUpdate
     @Mapping(source = "auditControlNr", target = "auditControlNumber")
     fun mapSimple(model: AuditControlCorrection): AuditControlCorrectionDTO
+    fun map(dto: CorrectionCostItem): CorrectionCostItemDTO
 }

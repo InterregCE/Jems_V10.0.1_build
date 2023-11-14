@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.auditAndControl.correction
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -26,5 +27,8 @@ interface AuditControlCorrectionPersistence {
     fun getOngoingCorrectionsByAuditControlId(auditControlId: Long): List<AuditControlCorrection>
 
     fun updateCorrection(correctionId: Long, data: AuditControlCorrectionUpdate): AuditControlCorrectionDetail
+
+    fun getCorrectionAvailableCostItems(partnerReportId: Long, pageable: Pageable): Page<CorrectionCostItem>
+
 
 }

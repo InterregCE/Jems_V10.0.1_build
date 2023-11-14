@@ -1,11 +1,14 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.auditAndControl.corrections.ProjectAuditControlCorrectionApi
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
+import io.cloudflight.jems.server.common.toDTO
 import io.cloudflight.jems.server.project.controller.auditAndControl.toDto
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.createAuditControlCorrection.CreateAuditControlCorrectionInteractor
@@ -13,6 +16,8 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.bas
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.getAuditControlCorrection.GetAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.listAuditControlCorrection.ListAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.UpdateAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionAvailableProcurements.GetCorrectionAvailableProcurementsInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionCostItems.GetCorrectionCostItemsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.listPreviouslyClosedCorrection.ListPreviouslyClosedCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import org.springframework.data.domain.Page
@@ -28,6 +33,8 @@ class AuditControlCorrectionController(
     private val closeCorrection: CloseAuditControlCorrectionInteractor,
     private val updateCorrection: UpdateAuditControlCorrectionInteractor,
     private val listPreviouslyClosedCorrection: ListPreviouslyClosedCorrectionInteractor,
+    private val getAvailableProcurements: GetCorrectionAvailableProcurementsInteractor,
+    private val getCorrectionCostItems: GetCorrectionCostItemsInteractor,
 ) : ProjectAuditControlCorrectionApi {
 
     override fun createProjectAuditCorrection(
@@ -66,4 +73,16 @@ class AuditControlCorrectionController(
     override fun getPreviousClosedCorrections(projectId: Long, auditControlId: Long, correctionId: Long) =
         listPreviouslyClosedCorrection.getClosedCorrectionsBefore(correctionId).toSimpleDto()
 
+    override fun listCorrectionAvailableCostItems(
+        projectId: Long,
+        auditControlId: Long,
+        correctionId: Long,
+        pageable: Pageable
+    ): Page<CorrectionCostItemDTO>  = getCorrectionCostItems.getCostItems(correctionId, pageable).toCorrectionCostItemDTO()
+
+    override fun listCorrectionAvailableProcurements(
+        projectId: Long,
+        auditControlId: Long,
+        correctionId: Long
+    ): List<IdNamePairDTO> = getAvailableProcurements.getAvailableProcurements(correctionId).toDTO()
 }

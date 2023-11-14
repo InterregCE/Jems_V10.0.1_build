@@ -29,4 +29,5 @@ interface ProjectPartnerReportProcurementPersistence {
 
     fun deletePartnerReportProcurement(partnerId: Long, reportId: Long, procurementId: Long)
 
+    fun existsByProcurementIdAndPartnerReportIdIn(procurementId: Long, partnerReportIds: Set<Long>): Boolean
 }

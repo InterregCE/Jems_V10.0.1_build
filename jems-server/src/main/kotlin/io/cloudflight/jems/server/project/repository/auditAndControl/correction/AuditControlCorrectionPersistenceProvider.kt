@@ -2,11 +2,13 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -18,6 +20,7 @@ class AuditControlCorrectionPersistenceProvider(
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
+    private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
 ) : AuditControlCorrectionPersistence {
 
     @Transactional(readOnly = true)
@@ -88,7 +91,22 @@ class AuditControlCorrectionPersistenceProvider(
         entity.repaymentDate = data.repaymentFrom
         entity.lateRepayment = data.lateRepaymentTo
 
+        entity.procurementId = data.procurementId
+        entity.costCategory = data.costCategory
+        entity.expenditure =
+            if (data.expenditureId != null) reportExpenditureRepository.getById(data.expenditureId) else null
+
         return entity.toModel()
     }
 
+    @Transactional(readOnly = true)
+    override fun getCorrectionAvailableCostItems(
+        partnerReportId: Long,
+        pageable: Pageable
+    ): Page<CorrectionCostItem> {
+        return reportExpenditureRepository.findAllByPartnerReportIdOrderById(
+            reportId = partnerReportId,
+            pageable = pageable
+        ).toPagedModel()
+    }
 }
