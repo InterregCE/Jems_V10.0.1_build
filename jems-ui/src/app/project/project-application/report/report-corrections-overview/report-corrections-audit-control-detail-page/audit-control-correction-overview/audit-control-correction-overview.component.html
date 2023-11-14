@@ -71,8 +71,10 @@
     <span class="id">{{'R' + correction.partnerReport}}</span>
 </ng-template>
 <ng-template #linkedCell let-correction>
-    <span *ngIf="correction.linkedToInvoice"> {{'common.yes' | translate }}</span>
-    <span *ngIf="!correction.linkedToInvoice"> {{'common.no' | translate }} </span>
+    <ng-container [ngSwitch]="correction.type">
+        <span *ngSwitchCase="TypeEnum.LinkedToInvoice">{{'common.yes' | translate }}</span>
+        <span *ngSwitchCase="TypeEnum.LinkedToCostOption">{{'common.no' | translate }}</span>
+    </ng-container>
 </ng-template>
 
 <ng-template #followUpCell let-correction>

@@ -5,9 +5,11 @@ import java.time.ZonedDateTime
 
 data class AuditControlDTO(
     val id: Long,
-    val projectId: Long,
     val number: Int,
+
+    val projectId: Long,
     val projectCustomIdentifier: String,
+
     val status: AuditStatusDTO,
     val controllingBody: ControllingBodyDTO,
     val controlType: AuditControlTypeDTO,

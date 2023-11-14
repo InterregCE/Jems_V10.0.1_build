@@ -1,8 +1,7 @@
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {Injectable} from '@angular/core';
 import {
-  CorrectionAvailablePartnerDTO,
-  ProjectCorrectionIdentificationDTO,
+  CorrectionAvailablePartnerDTO, ProjectAuditControlCorrectionDTO,
   ProjectCorrectionProgrammeMeasureDTO,
   ProjectCorrectionProgrammeMeasureService,
   ProjectCorrectionProgrammeMeasureUpdateDTO
@@ -21,7 +20,7 @@ export class AuditControlCorrectionDetailMeasureStore {
 
   canEdit$: Observable<boolean>;
   correctionPartnerData$: Observable<CorrectionAvailablePartnerDTO[]>;
-  correctionIdentity$: Observable<ProjectCorrectionIdentificationDTO>;
+  correctionIdentity$: Observable<ProjectAuditControlCorrectionDTO>;
   programmeMeasure$: Observable<ProjectCorrectionProgrammeMeasureDTO>;
   updatedProgrammeMeasure$ = new Subject<ProjectCorrectionProgrammeMeasureDTO>();
 
@@ -31,7 +30,7 @@ export class AuditControlCorrectionDetailMeasureStore {
   ) {
     this.canEdit$ = correctionPageStore.canEdit$;
     this.correctionPartnerData$ = correctionPageStore.correctionPartnerData$;
-    this.correctionIdentity$ = correctionPageStore.correctionIdentification$;
+    this.correctionIdentity$ = correctionPageStore.correction$;
     this.programmeMeasure$ = this.programmeMeasure();
   }
 

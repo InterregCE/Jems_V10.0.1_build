@@ -13,10 +13,9 @@ import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
-import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.ProjectAuditAndControlValidator
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.report.project.file.ProjectReportFilePersistence
@@ -89,9 +88,6 @@ class UploadAuditControlFileTest : UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
-    @MockK
-    lateinit var correctionPersistence: AuditControlCorrectionPersistence
-
     var generalValidatorService: GeneralValidatorDefaultImpl = GeneralValidatorDefaultImpl()
 
     @InjectMockKs
@@ -117,8 +113,9 @@ class UploadAuditControlFileTest : UnitTest() {
         )
 
         every { filePersistence.existsFile(exactPath = filePath(), fileName = file.name) } returns false
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Ongoing
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
         }
         every { securityService.getUserIdOrThrow() } returns userId
         every { projectReportFilePersistence.saveAuditControlFile(capture(fileToAdd)) } returns jemsFile
@@ -129,7 +126,7 @@ class UploadAuditControlFileTest : UnitTest() {
         every { auditPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
 
         val changeEventSlot = slot<ProjectFileChangeEvent>()
-        val uploadedFile = interactor.upload(PROJECT_ID, AUDIT_CONTROL_ID, file)
+        val uploadedFile = interactor.upload(AUDIT_CONTROL_ID, file)
         assertThat(uploadedFile).isEqualTo(fileMetadata.copy(uploaded = uploadedFile.uploaded))
         verify(exactly = 1) { auditPublisher.publishEvent(capture(changeEventSlot)) }
         assertThat(fileToAdd.captured).isEqualTo(
@@ -154,16 +151,21 @@ class UploadAuditControlFileTest : UnitTest() {
         val fileName = "duplicate.pdf"
         val file = mockk<ProjectFile> { every { name } returns fileName }
 
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
+        }
+
         every { filePersistence.existsFile(exactPath = eq(filePath()), fileName = fileName) } returns true
 
-        assertThrows<FileAlreadyExists> { interactor.upload(PROJECT_ID, AUDIT_CONTROL_ID, file) }
+        assertThrows<FileAlreadyExists> { interactor.upload(AUDIT_CONTROL_ID, file) }
     }
 
     @Test
     fun `upload - FileTypeNotSupported`() {
         val file = mockk<ProjectFile> { every { name } returns "file.jems" }
 
-        assertThrows<FileTypeNotSupported> { interactor.upload(PROJECT_ID, AUDIT_CONTROL_ID, file) }
+        assertThrows<FileTypeNotSupported> { interactor.upload(AUDIT_CONTROL_ID, file) }
     }
 
     @Test
@@ -175,10 +177,11 @@ class UploadAuditControlFileTest : UnitTest() {
         )
 
         every { filePersistence.existsFile(exactPath = filePath(), fileName = file.name) } returns false
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Closed
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Closed
+            every { projectId } returns PROJECT_ID
         }
 
-        assertThrows<AuditControlNotOngoingException> { interactor.upload(PROJECT_ID, AUDIT_CONTROL_ID, file) }
+        assertThrows<AuditControlNotOngoingException> { interactor.upload(AUDIT_CONTROL_ID, file) }
     }
 }

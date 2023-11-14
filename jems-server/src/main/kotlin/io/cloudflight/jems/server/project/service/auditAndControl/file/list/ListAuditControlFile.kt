@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.authorization.CanViewProjectAuditAndControl
+import io.cloudflight.jems.server.project.authorization.CanViewAuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -17,12 +17,11 @@ class ListAuditControlFile(
     private val auditControlPersistence: AuditControlPersistence,
 ) : ListAuditControlFileInteractor {
 
-    @CanViewProjectAuditAndControl
+    @CanViewAuditControl
     @Transactional(readOnly = true)
     @ExceptionWrapper(ListAuditControlFileException::class)
-    override fun list(projectId: Long, auditControlId: Long, pageable: Pageable): Page<JemsFile> {
-        if (!auditControlPersistence.existsByIdAndProjectId(projectId = projectId, auditControlId = auditControlId))
-            throw FileNotFound()
+    override fun list(auditControlId: Long, pageable: Pageable): Page<JemsFile> {
+        val projectId = auditControlPersistence.getProjectIdForAuditControl(auditControlId)
 
         val filePathPrefix = JemsFileType.AuditControl.generatePath(projectId, auditControlId)
         return filePersistence.listAttachments(

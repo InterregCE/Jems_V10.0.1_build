@@ -1,18 +1,30 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl
 
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControlUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import java.math.BigDecimal
 
-fun ProjectAuditControlUpdate.toCreateModel(projectSummary: ProjectSummary, latestNumber: Int) = ProjectAuditControl(
-    id = 0L,
-    number = latestNumber.plus(1),
-    projectId = projectSummary.id,
-    projectCustomIdentifier = projectSummary.customIdentifier,
-    status = AuditStatus.Ongoing,
+fun AuditControlUpdate.toCreateModel(sortNumber: Int) = AuditControlCreate(
+    number = sortNumber,
+    status = AuditControlStatus.Ongoing,
+    controllingBody = controllingBody,
+    controlType = controlType,
+    startDate = startDate,
+    endDate = endDate,
+    finalReportDate = finalReportDate,
+    totalControlledAmount = totalControlledAmount,
+    comment = comment,
+)
+
+fun AuditControlCreate.toEntity(project: ProjectEntity) = AuditControlEntity(
+    project = project,
+    number = number,
+    status = status,
     controllingBody = controllingBody,
     controlType = controlType,
     startDate = startDate,
@@ -20,54 +32,26 @@ fun ProjectAuditControlUpdate.toCreateModel(projectSummary: ProjectSummary, late
     finalReportDate = finalReportDate,
     totalControlledAmount = totalControlledAmount,
     totalCorrectionsAmount = BigDecimal.ZERO,
+    comment = comment
+)
+
+fun AuditControlEntity.toModel() = AuditControl(
+    id = id,
+    number = number,
+
+    projectId = project.id,
+    projectCustomIdentifier = project.customIdentifier,
+    projectAcronym = project.acronym,
+
+    status = status,
+    controllingBody = controllingBody,
+    controlType = controlType,
+    startDate = startDate,
+    endDate = endDate,
+    finalReportDate = finalReportDate,
+
+    totalControlledAmount = totalControlledAmount,
+    totalCorrectionsAmount = totalCorrectionsAmount,
+
     comment = comment,
-)
-
-fun ProjectAuditControl.toUpdatedModel(newData: ProjectAuditControlUpdate) = ProjectAuditControl(
-    id = id,
-    number = number,
-    projectId = projectId,
-    projectCustomIdentifier = projectCustomIdentifier,
-    status = status,
-    totalCorrectionsAmount = totalCorrectionsAmount,
-    controllingBody = newData.controllingBody,
-    controlType = newData.controlType,
-    startDate = newData.startDate,
-    endDate = newData.endDate,
-    finalReportDate = newData.finalReportDate,
-    totalControlledAmount = newData.totalControlledAmount,
-    comment = newData.comment,
-)
-
-fun  ProjectAuditControl.toEntity() = AuditControlEntity(
-    id = id,
-    number = number,
-    projectId = projectId,
-    projectCustomIdentifier = projectCustomIdentifier,
-    status = status,
-    controllingBody = controllingBody,
-    controlType = controlType,
-    startDate = startDate,
-    endDate = endDate,
-    finalReportDate = finalReportDate,
-    totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = totalCorrectionsAmount,
-    comment = comment
-)
-
-
-fun AuditControlEntity.toModel() = ProjectAuditControl(
-    id = id,
-    number = number,
-    projectId = projectId,
-    projectCustomIdentifier = projectCustomIdentifier,
-    status = status,
-    controllingBody = controllingBody,
-    controlType = controlType,
-    startDate = startDate,
-    endDate = endDate,
-    finalReportDate = finalReportDate,
-    totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = totalCorrectionsAmount,
-    comment = comment
 )

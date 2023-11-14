@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.get
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.repository.auditAndControl.correction.programmeMeasure.CorrectionProgrammeMeasurePersistenceProvider
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.measure.AuditControlCorrectionMeasurePersistenceProvider
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.mockk.clearMocks
@@ -26,7 +26,7 @@ class GetProgrammeMeasureTest: UnitTest() {
     }
 
     @MockK
-    lateinit var programmeMeasurePersistenceProvider: CorrectionProgrammeMeasurePersistenceProvider
+    lateinit var programmeMeasurePersistenceProvider: AuditControlCorrectionMeasurePersistenceProvider
 
     @InjectMockKs
     lateinit var interactor: GetProgrammeMeasure

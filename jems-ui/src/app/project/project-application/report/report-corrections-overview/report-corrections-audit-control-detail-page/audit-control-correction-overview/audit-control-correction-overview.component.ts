@@ -30,6 +30,7 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   actionPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
+  TypeEnum = ProjectAuditControlCorrectionLineDTO.TypeEnum;
 
   canEdit = true;
 

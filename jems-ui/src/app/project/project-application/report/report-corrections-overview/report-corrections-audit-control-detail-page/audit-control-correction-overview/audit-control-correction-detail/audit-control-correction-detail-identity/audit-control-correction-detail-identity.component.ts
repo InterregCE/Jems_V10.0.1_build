@@ -3,13 +3,11 @@ import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {
+  AuditControlCorrectionDTO,
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
   ProgrammeFundDTO,
-  ProjectAuditControlCorrectionDTO,
-  ProjectAuditControlCorrectionExtendedDTO,
-  ProjectCorrectionIdentificationDTO,
-  ProjectCorrectionIdentificationUpdateDTO,
+  ProjectAuditControlCorrectionDTO, ProjectCorrectionIdentificationUpdateDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -27,17 +25,16 @@ import {
 })
 export class AuditControlCorrectionDetailIdentityComponent {
 
-  naString:string = "N/A";
+  naString = 'N/A';
   Alert = Alert;
-  CorrectionFollowUpTypeEnum = ProjectCorrectionIdentificationDTO.CorrectionFollowUpTypeEnum;
+  CorrectionFollowUpTypeEnum = ProjectAuditControlCorrectionDTO.CorrectionFollowUpTypeEnum;
   error$ = new BehaviorSubject<APIError | null>(null);
   data$: Observable<{
-    correction: ProjectAuditControlCorrectionExtendedDTO;
-    correctionIdentification: ProjectCorrectionIdentificationDTO;
+    correction: ProjectAuditControlCorrectionDTO;
     correctionPartnerData: CorrectionAvailablePartnerDTO[];
     canEdit: boolean;
     canClose: boolean;
-    pastCorrections: ProjectAuditControlCorrectionDTO[];
+    pastCorrections: AuditControlCorrectionDTO[];
   }>;
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
@@ -60,7 +57,6 @@ export class AuditControlCorrectionDetailIdentityComponent {
       pageStore.canEdit$,
       pageStore.canClose$,
       pageStore.correction$,
-      pageStore.correctionIdentification$,
       pageStore.correctionPartnerData$,
       pageStore.pastCorrections$
     ]).pipe(
@@ -68,26 +64,24 @@ export class AuditControlCorrectionDetailIdentityComponent {
              canEdit,
              canClose,
              correction,
-             correctionIdentification,
              correctionPartnerData,
              pastCorrections
            ]) => ({
         canEdit,
         canClose,
         correction,
-        correctionIdentification,
         correctionPartnerData,
         pastCorrections
       })),
       tap(data => this.resetForm(
-        data.correctionIdentification,
+        data.correction,
         data.correctionPartnerData,
         data.canEdit
       )),
     );
   }
 
-  resetForm(correctionIdentification: ProjectCorrectionIdentificationDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
+  resetForm(correctionIdentification: ProjectAuditControlCorrectionDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
     const partner = correctionPartnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === correctionIdentification.partnerId);
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === correctionIdentification.partnerReportId);
     const fund = report?.availableReportFunds.find((it: ProgrammeFundDTO) => it.id === correctionIdentification.programmeFundId);

@@ -5,15 +5,12 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
-import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.ProjectAuditAndControlValidator
-import io.cloudflight.jems.server.project.service.auditAndControl.closeProjectAudit.AuditControlNotOngoingException
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.validator.AuditControlNotOngoingException
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearMocks
 import io.mockk.every
@@ -64,26 +61,17 @@ class DeleteAuditControlFileTest : UnitTest() {
     lateinit var projectPersistence: ProjectPersistence
 
     @MockK
-    lateinit var auditPublisher: ApplicationEventPublisher
-
-    @MockK
     lateinit var auditControlPersistence: AuditControlPersistence
 
     @MockK
-    lateinit var generalValidator: GeneralValidatorDefaultImpl
-
-    @MockK
-    lateinit var correctionPersistence: AuditControlCorrectionPersistence
-
-    @InjectMockKs
-    lateinit var auditAndControlValidator: ProjectAuditAndControlValidator
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var interactor: DeleteAuditControlFile
 
     @BeforeEach
     fun setup() {
-        clearMocks(filePersistence, projectPersistence, auditPublisher, auditControlPersistence)
+        clearMocks(filePersistence, projectPersistence, auditControlPersistence, auditPublisher)
     }
 
     @Test()
@@ -93,8 +81,9 @@ class DeleteAuditControlFileTest : UnitTest() {
         every { filePersistence.getFile(PROJECT_ID, FILE_ID) } returns dummyFile
         every { projectPersistence.getProjectSummary(PROJECT_ID) } answers { projectSummary }
         every { auditPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Ongoing
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
         }
 
         val changeEventSlot = slot<ProjectFileChangeEvent>()
@@ -106,6 +95,10 @@ class DeleteAuditControlFileTest : UnitTest() {
 
     @Test()
     fun `delete - FileNotFound`() {
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns PROJECT_ID
+        }
         every { filePersistence.getFile(PROJECT_ID, FILE_ID) } throws FileNotFound()
 
         assertThrows<FileNotFound> { interactor.delete(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID) }
@@ -115,8 +108,9 @@ class DeleteAuditControlFileTest : UnitTest() {
     fun `delete - NotOngoing`() {
         every { filePersistence.existsFile(exactPath = filePath(), fileId = FILE_ID) } returns true
         every { filePersistence.getFile(PROJECT_ID, FILE_ID) } returns dummyFile
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns mockk {
-            every { status } returns AuditStatus.Closed
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns mockk {
+            every { status } returns AuditControlStatus.Closed
+            every { projectId } returns PROJECT_ID
         }
         assertThrows<AuditControlNotOngoingException> { interactor.delete(PROJECT_ID, AUDIT_CONTROL_ID, FILE_ID) }
     }

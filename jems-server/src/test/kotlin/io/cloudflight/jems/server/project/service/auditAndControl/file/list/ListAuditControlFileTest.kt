@@ -13,7 +13,6 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -40,21 +39,13 @@ class ListAuditControlFileTest: UnitTest() {
 
     @Test
     fun list() {
-        val path = JemsFileType.AuditControl.generatePath(PROJECT_ID, AUDIT_CONTROL_ID)
+        val expectedPath = "Project/000011/Report/Corrections/AuditControl/000013/"
         val fileList = mockk<Page<JemsFile>>()
 
-        every { auditControlPersistence.existsByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns true
-        every { filePersistence.listAttachments(Pageable.unpaged(), path, setOf(JemsFileType.AuditControl), setOf()) } returns fileList
+        every { auditControlPersistence.getProjectIdForAuditControl(AUDIT_CONTROL_ID) } returns PROJECT_ID
+        every { filePersistence.listAttachments(Pageable.unpaged(), expectedPath, setOf(JemsFileType.AuditControl), setOf()) } returns fileList
 
-        assertThat(interactor.list(PROJECT_ID, AUDIT_CONTROL_ID, Pageable.unpaged())).isEqualTo(fileList)
+        assertThat(interactor.list(AUDIT_CONTROL_ID, Pageable.unpaged())).isEqualTo(fileList)
     }
 
-    @Test
-    fun notFound() {
-        every { auditControlPersistence.existsByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns false
-
-        assertThrows<FileNotFound> {
-            interactor.list(PROJECT_ID, AUDIT_CONTROL_ID, Pageable.unpaged())
-        }
-    }
 }

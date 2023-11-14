@@ -29,16 +29,15 @@ class ProjectAuditFileController(
 ) : ProjectAuditAndControlFileApi {
 
     override fun list(projectId: Long, auditControlId: Long, pageable: Pageable): Page<JemsFileDTO> =
-        listAuditControlFileInteractor.list(projectId = projectId, auditControlId = auditControlId, pageable = pageable)
+        listAuditControlFileInteractor.list(auditControlId = auditControlId, pageable = pageable)
             .map { it.toDto() }
 
     override fun upload(projectId: Long, auditControlId: Long, file: MultipartFile): JemsFileMetadataDTO =
-        uploadAuditControlFileInteractor.upload(projectId = projectId, auditControlId = auditControlId, file = file.toProjectFile())
+        uploadAuditControlFileInteractor.upload(auditControlId = auditControlId, file = file.toProjectFile())
             .toDto()
 
     override fun updateDescription(projectId: Long, auditControlId: Long, fileId: Long, description: String?) =
         updateDescriptionAuditControlFileInteractor.updateDescription(
-            projectId = projectId,
             auditControlId = auditControlId,
             fileId = fileId,
             description = description ?: ""

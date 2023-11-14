@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.auditAndControl.file.download
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.authorization.CanViewProjectAuditAndControl
+import io.cloudflight.jems.server.project.authorization.CanViewAuditControl
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,7 +12,7 @@ class DownloadAuditControlFile(
     private val filePersistence: JemsFilePersistence,
 ): DownloadAuditControlFileInteractor {
 
-    @CanViewProjectAuditAndControl
+    @CanViewAuditControl
     @Transactional(readOnly = true)
     @ExceptionWrapper(DownloadAuditControlFileException::class)
     override fun download(projectId: Long, auditControlId: Long, fileId: Long): Pair<String, ByteArray> {

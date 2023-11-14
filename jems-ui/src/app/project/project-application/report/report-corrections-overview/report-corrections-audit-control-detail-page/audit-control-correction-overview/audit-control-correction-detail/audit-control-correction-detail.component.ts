@@ -3,7 +3,7 @@ import {
   AuditControlCorrectionDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {CorrectionAvailablePartnerDTO, ProjectAuditControlCorrectionExtendedDTO} from '@cat/api';
+import {CorrectionAvailablePartnerDTO, ProjectAuditControlCorrectionDTO} from '@cat/api';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
@@ -24,7 +24,7 @@ export class AuditControlCorrectionDetailComponent {
   data$: Observable<{
     projectId: number;
     auditControlId: number;
-    correction: ProjectAuditControlCorrectionExtendedDTO;
+    correction: ProjectAuditControlCorrectionDTO;
     canEdit: boolean;
     canClose: boolean;
     correctionPartnerData: CorrectionAvailablePartnerDTO[];

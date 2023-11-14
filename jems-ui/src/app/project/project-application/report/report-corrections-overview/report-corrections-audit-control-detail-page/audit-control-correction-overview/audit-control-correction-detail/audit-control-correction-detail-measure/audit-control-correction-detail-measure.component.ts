@@ -7,8 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
   CorrectionAvailablePartnerDTO, CorrectionAvailablePartnerReportDTO, CorrectionAvailablePaymentDTO,
-  PaymentApplicationToEcDTO,
-  ProjectCorrectionIdentificationDTO,
+  PaymentApplicationToEcDTO, ProjectAuditControlCorrectionDTO,
   ProjectCorrectionProgrammeMeasureDTO,
   ProjectCorrectionProgrammeMeasureUpdateDTO
 } from '@cat/api';
@@ -29,7 +28,7 @@ export class AuditControlCorrectionDetailMeasureComponent {
 
   data$: Observable<{
     partnerData: CorrectionAvailablePartnerDTO[];
-    identification: ProjectCorrectionIdentificationDTO;
+    identification: ProjectAuditControlCorrectionDTO;
     programmeMeasure: ProjectCorrectionProgrammeMeasureDTO;
     canEdit: boolean;
   }>;
@@ -86,7 +85,7 @@ export class AuditControlCorrectionDetailMeasureComponent {
     this.form.get(this.constants.FORM_CONTROLS.scenario)?.updateValueAndValidity();
   }
 
-  resetForm(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectCorrectionIdentificationDTO, programmeMeasure: ProjectCorrectionProgrammeMeasureDTO) {
+  resetForm(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO, programmeMeasure: ProjectCorrectionProgrammeMeasureDTO) {
     const ecPayment: PaymentApplicationToEcDTO | undefined = this.filterEcPayment(partnerData, identification);
 
     this.form.setValue({
@@ -113,7 +112,7 @@ export class AuditControlCorrectionDetailMeasureComponent {
     ).subscribe();
   }
 
-  private filterEcPayment(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectCorrectionIdentificationDTO): PaymentApplicationToEcDTO | undefined {
+  private filterEcPayment(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO): PaymentApplicationToEcDTO | undefined {
     const partner = partnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === identification.partnerId);
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === identification.partnerReportId);
     const fund = report?.availablePayments.find((it: CorrectionAvailablePaymentDTO) => it.fund.id === identification.programmeFundId);

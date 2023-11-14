@@ -6,8 +6,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectC
 interface UpdateProjectCorrectionFinancialDescriptionInteractor {
 
     fun updateCorrectionFinancialDescription(
-        projectId: Long,
-        controlId: Long,
         correctionId: Long,
         correctionFinancialDescriptionUpdate: ProjectCorrectionFinancialDescriptionUpdate
     ): ProjectCorrectionFinancialDescription

@@ -1,21 +1,26 @@
 package io.cloudflight.jems.server.project.service.auditAndControl
 
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectAuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface AuditControlPersistence {
 
-    fun saveAuditControl(auditControl: ProjectAuditControl): ProjectAuditControl
+    fun getProjectIdForAuditControl(auditControlId: Long): Long
 
-    fun getByIdAndProjectId(auditControlId: Long, projectId: Long ): ProjectAuditControl
+    fun createControl(projectId: Long, auditControl: AuditControlCreate): AuditControl
 
-    fun findAllProjectAudits(projectId: Long, pageable: Pageable): Page<ProjectAuditControl>
+    fun updateControl(auditControlId: Long, auditControl: AuditControlUpdate): AuditControl
 
-    fun updateProjectAuditStatus( projectId: Long, auditControlId: Long, auditStatus: AuditStatus): ProjectAuditControl
+    fun getById(auditControlId: Long): AuditControl
 
-    fun countAuditsForProject(projectId: Long): Long
+    fun findAllProjectAudits(projectId: Long, pageable: Pageable): Page<AuditControl>
 
-    fun existsByIdAndProjectId(auditControlId: Long, projectId: Long): Boolean
+    fun updateAuditControlStatus(auditControlId: Long, status: AuditControlStatus): AuditControl
+
+    fun countAuditsForProject(projectId: Long): Int
+
 }

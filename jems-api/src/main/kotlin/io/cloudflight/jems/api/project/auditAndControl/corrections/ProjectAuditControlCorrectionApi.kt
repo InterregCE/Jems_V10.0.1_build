@@ -1,20 +1,25 @@
 package io.cloudflight.jems.api.project.auditAndControl.corrections
 
 import io.cloudflight.jems.api.project.auditAndControl.ProjectAuditAndControlApi
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionStatusDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionExtendedDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Correction")
@@ -30,7 +35,7 @@ interface ProjectAuditControlCorrectionApi {
     fun createProjectAuditCorrection(
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,
-        @RequestParam linkedToInvoice: Boolean,
+        @RequestParam type: AuditControlCorrectionTypeDTO,
     ): ProjectAuditControlCorrectionDTO
 
     @ApiOperation("List all corrections in an audit/control")
@@ -52,8 +57,7 @@ interface ProjectAuditControlCorrectionApi {
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,
         @PathVariable correctionId: Long,
-    ): ProjectAuditControlCorrectionExtendedDTO
-
+    ): ProjectAuditControlCorrectionDTO
 
     @ApiOperation("Delete last correction from audit/control")
     @DeleteMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}")
@@ -69,6 +73,23 @@ interface ProjectAuditControlCorrectionApi {
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,
         @PathVariable correctionId: Long,
-    ): CorrectionStatusDTO
+    ): AuditStatusDTO
+
+    @ApiOperation("Update project audit/control correction identification")
+    @PutMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateCorrectionIdentification(
+        @PathVariable projectId: Long,
+        @PathVariable auditControlId: Long,
+        @PathVariable correctionId: Long,
+        @RequestBody correctionIdentificationUpdate: ProjectCorrectionIdentificationUpdateDTO,
+    ): ProjectAuditControlCorrectionDTO
+
+    @ApiOperation("Get Project Past corrections")
+    @GetMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}/previousClosedCorrections")
+    fun getPreviousClosedCorrections(
+        @PathVariable projectId: Long,
+        @PathVariable auditControlId: Long,
+        @PathVariable correctionId: Long,
+    ): List<AuditControlCorrectionDTO>
 
 }

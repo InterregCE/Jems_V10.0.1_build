@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto.auditAndControl.correction
 
+import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 
@@ -7,8 +8,8 @@ data class ProjectAuditControlCorrectionLineDTO(
     val id: Long,
     val auditControlId: Long,
     val orderNr: Int,
-    val status: CorrectionStatusDTO,
-    val linkedToInvoice: Boolean,
+    val status: AuditStatusDTO,
+    val type: AuditControlCorrectionTypeDTO,
     val auditControlNumber: Int,
     val canBeDeleted: Boolean,
 
