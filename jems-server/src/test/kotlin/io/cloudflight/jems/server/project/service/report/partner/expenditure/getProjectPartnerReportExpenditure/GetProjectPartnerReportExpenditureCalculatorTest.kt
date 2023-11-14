@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -136,7 +137,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns true
 
         assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 74L))
-            .containsExactly(filledInExpenditure(10L))
+            .containsExactly(filledInExpenditure(10L).clearConversionBasedOnStatus(status))
     }
 
     @ParameterizedTest(name = "getContribution and fill in, but not parked ones (status {0})")
@@ -149,7 +150,8 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         val parked_11 = mockk<ExpenditureParkingMetadata>()
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 76L) } returns listOf(
             expenditure(10L)
-                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN),
+                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN)
+                .clearConversionBasedOnStatus(status),
             expenditure(11L)
                 .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN, parkingMetadata = parked_11)
         )
@@ -192,7 +194,10 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     @Test
     fun `test rounding`() {
         val notFilledInExpenditure = expenditure(30L)
-        notFilledInExpenditure.fillInRate(BigDecimal.valueOf(24305, 4))
+        notFilledInExpenditure.apply {
+            currencyConversionRate = BigDecimal.valueOf(24305, 4)
+            declaredAmountAfterSubmission = declaredAmount.divide(currencyConversionRate, 2, RoundingMode.HALF_UP)
+        }
 
         assertThat(notFilledInExpenditure.declaredAmountAfterSubmission)
             .isEqualTo(BigDecimal.valueOf(1000, 2))
@@ -257,5 +262,10 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         assertThat(expenditureCosts.first().attachment?.name).isEqualTo("file.txt")
     }
 
-
+    fun ProjectPartnerReportExpenditureCost.clearConversionBasedOnStatus(status: ReportStatus) = apply {
+        if (status != ReportStatus.Draft) {
+            currencyConversionRate = null
+            declaredAmountAfterSubmission = null
+        }
+    }
 }

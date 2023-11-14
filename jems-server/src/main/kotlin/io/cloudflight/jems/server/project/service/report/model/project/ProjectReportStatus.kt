@@ -12,7 +12,7 @@ enum class ProjectReportStatus {
     ReOpenFinalized;
 
     fun isClosed() = SUBMITTED_STATUSES.contains(this)
-    fun hasBeenClosed() = !isOpenInitially()
+    fun hasBeenSubmitted() = !isOpenInitially()
 
     fun isOpenForNumbersChanges() = isOpenInitially() || this in UNLIMITED_REOPEN_STATUSES
     fun isOpenInitially() = this == Draft
