@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdown
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.fillActualCurrencyRates
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -21,13 +21,13 @@ class GetReportExpenditureUnitCostBreakdownCalculator(
 
     @Transactional(readOnly = true)
     fun get(partnerId: Long, reportId: Long): ExpenditureUnitCostBreakdown {
-        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
+        val reportStatus = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
 
         val data = reportUnitCostPersistence.getUnitCost(partnerId = partnerId, reportId = reportId)
 
-        if (report.isOpenForNumbersChanges()) {
+        if (reportStatus.isOpenForNumbersChanges()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
-            currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
+            currentExpenditures.fillCurrencyRates(status = reportStatus, ratesResolver = { getActualCurrencyRates() })
             data.fillInCurrent(current = currentExpenditures.getCurrentForUnitCosts())
         }
         val unitCostLines = data.fillInOverviewFields()
@@ -39,7 +39,8 @@ class GetReportExpenditureUnitCostBreakdownCalculator(
     }
 
     private fun getActualCurrencyRates() = with(LocalDate.now()) {
-        return@with currencyPersistence.findAllByIdYearAndIdMonth(year = year, month = monthValue)
+        currencyPersistence.findAllByIdYearAndIdMonth(year = year, month = monthValue)
+            .associateBy { it.code }
     }
 
 }

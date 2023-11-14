@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,14 +25,14 @@ class GetReportExpenditureCostCategoryCalculatorService(
      */
     @Transactional(readOnly = true)
     fun getSubmittedOrCalculateCurrent(partnerId: Long, reportId: Long): ExpenditureCostCategoryBreakdown {
-        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
+        val reportStatus = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
         val data = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId = reportId)
 
         val costCategories = data.toLinesModel()
 
-        if (report.isOpenForNumbersChanges()) {
+        if (reportStatus.isOpenForNumbersChanges()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
-            currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
+            currentExpenditures.fillCurrencyRates(status = reportStatus, ratesResolver = { getActualCurrencyRates() })
             costCategories.fillInCurrent(current = currentExpenditures.calculateCurrent(data.options))
             costCategories.fillInCurrentReIncluded(currentReIncluded = currentExpenditures.onlyReIncluded().calculateCurrent(data.options))
         }
@@ -40,7 +41,8 @@ class GetReportExpenditureCostCategoryCalculatorService(
     }
 
     private fun getActualCurrencyRates() = with(LocalDate.now()) {
-        return@with currencyPersistence.findAllByIdYearAndIdMonth(year = year, month = monthValue)
+        currencyPersistence.findAllByIdYearAndIdMonth(year = year, month = monthValue)
+            .associateBy { it.code }
     }
 
 }

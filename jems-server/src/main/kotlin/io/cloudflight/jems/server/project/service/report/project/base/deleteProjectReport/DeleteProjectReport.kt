@@ -20,7 +20,7 @@ class DeleteProjectReport(
     override fun delete(projectId: Long, reportId: Long) {
         val report = reportPersistence.getReportById(projectId, reportId)
 
-        if (report.status.hasBeenClosed())
+        if (report.status.hasBeenSubmitted())
             throw ClosedReportCannotBeDeleted()
 
         reportPersistence.deleteReport(projectId, reportId = reportId)

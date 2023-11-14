@@ -112,7 +112,7 @@ class UpdateProjectReport(
         val newType = data.deadlineId?.let { deadlinePersistence.getContractingReportingDeadline(projectId, it).type } ?: data.type
         val thereAreChangesToBaseData = oldType != newType || report.deadlineId != data.deadlineId
 
-        if (report.status.hasBeenClosed() && thereAreChangesToBaseData)
+        if (report.status.hasBeenSubmitted() && thereAreChangesToBaseData)
             throw TypeChangeIsForbiddenWhenReportIsReOpened()
 
         if (oldType.hasFinance() && newType.doesNotHaveFinance())

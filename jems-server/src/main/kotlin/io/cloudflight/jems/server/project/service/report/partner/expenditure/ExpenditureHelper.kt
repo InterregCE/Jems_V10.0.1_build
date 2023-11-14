@@ -2,20 +2,25 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.common.anonymize
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCostOld
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
 import org.springframework.data.domain.Page
-import java.math.BigDecimal
+import java.math.RoundingMode
 
-fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<String, CurrencyConversion>) = map {
-    it.apply {
-        val rate: BigDecimal? = if (it.parkingMetadata != null) it.currencyConversionRate!! else rates.getOrDefault(it.currencyCode, null)?.conversionRate
-        if (rate != null) {
-            fillInRate(rate)
-        } else {
-            clearConversions()
+fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(
+    status: ReportStatus,
+    ratesResolver: () -> Map<String, CurrencyConversion>
+): List<ProjectPartnerReportExpenditureCost> {
+    val rates = if (status.isOpenInitially()) ratesResolver() else emptyMap()
+    return map { expenditure ->
+        val currencyFrozen = expenditure.parkingMetadata != null || status.hasBeenClosed()
+        val rateOrNull = if (currencyFrozen) expenditure.currencyConversionRate else rates.getOrDefault(expenditure.currencyCode, null)?.conversionRate
+        expenditure.apply {
+            currencyConversionRate = rateOrNull
+            declaredAmountAfterSubmission = rateOrNull?.let { rate -> declaredAmount.divide(rate, 2, RoundingMode.HALF_UP) }
         }
     }
 }
@@ -58,6 +63,7 @@ fun Page<ProjectPartnerReportParkedExpenditure>.anonymizeSensitiveDataIf(canNotW
         this.content.onEach { it.expenditure.anonymizeIfSensitive() }
     }
 }
+
 fun ProjectPartnerReportExpenditureCost.asOld() = ProjectPartnerReportExpenditureCostOld(
     id = id!!,
     number = number,
