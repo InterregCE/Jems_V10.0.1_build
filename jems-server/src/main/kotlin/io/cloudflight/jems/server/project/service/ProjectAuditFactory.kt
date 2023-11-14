@@ -443,6 +443,18 @@ fun projectAuditControlClosed(
         .build()
 )
 
+fun projectAuditControlReopened(
+    context: Any,
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_REOPENED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is set back to draft")
+        .build()
+)
+
 private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {
         if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"

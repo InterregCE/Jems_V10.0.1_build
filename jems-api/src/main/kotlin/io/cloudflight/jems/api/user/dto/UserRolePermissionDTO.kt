@@ -94,6 +94,7 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectMonitorAuditAndControlEdit("ProjectMonitorAuditAndControlEdit"),
     ProjectMonitorCloseAuditControl("ProjectMonitorCloseAuditControl"),
     ProjectMonitorCloseAuditControlCorrection("ProjectMonitorCloseAuditControlCorrection"),
+    ProjectMonitorReOpenAuditControl("ProjectMonitorReOpenAuditControl"),
     // endregion Monitor
 
     // region top navigation

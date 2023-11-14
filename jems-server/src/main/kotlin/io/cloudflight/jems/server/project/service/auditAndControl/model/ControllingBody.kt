@@ -6,6 +6,7 @@ enum class ControllingBody(val key: String) {
     RegionalApprobationBody("RegionalApprobationBody"),
     JS("JS"),
     MA("MA"),
+    MABAF("MABAF"),
     NA("NA"),
     GoA("GoA"),
     AA("AA"),

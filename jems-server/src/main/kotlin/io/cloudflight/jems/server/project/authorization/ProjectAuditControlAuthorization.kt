@@ -34,6 +34,9 @@ annotation class CanEditAuditControlForProject
 @PreAuthorize("@projectAuditControlAuthorization.canCloseAuditAndControl(#auditControlId)")
 annotation class CanCloseAuditControl
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuditControlAuthorization.canReopenAuditAndControl(#auditControlId)")
+annotation class CanReopenAuditControl
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuditControlAuthorization.canViewProjectCorrection(#correctionId)")
@@ -105,6 +108,11 @@ class ProjectAuditControlAuthorization(
     fun canCloseAuditAndControl(auditControlId: Long): Boolean {
         return canEditAuditControlViaAuditControlId(auditControlId = auditControlId)
                 && hasNonProjectAuthority(UserRolePermission.ProjectMonitorCloseAuditControl)
+    }
+
+    fun canReopenAuditAndControl(auditControlId: Long): Boolean {
+        return canEditAuditControlViaAuditControlId(auditControlId = auditControlId)
+            && hasNonProjectAuthority(UserRolePermission.ProjectMonitorReOpenAuditControl)
     }
 
     fun canCloseAuditAndControlCorrection(correctionId: Long): Boolean =
