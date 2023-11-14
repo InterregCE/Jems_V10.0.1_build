@@ -34,8 +34,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
@@ -43,6 +41,8 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -376,6 +376,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             projectAcronym = "Test Project",
             paymentClaimId = null,
             paymentClaimNo = 0,
+            paymentToEcId = null,
             fundName = "OTHER",
             fundId = fundId,
             lumpSumId = 50L,
@@ -432,6 +433,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             paymentClaimId = null,
             paymentClaimNo = 0,
             paymentClaimSubmissionDate = weekBefore,
+            paymentToEcId = 14L,
             lumpSumId = 50L,
             orderNr = 13,
             paymentApprovalDate = currentTime,
@@ -454,6 +456,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             paymentClaimId = 777L,
             paymentClaimNo = 23,
             paymentClaimSubmissionDate = yesterday,
+            paymentToEcId = null,
             lumpSumId = null,
             orderNr = null,
             paymentApprovalDate = yearAgo,

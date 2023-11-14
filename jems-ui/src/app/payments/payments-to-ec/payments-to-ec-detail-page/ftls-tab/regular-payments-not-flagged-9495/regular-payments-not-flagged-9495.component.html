@@ -1,9 +1,9 @@
 <ng-container>
-    <h3 class="mt-4">{{ 'payments.to.ec.detail.regular.projects.regular.payments.title' | translate }}</h3>
-    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.1' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.2' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.3' | translate }}</p>
-    <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.4' | translate }}</p>
+    <h3 class="mt-5">{{ 'payments.to.ec.detail.regular.projects.regular.payments.title' | translate }}</h3>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.1' | translate }}</div>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.2' | translate }}</div>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.3' | translate }}</div>
+    <div class="mb-2">{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.4' | translate }}</div>
 
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
@@ -12,202 +12,20 @@
     </jems-alert>
 
     <ng-container *ngIf="data$ | async as data">
-        <jems-alert [show]="successfulUpdateMessage"
+        <jems-alert [show]="success$ | async"
                     [type]="Alert.SUCCESS">
             <p>{{'payments.to.ec.detail.regular.projects.regular.payments.update.save.message' | translate}}</p>
         </jems-alert>
 
-        <ng-container *ngIf="data.ecRegularPayments.totalElements">
-            <jems-paginator
-                    [length]="data.ecRegularPayments.totalElements"
-                    [currentPageIndex]="data.ecRegularPayments.pageable.pageNumber"
-                    [currentPageSize]="data.ecRegularPayments.pageable.pageSize"
-                    [confirmPageChange]="editedRowIndex !== null"
-                    (pageIndexChanged)="pageStore.regularNewPageIndex$.next($event)"
-                    (pageSizeChanged)="pageStore.regularNewPageSize$.next($event)">
-            </jems-paginator>
+        <jems-payment-to-ec-select-table [data]="data"
+                                         [newSort]="pageStore.regularNewSort$"
+                                         [newIndex]="pageStore.regularNewPageIndex$"
+                                         [newSize]="pageStore.regularNewPageSize$"
+                                         (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
+                                         (submitPayment)="updateLinkedPayment($event.paymentId, $event.updateDto)"
+        ></jems-payment-to-ec-select-table>
 
-            <mat-table jemsNoWidthLimit matSort (matSortChange)="pageStore.regularNewSort$.next($event)" [dataSource]="dataSource">
-
-                <ng-container matColumnDef="select">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="ecId" class="border-cell-right">
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.select' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">
-                        <mat-checkbox [checked]="data.ecRegularPayments.content[i].paymentToEcId !== null"
-                                      [disabled]="!data.isEditable || editedRowIndex !== null"
-                                      (change)="selectionChanged(data.ecId, data.ecRegularPayments.content[i].payment.id, data.ecRegularPayments.content[i].paymentToEcId !== null, $event)">
-                        </mat-checkbox>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="projectId">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="projectCustomIdentifier">
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.id' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecRegularPayments.content[i].payment.projectCustomIdentifier}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="projectAcronym">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="projectAcronym">
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.acronym' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecRegularPayments.content[i].payment.projectAcronym}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="priorityAxis">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.priority.axis' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span>{{data.ecRegularPayments.content[i].priorityAxis}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="claimNo">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.claim.no' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span>{{'payments.to.ec.detail.regular.projects.regular.payments.table.claim.no' | translate : {number: data.ecRegularPayments.content[i].payment.paymentClaimNo} }}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="maApprovalDate">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="maApprovalDate">
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.ma.approval.date' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span>{{ data.ecRegularPayments.content[i].payment.paymentApprovalDate | localeDate: 'L'}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="totalEligible">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ (data.ecRegularPayments.content[i].payment.amountApprovedPerFund + data.ecRegularPayments.content[i].partnerContribution) | asMoney}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="fundAmount">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecRegularPayments.content[i].payment.amountApprovedPerFund | asMoney}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="partnerContribution">
-                    <mat-header-cell class="justify-end" *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let i = index">
-                        <span class="right-aligned-text">{{ data.ecRegularPayments.content[i].partnerContribution | asMoney}}</span>
-                    </mat-cell>
-                </ng-container>
-
-                <form [formGroup]="form">
-                    <ng-container formArrayName="ecRegularPayments">
-                        <ng-container matColumnDef="publicContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
-                                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let regularPayment; let i = index">
-                                <div *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ regularPayment.get('regularPublicContribution').value | asMoney}}
-                                </div>
-                                <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="regularPayment">
-                                        <input  matInput formControlName="regularPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
-                                    </mat-form-field>
-                                </div>
-                            </mat-cell>
-                        </ng-container>
-
-                        <ng-container matColumnDef="autoPublicContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
-                                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.auto.public.contribution' | translate }}</span>
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let regularPayment; let i = index" [formGroup]="regularPayment" [class.selected-button-cell] = "i === editedRowIndex">
-                                <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ regularPayment.get('regularAutoPublicContribution').value | asMoney}}
-                                </span>
-                                <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field>
-                                        <input matInput formControlName="regularAutoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
-                                    </mat-form-field>
-                                    <div>
-                                        <button class="reset-button" (click)="resetAmounts(i, data.ecRegularPayments.content[i])" mat-stroked-button>
-                                            {{'payments.to.ec.detail.ftls.update.reset' | translate}}
-                                        </button>
-                                    </div>
-                                </div>
-                            </mat-cell>
-                        </ng-container>
-
-                        <ng-container matColumnDef="privateContribution">
-                            <mat-header-cell class="justify-end" *matHeaderCellDef>
-                                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.private.contribution' | translate }}</span>
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let regularPayment; let i = index" [class.selected-button-cell] = "i === editedRowIndex">
-                                <span *ngIf="i !== editedRowIndex" class="right-aligned-text">
-                                    {{ regularPayment.get('regularPrivateContribution').value | asMoney}}
-                                </span>
-                                <div *ngIf="i === editedRowIndex">
-                                    <mat-form-field [formGroup]="regularPayment">
-                                        <input matInput formControlName="regularPrivateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
-                                    </mat-form-field>
-                                    <div>
-                                        <button (click)="discardChanges(i, data.ecRegularPayments.content[i])" mat-stroked-button class="discard-button">
-                                            {{'payments.to.ec.detail.ftls.update.discard' | translate}}
-                                        </button>
-                                        <button (click)="submitAmountChanges(i, data.ecId, data.ecRegularPayments.content[i].payment.id)" mat-raised-button type="submit" class="ml-2 save-button" color="primary">
-                                            <mat-icon class="save-icon">save</mat-icon> {{'payments.to.ec.detail.ftls.update.save' | translate}}
-                                        </button>
-                                    </div>
-                                </div>
-                            </mat-cell>
-                        </ng-container>
-                    </ng-container>
-                </form>
-
-                <ng-container matColumnDef="correction">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.correct.amounts' | translate }}</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let regularPayment;let i = index">
-                        <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
-                                [disabled]="!data.isEditable || editedRowIndex !== null"
-                                color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"
-                                aria-label="edit">
-                            <mat-icon>edit</mat-icon>
-                        </button>
-                    </mat-cell>
-                </ng-container>
-
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row;let i = index; columns: displayedColumns" [class.edited-row]="i === editedRowIndex"></mat-row>
-
-            </mat-table>
-
-            <jems-paginator
-                    [length]="data.ecRegularPayments.totalElements"
-                    [currentPageIndex]="data.ecRegularPayments.pageable.pageNumber"
-                    [currentPageSize]="data.ecRegularPayments.pageable.pageSize"
-                    (pageIndexChanged)="pageStore.regularNewPageIndex$.next($event)"
-                    (pageSizeChanged)="pageStore.regularNewPageSize$.next($event)">
-            </jems-paginator>
-
-        </ng-container>
-
-        <jems-alert [show]="data.ecRegularPayments.content?.length === 0" [type]="Alert.INFO">
+        <jems-alert [show]="data.paymentToEcLinking.content?.length === 0" [type]="Alert.INFO">
             <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.table.empty' | translate }}</p>
         </jems-alert>
     </ng-container>

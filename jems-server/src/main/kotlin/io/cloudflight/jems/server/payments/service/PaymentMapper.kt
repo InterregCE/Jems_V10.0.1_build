@@ -32,24 +32,7 @@ import io.cloudflight.jems.server.programme.controller.fund.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
-fun PaymentToProject.toDTO() = PaymentToProjectDTO(
-    id = id,
-    paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    projectId = projectId,
-    projectCustomIdentifier = projectCustomIdentifier,
-    projectAcronym = projectAcronym,
-    paymentClaimId = paymentClaimId,
-    paymentClaimNo = paymentClaimNo,
-    paymentClaimSubmissionDate = paymentClaimSubmissionDate,
-    paymentApprovalDate = paymentApprovalDate,
-    totalEligibleAmount = totalEligibleAmount,
-    fundName = fundName,
-    amountApprovedPerFund = amountApprovedPerFund,
-    amountPaidPerFund = amountPaidPerFund,
-    amountAuthorizedPerFund = amountAuthorizedPerFund,
-    dateOfLastPayment = dateOfLastPayment,
-    lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
-)
+fun PaymentToProject.toDTO() = mapper.map(this)
 
 fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
@@ -208,4 +191,5 @@ fun PaymentSearchRequestDTO.toModel() = PaymentSearchRequest(
 @Mapper
 interface PaymentMapper {
     fun map(dto: AdvancePaymentSearchRequestDTO): AdvancePaymentSearchRequest
+    fun map(model: PaymentToProject): PaymentToProjectDTO
 }

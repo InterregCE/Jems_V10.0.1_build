@@ -148,6 +148,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         projectAcronym = "Test Project",
         paymentClaimId = null,
         paymentClaimNo = 0,
+        paymentToEcId = 6L,
         lumpSumId = 45L,
         orderNr = 16,
         fundName = "OTHER",

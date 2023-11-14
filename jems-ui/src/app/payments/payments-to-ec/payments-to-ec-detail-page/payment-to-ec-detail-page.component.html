@@ -53,7 +53,7 @@
             </span>
         </a>
 
-        <a *ngIf="data.paymentDetail.id" [active]="activeTab('ftls')" mat-tab-link (click)="routeTo('ftls')">
+        <a *ngIf="data.paymentDetail.id" [active]="activeTab('regular')" mat-tab-link (click)="routeTo('regular')">
             <span jemsText maxWidth="230">
                 {{'payments.to.ec.detail.ftls.tab' | translate}}
             </span>
