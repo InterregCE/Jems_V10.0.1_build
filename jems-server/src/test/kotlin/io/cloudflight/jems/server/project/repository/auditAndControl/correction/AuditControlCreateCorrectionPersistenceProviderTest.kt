@@ -1,88 +1,64 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionFinanceEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionMeasureEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.finance.ProjectCorrectionFinancialDescriptionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.measure.CorrectionProgrammeMeasureRepository
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 class AuditControlCreateCorrectionPersistenceProviderTest {
 
     companion object {
-        /*
-        private const val AUDIT_CONTROL_ID = 1L
-        private const val PROJECT_ID = 2L
-        private const val CORRECTION_ID = 1L
-        private val today = LocalDate.now()
-
-        private val projectAuditControlEntity = AuditControlEntity(
-            id = AUDIT_CONTROL_ID,
-            number = 20,
-            projectId = PROJECT_ID,
-            projectCustomIdentifier = "test",
-            status = AuditControlStatus.Ongoing,
-            controllingBody = ControllingBody.OLAF,
-            controlType = AuditControlType.Administrative,
-            startDate = UpdateProjectAuditTest.DATE.minusDays(1),
-            endDate = UpdateProjectAuditTest.DATE.plusDays(1),
-            finalReportDate = UpdateProjectAuditTest.DATE.minusDays(5),
-            totalControlledAmount = BigDecimal.valueOf(10000),
-            totalCorrectionsAmount = BigDecimal.ZERO,
-            comment = null
+        private val correction = AuditControlCorrectionCreate(
+            orderNr = 4,
+            status = AuditControlStatus.Closed,
+            type = AuditControlCorrectionType.LinkedToCostOption,
+            followUpOfCorrectionType = CorrectionFollowUpType.CourtProcedure,
+            defaultImpact = CorrectionImpactAction.AdjustmentInNextPayment,
         )
 
-        private val correction = ProjectAuditControlCorrection(
-            id = 1,
-            auditControlId = AUDIT_CONTROL_ID,
-            orderNr = 1,
-            status = CorrectionStatus.Ongoing,
-            linkedToInvoice = true,
-        )
+        private val expectedCorrection = AuditControlCorrectionDetail(
+            id = 0L,
+            orderNr = 4,
+            status = AuditControlStatus.Closed,
+            type = AuditControlCorrectionType.LinkedToCostOption,
 
-        private val correctionEntity = AuditControlCorrectionEntity(
-            id = CORRECTION_ID,
-            auditControlEntity = projectAuditControlEntity,
-            orderNr = 1,
-            status = CorrectionStatus.Ongoing,
-            linkedToInvoice = true
-        )
+            auditControlId = 7L,
+            auditControlNr = 17,
 
-        private val correctionIdentificationEntity = ProjectCorrectionIdentificationEntity(
-            correctionId = CORRECTION_ID,
-            correctionEntity = correctionEntity,
             followUpOfCorrectionId = null,
-            correctionFollowUpType = CorrectionFollowUpType.No,
+            correctionFollowUpType = CorrectionFollowUpType.CourtProcedure,
             repaymentFrom = null,
             lateRepaymentTo = null,
             partnerId = null,
             partnerReportId = null,
-            programmeFundId = null
+            programmeFundId = null,
+            impact = AuditControlCorrectionImpact(
+                action = CorrectionImpactAction.AdjustmentInNextPayment,
+                comment = "",
+            ),
+            costCategory = null,
+            expenditureCostItem = null,
+            procurementId = null,
         )
-
-        private val financialDescriptionEntity = AuditControlCorrectionFinanceEntity(
-            correctionId = CORRECTION_ID,
-            correction = correctionEntity,
-            deduction = true,
-            fundAmount = BigDecimal.TEN,
-            publicContribution = BigDecimal(100),
-            autoPublicContribution = BigDecimal(101),
-            privateContribution = BigDecimal(102),
-            infoSentBeneficiaryDate = today,
-            infoSentBeneficiaryComment = "BENEFICIARY COMMENT",
-            correctionType = CorrectionType.Ref10Dot1,
-            clericalTechnicalMistake = true,
-            goldPlating = true,
-            suspectedFraud = true,
-            correctionComment = "CORRECTION COMMENT"
-        )
-
-        private val programmeMeasureEntity = AuditControlCorrectionMeasureEntity(
-            correctionEntity = correctionEntity,
-            scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
-            comment = "prog meas",
-        )
-        */
     }
 
     @MockK
@@ -95,19 +71,57 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
     private lateinit var auditControlCorrectionMeasureRepository: CorrectionProgrammeMeasureRepository
 
     @InjectMockKs
-    lateinit var createCorrectionPersistenceProvider: AuditControlCreateCorrectionPersistenceProvider
+    lateinit var persistence: AuditControlCreateCorrectionPersistenceProvider
 
-    /*
     @Test
     fun createCorrection() {
-        every { auditControlRepository.getById(AUDIT_CONTROL_ID) } returns projectAuditControlEntity
-        every { auditControlCorrectionRepository.save(any()) } returns correctionEntity
-        every { auditControlCorrectionIdentificationRepository.save(any()) } returns correctionIdentificationEntity
-        every { projectCorrectionFinancialDescriptionRepository.save(any()) } returns financialDescriptionEntity
-        every { programmeMeasureRepository.save(any()) } returns programmeMeasureEntity
+        val auditControl = mockk<AuditControlEntity> {
+            every { id } returns 7L
+            every { number } returns 17
+        }
+        every { auditControlRepository.getById(7L) } returns auditControl
 
-        assertThat(createCorrectionPersistenceProvider.createCorrection(correction)).isEqualTo(correction)
+        val slotEnity = slot<AuditControlCorrectionEntity>()
+        every { auditControlCorrectionRepository.save(capture(slotEnity)) } returnsArgument 0
+
+        val slotFinanceEntity = slot<AuditControlCorrectionFinanceEntity>()
+        every { auditControlCorrectionFinanceRepository.save(capture(slotFinanceEntity)) } returnsArgument 0
+
+        val slotMeasureEntity = slot<AuditControlCorrectionMeasureEntity>()
+        every { auditControlCorrectionMeasureRepository.save(capture(slotMeasureEntity)) } returnsArgument 0
+
+        assertThat(persistence.createCorrection(7L, correction)).isEqualTo(expectedCorrection)
+
+        assertThat(slotEnity.captured.auditControl).isEqualTo(auditControl)
+        assertThat(slotEnity.captured.orderNr).isEqualTo(4)
+        assertThat(slotEnity.captured.status).isEqualTo(AuditControlStatus.Closed)
+        assertThat(slotEnity.captured.correctionType).isEqualTo(AuditControlCorrectionType.LinkedToCostOption)
+        assertThat(slotEnity.captured.followUpOfCorrection).isNull()
+        assertThat(slotEnity.captured.followUpOfCorrectionType).isEqualTo(CorrectionFollowUpType.CourtProcedure)
+        assertThat(slotEnity.captured.repaymentDate).isNull()
+        assertThat(slotEnity.captured.lateRepayment).isNull()
+        assertThat(slotEnity.captured.partnerReport).isNull()
+        assertThat(slotEnity.captured.programmeFund).isNull()
+        assertThat(slotEnity.captured.impact).isEqualTo(CorrectionImpactAction.AdjustmentInNextPayment)
+        assertThat(slotEnity.captured.impactComment).isEmpty()
+
+        assertThat(slotFinanceEntity.captured.correction).isEqualTo(slotEnity.captured)
+        assertThat(slotFinanceEntity.captured.deduction).isTrue()
+        assertThat(slotFinanceEntity.captured.fundAmount).isEqualTo(BigDecimal.ZERO)
+        assertThat(slotFinanceEntity.captured.publicContribution).isEqualTo(BigDecimal.ZERO)
+        assertThat(slotFinanceEntity.captured.autoPublicContribution).isEqualTo(BigDecimal.ZERO)
+        assertThat(slotFinanceEntity.captured.privateContribution).isEqualTo(BigDecimal.ZERO)
+        assertThat(slotFinanceEntity.captured.infoSentBeneficiaryDate).isNull()
+        assertThat(slotFinanceEntity.captured.infoSentBeneficiaryComment).isNull()
+        assertThat(slotFinanceEntity.captured.correctionType).isNull()
+        assertThat(slotFinanceEntity.captured.clericalTechnicalMistake).isFalse()
+        assertThat(slotFinanceEntity.captured.goldPlating).isFalse()
+        assertThat(slotFinanceEntity.captured.suspectedFraud).isFalse()
+        assertThat(slotFinanceEntity.captured.correctionComment).isNull()
+
+        assertThat(slotMeasureEntity.captured.correction).isEqualTo(slotEnity.captured)
+        assertThat(slotMeasureEntity.captured.scenario).isEqualTo(ProjectCorrectionProgrammeMeasureScenario.NA)
+        assertThat(slotMeasureEntity.captured.comment).isNull()
     }
-    */
 
 }

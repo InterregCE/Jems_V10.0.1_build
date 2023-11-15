@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import java.time.LocalDate
 import javax.persistence.Entity
@@ -14,9 +15,9 @@ import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 @Entity(name = "audit_control_correction")
 class AuditControlCorrectionEntity (
@@ -58,8 +59,15 @@ class AuditControlCorrectionEntity (
     @ManyToOne
     var programmeFund: ProgrammeFundEntity?,
 
+    @Enumerated(EnumType.STRING)
+    @field:NotNull
+    var impact: CorrectionImpactAction,
+
+    @field:NotNull
+    @field:Size(max = 2000)
+    var impactComment: String,
+
     @ManyToOne
-    @JoinColumn(name = "expenditure_id")
     var expenditure: PartnerReportExpenditureCostEntity?,
 
     @Enumerated(EnumType.STRING)
@@ -67,4 +75,4 @@ class AuditControlCorrectionEntity (
 
     var procurementId: Long?,
 
-    )
+)

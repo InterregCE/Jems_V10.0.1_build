@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.dto.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AuditControlCorrectionImpactDTO
 import java.time.LocalDate
 
 data class ProjectAuditControlCorrectionDTO(
@@ -13,15 +14,16 @@ data class ProjectAuditControlCorrectionDTO(
     val auditControlNumber: Int,
 
     val followUpOfCorrectionId: Long?,
-    val correctionFollowUpType: CorrectionFollowUpTypeDTO?,
+    val correctionFollowUpType: CorrectionFollowUpTypeDTO,
     val repaymentFrom: LocalDate?,
     val lateRepaymentTo: LocalDate?,
     val partnerId: Long?,
     val partnerReportId: Long?,
     val programmeFundId: Long?,
 
+    val impact: AuditControlCorrectionImpactDTO,
+
     val costCategory: CorrectionCostCategoryDTO?,
     val expenditureCostItem: CorrectionCostItemDTO?,
     val procurementId: Long?,
-
 )

@@ -607,6 +607,9 @@ import {
   CorrectionTypeOrderPipePipe
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/correction-detail-financial-description/correction-type-order-pipe.pipe';
 import { AuditControlCorrectionDetailMeasureComponent } from './project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-measure/audit-control-correction-detail-measure.component';
+import {
+  AuditControlCorrectionImpactComponent
+} from "@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-impact/audit-control-correction-impact.component";
 
 @NgModule({
   declarations: [
@@ -821,6 +824,7 @@ import { AuditControlCorrectionDetailMeasureComponent } from './project-applicat
     CorrectionDetailFinancialDescriptionComponent,
     CorrectionTypeOrderPipePipe,
     AuditControlCorrectionDetailMeasureComponent,
+    AuditControlCorrectionImpactComponent,
   ],
   imports: [
     SharedModule,

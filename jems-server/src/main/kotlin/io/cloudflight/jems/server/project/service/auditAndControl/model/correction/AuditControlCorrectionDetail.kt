@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.model.correction
 
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import java.time.LocalDate
 
@@ -20,6 +21,8 @@ data class AuditControlCorrectionDetail(
     val partnerId: Long?,
     val partnerReportId: Long?,
     val programmeFundId: Long?,
+
+    val impact: AuditControlCorrectionImpact,
 
     val costCategory: BudgetCostCategory?,
     val expenditureCostItem: CorrectionCostItem?,
