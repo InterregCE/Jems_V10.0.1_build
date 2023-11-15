@@ -36,6 +36,7 @@ export class AuditControlIdentityComponent {
   constants = AuditControlConstants;
   Alert = Alert;
   PermissionsEnum = PermissionsEnum;
+  StatusEnum = AuditControlDTO.StatusEnum;
 
   pendingAction$ = new BehaviorSubject(false);
   error$ = new BehaviorSubject<APIError | null>(null);
@@ -46,6 +47,7 @@ export class AuditControlIdentityComponent {
     unpagedCorrections: PageProjectAuditControlCorrectionLineDTO;
     isControllerDisabled: boolean;
     isClosingAllowed: boolean;
+    isReopeningAllowed: boolean;
   }>;
 
   inputErrorMessages = {
@@ -74,9 +76,10 @@ export class AuditControlIdentityComponent {
       pageStore.auditControl$,
       pageStore.canEdit$,
       pageStore.canClose$,
-      this.correctionsOverviewStore.correctionsUnpaged$
+      this.correctionsOverviewStore.correctionsUnpaged$,
+      pageStore.canReopen$
     ]).pipe(
-      map(([projectId, auditControl, canEdit, canClose, unpagedCorrections]) => ({
+      map(([projectId, auditControl, canEdit, canClose, unpagedCorrections, canReopen]) => ({
         projectId,
         auditControl,
         canEdit,
@@ -84,6 +87,7 @@ export class AuditControlIdentityComponent {
         unpagedCorrections,
         isControllerDisabled: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Closed).length > 0 : false,
         isClosingAllowed: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Ongoing).length === 0 : true,
+        isReopeningAllowed: canReopen
       })),
       tap(data => this.resetForm(data.auditControl, data.canEdit)),
       tap(data => {
@@ -128,6 +132,14 @@ export class AuditControlIdentityComponent {
       tap(()=>this.redirectToCorrections(projectId)),
       catchError(error => this.showErrorMessage(error.error$)),
       finalize(() => this.pendingAction$.next(false)),
+    ).subscribe();
+  }
+
+  reopenAuditControl(projectId: number, auditControlId: number) {
+    this.pageStore.reopenAuditControl(projectId, auditControlId).pipe(
+      take(1),
+      tap(() => this.formService.setEditable(true)),
+      catchError(error => this.showErrorMessage(error.error$)),
     ).subscribe();
   }
 

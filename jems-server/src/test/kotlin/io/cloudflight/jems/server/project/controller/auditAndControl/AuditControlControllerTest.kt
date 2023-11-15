@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableReportDataForAuditControl.GetPartnerAndPartnerReportDataInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.base.getAuditControl.GetAuditControlInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.base.listAuditControl.ListAuditControlIntetractor
+import io.cloudflight.jems.server.project.service.auditAndControl.base.reopenAuditControl.ReopenAuditControlInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
@@ -236,6 +237,9 @@ class AuditControlControllerTest: UnitTest() {
     @MockK
     lateinit var partnerDataInteractor: GetPartnerAndPartnerReportDataInteractor
 
+    @MockK
+    lateinit var reopenAuditControlInteractor: ReopenAuditControlInteractor
+
     @InjectMockKs
     lateinit var controller: AuditControlController
 
@@ -290,5 +294,13 @@ class AuditControlControllerTest: UnitTest() {
                 AuditControlStatus.Closed
 
         assertThat(controller.closeAuditControl(PROJECT_ID, AUDIT_CONTROL_ID)).isEqualTo(AuditStatusDTO.Closed)
+    }
+
+    @Test
+    fun reopenAuditControl() {
+        every { reopenAuditControlInteractor.reopenAuditControl(auditControlId = AUDIT_CONTROL_ID) } returns
+            AuditControlStatus.Ongoing
+
+        assertThat(controller.reopenAuditControl(PROJECT_ID, AUDIT_CONTROL_ID)).isEqualTo(AuditStatusDTO.Ongoing)
     }
 }

@@ -25,6 +25,7 @@ export class ReportCorrectionsAuditControlDetailPageStore {
   auditControlStatus$: Observable<AuditControlDTO.StatusEnum>;
   canEdit$: Observable<boolean>;
   canClose$: Observable<boolean>;
+  canReopen$: Observable<boolean>;
   updatedAuditControl$ = new Subject<AuditControlDTO>();
   updatedAuditControlStatus$ = new Subject<AuditControlDTO.StatusEnum>();
 
@@ -41,6 +42,7 @@ export class ReportCorrectionsAuditControlDetailPageStore {
     this.auditControlStatus$ = this.auditControlStatus();
     this.canEdit$ = this.canEdit();
     this.canClose$ = this.canClose();
+    this.canReopen$ = this.canReopen();
   }
 
   private auditControlId(): Observable<string | number | null> {
@@ -96,6 +98,16 @@ export class ReportCorrectionsAuditControlDetailPageStore {
     );
   }
 
+  private canReopen(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorAuditAndControlEdit),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorReOpenAuditControl),
+      this.auditControlStatus$
+    ]).pipe(
+      map(([canEdit, canReopen, status]) => canEdit && canReopen && status === AuditControlDTO.StatusEnum.Closed)
+    );
+  }
+
   saveAuditControl(id: number | undefined, auditControlData: ProjectAuditControlUpdateDTO): Observable<AuditControlDTO> {
     return this.projectStore.projectId$.pipe(
       switchMap(projectId => id
@@ -110,6 +122,15 @@ export class ReportCorrectionsAuditControlDetailPageStore {
 
   closeAuditControl(projectId: number, auditControlId: number): Observable<AuditControlDTO.StatusEnum> {
     return this.auditControlService.closeAuditControl(auditControlId, projectId).pipe(
+      map(status => status as AuditControlDTO.StatusEnum),
+      tap(() => this.reportCorrectionsOverviewStore.refreshAudits$.next()),
+      tap(status => this.updatedAuditControlStatus$.next(status)),
+      tap(status => Log.info('Changed status for audit', this, auditControlId, status)),
+    );
+  }
+
+  reopenAuditControl(projectId: number, auditControlId: number): Observable<AuditControlDTO.StatusEnum> {
+    return this.auditControlService.reopenAuditControl(auditControlId, projectId).pipe(
       map(status => status as AuditControlDTO.StatusEnum),
       tap(() => this.reportCorrectionsOverviewStore.refreshAudits$.next()),
       tap(status => this.updatedAuditControlStatus$.next(status)),

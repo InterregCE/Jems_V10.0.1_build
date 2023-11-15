@@ -7,6 +7,7 @@ export class AuditControlConstants {
     AuditControlDTO.ControllingBodyEnum.RegionalApprobationBody,
     AuditControlDTO.ControllingBodyEnum.JS,
     AuditControlDTO.ControllingBodyEnum.MA,
+    AuditControlDTO.ControllingBodyEnum.MABAF,
     AuditControlDTO.ControllingBodyEnum.NA,
     AuditControlDTO.ControllingBodyEnum.GoA,
     AuditControlDTO.ControllingBodyEnum.AA,

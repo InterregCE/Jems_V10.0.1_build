@@ -6,10 +6,11 @@ enum class ControllingBodyDTO {
     RegionalApprobationBody,
     JS,
     MA,
+    MABAF,
     NA,
     GoA,
     AA,
     EC,
     ECA,
-    OLAF
+    OLAF,
 }

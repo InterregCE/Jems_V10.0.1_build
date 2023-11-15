@@ -57,6 +57,10 @@ interface ProjectAuditAndControlApi {
     @PostMapping("$ENDPOINT_API_PROJECT_AUDIT_CONTROL/{auditControlId}/close")
     fun closeAuditControl(@PathVariable projectId: Long, @PathVariable auditControlId: Long): AuditStatusDTO
 
+    @ApiOperation("Reopen audit/control")
+    @PostMapping("$ENDPOINT_API_PROJECT_AUDIT_CONTROL/{auditControlId}/reopen")
+    fun reopenAuditControl(@PathVariable projectId: Long, @PathVariable auditControlId: Long): AuditStatusDTO
+
     @ApiOperation("Get all partners and partner reports for current Project")
     @GetMapping("${ENDPOINT_API_PROJECT_AUDIT_CONTROL}/partnerData")
     fun getPartnerAndPartnerReportData(

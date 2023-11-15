@@ -20,11 +20,18 @@
         <span class="ml-2"><jems-audit-control-status [status]="data.auditControl.status"></jems-audit-control-status></span>
         <jems-pending-button *ngIf="data.canEdit" class="ml-2"
                              [pending]="pendingAction$ | async"
-                             [disabled]="!data.canClose || !data.isClosingAllowed"
+                             [disabled]="!data.isClosingAllowed"
                              (clicked)="closeAuditControl(data.projectId, data.auditControl?.id)">
             {{'project.application.reporting.corrections.close.audit' | translate}}
         </jems-pending-button>
-        <jems-context-info *ngIf="!data.canClose" infoPosition="right" infoText="{{'project.application.reporting.corrections.close.audit.info' | translate}}"></jems-context-info>
+        <jems-context-info *ngIf="!data.isClosingAllowed" infoPosition="right" infoText="{{'project.application.reporting.corrections.close.audit.info' | translate}}"></jems-context-info>
+
+        <button *ngIf="data.isReopeningAllowed"
+                mat-stroked-button type="button" class="ml-2"
+                (click)="reopenAuditControl(data.projectId, data.auditControl?.id)">
+            <mat-icon>undo</mat-icon>
+            <span>{{'project.application.reporting.corrections.reopen.audit' | translate}}</span>
+        </button>
     </div>
 
     <form [formGroup]="form" jemsFormLayout>
@@ -67,9 +74,9 @@
                        [max]="form?.controls?.endDate?.value"
                        [ngxMatDatetimePicker]="startDate"
                        [formControlName]="constants.FORM_CONTROLS.startDate">
-                <mat-datepicker-toggle [disabled]="false" [for]="startDate" matSuffix>
+                <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="startDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker #startDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #startDate [enableMeridian]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors
@@ -87,9 +94,9 @@
                        [min]="form?.controls?.startDate?.value"
                        [ngxMatDatetimePicker]="endDate"
                        [formControlName]="constants.FORM_CONTROLS.endDate">
-                <mat-datepicker-toggle [disabled]="false" [for]="endDate" matSuffix>
+                <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="endDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker #endDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #endDate [enableMeridian]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors
@@ -106,9 +113,9 @@
                        name="finalReportDate"
                        [ngxMatDatetimePicker]="finalReportDate"
                        [formControlName]="constants.FORM_CONTROLS.finalReportDate">
-                <mat-datepicker-toggle [disabled]="false" [for]="finalReportDate" matSuffix>
+                <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="finalReportDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker #finalReportDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #finalReportDate [enableMeridian]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors
