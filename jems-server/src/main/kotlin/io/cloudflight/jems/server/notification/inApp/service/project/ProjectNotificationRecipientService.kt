@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ProjectNotificationRecipientService(
@@ -24,6 +25,7 @@ class ProjectNotificationRecipientService(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : ProjectNotificationRecipientServiceInteractor {
 
+    @Transactional(readOnly = true)
     override fun getEmailsForProjectManagersAndAssignedUsers(
         notificationConfig: ProjectNotificationConfiguration,
         projectId: Long
@@ -38,6 +40,7 @@ class ProjectNotificationRecipientService(
         return managers + projectAssignedUsers
     }
 
+    @Transactional(readOnly = true)
     override fun getEmailsForPartners(
         notificationConfig: ProjectNotificationConfiguration,
         projectId: Long
@@ -58,6 +61,7 @@ class ProjectNotificationRecipientService(
         return leadPartnerCollaborators + nonLeadPartnerCollaborators
     }
 
+    @Transactional(readOnly = true)
     override fun getEmailsForSpecificPartner(
         notificationConfig: ProjectNotificationConfiguration,
         projectId: Long,
@@ -75,6 +79,7 @@ class ProjectNotificationRecipientService(
                 .partnerCollaboratorEmails()
     }
 
+    @Transactional(readOnly = true)
     override fun getEmailsForPartnerControllers(
         notificationConfig: ProjectNotificationConfiguration,
         partnerId: Long
@@ -82,6 +87,10 @@ class ProjectNotificationRecipientService(
         return if (!notificationConfig.sendToControllers) emptyMap() else
             userPersistence.findAllByIds(controllerInstitutionPersistence.getRelatedUserIdsForPartner(partnerId)).emails()
     }
+
+    @Transactional(readOnly = true)
+    override fun getSystemAdminEmails(): Map<String, UserEmailNotification> =
+        userPersistence.findAllWithRoleIdIn(setOf(1L)).emails()
 
     private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() =
         associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
