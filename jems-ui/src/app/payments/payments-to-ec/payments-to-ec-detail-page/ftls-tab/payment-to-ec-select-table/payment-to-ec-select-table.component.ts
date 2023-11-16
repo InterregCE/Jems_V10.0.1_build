@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PagePaymentToEcLinkingDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
-import {Subject} from "rxjs";
+import {Subject} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
@@ -19,7 +19,7 @@ export class PaymentToEcSelectTableComponent implements OnInit {
   data: {
     ecId: number;
     paymentToEcLinking: PagePaymentToEcLinkingDTO;
-    isEditable: boolean
+    isEditable: boolean;
   };
 
   @Input()
@@ -30,9 +30,9 @@ export class PaymentToEcSelectTableComponent implements OnInit {
   newIndex: Subject<number>;
 
   @Output()
-  selectionChanged = new EventEmitter<{ ecId: number, paymentId: number, checked: boolean, checkbox: MatCheckboxChange }>();
+  selectionChanged = new EventEmitter<{ ecId: number; paymentId: number; checked: boolean; checkbox: MatCheckboxChange }>();
   @Output()
-  submitPayment = new EventEmitter<{ paymentId: number, updateDto: PaymentToEcLinkingUpdateDTO }>();
+  submitPayment = new EventEmitter<{ paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
 
 
   form = this.formBuilder.group({

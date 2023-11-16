@@ -28,3 +28,17 @@ class CombinationOfReportAndFundIsInvalidException: ApplicationUnprocessableExce
     i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.fund.not.found"),
 )
 
+class ExpenditureNotValidException: ApplicationUnprocessableException(
+    code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.expenditure.not.valid"),
+)
+
+class InvalidCorrectionScopeException: ApplicationUnprocessableException(
+    code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.scope.not.valid"),
+)
+
+class ProcurementNotValidException: ApplicationUnprocessableException(
+    code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-006",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.procurement.not.valid"),
+)

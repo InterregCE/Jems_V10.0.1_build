@@ -157,7 +157,49 @@
         </mat-select>
       </mat-form-field>
     </div>
+
+    <div jemsMultiColumnRow *ngIf="!data.isLinkedToInvoice">
+      <mat-form-field  jemsFormFieldWidth="xxx-large">
+        <mat-label>{{'project.application.reporting.corrections.select.category.label' | translate}}</mat-label>
+        <mat-select formControlName="costCategory"
+                    [disabled]="!data.isMandatoryScopeDefined"
+                    placeholder="{{'common.not.applicable.option' | translate}}">
+          <mat-option [value]="'N/A'">{{'common.not.applicable.option' | translate}}</mat-option>
+          <mat-option *ngFor="let costCategory of costCategories"
+                      [value]="costCategory">
+            {{ ('project.application.reporting.corrections.cost.category.' + costCategory) | translate}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-label>{{'project.application.reporting.corrections.select.procurement.label' | translate}}</mat-label>
+        <mat-select
+                formControlName="procurementId"
+                [disabled]="!data.isMandatoryScopeDefined"
+                placeholder="{{'common.not.applicable.option' | translate}}">
+          <mat-option [value]="'N/A'">{{'common.not.applicable.option' | translate}}</mat-option>
+          <mat-option *ngFor="let procurementId of data.availableProcurements?.keys()" [value]="procurementId" role="option">
+            {{ data.availableProcurements.get(procurementId) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <mat-form-field class="cdk-visually-hidden">
+      <input formControlName="expenditureId" matInput disabled>
+    </mat-form-field>
   </form>
+
+  <ng-container *ngIf="isCostItemTableVisible"
+                [ngTemplateOutlet]="costItemsTable"
+                [ngTemplateOutletContext]="{
+                  dataSource: costItemsPage | async,
+                  data: data,
+                  isOngoing: data.correction.status === this.CorrectionStatusEnum.Ongoing
+                }">
+  </ng-container>
 
   <jems-alert *ngIf="error$ | async as error"
               [show]="!!error.i18nMessage?.i18nKey"
@@ -166,3 +208,126 @@
   </jems-alert>
 
 </jems-form>
+
+<ng-template #costItemsTable
+             let-dataSource="dataSource"
+             let-data="data"
+             let-isOngoing="isOngoing">
+
+  <mat-table jemsNoWidthLimit
+             [dataSource]="isOngoing ? dataSource?.content : [data.correction.expenditureCostItem]">
+
+    <ng-container *ngIf="isOngoing" matColumnDef="select" sticky>
+      <mat-header-cell mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
+        <span jemsText maxLines="2">{{ 'project.application.reporting.corrections.cost.table.column.select' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell mat-cell *matCellDef="let element">
+        <mat-radio-button
+                [value]="element.id"
+                (change)="setCostItemValue($event.value)"
+                [checked]="element.id === data.correction.expenditureCostItem?.id">
+        </mat-radio-button>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costId' | translate}} </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <a [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/expenditures/'">
+          R.{{element.partnerReportNumber}}.{{element.number}}
+        </a>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unitCostsAndLumpSums">
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxWidth="120">
+             {{'project.application.reporting.corrections.cost.table.column.costAndLumpSum' | translate}}
+        </span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span jemsText maxWidth="120"
+              class="text-overflow-ellipsis">
+            {{element.lumpSum ? (element.lumpSum?.name | translateByInputLanguage | async) :
+                (element.unitCost?.name | translateByInputLanguage | async)}}
+        </span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="costCategory">
+      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costCategory' | translate}} </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        {{ ('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="investmentNo">
+      <mat-header-cell *matHeaderCellDef> Investment Number</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        {{element.investmentId ?  'I' + element.investmentWorkPackageNumber + '.' + element.investmentNumber : '' }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="procurement">
+      <mat-header-cell
+              *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.procurement' | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <a [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/procurements/' + element.contractId ">
+          {{data.availableProcurements.get(element.contractId)}}
+        </a>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="internalReference">
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxWidth="100">
+          {{'project.application.reporting.corrections.cost.table.column.internalReference'  | translate}}
+        </span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.internalReferenceNumber}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="invoiceNo">
+      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.invoice' | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.invoiceNumber}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="invoiceDate">
+      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.invoiceDate' | translate}} </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element?.invoiceDate  | localeDate }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="declaredAmount">
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxWidth="100">
+           {{'project.application.reporting.corrections.cost.table.column.amount' | translate}}
+        </span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element?.declaredAmount | asMoney}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="currency">
+      <mat-header-cell *matHeaderCellDef>
+        {{'project.application.reporting.corrections.cost.table.column.currencyCode' | translate}}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element?.currencyCode}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="declaredAmountEur">
+      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.amountEuro' | translate}} </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element?.declaredAmountAfterSubmission | asMoney}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="costItemsDisplayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: costItemsDisplayedColumns;"></mat-row>>
+  </mat-table>
+
+  <jems-paginator *ngIf="isOngoing"
+                  [length]="dataSource?.totalElements"
+                  [currentPageIndex]="dataSource?.pageable?.pageNumber"
+                  [currentPageSize]="dataSource?.pageable?.pageSize"
+                  (pageIndexChanged)="costItemsPageIndex$.next($event)"
+                  (pageSizeChanged)="costItemsPageSize$.next($event)">
+  </jems-paginator>
+
+</ng-template>

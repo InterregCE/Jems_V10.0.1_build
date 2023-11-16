@@ -6,16 +6,26 @@ import {
   AuditControlCorrectionDTO,
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
+  PageCorrectionCostItemDTO,
   ProgrammeFundDTO,
-  ProjectAuditControlCorrectionDTO, ProjectCorrectionIdentificationUpdateDTO,
+  ProjectAuditControlCorrectionDTO,
+  ProjectCallSettingsDTO,
+  ProjectCorrectionIdentificationUpdateDTO,
+  UpdateProjectReportWorkPackageActivityDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {
   AuditControlCorrectionDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import StatusEnum = UpdateProjectReportWorkPackageActivityDTO.StatusEnum;
 
+@UntilDestroy()
 @Component({
   selector: 'jems-audit-control-correction-detail-identity',
   templateUrl: './audit-control-correction-detail-identity.component.html',
@@ -28,6 +38,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
   naString = 'N/A';
   Alert = Alert;
   CorrectionFollowUpTypeEnum = ProjectAuditControlCorrectionDTO.CorrectionFollowUpTypeEnum;
+  CorrectionTypeEnum = ProjectAuditControlCorrectionDTO.TypeEnum;
+  CorrectionStatusEnum = ProjectAuditControlCorrectionDTO.StatusEnum;
   error$ = new BehaviorSubject<APIError | null>(null);
   data$: Observable<{
     correction: ProjectAuditControlCorrectionDTO;
@@ -35,6 +47,10 @@ export class AuditControlCorrectionDetailIdentityComponent {
     canEdit: boolean;
     canClose: boolean;
     pastCorrections: AuditControlCorrectionDTO[];
+    availableProcurements: Map<number, string>;
+    isMandatoryScopeDefined: boolean;
+    isLinkedToInvoice: boolean;
+    projectId: number;
   }>;
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
@@ -48,37 +64,73 @@ export class AuditControlCorrectionDetailIdentityComponent {
     lateRepaymentTo: 'to date'
   };
 
+  readonly statusEnum = ProjectAuditControlCorrectionDTO.StatusEnum;
+  isCostItemTableVisible: boolean;
+
+  costItemsDisplayedColumns: string[] = [];
+  costItemsPage: Observable<PageCorrectionCostItemDTO>;
+
+  costItemsPageIndex$: BehaviorSubject<number>;
+  costItemsPageSize$: BehaviorSubject<number>;
+
+  costCategories: string[];
+
   constructor(
     private formBuilder: FormBuilder,
     private formService: FormService,
     private pageStore: AuditControlCorrectionDetailPageStore,
+    private projectStore: ProjectStore
   ) {
     this.data$ = combineLatest([
       pageStore.canEdit$,
       pageStore.canClose$,
       pageStore.correction$,
       pageStore.correctionPartnerData$,
-      pageStore.pastCorrections$
+      pageStore.pastCorrections$,
+      pageStore.availableProcurements$.pipe(startWith(new Map())),
+      pageStore.projectId$
     ]).pipe(
       map(([
              canEdit,
              canClose,
              correction,
              correctionPartnerData,
-             pastCorrections
-           ]) => ({
-        canEdit,
-        canClose,
+             pastCorrections,
+             availableProcurements,
+             projectId
+           ]: any) => ({
         correction,
         correctionPartnerData,
-        pastCorrections
+        canEdit,
+        canClose,
+        pastCorrections,
+        availableProcurements,
+        isMandatoryScopeDefined:  (!!correction.partnerId && !!correction.partnerReportId),
+        isLinkedToInvoice: correction.type === this.CorrectionTypeEnum.LinkedToInvoice,
+        projectId
+
       })),
       tap(data => this.resetForm(
         data.correction,
         data.correctionPartnerData,
         data.canEdit
       )),
+        tap(data => {
+          this.isCostItemTableVisible = data.isLinkedToInvoice && data.isMandatoryScopeDefined;
+          this.costItemsDisplayedColumns = this.getCostItemsAvailableColumns(data.correction.status);
+        })
     );
+    this.costItemsPage = this.pageStore.costItemsPage$;
+    this.costItemsPageIndex$ = pageStore.costItemsPageIndex$;
+    this.costItemsPageSize$ = pageStore.costItemsPageSize$;
+
+    this.projectStore.projectCallSettings$.pipe(
+        tap(data => {
+          this.costCategories = this.getCostCategories(data);
+        }),
+        untilDestroyed(this)
+    ).subscribe();
+
   }
 
   resetForm(correctionIdentification: ProjectAuditControlCorrectionDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
@@ -97,6 +149,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
       partnerReportId: [report?.id, Validators.required],
       projectReportNumber: [report?.projectReport?.id ? ('PR.' + report.projectReport.number) : this.naString],
       programmeFundId: [fund?.id ?? this.naString, Validators.required],
+      costCategory: correctionIdentification.costCategory ?? this.naString,
+      procurementId: correctionIdentification.procurementId ?? this.naString,
+      expenditureId: correctionIdentification.expenditureCostItem?.id ?? null
     });
     this.formService.init(this.form, of(editable));
     this.form.controls?.projectReportNumber?.disable();
@@ -105,6 +160,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
     } else {
       this.funds = [];
     }
+
+    this.costItemsPage = this.pageStore.costItemsPage$;
   }
 
   getPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): CorrectionAvailablePartnerDTO | undefined {
@@ -117,9 +174,13 @@ export class AuditControlCorrectionDetailIdentityComponent {
     this.form.controls?.programmeFundId?.setValue(null);
     this.form.updateValueAndValidity();
     this.funds = [];
+    this.resetCorrectionScopeOptionalControls();
+    this.isCostItemTableVisible = false;
   }
 
   selectReport(partnerReportId: number): void {
+    this.resetCorrectionScopeOptionalControls();
+    this.isCostItemTableVisible = false;
     if (partnerReportId) {
       const report = this.partnerReports.find(it => it.id === partnerReportId);
       if (report?.projectReport) {
@@ -144,7 +205,10 @@ export class AuditControlCorrectionDetailIdentityComponent {
       lateRepaymentTo: this.form.controls?.lateRepaymentTo.value,
       partnerId: this.form.controls?.partnerId.value,
       partnerReportId: this.form.controls?.partnerReportId.value,
-      programmeFundId: this.form.controls?.programmeFundId.value !== this.naString ? this.form.controls?.programmeFundId.value : null
+      programmeFundId: this.form.controls?.programmeFundId.value !== this.naString ? this.form.controls?.programmeFundId.value : null,
+      costCategory: this.form.controls?.costCategory.value !== this.naString ? this.form.controls?.costCategory.value : null,
+      procurementId: this.form.controls?.procurementId.value !== this.naString ? this.form.controls?.procurementId?.value : null,
+      expenditureId: this.form.controls?.expenditureId?.value ?? null
     } as ProjectCorrectionIdentificationUpdateDTO;
     this.pageStore.saveCorrection(id, data)
       .pipe(
@@ -154,4 +218,48 @@ export class AuditControlCorrectionDetailIdentityComponent {
       ).subscribe();
   }
 
+  setCostItemValue(costItemId: number): void {
+    this.form.controls?.expenditureId?.setValue(costItemId);
+    this.formService.setDirty(true);
+  }
+
+
+  getCostCategories(callSettings: ProjectCallSettingsDTO) {
+    return  [
+      'Staff',
+      'Office',
+      'Travel',
+      'External',
+      'Equipment',
+      'Infrastructure',
+      'Other',
+      'LumpSum',
+      'UnitCost',
+      ... callSettings.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF ? ['SpfCost'] : []
+    ];
+  }
+
+  resetCorrectionScopeOptionalControls() {
+    this.form.controls?.costCategory?.setValue('N/A');
+    this.form.controls?.procurementId?.setValue(null);
+    this.form.controls?.expenditureId?.setValue(null);
+  }
+
+
+  getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum): string[] {
+    return [
+      ...status === this.statusEnum.Ongoing ? ['select'] : [],
+      'id',
+      'unitCostsAndLumpSums',
+      'costCategory',
+      'investmentNo',
+      'procurement',
+      'internalReference',
+      'invoiceNo',
+      'invoiceDate',
+      'declaredAmount',
+      'currency',
+      'declaredAmountEur'
+    ];
+  }
 }

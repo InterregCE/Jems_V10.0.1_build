@@ -13,10 +13,15 @@ data class ProjectAuditControlCorrectionDTO(
     val auditControlNumber: Int,
 
     val followUpOfCorrectionId: Long?,
-    val correctionFollowUpType: CorrectionFollowUpTypeDTO,
+    val correctionFollowUpType: CorrectionFollowUpTypeDTO?,
     val repaymentFrom: LocalDate?,
     val lateRepaymentTo: LocalDate?,
     val partnerId: Long?,
     val partnerReportId: Long?,
     val programmeFundId: Long?,
+
+    val costCategory: CorrectionCostCategoryDTO?,
+    val expenditureCostItem: CorrectionCostItemDTO?,
+    val procurementId: Long?,
+
 )

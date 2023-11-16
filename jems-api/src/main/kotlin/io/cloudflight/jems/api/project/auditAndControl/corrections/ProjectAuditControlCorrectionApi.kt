@@ -1,9 +1,11 @@
 package io.cloudflight.jems.api.project.auditAndControl.corrections
 
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.auditAndControl.ProjectAuditAndControlApi
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
@@ -91,5 +93,26 @@ interface ProjectAuditControlCorrectionApi {
         @PathVariable auditControlId: Long,
         @PathVariable correctionId: Long,
     ): List<AuditControlCorrectionDTO>
+
+    @ApiOperation("List all available cost items for selected partner report in correction")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}/costItems")
+    fun listCorrectionAvailableCostItems(
+        @PathVariable projectId: Long,
+        @PathVariable auditControlId: Long,
+        @PathVariable correctionId: Long,
+        pageable: Pageable,
+    ): Page<CorrectionCostItemDTO>
+
+    @GetMapping("$ENDPOINT_API_PROJECT_CORRECTION/{correctionId}/procurements")
+    fun listCorrectionAvailableProcurements(
+        @PathVariable projectId: Long,
+        @PathVariable auditControlId: Long,
+        @PathVariable correctionId: Long
+    ): List<IdNamePairDTO>
 
 }

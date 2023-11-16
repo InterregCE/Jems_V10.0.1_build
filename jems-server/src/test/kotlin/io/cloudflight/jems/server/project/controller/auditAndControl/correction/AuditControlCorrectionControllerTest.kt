@@ -1,30 +1,39 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionFollowUpTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.createAuditControlCorrection.CreateAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.deleteAuditControlCorrection.DeleteAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.getAuditControlCorrection.GetAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.listAuditControlCorrection.ListAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.UpdateAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionAvailableProcurements.GetCorrectionAvailableProcurementsInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionCostItems.GetCorrectionCostItemsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.listPreviouslyClosedCorrection.ListPreviouslyClosedCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -50,6 +59,9 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            costCategory = null,
+            procurementId = null,
+            expenditureCostItem = null
         )
 
         private val expectedCorrection = ProjectAuditControlCorrectionDTO(
@@ -66,6 +78,9 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            costCategory = null,
+            procurementId = null,
+            expenditureCostItem = null
         )
 
         private val extendedCorrection = AuditControlCorrectionDetail(
@@ -82,6 +97,9 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            costCategory = null,
+            procurementId = null,
+            expenditureCostItem = null
         )
         private val expectedExtendedCorrection = ProjectAuditControlCorrectionDTO(
             id = 1L,
@@ -97,6 +115,9 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            costCategory = null,
+            procurementId = null,
+            expenditureCostItem = null
         )
 
         private val correctionLines = listOf(
@@ -138,6 +159,52 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             )
         )
 
+        val correctionCostItems = listOf(
+            CorrectionCostItem(
+                id = 21L,
+                number = 2,
+                partnerReportNumber = 3,
+                lumpSum = null,
+                unitCost = null,
+                costCategory = ReportBudgetCategory.StaffCosts,
+                investmentId = null,
+                investmentNumber = null,
+                investmentWorkPackageNumber = null,
+                contractId = 821L,
+                internalReferenceNumber = null,
+                invoiceNumber = null,
+                invoiceDate = null,
+                description = emptySet(),
+                comment = emptySet(),
+                declaredAmount = BigDecimal.valueOf(1233.33),
+                currencyCode = "EUR",
+                declaredAmountAfterSubmission = BigDecimal.valueOf(1233.33)
+            )
+        )
+
+        val correctionCostItemsDTOs = listOf(
+            CorrectionCostItemDTO(
+                id = 21L,
+                number = 2,
+                partnerReportNumber = 3,
+                lumpSum = null,
+                unitCost = null,
+                costCategory = BudgetCategoryDTO.StaffCosts,
+                investmentId = null,
+                investmentNumber = null,
+                investmentWorkPackageNumber = null,
+                contractId = 821L,
+                internalReferenceNumber = null,
+                invoiceNumber = null,
+                invoiceDate = null,
+                description = emptySet(),
+                comment = emptySet(),
+                declaredAmount = BigDecimal.valueOf(1233.33),
+                currencyCode = "EUR",
+                declaredAmountAfterSubmission = BigDecimal.valueOf(1233.33)
+            )
+        )
+
     }
 
     @MockK
@@ -160,6 +227,12 @@ class AuditControlCorrectionControllerTest: UnitTest() {
 
     @MockK
     private lateinit var listPreviouslyClosedCorrection: ListPreviouslyClosedCorrectionInteractor
+
+    @MockK
+    private lateinit var getAvailableProcurements: GetCorrectionAvailableProcurementsInteractor
+
+    @MockK
+    private lateinit var getCorrectionCostItems: GetCorrectionCostItemsInteractor
 
     @InjectMockKs
     lateinit var projectAuditCorrectionController: AuditControlCorrectionController
@@ -208,6 +281,22 @@ class AuditControlCorrectionControllerTest: UnitTest() {
         ).isEqualTo(AuditStatusDTO.Closed)
 
         verify(exactly = 1) { closeProjectCorrection.closeCorrection(45L) }
+    }
+
+    @Test
+    fun getAvailableProcurements() {
+        every { getAvailableProcurements.getAvailableProcurements(CORRECTION_ID) } returns listOf(IdNamePair(1L, "PC01"))
+        assertThat(
+            projectAuditCorrectionController.listCorrectionAvailableProcurements(0L, AUDIT_CONTROL_ID, CORRECTION_ID)
+        ).containsExactly(IdNamePairDTO(1L, "PC01"))
+    }
+
+    @Test
+    fun getAvailableCostItems() {
+        every { getCorrectionCostItems.getCostItems(CORRECTION_ID, Pageable.unpaged()) } returns PageImpl(correctionCostItems)
+        assertThat(
+            projectAuditCorrectionController.listCorrectionAvailableCostItems(0L, AUDIT_CONTROL_ID, CORRECTION_ID, Pageable.unpaged())
+        ).containsExactlyElementsOf(correctionCostItemsDTOs)
     }
 
 }

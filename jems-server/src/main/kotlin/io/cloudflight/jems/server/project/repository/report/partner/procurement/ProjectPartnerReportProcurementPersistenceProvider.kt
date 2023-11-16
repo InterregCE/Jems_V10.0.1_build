@@ -82,4 +82,8 @@ class ProjectPartnerReportProcurementPersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
+    override fun existsByProcurementIdAndPartnerReportIdIn(procurementId: Long, partnerReportIds: Set<Long>): Boolean {
+        return reportProcurementRepository.existsByIdAndReportEntityIdIn(procurementId, partnerReportIds)
+    }
 }

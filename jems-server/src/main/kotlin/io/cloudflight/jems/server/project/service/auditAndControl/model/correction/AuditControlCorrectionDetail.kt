@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.model.correction
 
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import java.time.LocalDate
 
 data class AuditControlCorrectionDetail(
@@ -19,4 +20,11 @@ data class AuditControlCorrectionDetail(
     val partnerId: Long?,
     val partnerReportId: Long?,
     val programmeFundId: Long?,
-)
+
+    val costCategory: BudgetCostCategory?,
+    val expenditureCostItem: CorrectionCostItem?,
+    val procurementId: Long?,
+) {
+
+    fun isPartnerRepostSet() = this.partnerReportId != null
+}

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {RoutingService} from '@common/services/routing.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {
@@ -11,7 +11,7 @@ import {
   ProjectCorrectionFinancialDescriptionService,
   ProjectCorrectionFinancialDescriptionUpdateDTO,
   ProjectCorrectionIdentificationUpdateDTO,
-  UserRoleDTO,
+  UserRoleDTO, PageCorrectionCostItemDTO,
   AuditControlCorrectionDTO,
 } from '@cat/api';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -25,6 +25,7 @@ import {
   AuditControlCorrectionStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {Tables} from '@common/utils/tables';
 
 @UntilDestroy()
 @Injectable({
@@ -33,6 +34,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class AuditControlCorrectionDetailPageStore {
 
   AUDIT_CONTROL_CORRECTION_PATH = 'correction/';
+  private static readonly COST_ITEMS_DEFAULT_PAGE_SIZE = 5;
 
   projectId$: Observable<number>;
   auditControlId$: Observable<number>;
@@ -45,6 +47,13 @@ export class AuditControlCorrectionDetailPageStore {
   updatedCorrection$ = new Subject<ProjectAuditControlCorrectionDTO>();
   financialDescription$: Observable<ProjectCorrectionFinancialDescriptionDTO>;
   savedFinancialDescription$ = new Subject<ProjectCorrectionFinancialDescriptionDTO>();
+
+  costItemsPage$: Observable<PageCorrectionCostItemDTO>;
+  costItemsPageSize$ = new BehaviorSubject<number>(AuditControlCorrectionDetailPageStore.COST_ITEMS_DEFAULT_PAGE_SIZE);
+  costItemsPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
+  refreshScopeLimitationData$ = new BehaviorSubject(null);
+
+  availableProcurements$: Observable<Map<number, string>>;
 
   constructor(
     private routingService: RoutingService,
@@ -64,6 +73,8 @@ export class AuditControlCorrectionDetailPageStore {
     this.financialDescription$ = this.financialDescription();
     this.canEdit$ = this.canEdit();
     this.canClose$ = this.canClose();
+    this.costItemsPage$ = this.correctionAvailableCostItems();
+    this.availableProcurements$ = this.correctionAvailableProcurements();
   }
 
   saveCorrection(id: number, correctionData: ProjectCorrectionIdentificationUpdateDTO): Observable<ProjectAuditControlCorrectionDTO> {
@@ -71,11 +82,12 @@ export class AuditControlCorrectionDetailPageStore {
       this.auditControlId$,
       this.projectId$,
     ]).pipe(
-      switchMap(([auditControlId, projectId]) =>
-        this.projectAuditControlCorrectionService.updateCorrectionIdentification(auditControlId, id, projectId, correctionData)
-      ),
-      tap(correction => this.updatedCorrection$.next(correction)),
-      tap(correction => Log.info('Updated correction', this, correction))
+        switchMap(([auditControlId, projectId]) =>
+          this.projectAuditControlCorrectionService.updateCorrectionIdentification(auditControlId, id, projectId, correctionData)
+        ),
+        tap(correction => this.updatedCorrection$.next(correction)),
+        tap(correction => this.refreshScopeLimitationData$.next(null)),
+        tap(correction => Log.info('Updated correction', this, correction))
     );
   }
 
@@ -127,6 +139,7 @@ export class AuditControlCorrectionDetailPageStore {
 
     return merge(initialCorrection, this.updatedCorrection$);
   }
+
 
   private financialDescription(): Observable<ProjectCorrectionFinancialDescriptionDTO> {
     const initialData$ = combineLatest([
@@ -190,6 +203,41 @@ export class AuditControlCorrectionDetailPageStore {
       tap(status => this.auditControlCorrectionStore.refreshCorrections$.next()),
       tap(status => Log.info('Changed status for correction', this, correctionId, status)),
     );
+  }
+
+  private correctionAvailableCostItems(): Observable<PageCorrectionCostItemDTO> {
+    return combineLatest([
+        this.correction$,
+        this.refreshScopeLimitationData$,
+        this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
+        this.reportCorrectionsAuditControlDetailPageStore.projectId$,
+        this.correctionId$,
+        this.costItemsPageIndex$,
+        this.costItemsPageSize$
+    ])
+        .pipe(
+            filter(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) => correction.type === 'LinkedToInvoice' && correction.status === 'Ongoing'),
+            switchMap(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) =>
+                this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize)
+            )
+        );
+  }
+
+  private correctionAvailableProcurements(): Observable<Map<number, string>> {
+    return combineLatest([
+      this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
+      this.reportCorrectionsAuditControlDetailPageStore.projectId$,
+      this.correction$,
+      this.refreshScopeLimitationData$,
+    ])
+        .pipe(
+            filter(([auditControlId, projectId, correction]) => !!correction.partnerId && !!correction.partnerReportId),
+            switchMap(([auditControlId, projectId, identification]) =>
+                this.projectAuditControlCorrectionService.listCorrectionAvailableProcurements(Number(auditControlId), Number(identification.id), Number(projectId))
+            ),
+            map(procurements =>
+                new Map(procurements.map(procurement => [procurement.id, procurement.name])))
+        );
   }
 
 }

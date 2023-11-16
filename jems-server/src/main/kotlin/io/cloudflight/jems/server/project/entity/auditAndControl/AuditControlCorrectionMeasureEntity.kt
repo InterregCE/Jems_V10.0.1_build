@@ -26,4 +26,4 @@ class AuditControlCorrectionMeasureEntity(
 
     var comment: String? = null,
 
-)
+    )
