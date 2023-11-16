@@ -160,6 +160,7 @@
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
+    <ID>NestedBlockDepth:BrokenReportCurrencyCheck.kt$BrokenReportCurrencyCheck$private fun List&lt;ExpenditureWithBrokenRate&gt;.toNiceFormat(): String</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>

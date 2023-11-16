@@ -19,6 +19,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -74,6 +75,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
         val savedSlot = slot<Iterable<NotificationEntity>>()
         every { notificationRepository.saveAll(capture(savedSlot)) } returnsArgument 0
 
+        val groupId = UUID.randomUUID()
         val toSave = NotificationInApp(
             subject = "subject",
             body = "body",
@@ -88,6 +90,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
             recipientsInApp = setOf("notify.me@inApp"),
             recipientsEmail = setOf("notify.me@email"),
             emailTemplate = "template.html",
+            groupId = groupId,
         )
 
         val expectedEpochSecond = 1679050521L
@@ -95,6 +98,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
 
         persistence.saveNotification(toSave)
         assertThat(savedSlot.captured).hasSize(1)
+        assertThat(savedSlot.captured.first().groupIdentifier).isEqualTo(groupId)
         assertThat(savedSlot.captured.first().account).isEqualTo(userNotifyMe)
         assertThat(savedSlot.captured.first().created).isEqualTo(LocalDateTime.ofEpochSecond(expectedEpochSecond, expectedNano, ZoneOffset.UTC))
         assertThat(savedSlot.captured.first().project).isEqualTo(project)
@@ -154,6 +158,46 @@ class NotificationPersistenceProviderTest : UnitTest() {
                 type = NotificationType.ProjectSubmittedStep1,
             )
         )
+    }
+
+    @Test
+    fun saveOrUpdateSystemNotification() {
+        val emails = setOf("email1, email2")
+        val user1 = mockk<UserEntity>()
+        val user2 = mockk<UserEntity>()
+        val groupId = UUID.randomUUID()
+
+        every { userRepository.findAllByEmailInIgnoreCaseOrderByEmail(emails) } returns
+                listOf(user1, user2)
+
+        every { notificationRepository.deleteAllByGroupIdentifier(groupId) } answers { }
+        val slotSaved = slot<Iterable<NotificationEntity>>()
+        every { notificationRepository.saveAll(capture(slotSaved)) } returnsArgument 0
+
+        val toSave = NotificationInApp(
+            subject = "subject",
+            body = "body",
+            type = NotificationType.SystemMessage,
+            time = TIME,
+            templateVariables = mockk(),
+            recipientsInApp = emails,
+            recipientsEmail = emptySet(),
+            emailTemplate = null,
+            groupId = groupId,
+        )
+
+        persistence.saveOrUpdateSystemNotification(toSave)
+
+        verify(exactly = 1) { notificationRepository.deleteAllByGroupIdentifier(groupId) }
+        assertThat(slotSaved.captured).hasSize(2)
+        assertThat(slotSaved.captured.first().account).isEqualTo(user1)
+        assertThat(slotSaved.captured.first().groupIdentifier).isEqualTo(groupId)
+        assertThat(slotSaved.captured.first().subject).isEqualTo("subject")
+        assertThat(slotSaved.captured.first().body).isEqualTo("body")
+        assertThat(slotSaved.captured.last().account).isEqualTo(user2)
+        assertThat(slotSaved.captured.last().groupIdentifier).isEqualTo(groupId)
+        assertThat(slotSaved.captured.last().subject).isEqualTo("subject")
+        assertThat(slotSaved.captured.last().body).isEqualTo("body")
     }
 
 }

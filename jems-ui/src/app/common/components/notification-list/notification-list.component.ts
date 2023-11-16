@@ -23,6 +23,8 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 @UntilDestroy()
 export class NotificationListComponent implements OnInit{
 
+  type = NotificationDTO.TypeEnum;
+
   displayedColumns = ['created', 'call', 'project', 'acronym', 'partner', 'subject'];
   displayedColumnsWithExpanded = [...this.displayedColumns, 'expand'];
   expandedElement: NotificationDTO | null;

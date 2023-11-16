@@ -10,4 +10,7 @@ interface NotificationPersistence {
     fun saveNotification(notification: NotificationInApp)
 
     fun getUserNotifications(userId: Long, pageable: Pageable): Page<UserNotification>
+
+    fun saveOrUpdateSystemNotification(notification: NotificationInApp)
+
 }

@@ -151,26 +151,6 @@ class ProjectNotificationRecipientServiceTest {
             gdpr = false
         )
 
-        val partnerCollaboratorActiveButFlagFalse = PartnerCollaborator(
-            userId = 43L,
-            partnerId = 3L,
-            userEmail = "pp.collaborator.noNotifications@jems.eu",
-            sendNotificationsToEmail = false,
-            userStatus = UserStatus.ACTIVE,
-            level = PartnerCollaboratorLevel.EDIT,
-            gdpr = false
-        )
-
-        val partnerCollaboratorDeactivated = PartnerCollaborator(
-            userId = 431L,
-            partnerId = 31L,
-            userEmail = "pp.collaborator.deactivated@jems.eu",
-            sendNotificationsToEmail = true,
-            userStatus = UserStatus.INACTIVE,
-            level = PartnerCollaboratorLevel.EDIT,
-            gdpr = false
-        )
-
         val programmeUser = UserSummary(
             id = 101L,
             email = "programme@user",
@@ -282,4 +262,13 @@ class ProjectNotificationRecipientServiceTest {
             "pp.collaborator@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE)
         ))
     }
+
+    @Test
+    fun getSystemAdminEmails() {
+        every { userPersistence.findAllWithRoleIdIn(setOf(1L)) } returns listOf(programmeUser)
+        assertThat(service.getSystemAdminEmails()).isEqualTo(mapOf(
+            "programme@user" to UserEmailNotification(true, UserStatus.ACTIVE)
+        ))
+    }
+
 }

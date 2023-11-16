@@ -44,4 +44,7 @@ enum class NotificationTypeDTO {
     ControlCommunicationFileDelete,
     ProjectReportVerificationFileUpload,
     ProjectReportVerificationFileDelete,
+
+    // System Message
+    SystemMessage,
 }
