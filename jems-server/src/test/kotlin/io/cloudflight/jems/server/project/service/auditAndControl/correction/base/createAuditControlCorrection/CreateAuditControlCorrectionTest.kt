@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -54,6 +55,7 @@ class CreateAuditControlCorrectionTest: UnitTest() {
             status = AuditControlStatus.Ongoing,
             type = AuditControlCorrectionType.LinkedToInvoice,
             followUpOfCorrectionType = CorrectionFollowUpType.No,
+            defaultImpact = CorrectionImpactAction.NA,
         )
 
     }

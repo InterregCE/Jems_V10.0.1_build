@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import org.springframework.data.domain.Page
 
 fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
@@ -26,9 +27,13 @@ fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     partnerId = partnerReport?.partnerId,
     partnerReportId = partnerReport?.id,
     programmeFundId = programmeFund?.id,
+    impact = AuditControlCorrectionImpact(
+        action = impact,
+        comment = impactComment,
+    ),
     costCategory =  costCategory,
     expenditureCostItem = expenditure?.toCorrectionCostItem(),
-    procurementId = procurementId
+    procurementId = procurementId,
 )
 
 fun AuditControlCorrectionEntity.toSimpleModel() = AuditControlCorrection(
@@ -64,9 +69,11 @@ fun AuditControlCorrectionCreate.toEntity(auditControlEntity: AuditControlEntity
     lateRepayment = null,
     partnerReport = null,
     programmeFund = null,
+    impact = defaultImpact,
+    impactComment = "",
     expenditure = null,
     costCategory = null,
-    procurementId = null
+    procurementId = null,
 )
 
 fun Page<PartnerReportExpenditureCostEntity>.toPagedModel() = map { it.toCorrectionCostItem() }

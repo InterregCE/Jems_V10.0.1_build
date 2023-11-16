@@ -1,0 +1,30 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.impact)"
+           (save)="update()">
+
+    <div jemsFormLayout class="mb-3">
+        <h3>{{ 'auditControl.correction.impact.title' | translate }}</h3>
+    </div>
+
+    <form [formGroup]="form" jemsFormLayout>
+        <mat-form-field>
+            <mat-label>{{ 'auditControl.correction.impact.action.title' | translate }}</mat-label>
+            <mat-select formControlName="action" [disabled]="!data.canEdit" required>
+                <mat-option *ngFor="let action of actions" [value]="action" role="option">
+                    {{ 'auditControl.correction.impact.action.' + action | translate }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <jems-expandable-textarea
+                jemsMultiColumnRow
+                [control]="form.controls.comment"
+                [errors]="form.controls.comment?.errors"
+                label="project.application.reporting.corrections.programme.measure.comment"
+                [minRows]="1"
+                [maxRows]="5"
+                [characterLimit]="2000"
+                class="comment">
+        </jems-expandable-textarea>
+    </form>
+</jems-form>

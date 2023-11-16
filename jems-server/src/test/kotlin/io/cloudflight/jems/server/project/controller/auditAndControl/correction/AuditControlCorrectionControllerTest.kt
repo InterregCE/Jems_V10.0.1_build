@@ -7,6 +7,8 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.Correction
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionFollowUpTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AuditControlCorrectionImpactDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.CorrectionImpactActionDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.server.UnitTest
@@ -26,6 +28,8 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -59,9 +63,13 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            impact = AuditControlCorrectionImpact(
+                action = CorrectionImpactAction.RepaymentByNA,
+                comment = "impact comment",
+            ),
             costCategory = null,
             procurementId = null,
-            expenditureCostItem = null
+            expenditureCostItem = null,
         )
 
         private val expectedCorrection = ProjectAuditControlCorrectionDTO(
@@ -78,9 +86,13 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            impact = AuditControlCorrectionImpactDTO(
+                action = CorrectionImpactActionDTO.RepaymentByNA,
+                comment = "impact comment",
+            ),
             costCategory = null,
             procurementId = null,
-            expenditureCostItem = null
+            expenditureCostItem = null,
         )
 
         private val extendedCorrection = AuditControlCorrectionDetail(
@@ -97,9 +109,13 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            impact = AuditControlCorrectionImpact(
+                action = CorrectionImpactAction.RepaymentByNA,
+                comment = "impact comment",
+            ),
             costCategory = null,
             procurementId = null,
-            expenditureCostItem = null
+            expenditureCostItem = null,
         )
         private val expectedExtendedCorrection = ProjectAuditControlCorrectionDTO(
             id = 1L,
@@ -115,9 +131,13 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             partnerId = 96L,
             partnerReportId = 960L,
             programmeFundId = 9605L,
+            impact = AuditControlCorrectionImpactDTO(
+                action = CorrectionImpactActionDTO.RepaymentByNA,
+                comment = "impact comment",
+            ),
             costCategory = null,
             procurementId = null,
-            expenditureCostItem = null
+            expenditureCostItem = null,
         )
 
         private val correctionLines = listOf(
