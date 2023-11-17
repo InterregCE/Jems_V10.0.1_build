@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
+import java.util.UUID
 
 @Service
 class GlobalProjectNotificationService(
@@ -28,6 +29,25 @@ class GlobalProjectNotificationService(
     private val eventPublisher: ApplicationEventPublisher,
     private val programmeDataPersistence: ProgrammeDataPersistence,
 ) : GlobalProjectNotificationServiceInteractor {
+
+    companion object {
+        private fun buildSystemNotificationFor(
+            subject: String,
+            body: String,
+            id: UUID,
+            recipients: Set<String>,
+        ) = NotificationInApp(
+            subject = subject,
+            body = body,
+            type = NotificationType.SystemMessage,
+            time = ZonedDateTime.now(),
+            templateVariables = emptyMap(),
+            recipientsInApp = recipients,
+            recipientsEmail = emptySet(),
+            emailTemplate = null,
+            groupId = id,
+        )
+    }
 
     @Transactional
     override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) {
@@ -41,6 +61,13 @@ class GlobalProjectNotificationService(
                     || type.isPartnerReportFileNotification() -> sendPartnerReportNotification(type, variables)
             else -> Unit
         }
+    }
+
+    @Transactional
+    override fun sendSystemNotification(subject: String, body: String, id: UUID) {
+        val recipients = recipientsService.getSystemAdminEmails().keys
+        val notification = buildSystemNotificationFor(subject = subject, body = body, id, recipients)
+        notificationPersistence.saveOrUpdateSystemNotification(notification)
     }
 
     fun sendProjectNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
@@ -78,7 +105,7 @@ class GlobalProjectNotificationService(
         emails: Map<String, UserEmailNotification>,
         variables: Map<NotificationVariable, Any>,
     ) {
-        val inAppNotifications = config.toInAppNotificationsFor(emails, variables)
+        val inAppNotifications = config.toInAppNotificationsFor(emails, variables, groupId = UUID.randomUUID())
         notificationPersistence.saveNotification(inAppNotifications)
         eventPublisher.publishEvent(inAppNotifications.buildSendEmailEvent())
     }
@@ -121,6 +148,7 @@ class GlobalProjectNotificationService(
     private fun ProjectNotificationConfiguration.toInAppNotificationsFor(
         users: Map<String, UserEmailNotification>,
         variablesProvided: Map<NotificationVariable, Any>,
+        groupId: UUID,
     ): NotificationInApp {
         val projectId = variablesProvided[NotificationVariable.ProjectId] as Long
         val variables = variablesProvided + getCallVariablesFrom(projectId) + getProgrammeVariables()
@@ -133,6 +161,7 @@ class GlobalProjectNotificationService(
             recipientsInApp = users.keys,
             recipientsEmail = users.filterValues { it.isEmailEnabled && it.isActive() }.keys,
             emailTemplate = "notification.html",
+            groupId = groupId,
         )
     }
 

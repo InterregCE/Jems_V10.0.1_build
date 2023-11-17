@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Repository
 class NotificationPersistenceProvider(
@@ -18,9 +17,9 @@ class NotificationPersistenceProvider(
 
     @Transactional
     override fun saveNotification(notification: NotificationInApp) {
+        val recipients = resolveRecipientsOf(notification)
         val notificationsToSave = notification.toUsers(
-            groupId = UUID.randomUUID(),
-            recipientsResolver = { userRepository.findAllByEmailInIgnoreCaseOrderByEmail(it) },
+            recipients = recipients,
             projectResolver = { projectRepository.getById(it) },
         )
         notificationRepository.saveAll(notificationsToSave)
@@ -29,5 +28,17 @@ class NotificationPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getUserNotifications(userId: Long, pageable: Pageable) =
         notificationRepository.findAllByAccountId(userId, pageable).toModel()
+
+    @Transactional
+    override fun saveOrUpdateSystemNotification(notification: NotificationInApp) {
+        val recipients = resolveRecipientsOf(notification)
+        val notificationsToSave = notification.toUsersNonProject(recipients = recipients)
+
+        notificationRepository.deleteAllByGroupIdentifier(notification.groupId)
+        notificationRepository.saveAll(notificationsToSave)
+    }
+
+    private fun resolveRecipientsOf(notification: NotificationInApp) =
+        userRepository.findAllByEmailInIgnoreCaseOrderByEmail(notification.recipientsInApp)
 
 }

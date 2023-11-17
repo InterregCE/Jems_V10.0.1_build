@@ -43,8 +43,10 @@ enum class NotificationType {
     ControlCommunicationFileUpload,
     ControlCommunicationFileDelete,
     ProjectReportVerificationFileUpload,
-    ProjectReportVerificationFileDelete;
+    ProjectReportVerificationFileDelete,
 
+    // System Message
+    SystemMessage;
 
     companion object {
 
@@ -105,5 +107,8 @@ enum class NotificationType {
     fun isPartnerReportFileNotification() = this in partnerReportFileControlCommunicationNotifications
 
     fun isProjectReportFileNotification() = this in projectFileVerificationCommunicationNotifications
+
+
+    fun isSystemMessage() = this == SystemMessage
 
 }

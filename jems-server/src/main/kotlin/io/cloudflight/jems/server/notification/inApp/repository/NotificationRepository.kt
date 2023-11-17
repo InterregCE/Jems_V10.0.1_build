@@ -6,11 +6,14 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 interface NotificationRepository : JpaRepository<NotificationEntity, Long> {
 
     @EntityGraph("NotificationEntity.withProject")
     fun findAllByAccountId(userId: Long, pageable: Pageable): Page<NotificationEntity>
+
+    fun deleteAllByGroupIdentifier(groupId: UUID)
 
 }
