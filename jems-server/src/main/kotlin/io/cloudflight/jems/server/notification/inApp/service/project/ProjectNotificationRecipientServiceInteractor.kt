@@ -26,4 +26,6 @@ interface ProjectNotificationRecipientServiceInteractor {
         partnerId: Long,
     ): Map<String, UserEmailNotification>
 
+    fun getSystemAdminEmails(): Map<String, UserEmailNotification>
+
 }

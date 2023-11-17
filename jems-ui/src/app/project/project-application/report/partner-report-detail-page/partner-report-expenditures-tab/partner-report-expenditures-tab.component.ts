@@ -575,8 +575,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
     const isParked = reportExpenditureCost.parkingMetadata != null;
-    const isSubmitted = ReportUtil.isPartnerReportSubmittedOrAfter(this.currentReport.status);
-    const conversionRate = isParked || isSubmitted
+    const conversionRate = isParked
       ? reportExpenditureCost.currencyConversionRate
       : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
 
@@ -654,7 +653,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getConversionRateByCode(currencyCode: string, reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): number {
-    if (this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Submitted && reportExpenditureCost) {
+    if (!ReportUtil.isReportOpenInitially(this.currentReport.status) && reportExpenditureCost != null) {
       return reportExpenditureCost.currencyConversionRate;
     }
     return this.currencies.find((currency) => currency.code === currencyCode)?.conversionRate || 0;

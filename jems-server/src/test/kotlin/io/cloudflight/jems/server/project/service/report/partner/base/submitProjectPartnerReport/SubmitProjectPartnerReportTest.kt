@@ -448,6 +448,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(888L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted [Contains sensitive data]")
+
         assertThat(slotRates.captured).containsExactly(
             ProjectPartnerReportExpenditureCurrencyRateChange(630L, BigDecimal.valueOf(254855L, 4), BigDecimal.valueOf(999L, 2)),
             ProjectPartnerReportExpenditureCurrencyRateChange(631L, BigDecimal.valueOf(77895L, 4), BigDecimal.valueOf(623L, 2)),

@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import java.util.UUID
 
 class GlobalProjectNotificationServiceTest : UnitTest() {
 
@@ -117,11 +118,26 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         val notifType = NotificationType.ProjectSubmittedStep1
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns step1submittedToAll
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(step1submittedToAll, PROJECT_ID) } returns mapOf(
+        every {
+            callNotificationConfigPersistence.getActiveNotificationOfType(
+                CALL_ID,
+                notifType
+            )
+        } returns step1submittedToAll
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+                step1submittedToAll,
+                PROJECT_ID
+            )
+        } returns mapOf(
             "manager.inactive@jems.eu" to UserEmailNotification(true, UserStatus.INACTIVE),
         )
-        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(step1submittedToAll, PROJECT_ID) } returns mapOf(
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForPartners(
+                step1submittedToAll,
+                PROJECT_ID
+            )
+        } returns mapOf(
             "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
             "partner.no-email@jems.eu" to UserEmailNotification(false, UserStatus.ACTIVE),
         )
@@ -160,6 +176,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 recipientsInApp = setOf("lead-partner@jems.eu", "partner.no-email@jems.eu", "manager.inactive@jems.eu"),
                 recipientsEmail = setOf("lead-partner@jems.eu"),
                 emailTemplate = "notification.html",
+                groupId = slotNotification.captured.groupId,
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
@@ -167,7 +184,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "Application Step 1 Submitted",
-                    templateVariables = templateVariables.plus("body" to "test step 1").map { Variable(it.key, it.value) }.toSet(),
+                    templateVariables = templateVariables.plus("body" to "test step 1")
+                        .map { Variable(it.key, it.value) }.toSet(),
                     recipients = setOf("lead-partner@jems.eu"),
                     messageType = "ProjectSubmittedStep1",
                 ),
@@ -180,9 +198,24 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         val notifType = NotificationType.ProjectSubmitted
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns submittedNone
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(submittedNone, PROJECT_ID) } returns emptyMap()
-        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(submittedNone, PROJECT_ID) } returns emptyMap()
+        every {
+            callNotificationConfigPersistence.getActiveNotificationOfType(
+                CALL_ID,
+                notifType
+            )
+        } returns submittedNone
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+                submittedNone,
+                PROJECT_ID
+            )
+        } returns emptyMap()
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForPartners(
+                submittedNone,
+                PROJECT_ID
+            )
+        } returns emptyMap()
         every { callPersistence.getCallSummaryById(CALL_ID) } returns mockk {
             every { id } returns CALL_ID
             every { name } returns "call-name"
@@ -218,6 +251,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 recipientsInApp = emptySet(),
                 recipientsEmail = emptySet(),
                 emailTemplate = "notification.html",
+                groupId = slotNotification.captured.groupId,
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
@@ -225,7 +259,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "Application Submitted",
-                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
+                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }
+                        .toSet(),
                     recipients = emptySet(),
                     messageType = "ProjectSubmitted",
                 ),
@@ -238,13 +273,32 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         val notificationType = NotificationType.PartnerReportSubmitted
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notificationType) } returns partnerReportSubmitted
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
-            partnerReportSubmitted, PROJECT_ID) } returns emptyMap()
-        every { projectNotificationRecipientServiceInteractor.getEmailsForSpecificPartner(partnerReportSubmitted, PROJECT_ID, 91L) } returns mapOf(
+        every {
+            callNotificationConfigPersistence.getActiveNotificationOfType(
+                CALL_ID,
+                notificationType
+            )
+        } returns partnerReportSubmitted
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+                partnerReportSubmitted, PROJECT_ID
+            )
+        } returns emptyMap()
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForSpecificPartner(
+                partnerReportSubmitted,
+                PROJECT_ID,
+                91L
+            )
+        } returns mapOf(
             "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
         )
-        every { projectNotificationRecipientServiceInteractor.getEmailsForPartnerControllers(partnerReportSubmitted, 91L) } returns mapOf(
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForPartnerControllers(
+                partnerReportSubmitted,
+                91L
+            )
+        } returns mapOf(
             "controller@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
             "controller.inactive@jems.eu" to UserEmailNotification(true, UserStatus.INACTIVE),
             "controller.no-email@jems.eu" to UserEmailNotification(false, UserStatus.ACTIVE),
@@ -287,9 +341,15 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 type = NotificationType.PartnerReportSubmitted,
                 time = slotNotification.captured.time,
                 templateVariables = templateVariables,
-                recipientsInApp = setOf("lead-partner@jems.eu", "controller@jems.eu", "controller.inactive@jems.eu", "controller.no-email@jems.eu"),
+                recipientsInApp = setOf(
+                    "lead-partner@jems.eu",
+                    "controller@jems.eu",
+                    "controller.inactive@jems.eu",
+                    "controller.no-email@jems.eu"
+                ),
                 recipientsEmail = setOf("lead-partner@jems.eu", "controller@jems.eu"),
                 emailTemplate = "notification.html",
+                groupId = slotNotification.captured.groupId,
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
@@ -297,7 +357,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "PartnerReport Submitted",
-                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
+                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }
+                        .toSet(),
                     recipients = setOf("lead-partner@jems.eu", "controller@jems.eu"),
                     messageType = "PartnerReportSubmitted",
                 ),
@@ -310,10 +371,23 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         val notificationType = NotificationType.ProjectReportSubmitted
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notificationType) } returns projectReportSubmitted
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
-            projectReportSubmitted, PROJECT_ID) } returns emptyMap()
-        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(projectReportSubmitted, PROJECT_ID) } returns mapOf(
+        every {
+            callNotificationConfigPersistence.getActiveNotificationOfType(
+                CALL_ID,
+                notificationType
+            )
+        } returns projectReportSubmitted
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+                projectReportSubmitted, PROJECT_ID
+            )
+        } returns emptyMap()
+        every {
+            projectNotificationRecipientServiceInteractor.getEmailsForPartners(
+                projectReportSubmitted,
+                PROJECT_ID
+            )
+        } returns mapOf(
             "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
             "pp@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE)
         )
@@ -354,6 +428,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 recipientsInApp = setOf("lead-partner@jems.eu", "pp@jems.eu"),
                 recipientsEmail = setOf("lead-partner@jems.eu", "pp@jems.eu"),
                 emailTemplate = "notification.html",
+                groupId = slotNotification.captured.groupId,
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
@@ -361,11 +436,38 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "ProjectReport Submitted",
-                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
+                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }
+                        .toSet(),
                     recipients = setOf("lead-partner@jems.eu", "pp@jems.eu"),
                     messageType = "ProjectReportSubmitted",
                 ),
             )
         )
     }
+
+    @Test
+    fun sendSystemNotification() {
+        every { projectNotificationRecipientServiceInteractor.getSystemAdminEmails() } returns
+                mapOf("sys-admin-user" to mockk())
+        val slotNotification = slot<NotificationInApp>()
+        every { notificationPersistence.saveOrUpdateSystemNotification(capture(slotNotification)) } answers { }
+
+        val uuid = UUID.randomUUID()
+        service.sendSystemNotification("title", "body", uuid)
+
+        assertThat(slotNotification.captured).isEqualTo(
+            NotificationInApp(
+                subject = "title",
+                body = "body",
+                type = NotificationType.SystemMessage,
+                time = slotNotification.captured.time,
+                templateVariables = emptyMap(),
+                recipientsInApp = setOf("sys-admin-user"),
+                recipientsEmail = emptySet(),
+                emailTemplate = null,
+                groupId = uuid,
+            )
+        )
+    }
+
 }

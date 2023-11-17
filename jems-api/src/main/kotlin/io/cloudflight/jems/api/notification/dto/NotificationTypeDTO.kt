@@ -33,12 +33,14 @@ enum class NotificationTypeDTO {
     ControlCommunicationFileUpload,
     ControlCommunicationFileDelete,
 
-
     // Project Report
     ProjectReportSubmitted,
     ProjectReportVerificationOngoing,
     ProjectReportVerificationDoneNotificationSent,
     ProjectReportVerificationFinalized,
     ProjectReportVerificationFileUpload,
-    ProjectReportVerificationFileDelete;
+    ProjectReportVerificationFileDelete,
+
+    // System Message
+    SystemMessage,
 }
