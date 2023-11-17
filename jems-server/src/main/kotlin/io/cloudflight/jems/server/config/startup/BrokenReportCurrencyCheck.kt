@@ -26,22 +26,22 @@ class BrokenReportCurrencyCheck(
         private val logger = LoggerFactory.getLogger(BrokenReportCurrencyCheck::class.java)
         private val identifier = UUID.fromString("f2245931-2808-43b8-9994-875231c982bf")
 
-        private const val successSubject = "Check for errors in expenditures done - No errors detected"
+        private const val successSubject = "Jems v8.0.5 - Check for errors in expenditures done - No errors detected"
         private val successBody = """
-            |We performed a check to ensure submitted currency rates for all expenditures are matching currencies from
+            |A check was performed to ensure submitted currency rates for all expenditures are matching currencies from
             |that particular month.
 
             |We did not detect any issue, so you do not have to perform any action and you can continue using Jems.
         """.trimMargin()
 
-        private fun errorSubject(amount: Int) = "Check for errors in expenditures done - $amount issues needs your attention!"
+        private fun errorSubject(amount: Int) = "Jems v8.0.5 - Check for errors in expenditures done - $amount issues needs your attention!"
         private fun errorBody(listOfIssues: String) = """
-            |We performed a check to ensure submitted currency rates for all expenditures are matching currencies from
+            |A check was performed to ensure submitted currency rates for all expenditures are matching currencies from
             |that particular month.
 
             |Unfortunately, we detected that during resubmission of some partner reports, those currency rates got broken.
 
-            |Please, read Jems v8.0.5 release notes, where you will find guidance how to proceed with those issues.
+            |Please, read Jems v8.0.5 release notes (jems.interact-eu.net/manual) for further guidance on how to proceed with the detected issues.
 
             |System found following expenditures suffering from conversion-rate bug:
             |(if list is too long to show, complete list is in system log)
