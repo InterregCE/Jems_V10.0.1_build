@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,6 +20,7 @@ class CorrectionIdentificationValidator(
     private val allowedDataService: GetPartnerAndPartnerReportDataService,
     private val partnerReportExpenditurePersistenceProvider: ProjectPartnerReportExpenditurePersistenceProvider,
     private val partnerReportProcurementPersistence: ProjectPartnerReportProcurementPersistenceProvider,
+    private val reportPersistence: ProjectPartnerReportPersistence,
 ) {
 
     fun validate(
@@ -46,12 +48,11 @@ class CorrectionIdentificationValidator(
         validateOptionalScope(
             updatedData = correctionUpdate,
             correction = correction,
-            allowedReportData = allowedReportData
         )
 
     }
 
-    private fun validateLinkedCorrectionScope(correctionUpdate: AuditControlCorrectionUpdate, correction: AuditControlCorrectionDetail) {
+    private fun validateLinkedToInvoiceCorrectionScope(correctionUpdate: AuditControlCorrectionUpdate, correction: AuditControlCorrectionDetail) {
         if (correctionUpdate.expenditureId != null) {
             checkExpenditureIsValidForSelectedPartnerReport(correctionUpdate, correction)
         }
@@ -76,31 +77,29 @@ class CorrectionIdentificationValidator(
     }
 
 
-    private fun validateNotLinkedCorrectionScope(
-        correctionIdentificationUpdate: AuditControlCorrectionUpdate,
-        allowedReportData: List<CorrectionAvailablePartner>
+    private fun validateLinkedToCostOptionCorrectionScope(
+        correctionUpdateData: AuditControlCorrectionUpdate,
+        correction: AuditControlCorrectionDetail
     ) {
-        checkExpenditureIsNull(correctionIdentificationUpdate)
+        checkExpenditureIsNull(correctionUpdateData)
 
-        if (correctionIdentificationUpdate.procurementId != null) {
-            val partnerDataForSelectedReport =
-                allowedReportData.firstOrNull { partnerData ->
-                    partnerData.availableReports.firstOrNull { it.id == correctionIdentificationUpdate.partnerReportId } != null
-                }
-            val partnerAvailableReportIds = partnerDataForSelectedReport?.availableReports?.map { it.id }?.toSet() ?: emptySet()
-
+        if (correctionUpdateData.procurementId != null) {
             checkProcurementIsValidForSelectedReport(
-                correctionIdentificationUpdate.procurementId,
-                partnerAvailableReportIds
+                correctionUpdateData.procurementId,
+                correctionUpdateData.partnerReportId,
+                correction.partnerId!!
             )
         }
 
     }
 
-    private fun checkProcurementIsValidForSelectedReport(procurementId: Long, reportIds: Set<Long>) {
+    private fun checkProcurementIsValidForSelectedReport(procurementId: Long, partnerReportId: Long, partnerId: Long) {
         val exists = partnerReportProcurementPersistence.existsByProcurementIdAndPartnerReportIdIn(
             procurementId = procurementId,
-            partnerReportIds = reportIds
+            partnerReportIds = reportPersistence.getReportIdsBefore(
+                partnerId = partnerId,
+                beforeReportId = partnerReportId
+            ).plus(partnerReportId)
         )
         if (exists.not()) {
              throw ProcurementNotValidException()
@@ -134,12 +133,11 @@ class CorrectionIdentificationValidator(
     private fun validateOptionalScope(
         updatedData: AuditControlCorrectionUpdate,
         correction: AuditControlCorrectionDetail,
-        allowedReportData: List<CorrectionAvailablePartner>
     ) {
         if (correction.type == AuditControlCorrectionType.LinkedToInvoice) {
-            validateLinkedCorrectionScope(updatedData, correction)
+            validateLinkedToInvoiceCorrectionScope(updatedData, correction)
         } else {
-            validateNotLinkedCorrectionScope(updatedData, allowedReportData)
+            validateLinkedToCostOptionCorrectionScope(updatedData, correction)
         }
     }
 

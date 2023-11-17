@@ -312,30 +312,27 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             every { projectId } returns 150L
         }
 
-
         every { allowedDataService.getPartnerAndPartnerReportData(150L) } returns listOf(
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
                         availablePayments = emptyList(),
-                    ),
-                    CorrectionAvailablePartnerReport(id = 849, 2, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
-                    ),
-                    CorrectionAvailablePartnerReport(id = 871, 3, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
-                    ),
+                    )
                 ),
             )
         )
 
 
+     every { partnerReportPersistence.getReportIdsBefore(
+         partnerId = 1L,
+         beforeReportId = reportId
+     ) } returns setOf(847)
+
+
        every { partnerReportProcurementPersistence.existsByProcurementIdAndPartnerReportIdIn(
            procurementId = procurementId,
-           partnerReportIds = setOf(847L, 849L, 871L)
+           partnerReportIds = setOf(847)
        ) } returns false
 
         assertThrows<ProcurementNotValidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }

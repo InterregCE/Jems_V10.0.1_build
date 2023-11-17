@@ -193,13 +193,16 @@
   </form>
 
   <ng-container *ngIf="isCostItemTableVisible"
-                [ngTemplateOutlet]="costItemsTable"
+                [ngTemplateOutlet]="data.costItemsTableConfig.dataSource?.numberOfElements > 0 ? costItemsTable : noCostItemsMessage"
                 [ngTemplateOutletContext]="{
-                  dataSource: costItemsPage | async,
+                  dataSource: data.costItemsTableConfig.dataSource,
+                  tableConfig: data.costItemsTableConfig.columnConfig,
+                  displayedColumns: data.costItemsTableConfig.availableColumns,
                   data: data,
                   isOngoing: data.correction.status === this.CorrectionStatusEnum.Ongoing
                 }">
   </ng-container>
+
 
   <jems-alert *ngIf="error$ | async as error"
               [show]="!!error.i18nMessage?.i18nKey"
@@ -211,17 +214,20 @@
 
 <ng-template #costItemsTable
              let-dataSource="dataSource"
+             let-tableConfig="tableConfig"
+             let-displayedColumns="displayedColumns"
              let-data="data"
              let-isOngoing="isOngoing">
 
   <mat-table jemsNoWidthLimit
-             [dataSource]="isOngoing ? dataSource?.content : [data.correction.expenditureCostItem]">
+             [dataSource]="dataSource?.content"
+              [jemsTableConfig]="tableConfig">
 
     <ng-container *ngIf="isOngoing" matColumnDef="select" sticky>
       <mat-header-cell mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
-        <span jemsText maxLines="2">{{ 'project.application.reporting.corrections.cost.table.column.select' | translate }}</span>
+        <span jemsText maxLines="1">{{ 'project.application.reporting.corrections.cost.table.column.select' | translate }}</span>
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let element">
+      <mat-cell  mat-cell *matCellDef="let element">
         <mat-radio-button
                 [value]="element.id"
                 (change)="setCostItemValue($event.value)"
@@ -233,7 +239,7 @@
     <ng-container matColumnDef="id">
       <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costId' | translate}} </mat-header-cell>
       <mat-cell *matCellDef="let element">
-        <a [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/expenditures/'">
+        <a jemsText maxLines="1" [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/expenditures/'">
           R.{{element.partnerReportNumber}}.{{element.number}}
         </a>
       </mat-cell>
@@ -241,28 +247,34 @@
 
     <ng-container matColumnDef="unitCostsAndLumpSums">
       <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxWidth="120">
+        <span jemsText maxLines="2">
              {{'project.application.reporting.corrections.cost.table.column.costAndLumpSum' | translate}}
         </span>
       </mat-header-cell>
       <mat-cell *matCellDef="let element">
-        <span jemsText maxWidth="120"
-              class="text-overflow-ellipsis">
-            {{element.lumpSum ? (element.lumpSum?.name | translateByInputLanguage | async) :
-                (element.unitCost?.name | translateByInputLanguage | async)}}
+        <span class="text-overflow-ellipsis"
+        [matTooltip]="(element.lumpSum ? element.lumpSum?.name : element.unitCost?.name) | translateByInputLanguage | async ">
+            {{(element.lumpSum ? element.lumpSum?.name : element.unitCost?.name) | translateByInputLanguage | async }}
         </span>
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="costCategory">
-      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costCategory' | translate}} </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.costCategory' | translate}}</span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element">
-        {{ ('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate }}
+       <span class="text-overflow-ellipsis"
+             [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate ">
+         {{ ('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate }}
+       </span>
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="investmentNo">
-      <mat-header-cell *matHeaderCellDef> Investment Number</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.investment' | translate}}</span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element">
         {{element.investmentId ?  'I' + element.investmentWorkPackageNumber + '.' + element.investmentNumber : '' }}
       </mat-cell>
@@ -270,7 +282,9 @@
 
     <ng-container matColumnDef="procurement">
       <mat-header-cell
-              *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.procurement' | translate}}</mat-header-cell>
+              *matHeaderCellDef>
+        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.procurement' | translate}}</span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element">
         <a [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/procurements/' + element.contractId ">
           {{data.availableProcurements.get(element.contractId)}}
@@ -280,7 +294,7 @@
 
     <ng-container matColumnDef="internalReference">
       <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxWidth="100">
+        <span jemsText  maxLines="2">
           {{'project.application.reporting.corrections.cost.table.column.internalReference'  | translate}}
         </span>
       </mat-header-cell>
@@ -288,18 +302,22 @@
     </ng-container>
 
     <ng-container matColumnDef="invoiceNo">
-      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.invoice' | translate}}</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.invoice' | translate}}</span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.invoiceNumber}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="invoiceDate">
-      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.invoiceDate' | translate}} </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.invoiceDate' | translate}} </span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element?.invoiceDate  | localeDate }} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="declaredAmount">
       <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxWidth="100">
+       <span jemsText maxLines="2">
            {{'project.application.reporting.corrections.cost.table.column.amount' | translate}}
         </span>
       </mat-header-cell>
@@ -308,18 +326,20 @@
 
     <ng-container matColumnDef="currency">
       <mat-header-cell *matHeaderCellDef>
-        {{'project.application.reporting.corrections.cost.table.column.currencyCode' | translate}}
+        <span jemsText maxLines="1">{{'project.application.reporting.corrections.cost.table.column.currencyCode' | translate}}</span>
       </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element?.currencyCode}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="declaredAmountEur">
-      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.amountEuro' | translate}} </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.amountEuro' | translate}}</span>
+      </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element?.declaredAmountAfterSubmission | asMoney}} </mat-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="costItemsDisplayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: costItemsDisplayedColumns;"></mat-row>>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>>
   </mat-table>
 
   <jems-paginator *ngIf="isOngoing"
@@ -330,4 +350,12 @@
                   (pageSizeChanged)="costItemsPageSize$.next($event)">
   </jems-paginator>
 
+</ng-template>
+
+<ng-template #noCostItemsMessage>
+  <jems-alert [closable]="false"
+              [show]="true"
+              [type]="Alert.INFO">
+    <p>{{'project.application.reporting.corrections.identification.cost.option.missing' | translate}}</p>
+  </jems-alert>
 </ng-template>
