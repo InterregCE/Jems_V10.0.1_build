@@ -80,8 +80,8 @@ context('Payments tests', () => {
                     assertPaymentProjectId(row, applicationId);
                     assertProjectAcronym(row, application.identification.acronym);
                     assertClaimNo(row, '0');
-                    assertSubmissionDate(row, date.format(new Date, 'MM/DD/YYYY'));
-                    assertMAApprovalDate(row, date.format(new Date, 'MM/DD/YYYY'));
+                    assertSubmissionDate(row, new Intl.DateTimeFormat().format(new Date));
+                    assertMAApprovalDate(row, new Intl.DateTimeFormat().format(new Date));
                     assertTotalApproved(row, '1.999,00');
                     assertFund(row, 'OTHER');
                     assertApprovedPerFund(row, '293,05');
@@ -227,7 +227,7 @@ context('Payments tests', () => {
 
             cy.loginByRequest(user.applicantUser.email);
             cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborators);
-            
+
             // group order 2
             cy.addPartnerReport(partnerId).then(partnerReportId => {
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
@@ -244,13 +244,13 @@ context('Payments tests', () => {
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
               partnerReportPage.verifyAmountsInTables(testData.expectedResults.afterPayment);
             });
-            
+
             // group order 5
             cy.startModification(applicationId, user.programmeUser.email);
             cy.updatePartnerCofinancing(partnerId, testData.modifiedCofinancing);
             cy.submitProjectApplication(applicationId);
             cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
-            
+
             // group order 6
             cy.addPartnerReport(partnerId).then(partnerReportId => {
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
@@ -262,13 +262,13 @@ context('Payments tests', () => {
             findProjectPayments(applicationId).then(projectPayments => {
               const projectPayment = projectPayments.find(payment => payment.fundName === testData.authorizedPayments[0].fundName);
               cy.visit(`app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
-              
+
               cy.contains('expand_more').click();
               cy.get('mat-checkbox').eq(1).click();
               cy.contains('Save changes').should('be.visible').click();
               cy.contains('Payment details have been saved successfully!').should('be.visible');
               cy.contains('Payment details have been saved successfully!').should('not.exist');
-              
+
               cy.get('mat-checkbox').eq(0).click();
               cy.contains('Save changes').should('be.visible').click();
               cy.contains('Payment details have been saved successfully!').should('be.visible');
@@ -280,18 +280,18 @@ context('Payments tests', () => {
             });
             cy.loginByRequest(user.programmeUser.email);
             cy.setContractingFastTrackLumpSums(applicationId, testData.contractingFastTrackLumpSumsDisabled);
-            
+
             // group order 8
             cy.loginByRequest(user.applicantUser.email);
             cy.addPartnerReport(partnerId).then(partnerReportId => {
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
               partnerReportPage.verifyAmountsInTables(testData.expectedResults.afterDeletePayment);
             });
-            
+
             // group order 9
             cy.loginByRequest(user.programmeUser.email);
             cy.setContractingFastTrackLumpSums(applicationId, testData.contractingFastTrackLumpSums);
-            
+
             // group order 10
             cy.loginByRequest(user.applicantUser.email);
             cy.addPartnerReport(partnerId).then(partnerReportId => {
@@ -330,37 +330,37 @@ function assertClaimNo(row, claimNo) {
 }
 
 function assertSubmissionDate(row, submissionDate) {
-  expect(row.children().get(5)).to.contain(submissionDate);
+  expect(row.children().get(6)).to.contain(submissionDate);
 }
 
 function assertMAApprovalDate(row, maApprovalDate) {
-  expect(row.children().get(6)).to.contain(maApprovalDate);
+  expect(row.children().get(7)).to.contain(maApprovalDate);
 }
 
 function assertTotalApproved(row, totalApproved) {
-  expect(row.children().get(7)).to.contain(totalApproved);
+  expect(row.children().get(8)).to.contain(totalApproved);
 }
 
 function assertFund(row, fund) {
-  expect(row.children().get(8)).to.contain(fund);
+  expect(row.children().get(9)).to.contain(fund);
 }
 
 function assertApprovedPerFund(row, approvedPerFund) {
-  expect(row.children().get(9)).to.contain(approvedPerFund);
+  expect(row.children().get(10)).to.contain(approvedPerFund);
 }
 
 function assertAuthorised(row, authorised) {
-  expect(row.children().get(10)).to.contain(authorised);
+  expect(row.children().get(11)).to.contain(authorised);
 }
 
 function assertPaid(row, paid) {
-  expect(row.children().get(11)).to.contain(paid);
+  expect(row.children().get(12)).to.contain(paid);
 }
 
 function assertDateOfLastPayment(row, dateOfLastPayment) {
-  expect(row.children().get(12)).to.contain(dateOfLastPayment);
+  expect(row.children().get(13)).to.contain(dateOfLastPayment);
 }
 
 function assertRemainingToBePaid(row, remainingToBePaid) {
-  expect(row.children().get(13)).to.contain(remainingToBePaid);
+  expect(row.children().get(14)).to.contain(remainingToBePaid);
 }
