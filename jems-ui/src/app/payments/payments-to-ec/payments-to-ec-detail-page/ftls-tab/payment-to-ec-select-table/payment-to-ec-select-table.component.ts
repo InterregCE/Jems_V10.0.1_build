@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {PagePaymentToEcLinkingDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
@@ -13,7 +13,7 @@ import {MatSort} from '@angular/material/sort';
   styleUrls: ['./payment-to-ec-select-table.component.scss'],
   providers: [FormService]
 })
-export class PaymentToEcSelectTableComponent implements OnInit {
+export class PaymentToEcSelectTableComponent implements OnChanges {
 
   @Input()
   data: {
@@ -65,7 +65,7 @@ export class PaymentToEcSelectTableComponent implements OnInit {
     this.formService.init(this.form);
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.initializeForm(this.data.paymentToEcLinking.content);
     this.displayedColumns = this.data.isEditable ? this.displayedColumnsAll
       : this.displayedColumnsAll.filter(col => !['select', 'correction'].includes(col));
