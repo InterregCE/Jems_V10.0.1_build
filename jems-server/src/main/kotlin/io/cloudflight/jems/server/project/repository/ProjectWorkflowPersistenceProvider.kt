@@ -38,7 +38,7 @@ class ProjectWorkflowPersistenceProvider(
         projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                        project = this, status = status, user = userRepository.getById(userId)
+                    project = this, status = status, user = userRepository.getById(userId)
                 )
             )
             if (this.currentStatus.status.isInStep2()) {
@@ -88,12 +88,14 @@ class ProjectWorkflowPersistenceProvider(
         projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getById(userId),
+                    project = this,
+                    status = status,
+                    user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
             )
-            if (status == ApplicationStatus.CONTRACTED){
+            if (status == ApplicationStatus.CONTRACTED) {
                 contractedDecision = newStatus
             }
             currentStatus = newStatus
@@ -218,16 +220,8 @@ class ProjectWorkflowPersistenceProvider(
                 ApplicationStatus.CONTRACTED,
             )
         ).zipWithNext()
-            .filter {
-                (it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
-                    ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.APPROVED
-                ).contains(it.first.status)) ||
-                    (it.second.status == ApplicationStatus.MODIFICATION_SUBMITTED && listOf(
-                    ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.CONTRACTED
-                ).contains(it.first.status))
-            }.map { it.first.toProjectStatus() }
+            .filter { it.filterByLatestAndPreviousStatuses() }
+            .map { it.first.toProjectStatus() }
 
     @Transactional
     override fun restoreProjectToLastVersionByStatus(projectId: Long, status: ApplicationStatus) {
@@ -262,4 +256,13 @@ class ProjectWorkflowPersistenceProvider(
                     throw PreviousApplicationStatusNotFoundException()
                 last()
             }
+
+    private fun Pair<ProjectStatusHistoryEntity, ProjectStatusHistoryEntity>.filterByLatestAndPreviousStatuses(): Boolean =
+        listOf(
+            ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED to listOf(ApplicationStatus.MODIFICATION_REJECTED, ApplicationStatus.APPROVED),
+            ApplicationStatus.MODIFICATION_SUBMITTED to listOf(ApplicationStatus.MODIFICATION_REJECTED, ApplicationStatus.CONTRACTED)
+        ).any { (latestStatus, previousStatuses) ->
+            latestStatus == second.status && previousStatuses.contains(first.status)
+        }
+
 }

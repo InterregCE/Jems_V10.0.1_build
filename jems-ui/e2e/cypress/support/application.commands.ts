@@ -231,6 +231,7 @@ Cypress.Commands.add('startModification', (applicationId: number, userEmail?: st
   }
 });
 
+// TODO:
 Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);

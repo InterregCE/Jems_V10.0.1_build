@@ -3,7 +3,9 @@ package io.cloudflight.jems.api.project.auditAndControl
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditControlDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AvailableCorrectionsForPaymentDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -66,4 +68,17 @@ interface ProjectAuditAndControlApi {
     fun getPartnerAndPartnerReportData(
         @PathVariable projectId: Long,
     ):  List<CorrectionAvailablePartnerDTO>
+
+    @ApiOperation("Get available corrections for modification")
+    @GetMapping("${ENDPOINT_API_PROJECT_AUDIT_CONTROL}/availableCorrections/modification")
+    fun getAvailableCorrectionsForModification(
+        @PathVariable projectId: Long,
+    ): List<AuditControlCorrectionDTO>
+
+    @ApiOperation("Get closed corrections for payment")
+    @GetMapping("${ENDPOINT_API_PROJECT_AUDIT_CONTROL}/availableCorrections/payment/{paymentId}")
+    fun getAvailableCorrectionsForPayment(
+        @PathVariable projectId: Long,
+        @PathVariable paymentId: Long,
+    ): List<AvailableCorrectionsForPaymentDTO>
 }

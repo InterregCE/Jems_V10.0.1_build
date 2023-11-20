@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction
 
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -30,5 +32,14 @@ interface AuditControlCorrectionPersistence {
 
     fun getCorrectionAvailableCostItems(partnerReportId: Long, pageable: Pageable): Page<CorrectionCostItem>
 
+    fun updateModificationByCorrectionIds(projectId: Long, correctionIds: Set<Long>, statuses: List<ApplicationStatus>)
+
+    fun getAllIdsByProjectId(projectId: Long): Set<Long>
+
+    fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment>
+
+    fun getAvailableCorrectionsForModification(projectId: Long): List<AuditControlCorrection>
+
+    fun getCorrectionsForModificationDecisions(projectId: Long): Map<Long, List<AuditControlCorrection>>
 
 }

@@ -4,10 +4,12 @@ import {
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CorrectionAvailablePartnerDTO, ProjectAuditControlCorrectionDTO} from '@cat/api';
-import {catchError, finalize, map, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
+import {MatDialog} from '@angular/material/dialog';
+import {Forms} from '@common/utils/forms';
 
 @Component({
   selector: 'jems-audit-control-correction-detail',
@@ -32,7 +34,8 @@ export class AuditControlCorrectionDetailComponent {
 
   constructor(
     private router: RoutingService,
-    private auditControlCorrectionDetailPageStore: AuditControlCorrectionDetailPageStore
+    private auditControlCorrectionDetailPageStore: AuditControlCorrectionDetailPageStore,
+    private dialog: MatDialog,
   ) {
     this.data$ = combineLatest([
       this.auditControlCorrectionDetailPageStore.projectId$,
@@ -59,15 +62,22 @@ export class AuditControlCorrectionDetailComponent {
     this.router.navigate([`/app/project/detail/${projectId}/corrections/auditControl/${auditControlId}`]);
   }
 
-  closeCorrection(projectId: number, auditControlId: number, correctionId: number) {
+  closeCorrection(projectId: number, auditControlId: number, correction: ProjectAuditControlCorrectionDTO) {
     this.pendingAction$.next(true);
-    this.auditControlCorrectionDetailPageStore.closeCorrection(projectId, auditControlId, correctionId)
-      .pipe(
-        take(1),
-        tap(() => this.redirectToCorrectionsOverview(projectId, auditControlId)),
-        catchError(error => this.showErrorMessage(error.error$)),
-        finalize(() => this.pendingAction$.next(false)),
-      ).subscribe();
+
+    Forms.confirm(
+      this.dialog, {
+        title: `AC${correction.auditControlNumber}.${correction.orderNr}`,
+        message: {i18nKey: 'project.application.reporting.corrections.close.correction.dialog'}
+      }
+    ).pipe(
+      take(1),
+      filter(answer => !!answer),
+      switchMap(() => this.auditControlCorrectionDetailPageStore.closeCorrection(projectId, auditControlId, correction.id)),
+      tap(() => this.redirectToCorrectionsOverview(projectId, auditControlId)),
+      catchError(error => this.showErrorMessage(error.error$)),
+      finalize(() => this.pendingAction$.next(false)),
+    ).subscribe();
   }
 
   private showErrorMessage(error: APIError): Observable<null> {

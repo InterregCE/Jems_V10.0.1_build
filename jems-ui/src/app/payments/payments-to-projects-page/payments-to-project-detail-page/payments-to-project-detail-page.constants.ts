@@ -20,6 +20,7 @@ export class PaymentsToProjectDetailPageConstants {
     paymentConfirmed: 'paymentConfirmed',
     paymentConfirmedUser: 'paymentConfirmedUser',
     paymentConfirmedDate: 'paymentConfirmedDate',
+    correction: 'correction',
   };
 
   public static columnsWidths = [
@@ -29,6 +30,7 @@ export class PaymentsToProjectDetailPageConstants {
     {minInRem: 10, maxInRem: 12}, //Authorise payment
     {minInRem: 9, maxInRem: 9}, //Payment date
     {minInRem: 10, maxInRem: 12}, //Confirm payment
+    {minInRem: 7, maxInRem: 10}, //Correction
     {minInRem: 3, maxInRem: 3}  //Actions
   ];
 

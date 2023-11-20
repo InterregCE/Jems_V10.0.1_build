@@ -1,5 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ProjectStatusDTO, ProjectVersionDTO} from '@cat/api';
+import {
+  ApplicationActionInfoDTO,
+  AuditControlCorrectionDTO,
+  ProjectModificationCreateDTO,
+  ProjectModificationDecisionDTO,
+  ProjectStatusDTO,
+  ProjectVersionDTO
+} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
@@ -21,17 +28,21 @@ export class ModificationConfirmationComponent implements OnInit {
   @Input()
   index: number;
   @Input()
-  decision: ProjectStatusDTO;
+  projectStatus: ProjectStatusDTO;
   @Input()
   version: ProjectVersionDTO;
   @Input()
-  projectStatus: ProjectStatusDTO.StatusEnum;
+  currentStatus: ProjectStatusDTO.StatusEnum;
+  @Input()
+  corrections: AuditControlCorrectionDTO[];
 
+  canEdit: boolean;
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
     decisionDate: ['', Validators.required],
     entryIntoForceDate: ['', Validators.required],
     note: ['', Validators.maxLength(10000)],
+    corrections: [],
   });
   today = new Date();
   dateErrors = {
@@ -45,31 +56,37 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.decisionForm, of(!this.decision &&
-      ((this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED) || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED)));
-    if (this.decision) {
+    this.canEdit = !this.projectStatus && [ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED, ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED]
+      .includes(this.currentStatus);
+    this.formService.init(this.decisionForm, of(this.canEdit));
+    if (this.projectStatus) {
       this.decisionForm.patchValue({
-        ...this.decision,
-        decisionDate: new Date(this.decision.decisionDate),
-        entryIntoForceDate: this.decision.entryIntoForceDate && new Date(this.decision.entryIntoForceDate)
+        status: this.projectStatus.status,
+        decisionDate: new Date(this.projectStatus.decisionDate),
+        entryIntoForceDate: this.projectStatus.entryIntoForceDate && new Date(this.projectStatus.entryIntoForceDate),
+        note: this.projectStatus.note,
+        corrections: this.corrections,
       });
     }
   }
 
   saveConfirmation(): void {
-    const info = {
+    const actionInfo = {
       note: this.decisionForm.get('note')?.value,
       date: this.decisionForm.get('decisionDate')?.value?.format('YYYY-MM-DD'),
       entryIntoForceDate: this.decisionForm.get('entryIntoForceDate')?.value?.format('YYYY-MM-DD'),
-    };
+    } as ApplicationActionInfoDTO;
+    const correctionIds = this.decisionForm.get('corrections')?.value?.map((correction: AuditControlCorrectionDTO) => correction.id);
+    const modificationCreateDto = {actionInfo, correctionIds} as ProjectModificationCreateDTO;
+
     if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
-      this.pageStore.approveModification(info)
+      this.pageStore.approveModification(modificationCreateDto)
         .pipe(
           untilDestroyed(this),
           catchError(err => this.formService.setError(err)))
         .subscribe();
     } else if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
-      this.pageStore.rejectModification(info)
+      this.pageStore.rejectModification(modificationCreateDto)
         .pipe(
           untilDestroyed(this),
           catchError(err => this.formService.setError(err)))
@@ -78,8 +95,8 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   getDecision() {
-    if (this.decision) {
-      if (this.decision.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
+    if (this.projectStatus) {
+      if (this.projectStatus.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
         return ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
       } else {
         return ProjectStatusDTO.StatusEnum.APPROVED;
@@ -90,18 +107,34 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   isStatusOpen(): boolean {
-    return !this.decision;
+    return !this.projectStatus;
   }
 
   isStatusDeclined(): boolean {
-    return this.decision?.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+    return this.projectStatus?.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
   }
 
   isStatusAccepted(): boolean {
-    return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED || this.decision?.status === ProjectStatusDTO.StatusEnum.CONTRACTED;
+    return [ProjectStatusDTO.StatusEnum.APPROVED, ProjectStatusDTO.StatusEnum.CONTRACTED]
+      .includes(this.projectStatus?.status);
   }
 
   getSwitchValue() {
-    return this.decision ? this.decision?.status : this.ProjectStatus.APPROVED;
+    return this.projectStatus?.status ?? this.ProjectStatus.APPROVED;
+  }
+
+  removeCorrection(correction: AuditControlCorrectionDTO) {
+    const corrections = this.decisionForm.get('corrections')?.value;
+
+    const index = corrections.indexOf(correction);
+    corrections.splice(index, 1);
+
+    this.decisionForm.get('corrections')?.setValue(corrections);
+  }
+
+  isSelected(correctionId: number): boolean {
+    return this.decisionForm.get('corrections')?.value?.find(
+      (correction: AuditControlCorrectionDTO) => correction.id === correctionId
+    );
   }
 }

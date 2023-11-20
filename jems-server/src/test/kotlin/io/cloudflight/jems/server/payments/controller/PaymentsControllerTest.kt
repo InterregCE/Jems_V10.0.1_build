@@ -127,7 +127,8 @@ class PaymentsControllerTest : UnitTest() {
             savePaymentDate = currentTime.toLocalDate().plusDays(1),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(3L, "paymentConfirmed@User", "name", "surname"),
-            paymentConfirmedDate = currentTime.toLocalDate().plusDays(2)
+            paymentConfirmedDate = currentTime.toLocalDate().plusDays(2),
+            correction = null,
         )
         private val installmentFirst = PaymentPartnerInstallment(
             id = installmentFirstDTO.id,
@@ -142,7 +143,8 @@ class PaymentsControllerTest : UnitTest() {
             savePaymentDate = installmentFirstDTO.savePaymentDate,
             isPaymentConfirmed = installmentFirstDTO.paymentConfirmed,
             paymentConfirmedUser = installmentFirstDTO.paymentConfirmedUser,
-            paymentConfirmedDate = installmentFirstDTO.paymentConfirmedDate
+            paymentConfirmedDate = installmentFirstDTO.paymentConfirmedDate,
+            correction = null,
         )
 
         private val ftlsPaymentDetail = PaymentDetail(

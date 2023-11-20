@@ -34,7 +34,8 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUserId = null,
-            paymentConfirmedDate = null
+            paymentConfirmedDate = null,
+            correctionId = null,
         )
         private val installmentSaved = PaymentPartnerInstallment(
             id = 3L,
@@ -45,13 +46,15 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             paymentDate = currentDate,
             comment = "comment",
             isSavePaymentInfo = true,
-            isPaymentConfirmed = true
+            isPaymentConfirmed = true,
+            correction = null,
         )
         private val installmentNew = PaymentPartnerInstallmentUpdate(
             id = 0L,
             amountPaid = BigDecimal.ONE,
             paymentDate = currentDate.minusDays(1),
-            comment = null
+            comment = null,
+            correctionId = null,
         )
     }
 
@@ -69,33 +72,40 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     @Test
     fun `should succeed deletion check on correct data`() {
         assertDoesNotThrow {
-            validator.validateInstallmentDeletion(listOf( PaymentPartnerInstallment(
-                id = 4L,
-                fundId = 65L,
-                lumpSumId = 6458L,
-                orderNr = 9,
-                amountPaid = BigDecimal.TEN,
-                paymentDate = currentDate,
-                comment = "comment"
+            validator.validateInstallmentDeletion(
+                listOf(
+                    PaymentPartnerInstallment(
+                        id = 4L,
+                        fundId = 65L,
+                        lumpSumId = 6458L,
+                        orderNr = 9,
+                        amountPaid = BigDecimal.TEN,
+                        paymentDate = currentDate,
+                        comment = "comment",
+                        correction = null,
+                    )
+                )
             )
-            ))
         }
     }
 
     @Test
     fun `should throw InputValidationException at deletion of already checked`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateInstallmentDeletion(listOf(
-                PaymentPartnerInstallment(
-                id = 4L,
-                fundId = 65L,
-                lumpSumId = 6459L,
-                orderNr = 10,
-                amountPaid = BigDecimal.TEN,
-                paymentDate = currentDate,
-                isSavePaymentInfo = true
+            validator.validateInstallmentDeletion(
+                listOf(
+                    PaymentPartnerInstallment(
+                        id = 4L,
+                        fundId = 65L,
+                        lumpSumId = 6459L,
+                        orderNr = 10,
+                        amountPaid = BigDecimal.TEN,
+                        paymentDate = currentDate,
+                        isSavePaymentInfo = true,
+                        correction = null,
+                    )
+                )
             )
-            ))
         }
         assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY, ex.i18nKey)
     }
@@ -117,10 +127,12 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     fun `should succeed if paymentDate is empty on unconfirmed payment`() {
         assertDoesNotThrow {
             validator.validateInstallments(
-                listOf(installmentNew, installmentUpdate.copy(
-                    isPaymentConfirmed = false,
-                    paymentDate = null
-                )),
+                listOf(
+                    installmentNew, installmentUpdate.copy(
+                        isPaymentConfirmed = false,
+                        paymentDate = null
+                    )
+                ),
                 emptyList(),
                 emptyList(),
                 1
@@ -132,10 +144,12 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     fun `should throw InputValidationException on confirmed payment if paymentDate is empty`() {
         val ex = assertThrows<AppInputValidationException> {
             validator.validateInstallments(
-                listOf(installmentNew, installmentUpdate.copy(
-                    isPaymentConfirmed = true,
-                    paymentDate = null
-                )),
+                listOf(
+                    installmentNew, installmentUpdate.copy(
+                        isPaymentConfirmed = true,
+                        paymentDate = null
+                    )
+                ),
                 emptyList(),
                 emptyList(),
                 1
@@ -183,13 +197,14 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             validator.validateCheckboxStates(
                 listOf(
                     PaymentPartnerInstallmentUpdate(
-                    id = 3L,
-                    amountPaid = BigDecimal.TEN,
-                    paymentDate = currentDate,
-                    comment = "comment",
-                    isSavePaymentInfo = false,
-                    isPaymentConfirmed = true
-                )
+                        id = 3L,
+                        amountPaid = BigDecimal.TEN,
+                        paymentDate = currentDate,
+                        comment = "comment",
+                        isSavePaymentInfo = false,
+                        isPaymentConfirmed = true,
+                        correctionId = null,
+                    )
                 )
             )
         }

@@ -39,7 +39,8 @@
                 </h3>
                 <jems-modification-confirmation
                         [index]="data.modificationDecisions.length + 1"
-                        [projectStatus]="data.currentVersionOfProjectStatus">
+                        [currentStatus]="data.currentVersionOfProjectStatus"
+                        [corrections]="availableCorrections$ | async">
                 </jems-modification-confirmation>
             </div>
         </ng-container>
@@ -50,9 +51,10 @@
             <jems-modification-confirmation
                     *ngFor="let decision of data.modificationDecisions; let i=index"
                     [index]="data.modificationDecisions.length - i"
-                    [decision]="decision"
+                    [projectStatus]="decision.projectStatus"
                     [version]="data.versions[i]"
-                    [projectStatus]="data.currentVersionOfProjectStatus">
+                    [currentStatus]="data.currentVersionOfProjectStatus"
+                    [corrections]="decision.corrections">
             </jems-modification-confirmation>
         </ng-container>
     </mat-card>

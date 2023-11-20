@@ -7,23 +7,33 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.Correction
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AvailableCorrectionsForPaymentDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
+fun List<AvailableCorrectionsForPayment>.toDto() = map {
+    AvailableCorrectionsForPaymentDTO(
+        partnerId = it.partnerId,
+        corrections = it.corrections.map { it.toSimpleDto() }
+    )
+}
+
 private val mapper = Mappers.getMapper(AuditControlCorrectionMapper::class.java)
 
 fun AuditControlCorrectionDetail.toDto() = mapper.map(this)
 fun ProjectCorrectionIdentificationUpdateDTO.toModel() = mapper.map(this)
-fun List<AuditControlCorrection>.toSimpleDto() = map { mapper.mapSimple(it) }
+fun List<AuditControlCorrection>.toSimpleDto() = map { it.toSimpleDto() }
+fun AuditControlCorrection.toSimpleDto() = mapper.mapSimple(this)
 
 fun Page<AuditControlCorrectionLine>.toDto() = map {
     ProjectAuditControlCorrectionLineDTO(
@@ -59,6 +69,7 @@ interface AuditControlCorrectionMapper {
     @Mapping(source = "auditControlNr", target = "auditControlNumber")
     fun map(model: AuditControlCorrectionDetail): ProjectAuditControlCorrectionDTO
     fun map(model: ProjectCorrectionIdentificationUpdateDTO): AuditControlCorrectionUpdate
+
     @Mapping(source = "auditControlNr", target = "auditControlNumber")
     fun mapSimple(model: AuditControlCorrection): AuditControlCorrectionDTO
     fun map(dto: CorrectionCostItem): CorrectionCostItemDTO

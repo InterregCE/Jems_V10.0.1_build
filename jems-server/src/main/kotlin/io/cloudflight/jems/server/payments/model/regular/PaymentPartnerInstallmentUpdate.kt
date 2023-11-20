@@ -15,5 +15,7 @@ data class PaymentPartnerInstallmentUpdate(
     var savePaymentDate: LocalDate? = null,
     val isPaymentConfirmed: Boolean? = null,
     var paymentConfirmedUserId: Long? = null,
-    var paymentConfirmedDate: LocalDate? = null
+    var paymentConfirmedDate: LocalDate? = null,
+
+    val correctionId: Long?,
 )

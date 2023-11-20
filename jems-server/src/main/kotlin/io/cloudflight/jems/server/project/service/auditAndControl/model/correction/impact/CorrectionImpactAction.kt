@@ -5,5 +5,10 @@ enum class CorrectionImpactAction {
     RepaymentByProject,
     AdjustmentInNextPayment,
     BudgetReduction,
-    RepaymentByNA,
+    RepaymentByNA;
+
+    companion object {
+        val MODIFICATION_IMPACTS = setOf(BudgetReduction)
+        val PAYMENT_IMPACTS = setOf(RepaymentByProject, AdjustmentInNextPayment)
+    }
 }
