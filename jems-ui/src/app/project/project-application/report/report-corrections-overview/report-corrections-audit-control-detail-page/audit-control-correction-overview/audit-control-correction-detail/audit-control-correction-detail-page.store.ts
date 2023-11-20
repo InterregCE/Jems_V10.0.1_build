@@ -12,7 +12,7 @@ import {
   ProjectCorrectionFinancialDescriptionUpdateDTO,
   ProjectCorrectionIdentificationUpdateDTO,
   UserRoleDTO, PageCorrectionCostItemDTO,
-  AuditControlCorrectionDTO,
+  AuditControlCorrectionDTO, CorrectionCostItemDTO,
 } from '@cat/api';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
@@ -48,7 +48,7 @@ export class AuditControlCorrectionDetailPageStore {
   financialDescription$: Observable<ProjectCorrectionFinancialDescriptionDTO>;
   savedFinancialDescription$ = new Subject<ProjectCorrectionFinancialDescriptionDTO>();
 
-  costItemsPage$: Observable<PageCorrectionCostItemDTO>;
+  costItems$: Observable<PageCorrectionCostItemDTO>;
   costItemsPageSize$ = new BehaviorSubject<number>(AuditControlCorrectionDetailPageStore.COST_ITEMS_DEFAULT_PAGE_SIZE);
   costItemsPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
   refreshScopeLimitationData$ = new BehaviorSubject(null);
@@ -73,7 +73,7 @@ export class AuditControlCorrectionDetailPageStore {
     this.financialDescription$ = this.financialDescription();
     this.canEdit$ = this.canEdit();
     this.canClose$ = this.canClose();
-    this.costItemsPage$ = this.correctionAvailableCostItems();
+    this.costItems$ = this.correctionCostItems();
     this.availableProcurements$ = this.correctionAvailableProcurements();
   }
 
@@ -205,7 +205,7 @@ export class AuditControlCorrectionDetailPageStore {
     );
   }
 
-  private correctionAvailableCostItems(): Observable<PageCorrectionCostItemDTO> {
+  private correctionCostItems(): Observable<PageCorrectionCostItemDTO> {
     return combineLatest([
         this.correction$,
         this.refreshScopeLimitationData$,
@@ -216,9 +216,12 @@ export class AuditControlCorrectionDetailPageStore {
         this.costItemsPageSize$
     ])
         .pipe(
-            filter(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) => correction.type === 'LinkedToInvoice' && correction.status === 'Ongoing'),
+            filter(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) => correction.type === 'LinkedToInvoice' && !!correction.partnerReportId),
             switchMap(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) =>
-                this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize)
+                correction.status === 'Ongoing' ? this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize).pipe(
+              ) : of({
+                  content: Array.of(correction.expenditureCostItem)
+                } as PageCorrectionCostItemDTO)
             )
         );
   }

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionAvailableProcurements
+package io.cloudflight.jems.server.project.service.auditAndControl.correction.base.scope.getCorrectionAvailableProcurements
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

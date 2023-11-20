@@ -11,7 +11,6 @@ import {
   ProjectAuditControlCorrectionDTO,
   ProjectCallSettingsDTO,
   ProjectCorrectionIdentificationUpdateDTO,
-  UpdateProjectReportWorkPackageActivityDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -23,7 +22,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import StatusEnum = UpdateProjectReportWorkPackageActivityDTO.StatusEnum;
+import {TableConfig} from "@common/directives/table-config/TableConfig";
 
 @UntilDestroy()
 @Component({
@@ -51,6 +50,11 @@ export class AuditControlCorrectionDetailIdentityComponent {
     isMandatoryScopeDefined: boolean;
     isLinkedToInvoice: boolean;
     projectId: number;
+    costItemsTableConfig: {
+      dataSource: PageCorrectionCostItemDTO;
+      columnConfig: TableConfig[];
+      availableColumns: string[];
+    }
   }>;
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
@@ -65,11 +69,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
   };
 
   readonly statusEnum = ProjectAuditControlCorrectionDTO.StatusEnum;
+
   isCostItemTableVisible: boolean;
-
-  costItemsDisplayedColumns: string[] = [];
-  costItemsPage: Observable<PageCorrectionCostItemDTO>;
-
   costItemsPageIndex$: BehaviorSubject<number>;
   costItemsPageSize$: BehaviorSubject<number>;
 
@@ -88,7 +89,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
       pageStore.correctionPartnerData$,
       pageStore.pastCorrections$,
       pageStore.availableProcurements$.pipe(startWith(new Map())),
-      pageStore.projectId$
+      pageStore.projectId$,
+      pageStore.costItems$.pipe(startWith({} as PageCorrectionCostItemDTO))
     ]).pipe(
       map(([
              canEdit,
@@ -97,7 +99,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
              correctionPartnerData,
              pastCorrections,
              availableProcurements,
-             projectId
+             projectId,
+             costItems
            ]: any) => ({
         correction,
         correctionPartnerData,
@@ -107,8 +110,12 @@ export class AuditControlCorrectionDetailIdentityComponent {
         availableProcurements,
         isMandatoryScopeDefined:  (!!correction.partnerId && !!correction.partnerReportId),
         isLinkedToInvoice: correction.type === this.CorrectionTypeEnum.LinkedToInvoice,
-        projectId
-
+        projectId,
+        costItemsTableConfig:  {
+          dataSource: costItems as PageCorrectionCostItemDTO,
+          columnConfig: this.costItemsTableColumnConfig(correction.status),
+          availableColumns: this.getCostItemsAvailableColumns(correction.status)
+        }
       })),
       tap(data => this.resetForm(
         data.correction,
@@ -117,10 +124,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
       )),
         tap(data => {
           this.isCostItemTableVisible = data.isLinkedToInvoice && data.isMandatoryScopeDefined;
-          this.costItemsDisplayedColumns = this.getCostItemsAvailableColumns(data.correction.status);
         })
     );
-    this.costItemsPage = this.pageStore.costItemsPage$;
+
     this.costItemsPageIndex$ = pageStore.costItemsPageIndex$;
     this.costItemsPageSize$ = pageStore.costItemsPageSize$;
 
@@ -160,8 +166,6 @@ export class AuditControlCorrectionDetailIdentityComponent {
     } else {
       this.funds = [];
     }
-
-    this.costItemsPage = this.pageStore.costItemsPage$;
   }
 
   getPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): CorrectionAvailablePartnerDTO | undefined {
@@ -224,7 +228,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
   }
 
 
-  getCostCategories(callSettings: ProjectCallSettingsDTO) {
+  private getCostCategories(callSettings: ProjectCallSettingsDTO) {
     return  [
       'Staff',
       'Office',
@@ -239,14 +243,14 @@ export class AuditControlCorrectionDetailIdentityComponent {
     ];
   }
 
-  resetCorrectionScopeOptionalControls() {
+ private resetCorrectionScopeOptionalControls() {
     this.form.controls?.costCategory?.setValue('N/A');
     this.form.controls?.procurementId?.setValue(null);
     this.form.controls?.expenditureId?.setValue(null);
   }
 
 
-  getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum): string[] {
+  private getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum): string[] {
     return [
       ...status === this.statusEnum.Ongoing ? ['select'] : [],
       'id',
@@ -262,4 +266,25 @@ export class AuditControlCorrectionDetailIdentityComponent {
       'declaredAmountEur'
     ];
   }
+
+  private costItemsTableColumnConfig(status: ProjectAuditControlCorrectionDTO.StatusEnum): TableConfig[] {
+  return [
+      ...status === this.statusEnum.Ongoing ? [{minInRem: 3, maxInRem: 3}] : [], // select
+      {minInRem: 3, maxInRem: 3}, // id
+
+      {minInRem: 11, maxInRem: 16}, // unitCostsAndLumpSums
+      {minInRem: 11, maxInRem: 16}, // costCategory
+      {minInRem: 5, maxInRem: 8},   // investmentNo
+      {minInRem: 8, maxInRem: 8},   // procurement
+
+      {minInRem: 5, maxInRem: 8},   // internalReference
+      {minInRem: 5, maxInRem: 5},   // invoiceNo
+      {minInRem: 8, maxInRem: 8},   // invoiceDate
+      {minInRem: 8, maxInRem: 8},   // declaredAmount
+      {minInRem: 4, maxInRem: 4},   // currency
+      {minInRem: 7, maxInRem: 8},   // declaredAmountEur
+    ];
+  }
+
+
 }
