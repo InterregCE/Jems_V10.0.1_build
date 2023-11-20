@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.config.startup
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.dsl.NumberExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.currency.entity.QCurrencyRateEntity
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
@@ -14,6 +15,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.UUID
 
 @Component
@@ -24,7 +26,7 @@ class BrokenReportCurrencyCheck(
 
     companion object {
         private val logger = LoggerFactory.getLogger(BrokenReportCurrencyCheck::class.java)
-        private val identifier = UUID.fromString("f2245931-2808-43b8-9994-875231c982bf")
+        private val identifier = UUID.randomUUID()
 
         private const val successSubject = "Jems v8.0.5 - Check for errors in expenditures done - No errors detected"
         private val successBody = """
@@ -91,6 +93,8 @@ class BrokenReportCurrencyCheck(
             expenditure.currencyCode,
             expenditure.currencyConversionRate,
             currencyRate.conversionRate,
+            expenditure.declaredAmountAfterSubmission,
+            expenditure.declaredAmount,
         ).from(expenditure)
             .leftJoin(report)
                 .on(expenditure.partnerReport.eq(report))
@@ -102,10 +106,14 @@ class BrokenReportCurrencyCheck(
                 .on(report.partnerId.eq(partner.id))
             .leftJoin(project)
                 .on(partner.project.eq(project))
-            .where(expenditure.currencyConversionRate.ne(currencyRate.conversionRate)
-                .and(expenditure.reIncludedFromExpenditure.isNull()))
-            .fetch()
+            .where(
+                (expenditure.currencyConversionRate.ne(currencyRate.conversionRate)
+                    .or(expenditure.declaredAmountAfterSubmission.ne(expenditure.declaredAmount.divide(currencyRate.conversionRate).roundHalfUp())))
+                .and(expenditure.reIncludedFromExpenditure.isNull())
+            ).fetch()
             .map { it: Tuple ->
+                val declaredAmount = it.get(12, BigDecimal::class.java)!!
+                val correctRate = it.get(10, BigDecimal::class.java)!!
                 ExpenditureWithBrokenRate(
                     projectId = it.get(0, Long::class.java)!!,
                     projectCustomIdentifier = it.get(1, String::class.java)!!,
@@ -117,10 +125,15 @@ class BrokenReportCurrencyCheck(
                     expenditureNumber = it.get(7, Int::class.java)!!,
                     currencyCode = it.get(8, String::class.java)!!,
                     wrongRate = it.get(9, BigDecimal::class.java)!!,
-                    correctRate = it.get(10, BigDecimal::class.java)!!,
+                    correctRate = correctRate,
+                    wrongAmount = it.get(11, BigDecimal::class.java)!!,
+                    correctAmount = declaredAmount.divide(correctRate, 2, RoundingMode.HALF_UP),
                 )
             }
     }
+
+    private fun NumberExpression<BigDecimal>.roundHalfUp(): NumberExpression<BigDecimal> =
+        multiply(100).round().divide(100)
 
     private fun List<ExpenditureWithBrokenRate>.toNiceFormat(): String {
         val byReport = groupBy { it.projectId }
@@ -142,7 +155,8 @@ class BrokenReportCurrencyCheck(
                 partnerItems.forEach { (reportNr, reportItems) ->
                     reportItems.forEach { expenditure ->
                         result.appendLine("    R${reportNr}.${expenditure.expenditureNumber} - ${expenditure.currencyCode} rate is" +
-                                " ${expenditure.wrongRate} but should be ${expenditure.correctRate}")
+                                " ${expenditure.wrongRate} but should be ${expenditure.correctRate} and declared amount is" +
+                                " ${expenditure.wrongAmount} but should be ${expenditure.correctAmount}")
                     }
                 }
             }
@@ -166,6 +180,8 @@ class BrokenReportCurrencyCheck(
         val currencyCode: String,
         val wrongRate: BigDecimal,
         val correctRate: BigDecimal,
+        val wrongAmount: BigDecimal,
+        val correctAmount: BigDecimal,
     )
 
 }
