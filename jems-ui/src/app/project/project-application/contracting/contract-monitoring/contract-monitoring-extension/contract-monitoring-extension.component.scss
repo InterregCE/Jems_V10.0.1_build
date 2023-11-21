@@ -19,10 +19,6 @@ p {
   max-width: 50rem !important;
 }
 
-mat-button-toggle-group {
-  width: 100% !important;
-}
-
 .w-30 {
   width: 30%;
 }
@@ -31,8 +27,13 @@ mat-button-toggle-group {
   width: 40%;
 }
 
-::ng-deep .mat-button-toggle-label-content {
-  display: inline-flex !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+::ng-deep  .typology-toggle-group {
+  width: 100% !important;
+
+  .mat-button-toggle-label-content {
+    display: inline-flex !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 }
+
