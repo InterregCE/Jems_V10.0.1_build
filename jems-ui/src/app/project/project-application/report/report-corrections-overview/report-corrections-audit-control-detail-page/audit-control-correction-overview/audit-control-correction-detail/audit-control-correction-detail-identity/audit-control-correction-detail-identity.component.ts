@@ -22,7 +22,10 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {TableConfig} from "@common/directives/table-config/TableConfig";
+import {TableConfig} from '@common/directives/table-config/TableConfig';
+import {
+    PartnerReportExpendituresTabConstants
+} from "@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.constants";
 
 @UntilDestroy()
 @Component({
@@ -54,7 +57,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       dataSource: PageCorrectionCostItemDTO;
       columnConfig: TableConfig[];
       availableColumns: string[];
-    }
+    };
   }>;
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
@@ -90,7 +93,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       pageStore.pastCorrections$,
       pageStore.availableProcurements$.pipe(startWith(new Map())),
       pageStore.projectId$,
-      pageStore.costItems$.pipe(startWith({} as PageCorrectionCostItemDTO))
+      pageStore.costItems$.pipe(startWith({content: Array.of()} as PageCorrectionCostItemDTO))
     ]).pipe(
       map(([
              canEdit,
@@ -113,8 +116,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
         projectId,
         costItemsTableConfig:  {
           dataSource: costItems as PageCorrectionCostItemDTO,
-          columnConfig: this.costItemsTableColumnConfig(correction.status),
-          availableColumns: this.getCostItemsAvailableColumns(correction.status)
+          columnConfig: this.costItemsTableColumnConfig(correction.status, canEdit),
+          availableColumns: this.getCostItemsAvailableColumns(correction.status, canEdit)
         }
       })),
       tap(data => this.resetForm(
@@ -250,9 +253,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
   }
 
 
-  private getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum): string[] {
+  private getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum, canEdit: boolean): string[] {
     return [
-      ...status === this.statusEnum.Ongoing ? ['select'] : [],
+      ...(status === this.statusEnum.Ongoing && canEdit) ? ['select'] : [],
       'id',
       'unitCostsAndLumpSums',
       'costCategory',
@@ -267,9 +270,12 @@ export class AuditControlCorrectionDetailIdentityComponent {
     ];
   }
 
-  private costItemsTableColumnConfig(status: ProjectAuditControlCorrectionDTO.StatusEnum): TableConfig[] {
+  private costItemsTableColumnConfig(status: ProjectAuditControlCorrectionDTO.StatusEnum, canEdit: boolean): TableConfig[] {
   return [
-      ...status === this.statusEnum.Ongoing ? [{minInRem: 3, maxInRem: 3}] : [], // select
+
+      // select
+      ...(status === this.statusEnum.Ongoing && canEdit) ? [{minInRem: 3, maxInRem: 3}] : [],
+
       {minInRem: 3, maxInRem: 3}, // id
 
       {minInRem: 11, maxInRem: 16}, // unitCostsAndLumpSums
@@ -285,6 +291,5 @@ export class AuditControlCorrectionDetailIdentityComponent {
       {minInRem: 7, maxInRem: 8},   // declaredAmountEur
     ];
   }
-
 
 }
