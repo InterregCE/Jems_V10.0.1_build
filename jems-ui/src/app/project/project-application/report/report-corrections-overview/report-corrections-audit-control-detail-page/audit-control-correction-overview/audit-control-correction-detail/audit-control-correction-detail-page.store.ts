@@ -220,7 +220,7 @@ export class AuditControlCorrectionDetailPageStore {
             switchMap(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) =>
                 correction.status === 'Ongoing' ? this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize).pipe(
               ) : of({
-                  content: Array.of(correction.expenditureCostItem)
+                    content: !!correction.expenditureCostItem ? Array.of(correction.expenditureCostItem) : Array.of(),
                 } as PageCorrectionCostItemDTO)
             )
         );
