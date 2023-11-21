@@ -115,9 +115,7 @@ context('Project privileges tests', () => {
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').parent().parent().should('be.disabled');
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
         cy.contains('Export').click();
         cy.contains('div', 'Export Plugin').find('mat-select').click();
         cy.contains('mat-option', 'Standard application form export').click();
