@@ -11,6 +11,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -61,12 +62,8 @@ class UpdateAuditControlCorrectionTest : UnitTest() {
         every { auditControlCorrectionPersistence.updateCorrection(14L, toUpdate) } returns result
 
         assertThat(interactor.updateCorrection(14L, toUpdate)).isEqualTo(result)
-    }
 
-    @Test
-    fun `updateCorrection - invalid report data`() {
-        // TODO
+        verify(exactly = 1) { correctionValidator.validate(14L, toUpdate) }
     }
-
 
 }

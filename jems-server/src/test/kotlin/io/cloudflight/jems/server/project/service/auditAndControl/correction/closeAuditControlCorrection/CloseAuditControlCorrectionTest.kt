@@ -1,6 +1,10 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
@@ -13,6 +17,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -43,10 +49,15 @@ class CloseAuditControlCorrectionTest : UnitTest() {
             comment = null
         )
 
-        private fun correctionIdentification(status: AuditControlStatus, reportId: Long?, programmeFundId: Long?): AuditControlCorrectionDetail {
+        private fun correctionIdentification(
+            status: AuditControlStatus,
+            reportId: Long?,
+            programmeFundId: Long?,
+            id: Long = AUDIT_CONTROL_ID,
+        ): AuditControlCorrectionDetail {
             val correction = mockk<AuditControlCorrectionDetail>()
             every { correction.status } returns status
-            every { correction.auditControlId } returns AUDIT_CONTROL_ID
+            every { correction.auditControlId } returns id
             every { correction.partnerReportId } returns reportId
             every { correction.programmeFundId } returns programmeFundId
             return correction
@@ -68,47 +79,32 @@ class CloseAuditControlCorrectionTest : UnitTest() {
 
     @Test
     fun closeCorrection() {
-        /*
-        every { auditControlPersistence.getByIdAndProjectId(AUDIT_CONTROL_ID, PROJECT_ID) } returns projectAuditControl(
-            AuditControlStatus.Ongoing
-        )
-        every {
-            correctionIdentificationPersistence.getCorrectionIdentification(
-                correctionId = CORRECTION_ID,
-            )
-        } returns correctionIdentification(
-            status = CorrectionStatus.Ongoing,
-            partnerId = 1L,
-            reportId = 2L,
-            programmeFundId = 3L,
-        )
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { correctionPersistence.closeCorrection(CORRECTION_ID) } returns correction(CorrectionStatus.Closed)
+        val auditControlId = 17L
+        val correctionId = 170L
+        every { auditControlCorrectionPersistence.getByCorrectionId(correctionId) } returns
+                correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, programmeFundId = 60L, id = auditControlId)
+        every { auditControlPersistence.getById(auditControlId) } returns
+                projectAuditControl(AuditControlStatus.Ongoing).copy(id = auditControlId)
+
+        every { auditControlCorrectionPersistence.closeCorrection(correctionId) } returns mockk {
+            every { orderNr } returns 4
+            every { status } returns AuditControlStatus.Closed
+        }
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
-        assertThat(
-            closeProjectAuditControlCorrection.closeProjectAuditCorrection(
-                PROJECT_ID,
-                AUDIT_CONTROL_ID,
-                CORRECTION_ID
-            )
-        ).isEqualTo(CorrectionStatus.Closed)
+        assertThat(closeProjectAuditControlCorrection.closeCorrection(correctionId))
+            .isEqualTo(AuditControlStatus.Closed)
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.CORRECTION_IS_CLOSED,
-                project = AuditProject(
-                    id = PROJECT_ID.toString(),
-                    customIdentifier = "01",
-                    name = "project acronym",
-                ),
-                description = "Correction AC1.2 for Audit/control number 01_AC_1 is closed."
+                project = AuditProject(id = "2", customIdentifier = "01", name = "01 acr"),
+                entityRelatedId = auditControlId,
+                description = "Correction AC1.4 for Audit/Control number 01_AC_1 is closed."
             )
         )
-        */
-
     }
 
     @Test
