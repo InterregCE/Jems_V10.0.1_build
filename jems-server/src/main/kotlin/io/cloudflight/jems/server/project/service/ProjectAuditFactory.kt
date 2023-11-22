@@ -384,6 +384,7 @@ fun projectAuditControlCreated(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
         .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
         .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created")
         .build()
 )
@@ -412,6 +413,7 @@ fun projectAuditControlCorrectionClosed(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CLOSED)
             .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+            .entityRelatedId(auditControl.id)
             .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
                 "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed.")
             .build()
@@ -439,6 +441,7 @@ fun projectAuditControlClosed(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CLOSED)
         .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
         .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed")
         .build()
 )

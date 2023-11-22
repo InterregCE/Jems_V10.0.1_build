@@ -666,11 +666,6 @@
     <ID>UnusedPrivateMember:AuditControlCorrectionControllerTest.kt$AuditControlCorrectionControllerTest$@MockK private lateinit var updateCorrection: UpdateAuditControlCorrectionInteractor</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var partnerReportRepository: ProjectPartnerReportRepository</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var programmeFundRepository: ProgrammeFundRepository</ID>
-    <ID>UnusedPrivateMember:AuditControlCreateCorrectionPersistenceProviderTest.kt$AuditControlCreateCorrectionPersistenceProviderTest$@MockK private lateinit var auditControlCorrectionFinanceRepository: ProjectCorrectionFinancialDescriptionRepository</ID>
-    <ID>UnusedPrivateMember:AuditControlCreateCorrectionPersistenceProviderTest.kt$AuditControlCreateCorrectionPersistenceProviderTest$@MockK private lateinit var auditControlCorrectionMeasureRepository: CorrectionProgrammeMeasureRepository</ID>
-    <ID>UnusedPrivateMember:AuditControlCreateCorrectionPersistenceProviderTest.kt$AuditControlCreateCorrectionPersistenceProviderTest$@MockK private lateinit var auditControlCorrectionRepository: AuditControlCorrectionRepository</ID>
-    <ID>UnusedPrivateMember:AuditControlCreateCorrectionPersistenceProviderTest.kt$AuditControlCreateCorrectionPersistenceProviderTest$@MockK private lateinit var auditControlRepository: AuditControlRepository</ID>
-    <ID>UnusedPrivateMember:AuditControlPersistenceProviderTest.kt$AuditControlPersistenceProviderTest$@MockK private lateinit var projectRepository: ProjectRepository</ID>
     <ID>UnusedPrivateMember:CloseAuditControlCorrectionTest.kt$CloseAuditControlCorrectionTest$@MockK private lateinit var auditPublisher: ApplicationEventPublisher</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$@MockK private lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence</ID>
