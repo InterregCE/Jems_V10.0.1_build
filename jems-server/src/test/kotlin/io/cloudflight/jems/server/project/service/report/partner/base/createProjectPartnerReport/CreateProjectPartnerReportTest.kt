@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -168,7 +169,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             ProjectPartnerContribution(
                 id = 200L,
                 name = "private id=200 amount=10",
-                status = ProjectPartnerContributionStatusDTO.Private,
+                status = ProjectPartnerContributionStatus.Private,
                 amount = BigDecimal.TEN,
                 isPartner = true,
             ),
@@ -178,7 +179,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             ProjectPartnerContributionSpf(
                 id = 210L,
                 name = "private id=210 amount=15",
-                status = ProjectPartnerContributionStatusDTO.Private,
+                status = ProjectPartnerContributionStatus.Private,
                 amount = BigDecimal.valueOf(15),
             ),
         )

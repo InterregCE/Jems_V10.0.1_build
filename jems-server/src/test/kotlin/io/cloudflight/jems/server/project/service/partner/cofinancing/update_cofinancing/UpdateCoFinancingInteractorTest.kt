@@ -39,6 +39,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -351,7 +352,12 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test success on partner contribution if disabled in configuration`() {
         every { callPersistence.getCallById(callId) } returns callDetail
         val partnerContributions = listOf(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, status = Public, isPartner = true)
+            ProjectPartnerContribution(
+                name = null,
+                amount = BigDecimal.TEN,
+                status = ProjectPartnerContributionStatus.Public,
+                isPartner = true
+            )
         )
         val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
             CallType.STANDARD,
@@ -374,8 +380,18 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test exception on partner contribution if disabled in configuration`() {
         every { callPersistence.getCallById(callId) } returns callDetail
         val partnerContributions = listOf(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public),
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = false, status = Public)
+            ProjectPartnerContribution(
+                name = null,
+                amount = BigDecimal.TEN,
+                isPartner = true,
+                status = ProjectPartnerContributionStatus.Public
+            ),
+            ProjectPartnerContribution(
+                name = null,
+                amount = BigDecimal.TEN,
+                isPartner = false,
+                status = ProjectPartnerContributionStatus.Public
+            )
         )
         val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
             CallType.STANDARD,
@@ -575,11 +591,21 @@ internal class UpdateCoFinancingInteractorTest {
             ProjectPartnerCoFinancingAndContribution(emptyList(), emptyList(), "")
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
+            ProjectPartnerContribution(
+                name = null,
+                amount = BigDecimal.TEN,
+                isPartner = true,
+                status = ProjectPartnerContributionStatus.Public
+            )
         )
         updateCoFinancing.updateCoFinancing(1, financingOk, toSave)
         assertThat(slotPartnerContributions.captured).containsExactly(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
+            ProjectPartnerContribution(
+                name = null,
+                amount = BigDecimal.TEN,
+                isPartner = true,
+                status = ProjectPartnerContributionStatus.Public
+            )
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
@@ -599,8 +625,8 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = Public),
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Private)
+            ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = ProjectPartnerContributionStatus.Public),
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = ProjectPartnerContributionStatus.Private)
         )
 
         assertExceptionMsg(
@@ -620,7 +646,7 @@ internal class UpdateCoFinancingInteractorTest {
                 name = "not used",
                 amount = BigDecimal.TEN,
                 isPartner = true,
-                status = AutomaticPublic
+                status = ProjectPartnerContributionStatus.AutomaticPublic
             )
         )
 
@@ -641,9 +667,9 @@ internal class UpdateCoFinancingInteractorTest {
                 name = "ignored",
                 amount = BigDecimal.valueOf(30),
                 isPartner = true,
-                status = Public
+                status = ProjectPartnerContributionStatus.Public
             ),
-            ProjectPartnerContribution(name = "", amount = BigDecimal.valueOf(70), isPartner = false, status = Public)
+            ProjectPartnerContribution(name = "", amount = BigDecimal.valueOf(70), isPartner = false, status = ProjectPartnerContributionStatus.Public)
         )
 
         assertExceptionMsg(
@@ -673,7 +699,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = Public)
+            ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = ProjectPartnerContributionStatus.Public)
         )
 
         assertExceptionMsg(
@@ -688,7 +714,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
+            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = ProjectPartnerContributionStatus.Public)
         )
 
         val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
@@ -704,7 +730,7 @@ internal class UpdateCoFinancingInteractorTest {
 
         updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave)
         assertThat(slotPartnerContributions.captured).containsExactly(
-            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
+            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = ProjectPartnerContributionStatus.Public)
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
@@ -722,8 +748,8 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test exception on SPF partner contribution if disabled in configuration`() {
         every { callPersistence.getCallById(callId) } returns callDetail
         val partnerSpfContributions = listOf(
-            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = Public),
-            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.ONE, status = Private)
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = ProjectPartnerContributionStatus.Public),
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.ONE, status = ProjectPartnerContributionStatus.Private)
         )
         val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
             CallType.SPF,
@@ -748,7 +774,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
-            ProjectPartnerContributionSpf(name = "name", amount = null, status = Public)
+            ProjectPartnerContributionSpf(name = "name", amount = null, status = ProjectPartnerContributionStatus.Public)
         )
 
         assertExceptionMsg(
@@ -776,7 +802,7 @@ internal class UpdateCoFinancingInteractorTest {
         val partnerSpfContribution = ProjectPartnerContributionSpf(
             name = "name",
             amount = BigDecimal.valueOf(30),
-            status = Public
+            status = ProjectPartnerContributionStatus.Public
         )
 
         val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()

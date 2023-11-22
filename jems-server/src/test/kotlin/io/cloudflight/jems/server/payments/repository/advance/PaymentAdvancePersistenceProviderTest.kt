@@ -36,6 +36,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -262,7 +263,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         private val contribution = ProjectPartnerContribution(
             id = contribSourceId,
             name = "contribution",
-            status = ProjectPartnerContributionStatusDTO.Public,
+            status = ProjectPartnerContributionStatus.Public,
             isPartner = true,
             amount = BigDecimal.ONE
         )
@@ -294,7 +295,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
                 ProjectPartnerContributionSpf(
                     id = contribSourceId,
                     name = "name",
-                    status = ProjectPartnerContributionStatusDTO.Public,
+                    status = ProjectPartnerContributionStatus.Public,
                     amount = BigDecimal.TEN
                 )
             )

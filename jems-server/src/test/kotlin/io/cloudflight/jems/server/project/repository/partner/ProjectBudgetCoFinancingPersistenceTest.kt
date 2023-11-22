@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
@@ -153,14 +154,14 @@ class ProjectBudgetCoFinancingPersistenceTest {
             ProjectPartnerContribution(
                 id = 1,
                 name = null,
-                status = Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.TEN,
                 isPartner = true
             ),
             ProjectPartnerContribution(
                 id = 2,
                 name = "source01",
-                status = Private,
+                status = ProjectPartnerContributionStatus.Private,
                 amount = BigDecimal.ONE,
                 isPartner = false,
             )
@@ -188,11 +189,11 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 1, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 1, name = "test abbr", status = ProjectPartnerContributionStatus.Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 2,
                 name = "source01",
-                status = Private,
+                status = ProjectPartnerContributionStatus.Private,
                 amount = BigDecimal.ONE,
                 isPartner = false
             )
@@ -220,8 +221,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         val toBeSavedContributions = listOf(
-            ProjectPartnerContribution(name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false)
+            ProjectPartnerContribution(name = null, status = ProjectPartnerContributionStatus.Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(name = "source", status = ProjectPartnerContributionStatus.Private, amount = BigDecimal.ONE, isPartner = false)
         )
 
         val result = persistence.updateCoFinancingAndContribution(
@@ -244,11 +245,11 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 0, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 0, name = "test abbr", status = ProjectPartnerContributionStatus.Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 0,
                 name = "source",
-                status = Private,
+                status = ProjectPartnerContributionStatus.Private,
                 amount = BigDecimal.ONE,
                 isPartner = false
             )

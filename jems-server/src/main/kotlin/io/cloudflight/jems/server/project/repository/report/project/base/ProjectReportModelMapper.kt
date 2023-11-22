@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectCo
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportSpfContributionClaimEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
@@ -16,10 +17,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import java.math.BigDecimal.ZERO
+import java.util.*
 
 fun ProjectReportEntity.toModel() = ProjectReportModel(
     id = id,
@@ -287,3 +290,18 @@ fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationCo
 )
 
 fun ProjectReportEntity.fetchType() = deadline?.type ?: type!!
+
+fun ProjectReportSpfContributionClaimCreate.toEntity(
+    report: ProjectReportEntity,
+    programmeFundResolver: (Long) -> ProgrammeFundEntity,
+    ) = ProjectReportSpfContributionClaimEntity(
+    id = 0L,
+    reportEntity = report,
+    programmeFund = if (fundId != null) programmeFundResolver.invoke(fundId) else null,
+    sourceOfContribution = sourceOfContribution,
+    legalStatus = legalStatus,
+    applicationFormPartnerContributionId = idFromApplicationForm,
+    amountFromAf = amountInAf,
+    previouslyReported = previouslyReported,
+    currentlyReported = currentlyReported
+)

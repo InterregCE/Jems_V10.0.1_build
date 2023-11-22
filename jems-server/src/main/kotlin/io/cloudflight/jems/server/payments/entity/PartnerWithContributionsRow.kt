@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.entity
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.entity.TranslationView
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.BigDecimal
 
@@ -17,11 +17,11 @@ interface PartnerWithContributionsRow: TranslationView {
 
     val partnerContributionId: Long
     val partnerContributionName: String?
-    val partnerContributionStatus: ProjectPartnerContributionStatusDTO
+    val partnerContributionStatus: ProjectPartnerContributionStatus
     val partnerContributionAmount: BigDecimal
 
     val partnerContributionSpfId: Long?
     val partnerContributionSpfName: String?
-    val partnerContributionSpfStatus: ProjectPartnerContributionStatusDTO?
+    val partnerContributionSpfStatus: ProjectPartnerContributionStatus?
     val partnerContributionSpfAmount: BigDecimal?
 }

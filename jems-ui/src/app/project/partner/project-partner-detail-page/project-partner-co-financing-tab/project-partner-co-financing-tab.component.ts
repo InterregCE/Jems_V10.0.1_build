@@ -138,7 +138,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
         return {
           financingAndContribution,
           callFunds,
-          totalBudget: totalBudget - totalSpfBudget,
+          totalBudget: NumberService.truncateNumber(totalBudget - totalSpfBudget),
           privateContributionSubTotal,
           publicContributionSubTotal,
           automaticPublicContributionSubTotal,

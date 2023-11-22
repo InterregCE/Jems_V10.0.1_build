@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import java.math.BigDecimal
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -23,7 +23,7 @@ data class ProjectPartnerContributionEntity(
     val name: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val status: ProjectPartnerContributionStatusDTO? = null,
+    val status: ProjectPartnerContributionStatus? = null,
 
     @field:NotNull
     val amount: BigDecimal

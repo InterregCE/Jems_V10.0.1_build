@@ -36,6 +36,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -166,9 +167,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectPartnerCoFinancing(ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal.valueOf(85)),
             ),
             partnerContributions = listOf(
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Public, BigDecimal.valueOf(3755L, 2), true),
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Private, BigDecimal.valueOf(4750L, 2), false),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.Public, BigDecimal.valueOf(3755L, 2), true),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.Private, BigDecimal.valueOf(4750L, 2), false),
             ),
             partnerAbbreviation = "",
         )

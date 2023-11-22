@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -49,14 +50,14 @@ internal class GetCoFinancingInteractorTest: UnitTest() {
             ProjectPartnerContribution(
                 id = 1,
                 name = null,
-                status = Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.TEN,
                 isPartner = true
             ),
             ProjectPartnerContribution(
                 id = 2,
                 name = "BMW",
-                status = AutomaticPublic,
+                status = ProjectPartnerContributionStatus.AutomaticPublic,
                 amount = BigDecimal.ONE,
                 isPartner = false
             )
@@ -98,7 +99,7 @@ internal class GetCoFinancingInteractorTest: UnitTest() {
                 ProjectPartnerContributionSpf(
                     id = 1,
                     name = "name",
-                    status = Public,
+                    status = ProjectPartnerContributionStatus.Public,
                     amount = BigDecimal.TEN
                 )
             )

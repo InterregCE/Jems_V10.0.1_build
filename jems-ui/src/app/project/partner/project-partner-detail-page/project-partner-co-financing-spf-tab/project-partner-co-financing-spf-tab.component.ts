@@ -164,10 +164,11 @@ export class ProjectPartnerCoFinancingSpfTabComponent implements OnInit {
 
   addNewPartnerContribution(initialValue?: ProjectPartnerContributionDTO): void {
     this.partnerContributions.push(this.formBuilder.group({
-      name: [initialValue ? initialValue.name : '', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
-      status: [initialValue ? initialValue.status : null, [Validators.required]],
-      amount: [initialValue?.amount || 0, [Validators.required, Validators.min(0)]],
-      partner: [initialValue ? initialValue.partner : false]
+        id: [initialValue ? initialValue.id : 0],
+        name: [initialValue ? initialValue.name : '', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
+        status: [initialValue ? initialValue.status : null, [Validators.required]],
+        amount: [initialValue?.amount || 0, [Validators.required, Validators.min(0)]],
+        partner: [initialValue ? initialValue.partner : false]
     }));
     if (!initialValue) {
       this.coFinancingSpfForm.markAsDirty();
