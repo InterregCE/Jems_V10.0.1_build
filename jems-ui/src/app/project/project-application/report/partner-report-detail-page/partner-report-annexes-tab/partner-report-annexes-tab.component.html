@@ -1,5 +1,10 @@
 <jems-form>
-    <h3>{{'project.application.partner.report.tab.annexes' | translate}}</h3>
+    <h3>{{'project.application.partner.report.tab.annexes' | translate}}
+        <jems-context-info-bubble infoPosition="right"
+                                  [infoText]="'project.application.partner.report.tab.annexes.infobubble.description'"
+                                  [link]="'project.application.partner.report.tab.annexes.infobubble.link'">
+        </jems-context-info-bubble>
+    </h3>
 
     <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO">
         <span>{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}</span>

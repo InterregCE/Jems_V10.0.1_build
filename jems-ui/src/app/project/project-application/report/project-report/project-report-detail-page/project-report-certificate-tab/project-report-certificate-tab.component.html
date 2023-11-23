@@ -1,7 +1,12 @@
 <jems-form *ngIf="data$ | async as data">
     <div jemsFormLayout>
 
-        <h3 class="mb-3">{{'project.application.project.report.certificates.title' | translate }}</h3>
+        <h3 class="mb-3">{{'project.application.project.report.certificates.title' | translate }}
+            <jems-context-info-bubble infoPosition="right"
+                                      [infoText]="'project.application.project.report.certificates.title.infobubble.description'"
+                                      [link]="'project.application.project.report.certificates.title.infobubble.link'">
+            </jems-context-info-bubble>
+        </h3>
         <p>{{'project.application.project.report.certificates.description' | translate }}</p>
 
         <div *ngIf="data.partnerReportCertificates.totalElements">

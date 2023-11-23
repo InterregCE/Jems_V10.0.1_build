@@ -3,7 +3,12 @@
            (discard)="resetForm(data.documentsLocation)">
     <form *ngIf="data.canView" jemsFormLayout [formGroup]="documentsLocationForm">
         <div jemsMultiColumnRow>
-            <h3>{{'project.application.contract.partner.section.documents.location.title' | translate}}</h3>
+            <h3>{{'project.application.contract.partner.section.documents.location.title' | translate}}
+                <jems-context-info-bubble infoPosition="right"
+                                          [link]="'project.application.contract.partner.section.documents.location.title.infobubble.link'"
+                                          [infoText]="'project.application.contract.partner.section.documents.location.title.infobubble.description'">
+                </jems-context-info-bubble>
+            </h3>
         </div>
 
         <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodTitle.value">

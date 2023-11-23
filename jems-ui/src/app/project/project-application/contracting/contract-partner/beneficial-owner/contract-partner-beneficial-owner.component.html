@@ -8,7 +8,12 @@
         <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
     <form *ngIf="data.canView" jemsFormLayout [formGroup]="form">
-        <h3>{{'project.application.contract.partner.section.beneficial.owner.title' | translate }}</h3>
+        <h3>{{'project.application.contract.partner.section.beneficial.owner.title' | translate }}
+            <jems-context-info-bubble infoPosition="right"
+                                      [link]="'project.application.contract.partner.section.beneficial.owner.title.infobubble.link'"
+                                      [infoText]="'project.application.contract.partner.section.beneficial.owner.title.infobubble.description'">
+            </jems-context-info-bubble>
+        </h3>
         <jems-section-lock
                 [isLocked]="data.isPartnerLocked"
                 (lock)="lock($event)"

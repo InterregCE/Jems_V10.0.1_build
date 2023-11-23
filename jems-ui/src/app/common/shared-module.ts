@@ -108,6 +108,7 @@ import {
 import {
   VerificationChecklistInstanceListComponent
 } from '@common/components/checklist/verification-checklist-instance-list/verification-checklist-instance-list.component';
+import {ContextInfoBubbleComponent} from "@common/components/info-bubble/context-info-bubble.component";
 
 const modules = [
   CommonModule,
@@ -152,6 +153,7 @@ const declarations = [
   HelpMenuComponent,
   SideNavComponent,
   ContextInfoComponent,
+    ContextInfoBubbleComponent,
   FormFieldWidthDirective,
   CurrencyDirective,
   HasPermissionDirective,

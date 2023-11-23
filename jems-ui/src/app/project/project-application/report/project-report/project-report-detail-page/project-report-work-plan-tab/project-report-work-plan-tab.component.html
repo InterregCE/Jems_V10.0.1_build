@@ -2,7 +2,12 @@
            (save)="saveForm()"
            (discard)="resetForm(data.workPackages, data.reportEditable)">
 
-    <h3 class="mb-3" [innerText]="'project.application.project.report.tab.work.plan' | translate"></h3>
+    <h3 class="mb-3" [innerText]="'project.application.project.report.tab.work.plan' | translate">
+        <jems-context-info-bubble infoPosition="right"
+                                  [infoText]="'project.application.project.report.tab.work.plan.infobubble.description'"
+                                  [link]="'project.application.project.report.tab.work.plan.infobubble.link'">
+        </jems-context-info-bubble>
+    </h3>
 
     <form [formGroup]="form" jemsFormLayout>
 

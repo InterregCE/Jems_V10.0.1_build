@@ -1,7 +1,12 @@
 <div *ngIf="data$ | async as data">
     <jems-form (save)="updateReportExpenditures()"
                (discard)="refreshListOfExpenditures()">
-        <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
+        <h3>{{'project.application.partner.report.expenditures.title' | translate}}
+            <jems-context-info-bubble infoPosition="right"
+                                      [infoText]="'project.application.partner.report.expenditures.title.infobubble.description'"
+                                      [link]="'project.application.partner.report.expenditures.title.infobubble.link'">
+            </jems-context-info-bubble>
+        </h3>
         <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
 
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
