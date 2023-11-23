@@ -121,8 +121,7 @@ context('Project privileges tests', () => {
         cy.contains('mat-option', 'Standard application form export').click();
         cy.contains('button', 'Export').should('be.enabled');
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
         cy.contains('annexes').click();
         cy.contains('button', 'Upload').should('not.exist');
         cy.get('jems-file-management').contains('mat-icon', 'download').should('be.visible');
@@ -139,8 +138,7 @@ context('Project privileges tests', () => {
         cy.loginByRequest(testData.applicantEdit.email);
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
 
         addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantManage, 'manage');
 
