@@ -1,0 +1,56 @@
+.context-info {
+  color: var(--info-color);
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: default;
+  width: 1em;
+  height: 1em;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1
+  }
+
+  &.after {
+    position: absolute;
+    right: -2em;
+    top: 0;
+  }
+
+  &.before {
+    position: absolute;
+    left: -2.5em;
+    top: 0;
+  }
+
+  &.above {
+    position: absolute;
+    top: -1.5em;
+  }
+
+  &.below {
+    position: absolute;
+    bottom: -1.5em;
+  }
+
+  &.right {
+    display: inline-block;
+    width: 1.5rem;
+    vertical-align: top;
+    mat-icon {
+      margin-top: -0.15rem;
+    }
+  }
+
+  /* appear "hanging" off the left edge of an inline element, e.g. a headline */
+  &.left {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1.25em;
+  }
+}
+/* enable newline (\n) in info bubble*/
+::ng-deep .newline {
+  white-space: pre-line;
+}

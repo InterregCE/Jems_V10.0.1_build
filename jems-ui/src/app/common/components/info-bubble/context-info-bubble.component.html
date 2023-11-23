@@ -1,0 +1,10 @@
+<ng-container *ngIf="isDisplayed">
+    <div class="context-info" [ngClass]="infoPosition">
+        <mat-icon
+            [matTooltip]="infoTextTranslated"
+            [matTooltipClass]="newLineClass"
+            [matTooltipPosition]="infoPosition"
+            [style.cursor]="isLinkActive ? 'pointer' : 'default'"
+            (click)="openLink()">{{icon}}</mat-icon>
+    </div>
+</ng-container>
