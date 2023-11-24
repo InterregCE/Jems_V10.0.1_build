@@ -7,7 +7,7 @@ import {
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import {ProjectReportDTO, UserRoleCreateDTO} from '@cat/api';
+import {ProjectCallSettingsDTO, ProjectReportDTO, UserRoleCreateDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
@@ -20,6 +20,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ReportUtil} from '@project/common/report-util';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
   selector: 'jems-project-report-detail-page',
@@ -32,6 +33,7 @@ export class ProjectReportDetailPageComponent {
   data$: Observable<{
     projectReport: ProjectReportDTO;
     hasReopenPermission: boolean;
+    isSpfProject: boolean;
   }>;
 
   ReportUtil = ReportUtil;
@@ -49,16 +51,18 @@ export class ProjectReportDetailPageComponent {
               private projectSidenavService: ProjectApplicationFormSidenavService,
               public projectReportPageStore: ProjectReportPageStore,
               private permissionService: PermissionService,
-              private dialog: MatDialog) {
-
+              private dialog: MatDialog
+  ) {
     this.data$ = combineLatest([
       this.pageStore.projectReport$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingProjectReOpen),
+      this.pageStore.projectCallType$
     ])
       .pipe(
-        map(([projectReport, hasReopenPermission]) => ({
+        map(([projectReport, hasReopenPermission, projectCallType]) => ({
           projectReport,
           hasReopenPermission,
+          isSpfProject: projectCallType === CallTypeEnum.SPF
         })),
       );
   }

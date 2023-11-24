@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  PreConditionCheckResultDTO,
+  PreConditionCheckResultDTO, ProjectCallSettingsDTO,
   ProjectReportDTO,
   ProjectReportService,
   ProjectReportSummaryDTO,
@@ -19,6 +19,7 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {ReportUtil} from '@project/common/report-util';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
@@ -32,6 +33,7 @@ export class ProjectReportDetailPageStore {
   reportEditable$: Observable<boolean>;
   reportVersion$ = new ReplaySubject<string | undefined>(1);
   canUserAccessCall$: Observable<boolean>;
+  projectCallType$: Observable<CallTypeEnum>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -45,13 +47,15 @@ export class ProjectReportDetailPageStore {
               private projectReportService: ProjectReportService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectReportVerificationNotificationService: ProjectReportVerificationNotificationAPIService,
-              public projectStore: ProjectStore) {
+              public projectStore: ProjectStore
+  ) {
     this.projectReportId$ = this.projectReportId();
     this.projectReport$ = this.projectReport();
     this.projectReportVerificationNotification$ = this.projectReportVerificationNotification();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
     this.canUserAccessCall$ = partnerReportDetailPageStore.canUserAccessCall$;
+    this.projectCallType$ = this.projectStore.projectCallType$;
   }
 
   private projectReportId(): Observable<any> {

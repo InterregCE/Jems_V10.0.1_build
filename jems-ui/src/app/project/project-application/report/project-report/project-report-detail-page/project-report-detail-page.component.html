@@ -58,6 +58,13 @@
                     </span>
             </a>
 
+            <a *ngIf="data.projectReport.type !== TypeEnum.Content && data.isSpfProject" [active]="activeTab('spfContributions')" mat-tab-link
+               (click)="routeTo('spfContributions')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.spf.contributions' | translate}}
+                    </span>
+            </a>
+
             <a [active]="activeTab('annexes')" mat-tab-link
                (click)="routeTo('annexes')">
                     <span jemsText maxWidth="230">

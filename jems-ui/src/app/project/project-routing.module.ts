@@ -304,6 +304,7 @@ import {
 import {
   AuditControlCorrectionDetailComponent
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
+import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
 
 export const routes: Routes = [
   {
@@ -531,6 +532,10 @@ export const routes: Routes = [
                       {
                         path: 'certificate',
                         component: ProjectReportCertificateTabComponent,
+                      },
+                      {
+                        path: 'spfContributions',
+                        component: ProjectReportSpfContributionsTabComponent,
                       },
                       {
                         path: 'annexes',
