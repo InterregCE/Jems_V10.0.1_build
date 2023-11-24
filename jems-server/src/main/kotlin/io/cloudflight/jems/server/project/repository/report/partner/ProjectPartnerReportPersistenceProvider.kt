@@ -124,7 +124,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getLastCertifiedPartnerReportId(partnerId: Long): Long? =
-        partnerReportRepository.findFirstByPartnerIdAndStatusOrderByIdDesc(partnerId, ReportStatus.Certified)?.id
+        partnerReportRepository.findFirstByPartnerIdAndStatusOrderByControlEndDesc(partnerId, ReportStatus.Certified)?.id
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =

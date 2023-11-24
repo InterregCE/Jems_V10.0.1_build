@@ -151,7 +151,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     fun findFirstByPartnerIdOrderByIdDesc(partnerId: Long): ProjectPartnerReportEntity?
 
-    fun findFirstByPartnerIdAndStatusOrderByIdDesc(partnerId: Long, status: ReportStatus): ProjectPartnerReportEntity?
+    fun findFirstByPartnerIdAndStatusOrderByControlEndDesc(partnerId: Long, status: ReportStatus): ProjectPartnerReportEntity?
 
     fun countAllByPartnerId(partnerId: Long): Int
 
