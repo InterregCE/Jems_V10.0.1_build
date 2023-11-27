@@ -11,7 +11,7 @@
         <mat-label>{{'project.application.reporting.corrections.identification.correction.id' | translate}}</mat-label>
         <mat-select formControlName="followUpOfCorrectionId"
                     [disabled]="!data.canEdit">
-          <mat-option [value]="null" role="option">{{'common.not.applicable.option' | translate}}</mat-option>
+          <mat-option [value]="0" role="option">{{'common.not.applicable.option' | translate}}</mat-option>
           <mat-option *ngFor="let correction of data.pastCorrections" [value]="correction.id" role="option">
             AC{{ correction.auditControlNumber }}.{{ correction.orderNr }}
           </mat-option>

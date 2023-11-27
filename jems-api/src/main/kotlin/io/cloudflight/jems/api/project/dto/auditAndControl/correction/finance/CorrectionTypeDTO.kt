@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.dto.auditAndControl.correction.finance
 
 enum class CorrectionTypeDTO {
+    NA,
     Ref1Dot1,
     Ref1Dot2,
     Ref1Dot3,
