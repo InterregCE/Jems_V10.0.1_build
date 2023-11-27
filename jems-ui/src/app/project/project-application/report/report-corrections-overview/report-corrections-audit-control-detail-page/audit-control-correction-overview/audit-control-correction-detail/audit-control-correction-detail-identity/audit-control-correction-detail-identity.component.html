@@ -179,17 +179,15 @@
                 [disabled]="!data.isMandatoryScopeDefined"
                 placeholder="{{'common.not.applicable.option' | translate}}">
           <mat-option [value]="'N/A'">{{'common.not.applicable.option' | translate}}</mat-option>
-          <mat-option *ngFor="let procurementId of data.availableProcurements?.keys()" [value]="procurementId" role="option">
+          <mat-option *ngFor="let procurementId of data.availableProcurements?.keys()"
+                      [matTooltip]="data.availableProcurements.get(procurementId)"
+                      [value]="procurementId" role="option">
             {{ data.availableProcurements.get(procurementId) }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
 
-
-    <mat-form-field class="cdk-visually-hidden">
-      <input formControlName="expenditureId" matInput disabled>
-    </mat-form-field>
   </form>
 
   <ng-container *ngIf="isCostItemTableVisible"
@@ -199,7 +197,8 @@
                   tableConfig: data.costItemsTableConfig.columnConfig,
                   displayedColumns: data.costItemsTableConfig.availableColumns,
                   data: data,
-                  isOngoing: data.correction.status === this.CorrectionStatusEnum.Ongoing
+                  isOngoing: data.correction.status === this.CorrectionStatusEnum.Ongoing,
+                  identificationForm: form
                 }">
   </ng-container>
 
@@ -217,143 +216,149 @@
              let-tableConfig="tableConfig"
              let-displayedColumns="displayedColumns"
              let-data="data"
-             let-isOngoing="isOngoing">
+             let-isOngoing="isOngoing"
+             let-identificationForm="identificationForm">
 
   <mat-table jemsNoWidthLimit
              [dataSource]="dataSource?.content"
-              [jemsTableConfig]="tableConfig">
+             [jemsTableConfig]="tableConfig">
 
-    <ng-container *ngIf="isOngoing && data.canEdit" matColumnDef="select" sticky>
-      <mat-header-cell mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
-        <span jemsText maxLines="1">{{ 'project.application.reporting.corrections.cost.table.column.select' | translate }}</span>
-      </mat-header-cell>
-      <mat-cell  mat-cell *matCellDef="let element">
-        <mat-radio-button
-                [value]="element.id"
-                (change)="setCostItemValue($event.value)"
-                [checked]="element.id === data.correction.expenditureCostItem?.id">
-        </mat-radio-button>
-      </mat-cell>
-    </ng-container>
+    <div [formGroup]="identificationForm">
+        <ng-container *ngIf="isOngoing && data.canEdit" matColumnDef="select" sticky>
+            <mat-header-cell mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
+                <span jemsText maxLines="1">{{ 'project.application.reporting.corrections.cost.table.column.select' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell  mat-cell *matCellDef="let element">
+                <mat-radio-group formControlName="expenditureId">
+                    <mat-radio-button
+                            [value]="element?.id"
+                            (change)="setCostItemValue(element?.id)"
+                            [checked]="element?.id === data.correction?.expenditureCostItem?.id">
+                    </mat-radio-button>
+                </mat-radio-group>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="id">
-      <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costId' | translate}} </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <a jemsText maxLines="1" [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/expenditures/'">
-          R.{{element.partnerReportNumber}}.{{element.number}}
-        </a>
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> {{'project.application.reporting.corrections.cost.table.column.costId' | translate}} </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <a jemsText maxLines="1" [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/expenditures/'">
+                    R.{{element.partnerReportNumber}}.{{element.number}}
+                </a>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="unitCostsAndLumpSums">
-      <mat-header-cell *matHeaderCellDef>
+        <ng-container matColumnDef="unitCostsAndLumpSums">
+            <mat-header-cell *matHeaderCellDef>
         <span jemsText maxLines="2">
              {{'project.application.reporting.corrections.cost.table.column.costAndLumpSum' | translate}}
         </span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element">
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
             <span *ngIf="element.lumpSum || element.unitCost" class="text-overflow-ellipsis"
-                [matTooltip]="(element.lumpSum ? element.lumpSum?.name : element.unitCost?.name) | translateByInputLanguage | async ">
+                  [matTooltip]="(element.lumpSum ? element.lumpSum?.name : element.unitCost?.name) | translateByInputLanguage | async ">
                 {{(element.lumpSum ? element.lumpSum?.name : element.unitCost?.name) | translateByInputLanguage | async }}
             </span>
-            <span  *ngIf="!element.lumpSum && !element.unitCost">
+                <span  *ngIf="!element.lumpSum && !element.unitCost">
               {{'common.not.applicable.option' | translate}}
             </span>
-      </mat-cell>
-    </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="costCategory">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.costCategory' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element">
+        <ng-container matColumnDef="costCategory">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.costCategory' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
        <span class="text-overflow-ellipsis"
              [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate ">
          {{ ('project.application.partner.report.expenditures.cost.category.' + element.costCategory) | translate }}
        </span>
-      </mat-cell>
-    </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="investmentNo">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.investment' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element">
+        <ng-container matColumnDef="investmentNo">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.investment' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
           <span *ngIf="element.investmentNumber">
               {{element.investmentId ?  'I' + element.investmentWorkPackageNumber + '.' + element.investmentNumber : '' }}
           </span>
-          <span *ngIf="!element.investmentNumber">
+                <span *ngIf="!element.investmentNumber">
             {{'common.not.applicable.option' | translate}}
           </span>
-      </mat-cell>
-    </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="procurement">
-      <mat-header-cell
-              *matHeaderCellDef>
-        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.procurement' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <a *ngIf="element.contractId" class="text-overflow-ellipsis"
-           [matTooltip]="data.availableProcurements.get(element.contractId)"
-           [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/procurements/' + element.contractId ">
+        <ng-container matColumnDef="procurement">
+            <mat-header-cell
+                    *matHeaderCellDef>
+                <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.procurement' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <a *ngIf="element.contractId" class="text-overflow-ellipsis"
+                   [matTooltip]="data.availableProcurements.get(element.contractId)"
+                   [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.correction.partnerId + '/reports/' + data.correction.partnerReportId + '/procurements/' + element.contractId ">
 
-            {{data.availableProcurements.get(element.contractId)}}
-        </a>
-        <span *ngIf="!element.contractId">
+                    {{data.availableProcurements.get(element.contractId)}}
+                </a>
+                <span *ngIf="!element.contractId">
             {{'common.not.applicable.option' | translate}}
         </span>
-      </mat-cell>
-    </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="internalReference">
-      <mat-header-cell *matHeaderCellDef>
+        <ng-container matColumnDef="internalReference">
+            <mat-header-cell *matHeaderCellDef>
         <span jemsText  maxLines="2">
           {{'project.application.reporting.corrections.cost.table.column.internalReference'  | translate}}
         </span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.internalReferenceNumber}} </mat-cell>
-    </ng-container>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.internalReferenceNumber}} </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="invoiceNo">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.invoice' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.invoiceNumber}} </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="invoiceNo">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.table.column.invoice' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.invoiceNumber}} </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="invoiceDate">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.invoiceDate' | translate}} </span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element?.invoiceDate  | localeDate }} </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="invoiceDate">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.invoiceDate' | translate}} </span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element?.invoiceDate  | localeDate }} </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="declaredAmount">
-      <mat-header-cell *matHeaderCellDef>
+        <ng-container matColumnDef="declaredAmount">
+            <mat-header-cell *matHeaderCellDef>
        <span jemsText maxLines="2">
            {{'project.application.reporting.corrections.cost.table.column.amount' | translate}}
         </span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element?.declaredAmount | asMoney}} </mat-cell>
-    </ng-container>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element?.declaredAmount | asMoney}} </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="currency">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="1">{{'project.application.reporting.corrections.cost.table.column.currencyCode' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element?.currencyCode}} </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="currency">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="1">{{'project.application.reporting.corrections.cost.table.column.currencyCode' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element?.currencyCode}} </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="declaredAmountEur">
-      <mat-header-cell *matHeaderCellDef>
-        <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.amountEuro' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element?.declaredAmountAfterSubmission | asMoney}} </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="declaredAmountEur">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2"> {{'project.application.reporting.corrections.cost.table.column.amountEuro' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element?.declaredAmountAfterSubmission | asMoney}} </mat-cell>
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>>
+    </div>
+
   </mat-table>
 
   <jems-paginator *ngIf="isOngoing"
