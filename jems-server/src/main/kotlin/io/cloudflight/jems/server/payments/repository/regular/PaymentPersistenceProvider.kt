@@ -48,6 +48,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
@@ -84,6 +85,7 @@ class PaymentPersistenceProvider(
     private val fileRepository: JemsProjectFileService,
     private val projectPartnerReportRepository: ProjectPartnerReportRepository,
     private val paymentToEcExtensionRepository: PaymentToEcExtensionRepository,
+    private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentPersistence {
 
@@ -333,7 +335,8 @@ class PaymentPersistenceProvider(
                 it.toEntity(
                     paymentPartner = paymentPartnerRepository.getById(paymentPartnerId),
                     savePaymentInfoUser = getUserOrNull(it.savePaymentInfoUserId),
-                    paymentConfirmedUser = getUserOrNull(it.paymentConfirmedUserId)
+                    paymentConfirmedUser = getUserOrNull(it.paymentConfirmedUserId),
+                    correction = it.correctionId?.let { correctionId -> auditControlCorrectionRepository.getById(correctionId) },
                 )
             }
         ).toModelList()

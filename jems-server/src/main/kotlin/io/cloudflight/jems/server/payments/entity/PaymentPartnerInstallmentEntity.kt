@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -37,5 +38,9 @@ class PaymentPartnerInstallmentEntity (
     @ManyToOne(optional = true)
     @JoinColumn(name = "payment_confirmed_account_id")
     val paymentConfirmedUser: UserEntity?,
-    val paymentConfirmedDate: LocalDate?
+    val paymentConfirmedDate: LocalDate?,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "project_correction_id")
+    val correction: AuditControlCorrectionEntity?
 )

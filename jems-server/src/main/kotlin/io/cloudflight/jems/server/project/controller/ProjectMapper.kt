@@ -15,6 +15,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
+import io.cloudflight.jems.api.project.dto.ProjectModificationCreateDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
@@ -41,6 +42,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectModificationCreate
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -145,6 +147,8 @@ fun ProjectSearchRequestDTO.toModel() = projectMapper.map(this)
 
 fun ProjectWithUsersDTO.map() = projectMapper.map(this)
 
+fun ProjectModificationCreateDTO.toModel() = projectMapper.map(this)
+
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
 @Mapper(uses = [CallDTOMapper::class])
@@ -231,4 +235,6 @@ abstract class ProjectMapper {
             lastSubmissionTo = null,
             objectives = null
         )
+
+    abstract fun map(dto: ProjectModificationCreateDTO): ProjectModificationCreate
 }

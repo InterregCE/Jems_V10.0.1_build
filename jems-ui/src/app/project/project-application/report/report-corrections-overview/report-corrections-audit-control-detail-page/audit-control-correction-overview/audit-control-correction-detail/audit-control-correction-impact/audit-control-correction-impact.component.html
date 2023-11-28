@@ -9,7 +9,7 @@
     <form [formGroup]="form" jemsFormLayout>
         <mat-form-field>
             <mat-label>{{ 'auditControl.correction.impact.action.title' | translate }}</mat-label>
-            <mat-select formControlName="action" [disabled]="!data.canEdit" required>
+            <mat-select formControlName="action" [disabled]="!data.canEdit">
                 <mat-option *ngFor="let action of actions" [value]="action" role="option">
                     {{ 'auditControl.correction.impact.action.' + action | translate }}
                 </mat-option>

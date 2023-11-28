@@ -22,7 +22,7 @@
                     <jems-pending-button *ngIf="data.canEdit" class="ml-2"
                                          [pending]="pendingAction$ | async"
                                          [disabled]="!data.canClose"
-                                         (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction.id)">
+                                         (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction)">
                         {{'project.application.reporting.corrections.close.correction' | translate}}
                     </jems-pending-button>
                     <jems-context-info *ngIf="!data.canClose" infoPosition="right"

@@ -12,10 +12,13 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.AuditControlTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerReportDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePaymentDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionProjectReportDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AvailableCorrectionsForPaymentDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
@@ -25,19 +28,24 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.auditAndControl.base.closeAuditControl.CloseAuditControlInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.base.createAuditControl.CreateAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.base.getAuditControl.GetAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.base.listAuditControl.ListAuditControlIntetractor
+import io.cloudflight.jems.server.project.service.auditAndControl.base.reopenAuditControl.ReopenAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.base.updateAuditControl.UpdateAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableCorrectionsForModification.GetAvailableCorrectionsForModificationInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableCorrectionsForPayment.GetAvailableCorrectionsForPaymentInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableReportDataForAuditControl.GetPartnerAndPartnerReportDataInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartnerReport
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePayment
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionProjectReport
-import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableReportDataForAuditControl.GetPartnerAndPartnerReportDataInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.base.getAuditControl.GetAuditControlInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.base.listAuditControl.ListAuditControlIntetractor
-import io.cloudflight.jems.server.project.service.auditAndControl.base.reopenAuditControl.ReopenAuditControlInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
-import io.cloudflight.jems.server.project.service.auditAndControl.base.updateAuditControl.UpdateAuditControlInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -217,6 +225,24 @@ class AuditControlControllerTest: UnitTest() {
 
             comment = "COMMENT"
         )
+
+        private val auditcontrolCorrection = AuditControlCorrection(
+            id = 123L,
+            orderNr = 1,
+            status = AuditControlStatus.Closed,
+            type = AuditControlCorrectionType.LinkedToInvoice,
+            auditControlId = AUDIT_CONTROL_ID,
+            auditControlNr = 1,
+        )
+
+        private val auditcontrolCorrectionDto = AuditControlCorrectionDTO(
+            id = 123L,
+            orderNr = 1,
+            status = AuditStatusDTO.Closed,
+            type = AuditControlCorrectionTypeDTO.LinkedToInvoice,
+            auditControlId = AUDIT_CONTROL_ID,
+            auditControlNumber = 1,
+        )
     }
 
     @MockK
@@ -239,6 +265,13 @@ class AuditControlControllerTest: UnitTest() {
 
     @MockK
     lateinit var reopenAuditControlInteractor: ReopenAuditControlInteractor
+
+    @MockK
+    lateinit var getCorrectionsForModification: GetAvailableCorrectionsForModificationInteractor
+
+    @MockK
+    lateinit var getCorrectionsForPayment: GetAvailableCorrectionsForPaymentInteractor
+
 
     @InjectMockKs
     lateinit var controller: AuditControlController
@@ -302,5 +335,25 @@ class AuditControlControllerTest: UnitTest() {
             AuditControlStatus.Ongoing
 
         assertThat(controller.reopenAuditControl(PROJECT_ID, AUDIT_CONTROL_ID)).isEqualTo(AuditStatusDTO.Ongoing)
+    }
+
+    @Test
+    fun getAvailableCorrectionsForModification() {
+        every { getCorrectionsForModification.getAvailableCorrections(PROJECT_ID) } returns listOf(auditcontrolCorrection)
+        assertThat(controller.getAvailableCorrectionsForModification(PROJECT_ID)).isEqualTo(
+            listOf(auditcontrolCorrectionDto)
+        )
+    }
+
+    @Test
+    fun getAvailableCorrectionsForPayment() {
+        val paymentId = 51L
+        every { getCorrectionsForPayment.getAvailableCorrections(paymentId) } returns listOf(
+            AvailableCorrectionsForPayment(2L, listOf(auditcontrolCorrection))
+        )
+
+        assertThat(controller.getAvailableCorrectionsForPayment(PROJECT_ID, paymentId)).isEqualTo(
+            listOf(AvailableCorrectionsForPaymentDTO(2L, listOf(auditcontrolCorrectionDto)))
+        )
     }
 }

@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.controller.fund.toDto
+import io.cloudflight.jems.server.project.controller.auditAndControl.correction.toSimpleDto
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -70,7 +71,8 @@ fun PaymentPartnerInstallment.toDTO() = PaymentPartnerInstallmentDTO(
     savePaymentDate = savePaymentDate,
     paymentConfirmed = isPaymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    correction = correction?.toSimpleDto(),
 )
 
 fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
@@ -84,7 +86,8 @@ fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
         savePaymentDate = it.savePaymentDate,
         isPaymentConfirmed = it.paymentConfirmed,
         paymentConfirmedUserId = it.paymentConfirmedUser?.id,
-        paymentConfirmedDate = it.paymentConfirmedDate
+        paymentConfirmedDate = it.paymentConfirmedDate,
+        correctionId = it.correction?.id,
     )
 }
 

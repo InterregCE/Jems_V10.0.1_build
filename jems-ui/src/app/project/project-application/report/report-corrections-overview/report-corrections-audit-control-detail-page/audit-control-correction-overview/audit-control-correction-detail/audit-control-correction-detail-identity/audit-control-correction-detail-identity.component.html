@@ -13,7 +13,8 @@
                     [disabled]="!data.canEdit">
           <mat-option [value]="0" role="option">{{'common.not.applicable.option' | translate}}</mat-option>
           <mat-option *ngFor="let correction of data.pastCorrections" [value]="correction.id" role="option">
-            AC{{ correction.auditControlNumber }}.{{ correction.orderNr }}
+              {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
+                :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr} }}
           </mat-option>
         </mat-select>
         <mat-error>

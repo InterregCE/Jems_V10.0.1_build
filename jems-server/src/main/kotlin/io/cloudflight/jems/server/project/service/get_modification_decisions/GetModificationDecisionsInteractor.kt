@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.get_modification_decisions
 
-import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.project.service.model.ProjectModificationDecision
 
 interface GetModificationDecisionsInteractor {
-    fun getModificationDecisions(projectId: Long): List<ProjectStatus>
+    fun getModificationDecisions(projectId: Long): List<ProjectModificationDecision>
 }

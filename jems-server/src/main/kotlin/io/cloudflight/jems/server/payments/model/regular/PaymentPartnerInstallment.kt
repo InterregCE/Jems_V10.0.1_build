@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.payments.model.regular
 
 import io.cloudflight.jems.api.user.dto.OutputUser
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -18,5 +19,7 @@ data class PaymentPartnerInstallment(
     val savePaymentDate: LocalDate? = null,
     val isPaymentConfirmed: Boolean? = null,
     val paymentConfirmedUser: OutputUser? = null,
-    val paymentConfirmedDate: LocalDate? = null
+    val paymentConfirmedDate: LocalDate? = null,
+
+    val correction: AuditControlCorrection?,
 )

@@ -75,4 +75,5 @@ class AuditControlCorrectionEntity (
 
     var procurementId: Long?,
 
+    var projectModificationId: Long?,
 )

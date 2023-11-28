@@ -74,6 +74,7 @@ fun AuditControlCorrectionCreate.toEntity(auditControlEntity: AuditControlEntity
     expenditure = null,
     costCategory = null,
     procurementId = null,
+    projectModificationId = null,
 )
 
 fun Page<PartnerReportExpenditureCostEntity>.toPagedModel() = map { it.toCorrectionCostItem() }

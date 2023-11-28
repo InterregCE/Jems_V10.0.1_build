@@ -28,10 +28,12 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentToCreat
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toSimpleModel
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
@@ -221,13 +223,15 @@ fun PaymentPartnerInstallmentEntity.toDetailModel() = PaymentPartnerInstallment(
     savePaymentDate = savePaymentDate,
     isPaymentConfirmed = isPaymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser?.toOutputUser(),
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    correction = correction?.toSimpleModel(),
 )
 
 fun PaymentPartnerInstallmentUpdate.toEntity(
     paymentPartner: PaymentPartnerEntity,
     savePaymentInfoUser: UserEntity?,
-    paymentConfirmedUser: UserEntity?
+    paymentConfirmedUser: UserEntity?,
+    correction: AuditControlCorrectionEntity?,
 ) = PaymentPartnerInstallmentEntity(
     id = id ?: 0,
     paymentPartner = paymentPartner,
@@ -239,7 +243,8 @@ fun PaymentPartnerInstallmentUpdate.toEntity(
     savePaymentDate = savePaymentDate,
     isPaymentConfirmed = isPaymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    correction = correction,
 )
 
 // Advance Payment

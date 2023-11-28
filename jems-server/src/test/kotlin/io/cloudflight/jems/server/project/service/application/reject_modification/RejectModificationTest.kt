@@ -3,12 +3,14 @@ package io.cloudflight.jems.server.project.service.application.reject_modificati
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingSubmittedApplicationState
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectModificationCreate
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,7 +23,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
-class RejectModificationInteractorTest : UnitTest() {
+class RejectModificationTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L
@@ -50,6 +52,9 @@ class RejectModificationInteractorTest : UnitTest() {
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @MockK
+    lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence
+
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -72,11 +77,16 @@ class RejectModificationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns inModificationState
         every { inModificationState.rejectModification(actionInfo) } returns ApplicationStatus.MODIFICATION_REJECTED
+        every {
+            auditControlCorrectionPersistence.updateModificationByCorrectionIds(PROJECT_ID, emptySet(), listOf(ApplicationStatus.MODIFICATION_REJECTED))
+        } returns Unit
+        every { auditControlCorrectionPersistence.getAllIdsByProjectId(PROJECT_ID) } returns emptySet()
 
         val slotAudit = slot<ProjectStatusChangeEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
-        assertThat(rejectModification.reject(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.MODIFICATION_REJECTED)
+        val modification = ProjectModificationCreate(actionInfo = actionInfo, correctionIds = emptySet())
+        assertThat(rejectModification.reject(PROJECT_ID, modification)).isEqualTo(ApplicationStatus.MODIFICATION_REJECTED)
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured).isEqualTo(

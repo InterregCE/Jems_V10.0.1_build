@@ -649,6 +649,7 @@
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
+    <ID>TooManyFunctions:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider : ProjectWorkflowPersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
@@ -666,7 +667,6 @@
     <ID>UnusedPrivateMember:AuditControlCorrectionControllerTest.kt$AuditControlCorrectionControllerTest$@MockK private lateinit var updateCorrection: UpdateAuditControlCorrectionInteractor</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var partnerReportRepository: ProjectPartnerReportRepository</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var programmeFundRepository: ProgrammeFundRepository</ID>
-    <ID>UnusedPrivateMember:CloseAuditControlCorrectionTest.kt$CloseAuditControlCorrectionTest$@MockK private lateinit var auditPublisher: ApplicationEventPublisher</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$@MockK private lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence</ID>
     <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$@MockK private lateinit var auditControlPersistence: AuditControlPersistence</ID>

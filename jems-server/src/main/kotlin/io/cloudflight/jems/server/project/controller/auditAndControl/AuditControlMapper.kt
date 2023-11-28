@@ -6,12 +6,14 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerDTO
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.CorrectionImpactActionDTO
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -47,7 +49,10 @@ fun AuditControlStatus.toDto() = AuditStatusDTO.valueOf(this.name)
 
 fun List<CorrectionAvailablePartner>.toDto() = map { mapper.map(it) }
 
+fun List<CorrectionImpactActionDTO>.toModel() = map { mapper.map(it) }
+
 @Mapper
 interface AuditControlMapper {
     fun map(model: CorrectionAvailablePartner): CorrectionAvailablePartnerDTO
+    fun map(dto: CorrectionImpactActionDTO): CorrectionImpactAction
 }

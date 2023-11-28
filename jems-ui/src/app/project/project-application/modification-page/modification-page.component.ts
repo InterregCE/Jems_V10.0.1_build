@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
+import {AuditControlCorrectionDTO, ProjectDetailDTO, ProjectModificationDecisionDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
@@ -35,11 +35,12 @@ export class ModificationPageComponent {
     currentVersionOfProject: ProjectDetailDTO;
     currentVersionOfProjectTitle: string;
     currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
-    modificationDecisions: ProjectStatusDTO[];
+    modificationDecisions: ProjectModificationDecisionDTO[];
     canOpenModification: boolean;
     canHandBackModification: boolean;
     versions: ProjectVersionDTO[] | ProjectVersionDTO | undefined;
   }>;
+  availableCorrections$: Observable<AuditControlCorrectionDTO[]>;
 
   constructor(public projectStore: ProjectStore,
               private pageStore: ModificationPageStore,
@@ -48,6 +49,7 @@ export class ModificationPageComponent {
               private projectVersionStore: ProjectVersionStore,
               private changeDetectorRef: ChangeDetectorRef,
               private dialog: MatDialog) {
+    this.availableCorrections$ = this.pageStore.availableCorrections$;
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
@@ -97,12 +99,13 @@ export class ModificationPageComponent {
   }
 
   private canOpenModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
-    return hasOpenPermission
-      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED || projectStatus === this.ProjectStatusEnum.CONTRACTED);
+    return hasOpenPermission &&
+      [this.ProjectStatusEnum.APPROVED, this.ProjectStatusEnum.NOTAPPROVED, this.ProjectStatusEnum.CONTRACTED].includes(projectStatus);
   }
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
-    return hasOpenPermission && (projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || projectStatus === this.ProjectStatusEnum.MODIFICATIONSUBMITTED);
+    return hasOpenPermission &&
+      [this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED, this.ProjectStatusEnum.MODIFICATIONSUBMITTED].includes(projectStatus);
   }
 
   private showSuccessMessage(): void {
@@ -114,9 +117,11 @@ export class ModificationPageComponent {
   }
 
   isModificationOpenedOrSubmitted(currentStatus: ProjectStatusDTO.StatusEnum) {
-    return currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
-      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED ||
-      currentStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION ||
-      currentStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
+    return [
+      ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING,
+      ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED,
+      ProjectStatusDTO.StatusEnum.INMODIFICATION,
+      ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+    ].includes(currentStatus)
   }
 }
