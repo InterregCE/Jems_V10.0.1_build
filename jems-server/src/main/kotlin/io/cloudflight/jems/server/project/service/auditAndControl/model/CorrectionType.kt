@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.model
 
-enum class CorrectionType{
+enum class CorrectionType {
+    NA,
     Ref1Dot1,
     Ref1Dot2,
     Ref1Dot3,

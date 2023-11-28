@@ -23,9 +23,6 @@ import {
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
-import {
-    PartnerReportExpendituresTabConstants
-} from "@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.constants";
 
 @UntilDestroy()
 @Component({
@@ -150,7 +147,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       this.partnerReports = partner.availableReports;
     }
     this.form = this.formBuilder.group({
-      followUpOfCorrectionId: [correctionIdentification.followUpOfCorrectionId],
+      followUpOfCorrectionId: [correctionIdentification.followUpOfCorrectionId || 0, Validators.required],
       correctionFollowUp: correctionIdentification.correctionFollowUpType,
       repaymentFrom: correctionIdentification.repaymentFrom,
       lateRepaymentTo: correctionIdentification.lateRepaymentTo,
@@ -206,7 +203,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
 
   save(id: number) {
     const data = {
-      followUpOfCorrectionId: this.form.controls?.followUpOfCorrectionId.value,
+      followUpOfCorrectionId: this.form.controls?.followUpOfCorrectionId.value || null,
       correctionFollowUpType: this.form.controls?.correctionFollowUp.value,
       repaymentFrom: this.form.controls?.repaymentFrom.value,
       lateRepaymentTo: this.form.controls?.lateRepaymentTo.value,
