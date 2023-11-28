@@ -12,9 +12,8 @@ data class CorrectionAvailableReportTmp(
 
     val projectReportId: Long?,
     val projectReportNumber: Int?,
-    val availableReportFunds: List<ProgrammeFund>,
 
-    val paymentFund: ProgrammeFund?,
+    val availableFund: ProgrammeFund,
 
     val ecPaymentId: Long?,
     val ecPaymentStatus: PaymentEcStatus?,

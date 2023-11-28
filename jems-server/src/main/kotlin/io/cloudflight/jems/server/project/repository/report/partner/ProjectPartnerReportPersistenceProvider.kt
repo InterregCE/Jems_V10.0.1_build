@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -166,15 +167,12 @@ class ProjectPartnerReportPersistenceProvider(
         val reportProject = QProjectReportEntity.projectReportEntity
         val payment = QPaymentEntity.paymentEntity
         val programmeFund = QProgrammeFundEntity.programmeFundEntity
-        val ecExtensionPayment = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+        val ecPaymentExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val ecPayment = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
         val accountingYear = QAccountingYearEntity.accountingYearEntity
+        val reportCoFin = QProjectPartnerReportCoFinancingEntity.projectPartnerReportCoFinancingEntity
 
-        val fundsPerReportId = partnerReportCoFinancingRepository.findAllByIdReportPartnerIdIn(partnerIds)
-            .groupBy { it.id.report.id }
-            .mapValues { it.value.mapNotNull { it.programmeFund?.toModel() } }
-
-        return jpaQueryFactory.select(
+        val g = jpaQueryFactory.select(
             reportPartner.partnerId,
             reportPartner.id,
             reportPartner.number,
@@ -186,35 +184,39 @@ class ProjectPartnerReportPersistenceProvider(
             accountingYear,
         )
             .from(reportPartner)
-            .leftJoin(reportProject).on(reportProject.id.eq(reportPartner.projectReport.id))
-            .leftJoin(payment).on(payment.projectReport.id.eq(reportProject.id))
-            .leftJoin(programmeFund).on(programmeFund.id.eq(payment.fund.id))
-            .leftJoin(ecExtensionPayment).on(ecExtensionPayment.payment.id.eq(payment.id))
-            .leftJoin(ecPayment).on(ecPayment.id.eq(ecExtensionPayment.paymentApplicationToEc.id))
-            .leftJoin(accountingYear).on(accountingYear.id.eq(ecPayment.accountingYear.id))
+            .leftJoin(reportProject)
+                .on(reportProject.eq(reportPartner.projectReport))
+            .leftJoin(reportCoFin)
+                .on(reportCoFin.id.report.eq(reportPartner).and(reportCoFin.programmeFund.isNotNull()))
+            .leftJoin(programmeFund)
+                .on(programmeFund.eq(reportCoFin.programmeFund))
+            .leftJoin(payment)
+                .on(payment.fund.eq(programmeFund).and(payment.projectReport.eq(reportProject)))
+            .leftJoin(ecPaymentExtension)
+                .on(ecPaymentExtension.payment.eq(payment))
+            .leftJoin(ecPayment)
+                .on(ecPayment.eq(ecPaymentExtension.paymentApplicationToEc))
+            .leftJoin(accountingYear)
+                .on(accountingYear.eq(ecPayment.accountingYear))
             .where(
                 reportPartner.partnerId.`in`(partnerIds)
-                    .and(reportPartner.controlEnd.isNotNull)
+                    .and(reportPartner.controlEnd.isNotNull())
             )
             .fetch()
-            .map { it.toTmpModel { fundsPerReportId[it]!! } }
+        return g.map { it.toTmpModel() }
     }
 
-    private fun Tuple.toTmpModel(fundResolver: (Long) -> List<ProgrammeFund>): CorrectionAvailableReportTmp {
-        val id = get(1, Long::class.java)!!
-        return CorrectionAvailableReportTmp(
+    private fun Tuple.toTmpModel(): CorrectionAvailableReportTmp =
+        CorrectionAvailableReportTmp(
             partnerId = get(0, Long::class.java)!!,
-            id = id,
+            id = get(1, Long::class.java)!!,
             reportNumber = get(2, Int::class.java)!!,
             projectReportId = get(3, Long::class.java),
             projectReportNumber = get(4, Int::class.java),
-            availableReportFunds = fundResolver(id),
-
-            paymentFund = get(5, ProgrammeFundEntity::class.java)?.toModel(),
-
+            availableFund = get(5, ProgrammeFundEntity::class.java)!!.toModel(),
             ecPaymentId = get(6, Long::class.java),
             ecPaymentStatus = get(7, PaymentEcStatus::class.java),
             ecPaymentAccountingYear = get(8, AccountingYearEntity::class.java)?.toModel(),
         )
-    }
+
 }

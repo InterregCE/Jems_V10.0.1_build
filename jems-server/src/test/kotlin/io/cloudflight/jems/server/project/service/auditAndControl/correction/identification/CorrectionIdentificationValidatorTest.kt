@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFund
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartnerReport
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
@@ -117,10 +118,12 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = 11, 1, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
+                        availableFunds = listOf(CorrectionAvailableFund(
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                        )),
                     ),
                 ),
+                availableFtls = emptyList(),
             )
         )
         assertThrows<CombinationOfReportAndFundIsInvalidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
@@ -162,10 +165,12 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
+                        availableFunds = listOf(CorrectionAvailableFund(
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                        )),
                     ),
                 ),
+                availableFtls = emptyList(),
             )
         )
 
@@ -216,10 +221,12 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
+                        availableFunds = listOf(CorrectionAvailableFund(
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                        )),
                     ),
                 ),
+                availableFtls = emptyList(),
             )
         )
 
@@ -270,10 +277,12 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
+                        availableFunds = listOf(CorrectionAvailableFund(
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                        )),
                     ),
                 ),
+                availableFtls = emptyList(),
             )
         )
 
@@ -316,10 +325,12 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
-                        availableReportFunds = listOf(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF)),
-                        availablePayments = emptyList(),
+                        availableFunds = listOf(CorrectionAvailableFund(
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                        )),
                     )
                 ),
+                availableFtls = emptyList(),
             )
         )
 

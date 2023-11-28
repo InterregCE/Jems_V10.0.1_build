@@ -71,7 +71,7 @@
       "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
-      "hash": "3cbbaba1",
+      "hash": "28f75461",
       "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
@@ -79,7 +79,7 @@
       "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
-      "hash": "28f75461",
+      "hash": "e677362b",
       "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
@@ -93,10 +93,6 @@
     {
       "hash": "02dfb4b5",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
-    },
-    {
-      "hash": "5d1862ba",
-      "reason": "generic exception thrown, but it is in generated mapstruct class AuditControlCorrectionMapperImpl.java:37"
     }
   ]
 }

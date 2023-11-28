@@ -126,7 +126,7 @@ class CorrectionIdentificationValidator(
 
     private fun validateReportAndFundSelectedAreValid(input: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
         availableData.flatMap { it.availableReports }
-            .firstOrNull { it.id == input.partnerReportId }?.availableReportFunds?.firstOrNull { it.id == input.programmeFundId }
+            .firstOrNull { it.id == input.partnerReportId }?.availableFunds?.firstOrNull { it.fund.id == input.programmeFundId }
             ?: throw CombinationOfReportAndFundIsInvalidException()
     }
 

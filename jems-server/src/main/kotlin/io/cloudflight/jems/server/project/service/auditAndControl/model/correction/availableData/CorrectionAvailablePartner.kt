@@ -9,5 +9,6 @@ data class CorrectionAvailablePartner(
     val partnerRole: ProjectPartnerRole,
     val partnerDisabled: Boolean,
 
-    val availableReports: List<CorrectionAvailablePartnerReport>
+    val availableReports: List<CorrectionAvailablePartnerReport>,
+    val availableFtls: List<CorrectionAvailableFtls>,
 )

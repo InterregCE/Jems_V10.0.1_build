@@ -6,8 +6,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  CorrectionAvailablePartnerDTO, CorrectionAvailablePartnerReportDTO, CorrectionAvailablePaymentDTO,
-  PaymentApplicationToEcDTO, ProjectAuditControlCorrectionDTO,
+  CorrectionAvailableFundDTO,
+  CorrectionAvailablePartnerDTO,
+  CorrectionAvailablePartnerReportDTO,
+  CorrectionEcPaymentDTO,
+  ProjectAuditControlCorrectionDTO,
   ProjectCorrectionProgrammeMeasureDTO,
   ProjectCorrectionProgrammeMeasureUpdateDTO
 } from '@cat/api';
@@ -86,7 +89,7 @@ export class AuditControlCorrectionDetailMeasureComponent {
   }
 
   resetForm(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO, programmeMeasure: ProjectCorrectionProgrammeMeasureDTO) {
-    const ecPayment: PaymentApplicationToEcDTO | undefined = this.filterEcPayment(partnerData, identification);
+    const ecPayment: CorrectionEcPaymentDTO | undefined = this.filterEcPayment(partnerData, identification);
 
     this.form.setValue({
       ...programmeMeasure,
@@ -112,10 +115,10 @@ export class AuditControlCorrectionDetailMeasureComponent {
     ).subscribe();
   }
 
-  private filterEcPayment(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO): PaymentApplicationToEcDTO | undefined {
+  private filterEcPayment(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO): CorrectionEcPaymentDTO | undefined {
     const partner = partnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === identification.partnerId);
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === identification.partnerReportId);
-    const fund = report?.availablePayments.find((it: CorrectionAvailablePaymentDTO) => it.fund.id === identification.programmeFundId);
+    const fund = report?.availableFunds.find((it: CorrectionAvailableFundDTO) => it.fund.id === identification.programmeFundId);
 
     return fund?.ecPayment;
   }
