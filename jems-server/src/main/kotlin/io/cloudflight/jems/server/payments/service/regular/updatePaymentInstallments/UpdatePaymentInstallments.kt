@@ -135,15 +135,18 @@ class UpdatePaymentInstallments(
     }
 
     private fun validateCorrections(paymentDetail: PaymentDetailDTO) {
-        val correctionIdsByProjectId = auditControlCorrectionPersistence.getAllIdsByProjectId(projectId = paymentDetail.projectId)
-        val paymentInstallmentCorrectionIds = paymentDetail.partnerPayments.flatMap { payment ->
-            payment.installments.mapNotNull { installment ->
-                installment.correction?.id
-            }
-        }
-        val invalidCorrectionIds = paymentInstallmentCorrectionIds.minus(correctionIdsByProjectId)
-        if (invalidCorrectionIds.isNotEmpty()) {
+        val correctionIdsByPartnerId = auditControlCorrectionPersistence
+            .getAvailableCorrectionsForPayments(projectId = paymentDetail.projectId)
+            .associateBy({ it.partnerId }, { it.corrections.mapTo(HashSet()) { it.id } })
+
+        val invalidCorrectionIds = paymentDetail.partnerPayments.map {
+            val correctionIds = it.installments.mapNotNullTo(HashSet()) { it.correction?.id }
+            val allowedCorrectionIds = correctionIdsByPartnerId[it.partnerId] ?: emptySet()
+
+            return@map Pair(it.partnerId, correctionIds.minus(allowedCorrectionIds))
+        }.filter { it.second.isNotEmpty() }.toMap()
+
+        if (invalidCorrectionIds.isNotEmpty())
             throw CorrectionsNotValidException(invalidCorrectionIds)
-        }
     }
 }

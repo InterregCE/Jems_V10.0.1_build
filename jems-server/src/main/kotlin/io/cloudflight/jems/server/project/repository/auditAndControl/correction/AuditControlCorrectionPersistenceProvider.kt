@@ -78,9 +78,12 @@ class AuditControlCorrectionPersistenceProvider(
         val results = jpaQueryFactory
             .select(correctionSpec, financeSpec, signedTotalExpr, partnerSpec, measureSpec)
             .from(correctionSpec)
-            .leftJoin(financeSpec).on(financeSpec.correctionId.eq(correctionSpec.id))
-            .leftJoin(measureSpec).on(measureSpec.correctionId.eq(correctionSpec.id))
-            .leftJoin(partnerSpec).on(partnerSpec.id.eq(correctionSpec.partnerReport.partnerId))
+            .leftJoin(financeSpec)
+                .on(financeSpec.correction.eq(correctionSpec))
+            .leftJoin(measureSpec)
+                .on(measureSpec.correction.eq(correctionSpec))
+            .leftJoin(partnerSpec)
+                .on(partnerSpec.id.eq(correctionSpec.partnerReport.partnerId))
             .where(correctionSpec.auditControl.id.eq(auditControlId))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -187,10 +190,6 @@ class AuditControlCorrectionPersistenceProvider(
         )
         auditControlCorrectionRepository.findAllById(correctionIds).onEach { it.projectModificationId = latestStatus.id }
     }
-
-    @Transactional(readOnly = true)
-    override fun getAllIdsByProjectId(projectId: Long): Set<Long> =
-        auditControlCorrectionRepository.findAllByAuditControlProjectId(projectId = projectId).map { it.id }.toSet()
 
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment> =

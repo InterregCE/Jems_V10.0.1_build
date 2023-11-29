@@ -37,8 +37,6 @@ interface AuditControlCorrectionPersistence {
 
     fun updateModificationByCorrectionIds(projectId: Long, correctionIds: Set<Long>, statuses: List<ApplicationStatus>)
 
-    fun getAllIdsByProjectId(projectId: Long): Set<Long>
-
     fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment>
 
     fun getAvailableCorrectionsForModification(projectId: Long): List<AuditControlCorrection>
