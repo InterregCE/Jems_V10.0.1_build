@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 
@@ -25,16 +26,16 @@ interface PaymentApplicationToEcLinkPersistence {
     fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
 
-    fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLineTmp>>
+    fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>
 
     fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
-        totals: Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>,
+        totals: Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>,
     )
 
     fun getTotalsForFinishedEcPayment(
         ecPaymentId: Long,
-    ): Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>
+    ): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>
 
 
     fun getCumulativeAmounts(finishedEcPaymentIds: Set<Long>): Map<Long?, EcPaymentSummaryLine>

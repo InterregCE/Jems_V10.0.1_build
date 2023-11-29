@@ -7,7 +7,6 @@ import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
@@ -20,7 +19,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -168,7 +166,7 @@ fun PaymentSearchRequest.transformToWhereClause(
     return expressions.joinWithAnd()
 }
 
-private fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
+fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
 fun Collection<BooleanExpression>.joinWithAnd() =
     if (isEmpty()) null else reduce { f, s -> f.and(s) }
 

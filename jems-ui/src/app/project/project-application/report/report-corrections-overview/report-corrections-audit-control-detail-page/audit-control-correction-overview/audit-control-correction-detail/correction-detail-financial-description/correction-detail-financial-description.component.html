@@ -88,7 +88,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input [value]="getAmountSum() | asMoney" [options]="{align: 'right'}" currencyMask matInput type="decimal" disabled readonly>
+                            <input class="justify-end" [value]="getAmountSum() | asMoney" matInput disabled readonly>
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>

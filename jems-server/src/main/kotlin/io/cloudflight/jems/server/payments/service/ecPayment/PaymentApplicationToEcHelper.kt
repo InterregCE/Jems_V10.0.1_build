@@ -2,9 +2,13 @@ package io.cloudflight.jems.server.payments.service.ecPayment
 
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import java.math.BigDecimal
 
 fun constructFilter(
@@ -28,17 +32,30 @@ fun constructFilter(
     scoBasis = scoBasis,
 )
 
-fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLineTmp>>.sumUpProperColumns() =
-    mapValues { (_, totals) ->
-        totals.mapValues { (_, it) ->
-            PaymentToEcAmountSummaryLine(
-                priorityAxis = it.priorityAxis,
-                totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution),
-                totalUnionContribution = BigDecimal.ZERO,
-                totalPublicContribution = it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic),
-            )
-        }
-    }
+fun constructCorrectionFilter(
+    ecPaymentIds: Set<Long?>,
+) = PaymentToEcCorrectionSearchRequest(
+    correctionStatus = AuditControlStatus.Closed,
+    ecPaymentIds = ecPaymentIds,
+    scenarios = listOf(
+        ProjectCorrectionProgrammeMeasureScenario.NA,
+        ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
+        ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
+    )
+)
+
+fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>.sumUpProperColumns() =
+    mapValues { (_, totals) -> totals.computeTotals() }
+
+fun Map<Long?, PaymentToEcAmountSummaryLineTmp>.computeTotals() =
+    mapValues { (_, it) ->
+    PaymentToEcAmountSummaryLine(
+        priorityAxis = it.priorityAxis,
+        totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution),
+        totalUnionContribution = BigDecimal.ZERO,
+        totalPublicContribution = it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic),
+    )
+}
 
 fun Collection<PaymentToEcAmountSummaryLine>.sumUp() = PaymentToEcAmountSummaryLine (
     priorityAxis = if (allAxesSame()) firstOrNull()?.priorityAxis else null,
@@ -63,7 +80,7 @@ fun Map<Long?, PaymentToEcAmountSummaryLine>.plus(other: Map<Long?, PaymentToEcA
 fun BigDecimal?.plusNullable(other: BigDecimal?): BigDecimal =
     (this ?: BigDecimal.ZERO).plus(other ?: BigDecimal.ZERO)
 
-fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.mergeBothScoBases(): Map<Long?, PaymentToEcAmountSummaryLine> {
+fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>.mergeBothScoBases(): Map<Long?, PaymentToEcAmountSummaryLine> {
     val priorityIds = values.map { it.keys }.fold(emptySet<Long?>()) { a, b -> a union b }
 
     return priorityIds.associateWith { priorityId ->
@@ -76,13 +93,13 @@ fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.
     }
 }
 
-private fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.getAxisFor(priorityId: Long?): String? =
+private fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>.getAxisFor(priorityId: Long?): String? =
     this.values.firstNotNullOfOrNull { it.getOrDefault(priorityId, null)?.priorityAxis }
-private fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.getTotalFor(priorityId: Long?): BigDecimal =
+private fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>.getTotalFor(priorityId: Long?): BigDecimal =
     this.values.map { it.getOrDefault(priorityId, null) }.sumOf { it?.totalEligibleExpenditure ?: BigDecimal.ZERO }
-private fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.getUnionFor(priorityId: Long?): BigDecimal =
+private fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>.getUnionFor(priorityId: Long?): BigDecimal =
     this.values.map { it.getOrDefault(priorityId, null) }.sumOf { it?.totalUnionContribution ?: BigDecimal.ZERO }
-private fun Map<PaymentSearchRequestScoBasis, Map<Long?, PaymentToEcAmountSummaryLine>>.getPublicFor(priorityId: Long?): BigDecimal =
+private fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLine>>.getPublicFor(priorityId: Long?): BigDecimal =
     this.values.map { it.getOrDefault(priorityId, null) }.sumOf { it?.totalPublicContribution ?: BigDecimal.ZERO }
 
  fun Collection<PaymentToEcAmountSummaryLine>.allAxesSame() = mapTo(HashSet()) { it.priorityAxis }.size == 1

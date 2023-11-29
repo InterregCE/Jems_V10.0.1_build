@@ -617,6 +617,7 @@
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
     <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
+    <ID>TooManyFunctions:AuditControlCorrectionPersistenceProvider.kt$AuditControlCorrectionPersistenceProvider : AuditControlCorrectionPersistence</ID>
     <ID>TooManyFunctions:CallDTOMapper.kt$io.cloudflight.jems.server.call.controller.CallDTOMapper.kt</ID>
     <ID>TooManyFunctions:CallEntityMapper.kt$io.cloudflight.jems.server.call.repository.CallEntityMapper.kt</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>

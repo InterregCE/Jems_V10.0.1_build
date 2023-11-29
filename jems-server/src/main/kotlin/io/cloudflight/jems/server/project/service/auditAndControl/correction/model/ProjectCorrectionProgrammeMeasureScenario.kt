@@ -6,5 +6,7 @@ enum class ProjectCorrectionProgrammeMeasureScenario {
     SCENARIO_2,
     SCENARIO_3,
     SCENARIO_4,
-    SCENARIO_5,
+    SCENARIO_5;
+
+    fun scenarioAllowsLinkingToEcPayment() = this == NA || this == SCENARIO_2 || this == SCENARIO_5
 }

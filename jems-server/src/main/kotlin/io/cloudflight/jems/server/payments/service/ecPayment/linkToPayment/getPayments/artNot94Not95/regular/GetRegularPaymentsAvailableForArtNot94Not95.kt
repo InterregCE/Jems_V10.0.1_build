@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestSco
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

@@ -99,3 +99,4 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
 )
+

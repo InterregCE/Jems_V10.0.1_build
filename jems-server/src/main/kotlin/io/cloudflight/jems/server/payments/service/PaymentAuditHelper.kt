@@ -1,0 +1,25 @@
+package io.cloudflight.jems.server.payments.service
+
+import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import java.time.LocalDate
+
+fun computeYearNumber(startingDate: LocalDate) =
+    startingDate.year - 2020
+
+fun getPartnerName(partnerRole: ProjectPartnerRole, partnerNumber: Int?): String =
+    partnerRole.isLead.let {
+        if (it) "LP${partnerNumber}" else "PP${partnerNumber}"
+    }
+
+fun PaymentApplicationToEcDetail.toDescription(previousStatus: PaymentEcStatus, newStatus: PaymentEcStatus) =
+    "Payment application to EC number $id " +
+        "created for Fund (${paymentApplicationToEcSummary.programmeFund.id}, ${paymentApplicationToEcSummary.programmeFund.type}) " +
+        "for accounting Year ${computeYearNumber(paymentApplicationToEcSummary.accountingYear.startDate)}: " +
+        "${paymentApplicationToEcSummary.accountingYear.startDate} - ${paymentApplicationToEcSummary.accountingYear.endDate} " +
+        "changes status from ${previousStatus.name} to ${newStatus.name}"
+
+fun  Map<Long, CorrectionInEcPaymentMetadata>.formCorrectionId(): List<String> =
+    this.values.map { "${it.projectId}_AC${it.auditControlNr}.${it.correctionNr}" }

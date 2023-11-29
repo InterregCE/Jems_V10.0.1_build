@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLin
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -78,6 +79,9 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    lateinit var ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence
+
     @InjectMockKs
     lateinit var service: CreatePaymentApplicationToEc
 
@@ -91,7 +95,10 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
 
         every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) } returns
                 setOf(19L, 20L, 21L)
+        every { ecPaymentCorrectionLinkPersistence.getCorrectionIdsAvailableForEcPayments(fundId = fund.id) } returns
+            setOf(22L, 23L)
         every { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) } answers { }
+        every {ecPaymentCorrectionLinkPersistence.selectCorrectionToEcPayment(setOf(22L, 23L), 108L) } answers { }
 
         every { ecPaymentPersistence.getIdsFinishedForYearAndFund(accountingYear.id, fundId = fund.id) } returns
                 setOf(514L, 515L)

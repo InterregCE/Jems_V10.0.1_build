@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -33,6 +34,9 @@ import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
+import io.cloudflight.jems.server.project.entity.QProjectEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.mockk.clearMocks
 import io.mockk.every
@@ -159,13 +163,23 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             code = "PO4",
             objective = ProgrammeObjectivePolicy.IndustrialTransition.objective
         )
+        private val programmePriority5 = ProgrammePriorityEntity(
+            id = 5L,
+            code = "PO5",
+            objective = ProgrammeObjectivePolicy.CultureAndTourism.objective
+        )
+        private val programmePriority6 = ProgrammePriorityEntity(
+            id = 6L,
+            code = "PO6",
+            objective = ProgrammeObjectivePolicy.EnergyEfficiency.objective
+        )
 
         private val selectedPaymentsToEcEntitiesNotArticle = listOf(
             PaymentToEcPriorityAxisOverviewEntity(
                 id = 1L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority1,
-                type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                type = PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95,
                 totalEligibleExpenditure = BigDecimal(101),
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(102)
@@ -174,7 +188,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 id = 2L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority2,
-                type = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                type = PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95,
                 totalEligibleExpenditure = BigDecimal(201),
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(202)
@@ -186,7 +200,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 id = 3L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority3,
-                type = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+                type = PaymentToEcOverviewType.FallsUnderArticle94Or95,
                 totalEligibleExpenditure = BigDecimal(301),
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(302),
@@ -195,15 +209,36 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 id = 4L,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 priorityAxis = programmePriority4,
-                type = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+                type = PaymentToEcOverviewType.FallsUnderArticle94Or95,
                 totalEligibleExpenditure = BigDecimal(401),
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(402),
             ),
         )
 
+        private val selectedPaymentsToEcEntitiesCorrection = listOf(
+            PaymentToEcPriorityAxisOverviewEntity(
+                id =5L,
+                paymentApplicationToEc = paymentApplicationToEcEntity,
+                priorityAxis = programmePriority5,
+                type = PaymentToEcOverviewType.Correction,
+                totalEligibleExpenditure = BigDecimal(501),
+                totalUnionContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal(502),
+            ),
+            PaymentToEcPriorityAxisOverviewEntity(
+                id = 6L,
+                paymentApplicationToEc = paymentApplicationToEcEntity,
+                priorityAxis = programmePriority6,
+                type = PaymentToEcOverviewType.Correction,
+                totalEligibleExpenditure = BigDecimal(601),
+                totalUnionContribution = BigDecimal.ZERO,
+                totalPublicContribution = BigDecimal(602),
+            ),
+        )
+
         private val expectedPaymentsIncludedInPaymentsToEcMapped = mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf(
                     18L to PaymentToEcAmountSummaryLine(
                         priorityAxis = "PO1",
                         totalEligibleExpenditure = BigDecimal(101),
@@ -217,7 +252,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                         totalPublicContribution = BigDecimal(202)
                     ),
             ),
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to mapOf(
+            PaymentToEcOverviewType.FallsUnderArticle94Or95 to mapOf(
                 3L to PaymentToEcAmountSummaryLine(
                     priorityAxis = "PO3",
                     totalEligibleExpenditure = BigDecimal(301),
@@ -231,6 +266,20 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                     totalPublicContribution = BigDecimal(402)
                 ),
             ),
+            PaymentToEcOverviewType.Correction to mapOf(
+                5L to PaymentToEcAmountSummaryLine(
+                    priorityAxis = "PO5",
+                    totalEligibleExpenditure = BigDecimal(501),
+                    totalUnionContribution = BigDecimal.ZERO,
+                    totalPublicContribution = BigDecimal(502)
+                ),
+                6L to PaymentToEcAmountSummaryLine(
+                    priorityAxis = "PO6",
+                    totalEligibleExpenditure = BigDecimal(601),
+                    totalUnionContribution = BigDecimal.ZERO,
+                    totalPublicContribution = BigDecimal(602)
+                ),
+            )
         )
     }
 
@@ -344,6 +393,17 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             ),
         )
 
+        val expectedPaymentsToEcCorrectionTmp = mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+            18L to PaymentToEcAmountSummaryLineTmp(
+                priorityId = 18L,
+                priorityAxis = "PO2",
+                fundAmount = BigDecimal.valueOf(101),
+                partnerContribution = BigDecimal.valueOf(1800),
+                ofWhichPublic = BigDecimal.valueOf(200),
+                ofWhichAutoPublic = BigDecimal.valueOf(300),
+            ),
+        )
+
         val query = mockk<JPAQuery<Tuple>>()
         every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any()) } returns query
         every { query.from(any()) } returns query
@@ -367,11 +427,41 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { result.size } returns 1
         every { query.fetch() } returns listOf(tuple)
 
+
+//        Get corrections
+
+        val correctionQuery = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns correctionQuery
+        every { correctionQuery.from(any()) } returns correctionQuery
+        val slotCorrectionLeftJoin = mutableListOf<EntityPath<Any>>()
+        every { correctionQuery.leftJoin(capture(slotCorrectionLeftJoin)) } returns correctionQuery
+        val slotCorrectionLeftJoinOn = mutableListOf<BooleanOperation>()
+        every { correctionQuery.on(capture(slotCorrectionLeftJoinOn)) } returns correctionQuery
+        every { correctionQuery.groupBy(any()) } returns correctionQuery
+        val slotCorrectionWhere = slot<BooleanOperation>()
+        every { correctionQuery.where(capture(slotCorrectionWhere)) } returns correctionQuery
+
+        val correctionTuple = mockk<Tuple>()
+        every { correctionTuple.get(0, Long::class.java) } returns 18L
+        every { correctionTuple.get(1, String::class.java) } returns "PO2"
+        every { correctionTuple.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(101)
+        every { correctionTuple.get(3, BigDecimal::class.java) } returns BigDecimal.valueOf(200)
+        every { correctionTuple.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(300)
+        every { correctionTuple.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(400)
+        every { correctionTuple.get(6, BigDecimal::class.java) } returns BigDecimal.valueOf(500)
+        every { correctionTuple.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(600)
+        every { correctionTuple.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(700)
+
+        val correctionResult = mockk<List<Tuple>>()
+        every { correctionResult.size } returns 1
+        every { correctionQuery.fetch() } returns listOf(correctionTuple)
+
         assertThat(
             persistenceProvider.calculateAndGetOverview(15L)
         ).containsExactlyInAnyOrderEntriesOf(mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to expectedPaymentsToEcTmp,
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 to emptyMap(),
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to expectedPaymentsToEcTmp,
+            PaymentToEcOverviewType.FallsUnderArticle94Or95 to emptyMap(),
+            PaymentToEcOverviewType.Correction to expectedPaymentsToEcCorrectionTmp,
         ))
         assertThat(slotLeftJoin).hasSize(3)
         assertThat(slotLeftJoin[0]).isInstanceOf(QPaymentEntity::class.java)
@@ -385,6 +475,25 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             .isEqualTo("programmePriorityEntity.id = programmeSpecificObjectiveEntity.programmePriority.id")
         assertThat(slotWhere.captured.toString())
             .isEqualTo("paymentToEcExtensionEntity.paymentApplicationToEc.id = 15")
+
+        assertThat(slotCorrectionLeftJoin).hasSize(5)
+        assertThat(slotCorrectionLeftJoin[0]).isInstanceOf(QAuditControlCorrectionEntity::class.java)
+        assertThat(slotCorrectionLeftJoinOn[0].toString())
+            .isEqualTo("auditControlCorrectionEntity.id = paymentToEcCorrectionExtensionEntity.correctionId")
+        assertThat(slotCorrectionLeftJoin[1]).isInstanceOf(QAuditControlEntity::class.java)
+        assertThat(slotCorrectionLeftJoinOn[1].toString())
+            .isEqualTo("auditControlEntity.id = auditControlCorrectionEntity.auditControl.id")
+        assertThat(slotCorrectionLeftJoin[2]).isInstanceOf(QProjectEntity::class.java)
+        assertThat(slotCorrectionLeftJoinOn[2].toString())
+            .isEqualTo("projectEntity.id = auditControlEntity.project.id")
+        assertThat(slotCorrectionLeftJoin[3]).isInstanceOf(QProgrammeSpecificObjectiveEntity::class.java)
+        assertThat(slotCorrectionLeftJoinOn[3].toString())
+            .isEqualTo("programmeSpecificObjectiveEntity.programmeObjectivePolicy = projectEntity.priorityPolicy.programmeObjectivePolicy")
+        assertThat(slotCorrectionLeftJoin[4]).isInstanceOf(QProgrammePriorityEntity::class.java)
+        assertThat(slotCorrectionLeftJoinOn[4].toString())
+            .isEqualTo("programmePriorityEntity.id = programmeSpecificObjectiveEntity.programmePriority.id")
+        assertThat(slotCorrectionWhere.captured.toString())
+            .isEqualTo("paymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id = 15")
     }
 
     @Test
@@ -413,7 +522,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 
         persistenceProvider.saveTotalsWhenFinishingEcPayment(
             ecPaymentId = paymentApplicationsToEcId,
-            totals = mapOf(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf(
+            totals = mapOf(PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf(
                 18L to prioP01,
                 19L to prioP02,
             ))
@@ -422,13 +531,13 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         verify(exactly = 1) { ecPaymentPriorityAxisOverviewRepository.saveAll(entitySlot.captured) }
 
         assertThat(entitySlot.captured).hasSize(2)
-        assertThat(entitySlot.captured[0].type).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
+        assertThat(entitySlot.captured[0].type).isEqualTo(PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95)
         assertThat(entitySlot.captured[0].priorityAxis).isEqualTo(programmePriority1)
         assertThat(entitySlot.captured[0].totalEligibleExpenditure).isEqualTo(BigDecimal.valueOf(101L))
         assertThat(entitySlot.captured[0].totalUnionContribution).isEqualTo(BigDecimal.valueOf(102L))
         assertThat(entitySlot.captured[0].totalPublicContribution).isEqualTo(BigDecimal.valueOf(103L))
 
-        assertThat(entitySlot.captured[1].type).isEqualTo(PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
+        assertThat(entitySlot.captured[1].type).isEqualTo(PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95)
         assertThat(entitySlot.captured[1].priorityAxis).isEqualTo(programmePriority2)
         assertThat(entitySlot.captured[1].totalEligibleExpenditure).isEqualTo(BigDecimal.valueOf(201L))
         assertThat(entitySlot.captured[1].totalUnionContribution).isEqualTo(BigDecimal.valueOf(202L))
@@ -440,18 +549,24 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every {
             ecPaymentPriorityAxisOverviewRepository.getAllByPaymentApplicationToEcIdAndType(
                 paymentApplicationsToEcId,
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95
             )
         } returns selectedPaymentsToEcEntitiesNotArticle
         every {
             ecPaymentPriorityAxisOverviewRepository.getAllByPaymentApplicationToEcIdAndType(
                 paymentApplicationsToEcId,
-                PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+                PaymentToEcOverviewType.FallsUnderArticle94Or95
             )
         } returns selectedPaymentsToEcEntitiesArticle
+        every {
+            ecPaymentPriorityAxisOverviewRepository.getAllByPaymentApplicationToEcIdAndType(
+                paymentApplicationsToEcId,
+                PaymentToEcOverviewType.Correction
+            )
+        } returns selectedPaymentsToEcEntitiesCorrection
 
         val result = persistenceProvider.getTotalsForFinishedEcPayment(ecPaymentId = paymentApplicationsToEcId)
-        assertThat(result.keys).containsExactlyInAnyOrderElementsOf(PaymentSearchRequestScoBasis.values().toList())
+        assertThat(result.keys).containsExactlyInAnyOrderElementsOf(PaymentToEcOverviewType.values().toList())
         assertThat(result).isEqualTo(expectedPaymentsIncludedInPaymentsToEcMapped)
     }
 

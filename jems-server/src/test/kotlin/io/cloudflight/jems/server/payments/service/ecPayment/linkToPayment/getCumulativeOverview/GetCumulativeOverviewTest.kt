@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.mockk.every
@@ -22,7 +22,7 @@ class GetCumulativeOverviewTest: UnitTest() {
     companion object {
 
         private val paymentToEcAmountSummaryTmpMap = mapOf(
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf(
                 174L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 174L,
                     priorityAxis = "PO1",
@@ -40,7 +40,7 @@ class GetCumulativeOverviewTest: UnitTest() {
                     ofWhichAutoPublic = BigDecimal(67),
                 ),
             ),
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
                 174L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 174L,
                     priorityAxis = "PO1",

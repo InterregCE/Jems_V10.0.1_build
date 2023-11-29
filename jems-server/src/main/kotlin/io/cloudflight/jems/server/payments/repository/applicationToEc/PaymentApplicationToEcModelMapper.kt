@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toEntity
@@ -54,7 +54,7 @@ fun PaymentApplicationToEcDetail.toEntity() = PaymentApplicationToEcEntity(
 fun PaymentToEcAmountSummaryLine.toEntity(
     paymentToEc: PaymentApplicationToEcEntity,
     programmePriority: ProgrammePriorityEntity,
-    type: PaymentSearchRequestScoBasis
+    type: PaymentToEcOverviewType
 ) =
     PaymentToEcPriorityAxisOverviewEntity(
         paymentApplicationToEc = paymentToEc,
