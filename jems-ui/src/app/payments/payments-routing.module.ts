@@ -24,6 +24,9 @@ import {
 import {
   PaymentToEcSummaryTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
+import {
+  PaymentToEcCorrectionTabComponent
+} from "./payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component";
 
 export const paymentsRoutes: Routes = [
   {
@@ -175,6 +178,10 @@ export const paymentsRoutes: Routes = [
           {
             path: 'regular',
             component: PaymentToEcRegularProjectsTabComponent,
+          },
+          {
+            path: 'corrections',
+            component: PaymentToEcCorrectionTabComponent,
           },
         ]
       },

@@ -58,6 +58,12 @@
                 {{'payments.to.ec.detail.ftls.tab' | translate}}
             </span>
         </a>
+
+        <a *ngIf="data.paymentDetail.id" [active]="activeTab('corrections')" mat-tab-link (click)="routeTo('corrections')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.corrections.tab' | translate}}
+            </span>
+        </a>
     </nav>
     <router-outlet></router-outlet>
 
