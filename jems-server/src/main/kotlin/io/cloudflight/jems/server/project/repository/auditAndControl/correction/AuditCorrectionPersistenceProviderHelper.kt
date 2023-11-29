@@ -39,6 +39,9 @@ fun PaymentToEcCorrectionSearchRequest.transformToWhereClause(
             )
     }
 
+    if (fundIds.isNotEmpty())
+        expressions.add(qCorrection.programmeFund.id.`in`(this.fundIds))
+
     return expressions.joinWithAnd()
 }
 
