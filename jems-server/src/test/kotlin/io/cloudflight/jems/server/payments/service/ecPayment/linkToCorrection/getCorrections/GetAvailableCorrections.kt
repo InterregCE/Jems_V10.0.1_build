@@ -29,6 +29,7 @@ class GetAvailableCorrections : UnitTest() {
         private const val CORRECTION_ID = 541L
         private const val EC_PAYMENT_ID = 20L
         private const val PROJECT_ID = 1L
+        private const val FUND_ID = 11L
 
         val paymentDraft = mockk<PaymentApplicationToEcDetail>()
 
@@ -41,14 +42,15 @@ class GetAvailableCorrections : UnitTest() {
             auditControlNr = 15,
         )
 
-        private fun searchRequest(ecPaymentIds: Set<Long?>) = PaymentToEcCorrectionSearchRequest(
+        private fun searchRequest(ecPaymentIds: Set<Long?>, fundIds: Set<Long>) = PaymentToEcCorrectionSearchRequest(
             correctionStatus = AuditControlStatus.Closed,
             ecPaymentIds = ecPaymentIds,
             scenarios = listOf(
                 ProjectCorrectionProgrammeMeasureScenario.NA,
                 ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
                 ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
-            )
+            ),
+            fundIds = fundIds
         )
 
         val correctionLinked = PaymentToEcCorrectionLinking(
@@ -109,11 +111,12 @@ class GetAvailableCorrections : UnitTest() {
     fun `getCorrectionList - payment draft`() {
         every { paymentDraft.id } returns EC_PAYMENT_ID
         every { paymentDraft.status } returns PaymentEcStatus.Draft
+        every { paymentDraft.paymentApplicationToEcSummary.programmeFund.id } returns FUND_ID
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(EC_PAYMENT_ID) } returns paymentDraft
         every {
             correctionPersistence.getCorrectionsLinkedToPaymentToEc(
                 Pageable.unpaged(),
-                searchRequest(setOf(null, EC_PAYMENT_ID))
+                searchRequest(setOf(null, EC_PAYMENT_ID), setOf(FUND_ID))
             )
         } returns PageImpl(listOf(correctionNotLinked, correctionLinked))
 
@@ -132,11 +135,12 @@ class GetAvailableCorrections : UnitTest() {
     fun `getCorrectionList - payment finished`() {
         every { paymentDraft.id } returns EC_PAYMENT_ID
         every { paymentDraft.status } returns PaymentEcStatus.Finished
+        every { paymentDraft.paymentApplicationToEcSummary.programmeFund.id } returns FUND_ID
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(EC_PAYMENT_ID) } returns paymentDraft
         every {
             correctionPersistence.getCorrectionsLinkedToPaymentToEc(
                 Pageable.unpaged(),
-                searchRequest(setOf(EC_PAYMENT_ID))
+                searchRequest(setOf(EC_PAYMENT_ID), emptySet())
             )
         } returns PageImpl(listOf(correctionNotLinked))
 

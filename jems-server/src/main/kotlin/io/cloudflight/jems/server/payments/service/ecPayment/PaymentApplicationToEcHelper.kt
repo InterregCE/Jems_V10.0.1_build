@@ -34,9 +34,11 @@ fun constructFilter(
 
 fun constructCorrectionFilter(
     ecPaymentIds: Set<Long?>,
+    fundId: Long? = null
 ) = PaymentToEcCorrectionSearchRequest(
     correctionStatus = AuditControlStatus.Closed,
     ecPaymentIds = ecPaymentIds,
+    fundIds = if (fundId != null) setOf(fundId) else emptySet(),
     scenarios = listOf(
         ProjectCorrectionProgrammeMeasureScenario.NA,
         ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,

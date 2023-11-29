@@ -22,11 +22,12 @@ class GetAvailableClosedCorrections(
     @ExceptionWrapper(GetAvailableClosedCorrectionsException::class)
     override fun getClosedCorrectionList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcCorrectionLinking> {
         val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecApplicationId)
+        val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
         val filter = if (ecPayment.status.isFinished())
             constructCorrectionFilter(ecPaymentIds = setOf(ecPayment.id))
         else
-            constructCorrectionFilter(ecPaymentIds = setOf(null, ecPayment.id))
+            constructCorrectionFilter(ecPaymentIds = setOf(null, ecPayment.id), fundId = fundId)
 
         return correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable, filter)
     }
