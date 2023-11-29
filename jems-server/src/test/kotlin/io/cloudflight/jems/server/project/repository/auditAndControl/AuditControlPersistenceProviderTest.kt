@@ -1,8 +1,12 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl
 
+import com.querydsl.core.types.Expression
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionFinanceEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlCreate
@@ -47,13 +51,13 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             comment = "dummy comment",
         )
 
-        fun dummyEntity(): AuditControlEntity {
+        fun dummyEntity(id: Long): AuditControlEntity {
             val project = mockk<ProjectEntity>()
             every { project.id } returns 78L
             every { project.customIdentifier } returns "ID78"
             every { project.acronym } returns "PROJ-78"
             return AuditControlEntity(
-                id = 42L,
+                id = id,
                 project = project,
                 number = 11,
                 status = AuditControlStatus.Closed,
@@ -63,13 +67,12 @@ class AuditControlPersistenceProviderTest: UnitTest() {
                 endDate = end,
                 finalReportDate = final,
                 totalControlledAmount = BigDecimal.valueOf(9586L),
-                totalCorrectionsAmount = BigDecimal.valueOf(3475L),
                 comment = "new comment",
             )
         }
 
-        val expectedAuditAfterUpdate = AuditControl(
-            id = 42L,
+        fun expectedAuditAfterUpdate(id: Long, total: BigDecimal) = AuditControl(
+            id = id,
             number = 11,
             projectId = 78L,
             projectCustomIdentifier = "ID78",
@@ -81,7 +84,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             endDate = end,
             finalReportDate = final,
             totalControlledAmount = BigDecimal.valueOf(9586L),
-            totalCorrectionsAmount = BigDecimal.valueOf(3475L),
+            totalCorrectionsAmount = total,
             comment = "new comment",
         )
 
@@ -104,6 +107,9 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
     @MockK
     private lateinit var auditControlRepository: AuditControlRepository
+
+    @MockK
+    private lateinit var jpaQueryFactory: JPAQueryFactory
 
     @InjectMockKs
     private lateinit var persistence: AuditControlPersistenceProvider
@@ -137,7 +143,6 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         assertThat(created.captured.endDate).isEqualTo(end)
         assertThat(created.captured.finalReportDate).isEqualTo(final)
         assertThat(created.captured.totalControlledAmount).isEqualTo(BigDecimal.valueOf(745L))
-        assertThat(created.captured.totalCorrectionsAmount).isZero()
         assertThat(created.captured.comment).isEqualTo("dummy comment")
     }
 
@@ -147,6 +152,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         every { project.id } returns 78L
         every { project.customIdentifier } returns "ID78"
         every { project.acronym } returns "PROJ-78"
+        mockGetTotalCorrectionsAmount(auditControlId = 42L, total = BigDecimal.valueOf(3475L))
 
         val toUpdateEntity = AuditControlEntity(
             id = 42L,
@@ -159,7 +165,6 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             endDate = end.plusYears(1),
             finalReportDate = final.plusYears(1),
             totalControlledAmount = BigDecimal.valueOf(396L),
-            totalCorrectionsAmount = BigDecimal.valueOf(3475L),
             comment = "old comment",
         )
         every { auditControlRepository.getById(42L) } returns toUpdateEntity
@@ -173,7 +178,8 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             totalControlledAmount = BigDecimal.valueOf(9586L),
             comment = "new comment",
         )
-        assertThat(persistence.updateControl(42L, toUpdate)).isEqualTo(expectedAuditAfterUpdate)
+        assertThat(persistence.updateControl(42L, toUpdate))
+            .isEqualTo(expectedAuditAfterUpdate(id = 42L, total = BigDecimal.valueOf(3475L)))
 
         assertThat(toUpdateEntity.status).isEqualTo(AuditControlStatus.Closed)
         assertThat(toUpdateEntity.controllingBody).isEqualTo(ControllingBody.NationalApprobationBody)
@@ -182,30 +188,33 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         assertThat(toUpdateEntity.endDate).isEqualTo(end)
         assertThat(toUpdateEntity.finalReportDate).isEqualTo(final)
         assertThat(toUpdateEntity.totalControlledAmount).isEqualTo(BigDecimal.valueOf(9586L))
-        assertThat(toUpdateEntity.totalCorrectionsAmount).isEqualTo(BigDecimal.valueOf(3475L))
         assertThat(toUpdateEntity.comment).isEqualTo("new comment")
     }
 
     @Test
     fun getById() {
-        every { auditControlRepository.getById(51L) } returns dummyEntity()
-        assertThat(persistence.getById(51L)).isEqualTo(expectedAuditAfterUpdate)
+        every { auditControlRepository.getById(51L) } returns dummyEntity(51L)
+        mockGetTotalCorrectionsAmount(auditControlId = 51L, total = BigDecimal.valueOf(3475L))
+        assertThat(persistence.getById(51L))
+            .isEqualTo(expectedAuditAfterUpdate(id = 51L, total = BigDecimal.valueOf(3475L)))
     }
 
     @Test
     fun findAllProjectAudits() {
-        every { auditControlRepository.findAllByProjectId(84L, Pageable.unpaged()) } returns PageImpl(listOf(dummyEntity()))
-        assertThat(persistence.findAllProjectAudits(84L, Pageable.unpaged())).containsExactly(expectedAuditAfterUpdate)
+        every { auditControlRepository.findAllByProjectId(84L, Pageable.unpaged()) } returns PageImpl(listOf(dummyEntity(84L)))
+        mockGetTotalCorrectionsAmount(auditControlId = 84L, total = BigDecimal.valueOf(3475L))
+        assertThat(persistence.findAllProjectAudits(84L, Pageable.unpaged()))
+            .containsExactly(expectedAuditAfterUpdate(id = 84L, total = BigDecimal.valueOf(3475L)))
     }
 
     @Test
     fun updateAuditControlStatus() {
-        val entity = dummyEntity()
+        val entity = dummyEntity(15L)
         assertThat(entity.status).isNotEqualTo(AuditControlStatus.Ongoing)
         every { auditControlRepository.findById(15L) } returns Optional.of(entity)
 
         assertThat(persistence.updateAuditControlStatus(15L, AuditControlStatus.Ongoing))
-            .isEqualTo(expectedAuditAfterUpdate.copy(status = AuditControlStatus.Ongoing))
+            .isEqualTo(expectedAuditAfterUpdate(id= 15L, BigDecimal.ZERO).copy(status = AuditControlStatus.Ongoing))
         assertThat(entity.status).isEqualTo(AuditControlStatus.Ongoing)
     }
 
@@ -213,6 +222,17 @@ class AuditControlPersistenceProviderTest: UnitTest() {
     fun countAuditsForProject() {
         every { auditControlRepository.countAllByProjectId(977L) } returns 45
         assertThat(persistence.countAuditsForProject(977L)).isEqualTo(45)
+    }
+
+    private fun mockGetTotalCorrectionsAmount(auditControlId: Long, total: BigDecimal) {
+        val financeSpec = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
+        val query = mockk<JPAQuery<BigDecimal>>()
+        val slot = slot<Expression<BigDecimal>>()
+        every { jpaQueryFactory.select(capture(slot)) } returns query
+        every { query.from(financeSpec) } returns query
+        every { query.where(financeSpec.correction.auditControl.id.eq(auditControlId)) } returns query
+        every { query.groupBy(financeSpec.correction.auditControl.id) } returns query
+        every { query.fetchOne() } returns total
     }
 
 }

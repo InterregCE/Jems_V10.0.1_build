@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.auditAndControl.correction.ba
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewAuditControl
-import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toLineModel
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import org.springframework.data.domain.Page
@@ -22,8 +21,6 @@ class ListAuditControlCorrection(
         auditControlId: Long,
         pageable: Pageable
     ): Page<AuditControlCorrectionLine> =
-        auditControlCorrectionPersistence
-            .getAllCorrectionsByAuditControlId(auditControlId, pageable)
-            .toLineModel()
+        auditControlCorrectionPersistence.getAllCorrectionsByAuditControlId(auditControlId, pageable)
 
 }

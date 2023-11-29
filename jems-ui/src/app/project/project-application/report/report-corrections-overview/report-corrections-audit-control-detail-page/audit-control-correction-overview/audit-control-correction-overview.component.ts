@@ -52,6 +52,8 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   followUpCell: TemplateRef<any>;
   @ViewChild('impactCell', {static: true})
   impactCell: TemplateRef<any>;
+  @ViewChild('scenarioCell', {static: true})
+  scenarioCell: TemplateRef<any>;
   @ViewChild('actionCell', {static: true})
   actionCell: TemplateRef<any>;
 
@@ -135,7 +137,7 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.reporting.corrections.audit.control.correction.table.fund.name',
-          elementProperty: 'fundName',
+          elementProperty: 'fundType',
           columnWidth: ColumnWidth.MediumColumnNoLimit,
           columnType: ColumnType.StringColumn,
         },
@@ -177,9 +179,9 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.reporting.corrections.audit.control.correction.table.scenario',
-          elementProperty: 'Scenario',
           columnWidth: ColumnWidth.SmallColumn,
-          columnType: ColumnType.StringColumn,
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.scenarioCell,
         },
         {
           displayedColumn: 'project.application.reporting.corrections.audit.control.correction.table.action.delete',

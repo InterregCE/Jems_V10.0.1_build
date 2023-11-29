@@ -10158,7 +10158,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/approve modification",
+							"raw": "{{url}}/api/project/{{application_id}}/approve-modification",
 							"host": [
 								"{{url}}"
 							],
@@ -10166,7 +10166,7 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"approve modification"
+								"approve-modification"
 							]
 						}
 					},

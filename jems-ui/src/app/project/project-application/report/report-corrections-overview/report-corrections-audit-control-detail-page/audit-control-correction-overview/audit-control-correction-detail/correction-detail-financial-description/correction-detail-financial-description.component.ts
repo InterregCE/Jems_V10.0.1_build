@@ -22,6 +22,7 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 })
 export class CorrectionDetailFinancialDescriptionComponent {
 
+  MAX_VALUE = 999_999_999.99;
   data$: Observable<{
     projectId: number;
     auditControlId: number;
@@ -106,10 +107,6 @@ export class CorrectionDetailFinancialDescriptionComponent {
       this.financialDescriptionForm.controls.publicContribution?.value +
       this.financialDescriptionForm.controls.autoPublicContribution?.value +
       this.financialDescriptionForm.controls.privateContribution?.value;
-  }
-
-  get amounts(): FormArray {
-    return this.financialDescriptionForm.get('amounts') as FormArray;
   }
 
   initializeTypeDropdown() {

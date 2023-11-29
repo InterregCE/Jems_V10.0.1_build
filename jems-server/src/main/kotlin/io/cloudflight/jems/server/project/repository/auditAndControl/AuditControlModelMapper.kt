@@ -2,11 +2,10 @@ package io.cloudflight.jems.server.project.repository.auditAndControl
 
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import java.math.BigDecimal
 
 fun AuditControlUpdate.toCreateModel(sortNumber: Int) = AuditControlCreate(
@@ -31,11 +30,12 @@ fun AuditControlCreate.toEntity(project: ProjectEntity) = AuditControlEntity(
     endDate = endDate,
     finalReportDate = finalReportDate,
     totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = BigDecimal.ZERO,
     comment = comment
 )
 
-fun AuditControlEntity.toModel() = AuditControl(
+fun AuditControlEntity.toModel(
+    totalCorrectionsResolver: (Long) -> BigDecimal = { BigDecimal.ZERO }
+) = AuditControl(
     id = id,
     number = number,
 
@@ -51,7 +51,7 @@ fun AuditControlEntity.toModel() = AuditControl(
     finalReportDate = finalReportDate,
 
     totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = totalCorrectionsAmount,
+    totalCorrectionsAmount = totalCorrectionsResolver(id),
 
     comment = comment,
 )

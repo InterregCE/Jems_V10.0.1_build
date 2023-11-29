@@ -122,7 +122,6 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             endDate = date.plusDays(1),
             finalReportDate = date.minusDays(5),
             totalControlledAmount = BigDecimal.valueOf(10000),
-            totalCorrectionsAmount = BigDecimal.ZERO,
             comment = null
         )
 

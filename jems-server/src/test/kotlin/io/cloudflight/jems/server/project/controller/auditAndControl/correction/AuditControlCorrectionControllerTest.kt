@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
@@ -9,10 +10,12 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAud
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAuditControlCorrectionLineDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AuditControlCorrectionImpactDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.CorrectionImpactActionDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureScenarioDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.createAuditControlCorrection.CreateAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.deleteAuditControlCorrection.DeleteAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.getAuditControlCorrection.GetAuditControlCorrectionInteractor
@@ -22,6 +25,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.clo
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionAvailableProcurements.GetCorrectionAvailableProcurementsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionCostItems.GetCorrectionCostItemsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.listPreviouslyClosedCorrection.ListPreviouslyClosedCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
@@ -30,6 +34,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -37,7 +42,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -149,6 +153,20 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 auditControlId = AUDIT_CONTROL_ID,
                 auditControlNr = 1,
                 canBeDeleted = true,
+                partnerReport = 2,
+                partnerRole = ProjectPartnerRole.PARTNER,
+                partnerNumber = 3,
+                partnerDisabled = false,
+                followUpAuditNr = null,
+                followUpCorrectionNr = null,
+                fundType = ProgrammeFundType.ERDF,
+                fundAmount = BigDecimal.valueOf(1000),
+                publicContribution = BigDecimal.valueOf(3000),
+                autoPublicContribution = BigDecimal.valueOf(4000),
+                privateContribution = BigDecimal.valueOf(5000),
+                total = BigDecimal.valueOf(10000),
+                impactProjectLevel = CorrectionImpactAction.RepaymentByProject,
+                scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
             )
         )
         private val expectedCorrectionLines = listOf(
@@ -158,24 +176,24 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 orderNr = 1,
                 status = AuditStatusDTO.Ongoing,
                 type = AuditControlCorrectionTypeDTO.LinkedToCostOption,
-                auditControlNumber = 1,
+                auditControlNr = 1,
                 canBeDeleted = true,
 
 
-                partnerRoleDTO = ProjectPartnerRoleDTO.PARTNER,
-                partnerNumber = 0,
+                partnerRole = ProjectPartnerRoleDTO.PARTNER,
+                partnerNumber = 3,
                 partnerDisabled = false,
-                partnerReport = "",
-                initialAuditNUmber = 0,
-                initialCorrectionNumber = 0,
-                fundName = "",
-                fundAmount = BigDecimal.ZERO,
-                publicContribution = BigDecimal.ZERO,
-                autoPublicContribution = BigDecimal.ZERO,
-                privateContribution = BigDecimal.ZERO,
-                total = BigDecimal.ZERO,
-                impactProjectLevel = "",
-                scenario = 0
+                partnerReport = 2,
+                followUpAuditNr = null,
+                followUpCorrectionNr = null,
+                fundType = ProgrammeFundTypeDTO.ERDF,
+                fundAmount = BigDecimal.valueOf(1000),
+                publicContribution = BigDecimal.valueOf(3000),
+                autoPublicContribution = BigDecimal.valueOf(4000),
+                privateContribution = BigDecimal.valueOf(5000),
+                total = BigDecimal.valueOf(10000),
+                impactProjectLevel = CorrectionImpactActionDTO.RepaymentByProject,
+                scenario = ProjectCorrectionProgrammeMeasureScenarioDTO.SCENARIO_5,
             )
         )
 

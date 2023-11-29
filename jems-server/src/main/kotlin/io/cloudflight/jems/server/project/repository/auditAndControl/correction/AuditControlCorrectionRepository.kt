@@ -7,8 +7,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
-import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -32,6 +30,6 @@ interface AuditControlCorrectionRepository : JpaRepository<AuditControlCorrectio
         impact: Set<CorrectionImpactAction>
     ): List<AuditControlCorrectionEntity>
 
-    fun findAllByAuditControlProjectId(projectId: Long): Set<Long>
+    fun findAllByAuditControlProjectId(projectId: Long): Set<AuditControlCorrectionEntity>
 
 }

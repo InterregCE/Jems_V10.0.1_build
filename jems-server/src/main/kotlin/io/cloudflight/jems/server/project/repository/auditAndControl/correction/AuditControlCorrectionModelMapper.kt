@@ -2,7 +2,10 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionFinanceEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.toModel
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
@@ -12,6 +15,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import org.springframework.data.domain.Page
+import java.math.BigDecimal
 
 fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     id = id,
@@ -31,7 +35,7 @@ fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
         action = impact,
         comment = impactComment,
     ),
-    costCategory =  costCategory,
+    costCategory = costCategory,
     expenditureCostItem = expenditure?.toCorrectionCostItem(),
     procurementId = procurementId,
 )
@@ -44,19 +48,6 @@ fun AuditControlCorrectionEntity.toSimpleModel() = AuditControlCorrection(
     auditControlId = auditControl.id,
     auditControlNr = auditControl.number,
 )
-
-fun Page<AuditControlCorrection>.toLineModel() =
-    map { it.toLineModel() }
-fun AuditControlCorrection.toLineModel() = AuditControlCorrectionLine(
-    id = id,
-    orderNr = orderNr,
-    status = status,
-    type = type,
-    auditControlId = auditControlId,
-    auditControlNr = auditControlNr,
-    canBeDeleted = !status.isClosed(),
-)
-
 
 fun AuditControlCorrectionCreate.toEntity(auditControlEntity: AuditControlEntity) = AuditControlCorrectionEntity(
     auditControl = auditControlEntity,
@@ -81,8 +72,8 @@ fun Page<PartnerReportExpenditureCostEntity>.toPagedModel() = map { it.toCorrect
 
 fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostItem(
     id = id,
-    number = number,
-    partnerReportNumber = partnerReport.number,
+    number = originalNumber ?: number,
+    partnerReportNumber = reportOfOrigin?.number ?: partnerReport.number,
     lumpSum = reportLumpSum?.toModel(),
     unitCost = reportUnitCost?.toModel(),
     costCategory = costCategory,
@@ -100,3 +91,35 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
 )
 
+fun AuditControlCorrectionEntity.toAuditControlCorrectionLine(
+    finance: AuditControlCorrectionFinanceEntity,
+    measure: AuditControlCorrectionMeasureEntity,
+    partner: ProjectPartnerEntity?,
+    total: BigDecimal?,
+): AuditControlCorrectionLine =
+    AuditControlCorrectionLine(
+        id = id,
+        orderNr = orderNr,
+        status = status,
+        type = correctionType,
+        auditControlId = auditControl.id,
+        auditControlNr = auditControl.number,
+        canBeDeleted = !status.isClosed(),
+        partnerRole = partner?.role,
+        partnerNumber = partner?.sortNumber,
+        partnerDisabled = partner?.active?.not(),
+        partnerReport = partnerReport?.number,
+        followUpAuditNr = followUpOfCorrection?.auditControl?.number,
+        followUpCorrectionNr = followUpOfCorrection?.orderNr,
+        fundType = programmeFund?.type,
+        fundAmount = finance.fundAmount.negateIf(finance.deduction),
+        publicContribution = finance.publicContribution.negateIf(finance.deduction),
+        autoPublicContribution = finance.autoPublicContribution.negateIf(finance.deduction),
+        privateContribution = finance.privateContribution.negateIf(finance.deduction),
+        total = total ?: BigDecimal.ZERO,
+        impactProjectLevel = impact,
+        scenario = measure.scenario,
+    )
+
+private fun BigDecimal.negateIf(deduction: Boolean): BigDecimal =
+    if (deduction) negate() else this
