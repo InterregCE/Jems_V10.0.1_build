@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl
 
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentEcStatusDTO
 import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
@@ -14,15 +13,16 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ProjectAuditControlUpdateDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailableFtlsDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailableFundDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePartnerReportDTO
-import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionAvailablePaymentDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionEcPaymentDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.availableData.CorrectionProjectReportDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.AvailableCorrectionsForPaymentDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -41,9 +41,11 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtls
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFund
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartnerReport
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePayment
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionEcPayment
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionProjectReport
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -67,9 +69,30 @@ class AuditControlControllerTest: UnitTest() {
         private val startDate = ZonedDateTime.now()
         private val endDate = startDate.plusDays(10)
         private val finalReportDate = startDate.plusDays(12)
-        private const val paymentApplicationsToEcId = 51L
-        private val accountingYear = AccountingYear(2L, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
-        private val expectedAccountingYear = AccountingYearDTO(2L, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
+
+        private val ayStart = LocalDate.now()
+        private val ayEnd = LocalDate.now().plusDays(5)
+
+        private val correctionEcPayment = CorrectionEcPayment(
+            id = 8L,
+            status = PaymentEcStatus.Draft,
+            accountingYear = AccountingYear(
+                id = 19L,
+                year = 2021,
+                startDate = ayStart,
+                endDate = ayEnd,
+            ),
+        )
+        private val expectedCorrectionEcPayment = CorrectionEcPaymentDTO(
+            id = 8L,
+            status = PaymentEcStatusDTO.Draft,
+            accountingYear = AccountingYearDTO(
+                id = 19L,
+                year = 2021,
+                startDate = ayStart,
+                endDate = ayEnd,
+            ),
+        )
 
         private val projectReport =
             CorrectionProjectReport(
@@ -97,6 +120,7 @@ class AuditControlControllerTest: UnitTest() {
             )
         )
 
+
         private val expectedFund = ProgrammeFundDTO(
             id = 1L,
             selected = true,
@@ -113,39 +137,27 @@ class AuditControlControllerTest: UnitTest() {
             )
         )
 
-        private val paymentApplicationToEc = PaymentApplicationToEc(
-            id = paymentApplicationsToEcId,
-            programmeFund = ERDF_FUND,
-            accountingYear = accountingYear,
-            status = PaymentEcStatus.Draft
-        )
-
-        private val expectedPaymentApplicationToEc = PaymentApplicationToEcDTO(
-            id = paymentApplicationsToEcId,
-            programmeFund = expectedFund,
-            accountingYear = expectedAccountingYear,
-            status = PaymentEcStatusDTO.Draft
-        )
-        private val correctionAvailablePayment = CorrectionAvailablePayment(
-            fund = ERDF_FUND,
-            ecPayment = paymentApplicationToEc
-
-        )
-
-        private val expectedCorrectionAvailablePayment = CorrectionAvailablePaymentDTO(
-            fund = expectedFund,
-            ecPayment = expectedPaymentApplicationToEc
-
-        )
-
         private val availableReports = listOf(
             CorrectionAvailablePartnerReport(
                 id = 15L,
                 reportNumber = 1,
                 projectReport = projectReport,
 
-                availableReportFunds = listOf(ERDF_FUND),
-                availablePayments = listOf(correctionAvailablePayment)
+                availableFunds = listOf(
+                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment),
+                )
+            )
+        )
+
+        private val availableFtls = listOf(
+            CorrectionAvailableFtls(
+                orderNr = 4,
+                programmeLumpSumId = 19L,
+                name = setOf(InputTranslation(SystemLanguage.EL, "EL - name")),
+
+                availableFunds = listOf(
+                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment),
+                )
             )
         )
 
@@ -156,7 +168,8 @@ class AuditControlControllerTest: UnitTest() {
                 partnerAbbreviation = "PARTNER",
                 partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                 partnerDisabled = false,
-                availableReports = availableReports
+                availableReports = availableReports,
+                availableFtls = availableFtls,
             )
         )
         private val expectedAvailableReports = listOf(
@@ -165,8 +178,20 @@ class AuditControlControllerTest: UnitTest() {
                 reportNumber = 1,
                 projectReport = expectedProjectReport,
 
-                availableReportFunds = listOf(expectedFund),
-                availablePayments = listOf(expectedCorrectionAvailablePayment)
+                availableFunds = listOf(
+                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment),
+                )
+            )
+        )
+        private val expectedAvailableFtls = listOf(
+            CorrectionAvailableFtlsDTO(
+                orderNr = 4,
+                programmeLumpSumId = 19L,
+                name = setOf(InputTranslation(SystemLanguage.EL, "EL - name")),
+
+                availableFunds = listOf(
+                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment),
+                )
             )
         )
 
@@ -177,9 +202,11 @@ class AuditControlControllerTest: UnitTest() {
                 partnerAbbreviation = "PARTNER",
                 partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                 partnerDisabled = false,
-                availableReports = expectedAvailableReports
+                availableReports = expectedAvailableReports,
+                availableFtls = expectedAvailableFtls,
             )
         )
+
 
         private val auditControlUpdateDTO = ProjectAuditControlUpdateDTO(
             controllingBody = ControllingBodyDTO.Controller,

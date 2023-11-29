@@ -3,7 +3,7 @@ import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {
-  AuditControlCorrectionDTO,
+  AuditControlCorrectionDTO, CorrectionAvailableFundDTO,
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
   PageCorrectionCostItemDTO,
@@ -142,7 +142,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
   resetForm(correctionIdentification: ProjectAuditControlCorrectionDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
     const partner = correctionPartnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === correctionIdentification.partnerId);
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === correctionIdentification.partnerReportId);
-    const fund = report?.availableReportFunds.find((it: ProgrammeFundDTO) => it.id === correctionIdentification.programmeFundId);
+    const fund = report?.availableFunds.find((it: CorrectionAvailableFundDTO) => it.fund.id === correctionIdentification.programmeFundId)?.fund;
     if (partner) {
       this.partnerReports = partner.availableReports;
     }
@@ -161,8 +161,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
     });
     this.formService.init(this.form, of(editable));
     this.form.controls?.projectReportNumber?.disable();
-    if (report && report?.availableReportFunds && report?.availableReportFunds?.length > 0) {
-      this.funds = report?.availableReportFunds;
+    if (report && report?.availableFunds && report?.availableFunds?.length > 0) {
+      this.funds = report?.availableFunds.map(f => f.fund);
     } else {
       this.funds = [];
     }
@@ -192,7 +192,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       } else {
         this.form.controls?.projectReportNumber?.setValue(this.naString);
       }
-      this.funds = report?.availableReportFunds ?? [];
+      this.funds = report?.availableFunds.map(f => f.fund) ?? [];
       return;
     }
     this.form.controls?.projectReportNumber?.setValue(this.naString);

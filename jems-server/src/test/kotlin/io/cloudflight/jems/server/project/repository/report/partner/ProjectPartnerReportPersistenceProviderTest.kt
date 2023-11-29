@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIde
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
@@ -313,11 +314,10 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             reportNumber = 1,
             projectReportId = PROJECT_REPORT_ID,
             projectReportNumber = 2,
-            availableReportFunds = listOf(programmeFund),
-            paymentFund = programmeFund,
+            availableFund = programmeFund,
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,
-            ecPaymentAccountingYear = accountingYearEntity.toModel()
+            ecPaymentAccountingYear = accountingYearEntity.toModel(),
         )
     }
 
@@ -615,8 +615,6 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @Test
     fun getAvailableReports() {
 
-        val reportEntity = reportEntity(PARTNER_REPORT_ID)
-        every { partnerReportCoFinancingRepository.findAllByIdReportPartnerIdIn(setOf(PARTNER_ID, PARTNER_ID_2)) } returns coFinancingEntities(reportEntity)
         val query = mockk<JPAQuery<Tuple>>()
         every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
         val slotFrom = slot<EntityPath<Any>>()
@@ -648,21 +646,25 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             .isEqualTo(listOf(expectedCorrectionAvailableReportTmp))
 
         assertThat(slotFrom.captured).isInstanceOf(QProjectPartnerReportEntity::class.java)
+        assertThat(slotLeftJoin.size).isEqualTo(7)
         assertThat(slotLeftJoin[0]).isInstanceOf(QProjectReportEntity::class.java)
-        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("projectReportEntity.id = projectPartnerReportEntity.projectReport.id")
-        assertThat(slotLeftJoin[1]).isInstanceOf(QPaymentEntity::class.java)
-        assertThat(slotLeftJoinOn[1].toString()).isEqualTo("paymentEntity.projectReport.id = projectReportEntity.id")
+        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("projectReportEntity = projectPartnerReportEntity.projectReport")
+        assertThat(slotLeftJoin[1]).isInstanceOf(QProjectPartnerReportCoFinancingEntity::class.java)
+        assertThat(slotLeftJoinOn[1].toString())
+            .isEqualTo("projectPartnerReportCoFinancingEntity.id.report = projectPartnerReportEntity && " +
+                    "projectPartnerReportCoFinancingEntity.programmeFund is not null")
         assertThat(slotLeftJoin[2]).isInstanceOf(QProgrammeFundEntity::class.java)
-        assertThat(slotLeftJoinOn[2].toString()).isEqualTo("programmeFundEntity.id = paymentEntity.fund.id")
-        assertThat(slotLeftJoin[3]).isInstanceOf(QPaymentToEcExtensionEntity::class.java)
-        assertThat(slotLeftJoinOn[3].toString()).isEqualTo("paymentToEcExtensionEntity.payment.id = paymentEntity.id")
-        assertThat(slotLeftJoin[4]).isInstanceOf(QPaymentApplicationToEcEntity::class.java)
-        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("paymentApplicationToEcEntity.id = paymentToEcExtensionEntity.paymentApplicationToEc.id")
-        assertThat(slotLeftJoin[5]).isInstanceOf(QAccountingYearEntity::class.java)
-        assertThat(slotLeftJoinOn[5].toString()).isEqualTo("accountingYearEntity.id = paymentApplicationToEcEntity.accountingYear.id")
+        assertThat(slotLeftJoinOn[2].toString()).isEqualTo("programmeFundEntity = projectPartnerReportCoFinancingEntity.programmeFund")
+        assertThat(slotLeftJoin[3]).isInstanceOf(QPaymentEntity::class.java)
+        assertThat(slotLeftJoinOn[3].toString()).isEqualTo("paymentEntity.fund = programmeFundEntity && paymentEntity.projectReport = projectReportEntity")
+        assertThat(slotLeftJoin[4]).isInstanceOf(QPaymentToEcExtensionEntity::class.java)
+        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("paymentToEcExtensionEntity.payment = paymentEntity")
+        assertThat(slotLeftJoin[5]).isInstanceOf(QPaymentApplicationToEcEntity::class.java)
+        assertThat(slotLeftJoinOn[5].toString()).isEqualTo("paymentApplicationToEcEntity = paymentToEcExtensionEntity.paymentApplicationToEc")
+        assertThat(slotLeftJoin[6]).isInstanceOf(QAccountingYearEntity::class.java)
+        assertThat(slotLeftJoinOn[6].toString()).isEqualTo("accountingYearEntity = paymentApplicationToEcEntity.accountingYear")
         assertThat(slotWhere.captured.toString()).isEqualTo(
-            "projectPartnerReportEntity.partnerId in [10, 11] &&" +
-                    " projectPartnerReportEntity.controlEnd is not null"
+            "projectPartnerReportEntity.partnerId in [10, 11] && projectPartnerReportEntity.controlEnd is not null"
         )
 
     }

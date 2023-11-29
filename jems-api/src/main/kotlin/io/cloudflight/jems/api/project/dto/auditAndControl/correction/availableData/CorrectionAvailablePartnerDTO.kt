@@ -9,5 +9,6 @@ data class CorrectionAvailablePartnerDTO(
     val partnerRole: ProjectPartnerRoleDTO,
     val partnerDisabled: Boolean,
 
-    val availableReports: List<CorrectionAvailablePartnerReportDTO>
+    val availableReports: List<CorrectionAvailablePartnerReportDTO>,
+    val availableFtls: List<CorrectionAvailableFtlsDTO>,
 )
