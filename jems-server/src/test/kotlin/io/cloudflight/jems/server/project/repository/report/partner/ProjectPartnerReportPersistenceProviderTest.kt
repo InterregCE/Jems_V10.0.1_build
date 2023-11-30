@@ -651,8 +651,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         assertThat(slotLeftJoinOn[0].toString()).isEqualTo("projectReportEntity = projectPartnerReportEntity.projectReport")
         assertThat(slotLeftJoin[1]).isInstanceOf(QProjectPartnerReportCoFinancingEntity::class.java)
         assertThat(slotLeftJoinOn[1].toString())
-            .isEqualTo("projectPartnerReportCoFinancingEntity.id.report = projectPartnerReportEntity && " +
-                    "projectPartnerReportCoFinancingEntity.programmeFund is not null")
+            .isEqualTo("projectPartnerReportCoFinancingEntity.id.report = projectPartnerReportEntity")
         assertThat(slotLeftJoin[2]).isInstanceOf(QProgrammeFundEntity::class.java)
         assertThat(slotLeftJoinOn[2].toString()).isEqualTo("programmeFundEntity = projectPartnerReportCoFinancingEntity.programmeFund")
         assertThat(slotLeftJoin[3]).isInstanceOf(QPaymentEntity::class.java)
@@ -664,7 +663,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         assertThat(slotLeftJoin[6]).isInstanceOf(QAccountingYearEntity::class.java)
         assertThat(slotLeftJoinOn[6].toString()).isEqualTo("accountingYearEntity = paymentApplicationToEcEntity.accountingYear")
         assertThat(slotWhere.captured.toString()).isEqualTo(
-            "projectPartnerReportEntity.partnerId in [10, 11] && projectPartnerReportEntity.controlEnd is not null"
+            "projectPartnerReportEntity.partnerId in [10, 11] && projectPartnerReportEntity.controlEnd is not null && " +
+                "projectPartnerReportCoFinancingEntity.programmeFund is not null"
         )
 
     }
