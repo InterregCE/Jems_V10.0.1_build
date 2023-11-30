@@ -187,7 +187,7 @@ class ProjectPartnerReportPersistenceProvider(
             .leftJoin(reportProject)
                 .on(reportProject.eq(reportPartner.projectReport))
             .leftJoin(reportCoFin)
-                .on(reportCoFin.id.report.eq(reportPartner).and(reportCoFin.programmeFund.isNotNull()))
+                .on(reportCoFin.id.report.eq(reportPartner))
             .leftJoin(programmeFund)
                 .on(programmeFund.eq(reportCoFin.programmeFund))
             .leftJoin(payment)
@@ -201,6 +201,7 @@ class ProjectPartnerReportPersistenceProvider(
             .where(
                 reportPartner.partnerId.`in`(partnerIds)
                     .and(reportPartner.controlEnd.isNotNull())
+                    .and(reportCoFin.programmeFund.isNotNull())
             )
             .fetch()
         return g.map { it.toTmpModel() }
