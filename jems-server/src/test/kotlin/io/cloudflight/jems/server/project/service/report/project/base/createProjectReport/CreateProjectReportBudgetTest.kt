@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
@@ -18,6 +22,11 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLu
 import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
@@ -38,10 +47,15 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedByContributionSource
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.toScaledBigDecimal
+import io.cloudflight.jems.server.utils.ERDF_FUND
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -424,6 +438,28 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         previouslyVerified = BigDecimal.valueOf(15),
     )
 
+
+    private val expectedSpfContributions = listOf(
+        ProjectReportSpfContributionClaimCreate(
+            fundId = 1L,
+            idFromApplicationForm = null,
+            sourceOfContribution = null,
+            legalStatus = null,
+            amountInAf = 500.00.toScaledBigDecimal(),
+            previouslyReported = BigDecimal.valueOf(100.00),
+            currentlyReported = BigDecimal.ZERO
+        ),
+        ProjectReportSpfContributionClaimCreate(
+            fundId = null,
+            idFromApplicationForm = 1L,
+            sourceOfContribution = "Contribution source one",
+            legalStatus = ProjectPartnerContributionStatus.Private,
+            amountInAf = BigDecimal.valueOf(500.00),
+            previouslyReported = BigDecimal.valueOf(50.00),
+            currentlyReported = BigDecimal.ZERO
+        )
+    )
+
     @MockK private lateinit var lumpSumPersistence: ProjectLumpSumPersistence
     @MockK private lateinit var getProjectBudget: GetProjectBudget
     @MockK private lateinit var reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistenceProvider
@@ -435,6 +471,10 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     @MockK private lateinit var projectBudgetPersistence: ProjectBudgetPersistence
     @MockK private lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
     @MockK private lateinit var reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence
+    @MockK private lateinit var projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider
+    @MockK private lateinit var projectReportSpfContributionClaimPersistence: ProjectReportSpfContributionClaimPersistence
+    @MockK private lateinit var callPersistence: CallPersistence
+    @MockK private lateinit var getBudgetTotalCost: GetBudgetTotalCost
 
     @InjectMockKs private lateinit var service: CreateProjectReportBudget
 
@@ -452,6 +492,10 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
             projectBudgetPersistence,
             reportCertificateUnitCostPersistence,
             reportInvestmentPersistence,
+            projectPartnerCoFinancingPersistence,
+            projectReportSpfContributionClaimPersistence,
+            callPersistence,
+            getBudgetTotalCost
         )
     }
 
@@ -496,6 +540,8 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { reportInvestmentPersistence.getReportedInvestmentCumulative(setOf(21L, 28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
         every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.valueOf(15)))
 
+        every { callPersistence.getCallByProjectId(projectId).type } returns CallType.STANDARD
+
         val result = service.retrieveBudgetDataFor(
             projectId = projectId,
             version = version,
@@ -513,6 +559,96 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         assertThat(result.availableLumpSums).containsExactly(expectedLumpSum_14, expectedLumpSum_15, expectedLumpSum_16)
         assertThat(result.unitCosts).containsExactly(expectedUnitCost, expectedUnitCost_Multiple)
         assertThat(result.investments).containsExactly(expectedInvestment)
+    }
+
+
+    @Test
+    fun `createReportBudget - with spf co financing`() {
+        val projectId = 30L
+        val version = "v4.2"
+        val coFinancingAndContributionSpf = ProjectPartnerCoFinancingAndContributionSpf(
+            finances = listOf(
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                    fund = ERDF_FUND,
+                    percentage = BigDecimal.valueOf(50.00)
+                )
+            ),
+            partnerContributions = listOf(
+                ProjectPartnerContributionSpf(
+                    id = 1L,
+                    name = "Contribution source one",
+                    status = ProjectPartnerContributionStatus.Private,
+                    amount = BigDecimal.valueOf(500.00)
+                )
+            )
+        )
+        val totalCostSpf = 1000.toScaledBigDecimal()
+        val previouslyReportedSpfCoFin = SpfPreviouslyReportedByContributionSource(
+            finances = mapOf(1L to BigDecimal.valueOf(100.00)),
+            partnerContributions = mapOf(1L to BigDecimal.valueOf(50.00)),
+        )
+
+        every { projectBudgetPersistence.getPartnersForProjectId(projectId, version) } returns partners()
+        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId), version) } returns listOf(staffCost(unitCostId))
+        every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId), version) } returns listOf(travelCost(unitCostId))
+        every { partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId), version) } returns listOf(
+            generalCost(unitCostId, investmentId)
+        )
+        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId), version) } returns listOf(
+            generalCost(null, investmentId)
+        )
+        every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId), version) } returns listOf(
+            generalCost(unitCostId, null)
+        )
+        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId), version) } returns budgetUnitCostEntries()
+        every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId = partnerId)
+        every { reportCertificateCostCategoryPersistence.getCostCategoriesCumulative(setOf(21L, 28L), setOf(28L)) } returns previouslyReportedCostCategory
+        every { getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version) } returns listOf(totalPerFundLineFromAF)
+        every { getProjectBudget.getBudget(projectId, version) } returns listOf(partnerBudget(ProjectPartnerSummary(
+            id = 1L,
+            abbreviation = "LP",
+            active = true,
+            role = ProjectPartnerRole.LEAD_PARTNER
+        )))
+        every { reportCertificateCoFinancingPersistence.getCoFinancingCumulative(setOf(21L, 28L), setOf(28L)) } returns previousCoFinancing
+        every { paymentPersistence.getFtlsCumulativeForProject(projectId) } returns paymentCumulative
+
+        every { reportCertificateLumpSumPersistence.getReportedLumpSumCumulative(setOf(21L, 28L)) } returns mapOf(Pair(1, BigDecimal.valueOf(1_944L)))
+        every { reportCertificateLumpSumPersistence.getVerifiedLumpSumCumulative(setOf(28L)) } returns mapOf(Pair(16, BigDecimal.valueOf(10_002_000L)))
+
+        every { paymentPersistence.getPaymentsByProjectId(projectId) } returns listOf(payment)
+
+        every { reportCertificateUnitCostPersistence.getReportedUnitCostsCumulative(setOf(21L, 28L)) } returns mapOf(Pair(unitCostId, BigDecimal.TEN))
+        every { reportCertificateUnitCostPersistence.getVerifiedUnitCostsCumulative(setOf(28L)) } returns mapOf(Pair(unitCostId, BigDecimal.valueOf(20)))
+
+        every { reportInvestmentPersistence.getReportedInvestmentCumulative(setOf(21L, 28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
+        every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.valueOf(15)))
+
+        every { callPersistence.getCallByProjectId(projectId).type } returns CallType.SPF
+        every { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions( partnerId, version) } returns coFinancingAndContributionSpf
+        every { projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId) } returns previouslyReportedSpfCoFin
+        every { getBudgetTotalCost.getBudgetTotalSpfCost( partnerId, version) } returns totalCostSpf
+
+        val result = service.retrieveBudgetDataFor(
+            projectId = projectId,
+            version = version,
+            investments = listOf(
+                PartnerReportInvestmentSummary(investmentId = investmentId, 2, 3, emptySet(), false)
+            ),
+            submittedReports = listOf(
+                ProjectReportStatusAndType(21L, ProjectReportStatus.Submitted, ContractingDeadlineType.Both),
+                ProjectReportStatusAndType(28L, ProjectReportStatus.Finalized, ContractingDeadlineType.Both),
+            ),
+        )
+
+        assertThat(result.coFinancing).isEqualTo(expectedCoFinancing)
+        assertThat(result.costCategorySetup).isEqualTo(expectedCostCategory)
+        assertThat(result.availableLumpSums).containsExactly(expectedLumpSum_14, expectedLumpSum_15, expectedLumpSum_16)
+        assertThat(result.unitCosts).containsExactly(expectedUnitCost, expectedUnitCost_Multiple)
+        assertThat(result.investments).containsExactly(expectedInvestment)
+
+        assertThat(result.spfContributionClaims).isEqualTo(expectedSpfContributions)
     }
 
 }

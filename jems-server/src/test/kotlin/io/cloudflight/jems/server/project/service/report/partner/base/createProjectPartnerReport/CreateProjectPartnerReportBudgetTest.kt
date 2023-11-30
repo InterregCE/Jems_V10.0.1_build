@@ -96,7 +96,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private val contribNonPartner2 = ProjectPartnerContribution(
         id = 300L,
         name = "C - this will be merged with contribution id=3",
-        status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
+        status = ProjectPartnerContributionStatus.AutomaticPublic,
         amount = BigDecimal.ONE,
         isPartner = false,
     )
@@ -118,7 +118,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private val contribNonPartner2Spf = ProjectPartnerContributionSpf(
         id = 310L,
         name = "C - this will be merged with contribution id=3",
-        status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
+        status = ProjectPartnerContributionStatus.AutomaticPublic,
         amount = BigDecimal.ONE,
     )
 

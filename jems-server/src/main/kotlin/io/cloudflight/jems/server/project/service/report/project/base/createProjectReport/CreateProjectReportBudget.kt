@@ -1,39 +1,47 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetSpfCoFinancing
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.*
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedByContributionSource
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import org.aspectj.weaver.ast.Call
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
+import java.math.RoundingMode
 
 @Service
 class CreateProjectReportBudget(
@@ -48,6 +56,10 @@ class CreateProjectReportBudget(
     private val projectBudgetPersistence: ProjectBudgetPersistence,
     private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
+    private val projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider,
+    private val projectReportSpfContributionClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val callPersistence: CallPersistence,
+    private val getBudgetTotalCost: GetBudgetTotalCost,
 ) {
 
     @Transactional
@@ -60,7 +72,8 @@ class CreateProjectReportBudget(
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
         val finalizedReportIds = submittedReports.filter { it.status.isFinalized() }.mapTo(HashSet()) { it.id }
 
-        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map {it.id!!}.toSet()
+        val partnerSummaries = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version)
+        val partnerIds = partnerSummaries.map {it.id!!}.toSet()
 
         val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerIds, version)
         val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerIds, version)
@@ -79,6 +92,15 @@ class CreateProjectReportBudget(
         val totalFromAF = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
             .first { it.partner === null }
         val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)
+
+        val isSpfProject = callPersistence.getCallByProjectId(projectId).type == CallType.SPF
+        val spfProjectReportContributionClaims = if (isSpfProject) {
+            getSpfProjectReportSpfContributionClaims(
+                spfCoFinancingAndContribution = getSpfCoFinancing(partnerSummaries, version),
+                previouslyReportedContributionClaims =
+                projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId)
+            )
+        } else emptyList()
 
         return ProjectReportBudget(
             coFinancing = toCreateModel(
@@ -111,8 +133,82 @@ class CreateProjectReportBudget(
                 previouslyReported = reportInvestmentPersistence.getReportedInvestmentCumulative(submittedReportIds),
                 previouslyVerified = reportInvestmentPersistence.getVerifiedInvestmentCumulative(finalizedReportIds)
             ),
+            spfContributionClaims = spfProjectReportContributionClaims
         )
     }
+
+    private fun getSpfProjectReportSpfContributionClaims(
+        spfCoFinancingAndContribution: List<PartnerBudgetSpfCoFinancing>,
+        previouslyReportedContributionClaims: SpfPreviouslyReportedByContributionSource
+    ): List<ProjectReportSpfContributionClaimCreate> {
+        val contributionClaims = mutableListOf<ProjectReportSpfContributionClaimCreate>()
+
+        spfCoFinancingAndContribution.forEach { partnerAfSpfCoFinancing ->
+            val totalFromAf = partnerAfSpfCoFinancing.total ?: ZERO
+            val financesFromAf = partnerAfSpfCoFinancing.projectPartnerCoFinancingAndContribution.finances
+                .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
+            val contributionsFromAf =
+                partnerAfSpfCoFinancing.projectPartnerCoFinancingAndContribution.partnerContributions
+
+            contributionClaims.addAll( financesFromAf.toFinanceContributionClaims(
+                    totalFromAf = totalFromAf,
+                    previousReportedAmounts = previouslyReportedContributionClaims.finances
+                )
+            )
+            contributionClaims.addAll(
+                contributionsFromAf.toPartnerContributionClaims(previouslyReportedContributionClaims.partnerContributions)
+            )
+        }
+        return contributionClaims
+    }
+
+    private fun getSpfCoFinancing(
+        partners: List<ProjectPartnerSummary>,
+        version: String?
+    ): List<PartnerBudgetSpfCoFinancing> {
+        return partners.map {
+                PartnerBudgetSpfCoFinancing(
+                    partner = it,
+                    projectPartnerCoFinancingAndContribution =
+                    projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id!!, version),
+                    total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
+                )
+            }
+    }
+
+    private fun List<ProjectPartnerCoFinancing>.toFinanceContributionClaims(
+        totalFromAf: BigDecimal,
+        previousReportedAmounts: Map<Long, BigDecimal>) =
+        this.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = it.fund?.id,
+                idFromApplicationForm = null,
+                sourceOfContribution = null,
+                legalStatus = null,
+                amountInAf = it.calculateAfAmount(totalFromAf),
+                previouslyReported = previousReportedAmounts.getOrDefault(it.fund?.id, ZERO),
+                currentlyReported = ZERO
+
+            )
+        }
+
+    private fun  Collection<ProjectPartnerContributionSpf>.toPartnerContributionClaims(
+        previousReportedAmounts: Map<Long, BigDecimal>) =
+        this.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = null,
+                idFromApplicationForm = it.id,
+                sourceOfContribution = it.name,
+                legalStatus = it.status,
+                amountInAf = it.amount ?: ZERO,
+                previouslyReported = previousReportedAmounts.getOrDefault(it.id, ZERO),
+                currentlyReported = ZERO
+
+            )
+        }
+
+    private fun ProjectPartnerCoFinancing.calculateAfAmount(totalFromAF: BigDecimal) =
+        totalFromAF.multiply(this.percentage.divide(BigDecimal(100))).setScale(2, RoundingMode.DOWN) ?: ZERO
 
     private fun costCategorySetup(
         budget: BudgetCostsCalculationResultFull,

@@ -348,7 +348,8 @@ internal class CreateProjectReportTest : UnitTest() {
                     previouslyReported = BigDecimal.ONE,
                     previouslyVerified = BigDecimal.ONE,
                 )
-            )
+            ),
+            spfContributionClaims = emptyList()
         )
 
         val workPackage = ProjectWorkPackageFull(
@@ -600,7 +601,8 @@ internal class CreateProjectReportTest : UnitTest() {
                         previouslyReported = BigDecimal.ONE,
                         previouslyVerified = BigDecimal.ONE,
                     )
-                )
+                ),
+                    spfContributionClaims = emptyList()
             ),
             workPackages = listOf(
                 ProjectReportWorkPackageCreate(

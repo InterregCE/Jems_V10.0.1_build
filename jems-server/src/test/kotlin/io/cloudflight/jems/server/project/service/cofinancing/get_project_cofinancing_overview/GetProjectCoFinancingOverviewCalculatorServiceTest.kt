@@ -158,7 +158,7 @@ internal class GetProjectCoFinancingOverviewCalculatorServiceTest: UnitTest() {
             ),
             partnerContributions = listOf(
                 ProjectPartnerContribution(isPartner = true, amount = BigDecimal(20)),
-                ProjectPartnerContribution(isPartner = false, status = ProjectPartnerContributionStatusDTO.AutomaticPublic, amount = BigDecimal(40)),
+                ProjectPartnerContribution(isPartner = false, status = ProjectPartnerContributionStatus.AutomaticPublic, amount = BigDecimal(40)),
             ),
             partnerAbbreviation = "test"
         )

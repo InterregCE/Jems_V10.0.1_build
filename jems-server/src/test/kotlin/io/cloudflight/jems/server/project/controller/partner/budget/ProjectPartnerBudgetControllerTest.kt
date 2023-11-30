@@ -39,6 +39,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
@@ -104,7 +105,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val contribution1 = ProjectPartnerContribution(
         id = 21,
         name = null,
-        status = Public,
+        status = ProjectPartnerContributionStatus.Public,
         isPartner = true,
         amount = BigDecimal.ONE
     )
@@ -112,7 +113,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val contribution2 = ProjectPartnerContribution(
         id = 22,
         name = "supporter 1",
-        status = Private,
+        status = ProjectPartnerContributionStatus.Private,
         isPartner = false,
         amount = BigDecimal.TEN
     )
@@ -120,7 +121,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val contribution3 = ProjectPartnerContribution(
         id = 23,
         name = "supporter 2",
-        status = AutomaticPublic,
+        status = ProjectPartnerContributionStatus.AutomaticPublic,
         isPartner = false,
         amount = BigDecimal.TEN
     )
@@ -167,7 +168,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             ProjectPartnerContributionSpf(
                 id = 1,
                 name = "name",
-                status = Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.TEN
             )
         )
@@ -565,7 +566,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             ProjectPartnerContributionSpf(
                 id = 1,
                 name = "name",
-                status = Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.TEN
             )
         )

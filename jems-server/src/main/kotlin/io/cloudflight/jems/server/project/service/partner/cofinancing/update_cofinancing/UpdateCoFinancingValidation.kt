@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallFundRate
@@ -8,6 +7,7 @@ import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import java.math.BigDecimal
 import org.springframework.http.HttpStatus
@@ -168,7 +168,7 @@ private fun validateMandatoryPartnerContributionSpfAmount(partnerContributions: 
 
 private fun validatePartnerContributionStatusIsValid(partnerContributions: Collection<ProjectPartnerContribution>) {
     val partnerStatus = partnerContributions.find { it.isPartner }!!.status!!
-    if (partnerStatus == ProjectPartnerContributionStatusDTO.AutomaticPublic)
+    if (partnerStatus == ProjectPartnerContributionStatus.AutomaticPublic)
         invalid("project.partner.contribution.partner.status.invalid")
 }
 //end partner contribution block

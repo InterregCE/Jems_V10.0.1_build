@@ -12,8 +12,6 @@ interface ProjectPartnerContributionSpfRepository : JpaRepository<ProjectPartner
 
     fun findAllByPartnerId(partnerId: Long): MutableList<ProjectPartnerContributionSpfEntity>
 
-    fun deleteByPartnerId(partnerId: Long)
-
     @Query(
         """
             SELECT

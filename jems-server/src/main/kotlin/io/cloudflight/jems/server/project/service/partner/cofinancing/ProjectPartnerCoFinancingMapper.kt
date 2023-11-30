@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.project.controller.partner.toDto
@@ -20,6 +21,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
@@ -53,7 +55,7 @@ fun Collection<ProjectPartnerContributionDTO>.toContributionModel() = map {
     ProjectPartnerContribution(
         id = it.id ?: 0,
         name = if (it.partner) null else it.name,
-        status = it.status,
+        status = it.status.toModel(),
         amount = it.amount,
         isPartner = it.partner
     )
@@ -63,7 +65,7 @@ fun Collection<ProjectPartnerContributionDTO>.toContributionSpfModel() = map {
     ProjectPartnerContributionSpf(
         id = it.id ?: 0,
         name = it.name,
-        status = it.status,
+        status = it.status.toModel(),
         amount = it.amount
     )
 }
@@ -99,7 +101,7 @@ fun Collection<ProjectPartnerCoFinancing>.toCoFinancingDto() = map { it.toDto() 
 fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartnerContributionDTO(
     id = id,
     name = if (isPartner) partnerAbbreviation else name,
-    status = status,
+    status = status.toDto(),
     partner = isPartner,
     amount = amount
 )
@@ -107,7 +109,7 @@ fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartn
 fun ProjectPartnerContributionDTO.toModel() = ProjectPartnerContribution(
     id = id,
     name = name,
-    status = status,
+    status = status.toModel(),
     amount = amount,
     isPartner = partner
 )
@@ -115,17 +117,11 @@ fun ProjectPartnerContributionDTO.toModel() = ProjectPartnerContribution(
 fun ProjectPartnerContributionSpf.toDto() = ProjectPartnerContributionDTO(
     id = id,
     name = name,
-    status = status,
+    status = status.toDto(),
     partner = false,
     amount = amount
 )
 
-fun ProjectPartnerContributionDTO.toModelSpf() = ProjectPartnerContributionSpf(
-    id = id,
-    name = name,
-    status = status,
-    amount = amount
-)
 
 fun Collection<ProjectPartnerContribution>.toContributionDto(partnerAbbreviation: String): List<ProjectPartnerContributionDTO> =
     if (isEmpty())
@@ -139,3 +135,9 @@ fun Collection<ProjectPartnerContributionSpf>.toSpfContributionDto(): List<Proje
     else
         map { it.toDto() }.sortedWith(compareBy { it.id })
 
+
+private fun ProjectPartnerContributionStatus?.toDto(): ProjectPartnerContributionStatusDTO? =
+    if (this != null) ProjectPartnerContributionStatusDTO.valueOf(this.name) else null
+
+private fun ProjectPartnerContributionStatusDTO?.toModel(): ProjectPartnerContributionStatus? =
+    if (this != null) ProjectPartnerContributionStatus.valueOf(this.name) else null

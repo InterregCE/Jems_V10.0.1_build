@@ -231,11 +231,11 @@ fun generateCoFinCalculationInputData(
     coFinancing = coFinancing.finances,
     contributionAmounts = mapOf(
         ProjectPartnerContributionStatus.Public to coFinancing.partnerContributions
-            .filter { it.status == ProjectPartnerContributionStatusDTO.Public }.sumOf { it.amount ?: BigDecimal.ZERO },
+            .filter { it.status == ProjectPartnerContributionStatus.Public }.sumOf { it.amount ?: BigDecimal.ZERO },
         ProjectPartnerContributionStatus.AutomaticPublic to coFinancing.partnerContributions
-            .filter { it.status == ProjectPartnerContributionStatusDTO.AutomaticPublic }.sumOf { it.amount ?: BigDecimal.ZERO },
+            .filter { it.status == ProjectPartnerContributionStatus.AutomaticPublic }.sumOf { it.amount ?: BigDecimal.ZERO },
         ProjectPartnerContributionStatus.Private to coFinancing.partnerContributions
-            .filter { it.status == ProjectPartnerContributionStatusDTO.Private }.sumOf { it.amount ?: BigDecimal.ZERO },
+            .filter { it.status == ProjectPartnerContributionStatus.Private }.sumOf { it.amount ?: BigDecimal.ZERO },
     ),
 )
 

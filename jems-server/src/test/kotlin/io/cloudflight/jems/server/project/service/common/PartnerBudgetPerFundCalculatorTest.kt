@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.junit.jupiter.api.Test
@@ -48,7 +49,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                         ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                     ),
                     partnerContributions = listOf(
-                        ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)
+                        ProjectPartnerContribution(
+                            id = 1L,
+                            name = "con1",
+                            status = ProjectPartnerContributionStatus.Public,
+                            amount = BigDecimal(600),
+                            isPartner = true
+                        )
                     ),
                     partnerAbbreviation = "LP 1"
                 ),
@@ -62,7 +69,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(10)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 2L,
+                                name = "con2",
+                                status = ProjectPartnerContributionStatus.Public,
+                                amount = BigDecimal(3),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = "PP 1"
                     ),
@@ -75,7 +88,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 3L,
+                                name = "con3",
+                                status = ProjectPartnerContributionStatus.Private,
+                                amount = BigDecimal(580),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = "PP 2"
                     ),
@@ -222,7 +241,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 1L,
+                                name = "con1",
+                                status = ProjectPartnerContributionStatus.Public,
+                                amount = BigDecimal(600),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = partnerSpf.abbreviation
                     ),
@@ -241,13 +266,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                         ProjectPartnerContributionSpf(
                             id = 2L,
                             name = "contribution spf 1",
-                            status = ProjectPartnerContributionStatusDTO.Public,
+                            status = ProjectPartnerContributionStatus.Public,
                             amount = BigDecimal(3),
                         ),
                         ProjectPartnerContributionSpf(
                             id = 3L,
                             name = "contribution spf 1",
-                            status = ProjectPartnerContributionStatusDTO.Private,
+                            status = ProjectPartnerContributionStatus.Private,
                             amount = BigDecimal(7),
                         )
                     )
