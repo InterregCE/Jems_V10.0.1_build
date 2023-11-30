@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -74,7 +74,8 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   };
 
   constructor(private formService: FormService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
 
@@ -95,6 +96,7 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
     if (changes.components) {
       this.initializeEmptyComponents();
       this.resetForm();
+      this.changeDetectorRef.detectChanges();
     }
   }
 
