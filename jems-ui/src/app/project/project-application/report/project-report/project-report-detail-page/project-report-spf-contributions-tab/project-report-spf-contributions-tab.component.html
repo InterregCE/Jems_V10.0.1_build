@@ -1,0 +1,95 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="save()"
+           (discard)="resetForm(data.spfContributions,data.reportEditable)">
+
+    <h3>{{'project.application.project.report.spf.contributions' | translate }}</h3>
+    <p>{{'project.application.project.report.spf.contributions.description' | translate }}</p>
+
+    <form [formGroup]="form">
+        <mat-table [dataSource]="dataSource" [formArrayName]="'contributions'" [jemsTableConfig]="[{maxInRem: 12},{maxInRem: 4}, {}, {}, {}, {minInRem: 16}]">
+
+            <ng-container matColumnDef="nameOfOrganization">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.name.of.organization' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index">
+                    <span *ngIf="contribution.get('sourceOfContribution').value">
+                        {{ contribution.get('sourceOfContribution').value }}
+                    </span>
+                    <span *ngIf="contribution.get('programmeFund').value">
+                        {{ contribution.get('programmeFund').value | translateBySystemLanguage | async }}
+                    </span>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef>
+                    <span>{{ 'project.application.project.report.spf.contributions.table.total.spf' | translate }}</span>
+                </mat-footer-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="legalStatus">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.legal.status' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index">
+                    <span *ngIf="contribution.get('legalStatus').value">
+                        {{ 'project.application.project.report.spf.contributions.table.legal.status.' + contribution.get('legalStatus').value | translate }}
+                    </span>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="amountInAf">
+                <mat-header-cell *matHeaderCellDef  class="justify-end">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.amount.in.af' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index"  class="justify-end">
+                    <div> {{ contribution.get('amountInAf').value | asMoney }} </div>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef class="justify-end"> {{ getTotalSpfAmount('amountInAf') | asMoney }} </mat-footer-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="previouslyReported">
+                <mat-header-cell *matHeaderCellDef  class="justify-end">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.previously.reported' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index"  class="justify-end">
+                    <div> {{ contribution.get('previouslyReported').value | asMoney }} </div>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef class="justify-end"> {{ getTotalSpfAmount('previouslyReported') | asMoney }} </mat-footer-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="currentReport">
+                <mat-header-cell *matHeaderCellDef  class="justify-end">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.current.report' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index"  class="justify-end">
+                    <div *ngIf="!data.reportEditable"> {{ contribution.get('currentReport').value | asMoney }} </div>
+                    <div *ngIf="data.reportEditable">
+                        <mat-form-field [formGroup]="contribution">
+                            <input currencyMask matInput
+                                   type="decimal"
+                                   formControlName="currentReport"
+                                   [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}">
+                        </mat-form-field>
+                    </div>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef class="justify-end"> {{ getTotalSpfAmount('currentReport') | asMoney }} </mat-footer-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="totalReported">
+                <mat-header-cell *matHeaderCellDef  class="justify-end">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.total.reported' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let contribution; let i = index"  class="justify-end">
+                    <div>
+                        {{ contribution.get('totalReported').value | asMoney }}
+                    </div>
+                </mat-cell>
+                <mat-footer-cell *matFooterCellDef class="justify-end"> {{ getTotalSpfAmount('totalReported') | asMoney }} </mat-footer-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let myRowData; columns: displayedColumns;"></mat-row>
+            <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+        </mat-table>
+    </form>
+</jems-form>
