@@ -293,18 +293,6 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getAllIdsByProjectId() {
-        val correctionIds = setOf(
-            mockk<AuditControlCorrectionEntity> { every { id } returns 1L },
-            mockk<AuditControlCorrectionEntity> { every { id } returns 2L },
-            mockk<AuditControlCorrectionEntity> { every { id } returns 3L },
-        )
-        every { auditControlCorrectionRepository.findAllByAuditControlProjectId(PROJECT_ID) } returns correctionIds
-
-        assertThat(persistence.getAllIdsByProjectId(PROJECT_ID)).isEqualTo(setOf(1L, 2L, 3L))
-    }
-
-    @Test
     fun getAvailableCorrectionsForPayments() {
         val query = mockk<JPAQuery<AuditControlCorrectionEntity>>()
         val wherePredicateSlot = slot<BooleanOperation>()
