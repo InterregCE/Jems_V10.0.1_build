@@ -68,10 +68,10 @@ export class CorrectionDetailFinancialDescriptionComponent {
 
   resetForm(financialDescription: ProjectCorrectionFinancialDescriptionDTO) {
     this.financialDescriptionForm.controls.deduction.setValue(financialDescription.deduction);
-    this.financialDescriptionForm.controls.fundAmount.setValue(financialDescription.fundAmount);
-    this.financialDescriptionForm.controls.publicContribution.setValue(financialDescription.publicContribution);
-    this.financialDescriptionForm.controls.autoPublicContribution.setValue(financialDescription.autoPublicContribution);
-    this.financialDescriptionForm.controls.privateContribution.setValue(financialDescription.privateContribution);
+    this.financialDescriptionForm.controls.fundAmount.setValue(Math.abs(financialDescription.fundAmount));
+    this.financialDescriptionForm.controls.publicContribution.setValue(Math.abs(financialDescription.publicContribution));
+    this.financialDescriptionForm.controls.autoPublicContribution.setValue(Math.abs(financialDescription.autoPublicContribution));
+    this.financialDescriptionForm.controls.privateContribution.setValue(Math.abs(financialDescription.privateContribution));
     this.financialDescriptionForm.controls.infoSentBeneficiaryDate.setValue(financialDescription.infoSentBeneficiaryDate);
     this.financialDescriptionForm.controls.infoSentBeneficiaryComment.setValue(financialDescription.infoSentBeneficiaryComment);
     this.financialDescriptionForm.controls.correctionType.setValue(financialDescription.correctionType);

@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.CorrectionCostItemDTO
@@ -15,6 +18,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.createAuditControlCorrection.CreateAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.deleteAuditControlCorrection.DeleteAuditControlCorrectionInteractor
@@ -154,12 +158,19 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 auditControlNr = 1,
                 canBeDeleted = true,
                 partnerReport = 2,
+                partnerId = 777L,
                 partnerRole = ProjectPartnerRole.PARTNER,
                 partnerNumber = 3,
                 partnerDisabled = false,
                 followUpAuditNr = null,
                 followUpCorrectionNr = null,
-                fundType = ProgrammeFundType.ERDF,
+                fund = ProgrammeFund(
+                    id = 622L,
+                    selected = true,
+                    type = ProgrammeFundType.NEIGHBOURHOOD_CBC,
+                    abbreviation = setOf(InputTranslation(SystemLanguage.GA, "abbr-GA")),
+                    description = setOf(InputTranslation(SystemLanguage.FI, "desc-FI")),
+                ),
                 fundAmount = BigDecimal.valueOf(1000),
                 publicContribution = BigDecimal.valueOf(3000),
                 autoPublicContribution = BigDecimal.valueOf(4000),
@@ -186,7 +197,13 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 partnerReport = 2,
                 followUpAuditNr = null,
                 followUpCorrectionNr = null,
-                fundType = ProgrammeFundTypeDTO.ERDF,
+                fund = ProgrammeFundDTO(
+                    id = 622L,
+                    selected = true,
+                    type = ProgrammeFundTypeDTO.NEIGHBOURHOOD_CBC,
+                    abbreviation = setOf(InputTranslation(SystemLanguage.GA, "abbr-GA")),
+                    description = setOf(InputTranslation(SystemLanguage.FI, "desc-FI")),
+                ),
                 fundAmount = BigDecimal.valueOf(1000),
                 publicContribution = BigDecimal.valueOf(3000),
                 autoPublicContribution = BigDecimal.valueOf(4000),

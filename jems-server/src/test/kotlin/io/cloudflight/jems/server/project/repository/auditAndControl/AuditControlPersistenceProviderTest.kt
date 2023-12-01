@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl
 
+import com.querydsl.core.Tuple
 import com.querydsl.core.types.Expression
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -14,12 +15,14 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -113,6 +116,11 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
     @InjectMockKs
     private lateinit var persistence: AuditControlPersistenceProvider
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(projectRepository, auditControlRepository, jpaQueryFactory)
+    }
 
     @Test
     fun getProjectIdForAuditControl() {
@@ -212,9 +220,10 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         val entity = dummyEntity(15L)
         assertThat(entity.status).isNotEqualTo(AuditControlStatus.Ongoing)
         every { auditControlRepository.findById(15L) } returns Optional.of(entity)
+        mockGetTotalCorrectionsAmount(auditControlId = 15L, total = BigDecimal.valueOf(3218L))
 
         assertThat(persistence.updateAuditControlStatus(15L, AuditControlStatus.Ongoing))
-            .isEqualTo(expectedAuditAfterUpdate(id= 15L, BigDecimal.ZERO).copy(status = AuditControlStatus.Ongoing))
+            .isEqualTo(expectedAuditAfterUpdate(id= 15L, BigDecimal.valueOf(3218L)).copy(status = AuditControlStatus.Ongoing))
         assertThat(entity.status).isEqualTo(AuditControlStatus.Ongoing)
     }
 
@@ -226,13 +235,15 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
     private fun mockGetTotalCorrectionsAmount(auditControlId: Long, total: BigDecimal) {
         val financeSpec = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
-        val query = mockk<JPAQuery<BigDecimal>>()
-        val slot = slot<Expression<BigDecimal>>()
-        every { jpaQueryFactory.select(capture(slot)) } returns query
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any()) } returns query
         every { query.from(financeSpec) } returns query
         every { query.where(financeSpec.correction.auditControl.id.eq(auditControlId)) } returns query
         every { query.groupBy(financeSpec.correction.auditControl.id) } returns query
-        every { query.fetchOne() } returns total
+        val tuple = mockk<Tuple>()
+        every { query.fetch() } returns listOf(tuple)
+        every { tuple.get(0, Long::class.java) } returns auditControlId
+        every { tuple.get(1, BigDecimal::class.java) } returns total
     }
 
 }

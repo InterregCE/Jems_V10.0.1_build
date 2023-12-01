@@ -118,22 +118,19 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             correctionId = financialDescription.correctionId,
             correction = correctionEntity,
             paymentApplicationToEc = null,
-            fundAmount = financialDescription.fundAmount.negateIf(financialDescription.deduction),
-            publicContribution = financialDescription.publicContribution.negateIf(financialDescription.deduction),
-            correctedPublicContribution = financialDescription.publicContribution.negateIf(financialDescription.deduction),
-            autoPublicContribution = financialDescription.autoPublicContribution.negateIf(financialDescription.deduction),
-            correctedAutoPublicContribution = financialDescription.autoPublicContribution.negateIf(financialDescription.deduction),
-            privateContribution = financialDescription.privateContribution.negateIf(financialDescription.deduction),
-            correctedPrivateContribution = financialDescription.privateContribution.negateIf(financialDescription.deduction),
+            fundAmount = financialDescription.fundAmount,
+            publicContribution = financialDescription.publicContribution,
+            correctedPublicContribution = financialDescription.publicContribution,
+            autoPublicContribution = financialDescription.autoPublicContribution,
+            correctedAutoPublicContribution = financialDescription.autoPublicContribution,
+            privateContribution = financialDescription.privateContribution,
+            correctedPrivateContribution = financialDescription.privateContribution,
             comment = null,
             finalScoBasis = null
         )
 
         ecPaymentCorrectionExtensionRepository.save(correctionExtensionEntity)
     }
-
-    private fun BigDecimal.negateIf(isDeduction: Boolean): BigDecimal =
-        if (isDeduction) this.negate() else this
 
     @Transactional(readOnly = true)
     override fun getCorrectionIdsAvailableForEcPayments(fundId: Long): Set<Long> {

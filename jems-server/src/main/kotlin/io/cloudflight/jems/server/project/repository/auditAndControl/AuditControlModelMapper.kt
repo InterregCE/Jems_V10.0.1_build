@@ -33,9 +33,7 @@ fun AuditControlCreate.toEntity(project: ProjectEntity) = AuditControlEntity(
     comment = comment
 )
 
-fun AuditControlEntity.toModel(
-    totalCorrectionsResolver: (Long) -> BigDecimal = { BigDecimal.ZERO }
-) = AuditControl(
+fun AuditControlEntity.toModel(totalCorrections: BigDecimal) = AuditControl(
     id = id,
     number = number,
 
@@ -51,7 +49,7 @@ fun AuditControlEntity.toModel(
     finalReportDate = finalReportDate,
 
     totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = totalCorrectionsResolver(id),
+    totalCorrectionsAmount = totalCorrections,
 
     comment = comment,
 )
