@@ -13,6 +13,9 @@ import {PaymentToEcAmountUpdate} from './payment-to-ec-amount-update';
 import {PaymentToEcRowSelected} from './paymnet-to-ec-row-selected';
 import {MatSort} from '@angular/material/sort';
 import {PaymentToEcCorrectionLinkingDTO} from "@cat/api";
+import {
+  AdvancePaymentsDetailPageConstants
+} from "../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants";
 
 @Component({
   selector: 'jems-payment-to-ec-correction-select-table',
@@ -53,6 +56,8 @@ export class PaymentToEcCorrectionSelectTableComponent {
   @Output()
   sortChanged$: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
+  constants = AdvancePaymentsDetailPageConstants;
+
   editedRowIndex: number | null = null;
   Alert = Alert;
   PaymentToEcCorrectionLinkingDTO = PaymentToEcCorrectionLinkingDTO;
@@ -75,8 +80,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
     this.array.at(rowIndex).patchValue({
       autoPublicContribution: row.autoPublicContribution,
       publicContribution: row.publicContribution,
-      privateContribution: row.privateContribution,
-      comment: ''
+      privateContribution: row.privateContribution
     });
     this.formService.setDirty(true);
   }
@@ -155,5 +159,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
       tap(() => this.selectionChanged$.emit(selection)),
       tap(() => checkbox.checked = false),
     ).subscribe();
+  }
+
+  canSave():boolean {
+    return this.form.valid;
   }
 }

@@ -8,7 +8,7 @@ import {
   PaymentToEcAmountSummaryDTO, PaymentToEcCorrectionLinkingDTO, PaymentToEcCorrectionLinkingUpdateDTO,
 } from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
-import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
 import {APIError} from '@common/models/APIError';
 import {PaymentsToEcDetailPageStore} from '../payment-to-ec-detail-page-store.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
@@ -226,7 +226,7 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
       autoPublicContribution: this.formBuilder.control(correction.correctedAutoPublicContribution),
       publicContribution: this.formBuilder.control(correction.correctedPublicContribution),
       privateContribution: this.formBuilder.control(correction.correctedPrivateContribution),
-      comment: this.formBuilder.control(correction.comment ? correction.comment : ''),
+      comment: this.formBuilder.control(correction.comment ? correction.comment : '', Validators.maxLength(500)),
     });
     this.ecCorrections.push(item);
   }
