@@ -43,8 +43,9 @@ class RejectModification(
         }
 
     private fun validateCorrections(projectId: Long, correctionIds: Set<Long>) {
-        val projectCorrectionIds = auditControlCorrectionPersistence.getAllIdsByProjectId(projectId)
-        val invalidCorrectionIds = correctionIds.minus(projectCorrectionIds)
+        val availableCorrectionIds = auditControlCorrectionPersistence.getAvailableCorrectionsForModification(projectId)
+            .mapTo(HashSet()) { it.id }
+        val invalidCorrectionIds = correctionIds.minus(availableCorrectionIds)
         if (invalidCorrectionIds.isNotEmpty()) {
             throw CorrectionsNotValidException(invalidCorrectionIds)
         }

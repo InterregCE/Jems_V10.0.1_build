@@ -19,10 +19,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.CorrectionsNotValidException
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.PaymentInstallmentsValidator
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallments
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.clearMocks
 import io.mockk.every
@@ -271,6 +274,14 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 )
             )
         )
+        private val auditControlCorrection = AuditControlCorrection(
+            id = 15L,
+            orderNr = 5,
+            status = mockk(),
+            type = mockk(),
+            auditControlId = 5L,
+            auditControlNr = 5
+        )
     }
 
     @MockK
@@ -303,7 +314,11 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns currentUserId
         every { validator.validateInstallments(any(), any(), any(), any()) } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
-        every { auditControlCorrectionPersistence.getAllIdsByProjectId(projectId) } returns setOf(15)
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
         every {
@@ -342,7 +357,12 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             validator.validateInstallments(any(), any(), any(), any())
         } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetailMultipleInstallments
-        every { auditControlCorrectionPersistence.getAllIdsByProjectId(projectId) } returns setOf(15)
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
+
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
         every {
@@ -421,15 +441,20 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every {
             paymentPersistence.updatePaymentPartnerInstallments(paymentPartnerId, emptySet(), any())
         } throws UpdatePaymentInstallmentsException(Exception())
-        every { auditControlCorrectionPersistence.getAllIdsByProjectId(projectId) } returns setOf(15)
 
-        val exception = assertThrows<UpdatePaymentInstallmentsException> {
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = paymentPartnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
+
+        val exception = assertThrows<CorrectionsNotValidException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
                 paymentDetail = paymentDetailDTO
             )
         }
-        assertThat(exception.code).isEqualTo("S-UPPI")
+        assertThat(exception.code).isEqualTo("S-UPPI-02")
     }
 
     @Test
@@ -439,7 +464,12 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every {
             validator.validateInstallments(any(), any(), any(), any())
         } throws I18nValidationException()
-        every { auditControlCorrectionPersistence.getAllIdsByProjectId(projectId) } returns setOf(15)
+
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
 
         assertThrows<I18nValidationException> {
             updatePaymentInstallments.updatePaymentInstallments(

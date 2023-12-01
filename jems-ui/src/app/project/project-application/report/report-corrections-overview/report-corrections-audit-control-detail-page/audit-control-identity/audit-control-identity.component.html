@@ -76,7 +76,7 @@
                        [formControlName]="constants.FORM_CONTROLS.startDate">
                 <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="startDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #startDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #startDate [enableMeridian]="true" [hideTime]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors
@@ -96,7 +96,7 @@
                        [formControlName]="constants.FORM_CONTROLS.endDate">
                 <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="endDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #endDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #endDate [enableMeridian]="true" [hideTime]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors
@@ -115,7 +115,7 @@
                        [formControlName]="constants.FORM_CONTROLS.finalReportDate">
                 <mat-datepicker-toggle [disabled]="!data.canEdit" [for]="finalReportDate" matSuffix>
                 </mat-datepicker-toggle>
-                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #finalReportDate [enableMeridian]="true"></ngx-mat-datetime-picker>
+                <ngx-mat-datetime-picker [disabled]="!data.canEdit" #finalReportDate [enableMeridian]="true" [hideTime]="true"></ngx-mat-datetime-picker>
 
                 <mat-error>
                     <jems-form-field-errors

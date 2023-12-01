@@ -208,7 +208,7 @@ class ProjectWorkflowPersistenceProvider(
             currentStatus = newStatus
         }.currentStatus.status
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getModificationDecisions(projectId: Long): List<ProjectStatus> =
         this.projectStatusHistoryRepository.findAllByProjectIdAndStatusInOrderByUpdatedDesc(
             projectId,

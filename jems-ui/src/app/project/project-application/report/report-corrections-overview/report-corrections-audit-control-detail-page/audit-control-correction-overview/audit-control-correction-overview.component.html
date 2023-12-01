@@ -51,8 +51,8 @@
 </mat-card>
 
 <ng-template #idCell let-correction>
-    <span class="id" [matTooltip]="'AC' + correction.auditControlNumber + '.' + correction.orderNr">
-        {{'AC' + correction.auditControlNumber}}.{{correction.orderNr}}
+    <span class="id" [matTooltip]="'AC' + correction.auditControlNr + '.' + correction.orderNr">
+        {{'AC' + correction.auditControlNr}}.{{correction.orderNr}}
     </span>
 </ng-template>
 
@@ -61,14 +61,16 @@
 </ng-template>
 
 <ng-template #partnerRoleCell let-correction>
-  <mat-icon *ngIf="correction?.partnerDisabled">person_off</mat-icon>
-  <span>
-      {{('common.label.project.partner.role.shortcut.' + correction.partnerRoleDTO) | translate:{partner: correction.partnerNumber} }}
-  </span>
+    <ng-container *ngIf="correction.partnerRole">
+        <mat-icon *ngIf="correction?.partnerDisabled">person_off</mat-icon>
+        <span>
+          {{('common.label.project.partner.role.shortcut.' + correction.partnerRole) | translate:{partner: correction.partnerNumber} }}
+        </span>
+    </ng-container>
 </ng-template>
 
 <ng-template #reportCell let-correction>
-    <span class="id">{{'R' + correction.partnerReport}}</span>
+    <span class="id" *ngIf="correction.partnerReport">{{'R' + correction.partnerReport}}</span>
 </ng-template>
 <ng-template #linkedCell let-correction>
     <ng-container [ngSwitch]="correction.type">
@@ -78,19 +80,30 @@
 </ng-template>
 
 <ng-template #followUpCell let-correction>
-  <span *ngIf="correction.followUp"> {{'AC' + correction.initialAuditNUmber}}
-      .{{correction.initialCorrectionNumber}}</span>
-    <span *ngIf="!correction.followUp"> {{'common.no' | translate }} </span>
+    <span *ngIf="correction.followUpAuditNr">
+      {{'AC' + correction.followUpAuditNr}}.{{correction.followUpCorrectionNr}}
+    </span>
+    <span *ngIf="!correction.followUpAuditNr"> {{'common.no' | translate }} </span>
 </ng-template>
 
 <ng-template #impactCell let-correction>
-    <span> {{(correction.impactProjectLevel) | translate }}</span>
+    <span class="text-overflow-ellipsis"
+          [matTooltip]="'auditControl.correction.impact.action.' + correction.impactProjectLevel | translate">
+        {{ 'auditControl.correction.impact.action.' + correction.impactProjectLevel | translate }}
+    </span>
+</ng-template>
+
+<ng-template #scenarioCell let-correction>
+    <span class="text-overflow-ellipsis"
+          [matTooltip]="'project.application.reporting.corrections.programme.measure.scenario.' + correction.scenario | translate">
+        {{ 'project.application.reporting.corrections.programme.measure.scenario.' + correction.scenario | translate }}
+    </span>
 </ng-template>
 
 <ng-template #actionCell let-correction>
-  <button *ngIf="correction.canBeDeleted && canEdit" (click)="delete(correction.id)"
-          color="accent" mat-icon-button
-          aria-label="delete">
-    <mat-icon>delete</mat-icon>
-  </button>
+    <button *ngIf="correction.canBeDeleted && canEdit" (click)="delete(correction.id)"
+            color="accent" mat-icon-button
+            aria-label="delete">
+        <mat-icon>delete</mat-icon>
+    </button>
 </ng-template>

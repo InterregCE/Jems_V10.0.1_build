@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
@@ -16,7 +17,7 @@ interface AuditControlCorrectionPersistence {
 
     fun getProjectIdForCorrection(correctionId: Long): Long
 
-    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrection>
+    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrectionLine>
 
     fun getPreviousClosedCorrections(correctionId: Long): List<AuditControlCorrection>
 
@@ -35,8 +36,6 @@ interface AuditControlCorrectionPersistence {
     fun getCorrectionAvailableCostItems(partnerReportId: Long, pageable: Pageable): Page<CorrectionCostItem>
 
     fun updateModificationByCorrectionIds(projectId: Long, correctionIds: Set<Long>, statuses: List<ApplicationStatus>)
-
-    fun getAllIdsByProjectId(projectId: Long): Set<Long>
 
     fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment>
 

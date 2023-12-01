@@ -80,7 +80,7 @@ class RejectModificationTest : UnitTest() {
         every {
             auditControlCorrectionPersistence.updateModificationByCorrectionIds(PROJECT_ID, emptySet(), listOf(ApplicationStatus.MODIFICATION_REJECTED))
         } returns Unit
-        every { auditControlCorrectionPersistence.getAllIdsByProjectId(PROJECT_ID) } returns emptySet()
+        every {auditControlCorrectionPersistence.getAvailableCorrectionsForModification(PROJECT_ID) } returns emptyList()
 
         val slotAudit = slot<ProjectStatusChangeEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)

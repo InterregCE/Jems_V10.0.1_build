@@ -18,8 +18,8 @@ class PaymentPartnerNotValidException: ApplicationUnprocessableException(
     i18nMessage =  I18nMessage("$UPDATE_PAYMENT_INSTALLMENTS_ERROR_KEY_PREFIX.failed"),
 )
 
-class CorrectionsNotValidException(invalid: List<Long>): ApplicationUnprocessableException(
+class CorrectionsNotValidException(invalidByPartnerId: Map<Long, Set<Long>>): ApplicationUnprocessableException(
     code ="$UPDATE_PAYMENT_INSTALLMENTS_ERROR_CODE_PREFIX-02",
     i18nMessage =  I18nMessage("$UPDATE_PAYMENT_INSTALLMENTS_ERROR_KEY_PREFIX.corrections.failed"),
-    message = invalid.joinToString(", "),
+    message = invalidByPartnerId.map { "Partner id=${it.key}: ${it.value}" }.joinToString(", "),
 )

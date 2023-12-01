@@ -237,7 +237,7 @@ Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo
     loginByRequest(userEmail);
   cy.request({
     method: 'PUT',
-    url: `api/project/${applicationId}/approve modification`,
+    url: `api/project/${applicationId}/approve-modification`,
     body: approvalInfo
   });
   if (userEmail) {

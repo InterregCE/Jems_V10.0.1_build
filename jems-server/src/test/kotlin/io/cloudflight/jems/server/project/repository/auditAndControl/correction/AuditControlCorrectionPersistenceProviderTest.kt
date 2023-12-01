@@ -259,7 +259,7 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
             listOf(
                 CorrectionCostItem(
                     id = 21L,
-                    number = 1,
+                    number = 12,
                     partnerReportNumber = 601,
                     lumpSum = null,
                     unitCost = null,
@@ -290,14 +290,6 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
 
         assertDoesNotThrow { persistence.updateModificationByCorrectionIds(PROJECT_ID, setOf(13L, 14L), listOf(ApplicationStatus.MODIFICATION_REJECTED)) }
         verify { auditControlCorrectionRepository.findAllById(setOf(13L, 14L)) }
-    }
-
-    @Test
-    fun getAllIdsByProjectId() {
-        val correctionIds = setOf(1L, 3L, 5L)
-        every { auditControlCorrectionRepository.findAllByAuditControlProjectId(PROJECT_ID) } returns correctionIds
-
-        assertThat(persistence.getAllIdsByProjectId(PROJECT_ID)).isEqualTo(correctionIds)
     }
 
     @Test

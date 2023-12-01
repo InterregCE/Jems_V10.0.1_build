@@ -39,7 +39,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input formControlName="fundAmount" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                            <input formControlName="fundAmount" [options]="{align: 'right', min: 0, max: MAX_VALUE}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -52,7 +52,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input formControlName="publicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                            <input formControlName="publicContribution" [options]="{align: 'right', min: 0, max: MAX_VALUE}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -64,7 +64,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input formControlName="autoPublicContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                            <input formControlName="autoPublicContribution" [options]="{align: 'right', min: 0, max: MAX_VALUE}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -76,7 +76,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input formControlName="privateContribution" [options]="{align: 'right'}" currencyMask matInput type="decimal">
+                            <input formControlName="privateContribution" [options]="{align: 'right', min: 0, max: MAX_VALUE}" currencyMask matInput type="decimal">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -88,7 +88,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control" class="text-right">
                         <mat-form-field>
-                            <input class="justify-end" [value]="getAmountSum() | asMoney" matInput disabled readonly>
+                            <input class="text-right" [value]="getAmountSum() | asMoney" matInput disabled readonly>
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>

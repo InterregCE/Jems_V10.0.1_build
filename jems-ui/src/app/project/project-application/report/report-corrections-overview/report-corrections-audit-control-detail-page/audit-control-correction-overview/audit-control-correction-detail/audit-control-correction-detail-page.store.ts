@@ -3,16 +3,17 @@ import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rx
 import {RoutingService} from '@common/services/routing.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {
+  AuditControlCorrectionDTO,
   CorrectionAvailablePartnerDTO,
+  PageCorrectionCostItemDTO,
   ProjectAuditAndControlService,
-  ProjectCorrectionService,
   ProjectAuditControlCorrectionDTO,
   ProjectCorrectionFinancialDescriptionDTO,
   ProjectCorrectionFinancialDescriptionService,
   ProjectCorrectionFinancialDescriptionUpdateDTO,
   ProjectCorrectionIdentificationUpdateDTO,
-  UserRoleDTO, PageCorrectionCostItemDTO,
-  AuditControlCorrectionDTO, CorrectionCostItemDTO,
+  ProjectCorrectionService,
+  UserRoleDTO,
 } from '@cat/api';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
@@ -24,8 +25,8 @@ import {PermissionService} from '../../../../../../../security/permissions/permi
 import {
   AuditControlCorrectionStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {Tables} from '@common/utils/tables';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Injectable({
@@ -82,12 +83,13 @@ export class AuditControlCorrectionDetailPageStore {
       this.auditControlId$,
       this.projectId$,
     ]).pipe(
-        switchMap(([auditControlId, projectId]) =>
-          this.projectAuditControlCorrectionService.updateCorrectionIdentification(auditControlId, id, projectId, correctionData)
-        ),
-        tap(correction => this.updatedCorrection$.next(correction)),
-        tap(correction => this.refreshScopeLimitationData$.next(null)),
-        tap(correction => Log.info('Updated correction', this, correction))
+      switchMap(([auditControlId, projectId]) =>
+        this.projectAuditControlCorrectionService.updateCorrectionIdentification(auditControlId, id, projectId, correctionData)
+      ),
+      tap(correction => this.updatedCorrection$.next(correction)),
+      tap(correction => this.refreshScopeLimitationData$.next(null)),
+      tap(correction => Log.info('Updated correction', this, correction)),
+      tap(() => this.auditControlCorrectionStore.refreshCorrections$.next()),
     );
   }
 
@@ -165,7 +167,8 @@ export class AuditControlCorrectionDetailPageStore {
         this.projectCorrectionFinancialDescriptionService.updateCorrectionFinancialDescription(auditControlId, correctionId, projectId, financialDescriptionData)
       ),
       tap(financialDescription => this.savedFinancialDescription$.next(financialDescription)),
-      tap(financialDescription => Log.info('Updated correction financial description', this, financialDescription))
+      tap(financialDescription => Log.info('Updated correction financial description', this, financialDescription)),
+      tap(() => this.auditControlCorrectionStore.refreshCorrections$.next()),
     );
   }
 
@@ -207,23 +210,23 @@ export class AuditControlCorrectionDetailPageStore {
 
   private correctionCostItems(): Observable<PageCorrectionCostItemDTO> {
     return combineLatest([
-        this.correction$,
-        this.refreshScopeLimitationData$,
-        this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
-        this.reportCorrectionsAuditControlDetailPageStore.projectId$,
-        this.correctionId$,
-        this.costItemsPageIndex$,
-        this.costItemsPageSize$
+      this.correction$,
+      this.refreshScopeLimitationData$,
+      this.reportCorrectionsAuditControlDetailPageStore.auditControlId$,
+      this.reportCorrectionsAuditControlDetailPageStore.projectId$,
+      this.correctionId$,
+      this.costItemsPageIndex$,
+      this.costItemsPageSize$
     ])
-        .pipe(
-            filter(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) => correction.type === 'LinkedToInvoice' && !!correction.partnerReportId),
-            switchMap(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) =>
-                correction.status === 'Ongoing' ? this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize).pipe(
-              ) : of({
-                    content: !!correction.expenditureCostItem ? Array.of(correction.expenditureCostItem) : Array.of(),
-                } as PageCorrectionCostItemDTO)
-            )
-        );
+      .pipe(
+        filter(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) => correction.type === 'LinkedToInvoice' && !!correction.partnerReportId),
+        switchMap(([correction, refresh, auditControlId, projectId, correctionId, pageIndex, pageSize]: any) =>
+          correction.status === 'Ongoing' ? this.projectAuditControlCorrectionService.listCorrectionAvailableCostItems(Number(auditControlId), Number(correctionId), projectId, pageIndex, pageSize).pipe(
+          ) : of({
+            content: !!correction.expenditureCostItem ? Array.of(correction.expenditureCostItem) : Array.of(),
+          } as PageCorrectionCostItemDTO)
+        )
+      );
   }
 
   private correctionAvailableProcurements(): Observable<Map<number, string>> {
@@ -233,14 +236,14 @@ export class AuditControlCorrectionDetailPageStore {
       this.correction$,
       this.refreshScopeLimitationData$,
     ])
-        .pipe(
-            filter(([auditControlId, projectId, correction]) => !!correction.partnerId && !!correction.partnerReportId),
-            switchMap(([auditControlId, projectId, identification]) =>
-                this.projectAuditControlCorrectionService.listCorrectionAvailableProcurements(Number(auditControlId), Number(identification.id), Number(projectId))
-            ),
-            map(procurements =>
-                new Map(procurements.map(procurement => [procurement.id, procurement.name])))
-        );
+      .pipe(
+        filter(([auditControlId, projectId, correction]) => !!correction.partnerId && !!correction.partnerReportId),
+        switchMap(([auditControlId, projectId, identification]) =>
+          this.projectAuditControlCorrectionService.listCorrectionAvailableProcurements(Number(auditControlId), Number(identification.id), Number(projectId))
+        ),
+        map(procurements =>
+          new Map(procurements.map(procurement => [procurement.id, procurement.name])))
+      );
   }
 
 }

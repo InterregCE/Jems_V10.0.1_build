@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
@@ -14,9 +15,11 @@ import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundReposit
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionFinanceEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
+import io.cloudflight.jems.server.project.entity.partner.QProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
@@ -27,6 +30,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
@@ -58,10 +62,48 @@ class AuditControlCorrectionPersistenceProvider(
     override fun getAllCorrectionsByAuditControlId(
         auditControlId: Long,
         pageable: Pageable
-    ): Page<AuditControlCorrection> =
-        auditControlCorrectionRepository.findAllByAuditControlId(auditControlId, pageable)
-            .map { it.toSimpleModel() }
+    ): Page<AuditControlCorrectionLine> {
+        val correctionSpec = QAuditControlCorrectionEntity.auditControlCorrectionEntity
+        val financeSpec = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
+        val measureSpec = QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
+        val partnerSpec = QProjectPartnerEntity.projectPartnerEntity
+        val unsignedTotalExpr = financeSpec.fundAmount
+            .add(financeSpec.publicContribution)
+            .add(financeSpec.autoPublicContribution)
+            .add(financeSpec.privateContribution)
+        val signedTotalExpr = CaseBuilder().`when`(financeSpec.deduction.isTrue)
+            .then(unsignedTotalExpr.negate())
+            .otherwise(unsignedTotalExpr)
 
+        val results = jpaQueryFactory
+            .select(correctionSpec, financeSpec, signedTotalExpr, partnerSpec, measureSpec)
+            .from(correctionSpec)
+            .leftJoin(financeSpec)
+                .on(financeSpec.correction.eq(correctionSpec))
+            .leftJoin(measureSpec)
+                .on(measureSpec.correction.eq(correctionSpec))
+            .leftJoin(partnerSpec)
+                .on(partnerSpec.id.eq(correctionSpec.partnerReport.partnerId))
+            .where(correctionSpec.auditControl.id.eq(auditControlId))
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetchResults()
+
+        return PageImpl(
+            results.results.map {
+                it.get(correctionSpec)!!
+                    .toAuditControlCorrectionLine(
+                        finance = it.get(financeSpec)!!,
+                        measure = it.get(measureSpec)!!,
+                        partner = it.get(partnerSpec),
+                        total = it.get(signedTotalExpr)
+                    )
+            },
+            pageable,
+            results.total
+        )
+
+    }
 
     @Transactional(readOnly = true)
     override fun getPreviousClosedCorrections(
@@ -148,10 +190,6 @@ class AuditControlCorrectionPersistenceProvider(
         )
         auditControlCorrectionRepository.findAllById(correctionIds).onEach { it.projectModificationId = latestStatus.id }
     }
-
-    @Transactional(readOnly = true)
-    override fun getAllIdsByProjectId(projectId: Long): Set<Long> =
-        auditControlCorrectionRepository.findAllByAuditControlProjectId(projectId = projectId)
 
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment> =
@@ -320,5 +358,6 @@ class AuditControlCorrectionPersistenceProvider(
         if (flaggedArticle94 == null || flaggedArticle95 == null)
             false
         else flaggedArticle94.isYes() || flaggedArticle95.isYes()
+
 
 }

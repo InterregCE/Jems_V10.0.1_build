@@ -18,9 +18,7 @@ import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {
   AuditControlCorrectionDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page.store';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 
@@ -252,7 +250,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
 
   private getCostItemsAvailableColumns(status: ProjectAuditControlCorrectionDTO.StatusEnum, canEdit: boolean): string[] {
     return [
-      ...(status === this.statusEnum.Ongoing && canEdit) ? ['select'] : [],
+      'select',
       'id',
       'unitCostsAndLumpSums',
       'costCategory',
@@ -270,9 +268,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
   private costItemsTableColumnConfig(status: ProjectAuditControlCorrectionDTO.StatusEnum, canEdit: boolean): TableConfig[] {
   return [
 
-      // select
-      ...(status === this.statusEnum.Ongoing && canEdit) ? [{minInRem: 3, maxInRem: 3}] : [],
-
+      {minInRem: 3, maxInRem: 3}, // select
       {minInRem: 3, maxInRem: 3}, // id
 
       {minInRem: 11, maxInRem: 16}, // unitCostsAndLumpSums

@@ -38,6 +38,7 @@ class ApproveModification(
     @ExceptionWrapper(ApproveModificationException::class)
     override fun approveModification(projectId: Long, modification: ProjectModificationCreate): ApplicationStatus =
         modification.actionInfo.ifIsValid(generalValidatorService).let {
+            validateCorrections(projectId, modification.correctionIds)
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveModification(modification.actionInfo).also {
                     projectVersionPersistence.updateTimestampForApprovedModification(projectId)
@@ -56,4 +57,14 @@ class ApproveModification(
                 }
             }
         }
+
+    private fun validateCorrections(projectId: Long, correctionIds: Set<Long>) {
+        val availableCorrectionIds = auditControlCorrectionPersistence.getAvailableCorrectionsForModification(projectId)
+            .mapTo(HashSet()) { it.id }
+        val invalidCorrectionIds = correctionIds.minus(availableCorrectionIds)
+        if (invalidCorrectionIds.isNotEmpty()) {
+            throw CorrectionsNotValidException(invalidCorrectionIds)
+        }
+    }
+
 }

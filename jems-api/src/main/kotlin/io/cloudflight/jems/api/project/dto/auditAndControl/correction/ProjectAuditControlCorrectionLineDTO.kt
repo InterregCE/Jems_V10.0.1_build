@@ -1,31 +1,33 @@
 package io.cloudflight.jems.api.project.dto.auditAndControl.correction
 
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.CorrectionImpactActionDTO
+import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureScenarioDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 
 data class ProjectAuditControlCorrectionLineDTO(
     val id: Long,
-    val auditControlId: Long,
     val orderNr: Int,
     val status: AuditStatusDTO,
     val type: AuditControlCorrectionTypeDTO,
-    val auditControlNumber: Int,
+    val auditControlId: Long,
+    val auditControlNr: Int,
     val canBeDeleted: Boolean,
 
-    //These will be updated in the following stories
-    val partnerRoleDTO: ProjectPartnerRoleDTO,
-    val partnerNumber: Int,
-    val partnerDisabled: Boolean,
-    val partnerReport: String,
-    val initialAuditNUmber: Int,
-    val initialCorrectionNumber: Int,
-    val fundName: String,
+    val partnerReport: Int?,
+    val partnerRole: ProjectPartnerRoleDTO?,
+    val partnerNumber: Int?,
+    val partnerDisabled: Boolean?,
+    val followUpAuditNr: Int?,
+    val followUpCorrectionNr: Int?,
+    val fundType: ProgrammeFundTypeDTO?,
     val fundAmount: BigDecimal,
     val publicContribution: BigDecimal,
     val autoPublicContribution: BigDecimal,
     val privateContribution: BigDecimal,
     val total: BigDecimal,
-    val impactProjectLevel: String,
-    val scenario: Int
+    val impactProjectLevel: CorrectionImpactActionDTO,
+    val scenario: ProjectCorrectionProgrammeMeasureScenarioDTO
 )

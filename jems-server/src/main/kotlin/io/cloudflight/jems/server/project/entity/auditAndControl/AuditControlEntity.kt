@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.entity.auditAndControl
 
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -49,9 +49,6 @@ class AuditControlEntity(
 
     @field:NotNull
     var totalControlledAmount: BigDecimal,
-
-    @field:NotNull
-    var totalCorrectionsAmount: BigDecimal,
 
     var comment: String?
 )
