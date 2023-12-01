@@ -104,8 +104,9 @@
                         </div>
                         <div *ngIf="i === editedRowIndex">
                             <mat-form-field [formGroup]="ftls" class="limit-input-width">
-                                <input matInput formControlName="publicContribution" [options]="{align: 'right'}" currencyMask matInput
-                                       type="decimal">
+                                <input matInput formControlName="publicContribution"
+                                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                       currencyMask matInput type="decimal">
                             </mat-form-field>
                             <div class="limit-input-width">
                                 <button class="w-100" (click)="resetAmounts(i, data.paymentToEcLinking.content[i])" mat-stroked-button>
@@ -128,8 +129,9 @@
                                 </span>
                         <div *ngIf="i === editedRowIndex">
                             <mat-form-field class="limit-input-width">
-                                <input matInput formControlName="autoPublicContribution" [options]="{align: 'right'}" currencyMask matInput
-                                       type="decimal">
+                                <input matInput formControlName="autoPublicContribution"
+                                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                       currencyMask matInput type="decimal">
                             </mat-form-field>
                             <div class="limit-input-width">
                                 <button (click)="discardChanges(i, data.paymentToEcLinking.content[i])" class="w-100" mat-stroked-button>
@@ -150,8 +152,9 @@
                                 </span>
                         <div *ngIf="i === editedRowIndex">
                             <mat-form-field [formGroup]="ftls" class="limit-input-width">
-                                <input matInput formControlName="privateContribution" [options]="{align: 'right'}" currencyMask matInput
-                                       type="decimal">
+                                <input matInput formControlName="privateContribution"
+                                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                       currencyMask matInput type="decimal">
                             </mat-form-field>
                             <div class="limit-input-width">
                                 <button (click)="submitAmountChanges(i, data.ecId, data.paymentToEcLinking.content[i].payment.id)" mat-flat-button type="submit"

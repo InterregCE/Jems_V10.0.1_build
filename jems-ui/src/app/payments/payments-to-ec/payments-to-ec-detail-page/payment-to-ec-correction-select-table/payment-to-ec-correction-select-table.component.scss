@@ -29,19 +29,22 @@ $input-col-width: 9rem;
 
 .mat-column-totalEligible,
 .mat-column-fundAmount,
-.mat-column-scenario,
-.mat-column-controllingBody {
+.mat-column-controllingBody,
+.mat-column-comment {
   min-width: 8rem;
 }
+.mat-column-scenario {
+  min-width: 5rem;
+  max-width: 5rem;
+}
+
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-autoPublicContribution,
-.mat-column-privateContribution,
-.mat-column-comment {
+.mat-column-privateContribution {
   min-width: $input-col-width;
   max-width: $input-col-width;
 }
-
 .mat-column-correction {
   padding-right: 0;
   min-width: 4.5rem;
@@ -72,7 +75,7 @@ $input-col-width: 9rem;
 }
 
 .vertical-align {
-  margin-top: 2.24rem;
+  margin-bottom: 30%;;
 }
 
 .edited-row {
@@ -89,4 +92,11 @@ $input-col-width: 9rem;
     font-size: 0.8em;
     color: var(--font-color-secondary);
   }
+}
+
+.comment-display {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

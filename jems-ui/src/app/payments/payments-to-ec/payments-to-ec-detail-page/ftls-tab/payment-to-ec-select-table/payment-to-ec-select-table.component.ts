@@ -6,6 +6,9 @@ import {Subject} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
+import {
+  AdvancePaymentsDetailPageConstants
+} from "../../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants";
 
 @Component({
   selector: 'jems-payment-to-ec-select-table',
@@ -34,6 +37,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   @Output()
   submitPayment = new EventEmitter<{ paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
 
+  constants = AdvancePaymentsDetailPageConstants;
 
   form = this.formBuilder.group({
     paymentToEcLinking: this.formBuilder.array([]),

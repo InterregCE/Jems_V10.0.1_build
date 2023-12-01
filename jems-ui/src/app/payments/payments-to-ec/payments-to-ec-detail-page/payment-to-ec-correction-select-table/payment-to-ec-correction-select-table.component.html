@@ -111,7 +111,9 @@
             </div>
             <div *ngIf="i === editedRowIndex">
               <mat-form-field [formGroup]="row" class="limit-input-width">
-                <input  matInput formControlName="publicContribution" [options]="{allowNegative: true, align: 'right'}" currencyMask matInput type="decimal">
+                <input  matInput formControlName="publicContribution"
+                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                        currencyMask matInput type="decimal">
               </mat-form-field>
               <div  class="limit-input-width">
                 <button class="w-100" (click)="resetAmounts(i, data.content[i])" mat-stroked-button>
@@ -132,7 +134,9 @@
                                 </span>
             <div *ngIf="i === editedRowIndex">
               <mat-form-field  class="limit-input-width">
-                <input matInput formControlName="autoPublicContribution" [options]="{allowNegative: true, align: 'right'}" currencyMask matInput type="decimal">
+                <input matInput formControlName="autoPublicContribution"
+                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput type="decimal">
               </mat-form-field>
               <div class="limit-input-width">
                 <button (click)="discardChanges(i, data.content[i])" class="w-100" mat-stroked-button>
@@ -153,10 +157,14 @@
                                 </span>
             <div *ngIf="i === editedRowIndex">
               <mat-form-field [formGroup]="row" class="limit-input-width">
-                <input matInput formControlName="privateContribution" [options]="{allowNegative: true, align: 'right'}" currencyMask matInput type="decimal">
+                <input matInput formControlName="privateContribution"
+                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput type="decimal">
               </mat-form-field>
               <div class="limit-input-width">
-                <button (click)="submitAmountChanges(i, data.content[i].correctionId)" mat-flat-button type="submit" color="primary" class="w-100">
+                <button
+                        [disabled]="!canSave()"
+                        (click)="submitAmountChanges(i, data.content[i].correctionId)" mat-flat-button type="submit" color="primary" class="w-100">
                   <mat-icon class="save-icon">save</mat-icon> {{'payments.to.ec.detail.ftls.update.save' | translate}}
                 </button>
               </div>
@@ -168,22 +176,19 @@
           <mat-header-cell *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.comment' | translate }}</span>
           </mat-header-cell>
-          <mat-cell *matCellDef="let row; let i = index">
-                                <span *ngIf="i !== editedRowIndex">
-                                    {{ row.get('comment').value }}
-                                </span>
-            <div *ngIf="i === editedRowIndex">
-              <jems-expandable-textarea
+          <mat-cell *matCellDef="let row; let i = index;">
+             <span *ngIf="i !== editedRowIndex" class="comment-display"
+                [matTooltip]="row.get('comment')?.value">
+                {{ row.get('comment').value }}
+             </span>
+              <jems-expandable-textarea *ngIf="i === editedRowIndex"
+                class="vertical-align comment-display"
                 [control]="row.get('comment')"
-                class="limit-input-width"
                 [errors]="row.get('comment')?.errors"
                 [characterLimit]="500"
                 [minRows]="1"
                 [maxRows]="1">
               </jems-expandable-textarea>
-              <div class="vertical-align">
-              </div>
-            </div>
           </mat-cell>
         </ng-container>
       </ng-container>
