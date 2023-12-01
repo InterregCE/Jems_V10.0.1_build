@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
@@ -24,6 +26,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -49,6 +52,8 @@ class SubmitProjectReport(
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
+    private val reportSpfContributionClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val callPersistence: CallPersistence
 ) : SubmitProjectReportInteractor {
 
     @CanEditProjectReport
@@ -180,11 +185,10 @@ class SubmitProjectReport(
     private fun deleteDataBasedOnContractingDeadlineType(projectId: Long, report: ProjectReportModel) =
         when(report.type!!) {
             ContractingDeadlineType.Finance -> {
-                reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(report.id)
-                reportWorkPlanPersistence.deleteWorkPlan(projectId, report.id)
+                deleteFinanceData(projectId, report.id)
             }
             ContractingDeadlineType.Content -> {
-                reportCertificatePersistence.deselectCertificatesOfProjectReport(report.id)
+                deleteContentData(projectId, report.id)
             }
             ContractingDeadlineType.Both -> {
                 // intentionally left empty
@@ -192,5 +196,16 @@ class SubmitProjectReport(
         }
 
     private fun ProjectReportModel.hasControlReopenedBefore() = this.lastVerificationReOpening != null
+
+    private fun deleteFinanceData(projectId: Long, reportId: Long) {
+        reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId)
+        reportWorkPlanPersistence.deleteWorkPlan(projectId, reportId)
+    }
+
+    private fun deleteContentData(projectId: Long, reportId: Long) {
+        reportCertificatePersistence.deselectCertificatesOfProjectReport(reportId)
+        if (callPersistence.getCallByProjectId(projectId).type == CallType.SPF)
+            reportSpfContributionClaimPersistence.resetSpfContributionClaims(reportId)
+    }
 
 }
