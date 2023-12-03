@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.auditAndControl.correction
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.tmpModel.AuditControlCorrectionLineTmp
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
@@ -17,7 +18,7 @@ interface AuditControlCorrectionPersistence {
 
     fun getProjectIdForCorrection(correctionId: Long): Long
 
-    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrectionLine>
+    fun getAllCorrectionsByAuditControlId(auditControlId: Long, pageable: Pageable): Page<AuditControlCorrectionLineTmp>
 
     fun getPreviousClosedCorrections(correctionId: Long): List<AuditControlCorrection>
 

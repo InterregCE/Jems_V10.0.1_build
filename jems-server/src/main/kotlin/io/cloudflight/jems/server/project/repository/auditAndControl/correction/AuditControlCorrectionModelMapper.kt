@@ -90,36 +90,3 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
 )
-
-fun AuditControlCorrectionEntity.toAuditControlCorrectionLine(
-    finance: AuditControlCorrectionFinanceEntity,
-    measure: AuditControlCorrectionMeasureEntity,
-    partner: ProjectPartnerEntity?,
-    total: BigDecimal?,
-): AuditControlCorrectionLine =
-    AuditControlCorrectionLine(
-        id = id,
-        orderNr = orderNr,
-        status = status,
-        type = correctionType,
-        auditControlId = auditControl.id,
-        auditControlNr = auditControl.number,
-        canBeDeleted = !status.isClosed(),
-        partnerRole = partnerReport?.identification?.partnerRole,
-        partnerNumber = partnerReport?.identification?.partnerNumber,
-        partnerDisabled = partner?.active?.not(),
-        partnerReport = partnerReport?.number,
-        followUpAuditNr = followUpOfCorrection?.auditControl?.number,
-        followUpCorrectionNr = followUpOfCorrection?.orderNr,
-        fundType = programmeFund?.type,
-        fundAmount = finance.fundAmount.negateIf(finance.deduction),
-        publicContribution = finance.publicContribution.negateIf(finance.deduction),
-        autoPublicContribution = finance.autoPublicContribution.negateIf(finance.deduction),
-        privateContribution = finance.privateContribution.negateIf(finance.deduction),
-        total = total ?: BigDecimal.ZERO,
-        impactProjectLevel = impact,
-        scenario = measure.scenario,
-    )
-
-private fun BigDecimal.negateIf(deduction: Boolean): BigDecimal =
-    if (deduction) negate() else this

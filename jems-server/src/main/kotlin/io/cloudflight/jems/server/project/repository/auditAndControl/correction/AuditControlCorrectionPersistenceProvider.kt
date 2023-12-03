@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import com.querydsl.core.Tuple
-import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
@@ -12,6 +11,7 @@ import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
@@ -19,8 +19,8 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCo
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
-import io.cloudflight.jems.server.project.entity.partner.QProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.tmpModel.AuditControlCorrectionLineTmp
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -30,7 +30,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
@@ -62,42 +61,50 @@ class AuditControlCorrectionPersistenceProvider(
     override fun getAllCorrectionsByAuditControlId(
         auditControlId: Long,
         pageable: Pageable
-    ): Page<AuditControlCorrectionLine> {
-        val correctionSpec = QAuditControlCorrectionEntity.auditControlCorrectionEntity
-        val financeSpec = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
-        val measureSpec = QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
-        val partnerSpec = QProjectPartnerEntity.projectPartnerEntity
-        val unsignedTotalExpr = financeSpec.fundAmount
-            .add(financeSpec.publicContribution)
-            .add(financeSpec.autoPublicContribution)
-            .add(financeSpec.privateContribution)
-        val signedTotalExpr = CaseBuilder().`when`(financeSpec.deduction.isTrue)
-            .then(unsignedTotalExpr.negate())
-            .otherwise(unsignedTotalExpr)
+    ): Page<AuditControlCorrectionLineTmp> {
+        val correction = QAuditControlCorrectionEntity.auditControlCorrectionEntity
+        val correctionFinance = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
+        val correctionMeasure = QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
 
         val results = jpaQueryFactory
-            .select(correctionSpec, financeSpec, signedTotalExpr, partnerSpec, measureSpec)
-            .from(correctionSpec)
-            .leftJoin(financeSpec)
-                .on(financeSpec.correction.eq(correctionSpec))
-            .leftJoin(measureSpec)
-                .on(measureSpec.correction.eq(correctionSpec))
-            .leftJoin(partnerSpec)
-                .on(partnerSpec.id.eq(correctionSpec.partnerReport.partnerId))
-            .where(correctionSpec.auditControl.id.eq(auditControlId))
+            .select(
+                correction,
+                correctionFinance.fundAmount,
+                correctionFinance.publicContribution,
+                correctionFinance.autoPublicContribution,
+                correctionFinance.privateContribution,
+                correctionMeasure.scenario,
+            )
+            .from(correction)
+            .leftJoin(correctionFinance)
+                .on(correctionFinance.correction.eq(correction))
+            .leftJoin(correctionMeasure)
+                .on(correctionMeasure.correction.eq(correction))
+            .where(correction.auditControl.id.eq(auditControlId))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetchResults()
 
         return PageImpl(
             results.results.map {
-                it.get(correctionSpec)!!
-                    .toAuditControlCorrectionLine(
-                        finance = it.get(financeSpec)!!,
-                        measure = it.get(measureSpec)!!,
-                        partner = it.get(partnerSpec),
-                        total = it.get(signedTotalExpr)
-                    )
+                val correctionEntity = it.get(correction)!!
+                AuditControlCorrectionLineTmp(
+                    correction = correctionEntity.toSimpleModel(),
+                    partnerId = correctionEntity.partnerReport?.partnerId,
+                    partnerNumber = correctionEntity.partnerReport?.identification?.partnerNumber,
+                    partnerAbbreviation = correctionEntity.partnerReport?.identification?.partnerAbbreviation,
+                    partnerRole = correctionEntity.partnerReport?.identification?.partnerRole,
+                    reportNr = correctionEntity.partnerReport?.number,
+                    followUpAuditNr = correctionEntity.followUpOfCorrection?.auditControl?.number,
+                    followUpCorrectionNr = correctionEntity.followUpOfCorrection?.orderNr,
+                    fund = correctionEntity.programmeFund?.toModel(),
+                    fundAmount = it.get(correctionFinance.fundAmount) ?: BigDecimal.ZERO,
+                    publicContribution = it.get(correctionFinance.publicContribution) ?: BigDecimal.ZERO,
+                    autoPublicContribution = it.get(correctionFinance.autoPublicContribution) ?: BigDecimal.ZERO,
+                    privateContribution = it.get(correctionFinance.privateContribution) ?: BigDecimal.ZERO,
+                    impactProjectLevel = correctionEntity.impact,
+                    scenario = it.get(correctionMeasure.scenario)!!,
+                )
             },
             pageable,
             results.total

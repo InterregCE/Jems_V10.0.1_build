@@ -86,6 +86,10 @@
     <span *ngIf="!correction.followUpAuditNr"> {{'common.no' | translate }} </span>
 </ng-template>
 
+<ng-template #fundCell let-correction>
+    {{ correction.fund?.abbreviation | translateBySystemLanguage | async }}
+</ng-template>
+
 <ng-template #impactCell let-correction>
     <span class="text-overflow-ellipsis"
           [matTooltip]="'auditControl.correction.impact.action.' + correction.impactProjectLevel | translate">

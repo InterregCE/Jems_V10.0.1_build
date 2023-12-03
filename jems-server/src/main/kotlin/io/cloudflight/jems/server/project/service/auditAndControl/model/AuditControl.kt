@@ -19,7 +19,7 @@ data class AuditControl(
     val finalReportDate: ZonedDateTime?,
 
     val totalControlledAmount: BigDecimal,
-    val totalCorrectionsAmount: BigDecimal,
+    var totalCorrectionsAmount: BigDecimal,
 
     val comment: String?
 )

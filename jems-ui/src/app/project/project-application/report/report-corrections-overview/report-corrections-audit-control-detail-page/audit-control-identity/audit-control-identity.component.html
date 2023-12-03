@@ -142,7 +142,7 @@
             <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.audit.control.totalCorrectionsAmount' | translate}}</mat-label>
                 <input [formControlName]="constants.FORM_CONTROLS.totalCorrectionsAmount"
-                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       [options]="{ allowNegative: true, align: 'right' }"
                        currencyMask matInput
                        type="decimal">
                 <mat-error>

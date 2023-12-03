@@ -172,7 +172,7 @@ class ProjectPartnerReportPersistenceProvider(
         val accountingYear = QAccountingYearEntity.accountingYearEntity
         val reportCoFin = QProjectPartnerReportCoFinancingEntity.projectPartnerReportCoFinancingEntity
 
-        val g = jpaQueryFactory.select(
+        return jpaQueryFactory.select(
             reportPartner.partnerId,
             reportPartner.id,
             reportPartner.number,
@@ -204,7 +204,7 @@ class ProjectPartnerReportPersistenceProvider(
                     .and(reportCoFin.programmeFund.isNotNull())
             )
             .fetch()
-        return g.map { it.toTmpModel() }
+            .map { it.toTmpModel() }
     }
 
     private fun Tuple.toTmpModel(): CorrectionAvailableReportTmp =

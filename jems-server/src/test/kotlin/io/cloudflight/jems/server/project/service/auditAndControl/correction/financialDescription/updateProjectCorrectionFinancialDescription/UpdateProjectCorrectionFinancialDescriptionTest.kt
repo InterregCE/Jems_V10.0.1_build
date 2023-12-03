@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -23,10 +24,10 @@ class UpdateProjectCorrectionFinancialDescriptionTest: UnitTest() {
 
         private val financialDescriptionUpdate = ProjectCorrectionFinancialDescriptionUpdate(
             deduction = true,
-            fundAmount = BigDecimal.TEN,
-            publicContribution = BigDecimal.ZERO,
-            autoPublicContribution = BigDecimal.ONE,
-            privateContribution = BigDecimal.ZERO,
+            fundAmount = BigDecimal.valueOf(14L),
+            publicContribution = BigDecimal.valueOf(15L),
+            autoPublicContribution = BigDecimal.valueOf(16L),
+            privateContribution = BigDecimal.valueOf(17L),
             infoSentBeneficiaryDate = null,
             infoSentBeneficiaryComment = "sample comment",
             correctionType = CorrectionType.Ref1Dot15,
@@ -59,8 +60,9 @@ class UpdateProjectCorrectionFinancialDescriptionTest: UnitTest() {
         every { correction.auditControlId } returns CONTROL_ID
 
         val result = mockk<ProjectCorrectionFinancialDescription>()
+        val toUpdate = slot<ProjectCorrectionFinancialDescriptionUpdate>()
         every { financialDescriptionPersistence.updateCorrectionFinancialDescription(
-            CORRECTION_ID, financialDescriptionUpdate
+            CORRECTION_ID, capture(toUpdate)
         )} returns result
 
         every { auditControlPersistence.getById(CONTROL_ID) } returns control
@@ -72,6 +74,23 @@ class UpdateProjectCorrectionFinancialDescriptionTest: UnitTest() {
                 financialDescriptionUpdate
             )
         ).isEqualTo(result)
+
+        assertThat(toUpdate.captured).isEqualTo(
+            ProjectCorrectionFinancialDescriptionUpdate(
+                deduction = true,
+                fundAmount = BigDecimal.valueOf(-14L),
+                publicContribution = BigDecimal.valueOf(-15L),
+                autoPublicContribution = BigDecimal.valueOf(-16L),
+                privateContribution = BigDecimal.valueOf(-17L),
+                infoSentBeneficiaryDate = null,
+                infoSentBeneficiaryComment = "sample comment",
+                correctionType = CorrectionType.Ref1Dot15,
+                clericalTechnicalMistake = false,
+                goldPlating = false,
+                suspectedFraud = true,
+                correctionComment = null,
+            )
+        )
     }
 
     @Test

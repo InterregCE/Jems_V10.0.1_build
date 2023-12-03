@@ -18,32 +18,31 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CloseAuditControlCorrection(
     private val auditControlPersistence: AuditControlPersistence,
-    private val auditControlCorrectionPersistence: AuditControlCorrectionPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val correctionPersistence: AuditControlCorrectionPersistence,
+    private val correctionFinancePersistence: AuditControlCorrectionFinancePersistence,
+    private val correctionMeasurePersistence: AuditControlCorrectionMeasurePersistence,
     private val correctionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence,
-    private val auditControlCorrectionFinancePersistence: AuditControlCorrectionFinancePersistence,
-    private val auditControlCorrectionMeasurePersistence: AuditControlCorrectionMeasurePersistence
+    private val auditPublisher: ApplicationEventPublisher,
 ): CloseAuditControlCorrectionInteractor {
 
     @CanCloseAuditControlCorrection
     @Transactional
     @ExceptionWrapper(CloseAuditControlCorrectionException::class)
     override fun closeCorrection(correctionId: Long): AuditControlStatus {
-        val correction = auditControlCorrectionPersistence.getByCorrectionId(correctionId)
+        val correction = correctionPersistence.getByCorrectionId(correctionId)
         val auditControl = auditControlPersistence.getById(correction.auditControlId)
 
         validateAuditControlNotClosed(auditControl)
         validateAuditControlCorrectionNotClosed(correction)
         validateReportAndFundAreAlreadySelected(correction)
 
-        val correctionMeasure = auditControlCorrectionMeasurePersistence.getProgrammeMeasure(correctionId)
+        val correctionMeasure = correctionMeasurePersistence.getProgrammeMeasure(correctionId)
         if (correctionMeasure.scenario.scenarioAllowsLinkingToEcPayment()) {
-            val correctionFinance =
-                auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(correctionId)
+            val correctionFinance = correctionFinancePersistence.getCorrectionFinancialDescription(correctionId)
             correctionExtensionLinkingPersistence.createCorrectionExtension(correctionFinance)
         }
 
-        return auditControlCorrectionPersistence.closeCorrection(correctionId).also {
+        return correctionPersistence.closeCorrection(correctionId).also {
             auditPublisher.publishEvent(
                 projectAuditControlCorrectionClosed(this, auditControl, correctionNr = it.orderNr)
             )

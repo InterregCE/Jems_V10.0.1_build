@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectC
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class UpdateProjectProjectCorrectionFinancialDescription(
@@ -32,8 +33,16 @@ class UpdateProjectProjectCorrectionFinancialDescription(
         validateAuditControlNotClosed(auditControl)
         validateAuditControlCorrectionNotClosed(correction)
 
-        return financialDescriptionPersistence
-            .updateCorrectionFinancialDescription(correctionId, correctionFinancialDescriptionUpdate)
+        val withSignedNumbers = with(correctionFinancialDescriptionUpdate) {
+            this.copy(
+                fundAmount = fundAmount.negateIf(deduction),
+                publicContribution = publicContribution.negateIf(deduction),
+                autoPublicContribution = autoPublicContribution.negateIf(deduction),
+                privateContribution = privateContribution.negateIf(deduction),
+            )
+        }
+
+        return financialDescriptionPersistence.updateCorrectionFinancialDescription(correctionId, withSignedNumbers)
     }
 
     private fun validateAuditControlNotClosed(auditControl: AuditControl) {
@@ -45,5 +54,8 @@ class UpdateProjectProjectCorrectionFinancialDescription(
         if (correction.status.isClosed())
             throw CorrectionIsInStatusClosedException()
     }
+
+    private fun BigDecimal.negateIf(isDeduction: Boolean): BigDecimal =
+        if (isDeduction && signum() == 1) this.negate() else this
 
 }
