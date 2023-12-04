@@ -98,10 +98,12 @@
 </ng-template>
 
 <ng-template #scenarioCell let-correction>
-    <span class="text-overflow-ellipsis"
-          [matTooltip]="'project.application.reporting.corrections.programme.measure.scenario.' + correction.scenario | translate">
-        {{ 'project.application.reporting.corrections.programme.measure.scenario.' + correction.scenario | translate }}
-    </span>
+    <span *ngIf="correction.scenario === ScenarioEnum.NA">{{'N/A'}}</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO1">1</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO2">2</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO3">3</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO4">4</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO5">5</span>
 </ng-template>
 
 <ng-template #actionCell let-correction>

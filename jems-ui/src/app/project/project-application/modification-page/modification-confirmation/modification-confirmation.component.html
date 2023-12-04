@@ -72,27 +72,29 @@
             <div class="corrections">
                 <mat-form-field class="w-100">
                     <mat-label>{{'project.application.reporting.corrections.title' | translate}}</mat-label>
-                    <mat-select id="corrections-select"
-                                formControlName="corrections"
-                                [multiple]="true">
-                        <mat-select-trigger>
-                            <mat-chip-list>
-                                <mat-chip *ngFor="let correction of decisionForm.get('corrections')?.value;"
-                                          [removable]="canEdit"
-                                          (removed)="removeCorrection($event)">
-                                    {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
-                                    :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr} }}
-                                    <mat-icon matChipRemove *ngIf="canEdit">cancel</mat-icon>
-                                </mat-chip>
-                            </mat-chip-list>
-                        </mat-select-trigger>
-                        <mat-option *ngFor="let correction of corrections;"
-                                    class="correction"
-                                    [value]="correction">
+                    <mat-chip-list #chipList>
+                        <mat-chip *ngFor="let correction of correctionsForm().value;let i = index"
+                                  [selectable]="false"
+                                  [removable]="canEdit"
+                                  (removed)="removeCorrection(i)">
                             {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
-                            :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr} }}
+                            :{ auditControlNumber: correction.auditControlNumber, correctionNumber: correction.correctionNumber } }}
+                            <mat-icon matChipRemove *ngIf="canEdit">cancel</mat-icon>
+                        </mat-chip>
+                        <input [disabled]="!canEdit"
+                                [placeholder]="canEdit ? ('project.application.form.section.modification.search.correction' | translate) : ''"
+                                #filterCorrections
+                                [matAutocomplete]="auto"
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                aria-label="partner to add">
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addCorrection($event.option.value); filterCorrections.blur();">
+                        <mat-option *ngFor="let correction of availableCorrections" [value]="correction.id">
+                            {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
+                            :{ auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr } }}
                         </mat-option>
-                    </mat-select>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 

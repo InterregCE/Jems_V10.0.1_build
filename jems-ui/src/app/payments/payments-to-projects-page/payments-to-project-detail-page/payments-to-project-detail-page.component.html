@@ -203,6 +203,7 @@
                                                 <mat-label>{{'payments.detail.table.header.installment.corrections' | translate}}</mat-label>
                                                 <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.correction"
                                                             [compareWith]="compareCorrections">
+                                                    <mat-option [value]="0">{{'common.not.applicable.option' | translate}}</mat-option>
                                                     <ng-container *ngFor="let correction of getAvailableCorrectionsForPartner(data.availableCorrections, partnerPayment.partnerId)">
                                                         <mat-option [value]="correction">
                                                             {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate

@@ -1,18 +1,18 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {
   ApplicationActionInfoDTO,
   AuditControlCorrectionDTO,
   ProjectModificationCreateDTO,
-  ProjectModificationDecisionDTO,
   ProjectStatusDTO,
   ProjectVersionDTO
 } from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {catchError} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 
 @UntilDestroy()
 @Component({
@@ -22,8 +22,10 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModificationConfirmationComponent implements OnInit {
+export class ModificationConfirmationComponent implements OnInit, OnChanges {
   ProjectStatus = ProjectStatusDTO.StatusEnum;
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  availableCorrections: AuditControlCorrectionDTO[] = [];
 
   @Input()
   index: number;
@@ -42,7 +44,7 @@ export class ModificationConfirmationComponent implements OnInit {
     decisionDate: ['', Validators.required],
     entryIntoForceDate: ['', Validators.required],
     note: ['', Validators.maxLength(10000)],
-    corrections: [],
+    corrections: this.formBuilder.array([]),
   });
   today = new Date();
   dateErrors = {
@@ -65,8 +67,18 @@ export class ModificationConfirmationComponent implements OnInit {
         decisionDate: new Date(this.projectStatus.decisionDate),
         entryIntoForceDate: this.projectStatus.entryIntoForceDate && new Date(this.projectStatus.entryIntoForceDate),
         note: this.projectStatus.note,
-        corrections: this.corrections,
       });
+      this.correctionsForm().clear();
+      this.corrections.forEach(c => {
+        this.correctionsForm().push(
+          this.formBuilder.group({
+            id: c?.id,
+            auditControlNumber: c?.auditControlNumber,
+            correctionNumber: c?.orderNr,
+          })
+        );
+      });
+      this.filterNotSelectedCorrections();
     }
   }
 
@@ -76,7 +88,7 @@ export class ModificationConfirmationComponent implements OnInit {
       date: this.decisionForm.get('decisionDate')?.value?.format('YYYY-MM-DD'),
       entryIntoForceDate: this.decisionForm.get('entryIntoForceDate')?.value?.format('YYYY-MM-DD'),
     } as ApplicationActionInfoDTO;
-    const correctionIds = this.decisionForm.get('corrections')?.value?.map((correction: AuditControlCorrectionDTO) => correction.id);
+    const correctionIds = this.correctionsForm().value?.map((correction: AuditControlCorrectionDTO) => correction.id);
     const modificationCreateDto = {actionInfo, correctionIds} as ProjectModificationCreateDTO;
 
     if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
@@ -123,18 +135,35 @@ export class ModificationConfirmationComponent implements OnInit {
     return this.projectStatus?.status ?? this.ProjectStatus.APPROVED;
   }
 
-  removeCorrection(correction: AuditControlCorrectionDTO) {
-    const corrections = this.decisionForm.get('corrections')?.value;
-
-    const index = corrections.indexOf(correction);
-    corrections.splice(index, 1);
-
-    this.decisionForm.get('corrections')?.setValue(corrections);
+  removeCorrection(index: number) {
+    this.correctionsForm().removeAt(index);
   }
 
-  isSelected(correctionId: number): boolean {
-    return this.decisionForm.get('corrections')?.value?.find(
-      (correction: AuditControlCorrectionDTO) => correction.id === correctionId
+  addCorrection(correctionId: number) {
+    const c = this.corrections.find(item => item.id === correctionId);
+    this.correctionsForm().push(
+      this.formBuilder.group({
+        id: c?.id,
+        auditControlNumber: c?.auditControlNumber,
+        correctionNumber: c?.orderNr,
+      })
     );
+    this.filterNotSelectedCorrections();
   }
+
+  correctionsForm(): FormArray {
+    return this.decisionForm.get('corrections') as FormArray;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.corrections) {
+      this.filterNotSelectedCorrections();
+    }
+  }
+
+  private filterNotSelectedCorrections() {
+    const usedIds: number[] = this.correctionsForm().value.map((c: any) => c.id);
+    this.availableCorrections = this.corrections.filter(c => !usedIds.includes(c.id));
+  }
+
 }
