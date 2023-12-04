@@ -35,10 +35,10 @@ class ProjectReportSpfContributionClaimPersistenceProvider(
         val previouslyReportedByContributionSource = spfContributionClaimRepository.getPreviouslyReportedContributionAmount(projectId)
 
         val finances = previouslyReportedByContributionSource.filter { it.programmeFundId != null }
-            .associateBy({ it.programmeFundId!! }, { it.previouslyReportedAmount })
+            .associateBy{ it.programmeFundId!! }
         val partnerContributions =
             previouslyReportedByContributionSource.filter { it.applicationFormPartnerContributionId != null }
-                .associateBy({ it.applicationFormPartnerContributionId!! }, { it.previouslyReportedAmount })
+                .associateBy{ it.applicationFormPartnerContributionId!! }
 
         return SpfPreviouslyReportedByContributionSource(
             finances = finances,
@@ -46,10 +46,16 @@ class ProjectReportSpfContributionClaimPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun resetSpfContributionClaims(reportId: Long): List<ProjectReportSpfContributionClaim> {
+        val contributions = spfContributionClaimRepository.getAllByReportEntityId(reportId)
+        contributions.forEach { contributionClaim ->
+            contributionClaim.currentlyReported = BigDecimal.ZERO
+        }
+        return contributions.map { it.toModel() }
+    }
 
-
-
-  private fun List<ProjectReportSpfContributionClaimEntity>.updateWith(toUpdate: Map<Long, BigDecimal>) {
+    private fun List<ProjectReportSpfContributionClaimEntity>.updateWith(toUpdate: Map<Long, BigDecimal>) {
         this.forEach { contributionClaim ->
             contributionClaim.currentlyReported = toUpdate[contributionClaim.id] ?: contributionClaim.currentlyReported
         }

@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -34,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -161,6 +165,10 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence
     @MockK
+    lateinit var reportSpfContributionClaimPersistence : ProjectReportSpfContributionClaimPersistence
+    @MockK
+    lateinit var callPersistence: CallPersistence
+    @MockK
     lateinit var filePersistence: JemsFilePersistence
 
 
@@ -224,9 +232,14 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportResultPrinciplePersistence.getProjectResultPrinciples(PROJECT_ID, reportId = REPORT_ID) } returns emptyReportResultPrinciple
         every { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, REPORT_ID) } returns listOf()
 
+        val callDetail = mockk<CallDetail>()
+        every { callDetail.type } returns CallType.STANDARD
+        every { callPersistence.getCallByProjectId(PROJECT_ID) } returns callDetail
+
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
         verify(exactly = 1) { reportPersistence.submitReportInitially(PROJECT_ID, REPORT_ID, any()) }
+        verify(exactly = 0) { reportSpfContributionClaimPersistence.resetSpfContributionClaims(REPORT_ID) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(

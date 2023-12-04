@@ -31,12 +31,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedByContributionSource
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedContributionRow
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
-import org.aspectj.weaver.ast.Call
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -98,7 +98,7 @@ class CreateProjectReportBudget(
             getSpfProjectReportSpfContributionClaims(
                 spfCoFinancingAndContribution = getSpfCoFinancing(partnerSummaries, version),
                 previouslyReportedContributionClaims =
-                projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId)
+                    projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId)
             )
         } else emptyList()
 
@@ -152,7 +152,7 @@ class CreateProjectReportBudget(
 
             contributionClaims.addAll( financesFromAf.toFinanceContributionClaims(
                     totalFromAf = totalFromAf,
-                    previousReportedAmounts = previouslyReportedContributionClaims.finances
+                    previousReportedContributions = previouslyReportedContributionClaims.finances
                 )
             )
             contributionClaims.addAll(
@@ -177,35 +177,70 @@ class CreateProjectReportBudget(
     }
 
     private fun List<ProjectPartnerCoFinancing>.toFinanceContributionClaims(
-        totalFromAf: BigDecimal,
-        previousReportedAmounts: Map<Long, BigDecimal>) =
-        this.map {
+        totalFromAf: BigDecimal, previousReportedContributions: Map<Long, SpfPreviouslyReportedContributionRow>
+    ): List<ProjectReportSpfContributionClaimCreate> {
+
+        val fundIdsFromAf = this.map { it.fund?.id }
+        val previouslyReportedRemovedFromAf = previousReportedContributions.filter { it.key !in fundIdsFromAf }
+
+        return this.map {
             ProjectReportSpfContributionClaimCreate(
                 fundId = it.fund?.id,
                 idFromApplicationForm = null,
                 sourceOfContribution = null,
                 legalStatus = null,
                 amountInAf = it.calculateAfAmount(totalFromAf),
-                previouslyReported = previousReportedAmounts.getOrDefault(it.fund?.id, ZERO),
+                previouslyReported = previousReportedContributions[it.fund?.id]?.previouslyReportedAmount ?: ZERO ,
                 currentlyReported = ZERO
 
             )
-        }
+        }.plus(previouslyReportedRemovedFromAf.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = it.key,
+                idFromApplicationForm = null,
+                sourceOfContribution = null,
+                legalStatus = null,
+                amountInAf = ZERO,
+                previouslyReported = previousReportedContributions[it.key]?.previouslyReportedAmount ?: ZERO ,
+                currentlyReported = ZERO
 
-    private fun  Collection<ProjectPartnerContributionSpf>.toPartnerContributionClaims(
-        previousReportedAmounts: Map<Long, BigDecimal>) =
-        this.map {
+            )
+        })
+    }
+
+
+    private fun Collection<ProjectPartnerContributionSpf>.toPartnerContributionClaims(
+        previousReportedAmounts: Map<Long, SpfPreviouslyReportedContributionRow>
+    ): List<ProjectReportSpfContributionClaimCreate> {
+
+        val contributionIdsFromAf = this.map { it.id }
+        val previouslyReportedRemovedFromAf = previousReportedAmounts.filter { it.key !in contributionIdsFromAf }
+
+        return this.map {
             ProjectReportSpfContributionClaimCreate(
                 fundId = null,
                 idFromApplicationForm = it.id,
                 sourceOfContribution = it.name,
                 legalStatus = it.status,
                 amountInAf = it.amount ?: ZERO,
-                previouslyReported = previousReportedAmounts.getOrDefault(it.id, ZERO),
+                previouslyReported = previousReportedAmounts[it.id]?.previouslyReportedAmount ?: ZERO,
                 currentlyReported = ZERO
 
             )
-        }
+        }.plus(previouslyReportedRemovedFromAf.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = null,
+                idFromApplicationForm = it.key,
+                sourceOfContribution = it.value.sourceOfContribution,
+                legalStatus = it.value.legalStatus,
+                amountInAf = ZERO,
+                previouslyReported = previousReportedAmounts[it.key]?.previouslyReportedAmount ?: ZERO,
+                currentlyReported = ZERO
+
+            )
+        })
+    }
+
 
     private fun ProjectPartnerCoFinancing.calculateAfAmount(totalFromAF: BigDecimal) =
         totalFromAF.multiply(this.percentage.divide(BigDecimal(100))).setScale(2, RoundingMode.DOWN) ?: ZERO

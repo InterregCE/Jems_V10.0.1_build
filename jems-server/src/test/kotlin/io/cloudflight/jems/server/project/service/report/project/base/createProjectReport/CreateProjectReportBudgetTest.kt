@@ -49,6 +49,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedByContributionSource
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedContributionRow
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
@@ -585,8 +586,26 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         )
         val totalCostSpf = 1000.toScaledBigDecimal()
         val previouslyReportedSpfCoFin = SpfPreviouslyReportedByContributionSource(
-            finances = mapOf(1L to BigDecimal.valueOf(100.00)),
-            partnerContributions = mapOf(1L to BigDecimal.valueOf(50.00)),
+            finances = mapOf(
+                1L to SpfPreviouslyReportedContributionRow(
+                    id = 1L,
+                    programmeFundId = 1L,
+                    applicationFormPartnerContributionId = null,
+                    sourceOfContribution = null,
+                    legalStatus = null,
+                    previouslyReportedAmount = BigDecimal.valueOf(100.00)
+                )
+            ),
+            partnerContributions = mapOf(
+                1L to SpfPreviouslyReportedContributionRow(
+                    id = 1L,
+                    programmeFundId = 1L,
+                    applicationFormPartnerContributionId = null,
+                    sourceOfContribution = null,
+                    legalStatus = null,
+                    previouslyReportedAmount = BigDecimal.valueOf(50.00)
+                )
+            ),
         )
 
         every { projectBudgetPersistence.getPartnersForProjectId(projectId, version) } returns partners()
