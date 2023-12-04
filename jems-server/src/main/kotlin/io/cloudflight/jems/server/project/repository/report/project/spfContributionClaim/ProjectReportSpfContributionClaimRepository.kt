@@ -17,6 +17,8 @@ interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectRepo
                 contributionClaim.id,
                 contributionClaim.programmeFund.id,
                 contributionClaim.applicationFormPartnerContributionId,
+                contributionClaim.sourceOfContribution,
+                contributionClaim.legalStatus,
                 COALESCE(SUM(contributionClaim.currentlyReported), 0)
             )
             FROM #{#entityName} as contributionClaim
@@ -24,5 +26,5 @@ interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectRepo
             GROUP BY contributionClaim.programmeFund.id, contributionClaim.applicationFormPartnerContributionId
     """
     )
-    fun getPreviouslyReportedContributionAmount(projectId: Long): List<SpfPreviouslyReportedContributionRow>
+    fun     getPreviouslyReportedContributionAmount(projectId: Long): List<SpfPreviouslyReportedContributionRow>
 }

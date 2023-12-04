@@ -35,10 +35,10 @@ class ProjectReportSpfContributionClaimPersistenceProvider(
         val previouslyReportedByContributionSource = spfContributionClaimRepository.getPreviouslyReportedContributionAmount(projectId)
 
         val finances = previouslyReportedByContributionSource.filter { it.programmeFundId != null }
-            .associateBy({ it.programmeFundId!! }, { it.previouslyReportedAmount })
+            .associateBy{ it.programmeFundId!! }
         val partnerContributions =
             previouslyReportedByContributionSource.filter { it.applicationFormPartnerContributionId != null }
-                .associateBy({ it.applicationFormPartnerContributionId!! }, { it.previouslyReportedAmount })
+                .associateBy{ it.applicationFormPartnerContributionId!! }
 
         return SpfPreviouslyReportedByContributionSource(
             finances = finances,
