@@ -15,7 +15,7 @@ import {MatSort} from '@angular/material/sort';
 import {PaymentToEcCorrectionLinkingDTO} from "@cat/api";
 import {
   AdvancePaymentsDetailPageConstants
-} from "../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants";
+} from '../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
 
 @Component({
   selector: 'jems-payment-to-ec-correction-select-table',
@@ -95,6 +95,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
     } as PaymentToEcAmountUpdate;
     this.submitAmountChanged$.emit(dataToUpdate);
     this.editedRowIndex = null;
+    this.formService.setDirty(false);
   }
 
   discardChanges(rowIndex: number, unchangedRow: PaymentToEcInclusionRow) {
