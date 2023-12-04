@@ -1,5 +1,7 @@
 {
-  "note": "API modification rejected",
-  "date": "2022-04-01",
-  "entryIntoForceDate": "2022-04-01"
+  "actionInfo": {
+    "note": "API modification rejected",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  }
 }

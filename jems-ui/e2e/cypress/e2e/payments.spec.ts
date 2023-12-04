@@ -4,13 +4,13 @@ import approvalInfo from '../fixtures/api/application/modification/approval.info
 import programmeFund from '../fixtures/api/programme/fund.json';
 import fastTrackLumpSum from '../fixtures/api/programme/fastTrackLumpSum.json';
 import {faker} from '@faker-js/faker';
-import date from 'date-and-time';
 import programmeEditorRole from "../fixtures/api/roles/programmeEditorRole.json";
 import programmeEditorUser from "../fixtures/api/users/programmeEditorUser.json";
 import paymentsRole from "../fixtures/api/roles/paymentsRole.json";
 import paymentsUser from "../fixtures/api/users/paymentsUser.json";
 import {partnerReportPage} from "./project/partner-reports.pom";
 import {findProjectPayments} from "../support/payments.commands";
+import date from 'date-and-time';
 
 context('Payments tests', () => {
 
@@ -80,8 +80,8 @@ context('Payments tests', () => {
                     assertPaymentProjectId(row, applicationId);
                     assertProjectAcronym(row, application.identification.acronym);
                     assertClaimNo(row, '0');
-                    assertSubmissionDate(row, new Intl.DateTimeFormat().format(new Date));
-                    assertMAApprovalDate(row, new Intl.DateTimeFormat().format(new Date));
+                    assertSubmissionDate(row, date.format(new Date(), 'MM/DD/YYYY'));
+                    assertMAApprovalDate(row, date.format(new Date(), 'MM/DD/YYYY'));
                     assertTotalApproved(row, '1.999,00');
                     assertFund(row, 'OTHER');
                     assertApprovedPerFund(row, '293,05');
@@ -314,53 +314,49 @@ function setReadyForPayment(flag, rowIndex) {
 }
 
 function assertPaymentType(row, type) {
-  expect(row.children().get(1)).to.contain(type);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-type').get(0)).to.contain(type);
 }
 
 function assertPaymentProjectId(row, id) {
-  expect(row.children().get(2)).to.contain(id);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-project-id').get(0)).to.contain(id);
 }
 
 function assertProjectAcronym(row, acronym) {
-  expect(row.children().get(3)).to.contain(acronym);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-project-acronym').get(0)).to.contain(acronym);
 }
 
 function assertClaimNo(row, claimNo) {
-  expect(row.children().get(4)).to.contain(claimNo);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-claim-no').get(0)).to.contain(claimNo);
 }
 
 function assertSubmissionDate(row, submissionDate) {
-  expect(row.children().get(6)).to.contain(submissionDate);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-claim-submission-date').get(0)).to.contain(submissionDate);
 }
 
 function assertMAApprovalDate(row, maApprovalDate) {
-  expect(row.children().get(7)).to.contain(maApprovalDate);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-claim-approval-date').get(0)).to.contain(maApprovalDate);
 }
 
 function assertTotalApproved(row, totalApproved) {
-  expect(row.children().get(8)).to.contain(totalApproved);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-total-eligible-amount').get(0)).to.contain(totalApproved);
 }
 
 function assertFund(row, fund) {
-  expect(row.children().get(9)).to.contain(fund);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-fund').get(0)).to.contain(fund);
 }
 
 function assertApprovedPerFund(row, approvedPerFund) {
-  expect(row.children().get(10)).to.contain(approvedPerFund);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-amount-approved-per-fund').get(0)).to.contain(approvedPerFund);
 }
 
 function assertAuthorised(row, authorised) {
-  expect(row.children().get(11)).to.contain(authorised);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-authorised').get(0)).to.contain(authorised);
 }
 
 function assertPaid(row, paid) {
-  expect(row.children().get(12)).to.contain(paid);
-}
-
-function assertDateOfLastPayment(row, dateOfLastPayment) {
-  expect(row.children().get(13)).to.contain(dateOfLastPayment);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-amount-paid-per-fund').get(0)).to.contain(paid);
 }
 
 function assertRemainingToBePaid(row, remainingToBePaid) {
-  expect(row.children().get(14)).to.contain(remainingToBePaid);
+  expect(row.children('.mat-column-payments-payment-to-project-table-column-remaining-to-be-paid').get(0)).to.contain(remainingToBePaid);
 }

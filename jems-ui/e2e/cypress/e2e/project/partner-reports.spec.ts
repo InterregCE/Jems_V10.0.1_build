@@ -2693,6 +2693,7 @@ context('Partner reports tests', () => {
     cy.contains('Run pre-submission check').click();
     cy.contains('Submit partner report').click();
     cy.contains('Confirm').should('be.visible').click();
+    cy.get('mat-chip.status-Submitted').should('be.visible');
   }
 
   //endregion
