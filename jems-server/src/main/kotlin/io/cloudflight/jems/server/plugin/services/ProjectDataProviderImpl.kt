@@ -201,7 +201,7 @@ class ProjectDataProviderImpl(
                         PartnerBudgetCoFinancing(
                             partner = partnerSummaries.first { it.id == partner.id },
                             budgetCoFinancingAndContributions[partner.id],
-                            total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
+                            total = partner.budget.projectBudgetCostsCalculationResult.totalCosts - partner.budget.projectPartnerSpfBudgetTotalCost
                         )
                     },
                     spfCoFinancing = emptyList()
