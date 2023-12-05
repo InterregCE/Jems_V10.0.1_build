@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
 import {
   PagePaymentToEcCorrectionLinkingDTO,
   PaymentApplicationToEcDetailDTO,
@@ -11,7 +11,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
 import {APIError} from '@common/models/APIError';
 import {PaymentsToEcDetailPageStore} from '../payment-to-ec-detail-page-store.service';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import { Alert } from '@common/components/forms/alert';
 import {PaymentToEcInclusionRow} from '../payment-to-ec-correction-select-table/payment-to-ec-inlcusion-row';
 import {PaymentToEcRowSelected} from '../payment-to-ec-correction-select-table/paymnet-to-ec-row-selected';
@@ -73,6 +73,7 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
   error$ = new BehaviorSubject<APIError | null>(null);
   editedRowIndex: number | null = null;
   successfulUpdateMessage = false;
+  discardChanges$ = new ReplaySubject<void>(1);
 
   constructor(
     public pageStore: PaymentToEcCorrectionTabStoreService,
@@ -86,6 +87,7 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
       this.detailPageStore.paymentToEcId$,
       this.detailPageStore.userCanEdit$,
       this.detailPageStore.updatedPaymentApplicationStatus$,
+      this.discardChanges$.pipe(startWith(null))
     ]).pipe(
       tap(([ecCorrections, ecId, userCanEdit, ecStatus ]) => {
         if (ecCorrections.content) {

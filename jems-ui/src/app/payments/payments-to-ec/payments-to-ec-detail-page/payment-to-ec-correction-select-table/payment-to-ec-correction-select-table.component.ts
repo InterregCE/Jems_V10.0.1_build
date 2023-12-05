@@ -16,6 +16,7 @@ import {PaymentToEcCorrectionLinkingDTO} from "@cat/api";
 import {
   AdvancePaymentsDetailPageConstants
 } from '../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
+import {ReplaySubject} from 'rxjs';
 
 @Component({
   selector: 'jems-payment-to-ec-correction-select-table',
@@ -47,6 +48,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
   @Input()
   dialogMessage: string;
 
+  @Input()
+  discardChanges$: ReplaySubject<void>;
+
   @Output()
   submitAmountChanged$: EventEmitter<PaymentToEcAmountUpdate> = new EventEmitter<PaymentToEcAmountUpdate>();
 
@@ -66,6 +70,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
     public formService: FormService,
     private confirmDialog: MatDialog,
   ) {
+    this.formService.init(this.form);
   }
 
   get array(): FormArray {
@@ -107,6 +112,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
     });
     this.editedRowIndex = null;
     this.formService.setDirty(false);
+    this.discardChanges$.next();
   }
 
   selectionChanged(ecId: number, correctionId: number, checked: boolean, event: MatCheckboxChange): void {

@@ -40,6 +40,7 @@
           [dataSource]="dataSource"
           [dialogTitle]="'payments.to.ec.detail.ftls.select.title'"
           [dialogMessage]="'payments.to.ec.detail.ftls.select.message'"
+          [discardChanges$]="discardChanges$"
           (submitAmountChanged$)="submitAmountChanges($event)"
           (selectionChanged$)="selectionChanged($event)"
           (sortChanged$)="pageStore.correctionNewSort$.next($event)"
