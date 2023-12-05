@@ -20,6 +20,8 @@ data class AuditControl(
 
     val totalControlledAmount: BigDecimal,
     var totalCorrectionsAmount: BigDecimal,
+    var existsOngoing: Boolean,
+    var existsClosed: Boolean,
 
     val comment: String?
 )

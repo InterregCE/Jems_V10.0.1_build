@@ -41,6 +41,8 @@ class DeleteAuditControlCorrectionTest : UnitTest() {
         finalReportDate = mockk(),
         totalControlledAmount = BigDecimal.valueOf(75044),
         totalCorrectionsAmount = BigDecimal.valueOf(847500),
+        existsOngoing = true,
+        existsClosed = true,
         comment = "dummy comment",
     )
 

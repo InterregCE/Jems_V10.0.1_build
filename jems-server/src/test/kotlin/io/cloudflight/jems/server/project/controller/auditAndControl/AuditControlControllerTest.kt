@@ -232,6 +232,8 @@ class AuditControlControllerTest: UnitTest() {
             finalReportDate = finalReportDate,
             totalControlledAmount = BigDecimal.TEN,
             totalCorrectionsAmount = BigDecimal.ZERO,
+            existsClosed = true,
+            existsOngoing = false,
 
             comment = "COMMENT"
         )
@@ -249,6 +251,8 @@ class AuditControlControllerTest: UnitTest() {
             finalReportDate = finalReportDate,
             totalControlledAmount = BigDecimal.TEN,
             totalCorrectionsAmount = BigDecimal.ZERO,
+            existsClosed = true,
+            existsOngoing = false,
 
             comment = "COMMENT"
         )

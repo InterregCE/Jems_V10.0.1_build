@@ -42,7 +42,9 @@ fun AuditControl.toDto() = AuditControlDTO(
     finalReportDate = finalReportDate,
     totalControlledAmount = totalControlledAmount,
     totalCorrectionsAmount = totalCorrectionsAmount,
-    comment = comment
+    existsOngoing = existsOngoing,
+    existsClosed = existsClosed,
+    comment = comment,
 )
 
 fun AuditControlStatus.toDto() = AuditStatusDTO.valueOf(this.name)

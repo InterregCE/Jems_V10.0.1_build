@@ -16,6 +16,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -55,7 +56,9 @@ class UpdateAuditControlTest: UnitTest() {
             finalReportDate = DATE.minusDays(5),
             totalControlledAmount = BigDecimal.valueOf(10000),
             totalCorrectionsAmount = BigDecimal.ZERO,
-            comment = null
+            existsOngoing = true,
+            existsClosed = true,
+            comment = null,
         )
     }
 
@@ -72,22 +75,7 @@ class UpdateAuditControlTest: UnitTest() {
     @Test
     fun updateAudit() {
 
-        val expectedAuditControl = AuditControl(
-            id = 1,
-            number = 1,
-            projectId = PROJECT_ID,
-            projectCustomIdentifier = "01",
-            projectAcronym = "01 Acr",
-            status = AuditControlStatus.Ongoing,
-            controllingBody = ControllingBody.OLAF,
-            controlType = AuditControlType.OnTheSpot,
-            startDate = DATE.minusDays(1),
-            endDate = DATE.plusDays(1),
-            finalReportDate = DATE.minusDays(5),
-            totalControlledAmount = BigDecimal.valueOf(300000),
-            totalCorrectionsAmount = BigDecimal.ZERO,
-            comment = "updated audit"
-        )
+        val expectedAuditControl = mockk<AuditControl>()
 
         every { projectAuditAndControlValidator.validateData(any()) } just Runs
         every { auditControlPersistence.getById(auditControlId = AUDIT_CONTROL_ID) } returns auditControl

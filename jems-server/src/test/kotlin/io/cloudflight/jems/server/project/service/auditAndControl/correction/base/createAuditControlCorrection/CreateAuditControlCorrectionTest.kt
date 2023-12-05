@@ -47,6 +47,8 @@ class CreateAuditControlCorrectionTest: UnitTest() {
             finalReportDate = mockk(),
             totalControlledAmount = mockk(),
             totalCorrectionsAmount = mockk(),
+            existsOngoing = true,
+            existsClosed = true,
             comment = "dumm comment 02",
         )
 

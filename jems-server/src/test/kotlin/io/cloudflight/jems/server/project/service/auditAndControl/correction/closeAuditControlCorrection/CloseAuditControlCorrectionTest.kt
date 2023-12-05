@@ -77,6 +77,8 @@ class CloseAuditControlCorrectionTest : UnitTest() {
             finalReportDate = UpdateAuditControlTest.DATE.minusDays(5),
             totalControlledAmount = BigDecimal.valueOf(10000),
             totalCorrectionsAmount = BigDecimal.ZERO,
+            existsOngoing = true,
+            existsClosed = true,
             comment = null
         )
 

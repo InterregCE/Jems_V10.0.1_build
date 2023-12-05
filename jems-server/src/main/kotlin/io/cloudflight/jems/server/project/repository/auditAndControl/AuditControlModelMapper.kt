@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.auditAndControl
 
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.tmpModel.AuditControlCorrectionRelatedData
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlCreate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -33,7 +34,7 @@ fun AuditControlCreate.toEntity(project: ProjectEntity) = AuditControlEntity(
     comment = comment
 )
 
-fun AuditControlEntity.toModel(totalCorrections: BigDecimal) = AuditControl(
+fun AuditControlEntity.toModel(correctionsRelatedData: AuditControlCorrectionRelatedData) = AuditControl(
     id = id,
     number = number,
 
@@ -49,7 +50,9 @@ fun AuditControlEntity.toModel(totalCorrections: BigDecimal) = AuditControl(
     finalReportDate = finalReportDate,
 
     totalControlledAmount = totalControlledAmount,
-    totalCorrectionsAmount = totalCorrections,
+    totalCorrectionsAmount = correctionsRelatedData.totalCorrections,
+    existsOngoing = correctionsRelatedData.existsOngoing,
+    existsClosed = correctionsRelatedData.existsClosed,
 
     comment = comment,
 )
