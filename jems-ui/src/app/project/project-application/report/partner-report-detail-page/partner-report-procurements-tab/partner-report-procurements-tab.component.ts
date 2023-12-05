@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
   PageProjectPartnerReportProcurementDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO
 } from '@cat/api';
@@ -17,6 +17,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Alert} from '@common/components/forms/alert';
+import {APIError} from "@common/models/APIError";
 
 @UntilDestroy()
 @Component({
@@ -41,6 +42,7 @@ export class PartnerReportProcurementsTabComponent {
     isReportEditable: boolean;
     isReportReopenedLimited: boolean;
   }>;
+  error$ = new BehaviorSubject<APIError | null>(null);
 
   constructor(
     public pageStore: PartnerReportProcurementsPageStore,
@@ -84,7 +86,19 @@ export class PartnerReportProcurementsTabComponent {
         filter(answer => !!answer),
         switchMap(() => this.pageStore.deleteProcurement(procurement.id)),
         take(1),
+        catchError(err => this.showErrorMessage(err?.error)),
       ).subscribe();
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      if (this.error$.value?.id === error.id) {
+        this.error$.next(null);
+      }
+    }, 10000);
+
+    return of(null);
   }
 
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {AuditControlDTO, ProjectAuditAndControlService, ProjectAuditControlUpdateDTO, UserRoleDTO} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -28,6 +28,7 @@ export class ReportCorrectionsAuditControlDetailPageStore {
   canReopen$: Observable<boolean>;
   updatedAuditControl$ = new Subject<AuditControlDTO>();
   updatedAuditControlStatus$ = new Subject<AuditControlDTO.StatusEnum>();
+  private refresh$ = new BehaviorSubject<any>(null);
 
   constructor(
     private routingService: RoutingService,
@@ -54,6 +55,7 @@ export class ReportCorrectionsAuditControlDetailPageStore {
       this.projectStore.projectId$,
       this.auditControlId$,
       this.updatedAuditControlStatus$.pipe(startWith(null)),
+      this.refresh$,
     ]).pipe(
       switchMap(([projectId, auditControlId]) =>
         auditControlId
@@ -137,4 +139,10 @@ export class ReportCorrectionsAuditControlDetailPageStore {
       tap(status => Log.info('Changed status for audit', this, auditControlId, status)),
     );
   }
+
+  refresh() {
+    this.refresh$.next(null);
+    this.reportCorrectionsOverviewStore.refreshAudits$.next();
+  }
+
 }

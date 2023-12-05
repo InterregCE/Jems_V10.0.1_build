@@ -169,6 +169,7 @@ export class AuditControlCorrectionDetailPageStore {
       tap(financialDescription => this.savedFinancialDescription$.next(financialDescription)),
       tap(financialDescription => Log.info('Updated correction financial description', this, financialDescription)),
       tap(() => this.auditControlCorrectionStore.refreshCorrections$.next()),
+      tap(() => this.reportCorrectionsAuditControlDetailPageStore.refresh()),
     );
   }
 
