@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
-    PageProjectAuditControlCorrectionLineDTO, ProgrammeChecklistDTO,
-    ProjectAuditControlCorrectionDTO,
-    ProjectAuditControlCorrectionLineDTO
+  PageProjectAuditControlCorrectionLineDTO,
+  PaymentToEcCorrectionLinkingDTO,
+  ProjectAuditControlCorrectionLineDTO,
 } from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
@@ -35,6 +35,7 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   TypeEnum = ProjectAuditControlCorrectionLineDTO.TypeEnum;
+  ScenarioEnum = PaymentToEcCorrectionLinkingDTO.ScenarioEnum;
 
   canEdit = true;
 

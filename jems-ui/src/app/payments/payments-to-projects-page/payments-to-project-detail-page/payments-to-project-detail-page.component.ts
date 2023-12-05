@@ -155,7 +155,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       paymentConfirmed: this.formBuilder.control(installment?.paymentConfirmed ? installment.paymentConfirmed : false),
       paymentConfirmedUser: this.formBuilder.control(installment?.paymentConfirmedUser ? this.getOutputUserObject(installment.paymentConfirmedUser) : null),
       paymentConfirmedDate: this.formBuilder.control(installment?.paymentConfirmedDate ? installment.paymentConfirmedDate : null),
-      correction: this.formBuilder.control(installment?.correction),
+      correction: this.formBuilder.control(installment?.correction || 0),
     });
     this.disableFieldsIfPaymentIsSaved(group);
     this.disableFieldsIfPaymentIsConfirmed(group);
@@ -192,7 +192,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.projectAcronym = data.projectAcronym;
     paymentDetail.amountApprovedPerFund = data.amountApprovedPerFund;
     paymentDetail.dateOfLastPayment = data.dateOfLastPayment;
-      this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
+    paymentDetail.partnerPayments.forEach(pp => // transform 0 into null
+      pp.installments.forEach(i => i.correction = i.correction || null)
+    );
+    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {
