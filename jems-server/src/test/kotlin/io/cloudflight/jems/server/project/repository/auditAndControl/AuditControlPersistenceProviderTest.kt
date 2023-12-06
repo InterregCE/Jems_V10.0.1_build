@@ -51,6 +51,8 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             finalReportDate = final,
             totalControlledAmount = BigDecimal.valueOf(745L),
             totalCorrectionsAmount = BigDecimal.ZERO,
+            existsOngoing = false,
+            existsClosed = false,
             comment = "dummy comment",
         )
 
@@ -88,6 +90,8 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             finalReportDate = final,
             totalControlledAmount = BigDecimal.valueOf(9586L),
             totalCorrectionsAmount = total,
+            existsOngoing = true,
+            existsClosed = false,
             comment = "new comment",
         )
 
@@ -236,7 +240,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
     private fun mockGetTotalCorrectionsAmount(auditControlId: Long, total: BigDecimal) {
         val financeSpec = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any()) } returns query
         every { query.from(financeSpec) } returns query
         every { query.where(financeSpec.correction.auditControl.id.eq(auditControlId)) } returns query
         every { query.groupBy(financeSpec.correction.auditControl.id) } returns query
@@ -244,6 +248,9 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         every { query.fetch() } returns listOf(tuple)
         every { tuple.get(0, Long::class.java) } returns auditControlId
         every { tuple.get(1, BigDecimal::class.java) } returns total
+        every { tuple.get(4, Int::class.java) } returns 2
+        every { tuple.get(2, Int::class.java) } returns 2
+        every { tuple.get(3, Int::class.java) } returns 0
     }
 
 }

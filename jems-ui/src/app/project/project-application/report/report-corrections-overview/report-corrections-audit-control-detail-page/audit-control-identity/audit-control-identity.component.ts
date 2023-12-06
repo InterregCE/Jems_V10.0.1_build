@@ -44,7 +44,6 @@ export class AuditControlIdentityComponent {
     projectId: number;
     auditControl: AuditControlDTO;
     canEdit: boolean;
-    unpagedCorrections: PageProjectAuditControlCorrectionLineDTO;
     isControllerDisabled: boolean;
     isClosingAllowed: boolean;
     isReopeningAllowed: boolean;
@@ -76,17 +75,15 @@ export class AuditControlIdentityComponent {
       pageStore.auditControl$,
       pageStore.canEdit$,
       pageStore.canClose$,
-      this.correctionsOverviewStore.correctionsUnpaged$,
-      pageStore.canReopen$
+      pageStore.canReopen$,
     ]).pipe(
-      map(([projectId, auditControl, canEdit, canClose, unpagedCorrections, canReopen]) => ({
+      map(([projectId, auditControl, canEdit, canClose, canReopen]) => ({
         projectId,
         auditControl,
         canEdit,
         canClose,
-        unpagedCorrections,
-        isControllerDisabled: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Closed).length > 0 : false,
-        isClosingAllowed: unpagedCorrections.content ? unpagedCorrections.content.filter(correction => correction.status === ProjectAuditControlCorrectionLineDTO.StatusEnum.Ongoing).length === 0 : true,
+        isControllerDisabled: auditControl.existsClosed,
+        isClosingAllowed: !auditControl.existsOngoing,
         isReopeningAllowed: canReopen
       })),
       tap(data => this.resetForm(data.auditControl, data.canEdit)),

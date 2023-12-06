@@ -137,6 +137,7 @@ export class ModificationConfirmationComponent implements OnInit, OnChanges {
 
   removeCorrection(index: number) {
     this.correctionsForm().removeAt(index);
+    this.filterNotSelectedCorrections();
   }
 
   addCorrection(correctionId: number) {

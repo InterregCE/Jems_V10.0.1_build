@@ -19,6 +19,8 @@ data class AuditControlDTO(
 
     val totalControlledAmount: BigDecimal,
     val totalCorrectionsAmount: BigDecimal,
+    val existsOngoing: Boolean,
+    val existsClosed: Boolean,
 
     val comment: String?
 )
