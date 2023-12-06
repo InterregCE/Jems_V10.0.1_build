@@ -22,7 +22,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import java.math.BigDecimal.ZERO
-import java.util.*
 
 fun ProjectReportEntity.toModel() = ProjectReportModel(
     id = id,
@@ -42,6 +41,7 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     projectAcronym = projectAcronym,
     leadPartnerNameInOriginalLanguage = leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = leadPartnerNameInEnglish,
+    spfPartnerId = spfPartnerId,
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
@@ -74,6 +74,7 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
     projectAcronym = first.projectAcronym,
     leadPartnerNameInOriginalLanguage = first.leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = first.leadPartnerNameInEnglish,
+    spfPartnerId = first.spfPartnerId,
 
     createdAt = first.createdAt,
     firstSubmission = first.firstSubmission,
@@ -107,6 +108,7 @@ fun ProjectReportModel.toEntity(
     projectAcronym = projectAcronym,
     leadPartnerNameInOriginalLanguage = leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = leadPartnerNameInEnglish,
+    spfPartnerId = spfPartnerId,
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
@@ -216,6 +218,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherCurrent = ZERO,
         lumpSumCurrent = ZERO,
         unitCostCurrent = ZERO,
+        spfCostCurrent = ZERO,
         sumCurrent = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
@@ -227,6 +230,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherPreviouslyReported = previouslyReported.other,
         lumpSumPreviouslyReported = previouslyReported.lumpSum,
         unitCostPreviouslyReported = previouslyReported.unitCost,
+        spfCostPreviouslyReported = previouslyReported.spfCost,
         sumPreviouslyReported = previouslyReported.sum,
 
         staffPreviouslyVerified = previouslyVerified.staff,
@@ -238,6 +242,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherPreviouslyVerified = previouslyVerified.other,
         lumpSumPreviouslyVerified = previouslyVerified.lumpSum,
         unitCostPreviouslyVerified = previouslyVerified.unitCost,
+        spfCostPreviouslyVerified = previouslyVerified.spfCost,
         sumPreviouslyVerified = previouslyVerified.sum,
 
         staffCurrentVerified = ZERO,
@@ -249,9 +254,9 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherCurrentVerified = ZERO,
         lumpSumCurrentVerified = ZERO,
         unitCostCurrentVerified = ZERO,
+        spfCostCurrentVerified = ZERO,
         sumCurrentVerified = ZERO,
-
-        )
+    )
 
 fun ProjectReportLumpSum.toEntity(
     report: ProjectReportEntity,

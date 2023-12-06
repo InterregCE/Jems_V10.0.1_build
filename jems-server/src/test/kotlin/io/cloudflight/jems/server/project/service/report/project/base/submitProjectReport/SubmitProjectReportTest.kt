@@ -92,6 +92,15 @@ internal class SubmitProjectReportTest : UnitTest() {
             partnerId = 1L
         )
 
+        private val spfContrib = ReportCertificateCoFinancingColumn(
+            funds = mapOf(20L to BigDecimal.valueOf(11L), null to BigDecimal.valueOf(12L)),
+            partnerContribution = BigDecimal.valueOf(13),
+            publicContribution = BigDecimal.valueOf(14),
+            automaticPublicContribution = BigDecimal.valueOf(15),
+            privateContribution = BigDecimal.valueOf(16),
+            sum = BigDecimal.valueOf(17),
+        )
+
         private val totalEligibleAfterControl = ReportCertificateCoFinancingColumn(
             funds = mapOf(20L to BigDecimal.valueOf(126L), null to BigDecimal.valueOf(376L)),
             partnerContribution = BigDecimal.valueOf(51),
@@ -197,17 +206,19 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { preSubmissionCheckService.preCheck(PROJECT_ID, REPORT_ID).isSubmissionAllowed } returns true
 
         if (type == ContractingDeadlineType.Finance) {
-            every { reportWorkPlanPersistence.deleteWorkPlan(PROJECT_ID, REPORT_ID) } answers { }
+            every { reportWorkPlanPersistence.deleteWorkPlan(REPORT_ID) } answers { }
             every { reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(REPORT_ID) } answers { }
         }
         if (type == ContractingDeadlineType.Content) {
             every { reportCertificatePersistence.deselectCertificatesOfProjectReport(REPORT_ID) } answers { }
+            every { reportSpfContributionClaimPersistence.resetSpfContributionClaims(REPORT_ID) } answers { }
         }
 
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReportInitially(any(), any(), capture(submissionTime)) } returns mockedResult
 
         every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate)
+        every { reportSpfContributionClaimPersistence.getCurrentSpfContribution(REPORT_ID) } returns spfContrib
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
@@ -217,7 +228,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportCertificateCoFinancingPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 
         every { reportCertificateCostCategoryPersistence.getCostCategories(PROJECT_ID, REPORT_ID) } returns certificateCostCategory
-        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(setOf(42L)) } returns budgetCostFull
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesTotalEligible(setOf(42L)) } returns budgetCostFull
         every { reportCertificateCostCategoryPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 
         every { reportLumpSumPersistence.getLumpSumCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1, BigDecimal.TEN))
@@ -239,7 +250,6 @@ internal class SubmitProjectReportTest : UnitTest() {
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
         verify(exactly = 1) { reportPersistence.submitReportInitially(PROJECT_ID, REPORT_ID, any()) }
-        verify(exactly = 0) { reportSpfContributionClaimPersistence.resetSpfContributionClaims(REPORT_ID) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
@@ -258,7 +268,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         )
 
         val expectDeletions = if (type == ContractingDeadlineType.Finance) 1 else 0
-        verify(exactly = expectDeletions) { reportWorkPlanPersistence.deleteWorkPlan(any(), any()) }
+        verify(exactly = expectDeletions) { reportWorkPlanPersistence.deleteWorkPlan(any()) }
     }
 
     @Test

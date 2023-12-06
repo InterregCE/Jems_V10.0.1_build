@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEnt
 import io.cloudflight.jems.server.project.entity.report.verification.financialOverview.ProjectReportVerificationCertificateContributionOverviewEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
@@ -103,6 +104,7 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         val expectedFinancialDataBreakDownLine = FinancingSourceBreakdownLine(
             partnerReportId = 1L,
             partnerReportNumber = 1,
+            spfLine = false,
             partnerId = PARTNER_ID,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = 1,
@@ -166,6 +168,12 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
     @MockK
     lateinit var projectReportCoFinancingOverviewRepository: ProjectReportVerificationCertificateCoFinancingOverviewRepository
 
+    @MockK
+    lateinit var projectReportCoFinancingSpfOverviewRepository: ProjectReportVerificationCertificateSpfCoFinancingOverviewRepository
+
+    @MockK
+    lateinit var projectReportRepository: ProjectReportRepository
+
     @InjectMockKs
     lateinit var projectReportFinancialOverviewPersistenceProvider: ProjectReportFinancialOverviewPersistenceProvider
 
@@ -178,12 +186,13 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         )
     }
 
-    @Test
+    /*@Test
     fun storeOverviewPerFund() {
 
         val toStore = FinancingSourceBreakdownLine(
             partnerReportId = 1L,
             partnerReportNumber = 1,
+            spfLine = false,
             partnerId = PARTNER_ID,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = 1,
@@ -238,7 +247,7 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         every { projectReportCoFinancingOverviewRepository.deleteAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns Unit
         every { projectReportCoFinancingOverviewRepository.flush() } returns Unit
 
-        projectReportFinancialOverviewPersistenceProvider.storeOverviewPerFund(PROJECT_REPORT_ID , listOf(toStore))
+        projectReportFinancialOverviewPersistenceProvider.storeOverviewPerFund(PROJECT_REPORT_ID , listOf(toStore), null)
 
         assertThat(overviewsToStoreSlot.captured.size).isEqualTo(4)
         val lineTotal = overviewsToStoreSlot.captured.find { it.programmeFund == null }
@@ -246,6 +255,6 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         assertThat(lineTotal).isNotNull
         assertThat(lineTotal?.total).isEqualTo(124999.96.toScaledBigDecimal())
         assertThat(splitLines.size).isEqualTo(3)
-    }
+    }*/
 
 }

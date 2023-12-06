@@ -44,6 +44,8 @@ data class CallDetail(
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 
+    fun isSpf() = type == CallType.SPF
+
     fun getCallApplyDeadline(): ZonedDateTime = endDateStep1 ?: endDate
 
     fun is2StepCall(): Boolean = endDateStep1 != null

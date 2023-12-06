@@ -271,7 +271,7 @@ class PaymentPersistenceProvider(
                     it.toEntity(
                         paymentEntity = entity,
                         partnerEntity = projectPartnerRepository.getById(it.partnerId),
-                        partnerReportEntity = projectPartnerReportRepository.getById(it.partnerReportId!!),
+                        partnerReportEntity = it.partnerReportId?.let { projectPartnerReportRepository.getById(it) },
                     )
                 }
             )

@@ -33,6 +33,6 @@ interface ProjectReportWorkPlanPersistence {
 
     fun getOutputCumulative(reportIds: Set<Long>): Map<Int, Map<Int, BigDecimal>>
 
-    fun deleteWorkPlan(projectId: Long, reportId: Long)
+    fun deleteWorkPlan(reportId: Long)
 
 }

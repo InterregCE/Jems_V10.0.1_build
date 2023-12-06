@@ -541,7 +541,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { reportInvestmentPersistence.getReportedInvestmentCumulative(setOf(21L, 28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
         every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.valueOf(15)))
 
-        every { callPersistence.getCallByProjectId(projectId).type } returns CallType.STANDARD
+        every { callPersistence.getCallByProjectId(projectId).isSpf() } returns false
 
         val result = service.retrieveBudgetDataFor(
             projectId = projectId,
@@ -644,9 +644,9 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { reportInvestmentPersistence.getReportedInvestmentCumulative(setOf(21L, 28L)) } returns mapOf(Pair(investmentId, BigDecimal.TEN))
         every { reportInvestmentPersistence.getVerifiedInvestmentCumulative(setOf(28L)) } returns mapOf(Pair(investmentId, BigDecimal.valueOf(15)))
 
-        every { callPersistence.getCallByProjectId(projectId).type } returns CallType.SPF
+        every { callPersistence.getCallByProjectId(projectId).isSpf() } returns true
         every { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions( partnerId, version) } returns coFinancingAndContributionSpf
-        every { projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId) } returns previouslyReportedSpfCoFin
+        every { projectReportSpfContributionClaimPersistence.getSpfContributionCumulative(setOf(21L, 28L)) } returns previouslyReportedSpfCoFin
         every { getBudgetTotalCost.getBudgetTotalSpfCost( partnerId, version) } returns totalCostSpf
 
         val result = service.retrieveBudgetDataFor(

@@ -26,6 +26,7 @@ fun FinancingSourceBreakdown.toDto() = FinancingSourceBreakdownDTO(
 fun FinancingSourceBreakdownLine.toDto() = FinancingSourceBreakdownLineDTO(
     partnerReportId = partnerReportId,
     partnerReportNumber = partnerReportNumber,
+    spfLine = spfLine,
     partnerId = partnerId,
     partnerRole = partnerRole?.let { ProjectPartnerRoleDTO.valueOf(it.name) },
     partnerNumber = partnerNumber,

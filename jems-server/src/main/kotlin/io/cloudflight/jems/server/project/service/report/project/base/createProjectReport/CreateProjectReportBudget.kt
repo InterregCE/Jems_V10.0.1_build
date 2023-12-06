@@ -93,12 +93,12 @@ class CreateProjectReportBudget(
             .first { it.partner === null }
         val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)
 
-        val isSpfProject = callPersistence.getCallByProjectId(projectId).type == CallType.SPF
-        val spfProjectReportContributionClaims = if (isSpfProject) {
+        val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
+        val spfProjectReportContributionClaims = if (isSpf) {
             getSpfProjectReportSpfContributionClaims(
-                spfCoFinancingAndContribution = getSpfCoFinancing(partnerSummaries, version),
+                spfCoFinancingAndContribution = getSpfCoFinancing(spfPartner = partnerSummaries.first(), version),
                 previouslyReportedContributionClaims =
-                    projectReportSpfContributionClaimPersistence.getPreviouslyReportedContributionForProject(projectId)
+                    projectReportSpfContributionClaimPersistence.getSpfContributionCumulative(submittedReportIds)
             )
         } else emptyList()
 
@@ -138,42 +138,37 @@ class CreateProjectReportBudget(
     }
 
     private fun getSpfProjectReportSpfContributionClaims(
-        spfCoFinancingAndContribution: List<PartnerBudgetSpfCoFinancing>,
+        spfCoFinancingAndContribution: PartnerBudgetSpfCoFinancing,
         previouslyReportedContributionClaims: SpfPreviouslyReportedByContributionSource
     ): List<ProjectReportSpfContributionClaimCreate> {
         val contributionClaims = mutableListOf<ProjectReportSpfContributionClaimCreate>()
 
-        spfCoFinancingAndContribution.forEach { partnerAfSpfCoFinancing ->
-            val totalFromAf = partnerAfSpfCoFinancing.total ?: ZERO
-            val financesFromAf = partnerAfSpfCoFinancing.projectPartnerCoFinancingAndContribution.finances
-                .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
-            val contributionsFromAf =
-                partnerAfSpfCoFinancing.projectPartnerCoFinancingAndContribution.partnerContributions
+        val totalFromAf = spfCoFinancingAndContribution.total ?: ZERO
+        val financesFromAf = spfCoFinancingAndContribution.projectPartnerCoFinancingAndContribution.finances
+            .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
+        val contributionsFromAf =
+            spfCoFinancingAndContribution.projectPartnerCoFinancingAndContribution.partnerContributions
 
-            contributionClaims.addAll( financesFromAf.toFinanceContributionClaims(
-                    totalFromAf = totalFromAf,
-                    previousReportedContributions = previouslyReportedContributionClaims.finances
-                )
-            )
-            contributionClaims.addAll(
-                contributionsFromAf.toPartnerContributionClaims(previouslyReportedContributionClaims.partnerContributions)
-            )
-        }
+        contributionClaims.addAll(
+            financesFromAf.toFinanceContributionClaims(totalFromAf, previouslyReportedContributionClaims.finances)
+        )
+        contributionClaims.addAll(
+            contributionsFromAf.toPartnerContributionClaims(previouslyReportedContributionClaims.partnerContributions)
+        )
+
         return contributionClaims
     }
 
     private fun getSpfCoFinancing(
-        partners: List<ProjectPartnerSummary>,
+        spfPartner: ProjectPartnerSummary,
         version: String?
-    ): List<PartnerBudgetSpfCoFinancing> {
-        return partners.map {
-                PartnerBudgetSpfCoFinancing(
-                    partner = it,
-                    projectPartnerCoFinancingAndContribution =
-                    projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id!!, version),
-                    total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
-                )
-            }
+    ): PartnerBudgetSpfCoFinancing {
+        return PartnerBudgetSpfCoFinancing(
+            partner = spfPartner,
+            projectPartnerCoFinancingAndContribution = projectPartnerCoFinancingPersistence
+                .getSpfCoFinancingAndContributions(spfPartner.id!!, version),
+            total = getBudgetTotalCost.getBudgetTotalSpfCost(spfPartner.id, version),
+        )
     }
 
     private fun List<ProjectPartnerCoFinancing>.toFinanceContributionClaims(

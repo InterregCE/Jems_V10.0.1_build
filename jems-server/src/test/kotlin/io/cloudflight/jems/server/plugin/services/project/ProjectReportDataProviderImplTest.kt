@@ -219,6 +219,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             projectAcronym = PROJ_ACRONYM,
             leadPartnerNameInOriginalLanguage = "Lead Partner Original",
             leadPartnerNameInEnglish = "Lead Partner EN",
+            spfPartnerId = null,
             createdAt = createdAt,
             firstSubmission = firstSubmission,
             lastReSubmission = mockk(),

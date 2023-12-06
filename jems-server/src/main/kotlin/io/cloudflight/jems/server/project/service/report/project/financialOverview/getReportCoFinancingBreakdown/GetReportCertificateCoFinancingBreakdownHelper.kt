@@ -80,3 +80,17 @@ fun CertificateCoFinancingBreakdown.fillInOverviewFields() = apply {
     privateContribution.fillInOverviewFields()
     total.fillInOverviewFields()
 }
+
+fun ReportCertificateCoFinancingColumn.plus(other: ReportCertificateCoFinancingColumn): ReportCertificateCoFinancingColumn {
+    val fundIds = funds.keys union other.funds.keys
+    return ReportCertificateCoFinancingColumn(
+        funds = fundIds.associateWith {
+            funds.getOrDefault(it, BigDecimal.ZERO).plus(other.funds.getOrDefault(it, BigDecimal.ZERO))
+        },
+        partnerContribution = partnerContribution.plus(other.partnerContribution),
+        publicContribution = publicContribution.plus(other.publicContribution),
+        automaticPublicContribution = automaticPublicContribution.plus(other.automaticPublicContribution),
+        privateContribution = privateContribution.plus(other.privateContribution),
+        sum = sum.plus(other.sum),
+    )
+}

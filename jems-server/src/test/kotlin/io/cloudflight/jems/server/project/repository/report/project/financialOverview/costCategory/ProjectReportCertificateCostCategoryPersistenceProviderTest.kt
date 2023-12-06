@@ -60,6 +60,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherCurrent = BigDecimal.valueOf(26),
             lumpSumCurrent = BigDecimal.valueOf(27),
             unitCostCurrent = BigDecimal.valueOf(28),
+            spfCostCurrent = BigDecimal.valueOf(285, 1),
             sumCurrent = BigDecimal.valueOf(29),
 
             staffPreviouslyReported = BigDecimal.valueOf(30),
@@ -71,6 +72,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherPreviouslyReported = BigDecimal.valueOf(36),
             lumpSumPreviouslyReported = BigDecimal.valueOf(37),
             unitCostPreviouslyReported = BigDecimal.valueOf(38),
+            spfCostPreviouslyReported = BigDecimal.valueOf(385, 1),
             sumPreviouslyReported = BigDecimal.valueOf(39),
 
             staffCurrentVerified = BigDecimal.valueOf(40),
@@ -82,6 +84,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherCurrentVerified = BigDecimal.valueOf(46),
             lumpSumCurrentVerified = BigDecimal.valueOf(47),
             unitCostCurrentVerified = BigDecimal.valueOf(48),
+            spfCostCurrentVerified = BigDecimal.valueOf(485, 1),
             sumCurrentVerified = BigDecimal.valueOf(49),
 
             staffPreviouslyVerified = BigDecimal.valueOf(50),
@@ -93,6 +96,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherPreviouslyVerified = BigDecimal.valueOf(56),
             lumpSumPreviouslyVerified = BigDecimal.valueOf(57),
             unitCostPreviouslyVerified = BigDecimal.valueOf(58),
+            spfCostPreviouslyVerified = BigDecimal.valueOf(585, 1),
             sumPreviouslyVerified = BigDecimal.valueOf(59),
         )
 
@@ -120,7 +124,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(26),
                 lumpSum = BigDecimal.valueOf(27),
                 unitCost = BigDecimal.valueOf(28),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(285L, 1),
                 sum = BigDecimal.valueOf(29),
             ),
             previouslyReported = BudgetCostsCalculationResultFull(
@@ -133,7 +137,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(36),
                 lumpSum = BigDecimal.valueOf(37),
                 unitCost = BigDecimal.valueOf(38),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(385L, 1),
                 sum = BigDecimal.valueOf(39),
             ),
             currentVerified = BudgetCostsCalculationResultFull(
@@ -146,7 +150,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(46),
                 lumpSum = BigDecimal.valueOf(47),
                 unitCost = BigDecimal.valueOf(48),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(485L, 1),
                 sum = BigDecimal.valueOf(49),
             ),
             previouslyVerified = BudgetCostsCalculationResultFull(
@@ -159,7 +163,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(56),
                 lumpSum = BigDecimal.valueOf(57),
                 unitCost = BigDecimal.valueOf(58),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(585L, 1),
                 sum = BigDecimal.valueOf(59),
             )
 
@@ -279,6 +283,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherCurrent = BigDecimal.valueOf(26),
             lumpSumCurrent = BigDecimal.valueOf(27),
             unitCostCurrent = BigDecimal.valueOf(28),
+            spfCostCurrent = BigDecimal.valueOf(285, 1),
             sumCurrent = BigDecimal.valueOf(29),
             staffDeduction = BigDecimal.valueOf(30),
             officeDeduction = BigDecimal.valueOf(31),
@@ -289,6 +294,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             otherDeduction = BigDecimal.valueOf(36),
             lumpSumDeduction = BigDecimal.valueOf(37),
             unitCostDeduction = BigDecimal.valueOf(38),
+            spfCostDeduction = BigDecimal.valueOf(385, 1),
             sumDeduction = BigDecimal.valueOf(39),
         )
         private val expectedPerPartner = PerPartnerCostCategoryBreakdownLine(
@@ -312,7 +318,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(26),
                 lumpSum = BigDecimal.valueOf(27),
                 unitCost = BigDecimal.valueOf(28),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(285L, 1),
                 sum = BigDecimal.valueOf(29),
             ),
             deduction = BudgetCostsCalculationResultFull(
@@ -325,7 +331,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
                 other = BigDecimal.valueOf(36),
                 lumpSum = BigDecimal.valueOf(37),
                 unitCost = BigDecimal.valueOf(38),
-                spfCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.valueOf(385L, 1),
                 sum = BigDecimal.valueOf(39),
             ),
         )

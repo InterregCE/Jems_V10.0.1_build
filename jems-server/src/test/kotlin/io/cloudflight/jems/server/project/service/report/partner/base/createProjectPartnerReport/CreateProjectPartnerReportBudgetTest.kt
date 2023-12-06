@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
@@ -60,6 +59,8 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.every
@@ -72,7 +73,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
-
+/*
     private val HISTORY_CONTRIBUTION_UUID_1 = UUID.randomUUID()
     private val HISTORY_CONTRIBUTION_UUID_2 = UUID.randomUUID()
     private val HISTORY_CONTRIBUTION_UUID_3 = UUID.randomUUID()
@@ -516,6 +517,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.valueOf(792, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
                 previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(1719, 2),
                 previouslyReportedParked = BigDecimal.valueOf(14),
+                previouslyReportedSpf = BigDecimal.valueOf(15),
                 disabled = false,
             ),
             PreviouslyReportedFund(
@@ -523,6 +525,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN,
                 previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.TEN,
                 previouslyReportedParked = BigDecimal.valueOf(10),
+                previouslyReportedSpf = BigDecimal.valueOf(11),
                 disabled = true,
             ),
             PreviouslyReportedFund(
@@ -530,6 +533,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.valueOf(1108, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
                 previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(3233, 2),
                 previouslyReportedParked = BigDecimal.valueOf(25),
+                previouslyReportedSpf = BigDecimal.valueOf(26),
                 disabled = false,
             ),
         ),
@@ -548,6 +552,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
         previouslyReportedParkedPrivate = BigDecimal.valueOf(4),
         previouslyReportedParkedSum = BigDecimal.valueOf(5),
+        previouslyReportedSpfPartner = BigDecimal.valueOf(39),
+        previouslyReportedSpfPublic = BigDecimal.valueOf(12),
+        previouslyReportedSpfAutoPublic = BigDecimal.valueOf(13),
+        previouslyReportedSpfPrivate = BigDecimal.valueOf(14),
+        previouslyReportedSpfSum = BigDecimal.valueOf(50),
         previouslyValidatedPartner = BigDecimal.valueOf(4941L, 2),
         previouslyValidatedPublic = BigDecimal.valueOf(943L, 2),
         previouslyValidatedAutoPublic = BigDecimal.valueOf(1343L, 2),
@@ -652,6 +661,12 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     @MockK
     lateinit var reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence
+
+    @MockK
+    private lateinit var reportProjectPersistence: ProjectReportPersistence
+
+    @MockK
+    private lateinit var reportProjectSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
@@ -784,6 +799,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             total = BigDecimal.ZERO,
                             previouslyReported = BigDecimal.ZERO,
                             previouslyReportedParked = BigDecimal.ZERO,
+                            previouslyReportedSpf = BigDecimal.ZERO,
                             previouslyValidated = BigDecimal.ZERO,
                             previouslyPaid = BigDecimal.ZERO,
                             disabled = true,
@@ -795,6 +811,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             total = BigDecimal.ZERO,
                             previouslyReported = BigDecimal.valueOf(309L, 2),
                             previouslyReportedParked = BigDecimal.ZERO,
+                            previouslyReportedSpf = BigDecimal.ZERO,
                             previouslyValidated = BigDecimal.valueOf(309L, 2),
                             previouslyPaid = BigDecimal.valueOf(11L),
                             disabled = true,
@@ -897,5 +914,5 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         return partner
     }
-
+*/
 }

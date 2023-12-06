@@ -20,6 +20,7 @@ data class PerPartnerCertificateCostCategory(
     val otherCurrent: BigDecimal,
     val lumpSumCurrent: BigDecimal,
     val unitCostCurrent: BigDecimal,
+    val spfCostCurrent: BigDecimal,
     val sumCurrent: BigDecimal,
 
     val staffDeduction: BigDecimal,
@@ -31,5 +32,6 @@ data class PerPartnerCertificateCostCategory(
     val otherDeduction: BigDecimal,
     val lumpSumDeduction: BigDecimal,
     val unitCostDeduction: BigDecimal,
+    val spfCostDeduction: BigDecimal,
     val sumDeduction: BigDecimal,
 )

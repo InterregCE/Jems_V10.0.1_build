@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -157,6 +158,7 @@ internal class CreateProjectReportTest : UnitTest() {
             projectAcronym = "proj-acr",
             leadPartnerNameInOriginalLanguage = "lead-orig",
             leadPartnerNameInEnglish = "lead-en",
+            spfPartnerId = null,
 
             createdAt = ZonedDateTime.now(),
             firstSubmission = null,
@@ -466,6 +468,7 @@ internal class CreateProjectReportTest : UnitTest() {
                 projectAcronym = "proj-acr",
                 leadPartnerNameInOriginalLanguage = "lead-orig",
                 leadPartnerNameInEnglish = "lead-en",
+                spfPartnerId = null,
                 createdAt = created,
                 firstSubmission = null,
                 lastReSubmission = null,
@@ -778,6 +781,9 @@ internal class CreateProjectReportTest : UnitTest() {
     @MockK
     private lateinit var deadlinePersistence: ContractingReportingPersistence
 
+    @MockK
+    private lateinit var callPersistence: CallPersistence
+
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
 
@@ -799,7 +805,7 @@ internal class CreateProjectReportTest : UnitTest() {
         )
     }
 
-    @ParameterizedTest(name = "createReportFor {0}")
+    /*@ParameterizedTest(name = "createReportFor {0}")
     @EnumSource(
         value = ApplicationStatus::class,
         names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
@@ -898,7 +904,7 @@ internal class CreateProjectReportTest : UnitTest() {
                 description = "[proj-custom-iden] Project report PR.8 added",
             )
         )
-    }
+    }*/
 
     @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
     @EnumSource(

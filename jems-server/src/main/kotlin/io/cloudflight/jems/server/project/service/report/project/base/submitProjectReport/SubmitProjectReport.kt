@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport
 
-import io.cloudflight.jems.api.call.dto.CallType
-import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryCurrentlyReported
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
@@ -23,6 +21,8 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.plus
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.plusSpf
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.service.report.project.workPlan.Projec
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Service
@@ -52,8 +53,7 @@ class SubmitProjectReport(
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
-    private val reportSpfContributionClaimPersistence: ProjectReportSpfContributionClaimPersistence,
-    private val callPersistence: CallPersistence
+    private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
 ) : SubmitProjectReportInteractor {
 
     @CanEditProjectReport
@@ -66,17 +66,18 @@ class SubmitProjectReport(
         if (!preSubmissionCheckService.preCheck(projectId, reportId = reportId).isSubmissionAllowed)
             throw SubmissionNotAllowed()
 
-        val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
+        val certificateIds = reportCertificatePersistence.listCertificatesOfProjectReport(reportId).mapTo(HashSet()) { it.id }
+        val spfContributionCurrentValues = reportSpfClaimPersistence.getCurrentSpfContribution(reportId)
 
         if (report.status.isOpenForNumbersChanges()) {
             saveCurrentSpendingProfile(reportId)
-            saveCurrentCoFinancing(certificates, projectId, reportId)
-            saveCurrentCostCategories(certificates, projectId, reportId)
-            saveCurrentUnitCosts(certificates, projectId, reportId)
-            saveCurrentLumpSums(certificates, projectId, reportId)
-            saveCurrentInvestments(certificates, projectId, reportId)
+            saveCurrentCoFinancing(certificateIds, spf = spfContributionCurrentValues, projectId, reportId)
+            saveCurrentCostCategories(certificateIds, spfSum = spfContributionCurrentValues.sum, projectId, reportId)
+            saveCurrentUnitCosts(certificateIds, projectId, reportId)
+            saveCurrentLumpSums(certificateIds, projectId, reportId)
+            saveCurrentInvestments(certificateIds, projectId, reportId)
 
-            deleteDataBasedOnContractingDeadlineType(projectId, report)
+            deleteDataBasedOnContractingDeadlineType(report)
         }
 
         val reportSubmitted = if (report.status.isOpenInitially())
@@ -116,27 +117,20 @@ class SubmitProjectReport(
             throw ProjectReportAlreadyClosed()
     }
 
-    private fun saveCurrentCoFinancing(
-        certificates: List<ProjectPartnerReportSubmissionSummary>,
-        projectId: Long,
-        reportId: Long,
-    ) {
-        val certificateCurrentValues = reportExpenditureCoFinancingPersistence.getCoFinancingTotalEligible(certificates.map { it.id}.toSet())
+    private fun saveCurrentCoFinancing(certificateIds: Set<Long>, spf: ReportCertificateCoFinancingColumn, projectId: Long, reportId: Long) {
+        val certificateCurrentValues = reportExpenditureCoFinancingPersistence.getCoFinancingTotalEligible(certificateIds)
+        val currentValues = certificateCurrentValues.plus(spf)
 
         reportCertificateCoFinancingPersistence.updateCurrentlyReportedValues(
             projectId = projectId,
             reportId = reportId,
-            currentlyReported = certificateCurrentValues
+            currentlyReported = currentValues,
         )
     }
 
-    private fun saveCurrentCostCategories(
-        certificates: List<ProjectPartnerReportSubmissionSummary>,
-        projectId: Long,
-        reportId: Long
-    ) {
-        val currentValues =
-            reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(certificates.map {it.id}.toSet())
+    private fun saveCurrentCostCategories(certificateIds: Set<Long>, spfSum: BigDecimal, projectId: Long, reportId: Long) {
+        val certificateCurrentValues = reportExpenditureCostCategoryPersistence.getCostCategoriesTotalEligible(certificateIds)
+        val currentValues = certificateCurrentValues.plusSpf(spfSum)
 
         reportCertificateCostCategoryPersistence.updateCurrentlyReportedValues(
             projectId = projectId,
@@ -147,13 +141,8 @@ class SubmitProjectReport(
         )
     }
 
-    private fun saveCurrentLumpSums(
-        certificates: List<ProjectPartnerReportSubmissionSummary>,
-        projectId: Long,
-        reportId: Long
-    ) {
-        val currentValues =
-            reportLumpSumPersistence.getLumpSumCumulativeAfterControl(certificates.map {it.id}.toSet())
+    private fun saveCurrentLumpSums(certificateIds: Set<Long>, projectId: Long, reportId: Long) {
+        val currentValues = reportLumpSumPersistence.getLumpSumCumulativeAfterControl(certificateIds)
 
         reportCertificateLumpSumPersistence.updateCurrentlyReportedValues(
             projectId = projectId,
@@ -162,8 +151,8 @@ class SubmitProjectReport(
         )
     }
 
-    private fun saveCurrentUnitCosts(certificates: List<ProjectPartnerReportSubmissionSummary>, projectId: Long, reportId: Long) {
-        val currentValues = reportExpenditureUnitCostPersistence.getUnitCostCumulativeAfterControl(certificates.map {it.id}.toSet())
+    private fun saveCurrentUnitCosts(certificateIds: Set<Long>, projectId: Long, reportId: Long) {
+        val currentValues = reportExpenditureUnitCostPersistence.getUnitCostCumulativeAfterControl(certificateIds)
 
         reportCertificateUnitCostPersistence.updateCurrentlyReportedValues(
             projectId = projectId,
@@ -172,8 +161,8 @@ class SubmitProjectReport(
         )
     }
 
-    private fun saveCurrentInvestments(certificates: List<ProjectPartnerReportSubmissionSummary>, projectId: Long, reportId: Long) {
-        val currentValues = reportExpenditureInvestmentPersistence.getInvestmentsCumulativeAfterControl(certificates.map {it.id}.toSet())
+    private fun saveCurrentInvestments(certificateIds: Set<Long>, projectId: Long, reportId: Long) {
+        val currentValues = reportExpenditureInvestmentPersistence.getInvestmentsCumulativeAfterControl(certificateIds)
 
         reportCertificateInvestmentPersistence.updateCurrentlyReportedValues(
             projectId = projectId,
@@ -182,13 +171,13 @@ class SubmitProjectReport(
         )
     }
 
-    private fun deleteDataBasedOnContractingDeadlineType(projectId: Long, report: ProjectReportModel) =
+    private fun deleteDataBasedOnContractingDeadlineType(report: ProjectReportModel) =
         when(report.type!!) {
             ContractingDeadlineType.Finance -> {
-                deleteFinanceData(projectId, report.id)
+                deleteContentOnlyData(report.id)
             }
             ContractingDeadlineType.Content -> {
-                deleteContentData(projectId, report.id)
+                deleteFinanceOnlyData(report.id)
             }
             ContractingDeadlineType.Both -> {
                 // intentionally left empty
@@ -197,15 +186,14 @@ class SubmitProjectReport(
 
     private fun ProjectReportModel.hasVerificationReopenedBefore() = this.lastVerificationReOpening != null
 
-    private fun deleteFinanceData(projectId: Long, reportId: Long) {
+    private fun deleteContentOnlyData(reportId: Long) {
         reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId)
-        reportWorkPlanPersistence.deleteWorkPlan(projectId, reportId)
+        reportWorkPlanPersistence.deleteWorkPlan(reportId)
     }
 
-    private fun deleteContentData(projectId: Long, reportId: Long) {
+    private fun deleteFinanceOnlyData(reportId: Long) {
         reportCertificatePersistence.deselectCertificatesOfProjectReport(reportId)
-        if (callPersistence.getCallByProjectId(projectId).type == CallType.SPF)
-            reportSpfContributionClaimPersistence.resetSpfContributionClaims(reportId)
+        reportSpfClaimPersistence.resetSpfContributionClaims(reportId)
     }
 
 }

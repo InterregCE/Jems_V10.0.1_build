@@ -247,6 +247,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
                         other = BigDecimal.valueOf(17L),
                         lumpSum = BigDecimal.valueOf(18L),
                         unitCost = BigDecimal.valueOf(19L),
+                        spfCost = BigDecimal.valueOf(195L, 1),
                         sum = BigDecimal.valueOf(20L),
                     ),
                     deduction = BudgetCostsCalculationResultFullDTO(
@@ -259,6 +260,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
                         other = BigDecimal.valueOf(27L),
                         lumpSum = BigDecimal.valueOf(28L),
                         unitCost = BigDecimal.valueOf(29L),
+                        spfCost = BigDecimal.valueOf(295L, 1),
                         sum = BigDecimal.valueOf(30L),
                     ),
                 )
@@ -273,6 +275,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
                 other = BigDecimal.valueOf(37L),
                 lumpSum = BigDecimal.valueOf(38L),
                 unitCost = BigDecimal.valueOf(39L),
+                spfCost = BigDecimal.valueOf(395L, 1),
                 sum = BigDecimal.valueOf(40L),
             ),
             totalDeduction = BudgetCostsCalculationResultFullDTO(
@@ -285,6 +288,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
                 other = BigDecimal.valueOf(47L),
                 lumpSum = BigDecimal.valueOf(48L),
                 unitCost = BigDecimal.valueOf(49L),
+                spfCost = BigDecimal.valueOf(495L, 1),
                 sum = BigDecimal.valueOf(50L),
             ),
         )

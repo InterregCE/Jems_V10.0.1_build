@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanCreateProjectReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
@@ -56,6 +57,7 @@ class CreateProjectReport(
     private val projectReportResultPersistence: ProjectReportResultPrinciplePersistence,
     private val workPlanPersistence: ProjectReportWorkPlanPersistence,
     private val deadlinePersistence: ContractingReportingPersistence,
+    private val callPersistence: CallPersistence,
 ) : CreateProjectReportInteractor {
 
     companion object {
@@ -102,9 +104,10 @@ class CreateProjectReport(
             .toCreateModel(previouslyReportedByNumber = projectReportResultPersistence.getResultCumulative(submittedReportIds))
         val projectManagement = projectDescriptionPersistence.getProjectManagement(projectId = projectId, version = version)
 
+        val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
         val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.type.hasContent() }?.id
         val reportToCreate = ProjectReportCreateModel(
-            reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
+            reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner, isSpf = isSpf),
             reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
                 projectId = projectId,
                 version = version,
@@ -169,6 +172,7 @@ class CreateProjectReport(
         version: String,
         project: ProjectFull,
         leadPartner: ProjectPartnerDetail?,
+        isSpf: Boolean,
     ) = ProjectReportModel(
         reportNumber = latestReportNumber.plus(1),
         status = ProjectReportStatus.Draft,
@@ -184,6 +188,7 @@ class CreateProjectReport(
         projectAcronym = project.acronym,
         leadPartnerNameInOriginalLanguage = leadPartner?.nameInOriginalLanguage ?: "",
         leadPartnerNameInEnglish = leadPartner?.nameInEnglish ?: "",
+        spfPartnerId = if (!isSpf) null else leadPartner?.id ?: throw NoPartnerForSpfProject(),
         createdAt = ZonedDateTime.now(),
         firstSubmission = null,
         lastReSubmission = null,

@@ -363,6 +363,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             total = valueOf(100L), previouslyReported = valueOf(25),
                             previouslyPaid = valueOf(35), previouslyValidated = valueOf(16),
                             previouslyReportedParked = valueOf(100),
+                            previouslyReportedSpf = valueOf(1005L, 1),
                             disabled = true,
                         ),
                         PreviouslyReportedFund(
@@ -370,6 +371,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             total = valueOf(900L), previouslyReported = valueOf(400),
                             previouslyPaid = valueOf(410), previouslyValidated = valueOf(19),
                             previouslyReportedParked = valueOf(100),
+                            previouslyReportedSpf = valueOf(505L, 1),
                             disabled = true,
                         ),
                     ),
@@ -390,6 +392,12 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReportedParkedPrivate = valueOf(100),
                     previouslyReportedParkedPublic = valueOf(100),
                     previouslyReportedParkedSum = valueOf(100),
+
+                    previouslyReportedSpfPartner = valueOf(201),
+                    previouslyReportedSpfAutoPublic = valueOf(202),
+                    previouslyReportedSpfPrivate = valueOf(203),
+                    previouslyReportedSpfPublic = valueOf(204),
+                    previouslyReportedSpfSum = valueOf(205),
 
                     previouslyValidatedPartner = valueOf(72L),
                     previouslyValidatedPublic = valueOf(20L),
@@ -474,7 +482,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
     @InjectMockKs
     lateinit var persistence: ProjectPartnerReportCreatePersistenceProvider
 
-    @ParameterizedTest(name = "createPartnerReport, without legal status {0}")
+    @ParameterizedTest(name = "createPartnerReport without legal status {0}")
     @ValueSource(booleans = [true, false])
     fun createPartnerReport(withoutLegalStatus: Boolean) {
         val reportSlot = slot<ProjectPartnerReportEntity>()
@@ -580,11 +588,15 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(programmeFund!!.equals(programmeFundEntity)).isTrue
             assertThat(percentage).isEqualByComparingTo(valueOf(10L))
             assertThat(previouslyPaid).isEqualByComparingTo(valueOf(35L))
+            assertThat(previouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(previouslyReportedSpf).isEqualByComparingTo(valueOf(1005L, 1))
         }
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 2 }!!) {
             assertThat(programmeFund).isNull()
             assertThat(percentage).isEqualTo(valueOf(90L))
             assertThat(previouslyPaid).isEqualByComparingTo(valueOf(410L))
+            assertThat(previouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(previouslyReportedSpf).isEqualByComparingTo(valueOf(505L, 1))
         }
 
         assertThat(investmentSlot.captured).hasSize(1)
@@ -629,6 +641,18 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(automaticPublicContributionPreviouslyReported).isEqualByComparingTo(valueOf(130L))
             assertThat(privateContributionPreviouslyReported).isEqualByComparingTo(valueOf(170L))
             assertThat(sumPreviouslyReported).isEqualByComparingTo(valueOf(7500L))
+
+            assertThat(partnerContributionPreviouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(automaticPublicContributionPreviouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(privateContributionPreviouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(publicContributionPreviouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+            assertThat(sumPreviouslyReportedParked).isEqualByComparingTo(valueOf(100L))
+
+            assertThat(partnerContributionPreviouslyReportedSpf).isEqualByComparingTo(valueOf(201L))
+            assertThat(automaticPublicContributionPreviouslyReportedSpf).isEqualByComparingTo(valueOf(202L))
+            assertThat(privateContributionPreviouslyReportedSpf).isEqualByComparingTo(valueOf(203L))
+            assertThat(publicContributionPreviouslyReportedSpf).isEqualByComparingTo(valueOf(204L))
+            assertThat(sumPreviouslyReportedSpf).isEqualByComparingTo(valueOf(205L))
         }
     }
 

@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import java.math.BigDecimal
 
 fun ReportCertificateCostCategory.toLinesModel() = CertificateCostCategoryBreakdown(
     staff = CertificateCostCategoryBreakdownLine(
@@ -115,3 +116,7 @@ fun CertificateCostCategoryBreakdown.fillInOverviewFields() = apply {
     total.fillInOverviewFields()
 }
 
+fun BudgetCostsCalculationResultFull.plusSpf(spfAmount: BigDecimal) = copy(
+    spfCost = spfCost.plus(spfAmount),
+    sum = sum.plus(spfAmount),
+)

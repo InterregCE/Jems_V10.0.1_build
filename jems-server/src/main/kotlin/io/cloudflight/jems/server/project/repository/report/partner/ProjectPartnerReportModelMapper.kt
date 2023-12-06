@@ -240,6 +240,7 @@ fun List<PreviouslyReportedFund>.toEntity(
         currentParked = ZERO,
         currentReIncluded = ZERO,
         previouslyReportedParked = fund.previouslyReportedParked,
+        previouslyReportedSpf = fund.previouslyReportedSpf,
         disabled = fund.disabled,
     )
 }
@@ -291,6 +292,12 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionPreviouslyReportedParked = previouslyReportedParkedAutoPublic,
         privateContributionPreviouslyReportedParked = previouslyReportedParkedPrivate,
         sumPreviouslyReportedParked = previouslyReportedParkedSum,
+
+        partnerContributionPreviouslyReportedSpf = previouslyReportedSpfPartner,
+        publicContributionPreviouslyReportedSpf = previouslyReportedSpfPublic,
+        automaticPublicContributionPreviouslyReportedSpf = previouslyReportedSpfAutoPublic,
+        privateContributionPreviouslyReportedSpf = previouslyReportedSpfPrivate,
+        sumPreviouslyReportedSpf = previouslyReportedSpfSum,
 
         partnerContributionCurrentReIncluded = ZERO,
         publicContributionCurrentReIncluded = ZERO,
@@ -389,6 +396,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherCurrent = ZERO,
         lumpSumCurrent = ZERO,
         unitCostCurrent = ZERO,
+        spfCostCurrent = ZERO,
         sumCurrent = ZERO,
 
         staffTotalEligibleAfterControl = ZERO,
@@ -400,6 +408,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherTotalEligibleAfterControl = ZERO,
         lumpSumTotalEligibleAfterControl = ZERO,
         unitCostTotalEligibleAfterControl = ZERO,
+        spfCostTotalEligibleAfterControl = ZERO,
         sumTotalEligibleAfterControl = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
@@ -411,6 +420,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherPreviouslyReported = previouslyReported.other,
         lumpSumPreviouslyReported = previouslyReported.lumpSum,
         unitCostPreviouslyReported = previouslyReported.unitCost,
+        spfCostPreviouslyReported = previouslyReported.spfCost,
         sumPreviouslyReported = previouslyReported.sum,
 
         staffPreviouslyValidated = previouslyValidated.staff,
@@ -422,6 +432,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherPreviouslyValidated = previouslyValidated.other,
         lumpSumPreviouslyValidated = previouslyValidated.lumpSum,
         unitCostPreviouslyValidated = previouslyValidated.unitCost,
+        spfCostPreviouslyValidated = previouslyValidated.spfCost,
         sumPreviouslyValidated = previouslyValidated.sum,
 
         // Parking
@@ -435,6 +446,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherCurrentParked = ZERO,
         lumpSumCurrentParked = ZERO,
         unitCostCurrentParked = ZERO,
+        spfCostCurrentParked = ZERO,
         sumCurrentParked = ZERO,
 
         staffCurrentReIncluded = ZERO,
@@ -446,6 +458,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherCurrentReIncluded = ZERO,
         lumpSumCurrentReIncluded = ZERO,
         unitCostCurrentReIncluded = ZERO,
+        spfCostCurrentReIncluded = ZERO,
         sumCurrentReIncluded = ZERO,
 
         staffPreviouslyReportedParked = previouslyReportedParked.staff,
@@ -457,6 +470,7 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         otherPreviouslyReportedParked = previouslyReportedParked.other,
         lumpSumPreviouslyReportedParked = previouslyReportedParked.lumpSum,
         unitCostPreviouslyReportedParked = previouslyReportedParked.unitCost,
+        spfCostPreviouslyReportedParked = previouslyReportedParked.spfCost,
         sumPreviouslyReportedParked = previouslyReportedParked.sum,
 
     )

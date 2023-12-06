@@ -59,6 +59,7 @@ class ProjectReportCertificateCostCategoryPersistenceProvider(
                 otherCurrent = currentlyReported.currentlyReported.other
                 lumpSumCurrent = currentlyReported.currentlyReported.lumpSum
                 unitCostCurrent = currentlyReported.currentlyReported.unitCost
+                spfCostCurrent = currentlyReported.currentlyReported.spfCost
                 sumCurrent = currentlyReported.currentlyReported.sum
             }
     }
@@ -80,6 +81,7 @@ class ProjectReportCertificateCostCategoryPersistenceProvider(
                 otherCurrentVerified = currentVerified.other
                 lumpSumCurrentVerified = currentVerified.lumpSum
                 unitCostCurrentVerified = currentVerified.unitCost
+                spfCostCurrentVerified = currentVerified.spfCost
                 sumCurrentVerified = currentVerified.sum
             }
     }

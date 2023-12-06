@@ -119,6 +119,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         private val financingSource = FinancingSourceBreakdownLine(
             partnerReportId = 1L,
             partnerReportNumber = 1,
+            spfLine = false,
             partnerId = 1L,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = 1,
@@ -134,6 +135,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         private val financingSourcesTotal = FinancingSourceBreakdownLine(
             partnerReportId = null,
             partnerReportNumber = null,
+            spfLine = false,
             partnerId = null,
             partnerRole = null,
             partnerNumber = null,
@@ -157,6 +159,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
             partnerNumber = 17,
             partnerReportId = 95L,
             partnerReportNumber = 65,
+            spfLine = false,
             requestedByPartner = BigDecimal.valueOf(17L),
             requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(18L),
             inVerificationSample = BigDecimal.valueOf(19L),
@@ -179,6 +182,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
             partnerNumber = 17,
             partnerReportId = 95L,
             partnerReportNumber = 65,
+            spfLine = false,
             requestedByPartner = BigDecimal.valueOf(17L),
             requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(18L),
             inVerificationSample = BigDecimal.valueOf(19L),
@@ -393,6 +397,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         val financingSourceLine = FinancingSourceBreakdownLineDTO(
             partnerReportId = 1L,
             partnerReportNumber = 1,
+            spfLine = false,
             partnerId = 1L,
             partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
             partnerNumber = 1,
@@ -408,6 +413,7 @@ class ProjectReportVerificationOverviewControllerTest : UnitTest() {
         val financingSourcesTotal = FinancingSourceBreakdownLineDTO(
             partnerReportId = null,
             partnerReportNumber = null,
+            spfLine = false,
             partnerId = null,
             partnerRole = null,
             partnerNumber = null,

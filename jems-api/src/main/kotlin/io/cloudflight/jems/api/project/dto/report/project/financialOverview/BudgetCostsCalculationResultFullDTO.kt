@@ -12,5 +12,6 @@ data class BudgetCostsCalculationResultFullDTO(
     val other: BigDecimal,
     val lumpSum: BigDecimal,
     val unitCost: BigDecimal,
+    val spfCost: BigDecimal,
     val sum: BigDecimal,
 )
