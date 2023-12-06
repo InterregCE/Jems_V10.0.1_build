@@ -1425,6 +1425,7 @@ context('Partner reports tests', () => {
               cy.wrap(column).get('mat-slide-toggle').click();
             });
             cy.get('button').contains('Save changes').click();
+            cy.contains('Report expenditure costs were saved successfully').should('be.visible');
 
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
             cy.contains('Run pre-submission check').scrollIntoView();
@@ -1551,6 +1552,7 @@ context('Partner reports tests', () => {
               cy.wrap(column).get('input').type('210,16');
             });
             cy.get('button').contains('Save changes').click();
+            cy.contains('Report expenditure costs were saved successfully').should('be.visible');
 
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
             //check expenditure summary table
