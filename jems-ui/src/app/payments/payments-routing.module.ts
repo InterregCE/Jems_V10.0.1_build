@@ -27,6 +27,7 @@ import {
 import {
   PaymentToEcCorrectionTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
+import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -184,6 +185,18 @@ export const paymentsRoutes: Routes = [
             component: PaymentToEcCorrectionTabComponent,
           },
         ]
+      },
+      {
+        path: 'audit',
+        canActivate: [PermissionGuard],
+        data: {
+          breadcrumb: 'payments.audit.breadcrumb',
+          permissionsOnly: [
+            PermissionsEnum.PaymentsAuditRetrieve,
+            PermissionsEnum.PaymentsAuditUpdate,
+          ],
+        },
+        component: PaymentsAuditPageComponent,
       },
     ]
   }

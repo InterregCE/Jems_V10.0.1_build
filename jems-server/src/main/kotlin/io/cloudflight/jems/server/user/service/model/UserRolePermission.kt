@@ -129,6 +129,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
     PaymentsToEcRetrieve("PaymentsToEcRetrieve"),
     PaymentsToEcUpdate("PaymentsToEcUpdate"),
+    PaymentsAuditRetrieve("PaymentsAuditRetrieve"),
+    PaymentsAuditUpdate("PaymentsAuditUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

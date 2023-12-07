@@ -39,6 +39,10 @@ import {
 import { PaymentToEcSelectTableComponent } from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-select-table/payment-to-ec-select-table.component';
 import { PaymentToEcCorrectionTabComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
 import { PaymentToEcCorrectionSelectTableComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-select-table/payment-to-ec-correction-select-table.component';
+import {PaymentsAuditPageComponent} from "./payments-audit/payments-audit-page.component";
+import {
+  PaymentToEcAuditAttachmentsComponent
+} from "./payments-audit/attachments/payment-to-ec-audit-attachments.component";
 
 @NgModule({
     declarations: [
@@ -59,6 +63,8 @@ import { PaymentToEcCorrectionSelectTableComponent } from './payments-to-ec/paym
         PaymentToEcSelectTableComponent,
         PaymentToEcCorrectionTabComponent,
         PaymentToEcCorrectionSelectTableComponent,
+        PaymentsAuditPageComponent,
+      PaymentToEcAuditAttachmentsComponent
     ],
     imports: [
         SharedModule,

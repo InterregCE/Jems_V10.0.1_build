@@ -12,4 +12,6 @@ interface ProgrammeFundPersistence {
 
     fun getFundsAlreadyInUse(): Iterable<Long>
 
+    fun getSelectedFunds(): List<ProgrammeFund>
+
 }

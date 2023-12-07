@@ -31,6 +31,12 @@ export class PaymentsPageSidenavService {
     baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/paymentApplicationsToEc`,
   };
 
+  private auditPage = {
+    headline: {i18nKey: 'payments.audit.header'},
+    route: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+    baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+  };
+
 
   constructor(private sideNavService: SideNavService,
               private permissionService: PermissionService,
@@ -59,6 +65,9 @@ export class PaymentsPageSidenavService {
     }
     if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
       bullets.push(this.paymentsToEcPage);
+    }
+    if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsAuditRetrieve || permission === PermissionsEnum.PaymentsAuditUpdate)) {
+      bullets.push(this.auditPage);
     }
 
     this.sideNavService.setHeadlines(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH, [

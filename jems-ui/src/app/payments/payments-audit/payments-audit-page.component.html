@@ -1,0 +1,108 @@
+<jems-main-page-template [needsCard]="true">
+    <ng-container *ngIf="data$ | async as data">
+        <div *ngIf="data.userCanView">
+            <h2>{{'payments.audit.header' | translate}}</h2>
+            <p>{{'payments.audit.subheader' | translate}}</p>
+            <p>{{'payments.audit.subheader.early.submission' | translate}}</p>
+        </div>
+
+        <h2>{{'payments.audit.export.table.header' | translate}}</h2>
+        <div jemsFormLayout>
+            <h3>{{'payments.audit.export.table.subheader' | translate}}</h3>
+            <div jemsNoWidthLimit class="mb-4"
+                 [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:5}, {minInRem:8}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
+                <div>
+                    <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
+                    <span>{{ 'programme.data.export.table.filename' | translate}}</span>
+                    <span>{{ 'payments.audit.export.label.fund.type' | translate}}</span>
+                    <span>{{ 'payments.audit.export.label.accounting.year' | translate}}</span>
+                    <span>{{ 'programme.data.export.table.request.time' | translate}}</span>
+                    <span>{{ 'programme.data.export.table.exportation.time' | translate}}</span>
+                    <span class="justify-center">{{ 'programme.data.export.table.download' | translate}}</span>
+                </div>
+
+                <div *ngIf="!data.paymentAuditExportMetadata.length">{{'programme.data.export.no.data.info' | translate}}</div>
+
+                <ng-container *ngFor="let exportedFileData of data.paymentAuditExportMetadata">
+                    <div>
+                        <span>{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
+                        <span>{{exportedFileData.generatedFile.name}}</span>
+                        <span>{{exportedFileData.fundType}}</span>
+                        <span>{{exportedFileData.accountingYear}}</span>
+                        <span>{{exportedFileData.requestTime | localeDate : 'L' : 'LT'}}</span>
+                        <span>{{exportedFileData.exportationTimeInSeconds | secondsToTimePipe | async}}</span>
+                        <span class="justify-center">
+                        <button *ngIf="exportedFileData.readyToDownload"
+                                (click)="downloadData(exportedFileData.pluginKey)" color="accent"
+                                mat-icon-button>
+                            <mat-icon>download</mat-icon>
+                        </button>
+                        <mat-icon color="warn" *ngIf="exportedFileData.failed">report_problem</mat-icon>
+                        <mat-spinner *ngIf="!exportedFileData.readyToDownload && !exportedFileData.failed"
+                                     [strokeWidth]="2"
+                                     [diameter]="24"></mat-spinner>
+                    </span>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!--        <p>{{'payments.audit.export.table.subheader' | translate}}</p>-->
+            <form jemsFormLayout [formGroup]="exportForm">
+                            <mat-form-field>
+<!--                                (selectionChange)="setPluginOptionsDescription($event.value, data.plugins)"-->
+                                <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
+                                <mat-select formControlName="pluginKey">
+                                    <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+                                        {{plugin.name}} - {{plugin.version}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                <jems-alert [show]="true"
+                            [type]="Alert.INFO">
+                    <p>{{'payments.audit.export.parameter.info' | translate}}</p>
+                    <p>{{'payments.audit.export.parameter.second.info' | translate}}</p>
+                </jems-alert>
+
+
+                <div>
+                    <mat-form-field class="parameter-selector-width">
+                        <mat-label>{{'payments.audit.export.fund.dropdown.placeholder' | translate}}</mat-label>
+                        <mat-select formControlName="fundType">
+                            <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                            <mat-option *ngFor="let fundType of data.fundTypes" [value]="fundType"
+                                        role="option">
+                                <mat-label>{{fundType}}</mat-label>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="parameter-selector-width ml-5">
+                        <mat-label>{{'payments.audit.export.accounting.year.dropdown.placeholder' | translate}}</mat-label>
+                        <mat-select formControlName="accountingYear">
+                            <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                            <mat-option *ngFor="let accountingYear of data.accountingYears"
+                                        [value]="accountingYear"
+                                        role="option">
+                                <mat-label>{{ accountingYear | asAccountingYear }}</mat-label>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <jems-pending-button jemsText
+                                     [disabled]="data.isExportDisabled"
+                                     (clicked)="exportData(pluginKey, fundType, accountingYear?.year)">
+                    {{'programme.data.export.label.export.button' | translate}}
+                </jems-pending-button>
+
+
+                <div class="attachments-section">
+
+                    <jems-payment-to-ec-audit-attachments></jems-payment-to-ec-audit-attachments>
+
+                </div>
+
+            </form>
+        </div>
+    </ng-container>
+</jems-main-page-template>
