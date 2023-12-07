@@ -466,7 +466,7 @@ context('Partner reports tests', () => {
                       cy.contains('Subcontract(s) saved successfully')
                         .should('be.visible');
 
-                      // Upload an attachment, then changes it's description and delete the attachment
+                      // Upload an attachment, then changes its description and delete the attachment
                       // file can be uploaded
                       cy.get('jems-partner-procurement-attachment input')
                         .scrollIntoView()
@@ -482,13 +482,8 @@ context('Partner reports tests', () => {
 
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
-
-                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription');
-
-                      cy.contains('button', 'Save')
-                        .click();
-
-                      cy.wait('@updateReportFileDescription');
+                      
+                      cy.contains('button', 'Save').should('be.visible').click();
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .should('be.visible');
@@ -502,7 +497,7 @@ context('Partner reports tests', () => {
                         .scrollIntoView()
                         .click();
 
-                      cy.contains('button', 'Confirm')
+                      cy.contains('button', 'Confirm').should('be.visible')
                         .click();
 
                       cy.contains("File \'fileToUpload.txt\' has been deleted successfully.")
