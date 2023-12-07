@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.partner.stateAid.deMinimis
 
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
-import io.cloudflight.jems.server.notification.inApp.service.project.ProjectNotificationRecipientServiceTest
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
 import io.cloudflight.jems.server.nuts.entity.NutsRegion1
 import io.cloudflight.jems.server.nuts.entity.NutsRegion2
@@ -46,7 +45,6 @@ val fund1 = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERD
 val fund2 = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.IPA_III)
 val fund3 = ProgrammeFund(id = 3L, selected = true, type = ProgrammeFundType.OTHER)
 const val COUNTRY_AT = "Österreich"
-const val COUNTRY_AT_CODE = "AT"
 const val COUNTRY_SK = "Slovakia"
 const val COUNTRY_SK_CODE = "SK"
 const val LAST_APPROVED_VERSION = "1.0"
@@ -76,7 +74,7 @@ val addDates = listOf(
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 2, entryIntoForceDate = date2),
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 3, entryIntoForceDate = date3),
 )
-val expectedDateOfGrantingAid = addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate
+val expectedDateOfGrantingAid = addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate
 
 val memberStates = setOf(
     MemberStateForGranting(

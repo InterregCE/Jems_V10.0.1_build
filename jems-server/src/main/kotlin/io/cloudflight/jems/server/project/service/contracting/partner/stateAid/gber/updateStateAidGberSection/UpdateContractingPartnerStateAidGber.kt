@@ -46,7 +46,7 @@ class UpdateContractingPartnerStateAidGber(
 
         return ContractingPartnerStateAidGberSection(
             partnerId = updatedGberEntity.partnerId,
-            dateOfGrantingAid = projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+            dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
             partnerFunds = fundsSelectedByPartner,
             amountGrantingAid = updatedGberEntity.amountGrantingAid ?: BigDecimal.ZERO,
             naceGroupLevel = partnerData.nace,
