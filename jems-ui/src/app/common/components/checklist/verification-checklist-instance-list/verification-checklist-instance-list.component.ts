@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {
+  AvailableCorrectionsForPaymentDTO,
   ChecklistInstanceDTO,
   IdNamePairDTO,
   ProgrammeChecklistDetailDTO, ProjectReportDTO,
@@ -22,7 +23,7 @@ import {PermissionService} from '../../../../security/permissions/permission.ser
 import {SecurityService} from '../../../../security/security.service';
 import {LanguageStore} from '@common/services/language-store.service';
 import {DownloadService} from '@common/services/download.service';
-import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, map, shareReplay, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {ReportUtil} from '@project/common/report-util';
 import {ChecklistItem} from '@common/components/checklist/checklist-item';
@@ -57,6 +58,8 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
   relatedId: number;
   @Input()
   verificationReportVerificationFinalizedDate: Date | null;
+  @Input()
+  verificationReportVerificationReopeningDate: Date | null;
 
   projectId = Number(this.routingService.getParameter(this.activatedRoute, 'projectId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -128,7 +131,8 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
           (canEditVerification && ReportUtil.isVerificationReportOpen(reportStatus))
           ||
           (canEditVerification && reportStatus === ProjectReportDTO.StatusEnum.Finalized)
-        )
+        ),
+        shareReplay(1)
       );
   }
 
@@ -249,6 +253,24 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
       return true;
     }
     return createdAt > this.verificationReportVerificationFinalizedDate;
+  }
+
+  isChecklistCreatedAfterVerificationReopening(createdAt: Date): boolean {
+    if (this.verificationReportVerificationReopeningDate === null) {
+      return true;
+    }
+    return createdAt > this.verificationReportVerificationReopeningDate;
+  }
+
+  isChecklistDeletionDisabled(checklist: ChecklistInstanceDTO): Observable<boolean> {
+    const isDraft = checklist.status === this.Status.DRAFT;
+    const isCreator = this.currentUserIsCreator(checklist);
+    const isCreatedAfterReopening = this.isChecklistCreatedAfterVerificationReopening(checklist.createdAt);
+    const isCreatedAfterFinalization = this.isAfterVerificationChecklist(checklist.createdAt);
+
+    return this.userCanEditVerificationChecklists$.pipe(
+      map(userCanEditChecklists => !isCreatedAfterReopening || !isDraft || !isCreator || !isCreatedAfterFinalization || !userCanEditChecklists)
+    );
   }
 
   download(checklistId: number) {

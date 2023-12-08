@@ -1,12 +1,14 @@
 package io.cloudflight.jems.server.project.repository.report.project.verification
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.verification.expenditure.ProjectReportVerificationExpenditureEntity
+import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
@@ -228,6 +230,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
     lateinit var projectReportRepository: ProjectReportRepository
 
     @MockK
+    lateinit var reportParkedExpenditureRepository: PartnerReportParkedExpenditureRepository
+
+    @MockK
     lateinit var projectReportCertificatePersistence: ProjectReportCertificatePersistence
 
     @InjectMockKs
@@ -291,7 +296,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             amountAfterVerification = BigDecimal.valueOf(100),
             typologyOfErrorId = null,
             parked = true,
-            verificationComment = "JS/MA VERIFICATION COMMENT"
+            verificationComment = "JS/MA VERIFICATION COMMENT",
+            parkedOn = LAST_WEEK
         )
 
         val certificate = mockk<ProjectPartnerReportSubmissionSummary>()
@@ -307,6 +313,15 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             expenditureVerificationRepository
                 .findAllByExpenditurePartnerReportProjectReportId(PROJECT_REPORT_ID)
         } returns listOf(expenditureVerificationEntity)
+
+        val partnerReportParkedExpenditureEntity = mockk<PartnerReportParkedExpenditureEntity>()
+        every { partnerReportParkedExpenditureEntity.parkedFromExpenditureId } returns EXPENDITURE_ID_1
+        every { partnerReportParkedExpenditureEntity.parkedOn } returns LAST_WEEK
+
+        every {reportParkedExpenditureRepository
+            .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1))
+        } returns listOf(partnerReportParkedExpenditureEntity)
+
 
         assertThat(
             projectReportVerificationExpenditurePersistenceProvider.getProjectReportExpenditureVerification(
@@ -386,7 +401,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
         val expenditureVerificationEntity1 = ProjectReportVerificationExpenditureEntity(
             expenditure = expenditure1,
-            expenditureId = expenditure2.id,
+            expenditureId = expenditure1.id,
             partOfVerificationSample = false,
             deductedByJs = BigDecimal.valueOf(0),
             deductedByMa = BigDecimal.valueOf(0),
@@ -417,7 +432,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 amountAfterVerification = BigDecimal.valueOf(200),
                 typologyOfErrorId = null,
                 parked = false,
-                verificationComment = "JS/MA VERIFICATION COMMENT, UNPARKED"
+                verificationComment = "JS/MA VERIFICATION COMMENT, UNPARKED",
+                parkedOn = null
             ),
             ProjectReportVerificationExpenditureLine(
                 expenditure = expenditure2.toExpenditurePart(procurementEntity),
@@ -427,10 +443,18 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 amountAfterVerification = BigDecimal.valueOf(0),
                 typologyOfErrorId = null,
                 parked = true,
-                verificationComment = "JS/MA VERIFICATION COMMENT, PARKED"
+                verificationComment = "JS/MA VERIFICATION COMMENT, PARKED",
+                parkedOn = LAST_WEEK
             )
-
         )
+
+        val partnerReportParkedExpenditureEntity = mockk<PartnerReportParkedExpenditureEntity>()
+        every { partnerReportParkedExpenditureEntity.parkedFromExpenditureId } returns EXPENDITURE_ID_2
+        every { partnerReportParkedExpenditureEntity.parkedOn } returns LAST_WEEK
+
+        every {reportParkedExpenditureRepository
+                .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1, EXPENDITURE_ID_2))
+        } returns listOf(partnerReportParkedExpenditureEntity)
 
         every {
             expenditureVerificationRepository

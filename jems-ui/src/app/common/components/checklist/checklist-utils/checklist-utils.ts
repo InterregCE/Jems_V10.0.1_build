@@ -68,14 +68,14 @@ export class ChecklistUtilsComponent {
         {
           displayedColumn: 'common.id',
           elementProperty: 'id',
-          columnWidth: ColumnWidth.IdColumn,
+          columnWidth: ColumnWidth.ThinColumn,
           sortProperty: 'id',
         },
         {
           displayedColumn: 'common.status',
           elementTranslationKey: 'checklists.instance.status',
           elementProperty: 'status',
-          columnWidth: ColumnWidth.DateColumn,
+          columnWidth: ColumnWidth.SmallColumn,
           sortProperty: 'status',
         },
         {
@@ -100,7 +100,7 @@ export class ChecklistUtilsComponent {
         {
           displayedColumn: 'file.table.column.name.description',
           customCellTemplate: description,
-          columnWidth: ColumnWidth.extraWideColumn,
+          columnWidth: ColumnWidth.WideColumn,
           sortProperty: 'description'
         },
         {

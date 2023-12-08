@@ -44,4 +44,5 @@ interface PaymentApplicationToEcLinkPersistence {
 
     fun getCumulativeTotalForEcPayment(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLine>
 
+    fun getPaymentToEcIdsProjectReportIncluded(projectReportId: Long): Set<Long>
 }

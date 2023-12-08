@@ -15,7 +15,7 @@
                                             (onError)="showErrorMessage($event)">
             </jems-start-verification-report>
 
-            <button *ngIf="data.hasReopenPermission && (data.projectReport.status === StatusEnum.Submitted || data.projectReport.status === StatusEnum.InVerification) "
+            <button *ngIf="data.hasReopenPermission && ReportUtil.projectReportCanBeReopened(data.projectReport.status)"
                     mat-stroked-button type="button" class="ml-2"
                     (click)="reopenReport(data.projectReport.projectId, data.projectReport.id, data.projectReport.reportNumber)">
                 <mat-icon>undo</mat-icon>

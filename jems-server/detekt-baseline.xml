@@ -4,7 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:CallValidator.kt$CallValidator$call.is2StepProcedureEnabled() &amp;&amp; (call.endDateStep1 == null || call.endDateStep1!!.isBefore(call.startDate) || call.endDateStep1!!.isAfter(call.endDate))</ID>
     <ID>ComplexCondition:DeleteControlChecklistInstance.kt$DeleteControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(checklistToBeDeleted, report.controlEnd) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
-    <ID>ComplexCondition:DeleteVerificationChecklistInstance.kt$DeleteVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(checklistToBeDeleted, report.verificationEndDate) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
+    <ID>ComplexCondition:DeleteVerificationChecklistInstance.kt$DeleteVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(checklistToBeDeleted.createdAt, report) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
     <ID>ComplexCondition:GetChecklistInstanceDetail.kt$GetChecklistInstanceDetail$checklistDetail.relatedToId != relatedToId || (isNotAllowedToUpdate(relatedToId, checklistDetail) &amp;&amp; (isNotVisible(checklistDetail) || canNotViewChecklist(relatedToId)))</ID>
     <ID>ComplexCondition:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)</ID>
     <ID>ComplexCondition:ProgrammeUnitCostValidation.kt$costPerUnit == null || costPerUnit &lt;= BigDecimal.ZERO || costPerUnit &gt; MAX_COST || costPerUnit.scale() &gt; 2</ID>
@@ -17,8 +17,8 @@
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UpdateLumpSum.kt$UpdateLumpSum$existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 || existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed || existingLumpSum.phase != updatedLumpSum.phase || existingLumpSum.categories != updatedLumpSum.categories</ID>
-    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
-    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || statusNotChanged || isFinishedNotByAuthor</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(existing.createdAt, report) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(existing.createdAt, report) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UploadProjectFile.kt$UploadProjectFile$fileTypeCategory.type == ProjectFileCategoryType.ALL || fileTypeCategory.type == ProjectFileCategoryType.PARTNER &amp;&amp; fileTypeCategory.id == null || fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT &amp;&amp; fileTypeCategory.id == null</ID>
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
@@ -85,9 +85,6 @@
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
     <ID>MaxLineLength:OutputIndicatorControllerTest.kt$OutputIndicatorControllerTest$fun</ID>
     <ID>MaxLineLength:OutputIndicatorRepository.kt$OutputIndicatorRepository$fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable&lt;OutputIndicatorEntity&gt;</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)</ID>
     <ID>MaxLineLength:PartnerPersistenceProvider.kt$PartnerPersistenceProvider$)</ID>
     <ID>MaxLineLength:ProgrammeAuditFactory.kt$.</ID>
     <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "FAILED upload of document $fileName to project application $projectId for Investment ${projectFileCategory.id} by $userId"</ID>
@@ -612,6 +609,7 @@
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
+    <ID>ThrowsCount:ReOpenVerificationProjectReport.kt$ReOpenVerificationProjectReport$private fun validateReportCanBeReOpened(report: ProjectReportModel)</ID>
     <ID>ThrowsCount:UpdateContractingReporting.kt$UpdateContractingReporting$private fun validateInputData( deadlines: Collection&lt;ProjectContractingReportingSchedule&gt;, oldDeadlines: Map&lt;Long, ProjectContractingReportingSchedule&gt;, periods: Map&lt;Int, ProjectPeriod&gt;, startDate: LocalDate, projectId: Long )</ID>
     <ID>ThrowsCount:UpdateProjectResults.kt$UpdateProjectResults$private fun validateProjectResultsWithProjectStatus(projectId: Long, projectResults: List&lt;ProjectResult&gt;)</ID>
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>

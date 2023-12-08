@@ -10,4 +10,5 @@ interface ProjectReportVerificationCertificateCoFinancingOverviewRepository :
 
     fun findAllByPartnerReportProjectReportId(projectReportId: Long): List<ProjectReportVerificationCertificateContributionOverviewEntity>
 
+    fun deleteAllByPartnerReportProjectReportId(projectReportId: Long)
 }

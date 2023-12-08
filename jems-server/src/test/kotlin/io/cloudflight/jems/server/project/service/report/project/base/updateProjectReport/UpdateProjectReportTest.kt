@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
@@ -54,6 +56,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             every { report.deadlineId } returns deadlineId
             every { report.type } returns type
             every { report.status } returns status
+            every { report.id } returns 222L
             return report
         }
 
@@ -82,7 +85,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO,
-            lastVerificationReOpening = mockk(),
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -108,7 +111,8 @@ internal class UpdateProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
-            verificationEndDate = NEXT_MONTH
+            verificationEndDate = NEXT_MONTH,
+            verificationLastReOpenDate = null
         )
     }
 
@@ -120,13 +124,19 @@ internal class UpdateProjectReportTest : UnitTest() {
     private lateinit var deadlinePersistence: ContractingReportingPersistence
     @MockK
     private lateinit var certificatePersistence: ProjectReportCertificatePersistence
+    @MockK
+    private lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    private lateinit var paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
+
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence, deadlinePersistence, certificatePersistence)
+        clearMocks(reportPersistence, projectPersistence, deadlinePersistence,
+            certificatePersistence, paymentPersistence, paymentApplicationToEcLinkPersistence)
     }
 
     @ParameterizedTest(name = "update with deadline link - {0}")
@@ -138,6 +148,8 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns
             listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
         every { deadlinePersistence.getContractingReportingDeadline(projectId, deadlineId = 7L) } returns deadline(7L)
+        every { paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(222L) } returns setOf()
+        every { paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(222L) } returns setOf()
 
         val slotStartDate = slot<LocalDate>()
         val slotEndDate = slot<LocalDate>()
@@ -172,6 +184,8 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { reportPersistence.getReportById(projectId, reportId = 82L) } returns report("5.2a", status, ContractingDeadlineType.Content)
         every { projectPersistence.getProjectPeriods(projectId, "5.2a") } returns
             listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
+        every { paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(222L) } returns setOf()
+        every { paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(222L) } returns setOf()
 
         val slotStartDate = slot<LocalDate>()
         val slotEndDate = slot<LocalDate>()

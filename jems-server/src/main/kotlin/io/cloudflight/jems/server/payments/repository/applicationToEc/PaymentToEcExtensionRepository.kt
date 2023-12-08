@@ -9,4 +9,6 @@ interface PaymentToEcExtensionRepository: JpaRepository<PaymentToEcExtensionEnti
 
     fun findAllByPaymentApplicationToEcId(ecPaymentId: Long): List<PaymentToEcExtensionEntity>
 
+    fun findAllByPaymentApplicationToEcNotNullAndPaymentProjectReportId(projectReportId: Long): List<PaymentToEcExtensionEntity>
+
 }

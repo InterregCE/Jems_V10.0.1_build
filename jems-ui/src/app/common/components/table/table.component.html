@@ -31,7 +31,7 @@
                                  [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
                                  [class.medium-column-no-limit]="column.columnWidth === ColumnWidth.MediumColumn"
                                  [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
-                                 [class.deletion-column-width]="column.columnWidth === ColumnWidth.DeletionColumn"
+                                 [class.thin-column-width]="column.columnWidth === ColumnWidth.ThinColumn"
                                  [mat-sort-header]="column.sortProperty"
                                  [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell"
                                  [arrowPosition]="column.columnType === ColumnType.Decimal ? 'before' : 'after'">
@@ -54,7 +54,7 @@
                         [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
                         [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
                         [class.justify-end]="column.columnType === ColumnType.Decimal"
-                        [class.deletion-column-width]="column.columnWidth === ColumnWidth.DeletionColumn"
+                        [class.thin-column-width]="column.columnWidth === ColumnWidth.ThinColumn"
                         *matHeaderCellDef class="cell">
                     <span jemsText maxLines="2">{{column.displayedColumn | translate}}</span>
                     <jems-context-info *ngIf="column.infoMessage"
@@ -74,7 +74,7 @@
                       [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                       [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
                       [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
-                      [class.deletion-column-width]="column.columnWidth === ColumnWidth.DeletionColumn"
+                      [class.thin-column-width]="column.columnWidth === ColumnWidth.ThinColumn"
                       (click)="column.clickable === false ? $event.stopPropagation() : false"
                       class="cell">
                 <div *ngIf="!column.customCellTemplate; else customCellTemplate"

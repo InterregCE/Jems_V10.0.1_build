@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.getMyProje
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenVerificationProjectReport.ReOpenVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
@@ -72,7 +73,8 @@ internal class ProjectReportControllerTest : UnitTest() {
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
-        verificationEndDate = TODAY
+        verificationEndDate = TODAY,
+        verificationLastReOpenDate = null
     )
 
     private val expectedReport = ProjectReportDTO(
@@ -95,6 +97,9 @@ internal class ProjectReportControllerTest : UnitTest() {
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         verificationEndDate = TODAY,
+        verificationLastReOpenDate = null,
+        paymentIdsInstallmentExists = setOf(),
+        paymentToEcIdsReportIncluded = setOf()
     )
 
     private val reportSummary = ProjectReportSummary(
@@ -179,6 +184,9 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getMyProjectReports: GetMyProjectReportsInteractor
+
+    @MockK
+    private lateinit var reOpenVerificationReport: ReOpenVerificationProjectReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -304,5 +312,11 @@ internal class ProjectReportControllerTest : UnitTest() {
         every { getMyProjectReports.findAllOfMine(Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
         assertThat(controller.getMyProjectReports(Pageable.unpaged()).content)
             .containsExactly(expectedReportSummary)
+    }
+
+    @Test
+    fun reOpenVerificationReport() {
+        every { reOpenVerificationReport.reOpen(21L, reportId = 10L) } returns ProjectReportStatus.ReOpenFinalized
+        assertThat(controller.reopenVerificationOnProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.ReOpenFinalized)
     }
 }

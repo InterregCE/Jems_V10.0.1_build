@@ -89,7 +89,7 @@
     <ng-container>
       <button
           (click)="delete(checklist);$event.stopPropagation();"
-          [disabled]="!isAfterVerificationChecklist(checklist.createdAt) || checklist.status !== Status.DRAFT || (userCanEditVerificationChecklists$ | async) === false || !currentUserIsCreator(checklist)"
+          [disabled]="isChecklistDeletionDisabled(checklist) | async"
           color="accent"
           mat-icon-button
           matTooltip="{{'common.delete.entry.tooltip' | translate}}"

@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {ActivatedRoute} from '@angular/router';
 import {RoutingService} from '@common/services/routing.service';
-import {map} from 'rxjs/operators';
+import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectReportDTO} from '@cat/api';
 import {
   ProjectReportDetailPageStore
@@ -15,6 +15,8 @@ import {
 import {
   ProjectVerificationReportStore
 } from '@project/project-application/report/project-verification-report/project-verification-report-store.service';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-project-verification-report',
@@ -28,9 +30,11 @@ export class ProjectVerificationReportComponent {
     projectReport: ProjectReportDTO;
     isVisibleForMonitoringUser: boolean;
     isVisibleForApplicantUser: boolean;
+    hasReopenPermission: boolean;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
   StatusEnum = ProjectReportDTO.StatusEnum;
+  actionPending = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -38,16 +42,19 @@ export class ProjectVerificationReportComponent {
     private projectReportDetailStore: ProjectReportDetailPageStore,
     private reportPageStore: ProjectReportPageStore,
     private projectVerificationReportStore: ProjectVerificationReportStore,
+    private dialog: MatDialog,
   ) {
     this.data$ = combineLatest([
       this.projectReportDetailStore.projectReport$,
       this.projectVerificationReportStore.hasMonitoringUserView$,
-      this.projectVerificationReportStore.hasProjectCollaboratorView$
+      this.projectVerificationReportStore.hasProjectCollaboratorView$,
+      this.projectVerificationReportStore.hasReopenPermission$
     ]).pipe(
-      map(([projectReport, hasMonitoringUserView, hasProjectCollaboratorView]) => ({
+      map(([projectReport, hasMonitoringUserView, hasProjectCollaboratorView, hasReopenPermission]) => ({
         projectReport,
         isVisibleForMonitoringUser: hasMonitoringUserView,
-        isVisibleForApplicantUser: hasProjectCollaboratorView
+        isVisibleForApplicantUser: hasProjectCollaboratorView,
+        hasReopenPermission
       }))
     );
   }
@@ -69,5 +76,37 @@ export class ProjectVerificationReportComponent {
 
   isFinance(type: ProjectReportDTO.TypeEnum) {
     return [ProjectReportDTO.TypeEnum.Finance, ProjectReportDTO.TypeEnum.Both].includes(type);
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    }, 4000);
+    return of(null);
+  }
+
+  private redirectToReportList(): void {
+    this.router.navigate(['../..'], {relativeTo: this.activatedRoute});
+  }
+
+  reopenVerificationReport(projectId: number, projectReportId: number){
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.project.report.verification.reopen',
+        message: {i18nKey: 'project.application.project.report.verification.reopen.confirm.message'}
+      }).pipe(
+      take(1),
+      filter(confirmed => confirmed),
+      switchMap(() => {
+        this.actionPending = true;
+        return this.projectVerificationReportStore.reopenVerificationReport(projectId, projectReportId).pipe(
+          tap(() => this.redirectToReportList()),
+          catchError((error) => this.showErrorMessage(error.error)),
+          finalize(() => this.actionPending = false)
+        );
+      }),
+    ).subscribe();
   }
 }

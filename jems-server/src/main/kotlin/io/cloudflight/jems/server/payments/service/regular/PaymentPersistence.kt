@@ -78,4 +78,7 @@ interface PaymentPersistence {
 
     fun getPaymentsLinkedToEcPayment(ecPaymentId: Long):  List<PaymentToEcExtension>
 
+    fun getPaymentIdsInstallmentsExistsByProjectReportId(projectReportId: Long): Set<Long>
+
+    fun deleteRegularPayments(projectReportId: Long)
 }

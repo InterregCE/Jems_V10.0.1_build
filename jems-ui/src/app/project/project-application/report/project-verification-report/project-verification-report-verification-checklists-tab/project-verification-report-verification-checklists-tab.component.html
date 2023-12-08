@@ -6,6 +6,7 @@
       <jems-verification-checklist-instance-list [relatedType]="ChecklistType.VERIFICATION"
                                             [relatedId]="data.projectVerificationReport.id"
                                             [verificationReportVerificationFinalizedDate]="(verificationReport$ | async)?.verificationEndDate"
+                                            [verificationReportVerificationReopeningDate]="(verificationReport$ | async)?.verificationLastReOpenDate"
                                             jemsNoWidthLimit>
       </jems-verification-checklist-instance-list>
     </ng-container>

@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
@@ -8,6 +10,7 @@ import io.cloudflight.jems.server.project.service.contracting.reporting.Contract
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
@@ -19,7 +22,9 @@ class UpdateProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val deadlinePersistence: ContractingReportingPersistence,
-    private val certificatePersistence: ProjectReportCertificatePersistence
+    private val certificatePersistence: ProjectReportCertificatePersistence,
+    private val paymentPersistence: PaymentPersistence,
+    private val paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
 ) : UpdateProjectReportInteractor {
 
     companion object {
@@ -118,16 +123,30 @@ class UpdateProjectReport(
         if (oldType.hasFinance() && newType.doesNotHaveFinance())
             certificatePersistence.deselectCertificatesOfProjectReport(projectReportId = reportId)
 
+        val paymentIdsInstallmentExists = report.getPaymentIdsInstallmentExists()
+        val paymentToEcIdsReportIncluded = report.getPaymentToEcIdsReportIncluded()
+
         return reportPersistence.updateReport(
             projectId = projectId,
             reportId = reportId,
             startDate = data.startDate,
             endDate = data.endDate,
             deadline =  data.toDeadlineObject(),
-        ).toServiceModel(periodResolver = { periodNumber -> periods[periodNumber]!! })
+        ).toServiceModel(
+            periodResolver = { periodNumber -> periods[periodNumber]!! },
+            paymentIdsInstallmentExists = paymentIdsInstallmentExists,
+            paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded
+        )
     }
 
     private fun ContractingDeadlineType?.hasFinance() = this?.hasFinance() ?: false
     private fun ContractingDeadlineType?.doesNotHaveFinance() = this == ContractingDeadlineType.Content
+
+    private fun ProjectReportModel.getPaymentIdsInstallmentExists() =
+        if (this.status.isFinalized()) paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(this.id) else setOf()
+
+    private fun ProjectReportModel.getPaymentToEcIdsReportIncluded() =
+        if (this.status.isFinalized()) paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(this.id) else setOf()
+
 
 }

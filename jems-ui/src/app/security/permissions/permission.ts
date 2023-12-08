@@ -289,6 +289,12 @@ export class Permission {
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingProjectReOpen]
             },
+            {
+              name: 'project.application.project.report.verification.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingVerificationReOpen],
+              infoMessage: 'project.application.project.report.verification.reopen.permission.info',
+            },
           ]
         },
         {

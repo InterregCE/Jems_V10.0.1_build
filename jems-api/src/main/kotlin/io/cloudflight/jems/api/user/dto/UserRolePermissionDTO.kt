@@ -28,6 +28,7 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectReportingVerificationProjectView("ProjectReportingVerificationProjectView"),
     ProjectReportingVerificationProjectEdit("ProjectReportingVerificationProjectEdit"),
     ProjectReportingVerificationFinalize("ProjectReportingVerificationFinalize"),
+    ProjectReportingVerificationReOpen("ProjectReportingVerificationReOpen"),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl"),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),

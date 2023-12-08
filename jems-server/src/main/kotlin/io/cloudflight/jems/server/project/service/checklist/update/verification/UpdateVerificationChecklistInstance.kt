@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
-import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedAfterVerification
+import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedBeforeDateLimits
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
@@ -32,8 +32,8 @@ class UpdateVerificationChecklistInstance(
         val existing = persistence.getChecklistDetail(checklist.id, ProgrammeChecklistType.VERIFICATION, reportId)
         val report = reportPersistence.getReportById(projectId, reportId)
 
-        if (report.status.verificationNotStartedYet() ||
-            isChecklistCreatedAfterVerification(existing, report.verificationEndDate)
+        if (report.status.verificationNotStartedYet()
+            || isChecklistCreatedBeforeDateLimits(existing.createdAt, report)
             || existing.status != checklist.status
             || (securityService.currentUser?.user?.id != existing.creatorId))
             throw UpdateVerificationChecklistInstanceStatusNotAllowedException()
@@ -59,7 +59,7 @@ class UpdateVerificationChecklistInstance(
         val isNotAuthor = securityService.getUserIdOrThrow() != existing.creatorId
         val isFinishedNotByAuthor = status == ChecklistInstanceStatus.FINISHED && isNotAuthor
 
-        if (report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate)
+        if (report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(existing.createdAt, report)
             || statusNotChanged || isFinishedNotByAuthor)
             throw UpdateVerificationChecklistInstanceStatusNotAllowedException()
 

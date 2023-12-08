@@ -299,4 +299,10 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     override fun getCumulativeTotalForEcPayment(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLine> =
         ecPaymentPriorityAxisCumulativeOverviewRepository.getAllByPaymentApplicationToEcId(ecPaymentId).toOverviewModels()
 
+    @Transactional(readOnly = true)
+    override fun getPaymentToEcIdsProjectReportIncluded(projectReportId: Long): Set<Long> =
+        ecPaymentExtensionRepository.findAllByPaymentApplicationToEcNotNullAndPaymentProjectReportId(projectReportId).map {
+            it.paymentApplicationToEc!!.id
+        }.toSet()
+
 }

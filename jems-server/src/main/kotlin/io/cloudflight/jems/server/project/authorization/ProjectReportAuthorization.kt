@@ -33,6 +33,10 @@ annotation class CanStartProjectReportVerification
 @PreAuthorize("@projectReportAuthorization.canReOpenProjectReport(#projectId)")
 annotation class CanReOpenProjectReport
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canReOpenVerificationProjectReport(#projectId)")
+annotation class CanReOpenVerificationProjectReport
+
 @Component
 class ProjectReportAuthorization(
     override val securityService: SecurityService,
@@ -83,6 +87,11 @@ class ProjectReportAuthorization(
 
         return hasPermissionForProject(permission, projectId = projectId) // assigned programme user with reopen
                 || hasControllerPermission(permission, projectId = projectId) // controller with reopen
+    }
+
+    fun canReOpenVerificationProjectReport(projectId: Long): Boolean {
+        return hasPermissionForProject(UserRolePermission.ProjectReportingVerificationReOpen, projectId = projectId)
+            || hasControllerPermission(UserRolePermission.ProjectReportingVerificationReOpen, projectId = projectId)
     }
 
     private fun hasControllerPermission(permission: UserRolePermission, projectId: Long) =

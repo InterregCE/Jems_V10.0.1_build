@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedAfterVerification
+import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedBeforeDateLimits
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectVerificationReportChecklistDeleted
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -29,7 +29,7 @@ class DeleteVerificationChecklistInstance(
         val report = this.reportPersistence.getReportById(projectId, reportId)
 
         if (report.status.verificationNotStartedYet() ||
-            isChecklistCreatedAfterVerification(checklistToBeDeleted, report.verificationEndDate)  ||
+            isChecklistCreatedBeforeDateLimits(checklistToBeDeleted.createdAt, report)  ||
             checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED ||
             (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId))
                 throw DeleteVerificationChecklistInstanceStatusNotAllowedException()

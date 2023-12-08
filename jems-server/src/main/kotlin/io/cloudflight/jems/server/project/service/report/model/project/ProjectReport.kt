@@ -29,4 +29,8 @@ data class ProjectReport(
     val firstSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
+    val verificationLastReOpenDate: ZonedDateTime?,
+
+    val paymentIdsInstallmentExists: Set<Long> = setOf(),
+    val paymentToEcIdsReportIncluded: Set<Long> = setOf(),
 )

@@ -68,7 +68,8 @@ class ProjectReportFinancialOverviewPersistenceProvider(
             return@flatMap listOf(certificateLine).plus(certificateSplits)
         }
 
+        projectReportCoFinancingOverviewRepository.deleteAllByPartnerReportProjectReportId(projectReportId)
+        projectReportCoFinancingOverviewRepository.flush()
         return projectReportCoFinancingOverviewRepository.saveAll(lines).filter { it.programmeFund != null }.toModel()
-
     }
 }

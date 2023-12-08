@@ -93,7 +93,7 @@ export class PaymentsToEcPageComponent implements OnInit, AfterViewInit {
             this.tableConfiguration.columns.push({
               displayedColumn: 'common.delete.entry',
               columnType: ColumnType.CustomComponent,
-              columnWidth: ColumnWidth.DeletionColumn,
+              columnWidth: ColumnWidth.ThinColumn,
               customCellTemplate: this.deleteButtonCell
             });
           }

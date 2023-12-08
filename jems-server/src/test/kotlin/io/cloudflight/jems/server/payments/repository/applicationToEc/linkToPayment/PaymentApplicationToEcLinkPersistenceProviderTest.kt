@@ -663,4 +663,11 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             ))
     }
 
+    @Test
+    fun getPaymentToEcIdsProjectReportIncluded() {
+        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
+        every { ecPaymentExtensionRepository.findAllByPaymentApplicationToEcNotNullAndPaymentProjectReportId(99L) } returns
+            listOf(entity)
+        assertThat(persistenceProvider.getPaymentToEcIdsProjectReportIncluded(99L)).isEqualTo(setOf(1L))
+    }
 }

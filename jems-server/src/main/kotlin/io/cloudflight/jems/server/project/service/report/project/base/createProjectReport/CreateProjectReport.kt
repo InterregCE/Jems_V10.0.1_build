@@ -124,7 +124,7 @@ class CreateProjectReport(
 
         return reportCreatePersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
             auditPublisher.publishEvent(projectReportCreated(this, project, it))
-        }.toServiceModel { periodNumber -> periods[periodNumber]!! }
+        }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
     }
 
     private fun getPreviouslyReportedByPartner(

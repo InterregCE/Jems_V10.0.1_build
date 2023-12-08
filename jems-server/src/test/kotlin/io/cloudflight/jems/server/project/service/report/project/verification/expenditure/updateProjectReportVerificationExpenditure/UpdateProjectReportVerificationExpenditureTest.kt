@@ -159,7 +159,8 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
             amountAfterVerification = BigDecimal.valueOf(300),
             typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
             parked = false,
-            verificationComment = "VERIFICATION COMM"
+            verificationComment = "VERIFICATION COMM",
+            parkedOn = null
         )
 
         private val expectedExpenditureLine = ProjectReportVerificationExpenditureLine(
@@ -170,7 +171,8 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
             amountAfterVerification = BigDecimal.valueOf(300),
             typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
             parked = false,
-            verificationComment = "NEW VERIFICATION COMM"
+            verificationComment = "NEW VERIFICATION COMM",
+            parkedOn = null
         )
 
         fun expendituresToUpdate(verificationComment: String) = listOf(

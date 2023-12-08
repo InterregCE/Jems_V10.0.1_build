@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.verification
 
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
@@ -15,12 +16,17 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationRiskBased
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
-fun Collection<ProjectReportVerificationExpenditureEntity>.toExtendedModel(procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>) =
-    map {
-        it.toModel(procurement = with(it.expenditure) {
-            procurementId?.let { procurementsById[it] }
-        })
+fun Collection<ProjectReportVerificationExpenditureEntity>.toExtendedModel(
+    procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>,
+    parkedInfo: List<PartnerReportParkedExpenditureEntity>,
+) =
+    map { entity ->
+        entity.toModel(
+            procurement = entity.expenditure.procurementId?.let{ procurementsById[it] },
+            parkedOn = parkedInfo.find { p -> p.parkedFromExpenditureId == entity.expenditureId }?.parkedOn
+        )
     }
 
 fun PartnerReportExpenditureCostEntity.toEmptyVerificationEntity() =
@@ -33,17 +39,19 @@ fun PartnerReportExpenditureCostEntity.toEmptyVerificationEntity() =
         amountAfterVerification = this.certifiedAmount,
         typologyOfErrorId = null,
         parked = false,
-        verificationComment = null
+        verificationComment = null,
     )
 
 
 fun List<ProjectReportVerificationExpenditureEntity>.toModels(
     procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>,
+    parkedInfo: List<PartnerReportParkedExpenditureEntity>,
 ): List<ProjectReportVerificationExpenditureLine> = map {
     it.toModel(
         procurement = with(it.expenditure) {
             procurementId?.let { procurementsById[it] }
-        }
+        },
+        parkedOn = parkedInfo.find { p -> p.parkedFromExpenditureId == it.expenditureId }?.parkedOn
     )
 }
 
@@ -94,7 +102,7 @@ fun PartnerReportExpenditureCostEntity.toExpenditurePart(
     parkingMetadata = getParkingMetadata(),
 )
 
-fun ProjectReportVerificationExpenditureEntity.toModel(procurement: ProjectPartnerReportProcurementEntity?) =
+fun ProjectReportVerificationExpenditureEntity.toModel(procurement: ProjectPartnerReportProcurementEntity?, parkedOn: ZonedDateTime?) =
     ProjectReportVerificationExpenditureLine(
         expenditure = expenditure.toExpenditurePart(procurement),
         partOfVerificationSample = partOfVerificationSample,
@@ -103,7 +111,8 @@ fun ProjectReportVerificationExpenditureEntity.toModel(procurement: ProjectPartn
         amountAfterVerification = amountAfterVerification,
         typologyOfErrorId = typologyOfErrorId,
         parked = parked,
-        verificationComment = verificationComment
+        verificationComment = verificationComment,
+        parkedOn = parkedOn
     )
 
 fun ProjectReportEntity.toRiskBasedModel() =

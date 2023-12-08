@@ -89,7 +89,7 @@ class SubmitProjectReport(
             reportPersistence.reSubmitReport(
                 projectId = projectId,
                 reportId = reportId,
-                newStatus = report.status.submitStatus(hasVerificationStartedBefore = report.hasControlReopenedBefore()),
+                newStatus = report.status.submitStatus(hasVerificationStartedBefore = report.hasVerificationReopenedBefore()),
                 submissionTime = ZonedDateTime.now(),
             )
 
@@ -195,7 +195,7 @@ class SubmitProjectReport(
             }
         }
 
-    private fun ProjectReportModel.hasControlReopenedBefore() = this.lastVerificationReOpening != null
+    private fun ProjectReportModel.hasVerificationReopenedBefore() = this.lastVerificationReOpening != null
 
     private fun deleteFinanceData(projectId: Long, reportId: Long) {
         reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId)

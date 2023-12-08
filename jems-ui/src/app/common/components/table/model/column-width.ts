@@ -9,5 +9,5 @@ export enum ColumnWidth {
     MediumColumn,
     MediumColumnNoLimit,
     SmallColumn,
-    DeletionColumn
+    ThinColumn,
 }
