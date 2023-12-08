@@ -72,27 +72,28 @@
             <div class="corrections">
                 <mat-form-field class="w-100">
                     <mat-label>{{'project.application.reporting.corrections.title' | translate}}</mat-label>
-                    <mat-chip-list #chipList>
+                    <mat-chip-list #chipList
+                                   [disabled]="!canEdit">
                         <mat-chip *ngFor="let correction of correctionsForm().value;let i = index"
                                   [selectable]="false"
                                   [removable]="canEdit"
                                   (removed)="removeCorrection(i)">
                             {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
-                            :{ auditControlNumber: correction.auditControlNumber, correctionNumber: correction.correctionNumber } }}
+                            :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.correctionNumber} }}
                             <mat-icon matChipRemove *ngIf="canEdit">cancel</mat-icon>
                         </mat-chip>
                         <input [disabled]="!canEdit"
-                                [placeholder]="canEdit ? ('project.application.form.section.modification.search.correction' | translate) : ''"
-                                #filterCorrections
-                                [matAutocomplete]="auto"
-                                [matChipInputFor]="chipList"
-                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                aria-label="partner to add">
+                               [placeholder]="canEdit ? ('project.application.form.section.modification.search.correction' | translate) : ''"
+                               #filterCorrections
+                               [matAutocomplete]="auto"
+                               [matChipInputFor]="chipList"
+                               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                               aria-label="partner to add">
                     </mat-chip-list>
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addCorrection($event.option.value); filterCorrections.blur();">
                         <mat-option *ngFor="let correction of availableCorrections" [value]="correction.id">
                             {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
-                            :{ auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr } }}
+                            :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr} }}
                         </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
