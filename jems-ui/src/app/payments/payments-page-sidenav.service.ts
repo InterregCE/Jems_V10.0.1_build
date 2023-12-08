@@ -5,8 +5,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {combineLatest} from 'rxjs';
 import {UserRoleDTO} from '@cat/api';
 import {PermissionService} from '../security/permissions/permission.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Injectable()
@@ -35,16 +35,18 @@ export class PaymentsPageSidenavService {
   constructor(private sideNavService: SideNavService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
-    combineLatest([this.routingService.routeChanges(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH), this.permissionService.permissionsChanged()])
-      .pipe(
-        filter(([paymentsPath]) => paymentsPath),
-        tap(([paymentsPath, permissions]) => this.init(permissions as PermissionsEnum[])),
-        untilDestroyed(this)
-      ).subscribe();
+    combineLatest([
+      this.routingService.routeChanges(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH),
+      this.permissionService.permissionsChanged()
+    ]).pipe(
+      filter(([paymentsPath, permissions]) => paymentsPath),
+      tap(([paymentsPath, permissions]) => this.init(permissions as PermissionsEnum[])),
+      untilDestroyed(this)
+    ).subscribe();
   }
 
   private init(permissions: PermissionsEnum[]): void {
-      this.setSideNavLinks(permissions);
+    this.setSideNavLinks(permissions);
   }
 
   setSideNavLinks(permissions: PermissionsEnum[]) {
@@ -77,15 +79,16 @@ export class PaymentsPageSidenavService {
   }
 
   public goToPaymentsToProjects(): void {
-    this.sideNavService.navigate(this.paymentsToProjectsPage);
+    // replaceUrl because if you navigate back to /payments, you will be caught in infinite loop
+    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
   }
 
   public goToAdvancePayments(): void {
-    this.sideNavService.navigate(this.advancePaymentsPage);
+    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
   }
 
-  public goToPaymentsToEc(): void{
-    this.sideNavService.navigate(this.paymentsToEcPage);
+  public goToPaymentsToEc(): void {
+    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
   }
 
 }
