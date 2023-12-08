@@ -310,10 +310,13 @@ class AuditControlCorrectionPersistenceProvider(
                 .on(specProjectContractingMonitoringEntity.projectId.eq(specProjectEntity.id))
             .where(
                 filter.transformToWhereClause(specCorrection, specCorrectionProgrammeMeasure, specPaymentToEcCorrectionExtensionEntity)
-            )
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
+            ).apply{
+                if (pageable.isPaged){
+                    this.offset(pageable.offset)
+                        .limit(pageable.pageSize.toLong())
+                        .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
+                }
+            }
             .fetch()
 
         return results.toPaymentToEcCorrectionPageResult(pageable)

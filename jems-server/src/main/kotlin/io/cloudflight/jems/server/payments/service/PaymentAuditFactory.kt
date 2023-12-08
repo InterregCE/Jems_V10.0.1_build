@@ -16,6 +16,8 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import java.math.RoundingMode
 
 fun monitoringFtlsReadyForPayment(
@@ -275,6 +277,33 @@ fun paymentApplicationToEcDeleted(
                 "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
                         paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
                 } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate} was deleted"
+        )
+        .build()
+)
+
+private fun paymentApplicationToEcFileUploadSuccess(
+    context: Any,
+    type: String,
+    name: String,
+    location: String,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_FILE_UPLOADED_SUCCESSFULLY)
+            .description("File (of type $type) \"$name\" has been uploaded to $location")
+            .build()
+    )
+
+fun paymentApplicationToEcAuditExportCreated(
+    context: Any,
+    programmeFundType: String?,
+    accountingYear: Short?
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_TRIGGERED)
+        .description(
+            "An audit export was generated for payments to ec with programme fund type ${programmeFundType} and accounting year " +
+                    "${accountingYear}"
         )
         .build()
 )

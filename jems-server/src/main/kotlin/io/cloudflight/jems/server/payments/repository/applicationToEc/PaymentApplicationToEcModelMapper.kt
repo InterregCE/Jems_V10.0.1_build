@@ -25,6 +25,8 @@ private val mapper = Mappers.getMapper(PaymentApplicationToEcModelMapper::class.
 fun PaymentApplicationToEcEntity.toModel(): PaymentApplicationToEc = mapper.map(this)
 fun Page<PaymentApplicationToEcEntity>.toModel() = map { it.toModel() }
 
+fun List<PaymentApplicationToEcEntity>.toDetailModel() = map { it.toDetailModel() }
+
 fun PaymentApplicationToEcEntity.toDetailModel() = PaymentApplicationToEcDetail(
     id = id,
     status = status,
