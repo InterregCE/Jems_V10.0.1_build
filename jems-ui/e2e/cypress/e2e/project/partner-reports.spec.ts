@@ -8,7 +8,7 @@ import partnerReportExpenditures from '../../fixtures/api/partnerReport/partnerR
 import partnerParkedExpenditures from '../../fixtures/api/partnerReport/partnerParkedExpenditures.json';
 import approvalInfo from '../../fixtures/api/application/modification/approval.info.json';
 import partner from '../../fixtures/api/application/partner/partner.json';
-import {partnerReportPage} from './partner-reports.pom';
+import {partnerReportPage} from './reports-page.pom';
 import controlReportIdentification from '../../fixtures/api/partnerControlReport/controlReportIdentification.json';
 
 const costCategories = [
@@ -482,7 +482,7 @@ context('Partner reports tests', () => {
 
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
-                      
+
                       cy.contains('button', 'Save').should('be.visible').click();
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
