@@ -5,7 +5,12 @@
     "types": ["cypress"],
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@fixtures/*": ["./cypress/fixtures/*"],
+      "@commands/*": ["./cypress/support/*"]
+    }
   },
   "include": ["**/*.ts"]
 }

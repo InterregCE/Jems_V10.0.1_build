@@ -84,7 +84,9 @@ declare global {
 
       updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
 
-      findInputContaining(selectorForInput, textToFind: string)
+      findInputContaining(selectorForInput, textToFind: string);
+
+      assignUserToProject(applicationId: number, userId: number);
     }
   }
 }
@@ -625,7 +627,7 @@ function createReportingDeadlines(applicationId, reportingDeadlines) {
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/reporting`,
     body: reportingDeadlines
-  });
+  }).then((response) => response.body);
 }
 
 function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {
@@ -672,5 +674,18 @@ function findInputContaining(selectorForInput, textToFind) {
       return (el as HTMLInputElement).value === textToFind
     })
 }
+
+Cypress.Commands.add('assignUserToProject', (applicationId: number, userId: number) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/projectUser/updateProjectUserAssignments`,
+    body: [{
+      projectId: applicationId,
+      userIds: [userId],
+      userIdsToAdd: [userId],
+      userIdsToRemove: [],
+    }]
+  });
+});
 
 export {}
