@@ -8,7 +8,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 
 @Component({
-  selector: 'jems-project-report-cost-category',
+  selector: 'jems-project-breakdown-cost-category',
   templateUrl: './project-report-cost-category.component.html',
   styleUrls: ['./project-report-cost-category.component.scss'],
   providers: [FormService],

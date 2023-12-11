@@ -8,7 +8,7 @@ import programmeEditorRole from "../fixtures/api/roles/programmeEditorRole.json"
 import programmeEditorUser from "../fixtures/api/users/programmeEditorUser.json";
 import paymentsRole from "../fixtures/api/roles/paymentsRole.json";
 import paymentsUser from "../fixtures/api/users/paymentsUser.json";
-import {partnerReportPage} from "./project/partner-reports.pom";
+import {partnerReportPage} from "./project/reports-page.pom";
 import {findProjectPayments} from "../support/payments.commands";
 import date from 'date-and-time';
 

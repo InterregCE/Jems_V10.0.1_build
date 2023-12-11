@@ -5,16 +5,31 @@ import rejectionInfo from '../../fixtures/api/application/modification/rejection
 import call from '../../fixtures/api/call/1.step.call.json';
 import {faker} from '@faker-js/faker';
 import date from 'date-and-time';
+import partnerReportExpenditures from "../../fixtures/api/partnerReport/partnerReportExpenditures.json";
+import partnerParkedExpenditures from "../../fixtures/api/partnerReport/partnerParkedExpenditures.json";
+import partnerReportIdentification from "../../fixtures/api/partnerReport/partnerReportIdentification.json";
+import controlReportIdentification from "../../fixtures/api/partnerControlReport/controlReportIdentification.json";
+import {findProjectPayments} from "../../support/payments.commands";
+import paymentsUser from "../../fixtures/api/users/paymentsUser.json";
+import paymentsRole from "../../fixtures/api/roles/paymentsRole.json";
+import {projectReportPage} from "./reports-page.pom";
+import {ProjectReportType} from "./ProjectReportType";
 
 context('Project report tests', () => {
 
-  before(() => {
-    cy.loginByRequest(user.programmeUser.email);
-    cy.createCall(call).then(callId => {
-      application.details.projectCallId = callId;
-      cy.publishCall(callId);
+    before(() => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.createCall(call).then(callId => {
+            application.details.projectCallId = callId;
+            cy.publishCall(callId);
+        });
+        cy.loginByRequest(user.admin.email);
+        paymentsUser.email = faker.internet.email();
+        cy.createRole(paymentsRole).then(roleId => {
+            paymentsUser.userRoleId = roleId;
+            cy.createUser(paymentsUser);
+        });
     });
-  });
 
   it('TB-1035 Data is taken from correct AF form version', function () {
 
@@ -161,7 +176,7 @@ context('Project report tests', () => {
           });
 
           cy.loginByRequest(user.applicantUser.email);
-          createProjectReportWithoutReportingSchedule(applicationId, 'Content');
+          createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Content);
 
           cy.url().then(url => {
             const reportId = Number(url.replace('/identification', '').split('/').pop());
@@ -180,7 +195,7 @@ context('Project report tests', () => {
             cy.wait('@submitProjectReport');
           });
 
-          createProjectReportWithoutReportingSchedule(applicationId, 'Both');
+          createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Both);
 
           cy.url().then(url => {
             const reportId = Number(url.replace('/identification', '').split('/').pop());
@@ -233,6 +248,102 @@ context('Project report tests', () => {
         });
     });
   });
+
+
+  it('TB-1093 Regular payments are properly reflected in following project reports', function () {
+    cy.fixture('project/reporting/TB-1093.json').then(testData => {
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email)
+            .then(applicationId => {
+                cy.loginByRequest(user.programmeUser.email);
+                const partnerId1 = this[application.partners[0].details.abbreviation];
+
+                cy.loginByRequest(user.applicantUser.email);
+                createControllerUser(testData, partnerId1);
+
+                cy.loginByRequest(user.applicantUser.email);
+                cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
+
+                // add partner report
+                cy.addPartnerReport(partnerId1)
+                    .then(reportId => {
+                        cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
+                        cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
+                            .then(response => {
+                                for (let i = 0; i < response.length; i++) {
+                                    partnerParkedExpenditures[i].id = response[i].id;
+                                }
+                            });
+                        cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
+                        cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
+                        cy.submitPartnerReport(partnerId1, reportId);
+
+                        performControlWorkAndFinalize(testData, reportId, partnerId1);
+                    });
+
+                cy.loginByRequest(user.applicantUser.email);
+                // first project report
+                createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Finance);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    projectReportPage.verifyAmountsInTables(testData.expectedResultsR1);
+                    cy.submitProjectReport(applicationId, reportId);
+                    cy.loginByRequest(testData.controllerUser.email);
+                    cy.startProjectReportVerification(applicationId, reportId);
+                    cy.finalizeProjectReportVerification(applicationId, reportId);
+                });
+
+                // second project report
+                createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Finance);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    projectReportPage.verifyAmountsInTables(testData.expectedResultsR2);
+                    cy.submitProjectReport(applicationId, reportId);
+                    cy.loginByRequest(testData.controllerUser.email);
+                    cy.startProjectReportVerification(applicationId, reportId);
+                    cy.finalizeProjectReportVerification(applicationId, reportId);
+                });
+
+                cy.loginByRequest(user.programmeUser.email);
+                cy.visit(`/app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+                setReadyForPayment(true, 1);
+
+                // check payments are created for FTLS
+                cy.contains('Payments').click();
+                findProjectPayments(applicationId).then(projectPayments => {
+                    const ftlsPayments = projectPayments.filter(payment => payment.paymentType === "FTLS");
+                    expect(ftlsPayments.length).to.be.equal(2);
+
+                    const paymentFundERDF = ftlsPayments.find(payment => payment.fundName === "ERDF");
+                    expect(paymentFundERDF.amountApprovedPerFund).to.be.equal(1199.99);
+                    expect(paymentFundERDF.amountAuthorizedPerFund).to.be.equal(0);
+                    expect(paymentFundERDF.amountPaidPerFund).to.be.equal(0);
+                    expect(paymentFundERDF.totalEligibleAmount).to.be.equal(1999.99);
+
+                    const paymentFundOTHER = ftlsPayments.find(payment => payment.fundName = "OTHER");
+                    expect(paymentFundOTHER.amountApprovedPerFund).to.be.equal(293.19);
+                    expect(paymentFundOTHER.amountAuthorizedPerFund).to.be.equal(0);
+                    expect(paymentFundOTHER.amountPaidPerFund).to.be.equal(0);
+                    expect(paymentFundOTHER.totalEligibleAmount).to.be.equal(1999.99);
+                });
+
+                // update payment
+                cy.loginByRequest(paymentsUser.email);
+                cy.addAuthorizedPayments(applicationId, testData.authorizedPayments);
+
+                // third project report
+                cy.loginByRequest(user.applicantUser.email);
+                createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Finance);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    projectReportPage.verifyAmountsInTables(testData.expectedResultsR3);
+                });
+            });
+    });
+  });
 });
 
 function addReportingPeriod(number: number) {
@@ -268,7 +379,7 @@ function createProjectReport(forPeriod: number) {
   cy.contains('button', 'Create').should('be.enabled').click();
 }
 
-function createProjectReportWithoutReportingSchedule(applicationId: number, reportType: string) {
+function createProjectReportWithoutReportingSchedule(applicationId: number, reportType: ProjectReportType) {
   cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
   cy.contains('Add Project Report').click();
 
@@ -311,4 +422,73 @@ function updateProjectReportWorkPlanProgress(workPlansUpdate: any, existingData:
 
 function formatAmount(amount) {
   return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
+}
+
+
+function createControllerUser(testData, partnerId1) {
+    cy.loginByRequest(user.admin.email);
+    testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
+    testData.controllerUser.email = faker.internet.email();
+
+    cy.createRole(testData.controllerRole)
+        .then(roleId => {
+            testData.controllerUser.userRoleId = roleId;
+
+            cy.createUser(testData.controllerUser);
+
+            testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+            testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser.email;
+
+            cy.createInstitution(testData.controllerInstitution)
+                .then(institutionId => {
+                    testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId1;
+                    testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+                    testData.controllerInstitution.id = institutionId;
+                    cy.assignInstitution(testData.controllerAssignment);
+                });
+        });
+}
+
+
+function performControlWorkAndFinalize(testData, reportId, partnerId) {
+    cy.loginByRequest(testData.controllerUser.email);
+    cy.startControlWork(partnerId, reportId);
+
+    controlReportIdentification.designatedController.controlInstitutionId = testData.controllerInstitution.id;
+    controlReportIdentification.designatedController.controllingUserId = testData.controllerUser.id;
+    controlReportIdentification.designatedController.controllerReviewerId = testData.controllerUser.id;
+    cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
+    cy.finalizeControl(partnerId, reportId);
+}
+
+function setReadyForPayment(flag, rowIndex) {
+    const ready = flag ? 'Yes' : 'No';
+    cy.get('div.jems-table-config').eq(1).children().eq(rowIndex).contains(ready).click();
+    cy.contains('Save changes').should('be.visible').click();
+    cy.contains('Contract monitoring form saved successfully.').should('be.visible');
+    cy.contains('Contract monitoring form saved successfully.').should('not.exist');
+}
+
+function assertPaymentType(row, type) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-type').get(0)).to.contain(type);
+}
+
+function assertPaymentProjectId(row, id) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-project-id').get(0)).to.contain(id);
+}
+
+function assertTotalApproved(row, totalApproved) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-total-eligible-amount').get(0)).to.contain(totalApproved);
+}
+
+function assertFund(row, fund) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-fund').get(0)).to.contain(fund);
+}
+
+function assertPaid(row, paid) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-amount-paid-per-fund').get(0)).to.contain(paid);
+}
+
+function assertRemainingToBePaid(row, remainingToBePaid) {
+    expect(row.children('.mat-column-payments-payment-to-project-table-column-remaining-to-be-paid').get(0)).to.contain(remainingToBePaid);
 }
