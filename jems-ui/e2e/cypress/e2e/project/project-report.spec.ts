@@ -9,7 +9,6 @@ import partnerReportExpenditures from "@fixtures/api/partnerReport/partnerReport
 import partnerParkedExpenditures from "@fixtures/api/partnerReport/partnerParkedExpenditures.json";
 import partnerReportIdentification from "@fixtures/api/partnerReport/partnerReportIdentification.json";
 import controlReportIdentification from "@fixtures/api/partnerControlReport/controlReportIdentification.json";
-import {findProjectPayments} from "@commands/payments.commands";
 import paymentsUser from "@fixtures/api/users/paymentsUser.json";
 import paymentsRole from "@fixtures/api/roles/paymentsRole.json";
 import {projectReportPage} from "./reports-page.pom";
@@ -241,7 +240,6 @@ context('Project report tests', () => {
     });
   });
 
-
   it('TB-1093 Regular payments are properly reflected in following project reports', function () {
     cy.fixture('project/reporting/TB-1093.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
@@ -303,7 +301,7 @@ context('Project report tests', () => {
 
         // check payments are created for FTLS
         cy.contains('Payments').click();
-        findProjectPayments(applicationId).then(projectPayments => {
+        cy.findProjectPayments(applicationId).then(projectPayments => {
           const ftlsPayments = projectPayments.filter(payment => payment.paymentType === "FTLS");
           expect(ftlsPayments.length).to.be.equal(2);
 

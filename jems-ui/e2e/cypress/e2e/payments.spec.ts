@@ -9,7 +9,6 @@ import programmeEditorUser from "../fixtures/api/users/programmeEditorUser.json"
 import paymentsRole from "../fixtures/api/roles/paymentsRole.json";
 import paymentsUser from "../fixtures/api/users/paymentsUser.json";
 import {partnerReportPage} from "./project/reports-page.pom";
-import {findProjectPayments} from "../support/payments.commands";
 import date from 'date-and-time';
 
 context('Payments tests', () => {
@@ -259,7 +258,7 @@ context('Payments tests', () => {
 
             // group order 7
             cy.loginByRequest(paymentsUser.email);
-            findProjectPayments(applicationId).then(projectPayments => {
+            cy.findProjectPayments(applicationId).then(projectPayments => {
               const projectPayment = projectPayments.find(payment => payment.fundName === testData.authorizedPayments[0].fundName);
               cy.visit(`app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
 

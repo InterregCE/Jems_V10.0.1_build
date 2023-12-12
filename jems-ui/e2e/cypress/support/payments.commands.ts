@@ -2,6 +2,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       addAuthorizedPayments(applicationId, authorizedPayments);
+      findProjectPayments(applicationId);
     }
   }
 }
@@ -30,6 +31,10 @@ Cypress.Commands.add('addAuthorizedPayments', (applicationId, testDataAuthorized
   });
 });
 
+Cypress.Commands.add('findProjectPayments', applicationId => {
+  findProjectPayments(applicationId)
+});
+
 function findProjectPayments(applicationId) {
   return cy.request({
     method: 'POST',
@@ -40,4 +45,4 @@ function findProjectPayments(applicationId) {
   });
 }
 
-export {findProjectPayments}
+export {}
