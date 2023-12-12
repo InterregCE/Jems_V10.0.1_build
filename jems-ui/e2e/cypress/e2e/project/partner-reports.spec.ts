@@ -1,7 +1,6 @@
 import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
 import call from '../../fixtures/api/call/1.step.call.json';
-import {loginByRequest} from '../../support/login.commands';
 import application from '../../fixtures/api/application/application.json';
 import partnerReportIdentification from '../../fixtures/api/partnerReport/partnerReportIdentification.json';
 import partnerReportExpenditures from '../../fixtures/api/partnerReport/partnerReportExpenditures.json';
@@ -481,7 +480,7 @@ context('Partner reports tests', () => {
                         .click();
 
                       cy.get('[label="file.table.column.name.description"] textarea')
-                        .type('Description test for the attachment');
+                        .type('Description test 1 for the attachment');
 
                       cy.contains('button', 'Save').should('be.visible').click();
 
@@ -715,17 +714,15 @@ context('Partner reports tests', () => {
                         .click();
 
                       cy.get('[label="file.table.column.name.description"] textarea')
-                        .type('Description test for the attachment');
+                        .type('Description test 2 for the attachment');
 
                       cy.contains('button', 'Save').should('be.visible')
                         .click();
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
-                        .scrollIntoView()
-                        .should('be.visible');
+                        .should('exist');
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
-                        .scrollIntoView()
                         .should('not.exist');
 
                       // file can be deleted
@@ -783,7 +780,7 @@ context('Partner reports tests', () => {
             });
 
             openModification(applicationId);
-            loginByRequest(user.applicantUser.email).then(() => {
+            cy.loginByRequest(user.applicantUser.email).then(() => {
               cy.createFullPartner(applicationId, partner);
               submitProjectApp(applicationId);
             });
@@ -2635,7 +2632,7 @@ context('Partner reports tests', () => {
   }
 
   function verify50PartnersLimit(applicationId) {
-    loginByRequest(user.applicantUser.email).then(() => {
+    cy.loginByRequest(user.applicantUser.email).then(() => {
       cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
       cy.contains('Add new partner')
         .should('not.exist');
@@ -2877,14 +2874,16 @@ context('Partner reports tests', () => {
     cy.contains('Control Identification').click();
     cy.get('input[name="controlUser"]').eq(0).click();
     cy.get('mat-option:last-of-type').click();
-    cy.contains('button', 'Save changes').click();
+    cy.contains('button', 'Save changes').should('be.visible').click();
+    cy.contains('Successfully saved the control identification data').should('be.visible');
 
     // Finalize
     cy.get('.mat-tab-header-pagination-after').click();
     cy.contains('Overview and Finalize').should('be.visible').click();
     cy.contains('Run pre-submission check').click();
     cy.contains('button', 'Finalize control').should('be.enabled').click();
-    cy.contains('Confirm').click();
+    cy.contains('Confirm').should('be.visible').click();
+    cy.get('mat-chip.status-Certified').should('be.visible');
   }
 
   function verifyCannotEdit(applicationId, partnerId) {
