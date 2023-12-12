@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.payments.repository.advance
 
+import com.querydsl.core.types.dsl.CaseBuilder
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
+import io.cloudflight.jems.server.payments.entity.QAdvancePaymentEntity
+import io.cloudflight.jems.server.payments.entity.QAdvancePaymentSettlementEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
@@ -26,6 +30,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Repository
@@ -39,11 +44,14 @@ class PaymentAdvancePersistenceProvider(
     private val programmeFundRepository: ProgrammeFundRepository,
     private val fileRepository: JemsProjectFileService,
     private val reportFileRepository: JemsFileMetadataRepository,
+    private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentAdvancePersistence {
 
     @Transactional(readOnly = true)
-    override fun list(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> =
-        advancePaymentRepository.filterPayments(pageable, filters).toModelList()
+    override fun list(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
+        return fetchAdvancePayments(pageable, filters)
+    }
+
 
     @Transactional(readOnly = true)
     override fun existsById(id: Long) =
@@ -120,6 +128,40 @@ class PaymentAdvancePersistenceProvider(
     override fun getConfirmedPaymentsForProject(projectId: Long, pageable: Pageable): Page<AdvancePayment> =
         advancePaymentRepository.findAllByProjectIdAndIsPaymentConfirmedTrue(projectId, pageable).toModelList()
 
+
+    private fun fetchAdvancePayments(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
+        val specPayment = QAdvancePaymentEntity.advancePaymentEntity
+        val specSettlement = QAdvancePaymentSettlementEntity.advancePaymentSettlementEntity
+
+        val results = jpaQueryFactory
+            .select(
+                specPayment.id,
+                specPayment.projectCustomIdentifier,
+                specPayment.projectAcronym,
+                specPayment.partnerRole,
+                specPayment.partnerSortNumber,
+                specPayment.partnerAbbreviation,
+                specPayment.isPaymentAuthorizedInfo,
+                specPayment.amountPaid(),
+                specSettlement.amountSettled.sum().`as`("amountSettled"),
+                specPayment.paymentDate,
+                specPayment.programmeFund,
+                specPayment.partnerContributionId,
+                specPayment.partnerContributionName,
+                specPayment.partnerContributionSpfId,
+                specPayment.partnerContributionSpfName,
+            ).from(specPayment)
+            .leftJoin(specSettlement)
+                .on(specSettlement.advancePayment.id.eq(specPayment.id))
+            .where(filters.transformToWhereClause(specPayment))
+            .groupBy(specPayment)
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetchResults()
+
+        return results.toPageResult(pageable)
+    }
+
     private fun setSourceOfContribution(
         entity: AdvancePaymentEntity,
         fundId: Long?,
@@ -151,4 +193,6 @@ class PaymentAdvancePersistenceProvider(
             userRepository.getById(userId)
         } else null
 
+    private fun QAdvancePaymentEntity.amountPaid() =
+        CaseBuilder().`when`(this.isPaymentConfirmed.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO)
 }

@@ -1,6 +1,13 @@
 package io.cloudflight.jems.server.payments.repository.advance
 
+import com.querydsl.core.QueryResults
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.EntityPath
+import com.querydsl.core.types.Order
+import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanOperation
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
@@ -13,15 +20,23 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
+import io.cloudflight.jems.server.payments.entity.PaymentEntity
+import io.cloudflight.jems.server.payments.entity.QAdvancePaymentEntity
+import io.cloudflight.jems.server.payments.entity.QAdvancePaymentSettlementEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProviderTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
@@ -89,6 +104,9 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
     lateinit var reportFileRepository: JemsFileMetadataRepository
     @MockK
     lateinit var fileRepository: JemsProjectFileService
+
+    @MockK
+    lateinit var jpaQueryFactory: JPAQueryFactory
 
     @InjectMockKs
     private lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
@@ -188,7 +206,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             paymentConfirmedDate = currentDate.minusDays(2),
         )
 
-        private fun advancePaymentEntity(settlements: MutableSet<AdvancePaymentSettlementEntity>) =
+        private fun advancePaymentEntity(settlements: MutableSet<AdvancePaymentSettlementEntity>? = null) =
             advancePaymentEntity.apply { this.paymentSettlements = settlements }
 
         private val advancePaymentSettlementEntity = AdvancePaymentSettlementEntity(
@@ -304,14 +322,78 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(advancePaymentRepository)
+        clearMocks(advancePaymentRepository, jpaQueryFactory)
     }
 
     @Test
     fun list() {
+
+        val expected = AdvancePayment(
+            id = paymentId,
+            projectCustomIdentifier = project.customIdentifier,
+            projectAcronym = project.acronym,
+            partnerType = ProjectPartnerRole.LEAD_PARTNER,
+            partnerSortNumber = partnerDetail.sortNumber,
+            partnerAbbreviation = partnerDetail.abbreviation,
+            programmeFund = fund,
+            paymentAuthorized = true,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate.minusDays(1),
+            amountSettled = BigDecimal.TEN,
+            partnerContribution=IdNamePair(id=22L, name="Source one"),
+            partnerContributionSpf=IdNamePair(id=43L, name="SPF source one"),
+            paymentSettlements = emptyList()
+        )
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every {
+            jpaQueryFactory.select(
+                any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(), any(), any()
+            )
+        } returns query
+        val slotFrom = slot<EntityPath<Any>>()
+        every { query.from(capture(slotFrom)) } returns query
+        val slotLeftJoin = mutableListOf<EntityPath<Any>>()
+        every { query.leftJoin(capture(slotLeftJoin)) } returns query
+        val slotLeftJoinOn = mutableListOf<BooleanOperation>()
+        every { query.on(capture(slotLeftJoinOn)) } returns query
+        val slotWhere = slot<BooleanOperation>()
+        every { query.where(capture(slotWhere)) } returns query
+        every { query.groupBy(any()) } returns query
+        val slotOffset = slot<Long>()
+        every { query.offset(capture(slotOffset)) } returns query
+        val slotLimit = slot<Long>()
+        every { query.limit(capture(slotLimit)) } returns query
+
+
+
+        val tupleAdvancePayment = mockk<Tuple>()
+        every { tupleAdvancePayment.get(0, Long::class.java) } returns 2L
+        every { tupleAdvancePayment.get(1, String::class.java) } returns project.customIdentifier
+        every { tupleAdvancePayment.get(2, String::class.java) } returns project.acronym
+        every { tupleAdvancePayment.get(3, ProjectPartnerRole::class.java) } returns ProjectPartnerRole.LEAD_PARTNER
+        every { tupleAdvancePayment.get(4, Int::class.java) } returns 2
+        every { tupleAdvancePayment.get(5, String::class.java) } returns partnerDetail.abbreviation
+
+        every { tupleAdvancePayment.get(6, Boolean::class.java) } returns true
+        every { tupleAdvancePayment.get(7, BigDecimal::class.java) } returns BigDecimal.TEN
+        every { tupleAdvancePayment.get(8, BigDecimal::class.java) } returns BigDecimal.TEN
+        every { tupleAdvancePayment.get(9, LocalDate::class.java) } returns currentDate.minusDays(1)
+        every { tupleAdvancePayment.get(10, ProgrammeFundEntity::class.java) } returns fundEntity
+        every { tupleAdvancePayment.get(11, Long::class.java) } returns 22L
+        every { tupleAdvancePayment.get(12, String::class.java) } returns "Source one"
+        every { tupleAdvancePayment.get(13, Long::class.java) } returns 43L
+        every { tupleAdvancePayment.get(14, String::class.java) } returns "SPF source one"
+
+        val result = mockk<QueryResults<Tuple>>()
+        every { result.total } returns 1
+        every { result.results } returns listOf(tupleAdvancePayment)
+        every { query.fetchResults() } returns result
+
         val filters = AdvancePaymentSearchRequest(
-            paymentId = 855L,
-            projectIdentifiers = setOf("472", "INT00473", ""),
+            paymentId = 2L,
+            projectIdentifiers = setOf("472", "INT00473", project.customIdentifier),
             projectAcronym = "acr-filter",
             fundIds = setOf(511L, 512L),
             amountFrom = BigDecimal.ONE,
@@ -321,24 +403,15 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             authorized = true,
             confirmed = false,
         )
-        val slotPredicate = slot<BooleanOperation>()
-        every { advancePaymentRepository.findAll(capture(slotPredicate), Pageable.unpaged()) } returns
-                PageImpl(mutableListOf(advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))))
 
-        assertThat(advancePaymentPersistenceProvider.list(Pageable.unpaged(), filters))
-            .containsAll(listOf(advancePayment))
-        assertThat(slotPredicate.captured.toString()).isEqualTo(
-            "advancePaymentEntity.id = 855 && " +
-                    "(advancePaymentEntity.projectId = 472 || advancePaymentEntity.projectCustomIdentifier in [472, INT00473]) && " +
-                    "containsIc(advancePaymentEntity.projectAcronym,acr-filter) && " +
-                    "advancePaymentEntity.programmeFund.id in [511, 512] && " +
-                    "advancePaymentEntity.amountPaid >= 1 && " +
-                    "advancePaymentEntity.amountPaid <= 10 && " +
-                    "advancePaymentEntity.paymentDate >= 2023-06-18 && " +
-                    "advancePaymentEntity.paymentDate <= 2023-06-20 && " +
-                    "advancePaymentEntity.isPaymentAuthorizedInfo = true && " +
-                    "advancePaymentEntity.isPaymentConfirmed = false"
-        )
+        assertThat(advancePaymentPersistenceProvider.list(Pageable.ofSize(5), filters))
+            .containsAll(listOf(expected))
+
+        assertThat(slotFrom.captured).isInstanceOf(QAdvancePaymentEntity::class.java)
+        assertThat(slotLeftJoin[0]).isInstanceOf(QAdvancePaymentSettlementEntity::class.java)
+        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("advancePaymentSettlementEntity.advancePayment.id = advancePaymentEntity.id")
+        assertThat(slotOffset.captured).isEqualTo(0L)
+        assertThat(slotLimit.captured).isEqualTo(5L)
     }
 
     @Test
