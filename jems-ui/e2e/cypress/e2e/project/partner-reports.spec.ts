@@ -717,12 +717,8 @@ context('Partner reports tests', () => {
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
 
-                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription');
-
-                      cy.contains('button', 'Save')
+                      cy.contains('button', 'Save').should('be.visible')
                         .click();
-
-                      cy.wait('@updateReportFileDescription');
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .scrollIntoView()
@@ -738,7 +734,7 @@ context('Partner reports tests', () => {
                         .scrollIntoView()
                         .click();
 
-                      cy.contains('button', 'Confirm')
+                      cy.contains('button', 'Confirm').should('be.visible')
                         .click();
 
                       cy.contains("File \'fileToUpload.txt\' has been deleted successfully.")
@@ -1460,14 +1456,13 @@ context('Partner reports tests', () => {
           cy.loginByRequest(user.applicantUser.email);
           cy.addPartnerReport(partnerId).then(reportId => {
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
-            cy.get('mat-row').eq(0).children().eq(22).within((column) => {
-              cy.wrap(column).get('button').contains('sync').click();
-            });
+            cy.contains('mat-row', 'R1.1').find('button').contains('sync').click();
             cy.contains('Confirm').should('be.visible').click();
-            cy.get('mat-row').eq(1).children().eq(22).within((column) => {
-              cy.wrap(column).get('button').contains('sync').click();
-            });
+            cy.get('jems-partner-report-expenditures-parked:contains("R1.1")').should('not.exist');
+            
+            cy.contains('mat-row', 'R1.5').find('button').contains('sync').click();
             cy.contains('Confirm').should('be.visible').click();
+            cy.get('jems-partner-report-expenditures-parked:contains("R1.5")').should('not.exist');
 
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
             //check expenditure summary table
