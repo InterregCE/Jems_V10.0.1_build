@@ -128,8 +128,8 @@ context('Project report tests', () => {
         cy.url().then(url => {
           const reportId = url.replace('/identification', '').split('/').pop();
           cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
-          cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
           cy.contains('button', 'Submit project report').should('be.disabled');
+          cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
           cy.contains('1 Issue(s)').should('be.visible');
           cy.contains('mat-expansion-panel-header', 'Project report identification').should('be.visible').click();
           cy.contains('The Date of the reporting schedule expired').should('be.visible');
