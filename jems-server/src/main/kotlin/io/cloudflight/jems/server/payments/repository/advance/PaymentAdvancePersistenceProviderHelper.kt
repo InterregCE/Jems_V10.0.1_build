@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.payments.repository.advance
 
 import com.querydsl.core.QueryResults
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.Order
+import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.entity.QAdvancePaymentEntity
@@ -13,6 +15,7 @@ import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -87,6 +90,24 @@ fun AdvancePaymentSearchRequest.transformToWhereClause(spec :QAdvancePaymentEnti
 
     return expressions.joinWithAnd()
 }
+
+
+fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
+    val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
+
+    val specAdvancePayment = QAdvancePaymentEntity.advancePaymentEntity
+    val dfg = when (orderBy.property) {
+        "projectCustomIdentifier" -> specAdvancePayment.projectCustomIdentifier
+        "projectAcronym" -> specAdvancePayment.projectAcronym
+        "partnerAbbreviation" -> specAdvancePayment.partnerAbbreviation
+        "programmeFund.id" -> specAdvancePayment.programmeFund.id
+        "paymentDate" -> specAdvancePayment.paymentDate
+        else -> specAdvancePayment.id
+    }
+
+    return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
+}
+
 private fun idNamePairOrNull(id: Long?, name: String?): IdNamePair? {
     return if (id != null && name != null) {
         IdNamePair(id, name)

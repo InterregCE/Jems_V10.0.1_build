@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.payments.repository.toEntity
 import io.cloudflight.jems.server.payments.repository.toModel
 import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -132,6 +133,7 @@ class PaymentAdvancePersistenceProvider(
     private fun fetchAdvancePayments(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
         val specPayment = QAdvancePaymentEntity.advancePaymentEntity
         val specSettlement = QAdvancePaymentSettlementEntity.advancePaymentSettlementEntity
+        val specProgrammeFund = QProgrammeFundEntity.programmeFundEntity
 
         val results = jpaQueryFactory
             .select(
@@ -145,7 +147,7 @@ class PaymentAdvancePersistenceProvider(
                 specPayment.amountPaid(),
                 specSettlement.amountSettled.sum().`as`("amountSettled"),
                 specPayment.paymentDate,
-                specPayment.programmeFund,
+                specProgrammeFund,
                 specPayment.partnerContributionId,
                 specPayment.partnerContributionName,
                 specPayment.partnerContributionSpfId,
@@ -153,10 +155,13 @@ class PaymentAdvancePersistenceProvider(
             ).from(specPayment)
             .leftJoin(specSettlement)
                 .on(specSettlement.advancePayment.id.eq(specPayment.id))
+            .leftJoin(specProgrammeFund)
+                .on(specPayment.programmeFund.id.eq(specProgrammeFund.id))
             .where(filters.transformToWhereClause(specPayment))
             .groupBy(specPayment)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
+            .orderBy(pageable.sort.toQueryDslOrderBy())
             .fetchResults()
 
         return results.toPageResult(pageable)
