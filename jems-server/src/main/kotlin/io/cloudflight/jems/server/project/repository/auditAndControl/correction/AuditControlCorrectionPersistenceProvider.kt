@@ -325,6 +325,10 @@ class AuditControlCorrectionPersistenceProvider(
             )
         }
 
+    @Transactional(readOnly = true)
+    override fun existsByProcurementId(procurementId: Long): Boolean =
+        auditControlCorrectionRepository.existsByProcurementId(procurementId)
+
     fun List<Tuple>.toPaymentToEcCorrectionPageResult(pageable: Pageable) = PageImpl(
         this.map { it: Tuple ->
             PaymentToEcCorrectionTmp(
