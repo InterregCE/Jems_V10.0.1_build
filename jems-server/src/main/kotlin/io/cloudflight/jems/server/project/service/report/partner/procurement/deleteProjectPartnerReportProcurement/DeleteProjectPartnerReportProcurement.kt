@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.de
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 class DeleteProjectPartnerReportProcurement(
     private val reportPersistence: ProjectPartnerReportPersistence,
     private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
+    private val auditControlCorrectionPersistence: AuditControlCorrectionPersistence,
+    private val expenditurePersistence: ProjectPartnerReportExpenditurePersistence,
 ) : DeleteProjectPartnerReportProcurementInteractor {
 
     @CanEditPartnerReport
@@ -20,7 +24,7 @@ class DeleteProjectPartnerReportProcurement(
     override fun delete(partnerId: Long, reportId: Long, procurementId: Long) {
         val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId)
         validateReportOpen(report)
-        validateNoSubmittedReportsAfterThisOne(reportId = reportId, partnerId = partnerId)
+        validateUsedInExpenditureOrCorrection(procurementId)
 
         reportProcurementPersistence.deletePartnerReportProcurement(
             partnerId = partnerId,
@@ -34,12 +38,11 @@ class DeleteProjectPartnerReportProcurement(
             throw ReportAlreadyClosed()
     }
 
-    private fun validateNoSubmittedReportsAfterThisOne(reportId: Long, partnerId: Long) {
-        val submittedReportIdsAfterCurrentOne = reportPersistence.getSubmittedPartnerReports(partnerId)
-            .map { it.reportId }
-            .filter { it > reportId }
-        if (submittedReportIdsAfterCurrentOne.isNotEmpty())
-            throw SubmittedReportsAfterThisOneAreBlockingProcurementDeletion(submittedReportIdsAfterCurrentOne)
-    }
+    private fun validateUsedInExpenditureOrCorrection(procurementId: Long) {
+        val usedInExpenditure = expenditurePersistence.existsByProcurementId(procurementId)
+        val usedInCorrection = auditControlCorrectionPersistence.existsByProcurementId(procurementId)
 
+        if (usedInExpenditure || usedInCorrection)
+            throw ProcurementIsLinkedToExpenditureOrCorrection()
+    }
 }

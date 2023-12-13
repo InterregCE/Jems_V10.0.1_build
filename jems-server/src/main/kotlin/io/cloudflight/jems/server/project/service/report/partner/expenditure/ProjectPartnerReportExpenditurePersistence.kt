@@ -45,4 +45,6 @@ interface ProjectPartnerReportExpenditurePersistence {
     fun getAvailableBudgetOptions(partnerId: Long, reportId: Long): ProjectPartnerBudgetOptions
 
     fun existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean
+
+    fun existsByProcurementId(procurementId: Long): Boolean
 }

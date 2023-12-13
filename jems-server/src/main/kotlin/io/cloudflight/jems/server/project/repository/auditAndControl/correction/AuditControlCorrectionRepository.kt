@@ -19,4 +19,5 @@ interface AuditControlCorrectionRepository : JpaRepository<AuditControlCorrectio
 
     fun getAllByAuditControlIdAndStatus(auditControlId: Long, status: AuditControlStatus): List<AuditControlCorrectionEntity>
 
+    fun existsByProcurementId(procurementId: Long): Boolean
 }

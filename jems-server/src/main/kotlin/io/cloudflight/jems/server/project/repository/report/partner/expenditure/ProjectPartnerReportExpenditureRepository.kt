@@ -25,4 +25,6 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
     fun existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 
     fun existsByPartnerReportPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean
+
+    fun existsByProcurementId(procurementId: Long): Boolean
 }

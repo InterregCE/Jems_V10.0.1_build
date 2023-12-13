@@ -46,4 +46,5 @@ interface AuditControlCorrectionPersistence {
 
     fun getCorrectionsLinkedToPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionLinking>
 
+    fun existsByProcurementId(procurementId: Long): Boolean
 }
