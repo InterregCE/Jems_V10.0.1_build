@@ -70,6 +70,16 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                                 editPermissions = setOf(UserRolePermission.ProjectReportingVerificationFinalize),
                                 type = UserRolePermissionNodeType.TOGGLE_EDIT,
                             ),
+                            UserRolePermissionNode(
+                                name = "Reopen project report",
+                                editPermissions = setOf(UserRolePermission.ProjectReportingProjectReOpen),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Reopen project report verification",
+                                editPermissions = setOf(UserRolePermission.ProjectReportingVerificationReOpen),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
                         )
                     ),
                     UserRolePermissionNode(

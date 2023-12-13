@@ -56,7 +56,7 @@ class ProjectReportDataProviderImpl(
     override fun get(projectId: Long, reportId: Long): ProjectReportData =
         projectReportPersistence.getReportById(projectId, reportId = reportId).let { report ->
             val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion)
-            report.toServiceModel { periodNumber -> periods.first { it.number == periodNumber } }
+            report.toServiceModel({ periodNumber -> periods.first { it.number == periodNumber } })
         }.toDataModel()
 
     @Transactional(readOnly = true)

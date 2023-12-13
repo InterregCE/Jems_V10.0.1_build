@@ -235,6 +235,8 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         every {  projectReportCoFinancingOverviewRepository.saveAll(capture(overviewsToStoreSlot)) } returns overviews
 
         every { projectReportCoFinancingOverviewRepository.findAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns overviews
+        every { projectReportCoFinancingOverviewRepository.deleteAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns Unit
+        every { projectReportCoFinancingOverviewRepository.flush() } returns Unit
 
         projectReportFinancialOverviewPersistenceProvider.storeOverviewPerFund(PROJECT_REPORT_ID , listOf(toStore))
 

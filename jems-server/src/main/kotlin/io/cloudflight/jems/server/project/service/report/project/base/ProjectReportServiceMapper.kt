@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 
 fun ProjectReportModel.toServiceModel(
     periodResolver: (Int) -> ProjectPeriod,
+    paymentIdsInstallmentExists: Set<Long> = setOf(),
+    paymentToEcIdsReportIncluded: Set<Long> = setOf()
 ) = ProjectReport(
     id = id,
     reportNumber = reportNumber,
@@ -29,7 +31,11 @@ fun ProjectReportModel.toServiceModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
-    verificationEndDate = verificationEndDate
+    verificationEndDate = verificationEndDate,
+    verificationLastReOpenDate = lastVerificationReOpening,
+
+    paymentIdsInstallmentExists = paymentIdsInstallmentExists,
+    paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded
 )
 
 fun ProjectReportModel.toServiceSummaryModel(

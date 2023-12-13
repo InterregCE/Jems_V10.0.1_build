@@ -36,6 +36,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 
 class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
@@ -43,6 +44,7 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
     companion object {
         const val PROJECT_ID = 13L
         const val REPORT_ID = 14L
+        private val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
         val finalizedExpenditureLine = FinancingSourceBreakdownLine(
             partnerReportId = 1L,
@@ -152,7 +154,8 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
             amountAfterVerification = 124999.96.toScaledBigDecimal(),
             typologyOfErrorId = null,
             parked = true,
-            verificationComment = "VERIFICATION COMM"
+            verificationComment = "VERIFICATION COMM",
+            parkedOn = YESTERDAY
         )
 
         private val inVerificationPartnerReportFinancialData = PartnerReportFinancialData(

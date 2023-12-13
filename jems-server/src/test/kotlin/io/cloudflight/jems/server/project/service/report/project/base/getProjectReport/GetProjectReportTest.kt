@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.project.base.getProjectReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -55,7 +57,7 @@ internal class GetProjectReportTest : UnitTest() {
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.valueOf(15L),
             totalEligibleAfterVerification = BigDecimal.valueOf(19L),
-            lastVerificationReOpening = mockk(),
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -82,7 +84,8 @@ internal class GetProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
-            verificationEndDate = NEXT_MONTH
+            verificationEndDate = NEXT_MONTH,
+            verificationLastReOpenDate = null
         )
 
         val expectedReportSummary = ProjectReportSummary(
@@ -116,13 +119,18 @@ internal class GetProjectReportTest : UnitTest() {
     private lateinit var reportPersistence: ProjectReportPersistence
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    private lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    private lateinit var paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
+
 
     @InjectMockKs
     lateinit var interactor: GetProjectReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence)
+        clearMocks(reportPersistence, projectPersistence, paymentPersistence, paymentApplicationToEcLinkPersistence)
     }
 
     @Test

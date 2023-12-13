@@ -31,4 +31,6 @@ interface PaymentRepository: JpaRepository<PaymentEntity, Long> {
 
     fun findAllByProjectId(projectId: Long): List<PaymentEntity>
 
+    fun findAllByProjectReportId(projectReportId: Long): List<PaymentEntity>
+
 }

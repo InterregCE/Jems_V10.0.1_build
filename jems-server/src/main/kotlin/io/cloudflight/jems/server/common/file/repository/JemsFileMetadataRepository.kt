@@ -65,6 +65,8 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
 
     fun findByProjectIdAndId(projectId: Long, fileId: Long): JemsFileMetadataEntity?
 
+    fun findAllByPath(path: String): List<JemsFileMetadataEntity>
+
     @EntityGraph(value = "FileMetadataEntity.user")
     override fun findAll(predicate: Predicate, pageable: Pageable): Page<JemsFileMetadataEntity>
 

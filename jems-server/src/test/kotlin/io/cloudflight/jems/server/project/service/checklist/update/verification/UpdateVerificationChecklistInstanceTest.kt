@@ -196,10 +196,11 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
         components = mutableListOf(optionsToggleComponentInstance)
     )
 
-    private fun report(status:ProjectReportStatus): ProjectReportModel {
+    private fun report(status:ProjectReportStatus, lastVerificationReOpening: ZonedDateTime? = null): ProjectReportModel {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
         every { report.verificationEndDate } returns TODAY
+        every { report.lastVerificationReOpening } returns null
         return report
     }
 
@@ -347,17 +348,15 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
     fun `change status (should trigger an audit log)`() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { securityService.currentUser?.user?.id } returns creatorId
-        every{
-            reportPersistence.getReportById(projectId, reportId)
-        } returns report(ProjectReportStatus.InVerification)
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(verificationChecklistDetail) } returns verificationChecklistDetail
         every { securityService.getUserIdOrThrow() } returns creatorId
         val report = mockk<ProjectReportModel>()
-        every { reportPersistence.getReportById(projectId, reportId) } returns report
         every { report.reportNumber} returns verificationReportId
         every { report.status} returns ProjectReportStatus.InVerification
         every { report.verificationEndDate} returns TODAY
+        every { report.lastVerificationReOpening} returns null
+        every { reportPersistence.getReportById(projectId, reportId) } returns report
 
         every {
             persistence.getChecklistDetail(
@@ -400,6 +399,7 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
         every{
             reportPersistence.getReportById(projectId, reportId)
         } returns report(ProjectReportStatus.InVerification)
+
         assertThrows<UpdateVerificationChecklistInstanceStatusNotAllowedException> {
             updateVerificationChecklistInstance.update(
                 projectId,
@@ -467,6 +467,7 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
         every{
             reportPersistence.getReportById(projectId, reportId)
         } returns report(ProjectReportStatus.InVerification)
+        every { securityService.currentUser?.user?.id } returns creatorId
 
         assertThrows<AppInputValidationException> {
             updateVerificationChecklistInstance.update(
@@ -526,6 +527,32 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
                 99L,
                 checklistId,
                 "test-update"
+            )
+        }
+    }
+
+    @Test
+    fun `update failed - checklist created before verification reopening`() {
+        every { securityService.currentUser?.user?.id } returns notCreatorId
+        every { persistence.update(verificationChecklistDetail) } returns verificationChecklistDetail
+        every {
+            persistence.getChecklistDetail(
+                verificationChecklistDetail.id,
+                ProgrammeChecklistType.VERIFICATION,
+                reportId
+            )
+        } returns verificationChecklistInstanceDetail(
+            ChecklistInstanceStatus.DRAFT
+        )
+        every{
+            reportPersistence.getReportById(projectId, reportId)
+        } returns report(ProjectReportStatus.ReOpenFinalized, ZonedDateTime.now().plusHours(1))
+
+        assertThrows<UpdateVerificationChecklistInstanceStatusNotAllowedException> {
+            updateVerificationChecklistInstance.update(
+                projectId,
+                reportId,
+                verificationChecklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
             )
         }
     }

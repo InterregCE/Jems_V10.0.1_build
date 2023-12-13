@@ -165,7 +165,7 @@ internal class CreateProjectReportTest : UnitTest() {
             verificationEndDate = null,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO,
-            lastVerificationReOpening = mockk(),
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = null
         )
@@ -192,7 +192,8 @@ internal class CreateProjectReportTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             firstSubmission = null,
             verificationDate = null,
-            verificationEndDate = null
+            verificationEndDate = null,
+            verificationLastReOpenDate = null
         )
 
         private fun projectRelevanceBenefits() = listOf(

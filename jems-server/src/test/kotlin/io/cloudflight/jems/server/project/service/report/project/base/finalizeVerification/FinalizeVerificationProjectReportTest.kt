@@ -203,7 +203,8 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 amountAfterVerification = BigDecimal.valueOf(300),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = true,
-                verificationComment = "VERIFICATION COMM"
+                verificationComment = "VERIFICATION COMM",
+                parkedOn = YESTERDAY
             )
 
         private val partner_costs = ReportExpenditureCostCategory(
@@ -439,7 +440,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "ReOpenFinalized"], mode = EnumSource.Mode.EXCLUDE)
     fun `finalizeVerification - wrong status`(reportStatus: ProjectReportStatus) {
         val reportId = 52L
         val report = report(reportStatus)

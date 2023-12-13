@@ -139,7 +139,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
             this.tableConfiguration.columns.push({
               displayedColumn: 'payments.advance.payment.table.header.actions.delete',
               columnType: ColumnType.CustomComponent,
-              columnWidth: ColumnWidth.DeletionColumn,
+              columnWidth: ColumnWidth.ThinColumn,
               customCellTemplate: this.deleteButtonCell
             });
           }

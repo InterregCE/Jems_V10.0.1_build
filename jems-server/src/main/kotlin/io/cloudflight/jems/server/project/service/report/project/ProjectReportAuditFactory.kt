@@ -214,3 +214,20 @@ fun projectReportReOpenedAudit(
             .description("PR.${report.reportNumber} was reopened")
             .build()
     )
+
+fun projectReportVerificationReOpenedAudit(
+    context: Any,
+    report: ProjectReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_VERIFICATION_REOPENED)
+            .project(
+                projectId = report.projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("PR.${report.reportNumber} verification was reopened")
+            .build()
+    )

@@ -261,11 +261,20 @@ class ProjectReportPersistenceProvider(
     }
 
     @Transactional
-    override fun reOpenReportTo(reportId: Long, newStatus: ProjectReportStatus, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary =
+    override fun reOpenReportTo(
+        reportId: Long,
+        newStatus: ProjectReportStatus,
+        submissionTime: ZonedDateTime
+    ): ProjectReportSubmissionSummary =
         projectReportRepository.getById(reportId)
             .apply {
                 status = newStatus
-                lastReSubmission = submissionTime
+                if (newStatus.isProjectReportReOpened()) {
+                    lastReSubmission = submissionTime
+                } else if (newStatus == ProjectReportStatus.ReOpenFinalized) {
+                    verificationEndDate = null
+                    lastVerificationReOpening = submissionTime
+                }
             }.toSubmissionSummary()
 
     private fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {

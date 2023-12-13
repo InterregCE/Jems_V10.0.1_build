@@ -99,7 +99,7 @@ class FinalizeVerificationProjectReport(
     }
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {
-        if (report.status != ProjectReportStatus.InVerification)
+        if (!report.status.canBeVerified())
             throw ReportVerificationNotStartedException()
     }
 

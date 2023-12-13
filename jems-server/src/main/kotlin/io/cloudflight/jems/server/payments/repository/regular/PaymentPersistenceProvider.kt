@@ -436,6 +436,22 @@ class PaymentPersistenceProvider(
         return paymentToEcExtensionRepository.findAllByPaymentApplicationToEcId(ecPaymentId).toModelList()
     }
 
+    @Transactional(readOnly = true)
+    override fun getPaymentIdsInstallmentsExistsByProjectReportId(projectReportId: Long): Set<Long> =
+        paymentPartnerInstallmentRepository.findAllByPaymentPartnerPaymentProjectReportId(projectReportId).map {
+            it.paymentPartner.payment.id }.toSet()
+
+    @Transactional
+    override fun deleteRegularPayments(projectReportId: Long) {
+        val regularPayments = paymentRepository.findAllByProjectReportId(projectReportId)
+        regularPayments.forEach { regularPayment ->
+            projectFileMetadataRepository.findAllByPath(PaymentAttachment.generatePath(regularPayment.id)).forEach {
+                fileRepository.delete(it)
+            }
+            paymentRepository.delete(regularPayment)
+        }
+    }
+
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
             userRepository.getById(userId)

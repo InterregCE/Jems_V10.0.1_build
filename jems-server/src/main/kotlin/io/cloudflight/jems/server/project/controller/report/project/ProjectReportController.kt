@@ -14,6 +14,8 @@ import io.cloudflight.jems.server.project.service.report.project.base.getMyProje
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenVerificationProjectReport.ReOpenVerificationProjectReport
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenVerificationProjectReport.ReOpenVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
@@ -34,7 +36,8 @@ class ProjectReportController(
     private val reOpenReport: ReOpenProjectReportInteractor,
     private val startVerificationReport: StartVerificationProjectReportInteractor,
     private val finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor,
-    private val getMyProjectReports: GetMyProjectReportsInteractor
+    private val getMyProjectReports: GetMyProjectReportsInteractor,
+    private val reOpenVerificationReport: ReOpenVerificationProjectReportInteractor
 ) : ProjectReportApi {
 
     override fun getProjectReportList(projectId: Long, pageable: Pageable) =
@@ -69,4 +72,7 @@ class ProjectReportController(
 
     override fun finalizeVerificationOnProjectReport(projectId: Long, reportId: Long) =
         finalizeVerificationProjectReport.finalizeVerification(reportId).toDto()
+
+    override fun reopenVerificationOnProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
+        reOpenVerificationReport.reOpen(projectId = projectId, reportId = reportId).toDto()
 }

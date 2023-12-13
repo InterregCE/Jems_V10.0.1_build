@@ -37,12 +37,6 @@ export class ReportUtil {
     ].includes(status);
   }
 
-  static isVerificationReportOpen(status: ProjectReportDTO.StatusEnum): boolean {
-    return [
-      ProjectReportDTO.StatusEnum.InVerification,
-    ].includes(status);
-  }
-
   static isControlCertifiedReOpened(status: ProjectPartnerReportDTO.StatusEnum): boolean {
     return status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified;
   }
@@ -98,11 +92,23 @@ export class ReportUtil {
       ProjectReportSummaryDTO.StatusEnum.InVerification,
       ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLimited,
       ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLast,
-      ProjectReportSummaryDTO.StatusEnum.Finalized
+      ProjectReportSummaryDTO.StatusEnum.Finalized,
+      ProjectReportSummaryDTO.StatusEnum.ReOpenFinalized
     ].includes(status);
   }
 
-  static isProjectReportVerificationOngoing(status: ProjectReportSummaryDTO.StatusEnum): boolean {
-    return [ProjectReportSummaryDTO.StatusEnum.InVerification].includes(status);
+  static isVerificationReportOpen(status: ProjectReportDTO.StatusEnum): boolean {
+    return [
+      ProjectReportDTO.StatusEnum.InVerification,
+      ProjectReportDTO.StatusEnum.ReOpenFinalized,
+    ].includes(status);
+  }
+
+  static projectReportCanBeReopened(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return [
+      ProjectReportSummaryDTO.StatusEnum.Submitted,
+      ProjectReportSummaryDTO.StatusEnum.InVerification,
+      ProjectReportSummaryDTO.StatusEnum.ReOpenFinalized
+    ].includes(status);
   }
 }

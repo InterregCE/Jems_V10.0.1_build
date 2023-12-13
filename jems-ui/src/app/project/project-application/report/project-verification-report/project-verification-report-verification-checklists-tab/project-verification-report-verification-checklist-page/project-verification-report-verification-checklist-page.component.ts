@@ -37,6 +37,7 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
     editable: boolean;
     reportEditable: boolean;
     isAfterVerificationChecklist: boolean;
+    isChecklistCreatedDuringLastReopening: boolean;
   }>;
 
   confirmFinish = {
@@ -72,7 +73,8 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
         checklist,
         editable,
         reportEditable,
-        isAfterVerificationChecklist: this.isAfterVerificationChecklist(checklist.createdAt, report.verificationEndDate)
+        isAfterVerificationChecklist: this.isAfterVerificationChecklist(checklist.createdAt, report.verificationEndDate),
+        isChecklistCreatedDuringLastReopening: this.isChecklistCreatedDuringLastReopening(checklist.createdAt, report)
       })),
     );
     this.userCanEditControlChecklists$ = this.userCanEditVerificationChecklists();
@@ -127,4 +129,10 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
     return createdAt > verificationReportVerificationFinalizedDate;
   }
 
+  private isChecklistCreatedDuringLastReopening(createdAt: Date, report: ProjectReportDTO) {
+    if (report.status !== ProjectReportDTO.StatusEnum.ReOpenFinalized) {
+      return false;
+    }
+    return createdAt > report.verificationLastReOpenDate;
+  }
 }

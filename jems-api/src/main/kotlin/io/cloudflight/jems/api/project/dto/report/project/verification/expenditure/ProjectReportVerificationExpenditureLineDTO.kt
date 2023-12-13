@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.dto.report.project.verification.expendit
 
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 data class ProjectReportVerificationExpenditureLineDTO(
     val expenditure: ProjectPartnerReportExpenditureItemDTO,
@@ -12,5 +13,6 @@ data class ProjectReportVerificationExpenditureLineDTO(
     val typologyOfErrorId: Long?,
     val parked: Boolean,
     val parkingMetadata: ExpenditureParkingMetadataDTO?,
-    val verificationComment: String?
+    val verificationComment: String?,
+    val parkedOn: ZonedDateTime?
 )

@@ -107,10 +107,12 @@ internal class DeleteVerificationChecklistInstanceTest : UnitTest() {
         components = emptyList()
     )
 
-    private fun report(status:ProjectReportStatus): ProjectReportModel {
+    private fun report(status:ProjectReportStatus, lastVerificationReOpening: ZonedDateTime? = null): ProjectReportModel {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
         every { report.verificationEndDate } returns TODAY
+        every { report.lastVerificationReOpening } returns lastVerificationReOpening
+        every { report.reportNumber } returns controlReportId
         return report
     }
 
@@ -131,9 +133,6 @@ internal class DeleteVerificationChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `delete verification checklist - OK`() {
-        every{
-            reportPersistence.getReportById(projectId, reportId)
-        } returns report(ProjectReportStatus.InVerification)
         every { securityService.currentUser?.user?.id } returns creatorId
         every { securityService.getUserIdOrThrow() } returns user.id
         every {
@@ -146,9 +145,10 @@ internal class DeleteVerificationChecklistInstanceTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.deleteById(checklistId) } answers {}
-        every { reportPersistence.getReportById(projectId, reportId).reportNumber } returns controlReportId
-        every { reportPersistence.getReportById(projectId, reportId).status } returns ProjectReportStatus.InVerification
-        every { reportPersistence.getReportById(projectId, reportId).verificationEndDate } returns TODAY
+        every{
+            reportPersistence.getReportById(projectId, reportId)
+        } returns report(ProjectReportStatus.InVerification)
+
         deleteVerificationChecklistInstance.deleteById(projectId, reportId, checklistId)
         verify { persistence.deleteById(checklistId) }
 
@@ -194,6 +194,7 @@ internal class DeleteVerificationChecklistInstanceTest : UnitTest() {
             reportPersistence.getReportById(projectId, reportId)
         } returns report(ProjectReportStatus.InVerification)
         every { securityService.currentUser?.user?.id } returns 1
+
         assertThrows<DeleteVerificationChecklistInstanceStatusNotAllowedException> {
             deleteVerificationChecklistInstance.deleteById(
                 projectId,
@@ -217,6 +218,29 @@ internal class DeleteVerificationChecklistInstanceTest : UnitTest() {
             reportPersistence.getReportById(projectId, reportId)
         } returns report(status)
         every { securityService.currentUser?.user?.id } returns 1
+        assertThrows<DeleteVerificationChecklistInstanceStatusNotAllowedException> {
+            deleteVerificationChecklistInstance.deleteById(
+                projectId,
+                reportId,
+                checklistId
+            )
+        }
+    }
+
+    @Test
+    fun `delete verification checklist - create before verification reopening (cannot be deleted)`() {
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.VERIFICATION,
+                reportId
+            )
+        } returns verificationChecklistDetail
+        every { securityService.currentUser?.user?.id } returns 1
+        every{
+            reportPersistence.getReportById(projectId, reportId)
+        } returns report(ProjectReportStatus.ReOpenFinalized, ZonedDateTime.now().plusHours(1))
+
         assertThrows<DeleteVerificationChecklistInstanceStatusNotAllowedException> {
             deleteVerificationChecklistInstance.deleteById(
                 projectId,

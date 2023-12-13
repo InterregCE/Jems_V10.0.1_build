@@ -11,6 +11,28 @@
             {{'project.application.project.verification.work.switch.report' | translate}}
         </a>
 
+        <div>
+            <jems-pending-button
+                    *ngIf="data.hasReopenPermission && data.projectReport.status === StatusEnum.Finalized"
+                    [disabled]="data.projectReport.paymentIdsInstallmentExists.length > 0 || data.projectReport.paymentToEcIdsReportIncluded.length > 0"
+                    [pending]="actionPending"
+                    [icon]="'undo'"
+                    class="ml-2"
+                    (clicked)="reopenVerificationReport(data.projectReport.projectId, data.projectReport.id)">
+                {{'project.application.project.report.verification.reopen' | translate}}
+            </jems-pending-button>
+
+            <jems-context-info
+                    *ngIf="data.projectReport.paymentIdsInstallmentExists.length > 0 && data.hasReopenPermission" class="reopen-tooltip-warning" infoPosition="right"
+                    infoText="{{ 'project.application.project.report.verification.reopen.payment.installment.exists' | translate : { ids: data.projectReport.paymentIdsInstallmentExists.join(',') } }}">
+            </jems-context-info>
+
+            <jems-context-info
+                    *ngIf="data.projectReport.paymentIdsInstallmentExists.length === 0 && data.projectReport.paymentToEcIdsReportIncluded.length > 0 && data.hasReopenPermission"
+                    class="reopen-tooltip-warning" infoPosition="right"
+                    infoText="{{ 'project.application.project.report.verification.reopen.included.in.payment.application.to.ec' | translate : { ids: data.projectReport.paymentToEcIdsReportIncluded.join(',') } }}">
+            </jems-context-info>
+        </div>
     </div>
 
     <jems-alert *ngIf="error$ | async as error"

@@ -52,6 +52,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = false,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 
@@ -79,6 +80,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = false,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 
@@ -106,6 +108,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = true,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 

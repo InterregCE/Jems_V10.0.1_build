@@ -146,7 +146,8 @@ class GetProjectReportVerificationExpenditureTest: UnitTest() {
                     amountAfterVerification = BigDecimal.valueOf(300),
                     typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                     parked = false,
-                    verificationComment = "VERIFICATION COMM"
+                    verificationComment = "VERIFICATION COMM",
+                    parkedOn = null
                 )
             )
     }
