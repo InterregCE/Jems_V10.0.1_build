@@ -316,7 +316,7 @@ context('Control report tests', () => {
           cy.contains('button', 'start new checklist').click();
 
           cy.get('mat-button-toggle-group button').click({multiple: true});
-          cy.get('textarea').should('exist').each(e => cy.wrap(e).type(faker.random.word()));
+          cy.get('textarea').should('exist').each(e => cy.wrap(e).type(faker.word.sample()));
 
           cy.contains('button', 'Save changes').click();
           cy.contains('button', 'Finish checklist').click();
@@ -383,7 +383,7 @@ context('Control report tests', () => {
 
           cy.contains('mat-icon', 'edit').scrollIntoView().click();
           cy.contains('div.mat-form-field-flex', 'Description').scrollIntoView().within(() => {
-            cy.get('textarea').type(faker.random.words(10));
+            cy.get('textarea').type(faker.lorem.words(10));
           })
           cy.contains('button', 'Save').click();
           cy.contains('File description for \'fileToUpload.txt\' has been updated.').should('be.visible');
@@ -419,7 +419,7 @@ context('Control report tests', () => {
 
           cy.contains('mat-icon', 'edit').scrollIntoView().click();
           cy.contains('div.mat-form-field-flex', 'Description').scrollIntoView().within(() => {
-            cy.get('textarea').type(faker.random.words(10));
+            cy.get('textarea').type(faker.lorem.words(10));
           })
           cy.contains('button', 'Save').click();
           cy.contains('File description for \'fileToUpload2.txt\' has been updated.').should('be.visible');
@@ -650,10 +650,10 @@ function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklist
 }
 
 function fillChecklistForm() {
-  cy.get('mat-slider').scrollIntoView().should('be.visible').focus().type('{rightarrow}'.repeat(Number(faker.random.numeric())));
+  cy.get('mat-slider').scrollIntoView().should('be.visible').focus().type('{rightarrow}'.repeat(Number(faker.string.numeric())));
   cy.contains('Did I change this question?').should('be.visible')
-  cy.contains('mat-form-field', 'Justification').find('textarea').clear().type(faker.random.words(5));
+  cy.contains('mat-form-field', 'Justification').find('textarea').clear().type(faker.lorem.words(5));
   cy.get('mat-button-toggle-group').scrollIntoView().should('be.visible');
   cy.contains('mat-button-toggle', 'Why not').click()
-  cy.contains('mat-form-field', 'Pls just enter something').find('textarea').clear().type(faker.random.words(5));
+  cy.contains('mat-form-field', 'Pls just enter something').find('textarea').clear().type(faker.lorem.words(5));
 }

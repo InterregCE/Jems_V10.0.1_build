@@ -12,14 +12,14 @@
   },
   "author": "Cloudflight GmbH",
   "devDependencies": {
-    "@faker-js/faker": "^8.0.2",
-    "@types/node": "^20.5.7",
+    "@faker-js/faker": "^8.3.1",
+    "@types/node": "^20.10.4",
     "compare-pdf": "^1.1.8",
     "cypress": "12.17.4",
     "cypress-cloud": "1.9.6",
-    "date-and-time": "^3.0.2",
+    "date-and-time": "^3.0.3",
     "node-xlsx": "^0.23.0",
-    "typescript": "^5.0.2",
-    "wait-on": "^7.0.1"
+    "typescript": "^5.3.3",
+    "wait-on": "^7.2.0"
   }
 }

@@ -14,7 +14,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
     cy.publishCall(callId);
     cy.loginByRequest(user.applicantUser.email);
 
-    const randomString = faker.random.words(1000);
+    const randomString = faker.lorem.words(1000);
     const numberOfPeriods = 10; // max 999, max supported 60
     const numberOfPartners = 50; // max 50
     const numberOfOrganisations = 30; // max 30
@@ -49,7 +49,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
           } else {
             partner.details.role = 'PARTNER';
           }
-          partner.details.abbreviation = faker.random.alphaNumeric(15);
+          partner.details.abbreviation = faker.string.alphanumeric(15);
           application.associatedOrganisations[0].cypressReference = partner.details.abbreviation;
           partner.details.nameInOriginalLanguage = randomString.substring(0, 100);
           partner.details.nameInEnglish = randomString.substring(0, 100);
@@ -81,7 +81,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
             partner.contact[1].title = randomString.substring(0, 25);
             partner.contact[1].firstName = randomString.substring(0, 50);
             partner.contact[1].lastName = randomString.substring(0, 50);
-            partner.contact[1].email = faker.random.alphaNumeric(253) + '@a';
+            partner.contact[1].email = faker.string.alphanumeric(253) + '@a';
             partner.contact[1].telephone = faker.phone.number('+48 91 ### ## ##### #####');
             cy.updatePartnerContact(partnerId, partner.contact);
 
@@ -192,7 +192,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
           application.associatedOrganisations[0].contacts[1].title = randomString.substring(0, 25);
           application.associatedOrganisations[0].contacts[1].firstName = randomString.substring(0, 50);
           application.associatedOrganisations[0].contacts[1].lastName = randomString.substring(0, 50);
-          application.associatedOrganisations[0].contacts[1].email = faker.random.alphaNumeric(253) + '@a';
+          application.associatedOrganisations[0].contacts[1].email = faker.string.alphanumeric(253) + '@a';
           application.associatedOrganisations[0].contacts[1].telephone = faker.phone.number('+48 91 ### ## ##### #####');
           application.associatedOrganisations[0].roleDescription.forEach(roleDescription => {
             roleDescription.translation = randomString.substring(0, 3000);

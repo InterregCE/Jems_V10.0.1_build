@@ -188,7 +188,7 @@ context('Programme management tests', () => {
     it('TB-527 Programme result indicators can be configured', () => {
       cy.fixture('programme/TB-527.json').then((testData) => {
         testData.resultIndicators.forEach(current => {
-          current.identifier = current.identifier + faker.random.numeric(6);
+          current.identifier = current.identifier + faker.string.numeric(6);
         })
         cy.visit('/app/programme', {failOnStatusCode: false});
         cy.contains('Indicators').click();
@@ -233,7 +233,7 @@ context('Programme management tests', () => {
     it('TB-528 Programme output indicators can be configured', () => {
       cy.fixture('programme/TB-528.json').then((testData) => {
         testData.outputIndicators.forEach(current => {
-          current.identifier = current.identifier + faker.random.numeric(6);
+          current.identifier = current.identifier + faker.string.numeric(6);
         })
         cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 

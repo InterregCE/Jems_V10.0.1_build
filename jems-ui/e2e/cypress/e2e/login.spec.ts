@@ -53,7 +53,7 @@ context('Login tests', () => {
   it('TB-399 Applicant can register', () => {
 
     cy.contains('Create a new account').click();
-    const id = faker.random.alphaNumeric(5);
+    const id = faker.string.alphanumeric(5);
     const email = `cypress1.${id}@Applicant.eu`;
 
     cy.contains('div', 'First name').find('input').type('Cypress');

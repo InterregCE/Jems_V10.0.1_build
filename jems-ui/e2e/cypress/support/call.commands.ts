@@ -42,7 +42,7 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
 });
 
 function createCall(call, creatingUserEmail?: string) {
-  call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.datatype.uuid()}`;
+  call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.string.uuid()}`;
   if (creatingUserEmail)
     loginByRequest(creatingUserEmail);
   cy.request({

@@ -27,7 +27,7 @@ Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf
 })
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
-  const randomizeDownload = `downloadRequest_${faker.random.alphaNumeric(5)}`;
+  const randomizeDownload = `downloadRequest_${faker.string.alphanumeric(5)}`;
   cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {
@@ -60,10 +60,9 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
 });
 
 // https://stackoverflow.com/a/63519375/4876320
-const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/
 Cypress.on('uncaught:exception', (err) => {
   /* returning false here prevents Cypress from failing the test */
-  if (resizeObserverLoopErrRe.test(err.message)) {
+  if (err.message.includes('ResizeObserver loop limit exceeded')) {
     return false
   }
 })
