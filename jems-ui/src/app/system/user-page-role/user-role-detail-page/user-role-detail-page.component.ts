@@ -459,11 +459,23 @@ export class UserRoleDetailPageComponent {
       ?.find(node => node.name === 'project.application.project.report.verification.reopen') as any;
     const verificationPermissionValue = this.state(verificationPermission.form)?.value;
 
+    if(verificationPermissionValue === PermissionState.HIDDEN) {
+      this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationFinalisationPermission.disabled = true;
+      this.state(verificationReopenPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationReopenPermission.disabled = true;
+    } else if(verificationPermissionValue === PermissionState.VIEW) {
+      this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationFinalisationPermission.disabled = true;
+    } else {
+      verificationFinalisationPermission.disabled = false;
+      verificationReopenPermission.disabled = false;
+
+    }
+
     if(verificationPermissionValue === PermissionState.HIDDEN || verificationPermissionValue === PermissionState.VIEW) {
       this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
-      this.state(verificationReopenPermission.form)?.setValue(PermissionState.HIDDEN);
       verificationFinalisationPermission.disabled = true;
-      verificationReopenPermission.disabled = true;
     } else {
       verificationFinalisationPermission.disabled = false;
       verificationReopenPermission.disabled = false;

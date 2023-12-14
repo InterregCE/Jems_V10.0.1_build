@@ -49,7 +49,7 @@ class UpdateProjectReportVerificationClarification(
     }
 
     private fun validateReportStatus(report: ProjectReportModel) {
-        if (report.status != ProjectReportStatus.InVerification)
+        if (!report.status.canBeVerified())
             throw ReportVerificationStatusNotValidException()
     }
 }

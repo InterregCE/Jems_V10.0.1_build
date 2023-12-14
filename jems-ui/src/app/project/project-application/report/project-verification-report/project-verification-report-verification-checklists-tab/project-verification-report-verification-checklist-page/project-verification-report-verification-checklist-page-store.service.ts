@@ -3,7 +3,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   ChecklistInstanceDetailDTO,
-  ChecklistInstanceDTO,
+  ChecklistInstanceDTO, ProjectReportDTO,
   VerificationChecklistInstanceService
 } from '@cat/api';
 import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
@@ -89,11 +89,18 @@ export class ProjectVerificationReportVerificationChecklistPageStore {
              user,
              reportEditable,
              report,
-         ]) =>
-             checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT
-             && user?.email === checklist.creatorEmail
-             && (reportEditable || (checklist.createdAt > report.verificationEndDate))
-        )
+         ]) => {
+          if (user?.email === checklist.creatorEmail && reportEditable) {
+            if (report.status === ProjectReportDTO.StatusEnum.InVerification) {
+              return true;
+            } else if (report.status === ProjectReportDTO.StatusEnum.ReOpenFinalized) {
+              return report.verificationLastReOpenDate < checklist.createdAt;
+            } else if (report.status === ProjectReportDTO.StatusEnum.Finalized) {
+              return report.verificationEndDate < checklist.createdAt;
+            }
+          }
+          return false;
+        })
       );
   }
 }
