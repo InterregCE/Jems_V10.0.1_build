@@ -3,13 +3,11 @@ package io.cloudflight.jems.server.payments.repository.advance
 import com.querydsl.core.QueryResults
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
-import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanOperation
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -20,23 +18,18 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
-import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.QAdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.QAdvancePaymentSettlementEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
-import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProviderTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
@@ -365,6 +358,8 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { query.offset(capture(slotOffset)) } returns query
         val slotLimit = slot<Long>()
         every { query.limit(capture(slotLimit)) } returns query
+        val slotOrderBy = slot<OrderSpecifier<*>>()
+        every { query.orderBy(capture(slotOrderBy)) } returns query
 
 
 
@@ -410,8 +405,11 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         assertThat(slotFrom.captured).isInstanceOf(QAdvancePaymentEntity::class.java)
         assertThat(slotLeftJoin[0]).isInstanceOf(QAdvancePaymentSettlementEntity::class.java)
         assertThat(slotLeftJoinOn[0].toString()).isEqualTo("advancePaymentSettlementEntity.advancePayment.id = advancePaymentEntity.id")
+        assertThat(slotLeftJoin[1]).isInstanceOf(QProgrammeFundEntity::class.java)
+        assertThat(slotLeftJoinOn[1].toString()).isEqualTo("advancePaymentEntity.programmeFund.id = programmeFundEntity.id")
         assertThat(slotOffset.captured).isEqualTo(0L)
         assertThat(slotLimit.captured).isEqualTo(5L)
+        assertThat(slotOrderBy.captured.target.toString()).isEqualTo("advancePaymentEntity.id")
     }
 
     @Test

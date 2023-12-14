@@ -15,6 +15,11 @@ class ProgrammeTypologyErrorsPersistenceProvider(
         return programmeTypologyErrorsRepository.findAll().toModel()
     }
 
+    @Transactional(readOnly = true)
+    override fun findAllByIdIn(ids: Set<Long>): List<TypologyErrors> =
+         programmeTypologyErrorsRepository.findAllById(ids).toModel()
+
+
     @Transactional
     override fun updateTypologyErrors(toDeleteIds: List<Long>, toPersist: List<TypologyErrors>): List<TypologyErrors> {
         programmeTypologyErrorsRepository.deleteAllByIdInBatch(toDeleteIds)

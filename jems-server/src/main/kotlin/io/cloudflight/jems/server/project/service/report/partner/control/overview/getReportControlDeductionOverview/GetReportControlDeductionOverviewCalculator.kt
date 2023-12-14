@@ -48,7 +48,7 @@ class GetReportControlDeductionOverviewCalculator(
                     .mapValues { it.value.sumOf { it.deductedAmount } }
             }
 
-        val result = this.typologyOfErrorsPersistence.getAllTypologyErrors()
+        val result = this.typologyOfErrorsPersistence.findAllByIdIn(byTypologyError.keys)
             .map { error -> byTypologyError.extractFor(error = error) }
             .plus(options.toRow(totalDeductedSplit))
             .fillInTotal()

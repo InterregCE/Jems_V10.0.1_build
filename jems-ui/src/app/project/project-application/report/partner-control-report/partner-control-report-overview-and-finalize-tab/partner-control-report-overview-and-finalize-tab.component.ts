@@ -256,6 +256,6 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
   }
 
   hasDeductions(deductions: ControlDeductionOverviewDTO): boolean {
-    return deductions.deductionRows.filter(deduction => deduction.total).length > 0;
+    return deductions.deductionRows.filter(deduction => deduction.typologyOfErrorId).length > 0;
   }
 }
