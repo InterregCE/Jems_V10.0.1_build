@@ -80,6 +80,8 @@ declare global {
 
       createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
 
+      updateReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
+
       getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
 
       updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
@@ -348,6 +350,11 @@ Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contrac
 });
 
 Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
+  createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
+Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
+  // same as create, but need to provide id reference in reportingDeadlines
   createReportingDeadlines(applicationId, reportingDeadlines);
 });
 

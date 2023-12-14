@@ -11,7 +11,7 @@ context('Call management tests', () => {
   context('Standard 1-step call', () => {
 
     before(() => {
-      cy.wrap(`Standard 1-step call ${faker.datatype.uuid()}`).as('callName');
+      cy.wrap(`Standard 1-step call ${faker.string.uuid()}`).as('callName');
     });
 
     it('TB-388 Create a new 1-step call', function () {
@@ -130,7 +130,7 @@ context('Call management tests', () => {
   context('Standard 2-step call', () => {
 
     before(() => {
-      cy.wrap(`Standard 2-step call ${faker.datatype.uuid()}`).as('callName');
+      cy.wrap(`Standard 2-step call ${faker.string.uuid()}`).as('callName');
     });
 
     it("TB-754 Create a new 2-step call", function () {

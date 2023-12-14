@@ -13,6 +13,7 @@ import paymentsUser from "@fixtures/api/users/paymentsUser.json";
 import paymentsRole from "@fixtures/api/roles/paymentsRole.json";
 import {projectReportPage} from "./reports-page.pom";
 import {ProjectReportType} from "./ProjectReportType";
+import contractMonitoring from "@fixtures/api/projectReport/contractMonitoring.json";
 
 
 context('Project report tests', () => {
@@ -107,49 +108,42 @@ context('Project report tests', () => {
     });
   });
 
-  it('TB-1034 Make sure Pre-check works and that you can submit', function () {
+  it('TB-1034 PR - Pre-submission check should show errors if the deadline has expired', function () {
     cy.fixture('project/reporting/TB-1034.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.updateContractMonitoring(applicationId, contractMonitoring);
+        cy.createReportingDeadlines(applicationId, testData.deadlines).then(deadlines => {
+          testData.projectReport.deadlineId = deadlines[0].id;
+          cy.loginByRequest(user.applicantUser.email);
+          cy.createProjectReport(applicationId, testData.projectReport).then(reportId => {
+            cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
+            cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
+            cy.contains('1 Issue(s)').should('be.visible');
+            cy.contains('button', 'Submit project report').should('be.disabled');
+            cy.contains('mat-expansion-panel-header', 'Project report identification').should('be.visible').click();
+            cy.contains('The Date of the reporting schedule expired').should('be.visible');
 
-        createReportingDeadlines(applicationId, testData);
+            cy.loginByRequest(user.programmeUser.email);
+            testData.deadlines[0].id = deadlines[0].id;
+            testData.deadlines[0].date = new Date();
+            cy.updateReportingDeadlines(applicationId, testData.deadlines);
 
-        cy.loginByRequest(user.applicantUser.email);
+            cy.loginByRequest(user.applicantUser.email);
+            cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
+            cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
+            cy.contains('0 Issue(s)').should('be.visible');
+            cy.contains('button', 'Submit project report').should('be.enabled').click();
 
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.contains('Add Project Report').click();
+            cy.intercept(`/api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/submit`).as('submitProjectReport');
+            cy.contains('button', 'Confirm').click();
+            cy.wait('@submitProjectReport');
 
-        cy.contains('Link to reporting schedule').click();
-        cy.contains('mat-option span', `1, Period 1`).click();
-        cy.contains('button', 'Create').should('be.enabled').click();
-        cy.wait(2000);
-
-        cy.url().then(url => {
-          const reportId = url.replace('/identification', '').split('/').pop();
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
-          cy.contains('button', 'Submit project report').should('be.disabled');
-          cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
-          cy.contains('1 Issue(s)').should('be.visible');
-          cy.contains('mat-expansion-panel-header', 'Project report identification').should('be.visible').click();
-          cy.contains('The Date of the reporting schedule expired').should('be.visible');
-
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/identification`, {failOnStatusCode: false});
-          cy.contains('Link to reporting schedule').parent().prev().click();
-          cy.contains('mat-option span', `2, Period 1`).click();
-          cy.contains('button', 'Save changes').should('be.enabled').click();
-
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
-          cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
-          cy.contains('0 Issue(s)').should('be.visible');
-          cy.contains('button', 'Submit project report').should('be.enabled').click();
-
-          cy.intercept(`/api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/submit`).as('submitProjectReport');
-          cy.contains('button', 'Confirm').click();
-          cy.wait('@submitProjectReport');
-
-          cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-          cy.contains('mat-row', 'PR.1').should('be.visible');
-          cy.contains('mat-row', 'Submitted').should('be.visible');
+            cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+            cy.contains('mat-row', 'PR.1').should('be.visible');
+            cy.contains('mat-row', 'Submitted').should('be.visible');
+          });
         });
       });
     });
@@ -366,8 +360,7 @@ context('Project report tests', () => {
         });
 
         // Contract monitoring
-        createReportingDeadlines(applicationId, testData);
-        cy.get<{ id: number, type: string }[]>('@deadlines').then(deadlines => {
+        createReportingDeadlines(applicationId, testData).then(deadlines => {
           const contentDeadlineId = deadlines.find(deadline => deadline.type == 'Content')?.id;
 
           cy.loginByRequest(user.applicantUser.email);
@@ -397,8 +390,6 @@ context('Project report tests', () => {
     });
   });
 });
-
-
 
 function addReportingPeriod(number: number) {
   cy.contains('span', 'Add Reporting deadline').click();
@@ -497,30 +488,6 @@ function setReadyForPayment(flag, rowIndex) {
   cy.contains('Contract monitoring form saved successfully.').should('not.exist');
 }
 
-function assertPaymentType(row, type) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-payment-type').get(0)).to.contain(type);
-}
-
-function assertPaymentProjectId(row, id) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-project-id').get(0)).to.contain(id);
-}
-
-function assertTotalApproved(row, totalApproved) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-total-eligible-amount').get(0)).to.contain(totalApproved);
-}
-
-function assertFund(row, fund) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-fund').get(0)).to.contain(fund);
-}
-
-function assertPaid(row, paid) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-amount-paid-per-fund').get(0)).to.contain(paid);
-}
-
-function assertRemainingToBePaid(row, remainingToBePaid) {
-  expect(row.children('.mat-column-payments-payment-to-project-table-column-remaining-to-be-paid').get(0)).to.contain(remainingToBePaid);
-}
-
 function createReportingDeadlines(applicationId, testData) {
   cy.loginByRequest(user.programmeUser.email);
   const yesterday = new Date((new Date()).valueOf() - (1000 * 60 * 60 * 24));
@@ -533,7 +500,7 @@ function createReportingDeadlines(applicationId, testData) {
   testData.deadlines[0].date = new Date();
   testData.deadlines[1].date = yesterday;
 
-  cy.createReportingDeadlines(applicationId, testData.deadlines).as('deadlines');
+  return cy.createReportingDeadlines(applicationId, testData.deadlines);
 }
 
 function createControllerUser(testData, partnerId) {

@@ -10,7 +10,7 @@ context('Application Audit log tests', () => {
       cy.loginByRequest(user.admin.email);
 
       // create audit role
-      testData.auditRole.name = `${testData.auditRole.name}_${faker.random.numeric(5)}`;
+      testData.auditRole.name = `${testData.auditRole.name}_${faker.string.numeric(5)}`;
       cy.createRole(testData.auditRole).then(roleId => {
 
         // create audit user

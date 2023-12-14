@@ -1,24 +1,22 @@
 {
   "deadlines": [
     {
-      "date":"updated",
-      "type":"Content",
-      "periodNumber":1,
-      "comment":"",
-      "id":0,
-      "number":0,
-      "linkedSubmittedProjectReportNumbers":[],
-      "linkedDraftProjectReportNumbers":[]
-    },
-    {
-      "date":"updated",
-      "type":"Finance",
-      "periodNumber":1,
-      "comment":"",
-      "id":0,
-      "number":0,
-      "linkedSubmittedProjectReportNumbers":[],
-      "linkedDraftProjectReportNumbers":[]
+      "date": "2023-11-01",
+      "type": "Both",
+      "periodNumber": 1,
+      "comment": "Deadline comment",
+      "id": 0,
+      "number": 0,
+      "linkedSubmittedProjectReportNumbers": [],
+      "linkedDraftProjectReportNumbers": []
     }
-  ]
+  ],
+  "projectReport": {
+    "startDate": "2023-11-01T00:00:00.000Z",
+    "endDate": "2023-11-30T00:00:00.000Z",
+    "periodNumber": null,
+    "deadlineId": 10,
+    "type": null,
+    "reportingDate": null
+  }
 }
