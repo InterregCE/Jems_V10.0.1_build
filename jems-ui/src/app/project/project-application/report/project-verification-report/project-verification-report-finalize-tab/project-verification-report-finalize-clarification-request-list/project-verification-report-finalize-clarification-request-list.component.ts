@@ -74,7 +74,7 @@ export class ProjectVerificationReportFinalizeClarificationRequestListComponent 
 
   addClarificationData(): void {
     const item = this.formBuilder.group({
-      requestDate: [''],
+      requestDate: ['', Validators.required],
       answerDate: [''],
       comment: ['', Validators.maxLength(3000)]
     });
@@ -87,7 +87,7 @@ export class ProjectVerificationReportFinalizeClarificationRequestListComponent 
     this.clarifications.clear();
     for (const clarification of clarifications) {
       const item = this.formBuilder.group({
-        requestDate: [clarification.requestDate],
+        requestDate: [clarification.requestDate, Validators.required],
         answerDate: [clarification.answerDate],
         comment: [clarification.comment],
       });
