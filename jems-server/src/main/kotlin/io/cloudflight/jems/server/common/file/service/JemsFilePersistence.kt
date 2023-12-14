@@ -57,6 +57,8 @@ interface JemsFilePersistence {
 
     fun deleteFile(type: JemsFileType, fileId: Long)
 
+    fun deleteFilesByPath(path: String)
+
     fun setDescriptionToFile(fileId: Long, description: String)
 
     fun getFileType(fileId: Long, projectId: Long): JemsFileType?

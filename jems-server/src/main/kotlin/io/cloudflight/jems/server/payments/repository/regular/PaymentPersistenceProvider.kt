@@ -157,25 +157,25 @@ class PaymentPersistenceProvider(
             )
             .from(specPayment)
             .leftJoin(specPaymentPartner)
-                .on(specPaymentPartner.payment.id.eq(specPayment.id))
+            .on(specPaymentPartner.payment.id.eq(specPayment.id))
             .leftJoin(specPaymentPartnerInstallment)
-                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
+            .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
             .leftJoin(specPartnerReportCertificateCoFin)
-                .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
+            .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
-                .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
+            .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
             .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
-                .on(specProjectReport.id.eq(specPayment.projectReport.id))
+            .on(specProjectReport.id.eq(specPayment.projectReport.id))
             .leftJoin(specProjectContracting)
-                .on(specProjectContracting.projectId.eq(specPayment.project.id))
+            .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .leftJoin(specProjectEntity)
-                .on(specProjectEntity.id.eq(specPayment.project.id))
+            .on(specProjectEntity.id.eq(specPayment.project.id))
             .leftJoin(specProgrammeSpecificObjectiveEntity)
-                .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(specProgrammePriorityEntity)
-                .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
             .leftJoin(specPaymentToEcExtensionEntity)
-                .on(specPaymentToEcExtensionEntity.payment.id.eq(specPayment.id))
+            .on(specPaymentToEcExtensionEntity.payment.id.eq(specPayment.id))
             .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
             .groupBy(specPayment)
             .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
@@ -197,7 +197,7 @@ class PaymentPersistenceProvider(
         paymentInstallments.forEach { installment ->
             if (installment.isPaymentConfirmed == true) {
                 amountPaid = amountPaid.add(installment.amountPaid)
-                lastPaymentDate =  if (installment.paymentDate != null && (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate)))
+                lastPaymentDate = if (installment.paymentDate != null && (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate)))
                     installment.paymentDate else lastPaymentDate
             }
             amountAuthorized = if (installment.isSavePaymentInfo == true) amountAuthorized.add(installment.amountPaid) else amountAuthorized
@@ -424,9 +424,9 @@ class PaymentPersistenceProvider(
             .select(specPayment.id)
             .from(specPayment)
             .leftJoin(specPaymentToEcExtension)
-                .on(specPayment.id.eq(specPaymentToEcExtension.paymentId))
+            .on(specPayment.id.eq(specPaymentToEcExtension.paymentId))
             .leftJoin(specProjectContracting)
-                .on(specProjectContracting.projectId.eq(specPayment.project.id))
+            .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .where(whereExpressions.joinWithAnd())
             .fetch().toSet()
     }
@@ -439,15 +439,15 @@ class PaymentPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentIdsInstallmentsExistsByProjectReportId(projectReportId: Long): Set<Long> =
         paymentPartnerInstallmentRepository.findAllByPaymentPartnerPaymentProjectReportId(projectReportId).map {
-            it.paymentPartner.payment.id }.toSet()
+            it.paymentPartner.payment.id
+        }.toSet()
 
     @Transactional
     override fun deleteRegularPayments(projectReportId: Long) {
         val regularPayments = paymentRepository.findAllByProjectReportId(projectReportId)
         regularPayments.forEach { regularPayment ->
-            projectFileMetadataRepository.findAllByPath(PaymentAttachment.generatePath(regularPayment.id)).forEach {
-                fileRepository.delete(it)
-            }
+            val attachments = projectFileMetadataRepository.findAllByPath(PaymentAttachment.generatePath(regularPayment.id))
+            fileRepository.deleteBatch(attachments)
             paymentRepository.delete(regularPayment)
         }
     }

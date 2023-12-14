@@ -126,8 +126,10 @@ class JemsProjectFileService(
 
         auditPublisher.publishEvent(
             fileDeleted(
-                context = this, fileId = fileId,
-                location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel()
+                context = this,
+                fileId = fileId,
+                location = file.minioLocation,
+                projectSummary = projectRepository.getById(projectId).toSummaryModel()
             )
         )
     }
