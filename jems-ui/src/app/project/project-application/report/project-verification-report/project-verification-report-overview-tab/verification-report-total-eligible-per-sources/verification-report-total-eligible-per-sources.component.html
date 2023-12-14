@@ -6,7 +6,8 @@
             <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner.report' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="border-cell-right">
-            <span *ngIf="!line.isSplit">R.{{line.partnerReportNumber}}</span>
+            <span *ngIf="!line.isSplit && !line.spfLine">R.{{line.partnerReportNumber}}</span>
+            <span *ngIf="!line.isSplit && line.spfLine">{{ 'project.partner.spf.cost.type.spf' | translate }}</span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
     </ng-container>
@@ -18,8 +19,10 @@
         <mat-cell *matCellDef="let line" class="text-left">
             <mat-icon *ngIf="line.isSplit" class="sub-row-indent">subdirectory_arrow_right</mat-icon>
             <span *ngIf="line.isSplit">{{line.splitFundAbbreviation| translateBySystemLanguage | async}}</span>
-            <span *ngIf="!line.isSplit && line.partnerRole === 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: line.partnerNumber} }}</span>
-            <span *ngIf="!line.isSplit && line.partnerRole !== 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: line.partnerNumber} }} </span>
+            <span *ngIf="!line.isSplit">
+                {{ 'common.label.project.partner.role.shortcut.' +
+                    (line.partnerRole || 'LEAD_PARTNER') | adaptTranslationKeyByCallType | async | translate:{partner: line.partnerNumber} }}
+            </span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
     </ng-container>

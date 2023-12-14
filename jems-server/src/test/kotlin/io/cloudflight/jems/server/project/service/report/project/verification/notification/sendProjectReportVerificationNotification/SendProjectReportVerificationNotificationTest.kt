@@ -66,6 +66,7 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
             projectAcronym = "projectAcronym",
             leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
             leadPartnerNameInEnglish = "nameInEnglish",
+            spfPartnerId = null,
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,

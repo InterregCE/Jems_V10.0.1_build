@@ -82,6 +82,7 @@ class DeleteProjectReportVerificationFileTest : UnitTest() {
             projectAcronym = "project acronym",
             leadPartnerNameInOriginalLanguage = "LP orig",
             leadPartnerNameInEnglish = "LP english",
+            spfPartnerId = null,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             lastReSubmission = DAY_AGO,

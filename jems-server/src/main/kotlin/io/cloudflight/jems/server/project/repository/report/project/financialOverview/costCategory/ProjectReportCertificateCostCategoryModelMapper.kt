@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.repository.report.partner.model.PerPar
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
-import java.math.BigDecimal
 
 fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCostCategory(
     totalsFromAF = BudgetCostsCalculationResultFull(
@@ -32,7 +31,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherCurrent,
         lumpSum = lumpSumCurrent,
         unitCost = unitCostCurrent,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostCurrent,
         sum = sumCurrent,
     ),
 
@@ -46,7 +45,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherPreviouslyReported,
         lumpSum = lumpSumPreviouslyReported,
         unitCost = unitCostPreviouslyReported,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostPreviouslyReported,
         sum = sumPreviouslyReported,
     ),
     currentVerified = BudgetCostsCalculationResultFull(
@@ -59,7 +58,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherCurrentVerified,
         lumpSum = lumpSumCurrentVerified,
         unitCost = unitCostCurrentVerified,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostCurrentVerified,
         sum = sumCurrentVerified,
     ),
     previouslyVerified = BudgetCostsCalculationResultFull(
@@ -72,7 +71,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherPreviouslyVerified,
         lumpSum = lumpSumPreviouslyVerified,
         unitCost = unitCostPreviouslyVerified,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostPreviouslyVerified,
         sum = sumPreviouslyVerified,
     )
 )
@@ -104,7 +103,7 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
                 other = it.otherCurrent,
                 lumpSum = it.lumpSumCurrent,
                 unitCost = it.unitCostCurrent,
-                spfCost = BigDecimal.ZERO,
+                spfCost = it.spfCostCurrent,
                 sum = it.sumCurrent,
             ),
             deduction = BudgetCostsCalculationResultFull(
@@ -117,7 +116,7 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
                 other = it.otherDeduction,
                 lumpSum = it.lumpSumDeduction,
                 unitCost = it.unitCostDeduction,
-                spfCost = BigDecimal.ZERO,
+                spfCost = it.spfCostDeduction,
                 sum = it.sumDeduction,
             ),
         )

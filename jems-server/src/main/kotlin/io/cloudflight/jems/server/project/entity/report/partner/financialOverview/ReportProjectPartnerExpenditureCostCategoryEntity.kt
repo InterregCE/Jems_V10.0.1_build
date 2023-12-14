@@ -49,6 +49,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull var otherCurrent: BigDecimal,
     @field:NotNull var lumpSumCurrent: BigDecimal,
     @field:NotNull var unitCostCurrent: BigDecimal,
+    @field:NotNull var spfCostCurrent: BigDecimal,
     @field:NotNull var sumCurrent: BigDecimal,
 
     @field:NotNull var staffTotalEligibleAfterControl: BigDecimal,
@@ -60,6 +61,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull var otherTotalEligibleAfterControl: BigDecimal,
     @field:NotNull var lumpSumTotalEligibleAfterControl: BigDecimal,
     @field:NotNull var unitCostTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var spfCostTotalEligibleAfterControl: BigDecimal,
     @field:NotNull var sumTotalEligibleAfterControl: BigDecimal,
 
     @field:NotNull val staffPreviouslyReported: BigDecimal,
@@ -71,6 +73,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val otherPreviouslyReported: BigDecimal,
     @field:NotNull val lumpSumPreviouslyReported: BigDecimal,
     @field:NotNull val unitCostPreviouslyReported: BigDecimal,
+    @field:NotNull val spfCostPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
     @field:NotNull val staffPreviouslyValidated: BigDecimal,
@@ -82,6 +85,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val otherPreviouslyValidated: BigDecimal,
     @field:NotNull val lumpSumPreviouslyValidated: BigDecimal,
     @field:NotNull val unitCostPreviouslyValidated: BigDecimal,
+    @field:NotNull val spfCostPreviouslyValidated: BigDecimal,
     @field:NotNull val sumPreviouslyValidated: BigDecimal,
 
     // Parking
@@ -95,6 +99,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull var otherCurrentParked: BigDecimal,
     @field:NotNull var lumpSumCurrentParked: BigDecimal,
     @field:NotNull var unitCostCurrentParked: BigDecimal,
+    @field:NotNull var spfCostCurrentParked: BigDecimal,
     @field:NotNull var sumCurrentParked: BigDecimal,
 
     @field:NotNull var staffCurrentReIncluded: BigDecimal,
@@ -106,6 +111,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull var otherCurrentReIncluded: BigDecimal,
     @field:NotNull var lumpSumCurrentReIncluded: BigDecimal,
     @field:NotNull var unitCostCurrentReIncluded: BigDecimal,
+    @field:NotNull var spfCostCurrentReIncluded: BigDecimal,
     @field:NotNull var sumCurrentReIncluded: BigDecimal,
 
     @field:NotNull val staffPreviouslyReportedParked: BigDecimal,
@@ -117,6 +123,7 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val otherPreviouslyReportedParked: BigDecimal,
     @field:NotNull val lumpSumPreviouslyReportedParked: BigDecimal,
     @field:NotNull val unitCostPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val spfCostPreviouslyReportedParked: BigDecimal,
     @field:NotNull val sumPreviouslyReportedParked: BigDecimal,
 
 ) : Serializable

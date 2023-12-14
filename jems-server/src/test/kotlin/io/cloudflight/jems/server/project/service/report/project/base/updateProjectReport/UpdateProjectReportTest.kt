@@ -78,6 +78,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             projectAcronym = "acron",
             leadPartnerNameInOriginalLanguage = "orig",
             leadPartnerNameInEnglish = "en",
+            spfPartnerId = null,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             lastReSubmission = mockk(),

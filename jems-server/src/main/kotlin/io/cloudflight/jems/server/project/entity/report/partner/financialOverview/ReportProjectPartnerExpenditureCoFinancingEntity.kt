@@ -65,6 +65,12 @@ class ReportProjectPartnerExpenditureCoFinancingEntity(
     @field:NotNull val privateContributionPreviouslyReportedParked: BigDecimal,
     @field:NotNull val sumPreviouslyReportedParked: BigDecimal,
 
+    @field:NotNull val partnerContributionPreviouslyReportedSpf: BigDecimal,
+    @field:NotNull val publicContributionPreviouslyReportedSpf: BigDecimal,
+    @field:NotNull val automaticPublicContributionPreviouslyReportedSpf: BigDecimal,
+    @field:NotNull val privateContributionPreviouslyReportedSpf: BigDecimal,
+    @field:NotNull val sumPreviouslyReportedSpf: BigDecimal,
+
     @field:NotNull var partnerContributionCurrentReIncluded: BigDecimal,
     @field:NotNull var publicContributionCurrentReIncluded: BigDecimal,
     @field:NotNull var automaticPublicContributionCurrentReIncluded: BigDecimal,

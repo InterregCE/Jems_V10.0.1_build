@@ -84,6 +84,12 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             automaticPublicContributionPreviouslyReportedParked = BigDecimal.valueOf(150),
             privateContributionPreviouslyReportedParked = BigDecimal.valueOf(200),
             sumPreviouslyReportedParked = BigDecimal.valueOf(400),
+
+            partnerContributionPreviouslyReportedSpf = BigDecimal.valueOf(52),
+            publicContributionPreviouslyReportedSpf = BigDecimal.valueOf(53),
+            automaticPublicContributionPreviouslyReportedSpf = BigDecimal.valueOf(54),
+            privateContributionPreviouslyReportedSpf = BigDecimal.valueOf(55),
+            sumPreviouslyReportedSpf = BigDecimal.valueOf(56),
         )
 
         private val coFin = ReportExpenditureCoFinancing(
@@ -143,6 +149,14 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
                 privateContribution = BigDecimal.valueOf(200),
                 sum = BigDecimal.valueOf(400),
             ),
+            previouslyReportedSpf = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(72L, 1), null to BigDecimal.valueOf(83L, 1)),
+                partnerContribution = BigDecimal.valueOf(52),
+                publicContribution = BigDecimal.valueOf(53),
+                automaticPublicContribution = BigDecimal.valueOf(54),
+                privateContribution = BigDecimal.valueOf(55),
+                sum = BigDecimal.valueOf(56),
+            ),
             previouslyPaid = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(20L to BigDecimal.valueOf(81L), null to BigDecimal.valueOf(123L)),
                 partnerContribution = BigDecimal.ZERO,
@@ -167,6 +181,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             currentParked = BigDecimal.valueOf(50L),
             currentReIncluded = BigDecimal.valueOf(125L),
             previouslyReportedParked = BigDecimal.valueOf(50L),
+            previouslyReportedSpf = BigDecimal.valueOf(72L, 1),
             disabled = true,
         )
 
@@ -184,6 +199,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             currentParked = BigDecimal.valueOf(150L),
             currentReIncluded = BigDecimal.valueOf(375L),
             previouslyReportedParked = BigDecimal.valueOf(150L),
+            previouslyReportedSpf = BigDecimal.valueOf(83L, 1),
             disabled = true,
         )
 

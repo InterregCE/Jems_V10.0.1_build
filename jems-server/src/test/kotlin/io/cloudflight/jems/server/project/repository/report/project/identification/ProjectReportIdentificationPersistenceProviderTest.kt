@@ -67,6 +67,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             projectAcronym = "projectAcronym",
             leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
             leadPartnerNameInEnglish = "nameInEnglish",
+            spfPartnerId = null,
 
             createdAt = ZonedDateTime.now().minusWeeks(1),
             firstSubmission = ZonedDateTime.now().minusYears(1),

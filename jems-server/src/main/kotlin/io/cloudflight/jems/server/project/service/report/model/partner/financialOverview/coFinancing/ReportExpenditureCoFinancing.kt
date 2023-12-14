@@ -7,6 +7,7 @@ data class ReportExpenditureCoFinancing(
     val totalEligibleAfterControl: ReportExpenditureCoFinancingColumn,
     val previouslyReported: ReportExpenditureCoFinancingColumn,
     val previouslyReportedParked: ReportExpenditureCoFinancingColumn,
+    val previouslyReportedSpf: ReportExpenditureCoFinancingColumn,
     val previouslyValidated: ReportExpenditureCoFinancingColumn,
     val previouslyPaid: ReportExpenditureCoFinancingColumn,
 )

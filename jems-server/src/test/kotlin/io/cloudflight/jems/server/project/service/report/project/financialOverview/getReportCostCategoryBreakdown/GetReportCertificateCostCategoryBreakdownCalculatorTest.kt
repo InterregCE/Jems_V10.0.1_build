@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -303,20 +304,20 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
             spfCost = CertificateCostCategoryBreakdownLine(
                 totalEligibleBudget = BigDecimal.valueOf(210L),
                 previouslyReported = BigDecimal.valueOf(29L),
-                currentReport = BigDecimal.valueOf(59L),
-                totalReportedSoFar = BigDecimal.valueOf(88L),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(41_90L, 2),
-                remainingBudget = BigDecimal.valueOf(122L),
+                currentReport = BigDecimal.valueOf(5907L, 2), // with SPF
+                totalReportedSoFar = BigDecimal.valueOf(88_07L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(41_94L, 2),
+                remainingBudget = BigDecimal.valueOf(121_93L, 2),
                 currentVerified = BigDecimal.ZERO,
                 previouslyVerified = BigDecimal.valueOf(29L),
             ),
             total = CertificateCostCategoryBreakdownLine(
                 totalEligibleBudget = BigDecimal.valueOf(2055L),
                 previouslyReported = BigDecimal.valueOf(245L),
-                currentReport = BigDecimal.valueOf(545L),
-                totalReportedSoFar = BigDecimal.valueOf(790L),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(38_44L, 2),
-                remainingBudget = BigDecimal.valueOf(1265L),
+                currentReport = BigDecimal.valueOf(545_07L, 2), // with SPF
+                totalReportedSoFar = BigDecimal.valueOf(790_07L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(38_45L, 2),
+                remainingBudget = BigDecimal.valueOf(1264_93L, 2),
                 currentVerified = BigDecimal.ZERO,
                 previouslyVerified = BigDecimal.valueOf(245L),
             ),
@@ -337,6 +338,8 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
     private lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
     @MockK
     private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+    @MockK
+    private lateinit var reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence
 
     @InjectMockKs
     private lateinit var service: GetReportCertificateCostCategoryBreakdownCalculator
@@ -367,7 +370,7 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
         every { reportCertificateCostCategoryPersistence.getCostCategories(projectId = PROJECT_ID, REPORT_ID) } returns
             reportCostCategory
         every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate())
-        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(setOf(4478L)) } returns
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesTotalEligible(setOf(4478L)) } returns
             BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(50L),
                 office = BigDecimal.valueOf(51L),
@@ -381,7 +384,7 @@ internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest
                 spfCost = BigDecimal.valueOf(59L),
                 sum = BigDecimal.valueOf(545L),
             )
-
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(REPORT_ID).sum } returns BigDecimal.valueOf(7L, 2)
         assertThat(service.getSubmittedOrCalculateCurrent(projectId = PROJECT_ID, REPORT_ID))
             .isEqualTo(expectedDraftOverview)
     }

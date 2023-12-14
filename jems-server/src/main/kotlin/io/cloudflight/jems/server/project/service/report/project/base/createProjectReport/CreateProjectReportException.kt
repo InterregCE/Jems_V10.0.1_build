@@ -55,3 +55,9 @@ class LastReOpenedReportException(reOpenedReportNumbers: List<Int>): Application
     message = "Following reports are blocking new report creation: " +
             reOpenedReportNumbers.joinToString(", ") { "PR.$it" },
 )
+
+class NoPartnerForSpfProject: ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-008",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.no.partner"),
+    message = "Project Report for SPF project cannot be created without partner. There has to be exactly 1 'PP1 SPF'",
+)

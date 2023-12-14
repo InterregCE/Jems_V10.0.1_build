@@ -22,10 +22,12 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.calculateSourcesAndSplits
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.fillInAdditionalSplitsForSpf
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.getPartnerReportFinancialData.GetPartnerReportFinancialData
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.sumUp
 import io.cloudflight.jems.server.project.service.report.project.verification.toIdentifiers
@@ -51,6 +53,7 @@ class FinalizeVerificationProjectReport(
     private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence,
     private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
+    private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
@@ -67,7 +70,13 @@ class FinalizeVerificationProjectReport(
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
 
-        val reportPartnerCertificateSplits = projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
+        val spfContributionSplit = reportSpfClaimPersistence.getCurrentSpfContributionSplit(reportId)
+        if (spfContributionSplit != null) {
+            spfContributionSplit.fillInAdditionalSplitsForSpf()
+            financialData.add(spfContributionSplit)
+        }
+        val reportPartnerCertificateSplits = projectReportFinancialOverviewPersistence
+            .storeOverviewPerFund(reportId, toStore = financialData, spfPartnerIdInCaseOfSpf = report.spfPartnerId)
         saveAfterVerificationCoFinancing(financialData.sumUp().totalLineToColumn(), report) // table 1
 
         val expendituresByCertificate = projectReportVerificationExpenditures.groupBy({ it.toIdentifiers() }, { it.toVerification() })

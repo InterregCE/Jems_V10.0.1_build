@@ -49,6 +49,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 otherCurrent = currentlyReportedWithReIncluded.currentlyReported.other
                 lumpSumCurrent = currentlyReportedWithReIncluded.currentlyReported.lumpSum
                 unitCostCurrent = currentlyReportedWithReIncluded.currentlyReported.unitCost
+                spfCostCurrent = currentlyReportedWithReIncluded.currentlyReported.spfCost
                 sumCurrent = currentlyReportedWithReIncluded.currentlyReported.sum
 
                 staffCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.staff
@@ -60,6 +61,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 otherCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.other
                 lumpSumCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.lumpSum
                 unitCostCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.unitCost
+                spfCostCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.spfCost
                 sumCurrentReIncluded = currentlyReportedWithReIncluded.currentlyReportedReIncluded.sum
             }
     }
@@ -97,7 +99,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getCostCategoriesCumulativeTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull {
+    override fun getCostCategoriesTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull {
         return expenditureCostCategoryRepository.findCumulativeForReportIdsTotalAfterEligible(reportIds)
     }
 }

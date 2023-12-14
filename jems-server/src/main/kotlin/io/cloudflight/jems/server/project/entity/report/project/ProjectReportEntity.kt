@@ -67,6 +67,8 @@ class ProjectReportEntity(
     @field:NotNull
     val leadPartnerNameInEnglish: String,
 
+    val spfPartnerId: Long?,
+
     @field:NotNull
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
 

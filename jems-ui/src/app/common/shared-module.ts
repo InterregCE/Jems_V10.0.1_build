@@ -112,6 +112,7 @@ import {
   ProjectReportStatusComponent
 } from '@project/project-application/report/project-report/project-report-status/project-report-status.component';
 import {AccountingYearPipe} from '@common/pipe/accounting-year.pipe';
+import {AsPercentagePipe} from '@common/pipe/as-percentage.pipe';
 
 const modules = [
   CommonModule,
@@ -142,6 +143,7 @@ const declarations = [
   TranslateContainerLessInputsBySystemLanguagePipe,
   AdaptTranslationKeyByCallTypePipe,
   MoneyPipe,
+  AsPercentagePipe,
   PercentagePipe,
   LocaleDatePipe,
   DateFormatInfoPipe,

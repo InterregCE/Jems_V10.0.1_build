@@ -41,6 +41,7 @@ internal class GetMyProjectReportsTest: UnitTest() {
             deadlineId = null,
             leadPartnerNameInEnglish = "",
             leadPartnerNameInOriginalLanguage = "",
+            spfPartnerId = null,
             periodNumber = id.toInt(),
             projectAcronym = "project",
             projectIdentifier = "iden-$projectId",

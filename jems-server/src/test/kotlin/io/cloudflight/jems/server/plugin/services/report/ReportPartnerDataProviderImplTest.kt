@@ -396,6 +396,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalEligibleBudget = BigDecimal.valueOf(1),
             previouslyReported = BigDecimal.valueOf(2),
             previouslyReportedParked = BigDecimal.valueOf(15L, 1),
+            previouslyReportedSpf = BigDecimal.valueOf(175L, 2),
             currentReport = BigDecimal.valueOf(4),
             currentReportReIncluded = BigDecimal.valueOf(35L, 1),
             totalEligibleAfterControl = BigDecimal.valueOf(8),

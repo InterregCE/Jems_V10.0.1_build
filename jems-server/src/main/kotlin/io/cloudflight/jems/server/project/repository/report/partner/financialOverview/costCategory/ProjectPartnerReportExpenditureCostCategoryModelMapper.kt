@@ -38,7 +38,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrent,
         lumpSum = lumpSumCurrent,
         unitCost = unitCostCurrent,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostCurrent,
         sum = sumCurrent,
     ),
     currentlyReportedParked = BudgetCostsCalculationResultFull(
@@ -51,7 +51,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrentParked,
         lumpSum = lumpSumCurrentParked,
         unitCost = unitCostCurrentParked,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostCurrentParked,
         sum = sumCurrentParked,
     ),
     currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -64,7 +64,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherCurrentReIncluded,
         lumpSum = lumpSumCurrentReIncluded,
         unitCost = unitCostCurrentReIncluded,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostCurrentReIncluded,
         sum = sumCurrentReIncluded,
     ),
     totalEligibleAfterControl = BudgetCostsCalculationResultFull(
@@ -77,7 +77,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherTotalEligibleAfterControl,
         lumpSum = lumpSumTotalEligibleAfterControl,
         unitCost = unitCostTotalEligibleAfterControl,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostTotalEligibleAfterControl,
         sum = sumTotalEligibleAfterControl,
     ),
     previouslyReported = BudgetCostsCalculationResultFull(
@@ -90,7 +90,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyReported,
         lumpSum = lumpSumPreviouslyReported,
         unitCost = unitCostPreviouslyReported,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostPreviouslyReported,
         sum = sumPreviouslyReported,
     ),
     previouslyValidated = BudgetCostsCalculationResultFull(
@@ -103,7 +103,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyValidated,
         lumpSum = lumpSumPreviouslyValidated,
         unitCost = unitCostPreviouslyValidated,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostPreviouslyValidated,
         sum = sumPreviouslyValidated,
     ),
     previouslyReportedParked = BudgetCostsCalculationResultFull(
@@ -116,7 +116,7 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         other = otherPreviouslyReportedParked,
         lumpSum = lumpSumPreviouslyReportedParked,
         unitCost = unitCostPreviouslyReportedParked,
-        spfCost = BigDecimal.ZERO,
+        spfCost = spfCostPreviouslyReportedParked,
         sum = sumPreviouslyReportedParked,
     ),
 )

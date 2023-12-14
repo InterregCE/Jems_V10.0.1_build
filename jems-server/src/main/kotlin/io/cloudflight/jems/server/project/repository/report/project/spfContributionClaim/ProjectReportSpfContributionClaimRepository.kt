@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectReportSpfContributionClaimEntity, Long> {
 
-    fun getAllByReportEntityId(reportId: Long): List<ProjectReportSpfContributionClaimEntity>
+    fun getAllByReportEntityIdIn(reportIds: Set<Long>): List<ProjectReportSpfContributionClaimEntity>
 
-    @Query(
-        """
+    @Query("""
          SELECT new io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedContributionRow(
                 contributionClaim.id,
                 contributionClaim.programmeFund.id,
@@ -22,9 +21,9 @@ interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectRepo
                 COALESCE(SUM(contributionClaim.currentlyReported), 0)
             )
             FROM #{#entityName} as contributionClaim
-            WHERE contributionClaim.reportEntity.projectId = :projectId
+            WHERE contributionClaim.reportEntity.id IN :reportIds
             GROUP BY contributionClaim.programmeFund.id, contributionClaim.applicationFormPartnerContributionId
-    """
-    )
-    fun     getPreviouslyReportedContributionAmount(projectId: Long): List<SpfPreviouslyReportedContributionRow>
+    """)
+    fun getPreviouslyReportedContributionAmount(reportIds: Set<Long>): List<SpfPreviouslyReportedContributionRow>
+
 }

@@ -26,6 +26,6 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
         afterControlWithParked: BudgetCostsCurrentValuesWrapper,
     )
 
-    fun getCostCategoriesCumulativeTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull
+    fun getCostCategoriesTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
 }

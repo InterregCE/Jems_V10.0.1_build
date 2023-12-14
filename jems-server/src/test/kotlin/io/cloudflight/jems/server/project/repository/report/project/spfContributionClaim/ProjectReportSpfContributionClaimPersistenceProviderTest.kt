@@ -16,6 +16,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -39,7 +40,7 @@ class ProjectReportSpfContributionClaimPersistenceProviderTest: UnitTest() {
             )
         )
 
-        private val entity = ProjectReportSpfContributionClaimEntity(
+        private fun entity() = ProjectReportSpfContributionClaimEntity(
             id = 5L,
             reportEntity = reportEntity,
             amountFromAf = BigDecimal.valueOf(80L),
@@ -78,7 +79,7 @@ class ProjectReportSpfContributionClaimPersistenceProviderTest: UnitTest() {
 
     @Test
     fun getSpfContributionClaimsFor() {
-        every { spfContributionClaimRepository.getAllByReportEntityId(REPORT_ID) } returns listOf(entity)
+        every { spfContributionClaimRepository.getAllByReportEntityIdIn(setOf(REPORT_ID)) } returns listOf(entity())
         every { reportEntity.id } returns REPORT_ID
 
         Assertions.assertThat(
@@ -88,7 +89,7 @@ class ProjectReportSpfContributionClaimPersistenceProviderTest: UnitTest() {
 
     @Test
     fun updateContributionClaimReportedAmount() {
-        every { spfContributionClaimRepository.getAllByReportEntityId(REPORT_ID) } returns listOf(entity)
+        every { spfContributionClaimRepository.getAllByReportEntityIdIn(setOf(REPORT_ID)) } returns listOf(entity())
         every { reportEntity.id } returns REPORT_ID
 
         val toUpdate = mapOf(5L to BigDecimal.valueOf(999L))
@@ -100,12 +101,10 @@ class ProjectReportSpfContributionClaimPersistenceProviderTest: UnitTest() {
 
     @Test
     fun resetSpfContributionClaims() {
-        every { spfContributionClaimRepository.getAllByReportEntityId(REPORT_ID) } returns listOf(entity)
-        every { reportEntity.id } returns REPORT_ID
-
-        Assertions.assertThat(
-            reportSpfContributionClaimPersistence.resetSpfContributionClaims(REPORT_ID)
-        ).isEqualTo(listOf(model.copy(currentlyReported = BigDecimal.ZERO)))
+        val entity = entity()
+        every { spfContributionClaimRepository.getAllByReportEntityIdIn(setOf(REPORT_ID)) } returns listOf(entity)
+        reportSpfContributionClaimPersistence.resetSpfContributionClaims(REPORT_ID)
+        assertThat(entity.currentlyReported).isZero()
     }
 
 }

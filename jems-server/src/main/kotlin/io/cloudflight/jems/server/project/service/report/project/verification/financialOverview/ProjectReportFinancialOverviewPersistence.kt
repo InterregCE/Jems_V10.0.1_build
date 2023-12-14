@@ -6,6 +6,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 interface ProjectReportFinancialOverviewPersistence {
 
     fun getOverviewPerFund(projectReportId: Long): List<FinancingSourceBreakdownLine>
+    fun getOverviewSpfPerFund(projectReportId: Long): FinancingSourceBreakdownLine?
 
-    fun storeOverviewPerFund(projectReportId: Long, toStore: List<FinancingSourceBreakdownLine>): List<PartnerCertificateFundSplit>
+    fun storeOverviewPerFund(
+        projectReportId: Long,
+        toStore: List<FinancingSourceBreakdownLine>,
+        spfPartnerIdInCaseOfSpf: Long?,
+    ): List<PartnerCertificateFundSplit>
 }
