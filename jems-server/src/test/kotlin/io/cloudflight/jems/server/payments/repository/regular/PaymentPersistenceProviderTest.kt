@@ -1082,12 +1082,13 @@ class PaymentPersistenceProviderTest : UnitTest() {
         val paymentRegularEntity = paymentRegularEntity()
         every { file.id } returns 18L
         every { paymentRepository.findAllByProjectReportId(projectReportId) } returns listOf(paymentRegularEntity)
-        every { reportFileRepository.findAllByPath("Payment/Regular/000002/PaymentAttachment/") } returns listOf(file)
-        every { fileRepository.delete(file) } returns Unit
+        val fileList = listOf(file)
+        every { reportFileRepository.findAllByPath("Payment/Regular/000002/PaymentAttachment/") } returns fileList
+        every { fileRepository.deleteBatch(fileList) } returns Unit
         every { paymentRepository.delete(paymentRegularEntity) } returns Unit
 
         paymentPersistenceProvider.deleteRegularPayments(projectReportId)
-        verify(exactly = 1) { fileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.deleteBatch(fileList) }
         verify(exactly = 1) { paymentRepository.delete(paymentRegularEntity) }
     }
 

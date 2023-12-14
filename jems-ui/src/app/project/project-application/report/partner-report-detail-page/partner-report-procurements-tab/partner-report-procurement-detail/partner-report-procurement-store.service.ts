@@ -38,8 +38,8 @@ export class PartnerReportProcurementStore {
   attachments$: Observable<ProjectReportProcurementFileDTO[]>;
   gdprAttachments$: Observable<ProjectReportProcurementFileDTO[]>;
 
-  partnerId$: Observable<string | number | null>;
-  reportId$: Observable<string | number | null>;
+  partnerId$: Observable<number>;
+  reportId$: Observable<number>;
 
   currencies$: Observable<CurrencyDTO[]>;
   savedProcurement$ = new Subject<ProjectPartnerReportProcurementDTO>();
@@ -71,18 +71,19 @@ export class PartnerReportProcurementStore {
     this.currencies$ = this.currencyStore.currencies$;
   }
 
-  private partnerId(): Observable<number | string | null> {
-    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
+  private partnerId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
+      .pipe(filter(Boolean), map(Number));
   }
-  private reportId(): Observable<number | string | null> {
-    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId');
+  private reportId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+      .pipe(filter(Boolean), map(Number));
   }
 
   public getProcurement(): Observable<ProjectPartnerReportProcurementDTO> {
     const initialProcurement$ = combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
     ]).pipe(
       switchMap(([partnerId, reportId, procurementId]) => {
@@ -116,9 +117,8 @@ export class PartnerReportProcurementStore {
 
   createProcurement(payload: ProjectPartnerReportProcurementChangeDTO): Observable<ProjectPartnerReportProcurementDTO> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementService.addNewProcurement(partnerId, reportId, payload)
@@ -129,9 +129,8 @@ export class PartnerReportProcurementStore {
 
   updateProcurement(payload: ProjectPartnerReportProcurementChangeDTO): Observable<ProjectPartnerReportProcurementDTO> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementService.updateProcurement(partnerId, reportId, payload)
@@ -142,9 +141,8 @@ export class PartnerReportProcurementStore {
 
   public getBeneficials(): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
     const initialBeneficials$ = combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
     ]).pipe(
       switchMap(([partnerId, reportId, procurementId]) => {
@@ -163,9 +161,8 @@ export class PartnerReportProcurementStore {
 
   updateBeneficials(procurementId: number, payload: ProjectPartnerReportProcurementBeneficialChangeDTO[]): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementBeneficialService.updateBeneficialOwners(partnerId, procurementId, reportId, payload)
@@ -176,9 +173,8 @@ export class PartnerReportProcurementStore {
 
   public getSubcontracts(): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
     const initialSubcontracts$ = combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
     ]).pipe(
       switchMap(([partnerId, reportId, procurementId]) => {
@@ -197,9 +193,8 @@ export class PartnerReportProcurementStore {
 
   updateSubcontracts(procurementId: number, payload: ProjectPartnerReportProcurementSubcontractChangeDTO[]): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementSubcontractorService.updateSubcontractors(partnerId, procurementId, reportId, payload)
@@ -210,9 +205,8 @@ export class PartnerReportProcurementStore {
 
   public getAttachments(): Observable<ProjectReportProcurementFileDTO[]> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
       this.filesChanged$.pipe(startWith(null)),
     ]).pipe(
@@ -230,9 +224,8 @@ export class PartnerReportProcurementStore {
 
   public getGdprAttachments(): Observable<ProjectReportProcurementFileDTO[]> {
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
       this.filesChanged$.pipe(startWith(null)),
     ]).pipe(
@@ -252,9 +245,8 @@ export class PartnerReportProcurementStore {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
     ]).pipe(
       take(1),
@@ -275,9 +267,8 @@ export class PartnerReportProcurementStore {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
+      this.partnerId$,
+      this.reportId$,
       this.procurementId$,
     ]).pipe(
       take(1),

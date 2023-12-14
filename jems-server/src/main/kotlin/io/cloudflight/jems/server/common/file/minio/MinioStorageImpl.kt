@@ -10,7 +10,9 @@ import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.RemoveObjectsArgs
 import io.minio.errors.ErrorResponseException
+import io.minio.messages.DeleteObject
 import io.minio.messages.Item
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
@@ -79,6 +81,18 @@ class MinioStorageImpl(
                 minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).`object`(filePath).build())
             else
                 logger.error("Attempt to delete a file $bucket/$filePath from MinIO storage, that does not exist.")
+        }
+    }
+
+    override fun deleteFiles(bucket: String, filePaths: List<String>) {
+        if (!bucketExists(bucket)) {
+            logger.error("Attempt to delete from bucket $bucket from MinIO storage, that does not exist.")
+            return
+        }
+
+        val objects = filePaths.map { DeleteObject(it) }
+        minioClient.removeObjects(RemoveObjectsArgs.builder().bucket(bucket).objects(objects).build()).forEach {
+            logger.error("Attempt to delete file $bucket/${it.get().objectName()} from MinIO storage: ${it.get().message()}")
         }
     }
 

@@ -137,6 +137,13 @@ class JemsFilePersistenceProvider(
     }
 
     @Transactional
+    override fun deleteFilesByPath(path: String) {
+        val files = projectFileMetadataRepository.findAllByPath(path)
+        fileService.deleteBatch(files)
+    }
+
+
+    @Transactional
     override fun setDescriptionToFile(fileId: Long, description: String) =
         fileService.setDescription(fileId, description)
 

@@ -14,9 +14,11 @@ import io.minio.MinioClient
 import io.minio.ObjectWriteResponse
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.RemoveObjectsArgs
 import io.minio.Result
 import io.minio.errors.ErrorResponseException
 import io.minio.messages.Contents
+import io.minio.messages.DeleteObject
 import io.minio.messages.ErrorResponse
 import io.minio.messages.Item
 import io.mockk.MockKAnnotations
@@ -24,11 +26,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertLinesMatch
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -287,5 +288,25 @@ class MinioStorageTest {
 
     private fun bucketExistsArgs(bucket: String) =
         BucketExistsArgs.builder().bucket(bucket).build()
+
+    @Test
+    fun deleteFiles() {
+        val contents = mockk<Contents>()
+        val fileMetadata = Result<Item>(contents)
+
+        every { contents.lastModified() } returns ZonedDateTime.of(LocalDateTime.of(2021, 7, 15, 7, 30), zone)
+        every { contents.objectName() } returns "file"
+        every { minioClient.listObjects(any()) } returns mutableListOf(fileMetadata)
+        every { minioClient.bucketExists(any()) } returns true
+
+        val slot = slot<RemoveObjectsArgs>()
+        every {minioClient.removeObjects(capture(slot)) } returns listOf()
+
+        val filePaths = listOf("path/file2", "path/file2", "path/file3")
+        minioStorage.deleteFiles("bucket", filePaths)
+        verify(exactly = 1) {
+            minioClient.removeObjects(slot.captured)
+        }
+    }
 
 }

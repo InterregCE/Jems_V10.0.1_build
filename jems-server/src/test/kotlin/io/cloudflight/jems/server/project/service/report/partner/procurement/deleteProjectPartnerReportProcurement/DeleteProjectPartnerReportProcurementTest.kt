@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
@@ -11,6 +14,8 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -35,12 +40,18 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     @MockK
     lateinit var expenditurePersistence: ProjectPartnerReportExpenditurePersistence
 
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
+
+    @MockK
+    lateinit var jemsFilePersistence: JemsFilePersistence
+
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportProcurement
 
     @BeforeEach
     fun setup() {
-        clearMocks(reportProcurementPersistence, auditControlCorrectionPersistence, expenditurePersistence)
+        clearMocks(reportProcurementPersistence, auditControlCorrectionPersistence, expenditurePersistence, partnerPersistence, jemsFilePersistence)
     }
 
     @ParameterizedTest(name = "delete (status {0})")
@@ -51,9 +62,13 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
         every { reportProcurementPersistence.deletePartnerReportProcurement(PARTNER_ID, reportId = 7L, 587L) } answers { }
         every { expenditurePersistence.existsByProcurementId(587L) } returns false
         every { auditControlCorrectionPersistence.existsByProcurementId(587L) } returns false
+        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns 1L
+        every { jemsFilePersistence.deleteFilesByPath(any()) } just runs
 
         interactor.delete(PARTNER_ID, reportId = 7L, procurementId = 587L)
         verify(exactly = 1) {
+            jemsFilePersistence.deleteFilesByPath(JemsFileType.ProcurementAttachment.generatePath(1L, PARTNER_ID, 7L, 587L))
+            jemsFilePersistence.deleteFilesByPath(JemsFileType.ProcurementGdprAttachment.generatePath(1L, PARTNER_ID, 7L, 587L))
             reportProcurementPersistence.deletePartnerReportProcurement(PARTNER_ID, reportId = 7L, procurementId = 587L)
         }
     }

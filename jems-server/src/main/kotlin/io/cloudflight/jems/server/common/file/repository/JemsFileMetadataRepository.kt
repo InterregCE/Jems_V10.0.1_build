@@ -19,6 +19,8 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
 
     fun existsByProjectIdAndId(projectId: Long, fileId: Long): Boolean
 
+    fun findAllByPath(path: String): List<JemsFileMetadataEntity>
+
     fun findOneByPathAndName(path: String, name: String): JemsFileMetadataEntity?
 
     @Query(
@@ -64,8 +66,6 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
     fun findByTypeAndId(type: JemsFileType, fileId: Long): JemsFileMetadataEntity?
 
     fun findByProjectIdAndId(projectId: Long, fileId: Long): JemsFileMetadataEntity?
-
-    fun findAllByPath(path: String): List<JemsFileMetadataEntity>
 
     @EntityGraph(value = "FileMetadataEntity.user")
     override fun findAll(predicate: Predicate, pageable: Pageable): Page<JemsFileMetadataEntity>

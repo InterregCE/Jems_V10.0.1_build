@@ -69,6 +69,14 @@ open class JemsGenericFileService(
         projectFileMetadataRepository.delete(file)
     }
 
+    @Transactional
+    open fun deleteBatch(files: List<JemsFileMetadataEntity>) {
+        if (files.isEmpty()) return
+
+        minioStorage.deleteFiles(bucket = files.first().minioBucket, filePaths = files.map { it.minioLocation })
+        projectFileMetadataRepository.deleteAll(files)
+    }
+
     protected fun validateType(type: JemsFileType, allowedFileTypes: Set<JemsFileType>) {
         if (type !in allowedFileTypes) {
             throw WrongFileTypeException(type)
