@@ -47,7 +47,10 @@ export class LanguageStore {
           return this.defaultLanguage;
         }
       }),
-      tap(language => this.setSystemLanguage(language)),
+      tap(language => {
+        this.setSystemLanguage(language);
+        this.changeHtmlLanguageAttribute(language);
+      }),
       untilDestroyed(this)
     ).subscribe();
 
