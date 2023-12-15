@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditReport(#projectId, #reportId)")
+@PreAuthorize("@projectReportAuthorization.canEditReport(#reportId)")
 annotation class CanEditProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -45,9 +45,9 @@ class ProjectReportAuthorization(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : Authorization(securityService) {
 
-    fun canEditReport(projectId: Long, reportId: Long): Boolean {
-        val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
-        return !report.status.isClosed() && canEditReportNotSpecific(projectId)
+    fun canEditReport(reportId: Long): Boolean {
+        val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
+        return !report.status.isClosed() && canEditReportNotSpecific(report.projectId)
     }
 
     fun canEditReportNotSpecific(projectId: Long): Boolean {

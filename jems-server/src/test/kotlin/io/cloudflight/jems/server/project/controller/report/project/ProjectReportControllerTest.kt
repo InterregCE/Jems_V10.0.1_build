@@ -285,7 +285,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @Test
     fun submitProjectReport() {
-        every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
+        every { submitReport.submit(reportId = 10L) } returns ProjectReportStatus.Submitted
         assertThat(controller.submitProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.Submitted)
     }
 

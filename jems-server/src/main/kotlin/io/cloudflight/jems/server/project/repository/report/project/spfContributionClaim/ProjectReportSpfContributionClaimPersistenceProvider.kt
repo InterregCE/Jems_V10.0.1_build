@@ -28,7 +28,6 @@ class ProjectReportSpfContributionClaimPersistenceProvider(
             privateContribution = BigDecimal.ZERO,
             sum = BigDecimal.ZERO,
         )
-
     }
 
     @Transactional(readOnly = true)
@@ -122,6 +121,10 @@ class ProjectReportSpfContributionClaimPersistenceProvider(
             split = emptyList(),
         )
     }
+
+    @Transactional(readOnly = true)
+    override fun getCurrentSpfContributions(reportIds: Set<Long>): Map<Long, BigDecimal> =
+        spfContributionClaimRepository.getCurrentPerReport(reportIds).toMap()
 
     @Transactional
     override fun resetSpfContributionClaims(reportId: Long) {

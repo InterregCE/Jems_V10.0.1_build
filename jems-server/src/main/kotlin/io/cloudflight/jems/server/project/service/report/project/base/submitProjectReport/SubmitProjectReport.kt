@@ -51,25 +51,41 @@ class SubmitProjectReport(
     private val reportExpenditureInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
     private val reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
     private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
     private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
+
+    companion object {
+        private val emptySpf = ReportCertificateCoFinancingColumn(
+            funds = emptyMap(),
+            partnerContribution = BigDecimal.ZERO,
+            publicContribution = BigDecimal.ZERO,
+            automaticPublicContribution = BigDecimal.ZERO,
+            privateContribution = BigDecimal.ZERO,
+            sum = BigDecimal.ZERO,
+        )
+    }
 
     @CanEditProjectReport
     @Transactional
     @ExceptionWrapper(SubmitProjectReportException::class)
-    override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
-        val report = reportPersistence.getReportById(projectId, reportId)
+    override fun submit(reportId: Long): ProjectReportStatus {
+        val report = reportPersistence.getReportByIdUnSecured(reportId)
+        val projectId = report.projectId
         validateReportIsStillOpen(report)
 
         if (!preSubmissionCheckService.preCheck(projectId, reportId = reportId).isSubmissionAllowed)
             throw SubmissionNotAllowed()
 
-        val certificateIds = reportCertificatePersistence.listCertificatesOfProjectReport(reportId).mapTo(HashSet()) { it.id }
-        val spfContributionCurrentValues = reportSpfClaimPersistence.getCurrentSpfContribution(reportId)
+        val certificates = if (report.type == ContractingDeadlineType.Content) emptyList() else
+            reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
 
         if (report.status.isOpenForNumbersChanges()) {
+            val certificateIds = certificates.mapTo(HashSet()) { it.id }
+            val spfContributionCurrentValues = if (report.type == ContractingDeadlineType.Content) emptySpf else
+                reportSpfClaimPersistence.getCurrentSpfContribution(reportId)
+
             saveCurrentSpendingProfile(reportId)
             saveCurrentCoFinancing(certificateIds, spf = spfContributionCurrentValues, projectId, reportId)
             saveCurrentCostCategories(certificateIds, spfSum = spfContributionCurrentValues.sum, projectId, reportId)
@@ -90,7 +106,7 @@ class SubmitProjectReport(
             reportPersistence.reSubmitReport(
                 projectId = projectId,
                 reportId = reportId,
-                newStatus = report.status.submitStatus(hasVerificationStartedBefore = report.hasVerificationReopenedBefore()),
+                newStatus = report.status.submitStatus(hasVerificationStartedBefore = report.hasVerificationStartedBefore()),
                 submissionTime = ZonedDateTime.now(),
             )
 
@@ -101,7 +117,7 @@ class SubmitProjectReport(
                     context = this,
                     projectId = projectId,
                     report = projectReportSummary,
-                    certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId),
+                    certificates = certificates,
                 )
             )
         }.status
@@ -184,7 +200,7 @@ class SubmitProjectReport(
             }
         }
 
-    private fun ProjectReportModel.hasVerificationReopenedBefore() = this.lastVerificationReOpening != null
+    private fun ProjectReportModel.hasVerificationStartedBefore() = this.lastVerificationReOpening != null
 
     private fun deleteContentOnlyData(reportId: Long) {
         reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId)

@@ -80,9 +80,10 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
 
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
-        every { reportPersistence.getReportById(projectId, reportId = reportId) } returns report
+        every { report.projectId } returns projectId
+        every { reportPersistence.getReportByIdUnSecured(reportId = reportId) } returns report
 
-        assertThat(reportAuthorization.canEditReport(projectId, reportId)).isFalse()
+        assertThat(reportAuthorization.canEditReport(reportId)).isFalse()
     }
 
     @ParameterizedTest(name = "canEditReportNotSpecific - monitor {0} - creator {1}")
