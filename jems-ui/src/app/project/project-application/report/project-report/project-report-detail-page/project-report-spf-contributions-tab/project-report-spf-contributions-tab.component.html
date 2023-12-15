@@ -13,6 +13,10 @@
                     <span jemsText maxLines="2">{{ 'project.application.project.report.spf.contributions.table.name.of.organization' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let contribution; let i = index">
+                    <mat-icon *ngIf="contribution.get('amountInAf').value === 0"
+                              class="mat-icon-waring"
+                              [matTooltip]="'project.application.partner.contribution.removed.warning' | translate">
+                    </mat-icon>
                     <span *ngIf="contribution.get('sourceOfContribution').value">
                         {{ contribution.get('sourceOfContribution').value }}
                     </span>
@@ -63,7 +67,7 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let contribution; let i = index"  class="justify-end">
                     <div *ngIf="!data.reportEditable"> {{ contribution.get('currentReport').value | asMoney }} </div>
-                    <div *ngIf="data.reportEditable">
+                    <div *ngIf="data.reportEditable && contribution.get('amountInAf').value > 0">
                         <mat-form-field [formGroup]="contribution">
                             <input currencyMask matInput
                                    type="decimal"

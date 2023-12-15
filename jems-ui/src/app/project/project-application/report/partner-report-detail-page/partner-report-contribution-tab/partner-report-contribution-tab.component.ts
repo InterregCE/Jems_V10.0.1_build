@@ -2,27 +2,28 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
-  ProjectApplicationFormSidenavService
+    ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {
-  PartnerReportDetailPageStore
+    PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  ProjectPartnerContributionDTO,
-  ProjectPartnerReportContributionDTO,
-  ProjectPartnerReportContributionWrapperDTO, ProjectPartnerReportDTO
+    ProjectPartnerContributionDTO,
+    ProjectPartnerReportContributionDTO,
+    ProjectPartnerReportContributionWrapperDTO,
+    ProjectPartnerReportDTO
 } from '@cat/api';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
-  PartnerReportContributionStore
+    PartnerReportContributionStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-store.service';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '@common/services/number.service';
 import {
-  PartnerFileManagementStore
+    PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
@@ -169,6 +170,7 @@ export class PartnerReportContributionTabComponent {
       previouslyReported: this.formBuilder.control(contrib?.numbers.previouslyReported || 0),
       currentlyReported: this.formBuilder.control(contrib?.numbers.currentlyReported || 0),
       totalReportedSoFar: this.formBuilder.control(contrib?.numbers.totalReportedSoFar || 0),
+      removedInAf: this.formBuilder.control(contrib?.removedInAf),
       attachment: this.formBuilder.control(contrib?.attachment || null),
     });
 

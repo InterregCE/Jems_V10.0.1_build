@@ -33,6 +33,7 @@ private fun List<ProjectPartnerReportEntityContribution>.toCalculatedModel(): Li
                 currentlyReported = it.currentlyReported,
                 totalReportedSoFar = it.previouslyReported.plus(it.currentlyReported),
             ),
+            removedInAf = it.idFromApplicationForm != null && it.amount == BigDecimal.ZERO.setScale(2),
             attachment = it.attachment,
         )
     }

@@ -56,6 +56,7 @@ class UpdateProjectPartnerReportContribution(
             removed = toBeDeletedIds.size,
             added = data.toBeCreated.size,
         )
+        validateNoUpdateForRemovedFromAF(data.toBeUpdated, existingContributions)
 
         val existingById = existingContributions.associateBy { it.id }.filterKeys { !toBeDeletedIds.contains(it) }
 
@@ -125,4 +126,15 @@ class UpdateProjectPartnerReportContribution(
         }
     }
 
+    private fun validateNoUpdateForRemovedFromAF(
+        toBeUpdated: Set<UpdateProjectPartnerReportContributionExisting>,
+        existingContributions: List<ProjectPartnerReportEntityContribution>
+    ) {
+        val previouslyReportedRemovedFromAF = existingContributions
+                .filter { it.idFromApplicationForm != null  && it.amount == BigDecimal.ZERO.setScale(2) }
+                .map { it.id }
+         if (toBeUpdated.any { it.id in previouslyReportedRemovedFromAF && it.currentlyReported > BigDecimal.ZERO} ) {
+             throw ContributionRemovedFromAFException()
+         }
+    }
 }

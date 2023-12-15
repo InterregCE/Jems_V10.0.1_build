@@ -112,7 +112,7 @@ export class ProjectReportSpfContributionsTabComponent {
   getTotalSpfAmount(control: string): number {
     let totalAmount = 0;
     this.contributions.controls.forEach((element) => {
-      totalAmount += element.get(control)?.value
+      totalAmount += element.get(control)?.value;
     });
     return totalAmount;
   }

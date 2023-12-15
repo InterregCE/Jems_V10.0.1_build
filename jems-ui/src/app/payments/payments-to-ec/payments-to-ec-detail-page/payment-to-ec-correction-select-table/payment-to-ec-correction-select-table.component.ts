@@ -12,7 +12,7 @@ import {Forms} from '@common/utils/forms';
 import {PaymentToEcAmountUpdate} from './payment-to-ec-amount-update';
 import {PaymentToEcRowSelected} from './paymnet-to-ec-row-selected';
 import {MatSort} from '@angular/material/sort';
-import {PaymentToEcCorrectionLinkingDTO} from "@cat/api";
+import {PaymentToEcCorrectionLinkingDTO} from '@cat/api';
 import {
   AdvancePaymentsDetailPageConstants
 } from '../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
@@ -96,7 +96,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
       correctedAutoPublicContribution: this.array.at(rowIndex).get('autoPublicContribution')?.value,
       correctedPrivateContribution: this.array.at(rowIndex).get('privateContribution')?.value,
       comment: this.array.at(rowIndex).get('comment')?.value,
-      correctionId: correctionId
+      correctionId
     } as PaymentToEcAmountUpdate;
     this.submitAmountChanged$.emit(dataToUpdate);
     this.editedRowIndex = null;
@@ -126,9 +126,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   private select(ecId: number, correctionId: number, checkbox: MatCheckbox) {
     const selection = {
-      ecId: ecId,
+      ecId,
       selected: true,
-      correctionId: correctionId
+      correctionId
     } as PaymentToEcRowSelected;
 
     Forms.confirm(
@@ -148,9 +148,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   private deselect(ecId: number, correctionId: number, checkbox: MatCheckbox) {
     const selection = {
-      ecId: ecId,
+      ecId,
       selected: false,
-      correctionId: correctionId
+      correctionId
     } as PaymentToEcRowSelected;
 
     Forms.confirm(
@@ -168,7 +168,7 @@ export class PaymentToEcCorrectionSelectTableComponent {
     ).subscribe();
   }
 
-  canSave():boolean {
+  canSave(): boolean {
     return this.form.valid;
   }
 }
