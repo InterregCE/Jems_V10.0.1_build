@@ -536,14 +536,14 @@ context('Partner reports tests', () => {
                       cy.contains('mat-option', 'LP1 - Very important procurement FOR REMOVAL')
                         .click();
 
-                      cy.contains('Save changes')
+                      cy.contains('Save changes').should('be.visible')
                         .click();
 
                       // Delete the procurement
                       cy.contains('Public procurements')
                         .click();
 
-                      // Only the procurement created in the current partner report can be deleted
+                      // The linked procurement cannot be deleted
                       cy.get('mat-row')
                         .eq(1)
                         .contains('mat-icon', 'delete')
@@ -554,24 +554,44 @@ context('Partner reports tests', () => {
                         .contains('mat-icon', 'delete')
                         .should('be.visible')
                         .click();
-
-                      cy.contains('Confirm')
+                      cy.contains('Confirm').should('be.visible')
                         .click();
+                      
+                      cy.contains('Procurement cannot be deleted, because it is used in a report in the list of expenditure or in a Correction. Please remove the link before trying to delete this procurement.')
+                        .should('be.visible');
 
-                      // links to procurement are deleted from LoE
+                      // unlink the procurement
                       cy.contains('List of expenditures')
                         .click();
 
                       cy.get(`#expenditure-costs-table mat-cell.mat-column-contractId`)
                         .scrollIntoView()
-                        .should('contain.text', 'N/A');
+                        .click();
+
+                      cy.contains('mat-option', 'N/A')
+                        .click();
+
+                      cy.contains('Save changes').should('be.visible')
+                        .click();
+                      cy.contains('Report expenditure costs were saved successfully')
+                        .should('be.visible');
+
+                      // The unlinked procurement can finally be deleted
+                      cy.contains('Public procurements')
+                        .click();
+                      cy.get('mat-row')
+                        .eq(0)
+                        .contains('mat-icon', 'delete')
+                        .should('be.visible')
+                        .click();
+                      cy.contains('Confirm').should('be.visible')
+                        .click();
+                      cy.contains('LP1 - Very important procurement FOR REMOVAL')
+                        .should('not.exist');
 
                       // Open a procurement created in previous report
                       // Info, beneficial owner, subcontractor and attachment description for a procurement
                       // created in a previous report can't be edited
-                      cy.contains('Public procurements')
-                        .click();
-
                       cy.contains(partnerProcurmentNameFromPreviousReport)
                         .click();
 
