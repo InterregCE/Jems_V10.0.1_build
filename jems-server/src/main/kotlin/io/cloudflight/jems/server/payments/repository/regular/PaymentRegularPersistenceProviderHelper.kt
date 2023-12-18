@@ -149,8 +149,8 @@ fun PaymentSearchRequest.transformToWhereClause(
     }
 
     if (scoBasis != null) {
-        val allAnswersNo = specProjectContracting.typologyProv94.eq(No)
-            .and(specProjectContracting.typologyProv95.eq(No))
+        val allAnswersNo = specProjectContracting.typologyProv94.eq(No).or(specProjectContracting.typologyProv94.isNull())
+            .and(specProjectContracting.typologyProv95.eq(No).or(specProjectContracting.typologyProv95.isNull()))
         val scoBasisFilter = when (scoBasis) {
             DoesNotFallUnderArticle94Nor95 -> allAnswersNo
             FallsUnderArticle94Or95 -> allAnswersNo.not()
