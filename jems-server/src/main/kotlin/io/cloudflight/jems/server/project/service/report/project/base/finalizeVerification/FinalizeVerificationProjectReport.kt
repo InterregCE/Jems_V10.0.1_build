@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.plusSpf
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
@@ -84,7 +85,9 @@ class FinalizeVerificationProjectReport(
             reportExpenditureCostCategoryPersistence.getCostCategoriesFor(expendituresByCertificate.keys.mapTo(HashSet()) { it.partnerReportId })
                 .mapValues { it.value.options }
 
-        val afterVerificationCostCategories = expendituresByCertificate.calculateCostCategoriesCurrentVerified(budgetOptionsByCertificate)
+        val afterVerificationCostCategories = expendituresByCertificate
+            .calculateCostCategoriesCurrentVerified(budgetOptionsByCertificate)
+            .plusSpf(spfContributionSplit?.total ?: BigDecimal.ZERO)
 
         saveAfterVerificationCostCategories(afterVerificationCostCategories, report) // table 2
         saveAfterVerificationLumpSums(expendituresByCertificate.values.getAfterVerificationForLumpSums(), report) // table 3

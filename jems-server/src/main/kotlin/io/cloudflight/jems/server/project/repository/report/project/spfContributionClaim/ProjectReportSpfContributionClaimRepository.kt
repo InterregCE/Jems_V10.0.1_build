@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.spfContri
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.math.BigDecimal
 
 @Repository
 interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectReportSpfContributionClaimEntity, Long> {
@@ -25,5 +26,16 @@ interface ProjectReportSpfContributionClaimRepository: JpaRepository<ProjectRepo
             GROUP BY contributionClaim.programmeFund.id, contributionClaim.applicationFormPartnerContributionId
     """)
     fun getPreviouslyReportedContributionAmount(reportIds: Set<Long>): List<SpfPreviouslyReportedContributionRow>
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            contributionClaim.reportEntity.id,
+            COALESCE(SUM(contributionClaim.currentlyReported), 0)
+        )
+        FROM #{#entityName} as contributionClaim
+        WHERE contributionClaim.reportEntity.id IN :reportIds
+        GROUP BY contributionClaim.reportEntity.id
+    """)
+    fun getCurrentPerReport(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
 
 }

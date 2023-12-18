@@ -21,6 +21,7 @@ interface ProjectReportSpfContributionClaimPersistence {
 
     fun getCurrentSpfContribution(reportId: Long): ReportCertificateCoFinancingColumn
     fun getCurrentSpfContributionSplit(reportId: Long): FinancingSourceBreakdownLine?
+    fun getCurrentSpfContributions(reportIds: Set<Long>): Map<Long, BigDecimal>
 
     fun resetSpfContributionClaims(reportId: Long)
 }

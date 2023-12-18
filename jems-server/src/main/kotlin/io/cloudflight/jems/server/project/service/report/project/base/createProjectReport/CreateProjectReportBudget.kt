@@ -112,8 +112,7 @@ class CreateProjectReportBudget(
             costCategorySetup = costCategorySetup(
                 budget = costCategoryBreakdownFromAF,
                 previouslyReported = previouslyReportedCostCategories.previouslyReported,
-                previouslyVerified = previouslyReportedCostCategories.previouslyVerified
-
+                previouslyVerified = previouslyReportedCostCategories.previouslyVerified,
             ),
             availableLumpSums = lumpSums.toProjectReportLumpSums(
                 previouslyReported = reportCertificateLumpSumPersistence.getReportedLumpSumCumulative(submittedReportIds),

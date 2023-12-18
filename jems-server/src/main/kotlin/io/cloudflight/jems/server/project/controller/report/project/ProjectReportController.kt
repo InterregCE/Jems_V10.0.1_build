@@ -62,7 +62,7 @@ class ProjectReportController(
         runProjectReportPreSubmissionCheck.preCheck(projectId, reportId).toDTO()
 
     override fun submitProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
-        submitReport.submit(projectId = projectId, reportId = reportId).toDto()
+        submitReport.submit(reportId = reportId).toDto()
 
     override fun reOpenProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
         reOpenReport.reOpen(projectId = projectId, reportId = reportId).toDto()
