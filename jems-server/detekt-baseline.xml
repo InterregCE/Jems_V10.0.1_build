@@ -42,6 +42,7 @@
     <ID>LargeClass:CallPersistenceProviderTest.kt$CallPersistenceProviderTest</ID>
     <ID>LargeClass:CreateProjectReportTest.kt$CreateProjectReportTest$Companion</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
+    <ID>LargeClass:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest$Companion</ID>
     <ID>LargeClass:GetReportExpenditureCostCategoryCalculatorServiceTest.kt$GetReportExpenditureCostCategoryCalculatorServiceTest$Companion</ID>
     <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
     <ID>LargeClass:ProjectReportDataProviderImplTest.kt$ProjectReportDataProviderImplTest$Companion</ID>

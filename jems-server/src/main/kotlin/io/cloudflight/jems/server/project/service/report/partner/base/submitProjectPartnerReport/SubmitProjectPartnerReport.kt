@@ -127,7 +127,7 @@ class SubmitProjectPartnerReport(
         saveCurrentCoFinancing( // table 1
             currentReport = currentCostCategories.currentlyReported.sum,
             currentReportReIncluded = currentCostCategories.currentlyReportedReIncluded.sum,
-            totalEligibleBudget = costCategories.totalsFromAF.sum,
+            totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
             report = report, partnerId = partnerId,
         )
         saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, report.id) // table 3

@@ -84,7 +84,7 @@ class FinalizeControlPartnerReport(
         saveAfterControlCoFinancing( // table 1 summary
             afterControlExpenditureCurrent =  afterControlCostCategories.currentlyReported.sum,
             afterControlExpenditureParked =  afterControlCostCategories.currentlyReportedParked.sum,
-            totalEligibleBudget = costCategories.totalsFromAF.sum,
+            totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
             report = report, partnerId = partnerId,
         )
         saveAfterControlLumpSums(expenditures.getAfterControlForLumpSums(), partnerId = partnerId, reportId) // table 3

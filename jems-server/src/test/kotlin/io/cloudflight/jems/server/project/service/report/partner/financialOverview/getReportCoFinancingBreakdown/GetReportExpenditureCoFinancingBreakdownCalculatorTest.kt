@@ -636,6 +636,22 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             ),
         )
 
+        private fun currentCalculation(total: ExpenditureCostCategoryBreakdownLine, spf: BigDecimal) = ExpenditureCostCategoryBreakdown(
+            staff = mockk(),
+            office = mockk(),
+            travel = mockk(),
+            external = mockk(),
+            equipment = mockk(),
+            infrastructure = mockk(),
+            other = mockk(),
+            lumpSum = mockk(),
+            unitCost = mockk(),
+            spfCost = mockk {
+                every { totalEligibleBudget } returns spf
+            },
+            total = total,
+        )
+
     }
 
     @MockK
@@ -664,9 +680,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report(reportId, ReportStatus.Draft)
         every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns coFinancing
 
-        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
-        every { currentCalculation.total } returns total
-        every { currentCalculation.spfCost.totalEligibleBudget } returns BigDecimal.valueOf(321L)
+        val currentCalculation = currentCalculation(total, spf = BigDecimal.valueOf(321L))
         every {
             reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(
                 PARTNER_ID,
@@ -709,9 +723,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 )
             )
 
-        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
-        every { currentCalculation.total } returns total
-        every { currentCalculation.spfCost.totalEligibleBudget } returns BigDecimal.valueOf(321L)
+        val currentCalculation = currentCalculation(total, spf = BigDecimal.valueOf(321L))
         every {
             reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(
                 PARTNER_ID,
@@ -739,12 +751,11 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report(reportId, ReportStatus.Draft)
         every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns coFinancing
 
-        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
-        every { currentCalculation.total } returns total.copy(
+        val zeroTotal = total.copy(
             currentReport = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.ZERO,
         )
-        every { currentCalculation.spfCost.totalEligibleBudget } returns BigDecimal.ZERO
+        val currentCalculation = currentCalculation(zeroTotal, spf = BigDecimal.valueOf(321L))
         every {
             reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId)
         } returns currentCalculation
@@ -767,9 +778,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 sum = coFinancing.totalsFromAF.sum,
             ))
 
-        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
-        every { currentCalculation.total } returns total
-        every { currentCalculation.spfCost.totalEligibleBudget } returns BigDecimal.valueOf(321L)
+        val currentCalculation = currentCalculation(total, spf = BigDecimal.valueOf(321L))
         every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns partnerContribution
@@ -895,9 +904,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
 
         every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns coFinancing
 
-        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
-        every { currentCalculation.spfCost.totalEligibleBudget } returns BigDecimal.ZERO
-        every { currentCalculation.total } returns ExpenditureCostCategoryBreakdownLine(
+        val currentTotal = ExpenditureCostCategoryBreakdownLine(
             flatRate = null,
             totalEligibleBudget = BigDecimal.valueOf(7_000_000_000L),
             previouslyReported = BigDecimal.ZERO,
@@ -910,6 +917,8 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             remainingBudget = BigDecimal.valueOf(-999_993_000_000_000_01L, 2),
             previouslyValidated = BigDecimal.valueOf(5)
         )
+        val currentCalculation = currentCalculation(currentTotal, spf = BigDecimal.ZERO)
+
         every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns listOf(
