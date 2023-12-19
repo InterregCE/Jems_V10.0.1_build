@@ -70,6 +70,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lateRepaymentTo = LocalDate.of(2023, 11, 15),
             partnerId = 96L,
             partnerReportId = 960L,
+            lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpact(
                 action = CorrectionImpactAction.RepaymentByNA,
@@ -93,6 +94,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lateRepaymentTo = LocalDate.of(2023, 11, 15),
             partnerId = 96L,
             partnerReportId = 960L,
+            lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpactDTO(
                 action = CorrectionImpactActionDTO.RepaymentByNA,
@@ -116,6 +118,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lateRepaymentTo = LocalDate.of(2023, 11, 15),
             partnerId = 96L,
             partnerReportId = 960L,
+            lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpact(
                 action = CorrectionImpactAction.RepaymentByNA,
@@ -138,6 +141,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lateRepaymentTo = LocalDate.of(2023, 11, 15),
             partnerId = 96L,
             partnerReportId = 960L,
+            lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpactDTO(
                 action = CorrectionImpactActionDTO.RepaymentByNA,
@@ -158,6 +162,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 auditControlNr = 1,
                 canBeDeleted = true,
                 partnerReport = 2,
+                lumpSumOrderNr = null,
                 partnerId = 777L,
                 partnerRole = ProjectPartnerRole.PARTNER,
                 partnerNumber = 3,
@@ -195,6 +200,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 partnerNumber = 3,
                 partnerDisabled = false,
                 partnerReport = 2,
+                lumpSumOrderNr = null,
                 followUpAuditNr = null,
                 followUpCorrectionNr = null,
                 fund = ProgrammeFundDTO(

@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCo
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -124,6 +125,9 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
 
     @MockK
     private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+
+    @MockK
+    private lateinit var projectLumpSumRepository: ProjectLumpSumRepository
 
     @MockK
     private lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository

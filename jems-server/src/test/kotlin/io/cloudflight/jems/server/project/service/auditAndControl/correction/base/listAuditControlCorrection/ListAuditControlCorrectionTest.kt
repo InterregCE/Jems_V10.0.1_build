@@ -44,6 +44,7 @@ class ListAuditControlCorrectionTest : UnitTest() {
         partnerAbbreviation = "partner abbr",
         partnerRole = ProjectPartnerRole.LEAD_PARTNER,
         reportNr = 9,
+        lumpSumOrderNr = null,
         followUpAuditNr = 11,
         followUpCorrectionNr = 13,
         fund = ProgrammeFund(
@@ -102,6 +103,7 @@ class ListAuditControlCorrectionTest : UnitTest() {
                 partnerId = 300,
                 partnerNumber = 5,
                 partnerDisabled = true,
+                lumpSumOrderNr = null,
                 followUpAuditNr = 11,
                 followUpCorrectionNr = 13,
                 fund = ProgrammeFund(

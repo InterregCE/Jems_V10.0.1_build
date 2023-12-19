@@ -19,6 +19,7 @@ data class ProjectAuditControlCorrectionDTO(
     val lateRepaymentTo: LocalDate?,
     val partnerId: Long?,
     val partnerReportId: Long?,
+    val lumpSumOrderNr: Int?,
     val programmeFundId: Long?,
 
     val impact: AuditControlCorrectionImpactDTO,

@@ -3,7 +3,7 @@ import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {
-  AuditControlCorrectionDTO, CorrectionAvailableFundDTO,
+  AuditControlCorrectionDTO, CorrectionAvailableFtlsDTO, CorrectionAvailableFundDTO,
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
   PageCorrectionCostItemDTO,
@@ -22,6 +22,11 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 
+enum LinkedToCostOptionType {
+  PR,
+  FTLS,
+}
+
 @UntilDestroy()
 @Component({
   selector: 'jems-audit-control-correction-detail-identity',
@@ -37,6 +42,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
   CorrectionFollowUpTypeEnum = ProjectAuditControlCorrectionDTO.CorrectionFollowUpTypeEnum;
   CorrectionTypeEnum = ProjectAuditControlCorrectionDTO.TypeEnum;
   CorrectionStatusEnum = ProjectAuditControlCorrectionDTO.StatusEnum;
+  LinkedToCostOptionType = LinkedToCostOptionType;
   error$ = new BehaviorSubject<APIError | null>(null);
   data$: Observable<{
     correction: ProjectAuditControlCorrectionDTO;
@@ -57,6 +63,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
   funds: ProgrammeFundDTO[] = [];
+
+  linkedToCostOptionType: LinkedToCostOptionType = LinkedToCostOptionType.PR;
+  ftls: CorrectionAvailableFtlsDTO[] = [];
 
   inputErrorMessages = {
     matDatetimePickerMin: 'common.error.field.to.after.from'
@@ -106,10 +115,12 @@ export class AuditControlCorrectionDetailIdentityComponent {
         canClose,
         pastCorrections,
         availableProcurements,
-        isMandatoryScopeDefined:  (!!correction.partnerId && !!correction.partnerReportId),
+
+        // TODO: set correctly
+        isMandatoryScopeDefined: (!!correction.partnerId && (!!correction.partnerReportId || !!correction.lumpSumOrderNr)),
         isLinkedToInvoice: correction.type === this.CorrectionTypeEnum.LinkedToInvoice,
         projectId,
-        costItemsTableConfig:  {
+        costItemsTableConfig: {
           dataSource: costItems as PageCorrectionCostItemDTO,
           columnConfig: this.costItemsTableColumnConfig(correction.status, canEdit),
           availableColumns: this.getCostItemsAvailableColumns(correction.status, canEdit)
@@ -120,29 +131,36 @@ export class AuditControlCorrectionDetailIdentityComponent {
         data.correctionPartnerData,
         data.canEdit
       )),
-        tap(data => {
-          this.isCostItemTableVisible = data.isLinkedToInvoice && data.isMandatoryScopeDefined;
-        })
+      tap(data => {
+        this.isCostItemTableVisible = data.isLinkedToInvoice && data.isMandatoryScopeDefined;
+      })
     );
 
     this.costItemsPageIndex$ = pageStore.costItemsPageIndex$;
     this.costItemsPageSize$ = pageStore.costItemsPageSize$;
 
     this.projectStore.projectCallSettings$.pipe(
-        tap(data => {
-          this.costCategories = this.getCostCategories(data);
-        }),
-        untilDestroyed(this)
+      tap(data => {
+        this.costCategories = this.getCostCategories(data);
+      }),
+      untilDestroyed(this)
     ).subscribe();
 
   }
 
   resetForm(correctionIdentification: ProjectAuditControlCorrectionDTO, correctionPartnerData: CorrectionAvailablePartnerDTO[], editable: boolean) {
     const partner = correctionPartnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === correctionIdentification.partnerId);
+
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === correctionIdentification.partnerReportId);
-    const fund = report?.availableFunds.find((it: CorrectionAvailableFundDTO) => it.fund.id === correctionIdentification.programmeFundId)?.fund;
+    const ftls = partner?.availableFtls.find((it: CorrectionAvailableFtlsDTO) => it.orderNr === correctionIdentification.lumpSumOrderNr);
+    this.linkedToCostOptionType = ftls != null ? LinkedToCostOptionType.FTLS : LinkedToCostOptionType.PR;
+
+    this.funds = (report?.availableFunds ?? ftls?.availableFunds)?.map(f => f.fund) ?? [];
+    const fund = this.funds.find((it: ProgrammeFundDTO) => it.id === correctionIdentification.programmeFundId);
+
     if (partner) {
       this.partnerReports = partner.availableReports;
+      this.ftls = partner.availableFtls;
     }
     this.form = this.formBuilder.group({
       followUpOfCorrectionId: [correctionIdentification.followUpOfCorrectionId || 0, Validators.required],
@@ -150,8 +168,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
       repaymentFrom: correctionIdentification.repaymentFrom,
       lateRepaymentTo: correctionIdentification.lateRepaymentTo,
       partnerId: [partner?.partnerId, Validators.required],
-      partnerReportId: [report?.id, Validators.required],
+      partnerReportId: [report?.id],
       projectReportNumber: [report?.projectReport?.id ? ('PR.' + report.projectReport.number) : this.naString],
+      lumpSumOrderNr: [ftls?.orderNr],
       programmeFundId: [fund?.id ?? this.naString, Validators.required],
       costCategory: correctionIdentification.costCategory ?? this.naString,
       procurementId: correctionIdentification.procurementId ?? this.naString,
@@ -159,11 +178,6 @@ export class AuditControlCorrectionDetailIdentityComponent {
     });
     this.formService.init(this.form, of(editable));
     this.form.controls?.projectReportNumber?.disable();
-    if (report && report?.availableFunds && report?.availableFunds?.length > 0) {
-      this.funds = report?.availableFunds.map(f => f.fund);
-    } else {
-      this.funds = [];
-    }
   }
 
   getPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): CorrectionAvailablePartnerDTO | undefined {
@@ -172,7 +186,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
 
   selectPartner(correctionPartnerData: CorrectionAvailablePartnerDTO[], partnerId: number): void {
     this.partnerReports = this.getPartner(correctionPartnerData, partnerId)?.availableReports ?? [];
+    this.ftls = this.getPartner(correctionPartnerData, partnerId)?.availableFtls ?? [];
     this.form.controls?.projectReportNumber?.setValue(this.naString);
+    this.form.controls?.lumpSumOrderNr?.setValue(null);
     this.form.controls?.programmeFundId?.setValue(null);
     this.form.updateValueAndValidity();
     this.funds = [];
@@ -199,6 +215,21 @@ export class AuditControlCorrectionDetailIdentityComponent {
     this.funds = [];
   }
 
+  selectFtls(lumpSumOrderNr: number) {
+    this.isCostItemTableVisible = false;
+    this.form.controls?.partnerReportId.setValue(null);
+    this.form.controls?.projectReportNumber.setValue(null);
+    this.form.controls?.costCategory?.setValue('LumpSum');
+    if (lumpSumOrderNr) {
+      const ftls = this.ftls.find(it => it.orderNr === lumpSumOrderNr);
+      this.funds = ftls?.availableFunds.map(f => f.fund) ?? [];
+      return;
+    }
+    this.form.controls?.programmeFundId?.setValue(null);
+    this.form.updateValueAndValidity();
+    this.funds = [];
+  }
+
   save(id: number) {
     const data = {
       followUpOfCorrectionId: this.form.controls?.followUpOfCorrectionId.value || null,
@@ -207,6 +238,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       lateRepaymentTo: this.form.controls?.lateRepaymentTo.value,
       partnerId: this.form.controls?.partnerId.value,
       partnerReportId: this.form.controls?.partnerReportId.value,
+      lumpSumOrderNr: this.form.controls?.lumpSumOrderNr.value,
       programmeFundId: this.form.controls?.programmeFundId.value !== this.naString ? this.form.controls?.programmeFundId.value : null,
       costCategory: this.form.controls?.costCategory.value !== this.naString ? this.form.controls?.costCategory.value : null,
       procurementId: this.form.controls?.procurementId.value !== this.naString ? this.form.controls?.procurementId?.value : null,
@@ -227,7 +259,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
 
 
   private getCostCategories(callSettings: ProjectCallSettingsDTO) {
-    return  [
+    return [
       'Staff',
       'Office',
       'Travel',
@@ -237,11 +269,11 @@ export class AuditControlCorrectionDetailIdentityComponent {
       'Other',
       'LumpSum',
       'UnitCost',
-      ... callSettings.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF ? ['SpfCost'] : []
+      ...callSettings.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF ? ['SpfCost'] : []
     ];
   }
 
- private resetCorrectionScopeOptionalControls() {
+  private resetCorrectionScopeOptionalControls() {
     this.form.controls?.costCategory?.setValue('N/A');
     this.form.controls?.procurementId?.setValue(null);
     this.form.controls?.expenditureId?.setValue(null);
@@ -266,8 +298,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
   }
 
   private costItemsTableColumnConfig(status: ProjectAuditControlCorrectionDTO.StatusEnum, canEdit: boolean): TableConfig[] {
-  return [
-
+    return [
       {minInRem: 3, maxInRem: 3}, // select
       {minInRem: 3, maxInRem: 3}, // id
 
@@ -285,4 +316,14 @@ export class AuditControlCorrectionDetailIdentityComponent {
     ];
   }
 
+  clearValues() {
+    this.form.controls?.partnerId?.setValue(null);
+    this.form.controls?.partnerReportId.setValue(null);
+    this.form.controls?.projectReportNumber?.setValue(this.naString);
+    this.form.controls?.lumpSumOrderNr.setValue(null);
+    this.form.controls?.programmeFundId?.setValue(null);
+    this.form.controls?.costCategory?.setValue(null);
+    this.form.controls?.procurementId?.setValue(null);
+    this.form.controls?.expenditureId?.setValue(null);
+  }
 }

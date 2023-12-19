@@ -194,7 +194,7 @@ export class AuditControlCorrectionDetailPageStore {
         canEdit &&
         canClose &&
         !!identification.partnerId &&
-        !!identification.partnerReportId &&
+        (!!identification.partnerReportId || !!identification.lumpSumOrderNr) &&
         !!identification.programmeFundId &&
         !!financialDescription.correctionType
       )

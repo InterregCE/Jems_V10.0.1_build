@@ -10,12 +10,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import org.springframework.data.domain.Page
@@ -81,4 +82,6 @@ interface PaymentPersistence {
     fun getPaymentIdsInstallmentsExistsByProjectReportId(projectReportId: Long): Set<Long>
 
     fun deleteRegularPayments(projectReportId: Long)
+
+    fun getAvailableFtlsPayments(partnerIds: Set<Long>): List<CorrectionAvailableFtlsTmp>
 }

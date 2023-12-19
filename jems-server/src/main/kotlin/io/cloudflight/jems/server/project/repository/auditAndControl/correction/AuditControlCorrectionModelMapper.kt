@@ -2,20 +2,15 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
-import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionFinanceEntity
-import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.toModel
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionCreate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import org.springframework.data.domain.Page
-import java.math.BigDecimal
 
 fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     id = id,
@@ -28,8 +23,9 @@ fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     correctionFollowUpType = followUpOfCorrectionType,
     repaymentFrom = repaymentDate,
     lateRepaymentTo = lateRepayment,
-    partnerId = partnerReport?.partnerId,
+    partnerId = partnerReport?.partnerId ?: lumpSumPartnerId,
     partnerReportId = partnerReport?.id,
+    lumpSumOrderNr = lumpSum?.id?.orderNr,
     programmeFundId = programmeFund?.id,
     impact = AuditControlCorrectionImpact(
         action = impact,
@@ -59,6 +55,8 @@ fun AuditControlCorrectionCreate.toEntity(auditControlEntity: AuditControlEntity
     repaymentDate = null,
     lateRepayment = null,
     partnerReport = null,
+    lumpSum = null,
+    lumpSumPartnerId = null,
     programmeFund = null,
     impact = defaultImpact,
     impactComment = "",

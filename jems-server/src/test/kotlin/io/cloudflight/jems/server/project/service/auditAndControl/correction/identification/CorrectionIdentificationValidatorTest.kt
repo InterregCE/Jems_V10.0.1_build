@@ -7,12 +7,14 @@ import io.cloudflight.jems.server.project.repository.report.partner.expenditure.
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementPersistenceProvider
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.CorrectionIdentificationValidator
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.AuditControlClosedException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.AuditControlCorrectionClosedException
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.CombinationOfReportAndFundIsInvalidException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.CombinationOfSelectedFundIsInvalidException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.CorrectionIdentificationValidator
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.ExpenditureNotValidException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.InvalidCorrectionScopeException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.LumpSumAndPartnerNotValidException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.PartnerReportNotValidException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.ProcurementNotValidException
 import io.cloudflight.jems.server.project.service.auditAndControl.getAvailableReportDataForAuditControl.GetPartnerAndPartnerReportDataService
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -95,8 +97,10 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             correctionFollowUpType = CorrectionFollowUpType.Interest,
             repaymentFrom = LocalDate.now().minusDays(1),
             lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
             partnerReportId = reportId,
-            programmeFundId = fundId,
+            lumpSumOrderNr = null,
+            programmeFundId = 999L,
             costCategory = null,
             procurementId = null,
             expenditureId = null
@@ -117,7 +121,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
         every { allowedDataService.getPartnerAndPartnerReportData(150L) } returns listOf(
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
-                    CorrectionAvailablePartnerReport(id = 11, 1, null,
+                    CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableFunds = listOf(CorrectionAvailableFund(
                             ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
                         )),
@@ -126,7 +130,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
                 availableFtls = emptyList(),
             )
         )
-        assertThrows<CombinationOfReportAndFundIsInvalidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
+        assertThrows<CombinationOfSelectedFundIsInvalidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
     }
 
     @Test
@@ -141,7 +145,9 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             correctionFollowUpType = CorrectionFollowUpType.Interest,
             repaymentFrom = LocalDate.now().minusDays(1),
             lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
             partnerReportId = reportId,
+            lumpSumOrderNr = null,
             programmeFundId = fundId,
             costCategory = null,
             procurementId = null,
@@ -197,7 +203,9 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             correctionFollowUpType = CorrectionFollowUpType.Interest,
             repaymentFrom = LocalDate.now().minusDays(1),
             lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
             partnerReportId = reportId,
+            lumpSumOrderNr = null,
             programmeFundId = fundId,
             costCategory = null,
             procurementId = 29L,
@@ -253,7 +261,9 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             correctionFollowUpType = CorrectionFollowUpType.Interest,
             repaymentFrom = LocalDate.now().minusDays(1),
             lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
             partnerReportId = reportId,
+            lumpSumOrderNr = null,
             programmeFundId = fundId,
             costCategory = BudgetCostCategory.Office,
             procurementId = 29L,
@@ -302,7 +312,9 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             correctionFollowUpType = CorrectionFollowUpType.Interest,
             repaymentFrom = LocalDate.now().minusDays(1),
             lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
             partnerReportId = reportId,
+            lumpSumOrderNr = null,
             programmeFundId = fundId,
             costCategory =  BudgetCostCategory.Office,
             procurementId = procurementId,
@@ -347,6 +359,71 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
        ) } returns false
 
         assertThrows<ProcurementNotValidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
+    }
+
+    @Test
+    fun `notLinkedInvoice correction - partner exception`() {
+        val fundId = 317L
+        val correctionId = 16L
+
+        val toUpdate = AuditControlCorrectionUpdate(
+            followUpOfCorrectionId = 333L,
+            correctionFollowUpType = CorrectionFollowUpType.Interest,
+            repaymentFrom = LocalDate.now().minusDays(1),
+            lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
+            partnerReportId = null,
+            lumpSumOrderNr = 1,
+            programmeFundId = fundId,
+            costCategory = null,
+            procurementId = null,
+            expenditureId = null
+        )
+
+        every { correctionPersistence.getByCorrectionId(correctionId) } returns mockk {
+            every { auditControlId } returns 475L
+            every { type } returns AuditControlCorrectionType.LinkedToCostOption
+            every { status } returns AuditControlStatus.Ongoing
+        }
+        every { auditControlPersistence.getById(475L) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns 150L
+        }
+        every { allowedDataService.getPartnerAndPartnerReportData(150L) } returns listOf()
+
+        assertThrows<LumpSumAndPartnerNotValidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
+    }
+    @Test
+    fun `linkedInvoice correction - partner report exception`() {
+        val fundId = 317L
+        val correctionId = 16L
+
+        val toUpdate = AuditControlCorrectionUpdate(
+            followUpOfCorrectionId = 333L,
+            correctionFollowUpType = CorrectionFollowUpType.Interest,
+            repaymentFrom = LocalDate.now().minusDays(1),
+            lateRepaymentTo = LocalDate.now().plusDays(1),
+            partnerId = 1L,
+            partnerReportId = 1L,
+            lumpSumOrderNr = null,
+            programmeFundId = fundId,
+            costCategory = null,
+            procurementId = null,
+            expenditureId = null
+        )
+
+        every { correctionPersistence.getByCorrectionId(correctionId) } returns mockk {
+            every { auditControlId } returns 475L
+            every { type } returns AuditControlCorrectionType.LinkedToCostOption
+            every { status } returns AuditControlStatus.Ongoing
+        }
+        every { auditControlPersistence.getById(475L) } returns mockk {
+            every { status } returns AuditControlStatus.Ongoing
+            every { projectId } returns 150L
+        }
+        every { allowedDataService.getPartnerAndPartnerReportData(150L) } returns listOf()
+
+        assertThrows<PartnerReportNotValidException> { correctionIdentificationValidator.validate(correctionId, toUpdate) }
     }
 
 

@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEn
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.tmpModel.AuditControlCorrectionLineTmp
+import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -49,6 +50,7 @@ class AuditControlCorrectionPersistenceProvider(
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
+    private val projectLumpSumRepository: ProjectLumpSumRepository,
     private val projectStatusHistoryRepository: ProjectStatusHistoryRepository,
     private val jpaQueryFactory: JPAQueryFactory
 ) : AuditControlCorrectionPersistence {
@@ -95,6 +97,7 @@ class AuditControlCorrectionPersistenceProvider(
                     partnerAbbreviation = correctionEntity.partnerReport?.identification?.partnerAbbreviation,
                     partnerRole = correctionEntity.partnerReport?.identification?.partnerRole,
                     reportNr = correctionEntity.partnerReport?.number,
+                    lumpSumOrderNr = correctionEntity.lumpSum?.id?.orderNr,
                     followUpAuditNr = correctionEntity.followUpOfCorrection?.auditControl?.number,
                     followUpCorrectionNr = correctionEntity.followUpOfCorrection?.orderNr,
                     fund = correctionEntity.programmeFund?.toModel(),
@@ -158,7 +161,12 @@ class AuditControlCorrectionPersistenceProvider(
         val entity = auditControlCorrectionRepository.findById(correctionId).get()
 
         if (entity.partnerReport?.id != data.partnerReportId)
-            entity.partnerReport = partnerReportRepository.getById(data.partnerReportId)
+            entity.partnerReport = data.partnerReportId?.let { partnerReportRepository.getById(it) }
+
+        if (entity.lumpSum?.id?.orderNr != data.lumpSumOrderNr) {
+            entity.lumpSum = data.lumpSumOrderNr?.let { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(entity.auditControl.project.id, it) }
+            entity.lumpSumPartnerId = data.partnerId
+        }
 
         if (entity.programmeFund?.id != data.programmeFundId)
             entity.programmeFund = programmeFundRepository.getById(data.programmeFundId)

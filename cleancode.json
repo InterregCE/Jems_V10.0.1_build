@@ -100,7 +100,11 @@
     },
     {
       "hash": "4f35a59c",
-      "reason": "queryDSL JPAQueryFactory is called to fetch advance payments data, but somehow this verifier can't get it as Transactional"
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "459fdfe1",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }
   ]
 }

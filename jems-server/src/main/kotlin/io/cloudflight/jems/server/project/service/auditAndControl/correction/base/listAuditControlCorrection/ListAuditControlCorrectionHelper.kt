@@ -19,6 +19,7 @@ fun Page<AuditControlCorrectionLineTmp>.toModel() = map {
         partnerNumber = it.partnerNumber,
         partnerDisabled = false,
         partnerReport = it.reportNr,
+        lumpSumOrderNr = it.lumpSumOrderNr,
         followUpAuditNr = it.followUpAuditNr,
         followUpCorrectionNr = it.followUpCorrectionNr,
         fund = it.fund,

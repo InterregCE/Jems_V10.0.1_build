@@ -43,12 +43,24 @@ class CorrectionIdentificationValidator(
         auditControl: AuditControl
     ) {
         val allowedReportData = allowedDataService.getPartnerAndPartnerReportData(projectId = auditControl.projectId)
-        validateReportAndFundSelectedAreValid(correctionUpdate, availableData = allowedReportData)
+        validatePartnerReportAndLumpSum(correctionUpdate, availableData = allowedReportData)
+        validateSelectedFundCombinationValid(correctionUpdate, availableData = allowedReportData)
 
         validateOptionalScope(
             updatedData = correctionUpdate,
             correction = correction,
         )
+
+    }
+
+    private fun validatePartnerReportAndLumpSum(correctionUpdate: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
+        val validPartnerIds = availableData.map { it.partnerId }
+        val validPartnerReportIds = availableData.flatMap { it.availableReports.map { report -> report.id } }
+        if (correctionUpdate.lumpSumOrderNr != null && correctionUpdate.partnerId !in validPartnerIds) {
+            throw LumpSumAndPartnerNotValidException()
+        } else if (correctionUpdate.partnerReportId !in validPartnerReportIds) {
+            throw PartnerReportNotValidException()
+        }
 
     }
 
@@ -62,17 +74,17 @@ class CorrectionIdentificationValidator(
     private fun checkExpenditureIsValidForSelectedPartnerReport(correctionUpdate: AuditControlCorrectionUpdate, correction: AuditControlCorrectionDetail) {
         val exists = partnerReportExpenditurePersistenceProvider.existsByExpenditureId(
             partnerId = correction.partnerId!!,
-            reportId = correctionUpdate.partnerReportId,
+            reportId = correctionUpdate.partnerReportId!!,
             expenditureId = correctionUpdate.expenditureId!!
         )
         if (exists.not()) {
-             throw ExpenditureNotValidException()
+            throw ExpenditureNotValidException()
         }
     }
 
     private fun checkCategoryAndProcurementIsNull(correctionIdentification: AuditControlCorrectionUpdate) {
         if (correctionIdentification.costCategory != null || correctionIdentification.procurementId != null) {
-             throw InvalidCorrectionScopeException()
+            throw InvalidCorrectionScopeException()
         }
     }
 
@@ -86,7 +98,7 @@ class CorrectionIdentificationValidator(
         if (correctionUpdateData.procurementId != null) {
             checkProcurementIsValidForSelectedReport(
                 correctionUpdateData.procurementId,
-                correctionUpdateData.partnerReportId,
+                correctionUpdateData.partnerReportId!!,
                 correction.partnerId!!
             )
         }
@@ -102,12 +114,12 @@ class CorrectionIdentificationValidator(
             ).plus(partnerReportId)
         )
         if (exists.not()) {
-             throw ProcurementNotValidException()
+            throw ProcurementNotValidException()
         }
     }
 
     private fun checkExpenditureIsNull(correctionIdentification: AuditControlCorrectionUpdate) {
-        if (correctionIdentification.expenditureId != null ) {
+        if (correctionIdentification.expenditureId != null) {
             throw InvalidCorrectionScopeException()
         }
     }
@@ -124,10 +136,13 @@ class CorrectionIdentificationValidator(
     }
 
 
-    private fun validateReportAndFundSelectedAreValid(input: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
-        availableData.flatMap { it.availableReports }
-            .firstOrNull { it.id == input.partnerReportId }?.availableFunds?.firstOrNull { it.fund.id == input.programmeFundId }
-            ?: throw CombinationOfReportAndFundIsInvalidException()
+    private fun validateSelectedFundCombinationValid(input: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
+        val availableFunds =
+            availableData.flatMap { it.availableReports }.firstOrNull { it.id == input.partnerReportId }?.availableFunds
+                ?: availableData.flatMap { it.availableFtls }.firstOrNull { it.orderNr == input.lumpSumOrderNr }?.availableFunds
+
+        availableFunds?.firstOrNull { it.fund.id == input.programmeFundId }
+            ?: throw CombinationOfSelectedFundIsInvalidException()
     }
 
     private fun validateOptionalScope(

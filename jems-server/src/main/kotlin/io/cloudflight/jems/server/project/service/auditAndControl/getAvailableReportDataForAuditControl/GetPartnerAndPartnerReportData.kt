@@ -12,7 +12,7 @@ class GetPartnerAndPartnerReportData(
 ) : GetPartnerAndPartnerReportDataInteractor {
 
     @CanViewAuditControlForProject
-    @Transactional
+    @Transactional(readOnly = true)
     @ExceptionWrapper(GetPartnerAndPartnerReportException::class)
     override fun getPartnerAndPartnerReportData(projectId: Long): List<CorrectionAvailablePartner> =
         service.getPartnerAndPartnerReportData(projectId)
