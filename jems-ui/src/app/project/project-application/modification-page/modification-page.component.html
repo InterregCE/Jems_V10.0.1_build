@@ -4,8 +4,7 @@
                            [isVersionedData]="false">
 
     <mat-card>
-        <h3 *ngIf="data.canHandBackModification || data.canOpenModification">
-            {{'project.application.form.section.modification.open' | translate}}
+        <h3>{{'project.application.form.section.modification.open' | translate}}
             <jems-pending-button
                     *ngIf="data.canHandBackModification"
                     class="ml-2"
@@ -20,9 +19,9 @@
             <p>{{'project.application.form.section.modification.open.button.success.message' | translate}}</p>
         </jems-alert>
 
-        <div *ngIf="data.canOpenModification">
+        <div *ngIf="!isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)">
             <p>{{'project.application.form.section.modification.open.empty' | translate}}</p>
-            <jems-pending-button
+            <jems-pending-button *ngIf="data.canOpenModification"
                     class="mr-2 mt-2"
                     [pending]="pendingButtonProgress"
                     (clicked)="startModification()"
@@ -31,23 +30,30 @@
             </jems-pending-button>
         </div>
 
-        <ng-container
-                *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
-            <div *ngIf="isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)">
-                <h3 *ngIf="!(data.canHandBackModification || data.canOpenModification)">
-                    {{'project.application.form.section.modification.open' | translate}}
-                </h3>
+        <ng-container *ngIf="isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)">
+            <jems-alert
+                [show]="isModificationOpened(data.currentVersionOfProjectStatus)"
+                [type]="Alert.INFO"
+                [closable]="false">
+                <span>{{'project.application.form.section.modification.open.ongoing.alert' | translate}}</span>
+            </jems-alert>
+            <jems-alert
+                [show]="(isModificationSubmitted(data.currentVersionOfProjectStatus) && !data.canHandBackModification)"
+                [type]="Alert.INFO"
+                [closable]="false">
+                <span>{{'project.application.form.section.modification.open.decision.alert' | translate}}</span>
+            </jems-alert>
+            <ng-container *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
                 <jems-modification-confirmation
                         [index]="data.modificationDecisions.length + 1"
                         [currentStatus]="data.currentVersionOfProjectStatus"
                         [corrections]="availableCorrections$ | async">
                 </jems-modification-confirmation>
-            </div>
+            </ng-container>
         </ng-container>
 
         <ng-container *ngIf="data.modificationDecisions.length">
             <h3>{{'project.application.form.section.modification.past' | translate}}</h3>
-
             <jems-modification-confirmation
                     *ngFor="let decision of data.modificationDecisions; let i=index"
                     [index]="data.modificationDecisions.length - i"
