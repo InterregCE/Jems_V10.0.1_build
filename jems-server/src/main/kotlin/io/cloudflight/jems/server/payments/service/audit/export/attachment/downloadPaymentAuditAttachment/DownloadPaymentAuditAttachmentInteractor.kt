@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.downloadPaymentAuditAttachment
+package io.cloudflight.jems.server.payments.service.audit.export.attachment.downloadPaymentAuditAttachment
 
 interface DownloadPaymentAuditAttachmentInteractor {
 

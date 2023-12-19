@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.programme.fund
 
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -20,9 +19,9 @@ interface ProgrammeFundApi {
     @GetMapping(ENDPOINT_API_PROGRAMME_FUND)
     fun getProgrammeFundList(): List<ProgrammeFundDTO>
 
-    @ApiOperation("Retrieve all selected programme funds types")
+    @ApiOperation("Retrieve all selected programme funds")
     @GetMapping("$ENDPOINT_API_PROGRAMME_FUND/selected")
-    fun getAvailableProgrammeFundTypes(): List<ProgrammeFundTypeDTO>
+    fun getAvailableProgrammeFunds(): List<ProgrammeFundDTO>
 
     @ApiOperation("Specify available Funds for this programme")
     @PutMapping(ENDPOINT_API_PROGRAMME_FUND, consumes = [MediaType.APPLICATION_JSON_VALUE])

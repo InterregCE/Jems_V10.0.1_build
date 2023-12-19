@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.fund.get_selected_fund
+package io.cloudflight.jems.server.programme.service.fund.getSelectedFund
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

@@ -9,9 +9,9 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.uploadPaymentAuditAttachment.FileAlreadyExists
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.uploadPaymentAuditAttachment.FileTypeNotSupported
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.uploadPaymentAuditAttachment.UploadPaymentAuditAttachment
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.uploadPaymentAuditAttachment.FileAlreadyExists
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.uploadPaymentAuditAttachment.FileTypeNotSupported
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.uploadPaymentAuditAttachment.UploadPaymentAuditAttachment
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.mockk.clearMocks
 import io.mockk.every

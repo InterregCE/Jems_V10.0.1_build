@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
+import io.cloudflight.jems.server.programme.service.fund.getFund.GetFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.mockk.every

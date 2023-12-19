@@ -354,6 +354,9 @@ fun ProjectAssessment.toDataModel() =
 fun ProgrammeFundType.toDataModel() =
     ProgrammeFundTypeData.valueOf(this.name)
 
+fun ProgrammeFundTypeData.toModel() =
+    ProgrammeFundType.valueOf(this.name)
+
 fun List<ProjectCoFinancingByFundOverview>.projectCoFinancingByFundOverviewListToDataList() =
     map {
         ProjectCoFinancingByFundOverviewData(

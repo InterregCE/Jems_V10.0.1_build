@@ -10,7 +10,7 @@
         <div jemsFormLayout>
             <h3>{{'payments.audit.export.table.subheader' | translate}}</h3>
             <div jemsNoWidthLimit class="mb-4"
-                 [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:5}, {minInRem:8}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
+                 [jemsTableConfig]="[{minInRem: 25}, {minInRem: 30}, {minInRem:10}, {minInRem:8}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
                 <div>
                     <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
                     <span>{{ 'programme.data.export.table.filename' | translate}}</span>
@@ -26,14 +26,14 @@
                 <ng-container *ngFor="let exportedFileData of data.paymentAuditExportMetadata">
                     <div>
                         <span>{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
-                        <span>{{exportedFileData.generatedFile.name}}</span>
-                        <span>{{exportedFileData.fundType}}</span>
-                        <span>{{exportedFileData.accountingYear}}</span>
+                        <span>{{exportedFileData.fileName}}</span>
+                        <span>{{exportedFileData.fund?.type}}</span>
+                        <span>{{exportedFileData.accountingYear | asAccountingYear}}</span>
                         <span>{{exportedFileData.requestTime | localeDate : 'L' : 'LT'}}</span>
                         <span>{{exportedFileData.exportationTimeInSeconds | secondsToTimePipe | async}}</span>
                         <span class="justify-center">
                         <button *ngIf="exportedFileData.readyToDownload"
-                                (click)="downloadData(exportedFileData.pluginKey)" color="accent"
+                                (click)="downloadData(exportedFileData.id, exportedFileData.pluginKey)" color="accent"
                                 mat-icon-button>
                             <mat-icon>download</mat-icon>
                         </button>
@@ -46,10 +46,8 @@
                 </ng-container>
             </div>
 
-            <!--        <p>{{'payments.audit.export.table.subheader' | translate}}</p>-->
             <form jemsFormLayout [formGroup]="exportForm">
                             <mat-form-field>
-<!--                                (selectionChange)="setPluginOptionsDescription($event.value, data.plugins)"-->
                                 <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
                                 <mat-select formControlName="pluginKey">
                                     <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
@@ -67,11 +65,11 @@
                 <div>
                     <mat-form-field class="parameter-selector-width">
                         <mat-label>{{'payments.audit.export.fund.dropdown.placeholder' | translate}}</mat-label>
-                        <mat-select formControlName="fundType">
+                        <mat-select formControlName="fund">
                             <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
-                            <mat-option *ngFor="let fundType of data.fundTypes" [value]="fundType"
+                            <mat-option *ngFor="let fund of data.availableFunds" [value]="fund"
                                         role="option">
-                                <mat-label>{{fundType}}</mat-label>
+                                <mat-label>{{fund.type}}</mat-label>
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -91,15 +89,12 @@
 
                 <jems-pending-button jemsText
                                      [disabled]="data.isExportDisabled"
-                                     (clicked)="exportData(pluginKey, fundType, accountingYear?.year)">
+                                     (clicked)="exportData(pluginKey, fund?.id, accountingYear?.id)">
                     {{'programme.data.export.label.export.button' | translate}}
                 </jems-pending-button>
 
-
                 <div class="attachments-section">
-
                     <jems-payment-to-ec-audit-attachments></jems-payment-to-ec-audit-attachments>
-
                 </div>
 
             </form>

@@ -14,4 +14,8 @@ class AccountingYearPersistenceProvider(
     override fun findAll(): List<AccountingYear> =
         repository.findAllByOrderByYear().toModel()
 
+    @Transactional(readOnly = true)
+    override fun getById(id: Long): AccountingYear =
+        repository.getById(id).toModel()
+
 }

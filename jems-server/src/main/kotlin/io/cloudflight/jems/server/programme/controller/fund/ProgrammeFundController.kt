@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.programme.controller.fund
 
-import io.cloudflight.jems.api.programme.fund.ProgrammeFundApi
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
-import io.cloudflight.jems.server.programme.service.fund.get_fund.GetFundInteractor
-import io.cloudflight.jems.server.programme.service.fund.get_selected_fund.GetSelectedFundInteractor
+import io.cloudflight.jems.api.programme.fund.ProgrammeFundApi
+import io.cloudflight.jems.server.programme.service.fund.getFund.GetFundInteractor
+import io.cloudflight.jems.server.programme.service.fund.getSelectedFund.GetSelectedFundInteractor
 import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFundsInteractor
 import org.springframework.web.bind.annotation.RestController
 
@@ -18,7 +17,7 @@ class ProgrammeFundController(
     override fun getProgrammeFundList(): List<ProgrammeFundDTO> =
         getFundInteractor.getFunds().toDto()
 
-    override fun getAvailableProgrammeFundTypes(): List<ProgrammeFundTypeDTO> =
+    override fun getAvailableProgrammeFunds(): List<ProgrammeFundDTO> =
         getAvailableFundTypesInteractor.getAvailableFunds().toDto()
 
     override fun updateProgrammeFundList(funds: Set<ProgrammeFundDTO>): List<ProgrammeFundDTO> =

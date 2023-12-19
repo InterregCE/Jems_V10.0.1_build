@@ -1,11 +1,11 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.setDescriptionToPaymentAuditAttachment
+package io.cloudflight.jems.server.payments.service.audit.export.attachment.setDescriptionToPaymentAuditAttachment
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
+import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentsAudit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,7 +16,7 @@ class SetDescriptionToPaymentAuditAttachment(
     private val generalValidator: GeneralValidatorService,
 ) : SetDescriptionToPaymentAuditAttachmentInteractor {
 
-    @CanUpdatePayments
+    @CanUpdatePaymentsAudit
     @Transactional
     @ExceptionWrapper(SetDescriptionToPaymentAttachmentException::class)
     override fun setDescription(fileId: Long, description: String) {

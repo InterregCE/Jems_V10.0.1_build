@@ -16,8 +16,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import java.math.RoundingMode
 
 fun monitoringFtlsReadyForPayment(
@@ -280,19 +278,6 @@ fun paymentApplicationToEcDeleted(
         )
         .build()
 )
-
-private fun paymentApplicationToEcFileUploadSuccess(
-    context: Any,
-    type: String,
-    name: String,
-    location: String,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_FILE_UPLOADED_SUCCESSFULLY)
-            .description("File (of type $type) \"$name\" has been uploaded to $location")
-            .build()
-    )
 
 fun paymentApplicationToEcAuditExportCreated(
     context: Any,

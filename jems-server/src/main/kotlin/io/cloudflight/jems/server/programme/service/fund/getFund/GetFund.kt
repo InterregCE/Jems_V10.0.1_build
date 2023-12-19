@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.fund.get_fund
+package io.cloudflight.jems.server.programme.service.fund.getFund
 
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence

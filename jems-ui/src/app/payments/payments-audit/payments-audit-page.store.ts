@@ -1,20 +1,20 @@
-import {UntilDestroy} from "@ngneat/until-destroy";
-import {Injectable} from "@angular/core";
-import {BehaviorSubject, combineLatest, Observable, of} from "rxjs";
-import {map, switchMap, tap} from "rxjs/operators";
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {
   AccountingYearDTO,
   AccountingYearService, PaymentToECAuditService, PaymentToEcExportMetadataDTO,
-  PluginInfoDTO, ProgrammeDataExportMetadataDTO,
+  PluginInfoDTO, ProgrammeFundDTO,
   ProgrammeFundService,
   UserRoleCreateDTO
-} from "@cat/api";
-import {PermissionService} from "../../security/permissions/permission.service";
-import {Log} from "@common/utils/log";
+} from '@cat/api';
+import {PermissionService} from '../../security/permissions/permission.service';
+import {Log} from '@common/utils/log';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {PluginStore} from "@common/services/plugin-store.service";
+import {PluginStore} from '@common/services/plugin-store.service';
 import TypeEnum = PluginInfoDTO.TypeEnum;
-import {DownloadService} from "@common/services/download.service";
+import {DownloadService} from '@common/services/download.service';
 
 
 @UntilDestroy()
@@ -25,7 +25,7 @@ export class PaymentsAuditPageStore {
 
   userCanView$: Observable<boolean>;
   userCanEdit$: Observable<boolean>;
-  availableFunds$: Observable<String[]>;
+  availableFunds$: Observable<ProgrammeFundDTO[]>;
   accountingYears$: Observable<AccountingYearDTO[]>;
   paymentAuditExportPlugins$: Observable<PluginInfoDTO[]>;
   paymentAuditExportMetadata$: Observable<PaymentToEcExportMetadataDTO[]>;
@@ -44,7 +44,7 @@ export class PaymentsAuditPageStore {
     this.paymentAuditExportMetadata$ = combineLatest([this.exportTriggeredEvent$, this.refreshExportMetadata$]).pipe(switchMap(() => this.paymentToEcAuditService.list()));
     this.userCanView$ = this.userCanView();
     this.userCanEdit$ = this.userCanEdit();
-    this.availableFunds$ = this.availableFundTypes();
+    this.availableFunds$ = this.availableFunds();
     this.accountingYears$ = this.accountingYears();
   }
 
@@ -67,10 +67,10 @@ export class PaymentsAuditPageStore {
       );
   }
 
-  private availableFundTypes(): Observable<String[]> {
-    return this.programmeFundsService.getAvailableProgrammeFundTypes()
+  private availableFunds(): Observable<ProgrammeFundDTO[]> {
+    return this.programmeFundsService.getAvailableProgrammeFunds()
       .pipe(
-        tap(funds => Log.info('Fetched available fund types:', this, funds))
+        tap(funds => Log.info('Fetched available funds:', this, funds))
       );
   }
 
@@ -81,16 +81,15 @@ export class PaymentsAuditPageStore {
       );
   }
 
-  exportData(pluginKey: string, programmeFundType: string, accountingYearNumber: number): Observable<any> {
-    return this.paymentToEcAuditService._export(pluginKey, accountingYearNumber, programmeFundType).pipe(
+  exportData(pluginKey: string, programmeFundId: number, accountingYearId: number): Observable<any> {
+    return this.paymentToEcAuditService._export(pluginKey, accountingYearId, programmeFundId).pipe(
       tap(() => this.exportTriggeredEvent$.next())
     );
   }
 
-  download(fileId: string): Observable<any> {
-    return this.downloadService.download(`/api/paymentApplicationsToEc/audit/download?fileId=${fileId}`, 'audit-data.xlsx'); //TODO update
+  download(fileId: number, pluginKey: string): Observable<any> {
+    return this.downloadService.download(`/api/paymentApplicationsToEc/audit/download/${fileId}?pluginKey=${pluginKey}`, 'audit-data.xls');
   }
-
   refreshExportMetaData() {
     this.refreshExportMetadata$.next();
   }

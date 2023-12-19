@@ -41,6 +41,8 @@ export const paymentsRoutes: Routes = [
         PermissionsEnum.AdvancePaymentsUpdate,
         PermissionsEnum.PaymentsToEcRetrieve,
         PermissionsEnum.PaymentsToEcUpdate,
+        PermissionsEnum.PaymentsAuditRetrieve,
+        PermissionsEnum.PaymentsAuditUpdate
       ],
     },
     children: [
@@ -56,6 +58,8 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.AdvancePaymentsUpdate,
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
+            PermissionsEnum.PaymentsAuditRetrieve,
+            PermissionsEnum.PaymentsAuditUpdate
           ],
         },
       },

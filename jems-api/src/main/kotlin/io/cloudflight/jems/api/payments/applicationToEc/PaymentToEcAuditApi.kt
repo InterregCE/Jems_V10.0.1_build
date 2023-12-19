@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.payments.applicationToEc
 
 import io.cloudflight.jems.api.payments.dto.export.PaymentToEcExportMetadataDTO
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
@@ -21,20 +20,21 @@ interface PaymentToEcAuditApi {
     @PostMapping("${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/export")
     fun export(
         @RequestParam(required = true) pluginKey: String,
-        @RequestParam(required = false) accountingYear: Short?,
-        @RequestParam(required = false) programmeFundType: ProgrammeFundTypeDTO?
+        @RequestParam(required = false) programmeFundId: Long?,
+        @RequestParam(required = false) accountingYearId: Long?
     )
 
     @ApiOperation("Get list of payment to ec exported files metadata")
     @GetMapping("${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/list")
     fun list() : List<PaymentToEcExportMetadataDTO>
 
-    @ApiOperation("Download control report certificate")
+    @ApiOperation("Download payment to ec audit export")
     @GetMapping(
         "${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/download/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
     fun download(
         @PathVariable fileId: Long,
+        @RequestParam pluginKey: String
     ): ResponseEntity<ByteArrayResource>
 }

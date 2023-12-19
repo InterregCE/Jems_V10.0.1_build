@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.payments.service.ecPayment.plus
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.plugin.services.toModel
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -30,7 +31,7 @@ class PaymentApplicationToEcAuditDataProviderImpl(
     private val ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence,
     private val correctionPersistence: AuditControlCorrectionPersistence,
     private val paymentPersistence: PaymentPersistence
-): PaymentApplicationToEcAuditDataProvider {
+) : PaymentApplicationToEcAuditDataProvider {
 
     @Transactional(readOnly = true)
     override fun getPaymentApplicationToEcAuditData(
@@ -38,13 +39,26 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         programmeFundType: ProgrammeFundTypeData?
     ): List<PaymentApplicationToEcData> {
         val payments = paymentApplicationToEcPersistence.findAllWithDetails()
-        return payments.map { PaymentApplicationToEcFull(
-            id = it.id,
-            paymentApplicationToEcSummary = it.paymentApplicationToEcSummary,
-            paymentToEcAmountSummary = calculateCumulativeValues(it),
-            corrections = getCorrectionsForEcPayment(it),
-            regularProjectPayments = getPaymentsRegular(it)
-        ).toDataModel() }
+            .filter {
+                programmeFundType?.let {
+                        fundType -> fundType.toModel() == it.paymentApplicationToEcSummary.programmeFund.type
+                } ?: true
+            }
+            .filter {
+                accountingYear?.let {
+                        accountingYear -> accountingYear == it.paymentApplicationToEcSummary.accountingYear.year
+                } ?: true
+            }
+
+        return payments.map {
+            PaymentApplicationToEcFull(
+                id = it.id,
+                paymentApplicationToEcSummary = it.paymentApplicationToEcSummary,
+                paymentToEcAmountSummary = calculateCumulativeValues(it),
+                corrections = getCorrectionsForEcPayment(it),
+                regularProjectPayments = getPaymentsRegular(it)
+            ).toDataModel()
+        }
     }
 
     private fun calculateCumulativeValues(payment: PaymentApplicationToEcDetail): PaymentToEcAmountSummary {
@@ -54,7 +68,7 @@ class PaymentApplicationToEcAuditDataProviderImpl(
             ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(payment.id)
         else
             ecPaymentLinkPersistence.calculateAndGetOverview(payment.id).sumUpProperColumns()
-                ).mergeBothScoBases()
+            ).mergeBothScoBases()
 
         val cumulativeOverviewLines = currentOverview.plus(cumulativeOverviewForThisEcPayment)
         return PaymentToEcAmountSummary(

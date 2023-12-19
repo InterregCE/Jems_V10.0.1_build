@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.getPaymentAuditAttchament
+package io.cloudflight.jems.server.payments.service.audit.export.attachment.getPaymentAuditAttchament
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

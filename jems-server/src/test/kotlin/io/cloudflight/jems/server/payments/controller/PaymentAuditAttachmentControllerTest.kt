@@ -8,11 +8,11 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.payments.controller.applicationToEc.export.PaymentAuditAttachmentController
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.deletePaymentAuditAttachment.DeletePaymentAuditAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.downloadPaymentAuditAttachment.DownloadPaymentAuditAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.getPaymentAuditAttchament.GetPaymentAuditAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.setDescriptionToPaymentAuditAttachment.SetDescriptionToPaymentAuditAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.uploadPaymentAuditAttachment.UploadPaymentAuditAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.deletePaymentAuditAttachment.DeletePaymentAuditAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.downloadPaymentAuditAttachment.DownloadPaymentAuditAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.getPaymentAuditAttchament.GetPaymentAuditAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.setDescriptionToPaymentAuditAttachment.SetDescriptionToPaymentAuditAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.uploadPaymentAuditAttachment.UploadPaymentAuditAttachmentInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

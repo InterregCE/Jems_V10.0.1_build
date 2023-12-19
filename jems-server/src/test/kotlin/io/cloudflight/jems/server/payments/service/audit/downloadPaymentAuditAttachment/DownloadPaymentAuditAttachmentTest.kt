@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.payments.service.audit.attachment.downloadPay
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.downloadPaymentAuditAttachment.DownloadPaymentAuditAttachment
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.downloadPaymentAuditAttachment.FileNotFound
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.downloadPaymentAuditAttachment.FileNotFound
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.downloadPaymentAuditAttachment.DownloadPaymentAuditAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

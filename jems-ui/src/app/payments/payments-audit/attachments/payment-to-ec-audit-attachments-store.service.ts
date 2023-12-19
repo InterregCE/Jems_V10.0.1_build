@@ -3,7 +3,6 @@ import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   JemsFileMetadataDTO,
   PageJemsFileDTO,
-  PaymentApplicationToEcAttachmentService,
   PaymentAuditAttachmentService,
   UserRoleDTO
 } from '@cat/api';
@@ -18,10 +17,10 @@ import {Log} from '@common/utils/log';
 import {v4 as uuid} from 'uuid';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {PermissionService} from "../../../security/permissions/permission.service";
+import {PermissionService} from '../../../security/permissions/permission.service';
 import {
   PaymentsToEcDetailPageStore
-} from "../../payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page-store.service";
+} from '../../payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page-store.service';
 
 
 @Injectable({providedIn: 'root'})

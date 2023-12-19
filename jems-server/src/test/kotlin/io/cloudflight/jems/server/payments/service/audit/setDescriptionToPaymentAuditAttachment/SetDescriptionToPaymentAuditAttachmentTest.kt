@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAuditAttachment
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.setDescriptionToPaymentAuditAttachment.FileNotFound
-import io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.setDescriptionToPaymentAuditAttachment.SetDescriptionToPaymentAuditAttachment
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.setDescriptionToPaymentAuditAttachment.FileNotFound
+import io.cloudflight.jems.server.payments.service.audit.export.attachment.setDescriptionToPaymentAuditAttachment.SetDescriptionToPaymentAuditAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

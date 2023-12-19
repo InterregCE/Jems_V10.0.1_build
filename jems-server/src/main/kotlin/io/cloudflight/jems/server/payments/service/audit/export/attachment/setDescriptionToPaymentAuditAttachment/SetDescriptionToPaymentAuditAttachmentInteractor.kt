@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.export.attachment.setDescriptionToPaymentAuditAttachment
+package io.cloudflight.jems.server.payments.service.audit.export.attachment.setDescriptionToPaymentAuditAttachment
 
 interface SetDescriptionToPaymentAuditAttachmentInteractor {
 

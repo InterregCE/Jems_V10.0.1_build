@@ -1,8 +1,9 @@
-package io.cloudflight.jems.server.programme.service.fund.get_selected_fund
+package io.cloudflight.jems.server.programme.service.fund.getSelectedFund
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentsAudit
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,10 +12,10 @@ class GetSelectedFund(
     private val persistence: ProgrammeFundPersistence,
 ) : GetSelectedFundInteractor {
 
-    //    @CanViewPaymentsAudit
+    @CanRetrievePaymentsAudit
     @ExceptionWrapper(GetSelectedFundsException::class)
     @Transactional(readOnly = true)
-    override fun getAvailableFunds(): List<ProgrammeFundType> =
-        this.persistence.getSelectedFunds().map { it.type }
+    override fun getAvailableFunds(): List<ProgrammeFund> =
+        this.persistence.getSelectedFunds()
 
 }

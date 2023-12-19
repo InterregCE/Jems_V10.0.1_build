@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
-import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import java.time.ZonedDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -11,23 +10,27 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
-@Entity(name = "payment_application_to_ec_audit_export")
+@Entity(name = "payment_application_to_ec_audit_export_metadata")
 class PaymentApplicationToEcAuditExportEntity (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @field:NotNull
     val pluginKey: String,
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "generated_file_id")
-    @field:NotNull
-    val generatedFile: JemsFileMetadataEntity,
+    @ManyToOne
+    @JoinColumn(name = "accounting_year_id")
+    val accountingYear: AccountingYearEntity? = null,
 
-    val accountingYear: Short?,
+    @ManyToOne
+    @JoinColumn(name = "programme_fund_id")
+    val programmeFund: ProgrammeFundEntity? = null,
 
-    val fundType: ProgrammeFundType?,
+    var fileName: String? = null,
+
+    var contentType: String? = null,
 
     @field:NotNull
     var requestTime: ZonedDateTime,

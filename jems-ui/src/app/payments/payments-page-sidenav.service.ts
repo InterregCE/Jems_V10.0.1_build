@@ -83,7 +83,8 @@ export class PaymentsPageSidenavService {
   hasAccessToPayments(permissions: PermissionsEnum[]): boolean {
     return permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsRetrieve ||
       permission === PermissionsEnum.AdvancePaymentsRetrieve ||
-      permission === PermissionsEnum.PaymentsToEcRetrieve
+      permission === PermissionsEnum.PaymentsToEcRetrieve ||
+      permission === PermissionsEnum.PaymentsAuditRetrieve
     );
   }
 
@@ -93,11 +94,15 @@ export class PaymentsPageSidenavService {
   }
 
   public goToAdvancePayments(): void {
-    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
+    this.routingService.navigate([this.advancePaymentsPage.route], {replaceUrl: true});
   }
 
   public goToPaymentsToEc(): void {
-    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
+    this.routingService.navigate([this.paymentsToEcPage.route], {replaceUrl: true});
+  }
+
+  public goToAudit(): void {
+    this.routingService.navigate([this.auditPage.route], {replaceUrl: true});
   }
 
 }
