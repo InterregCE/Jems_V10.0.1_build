@@ -48,7 +48,7 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
         if (report.status.isOpenForNumbersChanges()) {
             val expenditureCurrent = reportExpenditureCostCategoryCalculatorService
                 .getSubmittedOrCalculateCurrent(partnerId = partnerId, reportId = reportId)
-            val totalWithoutSpf = expenditureCurrent.total.totalEligibleBudget.minus(expenditureCurrent.spfCost.totalEligibleBudget)
+            val totalWithoutSpf = expenditureCurrent.totalBudgetWithoutSpf()
 
             val contributions = reportContributionPersistence
                 .getPartnerReportContribution(partnerId, reportId = reportId).extractOverview()

@@ -15,4 +15,6 @@ data class ReportExpenditureCostCategory(
     val currentlyReportedParked: BudgetCostsCalculationResultFull,
     val currentlyReportedReIncluded: BudgetCostsCalculationResultFull,
     val previouslyReportedParked: BudgetCostsCalculationResultFull,
-)
+) {
+    fun totalBudgetWithoutSpf() = totalsFromAF.sum.minus(totalsFromAF.spfCost)
+}

@@ -12,4 +12,6 @@ data class ExpenditureCostCategoryBreakdown(
     val unitCost: ExpenditureCostCategoryBreakdownLine,
     val spfCost: ExpenditureCostCategoryBreakdownLine,
     val total: ExpenditureCostCategoryBreakdownLine,
-)
+) {
+    fun totalBudgetWithoutSpf() = total.totalEligibleBudget.minus(spfCost.totalEligibleBudget)
+}

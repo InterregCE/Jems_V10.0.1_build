@@ -147,6 +147,7 @@ class UpdateContractingMonitoring(
         version: String,
     ) {
         val projectId = projectOfCorrectVersion.id!!
+        // TODO MP2-4145 recheck if this split is not affected by wrong total with SPF
         val partnerTotalByPartnerId = getProjectBudget.getBudget(projectId = projectId, version)
             .associate { Pair(it.partner.id!!, it.totalCosts) }
 

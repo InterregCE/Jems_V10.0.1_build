@@ -166,17 +166,27 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             parkingMetadata = null,
         )
 
-        val options = mockk<ReportExpenditureCostCategory>().also {
-            every { it.options } returns ProjectPartnerBudgetOptions(
+        val options = ReportExpenditureCostCategory(
+            options =  ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
                 officeAndAdministrationOnStaffCostsFlatRate = null,
                 officeAndAdministrationOnDirectCostsFlatRate = 10,
                 travelAndAccommodationOnStaffCostsFlatRate = 15,
                 staffCostsFlatRate = null,
                 otherCostsOnStaffCostsFlatRate = null,
-            )
-            every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
-        }
+            ),
+            totalsFromAF = mockk<BudgetCostsCalculationResultFull> {
+                every { spfCost } returns BigDecimal.valueOf(50L)
+                every { sum } returns BigDecimal.valueOf(550L)
+            },
+            currentlyReported = mockk(),
+            totalEligibleAfterControl = mockk(),
+            previouslyReported = mockk(),
+            previouslyValidated = mockk(),
+            currentlyReportedParked = mockk(),
+            currentlyReportedReIncluded = mockk(),
+            previouslyReportedParked = mockk(),
+        )
 
         private val expectedPersistedExpenditureCostCategory = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
             currentlyReported = BudgetCostsCalculationResultFull(
