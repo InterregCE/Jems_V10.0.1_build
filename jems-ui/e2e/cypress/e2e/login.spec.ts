@@ -7,7 +7,7 @@ context('Login tests', () => {
   before(() => {
     cy.loginByRequest(user.admin.email);
     cy.createUser(user.applicantUser);
-    // change default programme role so that it can edit calls
+    // change default programme role so that it can edit calls and contracting section
     cy.updateRole(updatedDefaultProgrammeRole);
     cy.createUser(user.programmeUser);
     cy.logoutByRequest();

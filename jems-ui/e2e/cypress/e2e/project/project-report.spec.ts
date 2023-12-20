@@ -4,7 +4,6 @@ import approvalInfo from '@fixtures/api/application/modification/approval.info.j
 import rejectionInfo from '@fixtures/api/application/modification/rejection.info.json';
 import call from '@fixtures/api/call/1.step.call.json';
 import {faker} from '@faker-js/faker';
-import date from 'date-and-time';
 import partnerReportExpenditures from "@fixtures/api/partnerReport/partnerReportExpenditures.json";
 import partnerParkedExpenditures from "@fixtures/api/partnerReport/partnerParkedExpenditures.json";
 import partnerReportIdentification from "@fixtures/api/partnerReport/partnerReportIdentification.json";
@@ -13,7 +12,6 @@ import paymentsUser from "@fixtures/api/users/paymentsUser.json";
 import paymentsRole from "@fixtures/api/roles/paymentsRole.json";
 import {projectReportPage} from "./reports-page.pom";
 import {ProjectReportType} from "./ProjectReportType";
-import contractMonitoring from "@fixtures/api/projectReport/contractMonitoring.json";
 
 
 context('Project report tests', () => {
@@ -39,22 +37,6 @@ context('Project report tests', () => {
 
       const originalPartnerDetails = application.partners[0].details;
       const partnerId = this[originalPartnerDetails.abbreviation];
-
-      // Set-up
-      cy.loginByRequest(user.programmeUser.email);
-      cy.getContractMonitoring(applicationId).then((contractMonitoring) => {
-        contractMonitoring.startDate = date.format(new Date(), 'YYYY-MM-DD');
-        cy.updateContractMonitoring(applicationId, contractMonitoring);
-      });
-
-      cy.loginByRequest(user.programmeUser.email);
-      cy.visit(`/app/project/detail/${applicationId}/contractReporting`, {failOnStatusCode: false});
-
-      addReportingPeriod(0);
-      addReportingPeriod(1);
-      addReportingPeriod(2);
-
-      cy.contains('Save changes').should('be.enabled').click().wait(1000);
 
       // 1
       cy.loginByRequest(user.applicantUser.email);
@@ -113,7 +95,6 @@ context('Project report tests', () => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
-        cy.updateContractMonitoring(applicationId, contractMonitoring);
         cy.createReportingDeadlines(applicationId, testData.deadlines).then(deadlines => {
           testData.projectReport.deadlineId = deadlines[0].id;
           cy.loginByRequest(user.applicantUser.email);
@@ -152,15 +133,9 @@ context('Project report tests', () => {
   it('TB-1023 PR - Work plan progress', function () {
     cy.fixture('project/reporting/TB-1023.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
+      application.reportingDeadlines = [];
       cy.createContractedApplication(application, user.programmeUser.email)
         .then(applicationId => {
-          cy.loginByRequest(user.programmeUser.email);
-          cy.getContractMonitoring(applicationId).then((contractMonitoring) => {
-            contractMonitoring.startDate = date.format(new Date(), 'YYYY-MM-DD');
-            cy.updateContractMonitoring(applicationId, contractMonitoring);
-          });
-
-          cy.loginByRequest(user.applicantUser.email);
           createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Content);
 
           cy.url().then(url => {
@@ -237,6 +212,8 @@ context('Project report tests', () => {
   it('TB-1093 Regular payments are properly reflected in following project reports', function () {
     cy.fixture('project/reporting/TB-1093.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
+      application.reportingDeadlines = [];
+      application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
         const partnerId1 = this[application.partners[0].details.abbreviation];
@@ -391,24 +368,6 @@ context('Project report tests', () => {
   });
 });
 
-function addReportingPeriod(number: number) {
-  cy.contains('span', 'Add Reporting deadline').click();
-  cy.get('mat-table').scrollIntoView();
-
-  const type = number == 0 ? 'Only Finance'
-    : number == 1 ? 'Only Content' : 'Both';
-
-  cy.get('mat-table mat-row').eq(number).within(() => {
-    cy.contains('span', type).click();
-
-    cy.get('.mat-select-placeholder').eq(0).click();
-    cy.root().closest('body').find('mat-option').contains(`Period ${number + 1}`).click();
-
-    cy.contains('div', 'Date').scrollIntoView().next().click();
-    cy.root().closest('body').find('table.mat-calendar-table').find('tr').last().find('td').last().click();
-  });
-}
-
 function createProjectReport(forPeriod: number) {
   cy.contains('Add Project Report').click();
 
@@ -491,11 +450,6 @@ function setReadyForPayment(flag, rowIndex) {
 function createReportingDeadlines(applicationId, testData) {
   cy.loginByRequest(user.programmeUser.email);
   const yesterday = new Date((new Date()).valueOf() - (1000 * 60 * 60 * 24));
-
-  cy.getContractMonitoring(applicationId).then((contractMonitoring) => {
-    contractMonitoring.startDate = date.format(yesterday, 'YYYY-MM-DD');
-    cy.updateContractMonitoring(applicationId, contractMonitoring);
-  });
 
   testData.deadlines[0].date = new Date();
   testData.deadlines[1].date = yesterday;

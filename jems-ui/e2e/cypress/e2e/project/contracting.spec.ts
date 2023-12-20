@@ -201,6 +201,9 @@ context('Application contracting tests', () => {
             application.lumpSums[0] = application.lumpSums[1];
             application.lumpSums[1] = fastTrackLumpSum;
             application.lumpSums.pop();
+            
+            // also update contracting section properly
+            application.contractMonitoring.fastTrackLumpSums = testData.contractingFastTrackLumpSums;
 
             cy.loginByRequest(user.applicantUser.email);
             cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {

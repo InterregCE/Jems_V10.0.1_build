@@ -308,7 +308,6 @@ context('Control report tests', () => {
           cy.contains('Select checklist template').parent().parent().click();
           cy.getProgrammeChecklists().then(response => {
             let checklists = response.body.map(e => e['name']);
-            console.log(checklists);
             cy.get('mat-option span span').each(checklist => expect(checklist.text()).be.oneOf(checklists));
           });
           cy.contains('mat-option span', 'HIT - Accounting').click();
