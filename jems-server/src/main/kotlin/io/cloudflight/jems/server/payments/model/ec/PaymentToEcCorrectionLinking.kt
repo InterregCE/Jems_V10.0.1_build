@@ -17,6 +17,7 @@ data class PaymentToEcCorrectionLinking(
     val paymentToEcId: Long?,
 
     val fundAmount: BigDecimal,
+    var correctedFundAmount: BigDecimal,
     val partnerContribution: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
@@ -24,5 +25,10 @@ data class PaymentToEcCorrectionLinking(
     val correctedAutoPublicContribution: BigDecimal,
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
-    val comment: String?
+    val comment: String?,
+
+    val totalEligibleWithoutArt94or95: BigDecimal,
+    var correctedTotalEligibleWithoutArt94or95: BigDecimal,
+    val unionContribution: BigDecimal,
+    var correctedUnionContribution: BigDecimal,
 )

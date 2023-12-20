@@ -9,4 +9,6 @@ data class PaymentToEcAmountSummaryLineTmp(
     val partnerContribution: BigDecimal,
     val ofWhichPublic: BigDecimal,
     val ofWhichAutoPublic: BigDecimal,
+    val unionContribution: BigDecimal,
+    val correctedFundAmount: BigDecimal,
 )

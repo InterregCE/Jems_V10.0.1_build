@@ -34,10 +34,13 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
     'projectId',
     'projectAcronym',
     'priorityAxis',
+    'projectFlagged94Or95',
     'correctionNo',
     'scenario',
     'controllingBody',
     'totalEligible',
+    'totalEligibleWithoutArt94or95',
+    'unionContribution',
     'fundAmount',
     'partnerContribution',
     'publicContribution',
@@ -165,6 +168,9 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
       correctedPublicContribution: event$.correctedPublicContribution,
       correctedAutoPublicContribution: event$.correctedAutoPublicContribution,
       correctedPrivateContribution: event$.correctedPrivateContribution,
+      correctedTotalEligibleWithoutArt94or95: event$.correctedTotalEligibleWithoutArt94or95,
+      correctedUnionContribution: event$.correctedUnionContribution,
+      correctedFundAmount: event$.correctedFundAmount,
       comment: event$.comment,
     } as PaymentToEcCorrectionLinkingUpdateDTO;
 
@@ -175,17 +181,6 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe();
     this.editedRowIndex = null;
-  }
-
-  discardChanges(rowIndex: number, unchangedCorrections: PaymentToEcCorrectionLinkingDTO) {
-    this.ecCorrections.at(rowIndex).patchValue({
-      autoPublicContribution: unchangedCorrections.autoPublicContribution,
-      publicContribution: unchangedCorrections.publicContribution,
-      privateContribution: unchangedCorrections.privateContribution,
-      comment: unchangedCorrections.comment,
-    });
-    this.editedRowIndex = null;
-    this.formService.setDirty(false);
   }
 
   private initializeForm(ecId: number, isEditable: boolean, corrections: PaymentToEcCorrectionLinkingDTO[]) {
@@ -207,6 +202,7 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
         scenario: correction.scenario,
         controllingBody: correction.controllingBody,
         amountApprovedPerFund: correction.fundAmount,
+        correctedFundAmount: correction.correctedFundAmount,
         partnerContribution: correction.partnerContribution,
         publicContribution: correction.publicContribution,
         correctedPublicContribution: correction.correctedPublicContribution,
@@ -215,6 +211,11 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
         privateContribution: correction.privateContribution,
         correctedPrivateContribution: correction.correctedPrivateContribution,
         comment: correction.comment,
+        projectFlagged94Or95: correction.projectFlagged94Or95,
+        totalEligibleWithoutArt94or95: correction.totalEligibleWithoutArt94or95,
+        correctedTotalEligibleWithoutArt94or95: correction.correctedTotalEligibleWithoutArt94or95,
+        unionContribution: correction.unionContribution,
+        correctedUnionContribution: correction.correctedUnionContribution
       } as PaymentToEcInclusionRow))
     };
   }
@@ -225,6 +226,9 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
 
   addCorrections(correction: PaymentToEcCorrectionLinkingDTO) {
     const item = this.formBuilder.group({
+      totalEligibleWithoutArt94or95: this.formBuilder.control(correction.correctedTotalEligibleWithoutArt94or95),
+      unionContribution: this.formBuilder.control(correction.correctedUnionContribution),
+      fundAmount: this.formBuilder.control(correction.correctedFundAmount),
       autoPublicContribution: this.formBuilder.control(correction.correctedAutoPublicContribution),
       publicContribution: this.formBuilder.control(correction.correctedPublicContribution),
       privateContribution: this.formBuilder.control(correction.correctedPrivateContribution),

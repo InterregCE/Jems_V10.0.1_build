@@ -76,7 +76,12 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
                 correctedPrivateContribution = BigDecimal(105),
                 correctedPublicContribution = BigDecimal(106),
                 correctedAutoPublicContribution = BigDecimal(107),
-                comment = "Comment"
+                comment = "Comment",
+                correctedFundAmount = BigDecimal(100),
+                correctedTotalEligibleWithoutArt94or95 = BigDecimal(200),
+                correctedUnionContribution = BigDecimal(0),
+                totalEligibleWithoutArt94or95 = BigDecimal(250),
+                unionContribution = BigDecimal(0)
             )
         )
 
@@ -101,7 +106,12 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
                 correctedPrivateContribution = BigDecimal(105),
                 correctedPublicContribution = BigDecimal(106),
                 correctedAutoPublicContribution = BigDecimal(107),
-                comment = "Comment"
+                comment = "Comment",
+                correctedFundAmount = BigDecimal(100),
+                correctedTotalEligibleWithoutArt94or95 = BigDecimal(200),
+                correctedUnionContribution = BigDecimal(0),
+                totalEligibleWithoutArt94or95 = BigDecimal(250),
+                unionContribution = BigDecimal(0)
             )
         )
 
@@ -109,7 +119,10 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
             correctedPrivateContribution = BigDecimal(205),
             correctedPublicContribution = BigDecimal(206),
             correctedAutoPublicContribution = BigDecimal(207),
-            comment = "Updated comment"
+            comment = "Updated comment",
+            correctedFundAmount = BigDecimal(55),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(250),
+            correctedUnionContribution = BigDecimal(150),
         )
 
 
@@ -126,6 +139,11 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
+            correctedFundAmount = BigDecimal.valueOf(75.00),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(25.00),
+            correctedUnionContribution = BigDecimal.valueOf(55.00),
+            totalEligibleWithoutArt94or95 = BigDecimal.valueOf(55.00),
+            unionContribution = BigDecimal.valueOf(0.00),
         )
     }
 

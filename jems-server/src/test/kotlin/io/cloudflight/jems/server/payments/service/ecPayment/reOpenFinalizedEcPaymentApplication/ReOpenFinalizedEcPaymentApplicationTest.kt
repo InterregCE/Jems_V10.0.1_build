@@ -77,6 +77,12 @@ class ReOpenFinalizedEcPaymentApplicationTest: UnitTest() {
             ecPaymentApplicationId, PaymentEcStatus.Draft
         )
 
+        every {
+            paymentApplicationsToEcPersistence.updatePaymentApplicationToEcStatus(any(), any())
+        } returns paymentApplicationsToEcDetail(
+            ecPaymentApplicationId, PaymentEcStatus.Draft
+        )
+
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot))} answers { }
 

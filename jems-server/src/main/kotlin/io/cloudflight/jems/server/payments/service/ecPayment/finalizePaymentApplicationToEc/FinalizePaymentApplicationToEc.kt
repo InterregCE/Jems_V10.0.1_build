@@ -32,7 +32,7 @@ class FinalizePaymentApplicationToEc(
         val paymentApplication = ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentId)
         validatePaymentApplicationIsDraft(paymentApplication.status)
 
-        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetOverview(paymentId).sumUpProperColumns()
+        val selectedPaymentTotals = ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(paymentId).sumUpProperColumns()
         ecPaymentLinkPersistence.saveTotalsWhenFinishingEcPayment(paymentId, selectedPaymentTotals)
 
         val linkedPayments = ecPaymentLinkPersistence.getPaymentsLinkedToEcPayment(paymentId)
@@ -61,7 +61,7 @@ class FinalizePaymentApplicationToEc(
         with (paymentMetadata) {
             when {
                 finalScoBasis != null -> finalScoBasis
-                typologyProv94.isNo() && typologyProv94.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                typologyProv94.isNo() && typologyProv95.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
                 else -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
             }
         }
@@ -70,8 +70,7 @@ class FinalizePaymentApplicationToEc(
     private fun Map<Long, CorrectionInEcPaymentMetadata>.toCorrectionFinalScoBasisChanges() = mapValues { (_, correctionMetadata) ->
         with (correctionMetadata) {
             when {
-                finalScoBasis != null -> finalScoBasis
-                typologyProv94.isNo() && typologyProv94.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+                typologyProv94.isNo() && typologyProv95.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
                 else -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
             }
         }

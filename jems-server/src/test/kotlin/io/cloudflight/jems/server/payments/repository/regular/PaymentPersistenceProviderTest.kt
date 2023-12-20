@@ -644,9 +644,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     "&& containsIc(paymentEntity.projectAcronym,acr-filter) " +
                     "&& paymentEntity.fund.id in [511, 512] " +
                     "&& (paymentToEcExtensionEntity.paymentApplicationToEc is null || paymentToEcExtensionEntity.paymentApplicationToEc.id = 693) " +
-                    "&& (paymentToEcExtensionEntity.finalScoBasis = FallsUnderArticle94Or95 || paymentToEcExtensionEntity.finalScoBasis is null " +
                     "&& !((projectContractingMonitoringEntity.typologyProv94 = No || projectContractingMonitoringEntity.typologyProv94 is null) " +
-                        "&& (projectContractingMonitoringEntity.typologyProv95 = No || projectContractingMonitoringEntity.typologyProv95 is null)))"
+                    "&& (projectContractingMonitoringEntity.typologyProv95 = No || projectContractingMonitoringEntity.typologyProv95 is null))"
         )
         assertThat(slotHaving.captured.toString()).isEqualTo(
             "max(paymentPartnerInstallmentEntity.paymentDate) >= 2023-07-10 " +

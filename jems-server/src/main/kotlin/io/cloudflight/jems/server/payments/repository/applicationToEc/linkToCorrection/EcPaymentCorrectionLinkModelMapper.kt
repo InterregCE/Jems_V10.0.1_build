@@ -14,13 +14,18 @@ fun PaymentToEcCorrectionExtensionEntity.toModel() = EcPaymentCorrectionExtensio
     ecPaymentStatus = paymentApplicationToEc?.status,
     comment = comment,
     fundAmount = fundAmount,
+    correctedFundAmount = correctedFundAmount,
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,
     autoPublicContribution= autoPublicContribution,
     correctedAutoPublicContribution = correctedAutoPublicContribution,
     privateContribution = privateContribution,
     correctedPrivateContribution = correctedPrivateContribution,
-    auditControlStatus = correction.auditControl.status
+    auditControlStatus = correction.auditControl.status,
+    totalEligibleWithoutArt94or95 = totalEligibleWithoutArt94or95,
+    correctedTotalEligibleWithoutArt94or95 = correctedTotalEligibleWithoutArt94or95,
+    unionContribution = unionContribution,
+    correctedUnionContribution = correctedUnionContribution,
 )
 
 fun PaymentToEcCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentToEcCorrectionLinking(
@@ -36,6 +41,7 @@ fun PaymentToEcCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentT
     paymentToEcId = paymentToEcId,
 
     fundAmount = fundAmount,
+    correctedFundAmount = correctedFundAmount,
     partnerContribution = partnerContribution,
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,
@@ -43,6 +49,11 @@ fun PaymentToEcCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentT
     correctedAutoPublicContribution = correctedAutoPublicContribution,
     privateContribution = privateContribution,
     correctedPrivateContribution = correctedPrivateContribution,
-    comment = comment
+    comment = comment,
+
+    totalEligibleWithoutArt94or95 = totalEligibleWithoutArt94or95,
+    correctedTotalEligibleWithoutArt94or95 = correctedTotalEligibleWithoutArt94or95,
+    unionContribution = unionContribution,
+    correctedUnionContribution = correctedUnionContribution
 )
 

@@ -25,7 +25,10 @@ class UpdateLinkedCorrectionTest : UnitTest() {
             correctedPrivateContribution = BigDecimal(205),
             correctedPublicContribution = BigDecimal(206),
             correctedAutoPublicContribution = BigDecimal(207),
-            comment = "Updated comment"
+            comment = "Updated comment",
+            correctedFundAmount = BigDecimal.valueOf(80),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(40),
+            correctedUnionContribution = BigDecimal.valueOf(95),
         )
 
         private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
@@ -41,6 +44,11 @@ class UpdateLinkedCorrectionTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
+            correctedFundAmount = BigDecimal.valueOf(75.00),
+            unionContribution = BigDecimal.valueOf(0.00),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(46.00),
+            correctedUnionContribution = BigDecimal.valueOf(80.50),
+            totalEligibleWithoutArt94or95 = BigDecimal.valueOf(90.00),
         )
 
     }

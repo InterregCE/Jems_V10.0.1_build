@@ -47,15 +47,16 @@ fun constructCorrectionFilter(
 )
 
 fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>.sumUpProperColumns() =
-    mapValues { (_, totals) -> totals.computeTotals() }
+    mapValues { (type, totals) -> totals.computeTotals(type) }
 
-fun Map<Long?, PaymentToEcAmountSummaryLineTmp>.computeTotals() =
+fun Map<Long?, PaymentToEcAmountSummaryLineTmp>.computeTotals(type: PaymentToEcOverviewType) =
     mapValues { (_, it) ->
     PaymentToEcAmountSummaryLine(
         priorityAxis = it.priorityAxis,
         totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution),
-        totalUnionContribution = BigDecimal.ZERO,
-        totalPublicContribution = it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic),
+        totalUnionContribution = if (type.isCorrection()) it.unionContribution else BigDecimal.ZERO,
+        totalPublicContribution = if (type.isCorrection()) it.correctedFundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic) else
+            it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic),
     )
 }
 

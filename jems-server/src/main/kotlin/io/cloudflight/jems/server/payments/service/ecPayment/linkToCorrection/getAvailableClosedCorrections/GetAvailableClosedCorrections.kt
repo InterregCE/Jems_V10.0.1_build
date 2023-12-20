@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class GetAvailableClosedCorrections(
@@ -29,7 +30,17 @@ class GetAvailableClosedCorrections(
         else
             constructCorrectionFilter(ecPaymentIds = setOf(null, ecPayment.id), fundId = fundId)
 
-        return correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable, filter)
+        val corrections = correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable, filter)
+
+        if (!ecPayment.status.isFinished())
+            corrections.filter { !it.projectFlagged94Or95 }.forEach { it.clear94Or95FlaggedInputs() }
+
+        return corrections
     }
 
+    private fun PaymentToEcCorrectionLinking.clear94Or95FlaggedInputs() {
+        this.correctedFundAmount = this.fundAmount
+        this.correctedTotalEligibleWithoutArt94or95 = this.totalEligibleWithoutArt94or95
+        this.correctedUnionContribution = BigDecimal.ZERO
+    }
 }

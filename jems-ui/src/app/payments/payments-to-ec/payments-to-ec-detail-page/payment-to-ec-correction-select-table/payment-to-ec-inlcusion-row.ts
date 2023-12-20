@@ -10,6 +10,7 @@ export interface PaymentToEcInclusionRow {
   scenario?: PaymentToEcCorrectionLinkingDTO.ScenarioEnum;
   controllingBody?: string;
   amountApprovedPerFund: number;
+  correctedFundAmount: number;
   partnerContribution: number;
   publicContribution: number;
   correctedPublicContribution: number;
@@ -18,4 +19,9 @@ export interface PaymentToEcInclusionRow {
   privateContribution: number;
   correctedPrivateContribution: number;
   comment?: string;
+  projectFlagged94Or95: boolean;
+  totalEligibleWithoutArt94or95: number;
+  correctedTotalEligibleWithoutArt94or95: number;
+  unionContribution: number;
+  correctedUnionContribution: number;
 }

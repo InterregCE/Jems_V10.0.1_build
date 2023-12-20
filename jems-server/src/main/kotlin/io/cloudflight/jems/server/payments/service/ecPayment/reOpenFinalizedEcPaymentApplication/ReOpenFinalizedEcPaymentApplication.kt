@@ -22,7 +22,6 @@ class ReOpenFinalizedEcPaymentApplication(
     @CanUpdatePaymentApplicationsToEc
     @ExceptionWrapper(ReOpenFinalizedEcPaymentApplicationException::class)
     override fun reOpen(ecPaymentApplicationId: Long): PaymentApplicationToEcDetail {
-
         val paymentApplicationToReOpen = paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(ecPaymentApplicationId)
         validatePaymentApplicationIsFinished(paymentApplicationToReOpen.status)
         validateFundAccountingYearPair(paymentApplicationToReOpen.paymentApplicationToEcSummary)

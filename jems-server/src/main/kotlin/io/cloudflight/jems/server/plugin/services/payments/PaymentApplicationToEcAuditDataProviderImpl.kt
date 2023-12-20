@@ -67,7 +67,7 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         val currentOverview = (if (payment.status.isFinished())
             ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(payment.id)
         else
-            ecPaymentLinkPersistence.calculateAndGetOverview(payment.id).sumUpProperColumns()
+            ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(payment.id).sumUpProperColumns()
             ).mergeBothScoBases()
 
         val cumulativeOverviewLines = currentOverview.plus(cumulativeOverviewForThisEcPayment)

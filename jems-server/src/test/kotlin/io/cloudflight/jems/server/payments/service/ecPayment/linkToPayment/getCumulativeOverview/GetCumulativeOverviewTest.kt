@@ -30,6 +30,8 @@ class GetCumulativeOverviewTest: UnitTest() {
                     partnerContribution = BigDecimal(53),
                     ofWhichPublic = BigDecimal(54),
                     ofWhichAutoPublic = BigDecimal(55),
+                    correctedFundAmount = BigDecimal(50),
+                    unionContribution = BigDecimal(0),
                 ),
                 null to PaymentToEcAmountSummaryLineTmp(
                     priorityId = null,
@@ -38,6 +40,8 @@ class GetCumulativeOverviewTest: UnitTest() {
                     partnerContribution = BigDecimal(69),
                     ofWhichPublic = BigDecimal(68),
                     ofWhichAutoPublic = BigDecimal(67),
+                    correctedFundAmount = BigDecimal(50),
+                    unionContribution = BigDecimal(0),
                 ),
             ),
             PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
@@ -48,6 +52,8 @@ class GetCumulativeOverviewTest: UnitTest() {
                     partnerContribution = BigDecimal(5),
                     ofWhichPublic = BigDecimal(5),
                     ofWhichAutoPublic = BigDecimal(5),
+                    correctedFundAmount = BigDecimal(50),
+                    unionContribution = BigDecimal(0),
                 ),
                 175L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 175L,
@@ -56,6 +62,8 @@ class GetCumulativeOverviewTest: UnitTest() {
                     partnerContribution = BigDecimal(26),
                     ofWhichPublic = BigDecimal(27),
                     ofWhichAutoPublic = BigDecimal(28),
+                    correctedFundAmount = BigDecimal(50),
+                    unionContribution = BigDecimal(0),
                 ),
             ),
         )
@@ -135,7 +143,7 @@ class GetCumulativeOverviewTest: UnitTest() {
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentId) } returns paymentDraft
 
         every { ecPaymentLinkPersistence.getCumulativeTotalForEcPayment(paymentId) } returns cumulativeValues
-        every { ecPaymentLinkPersistence.calculateAndGetOverview(paymentId) } returns paymentToEcAmountSummaryTmpMap
+        every { ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(paymentId) } returns paymentToEcAmountSummaryTmpMap
 
         assertThat(getCumulativeOverview.getCumulativeOverview(paymentId)).isEqualTo(expectedCumulativeOverview)
     }

@@ -28,7 +28,7 @@ class GetOverviewAmountsByType(
         val currentOverview = if (ecPayment.status.isFinished())
                 ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(paymentToEcId)
             else
-                ecPaymentLinkPersistence.calculateAndGetOverview(paymentToEcId).sumUpProperColumns()
+                ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(paymentToEcId).sumUpProperColumns()
 
         val currentOverviewOfType = if (type != null) currentOverview[type]!! else currentOverview.mergeBothScoBases()
 

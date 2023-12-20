@@ -83,8 +83,12 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
             correctedPrivateContribution = BigDecimal(700),
             comment = "Comment",
             finalScoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+            correctedFundAmount = BigDecimal(107),
+            unionContribution = BigDecimal(0),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(108),
+            correctedUnionContribution = BigDecimal(55),
+            totalEligibleWithoutArt94or95 = BigDecimal(800),
         )
-
 
     }
 
