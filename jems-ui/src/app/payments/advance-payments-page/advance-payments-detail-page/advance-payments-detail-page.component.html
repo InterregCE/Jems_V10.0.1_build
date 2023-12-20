@@ -31,7 +31,7 @@
                     <div class="column-partner-name justify-start">{{ 'payments.advance.payment.table.header.partner.name' | translate }}</div>
                     <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
                     <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
-                    <div class="column-advance-amount justify-start">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
+                    <div class="column-advance-amount justify-end">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
                     <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
                     <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
                     <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
@@ -162,8 +162,9 @@
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
-                                    <span jemsText
-                                          class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email">
+                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -192,8 +193,9 @@
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
-                                    <span jemsText
-                                          class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email">
+                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -215,18 +217,18 @@
                          [ngClass]="{'expanded' : settlementsExpanded}">
                         <div [jemsTableConfig]="[{maxInRem:9},{maxInRem: 14},{maxInRem: 12},{minInRem: 12}, {maxInRem:5}]">
                             <div class="table-row">
-                                <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.number' | translate }}</div>
-                                <div class="justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
-                                <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
-                                <div>{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
-                                <div *ngIf="data.userCanEdit">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                                <div class="column-settlement-number justify-start">{{ 'payments.advance.payments.detail.settlement.number' | translate }}</div>
+                                <div class="column-advance-amount justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
+                                <div class="column-date justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
+                                <div class="column-comment">{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
+                                <div *ngIf="data.userCanEdit" class="column-delete">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
                             </div>
 
                             <div *ngFor="let settlement of settlementsArray.controls; let i=index">
                                 <ng-container formArrayName="paymentSettlements">
                                     <ng-container [formGroupName]="i">
-                                        <div class="w-50">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr)?.value}}</div>
-                                        <div>
+                                        <div class="column-settlement-number">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr)?.value}}</div>
+                                        <div class="column-advance-amount">
                                             <mat-form-field class="w-100">
                                                 <input name="amountSettled"
                                                        matInput type="decimal" currencyMask
@@ -236,7 +238,7 @@
                                             </mat-form-field>
                                         </div>
 
-                                        <div>
+                                        <div class="column-date">
                                             <mat-form-field class="w-100">
                                                     <span [ngClass]="{'marked-as-required' : !inputSettlementDate.value}">
                                                         <input #inputSettlementDate name="settlementDate"
@@ -254,7 +256,7 @@
                                             </mat-form-field>
                                         </div>
 
-                                        <div>
+                                        <div class="column-comment">
                                             <mat-form-field class="w-100">
                                                 <input matInput #settlementComment class="text-overflow-ellipsis"
                                                        [formControlName]="constants.FORM_CONTROL_NAMES.settlementComment"
@@ -270,7 +272,7 @@
                                             </mat-form-field>
                                         </div>
 
-                                        <div *ngIf="data.userCanEdit">
+                                        <div *ngIf="data.userCanEdit" class="column-delete">
                                             <button (click)="removeSettlement(i)"
                                                     class="delete-button"
                                                     color="accent" mat-icon-button

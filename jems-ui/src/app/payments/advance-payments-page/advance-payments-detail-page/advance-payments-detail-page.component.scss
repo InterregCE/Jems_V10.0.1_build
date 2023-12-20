@@ -9,6 +9,7 @@
   }
   .table-row {
     padding: 0.5rem 0;
+    word-break: break-word;
 
     > :first-child {
       padding-left: 1rem
@@ -18,7 +19,7 @@
     }
   }
   .jems-multi-column-row {
-    column-gap: 0;
+    column-gap: 0.5rem;
     > * {
       flex: 1 1 0 !important;
       margin-right: 0 !important;
@@ -68,18 +69,19 @@
     width: auto;
   }
   .column-advance-amount {
-    min-width: 6rem !important;
-    max-width: 6rem !important;
+    min-width: 9rem !important;
+    max-width: 9rem !important;
   }
   .column-checkbox {
-    min-width: 12rem !important;
-    max-width: 12rem !important;
+    min-width: 9rem !important;
+    max-width: 16rem !important;
 
     .column-checkbox-text-content {
       margin-left: 0.75rem !important;
-      align-items: center;
+      align-items: flex-start;
       font-size: 0.75rem;
       line-height: 1.2em;
+      overflow: hidden;
     }
   }
   .column-comment {
@@ -90,11 +92,15 @@
     min-width: 9rem !important;
     max-width: 9rem !important;
   }
-  .column-expand {
+  .column-expand, .column-delete {
     min-width: 3rem !important;
     max-width: 3rem !important;
   }
-
+  // settlement
+  .column-settlement-number {
+    min-width: 5rem;
+    max-width: 5rem;
+  }
 }
 
 .advance-payment-container {
@@ -156,9 +162,10 @@ jems-advance-payments-attachments {
 }
 
 .display-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .settlements-table-container {
