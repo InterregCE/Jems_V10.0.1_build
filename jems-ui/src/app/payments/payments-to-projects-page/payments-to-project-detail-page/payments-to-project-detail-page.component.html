@@ -156,8 +156,8 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </div>
-                                        <div class="justify-start">
-                                            <div class="display-row">
+                                        <div class="column-installment-authorise-checkbox justify-start">
+                                            <div class="display-row overflow-hidden">
                                                 <mat-checkbox
                                                         [disabled]="isPaymentAuthorisationDisabled(index, installmentIndex)"
                                                         (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
@@ -165,8 +165,9 @@
                                                 </mat-checkbox>
                                                 <div class="column-checkbox-text-content">
                                                     <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</span>
-                                                    <span jemsText
-                                                          class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                                    <div class="text-overflow-ellipsis" [matTooltip]="installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email">
+                                                        <span jemsText>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,8 +185,8 @@
                                                 <mat-datepicker #paymentDatePicker></mat-datepicker>
                                             </mat-form-field>
                                         </div>
-                                        <div class="justify-start">
-                                            <div class="display-row">
+                                        <div class="column-installment-confirm-checkbox justify-start">
+                                            <div class="display-row overflow-hidden">
                                                 <mat-checkbox
                                                         (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
                                                         [disabled]="isPaymentConfirmationDisabled(index, installmentIndex)"
@@ -193,8 +194,9 @@
                                                 </mat-checkbox>
                                                 <div class="column-checkbox-text-content">
                                                     <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</span>
-                                                    <span jemsText
-                                                          class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span>
+                                                    <div class="text-overflow-ellipsis" [matTooltip]="installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email">
+                                                        <span jemsText>{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
