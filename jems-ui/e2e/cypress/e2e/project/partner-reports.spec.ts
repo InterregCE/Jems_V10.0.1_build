@@ -919,8 +919,6 @@ context('Partner reports tests', () => {
           cy.contains('Financial overview').click({force: true});
           const unitCostExternalFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.external[1].pricePerUnit);
           const unitCostsFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.unit[0].rowSum / 2);
-          console.log(unitCostExternalFormatted);
-          console.log(unitCostsFormatted);
           cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', unitCostExternalFormatted);
           cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', unitCostsFormatted);
 
@@ -1358,6 +1356,7 @@ context('Partner reports tests', () => {
 
         cy.loginByRequest(user.applicantUser.email);
 
+        application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
         cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
           const partnerId = this[application.partners[0].details.abbreviation];
           cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);

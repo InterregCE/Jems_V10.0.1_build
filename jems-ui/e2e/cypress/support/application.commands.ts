@@ -123,18 +123,8 @@ Cypress.Commands.add('createContractedApplication', (application, contractingUse
     updateApplicationSections(applicationId, application);
     runPreSubmissionCheck(applicationId);
     submitProjectApplication(applicationId);
-    if (contractingUserEmail)
-      loginByRequest(contractingUserEmail);
-    approveApplication(applicationId, application.assessments);
-    cy.request({
-      method: 'PUT',
-      url: `api/project/${applicationId}/set-to-contracted`
-    });
-    if (contractingUserEmail) {
-      cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
-      });
-    }
+    approveApplication(applicationId, application.assessments, contractingUserEmail);
+    updateContractingSections(applicationId, application, contractingUserEmail);
     cy.wrap(applicationId).as('applicationId');
   });
 });
@@ -269,10 +259,7 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
 Cypress.Commands.add('setProjectToContracted', (applicationId: number, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/set-to-contracted`
-  });
+  setProjectToContracted(applicationId);
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
       loginByRequest(currentUser.name);
@@ -409,6 +396,44 @@ function updateApplicationSections(applicationId, application) {
 
   // E
   updateLumpSums(applicationId, application.lumpSums);
+}
+
+function updateContractingSections(applicationId, application, contractingUserEmail) {
+
+  cy.then(function () {
+    updateContractsAndAgreements(applicationId, application.contractsAndAgreements);
+    updateProjectManagers(applicationId, application.projectManagers);
+
+    application.projectPrivileges.partnerCollaborators.forEach(partnerCollaborator => {
+      const partnerId = this[partnerCollaborator.cypressPartnerReference];
+      const partnerDetails = application.partnerDetails[partnerCollaborator.cypressPartnerReference];
+      updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborator.users);
+      updatePartnerBeneficialOwners(applicationId, partnerId, partnerDetails.beneficialOwners);
+      updatePartnerBankDetails(applicationId, partnerId, partnerDetails.bankDetails);
+      updatePartnerLocationOfDocuments(applicationId, partnerId, partnerDetails.locationOfDocuments);
+      if (partnerDetails.minimis) {
+        loginByRequest(contractingUserEmail); // only programme user can edit state aid fields
+        updatePartnerMinimis(partnerId, partnerDetails.minimis);
+        cy.get('@currentUser').then((currentUser: any) => {
+          loginByRequest(currentUser.name);
+        });
+      }
+    })
+
+    loginByRequest(contractingUserEmail);
+    application.contractMonitoring.fastTrackLumpSums.forEach(fastTrackLumpSum => {
+      fastTrackLumpSum.lumpSumContributions.forEach(lumpSumContribution => {
+        lumpSumContribution.partnerId = this[lumpSumContribution.cypressPartnerReference];
+      });
+    });
+
+    updateContractMonitoring(applicationId, application.contractMonitoring);
+    createReportingDeadlines(applicationId, application.reportingDeadlines);
+    setProjectToContracted(applicationId);
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  })
 }
 
 function updateIdentification(applicationId: number, projectIdentification) {
@@ -574,6 +599,13 @@ function enterFundingDecision(applicationId, decision) {
   });
 }
 
+function setProjectToContracted(applicationId) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/set-to-contracted`
+  });
+}
+
 function approveApplication(applicationId: number, assessments, approvingUserEmail?: string) {
   if (approvingUserEmail)
     loginByRequest(approvingUserEmail);
@@ -622,10 +654,73 @@ function getContractMonitoring(applicationId) {
 }
 
 function updateContractMonitoring(applicationId, contractMonitoring) {
+  contractMonitoring.projectId = applicationId;
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/monitoring`,
     body: contractMonitoring
+  });
+}
+
+function updateContractsAndAgreements(applicationId, contractsAndAgreements) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/contract`,
+    body: contractsAndAgreements
+  });
+}
+
+function updateProjectManagers(applicationId, projectManagers) {
+  projectManagers[0].projectId = applicationId;
+  projectManagers[1].projectId = applicationId;
+  projectManagers[2].projectId = applicationId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/management`,
+    body: projectManagers
+  });
+}
+
+function updatePartnerBeneficialOwners(applicationId, partnerId, beneficialOwners) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/beneficialOwner/byPartnerId/${partnerId}`,
+    body: beneficialOwners
+  });
+}
+
+function updatePartnerBankDetails(applicationId, partnerId, bankDetails) {
+  bankDetails.partnerId = partnerId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/bankingDetails/byPartnerId/${partnerId}`,
+    body: bankDetails
+  });
+}
+
+function updatePartnerLocationOfDocuments(applicationId, partnerId, locationOfDocuments) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/documentsLocation/byPartnerId/${partnerId}`,
+    body: locationOfDocuments
+  });
+}
+
+function updatePartnerMinimis(partnerId, minimis) {
+  minimis.memberStatesGranting[0].partnerId = partnerId;
+  minimis.memberStatesGranting[1].partnerId = partnerId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/contracting/partner/stateAid/byPartnerId/${partnerId}/minimis`,
+    body: minimis
+  });
+}
+
+function updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborators) {
+  cy.request({
+    method: 'PUT',
+    url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
+    body: partnerCollaborators
   });
 }
 

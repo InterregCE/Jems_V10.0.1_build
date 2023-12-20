@@ -1,7 +1,5 @@
-FROM cypress/browsers
-
+FROM currentsdev/cypress-included:12.17.4
 WORKDIR e2e
-ENV CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev
 
 # copy test files
 COPY .git .git

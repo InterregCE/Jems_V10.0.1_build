@@ -16,8 +16,6 @@ declare global {
 }
 
 Cypress.Commands.add('createProjectReport', (applicationId: number, projectReportIdentification) => {
-  console.log(applicationId)
-  console.log(projectReportIdentification)
   cy.request({
     method: 'POST',
     url: `api/project/report/byProjectId/${applicationId}`,

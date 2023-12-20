@@ -1,4 +1,43 @@
 {
   "fastTrackLumpSumName": "Preparation Lump sum",
-  "regularLumpSumName": "Implementation Lump sum"
+  "regularLumpSumName": "Implementation Lump sum",
+  "contractingFastTrackLumpSums": [
+    {
+      "orderNr": 1,
+      "programmeLumpSumId": 2,
+      "period": 1,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Lead Partner",
+          "partnerId": null,
+          "amount": 2000
+        },
+        {
+          "cypressPartnerReference": "Project Partner",
+          "partnerId": null,
+          "amount": 3555.56
+        }
+      ],
+      "comment": "",
+      "readyForPayment": false,
+      "fastTrack": false,
+      "installmentsAlreadyCreated": false
+    },
+    {
+      "orderNr": 2,
+      "programmeLumpSumId": 1,
+      "period": 0,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Lead Partner",
+          "partnerId": null,
+          "amount": 1999.99
+        }
+      ],
+      "comment": "Fast track lump sum comment 1",
+      "readyForPayment": false,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    }
+  ]
 }

@@ -16,14 +16,14 @@ declare global {
 
 Cypress.Commands.add('createCall', (call, creatingUserEmail?: string) => {
   call.generalCallSettings.startDateTime = faker.date.recent();
-  call.generalCallSettings.endDateTime = faker.date.soon(2);
+  call.generalCallSettings.endDateTime = faker.date.soon({ days: 2 });
   createCall(call, creatingUserEmail);
 });
 
 Cypress.Commands.add('create2StepCall', (call, creatingUserEmail?: string) => {
   call.generalCallSettings.startDateTime = faker.date.recent();
-  call.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
-  call.generalCallSettings.endDateTime = faker.date.soon(1, call.generalCallSettings.endDateTimeStep1);
+  call.generalCallSettings.endDateTimeStep1 = faker.date.soon({ days: 1 });
+  call.generalCallSettings.endDateTime = faker.date.soon({ days: 1, refDate: call.generalCallSettings.endDateTimeStep1 });
   createCall(call, creatingUserEmail);
 });
 
