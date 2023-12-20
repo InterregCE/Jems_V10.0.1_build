@@ -173,96 +173,74 @@ class CreateProjectPartnerReportBudget(
         partnerContributionsSpfSorted: List<ProjectPartnerContributionSpf>,
     ) = ProjectPartnerReportContributionWithSpf(
         contributions = mergeAfContributionsWithReport(
-            contributions = partnerContributionsSorted,
-            previousReportContributions = reportContributionPersistence.getAllContributionsForReportIds(submittedReportIds),
+            currentContributionsFromProject = partnerContributionsSorted,
+            previouslyReportedContributions = reportContributionPersistence.getAllContributionsForReportIds(submittedReportIds),
         ),
         contributionsSpf = mergeAfContributionsWithReport(
-            contributions = partnerContributionsSpfSorted,
-            previousReportContributions = emptyList(),
+            currentContributionsFromProject = partnerContributionsSpfSorted,
+            previouslyReportedContributions = emptyList(),
         ),
     )
 
     private fun mergeAfContributionsWithReport(
-        contributions: List<ProjectContribution>,
-        previousReportContributions: List<ProjectPartnerReportEntityContribution>,
+        currentContributionsFromProject: List<ProjectContribution>,
+        previouslyReportedContributions: List<ProjectPartnerReportEntityContribution>,
     ): List<CreateProjectPartnerReportContribution> {
-        val mapIdToHistoricalIdentifier: MutableMap<Long, UUID> = mutableMapOf()
+        val projectContributionIdToUuid: MutableMap<Long, UUID> = mutableMapOf()
         val contributionsNotLinkedToApplicationForm: LinkedHashMap<UUID, Pair<String?, ProjectPartnerContributionStatus?>> = LinkedHashMap()
-        val historicalContributionsAmounts: MutableMap<UUID, MutableList<BigDecimal>> = mutableMapOf()
+        val contributionsAll: MutableMap<UUID, MutableList<ProjectPartnerReportEntityContribution>> = mutableMapOf()
 
-        previousReportContributions.forEach {
+        previouslyReportedContributions.forEach {
             if (it.idFromApplicationForm != null)
-                mapIdToHistoricalIdentifier[it.idFromApplicationForm] = it.historyIdentifier
+                projectContributionIdToUuid[it.idFromApplicationForm] = it.historyIdentifier
             else
                 contributionsNotLinkedToApplicationForm.putIfAbsent(it.historyIdentifier, it.toModel())
 
-            historicalContributionsAmounts.getOrPut(it.historyIdentifier) { mutableListOf() }
-                .add(it.currentlyReported)
+            contributionsAll.getOrPut(it.historyIdentifier) { mutableListOf() }
+                .add(it)
         }
 
-        val partnerContributionsFromAf = contributions.fromApplicationForm(
-                idToUuid = mapIdToHistoricalIdentifier,
-                historicalContributions = historicalContributionsAmounts
-            )
-        val previouslyReportedRemovedFromAF = previousReportContributions.previouslyReportedRemovedFromAF(
-            contributionIdsFromAF = contributions.filter { it.id != null }.map { it.id!! },
-            idToUuid = mapIdToHistoricalIdentifier,
-            historicalContributions = historicalContributionsAmounts
-        )
-        val contributionsNotLinkedToApplicationFormT =
-            contributionsNotLinkedToApplicationForm.accumulatePreviousContributions(historicalContributions = historicalContributionsAmounts)
+        val previouslyReported: Map<UUID, BigDecimal> = contributionsAll.mapValues { it.value.sumOf { it.currentlyReported } }
+
+        val removedContributionUuids = projectContributionIdToUuid.keys
+            .minus(currentContributionsFromProject.mapNotNullTo(HashSet()) { it.id })
+            .map { projectContributionIdToUuid[it]!! }
+
+        val contributionsExistingOnProject = currentContributionsFromProject
+            .toContributions(projectContributionIdToUuid, previouslyReported = previouslyReported)
+        val contributionsOnlyRelatedToReport = contributionsNotLinkedToApplicationForm
+            .toContributions(previouslyReported = previouslyReported)
+        val contributionsReportedPreviouslyButRemovedFromProject = removedContributionUuids
+            .toContributions(contributionsAll)
 
         return buildList {
-            addAll(partnerContributionsFromAf)
-            addAll(previouslyReportedRemovedFromAF)
-            addAll(contributionsNotLinkedToApplicationFormT)
+            addAll(contributionsExistingOnProject)
+            addAll(contributionsOnlyRelatedToReport)
+            addAll(contributionsReportedPreviouslyButRemovedFromProject)
         }
     }
 
     private fun ProjectPartnerReportEntityContribution.toModel() = Pair(sourceOfContribution, legalStatus)
 
-    private fun List<ProjectPartnerReportEntityContribution>.previouslyReportedRemovedFromAF(
-        contributionIdsFromAF: List<Long>,
+    private fun List<ProjectContribution>.toContributions(
         idToUuid: Map<Long, UUID>,
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>
-    ): List<CreateProjectPartnerReportContribution> =
-        this.filter { it.idFromApplicationForm !in contributionIdsFromAF}.distinctBy { it.idFromApplicationForm }
-            .map {
-                 idToUuid[it.idFromApplicationForm]!!.let { uuid ->
-                    CreateProjectPartnerReportContribution(
-                        sourceOfContribution = it.sourceOfContribution,
-                        legalStatus = it.legalStatus,
-                        idFromApplicationForm = it.idFromApplicationForm,
-                        historyIdentifier = uuid,
-                        createdInThisReport = false,
-                        amount = ZERO,
-                        previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
-                        currentlyReported = ZERO,
-                    )
-            }
-        }
-
-
-    private fun List<ProjectContribution>.fromApplicationForm(
-        idToUuid: Map<Long, UUID>,
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
-    ) = filter { it.id != null }.map {
-        (idToUuid[it.id] ?: UUID.randomUUID()).let { uuid ->
-            CreateProjectPartnerReportContribution(
-                sourceOfContribution = it.name,
-                legalStatus = it.status?.name?.let { ProjectPartnerContributionStatus.valueOf(it) },
-                idFromApplicationForm = it.id,
-                historyIdentifier = uuid,
-                createdInThisReport = false,
-                amount = it.amount ?: ZERO,
-                previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
-                currentlyReported = ZERO,
-            )
-        }
+        previouslyReported: Map<UUID, BigDecimal>,
+    ) = map {
+        val uuid = idToUuid[it.id] ?: UUID.randomUUID()
+        return@map CreateProjectPartnerReportContribution(
+            sourceOfContribution = it.name,
+            legalStatus = it.status?.name?.let { ProjectPartnerContributionStatus.valueOf(it) },
+            idFromApplicationForm = it.id,
+            historyIdentifier = uuid,
+            createdInThisReport = false,
+            amount = it.amount ?: ZERO,
+            previouslyReported = previouslyReported[uuid] ?: ZERO,
+            currentlyReported = ZERO,
+        )
     }
 
-    private fun Map<UUID, Pair<String?, ProjectPartnerContributionStatus?>>.accumulatePreviousContributions(
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
+    private fun Map<UUID, Pair<String?, ProjectPartnerContributionStatus?>>.toContributions(
+        previouslyReported: Map<UUID, BigDecimal>,
     ) = map { (uuid, formData) ->
         CreateProjectPartnerReportContribution(
             sourceOfContribution = formData.first,
@@ -271,9 +249,29 @@ class CreateProjectPartnerReportBudget(
             historyIdentifier = uuid,
             createdInThisReport = false,
             amount = ZERO,
-            previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
+            previouslyReported = previouslyReported[uuid] ?: ZERO,
             currentlyReported = ZERO,
         )
+    }
+
+    private fun List<UUID>.toContributions(
+        allExistingContributions: Map<UUID, MutableList<ProjectPartnerReportEntityContribution>>,
+    ): List<CreateProjectPartnerReportContribution> {
+        val previouslyReported = allExistingContributions.mapValues { it.value.sumOf { it.currentlyReported } }
+
+        return map {
+            val representative = allExistingContributions[it]!!.first()
+            CreateProjectPartnerReportContribution(
+                sourceOfContribution = representative.sourceOfContribution,
+                legalStatus = representative.legalStatus,
+                idFromApplicationForm = representative.idFromApplicationForm,
+                historyIdentifier = it,
+                createdInThisReport = false,
+                amount = ZERO,
+                previouslyReported = previouslyReported[it] ?: ZERO,
+                currentlyReported = ZERO,
+            )
+        }
     }
 
     private fun List<PartnerReportInvestmentSummary>.toPartnerReportInvestments(

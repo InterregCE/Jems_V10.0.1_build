@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.toModelData
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.isZero
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -56,7 +57,6 @@ class UpdateProjectPartnerReportContribution(
             removed = toBeDeletedIds.size,
             added = data.toBeCreated.size,
         )
-        validateNoUpdateForRemovedFromAF(data.toBeUpdated, existingContributions)
 
         val existingById = existingContributions.associateBy { it.id }.filterKeys { !toBeDeletedIds.contains(it) }
 
@@ -119,22 +119,11 @@ class UpdateProjectPartnerReportContribution(
         with(existingById[new.id]!!) {
             UpdateProjectPartnerReportContributionExisting(
                 id = new.id,
-                currentlyReported = new.currentlyReported,
+                currentlyReported = if (idFromApplicationForm != null && amount.isZero()) BigDecimal.ZERO else new.currentlyReported,
                 sourceOfContribution = if (createdInThisReport) new.sourceOfContribution else this.sourceOfContribution,
                 legalStatus = if (createdInThisReport) new.legalStatus else this.legalStatus,
             )
         }
     }
 
-    private fun validateNoUpdateForRemovedFromAF(
-        toBeUpdated: Set<UpdateProjectPartnerReportContributionExisting>,
-        existingContributions: List<ProjectPartnerReportEntityContribution>
-    ) {
-        val previouslyReportedRemovedFromAF = existingContributions
-                .filter { it.idFromApplicationForm != null  && it.amount == BigDecimal.ZERO.setScale(2) }
-                .map { it.id }
-         if (toBeUpdated.any { it.id in previouslyReportedRemovedFromAF && it.currentlyReported > BigDecimal.ZERO} ) {
-             throw ContributionRemovedFromAFException()
-         }
-    }
 }

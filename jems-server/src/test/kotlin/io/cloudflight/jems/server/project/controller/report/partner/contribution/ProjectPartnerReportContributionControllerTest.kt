@@ -45,6 +45,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
 
     private val dummyContribution = ProjectPartnerReportContribution(
         id = 265,
+        removedInAf = false,
         sourceOfContribution = "source text",
         legalStatus = ProjectPartnerContributionStatus.Public,
         createdInThisReport = true,
@@ -86,6 +87,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
 
     private val expectedContribution = ProjectPartnerReportContributionDTO(
         id = 265,
+        removedInAf = false,
         sourceOfContribution = "source text",
         legalStatus = ProjectPartnerContributionStatusDTO.Public,
         createdInThisReport = true,
