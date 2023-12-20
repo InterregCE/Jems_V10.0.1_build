@@ -181,6 +181,14 @@ fun checklistCreated(context: Any, checklist: ProgrammeChecklistDetail): AuditCa
         )
     )
 
+fun checklistUpdated(context: Any, checklist: ProgrammeChecklistDetail, oldName: String): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CHECKLIST_IS_CHANGED)
+          .description("Checklist [${checklist.id}], type [${checklist.type}], name [${oldName}] changed its name to [${checklist.name}]")
+          .build()
+    )
+
 fun checklistDeleted(context: Any, checklist: ProgrammeChecklistDetail): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,

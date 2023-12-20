@@ -12,6 +12,7 @@ export class ProgrammeChecklistDetailPageStore {
 
   checklist$: Observable<ProgrammeChecklistDetailDTO>;
   isEditable$ = new BehaviorSubject<boolean>(true);
+  isNameEditable$ = new BehaviorSubject<boolean>(true);
 
   private savedChecklist$ = new Subject<ProgrammeChecklistDetailDTO>();
 
@@ -50,6 +51,7 @@ export class ProgrammeChecklistDetailPageStore {
         tap(checklist => Log.info('Fetched checklist', this, checklist)),
         withLatestFrom(this.programmeEditableStateStore.hasEditPermission$),
         tap(([checklist, hasEditPermission]) => this.isEditable$.next(hasEditPermission && !checklist.locked)),
+        tap(([_, hasEditPermission]) => this.isNameEditable$.next(hasEditPermission)),
         map(([checklist]) => checklist)
       );
 

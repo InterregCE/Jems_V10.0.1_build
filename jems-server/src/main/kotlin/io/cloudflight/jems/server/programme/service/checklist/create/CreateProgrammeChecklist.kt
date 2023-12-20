@@ -29,7 +29,7 @@ class CreateProgrammeChecklist(
         checklistTemplateValidator.validateNewChecklist(programmeChecklist)
         if (persistence.countAll().toInt() >= MAX_NUMBER_OF_CHECKLIST)
             throw MaxAmountOfProgrammeChecklistReached(maxAmount = MAX_NUMBER_OF_CHECKLIST)
-        return persistence.createOrUpdate(programmeChecklist).also {
+        return persistence.saveChecklist(programmeChecklist).also {
             auditPublisher.publishEvent(
                 checklistCreated(
                     context = this,

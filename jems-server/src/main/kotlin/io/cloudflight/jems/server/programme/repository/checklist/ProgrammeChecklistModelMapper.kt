@@ -91,6 +91,14 @@ fun ProgrammeChecklistComponent.toEntity(): ProgrammeChecklistComponentEntity =
         metadata = metadata.toJson()
     )
 
+fun ProgrammeChecklistComponent.toEntity(checklist: ProgrammeChecklistEntity): ProgrammeChecklistComponentEntity =
+    ProgrammeChecklistComponentEntity(
+        id = 0L,
+        type = type,
+        positionOnTable = position,
+        metadata = metadata.toJson(),
+        checklist = checklist
+    )
 
 private fun ProgrammeChecklistEntity.assignComponents() =
     this.components?.forEach { it.checklist = this }

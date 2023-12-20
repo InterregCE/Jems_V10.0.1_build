@@ -5,8 +5,10 @@ import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistE
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgrammeChecklistDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import io.cloudflight.jems.server.programme.service.checklist.model.toJson
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -27,8 +29,31 @@ class ProgrammeChecklistPersistenceProvider(
     }
 
     @Transactional
-    override fun createOrUpdate(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
+    override fun saveChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
         return repository.save(checklist.toEntity()).toDetailModel()
+    }
+
+    @Transactional
+    override fun updateChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
+        val checklistEntity = getProgrammeChecklistOrThrow(checklist.id!!).apply {
+            name = checklist.name
+            minScore = checklist.minScore
+            maxScore = checklist.maxScore
+            allowsDecimalScore = checklist.allowsDecimalScore
+        }
+        val toCreate = checklist.components?.filter { it.isNew() } ?: emptyList()
+        val byId = checklist.components?.filter { !it.isNew() }?.associateBy { it.id } ?: emptyMap()
+        val toDeleteIds = checklistEntity.components?.mapTo(HashSet()) { it.id }?.minus(byId.keys) ?: emptySet()
+
+        checklistEntity.components?.addAll(toCreate.map { it.toEntity(checklistEntity) })
+        checklistEntity.components?.removeAll { toDeleteIds.contains(it.id) }
+        checklistEntity.components?.filter { it.id in byId.keys }?.associateWith { byId[it.id]!! }?.forEach { (old, new) ->
+            old.type = new.type
+            old.positionOnTable = new.position
+            old.metadata = new.metadata?.toJson()
+        }
+
+        return checklistEntity.toDetailModel()
     }
 
     @Transactional
@@ -48,4 +73,8 @@ class ProgrammeChecklistPersistenceProvider(
 
     private fun getProgrammeChecklistOrThrow(id: Long): ProgrammeChecklistEntity =
         repository.findById(id).orElseThrow { GetProgrammeChecklistDetailNotFoundException() }
+
+    private fun ProgrammeChecklistComponent.isNew(): Boolean {
+        return this.id == null || this.id == 0L
+    }
 }

@@ -135,10 +135,10 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
     }
 
     @Test
-    fun createOrUpdate() {
+    fun saveChecklist() {
         val checklistSlot = slot<ProgrammeChecklistEntity>()
         every { repository.save(capture(checklistSlot)) } returnsArgument 0
-        assertThat(persistence.createOrUpdate(checkLisDetail))
+        assertThat(persistence.saveChecklist(checkLisDetail))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
     }
