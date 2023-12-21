@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.isZero
 import java.math.BigDecimal
 
 private val emptySumUp = ProjectPartnerReportContributionRow(
@@ -33,6 +34,7 @@ private fun List<ProjectPartnerReportEntityContribution>.toCalculatedModel(): Li
                 currentlyReported = it.currentlyReported,
                 totalReportedSoFar = it.previouslyReported.plus(it.currentlyReported),
             ),
+            removedInAf = it.idFromApplicationForm != null && it.amount.isZero(),
             attachment = it.attachment,
         )
     }

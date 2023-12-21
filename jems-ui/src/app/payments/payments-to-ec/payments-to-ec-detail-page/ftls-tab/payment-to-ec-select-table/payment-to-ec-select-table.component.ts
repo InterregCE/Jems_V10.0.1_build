@@ -8,7 +8,7 @@ import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
 import {
   AdvancePaymentsDetailPageConstants
-} from "../../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants";
+} from '../../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
 
 @Component({
   selector: 'jems-payment-to-ec-select-table',

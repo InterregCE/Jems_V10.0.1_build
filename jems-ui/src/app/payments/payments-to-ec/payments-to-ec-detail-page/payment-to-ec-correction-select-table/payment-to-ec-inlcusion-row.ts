@@ -1,4 +1,4 @@
-import {PaymentToEcCorrectionLinkingDTO} from "@cat/api";
+import {PaymentToEcCorrectionLinkingDTO} from '@cat/api';
 
 export interface PaymentToEcInclusionRow {
   correctionId: number;

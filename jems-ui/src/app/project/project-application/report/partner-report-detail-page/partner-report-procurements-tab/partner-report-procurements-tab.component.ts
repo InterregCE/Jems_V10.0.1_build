@@ -17,7 +17,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Alert} from '@common/components/forms/alert';
-import {APIError} from "@common/models/APIError";
+import {APIError} from '@common/models/APIError';
 
 @UntilDestroy()
 @Component({

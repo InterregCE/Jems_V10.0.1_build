@@ -148,6 +148,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution1 = ProjectPartnerReportContribution(
             id = 45L,
+            removedInAf = false,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             createdInThisReport = false,
@@ -162,6 +163,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution2 = ProjectPartnerReportContribution(
             id = 46L,
+            removedInAf = false,
             sourceOfContribution = "to be deleted but cannot be because created sooner",
             legalStatus = ProjectPartnerContributionStatus.Public,
             createdInThisReport = false,
@@ -176,6 +178,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution3 = ProjectPartnerReportContribution(
             id = 0L, // created
+            removedInAf = false,
             sourceOfContribution = "source private created now",
             legalStatus = ProjectPartnerContributionStatus.Private,
             createdInThisReport = true,
@@ -190,6 +193,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution4 = ProjectPartnerReportContribution(
             id = 48L,
+            removedInAf = false,
             sourceOfContribution = "this value has been updated",
             legalStatus = ProjectPartnerContributionStatus.Private,
             createdInThisReport = true,

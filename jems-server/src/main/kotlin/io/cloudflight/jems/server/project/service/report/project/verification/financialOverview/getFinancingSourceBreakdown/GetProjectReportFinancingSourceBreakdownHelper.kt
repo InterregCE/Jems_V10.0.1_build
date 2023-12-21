@@ -248,4 +248,4 @@ private fun Pair<ProgrammeFund, BigDecimal>.toZeroSplitLine() = FinancingSourceB
     total = BigDecimal.ZERO,
 )
 
-private fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
+fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

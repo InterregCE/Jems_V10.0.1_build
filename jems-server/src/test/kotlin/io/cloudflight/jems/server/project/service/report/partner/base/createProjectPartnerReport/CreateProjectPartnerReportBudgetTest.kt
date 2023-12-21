@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -51,9 +52,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
@@ -61,22 +63,24 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.util.UUID
 
 internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
-/*
+
     private val HISTORY_CONTRIBUTION_UUID_1 = UUID.randomUUID()
     private val HISTORY_CONTRIBUTION_UUID_2 = UUID.randomUUID()
     private val HISTORY_CONTRIBUTION_UUID_3 = UUID.randomUUID()
+    private val SUBMITTED_PROJECT_REPORT_ID = 8857L
 
     private val contribPartner = ProjectPartnerContribution(
         id = 100L,
@@ -104,21 +108,21 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private val contribPartnerSpf = ProjectPartnerContributionSpf(
         id = 110L,
-        name = "A",
+        name = "G",
         status = null,
         amount = BigDecimal.ONE,
     )
 
     private val contribNonPartner1Spf = ProjectPartnerContributionSpf(
         id = null,
-        name = "B",
+        name = "H",
         status = null,
         amount = BigDecimal.ONE,
     )
 
     private val contribNonPartner2Spf = ProjectPartnerContributionSpf(
         id = 310L,
-        name = "C - this will be merged with contribution id=3",
+        name = "I",
         status = ProjectPartnerContributionStatus.AutomaticPublic,
         amount = BigDecimal.ONE,
     )
@@ -158,14 +162,14 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private val previousContributions = listOf(
         ProjectPartnerReportEntityContribution(
             id = 1L,
-            sourceOfContribution = "old source, should be ignored and taken from AF",
+            sourceOfContribution = "old source, should be not forgotten",
             legalStatus = ProjectPartnerContributionStatus.Public, // should also be ignored
             idFromApplicationForm = 200L,
             historyIdentifier = HISTORY_CONTRIBUTION_UUID_1,
             createdInThisReport = false,
             amount = BigDecimal.ZERO, // should be ignored
             previouslyReported = BigDecimal.ZERO,
-            currentlyReported = BigDecimal.ONE,
+            currentlyReported = BigDecimal.valueOf(444L),
             attachment = JemsFileMetadata(780L, "this_is_ignored", mockk()),
         ),
         ProjectPartnerReportEntityContribution(
@@ -339,6 +343,17 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     )
 
     private val expectedContribution2 = CreateProjectPartnerReportContribution(
+        sourceOfContribution = "B",
+        legalStatus = null,
+        idFromApplicationForm = null,
+        historyIdentifier = UUID.randomUUID(),
+        createdInThisReport = false,
+        amount = BigDecimal.ONE,
+        previouslyReported = BigDecimal.ZERO,
+        currentlyReported = BigDecimal.ZERO,
+    )
+
+    private val expectedContribution3 = CreateProjectPartnerReportContribution(
         sourceOfContribution = "C - this will be merged with contribution id=3",
         legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
         idFromApplicationForm = 300,
@@ -349,7 +364,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         currentlyReported = BigDecimal.ZERO,
     )
 
-    private val expectedContribution3 = CreateProjectPartnerReportContribution(
+    private val expectedContribution4 = CreateProjectPartnerReportContribution(
         sourceOfContribution = "this has been added inside reporting (not linked to AF)",
         legalStatus = ProjectPartnerContributionStatus.Private,
         idFromApplicationForm = null,
@@ -357,6 +372,17 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         createdInThisReport = false,
         amount = BigDecimal.ZERO,
         previouslyReported = BigDecimal.ONE,
+        currentlyReported = BigDecimal.ZERO,
+    )
+
+    private val expectedContribution5 = CreateProjectPartnerReportContribution(
+        sourceOfContribution = "old source, should be not forgotten",
+        legalStatus = ProjectPartnerContributionStatus.Public,
+        idFromApplicationForm = 200L,
+        historyIdentifier = HISTORY_CONTRIBUTION_UUID_1,
+        createdInThisReport = false,
+        amount = BigDecimal.ZERO,
+        previouslyReported = BigDecimal.valueOf(444L),
         currentlyReported = BigDecimal.ZERO,
     )
 
@@ -492,8 +518,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         other = BigDecimal.valueOf(36),
         lumpSum = BigDecimal.valueOf(8763, 2), /* +50.63 from ready FT lump sum */
         unitCost = BigDecimal.valueOf(38),
-        spfCost = BigDecimal.valueOf(385L, 1),
-        sum = BigDecimal.valueOf(8963, 2), /* +50.63 from ready FT lump sum */
+        spfCost = BigDecimal.valueOf(535L, 1), /* +15 from SPF */
+        sum = BigDecimal.valueOf(10463, 2), /* +50.63 from ready FT lump sum + 15 from SPF */
     )
 
     private val expectedPreviousParked = BudgetCostsCalculationResultFull(
@@ -514,24 +540,24 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         fundsSorted = listOf(
             PreviouslyReportedFund(
                 fund.id, percentage = BigDecimal.valueOf(30), percentageSpf = BigDecimal.valueOf(42),
-                total = BigDecimal.valueOf(792, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
-                previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(1719, 2),
+                total = BigDecimal.valueOf(792, 2), previouslyReported = BigDecimal.valueOf(3209, 2),
+                previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(3219, 2),
                 previouslyReportedParked = BigDecimal.valueOf(14),
                 previouslyReportedSpf = BigDecimal.valueOf(15),
                 disabled = false,
             ),
             PreviouslyReportedFund(
                 -1L, percentage = BigDecimal.ZERO, percentageSpf = BigDecimal.ZERO,
-                total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN,
-                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.TEN,
+                total = BigDecimal.ZERO, previouslyReported = BigDecimal.valueOf(21L),
+                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(21L),
                 previouslyReportedParked = BigDecimal.valueOf(10),
                 previouslyReportedSpf = BigDecimal.valueOf(11),
                 disabled = true,
             ),
             PreviouslyReportedFund(
                 null, percentage = BigDecimal.valueOf(70), percentageSpf = BigDecimal.valueOf(58),
-                total = BigDecimal.valueOf(1108, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
-                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(3233, 2),
+                total = BigDecimal.valueOf(1108, 2), previouslyReported = BigDecimal.valueOf(5823, 2),
+                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(5833, 2),
                 previouslyReportedParked = BigDecimal.valueOf(25),
                 previouslyReportedSpf = BigDecimal.valueOf(26),
                 disabled = false,
@@ -542,11 +568,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         totalAutoPublic = BigDecimal.valueOf(2),
         totalPrivate = BigDecimal.valueOf(0),
         totalSum = BigDecimal.valueOf(19),
-        previouslyReportedPartner = BigDecimal.valueOf(4931L, 2),
-        previouslyReportedPublic = BigDecimal.valueOf(933L, 2),
-        previouslyReportedAutoPublic = BigDecimal.valueOf(1333L, 2),
-        previouslyReportedPrivate = BigDecimal.valueOf(1633L, 2),
-        previouslyReportedSum = BigDecimal.valueOf(5563L, 2),
+        previouslyReportedPartner = BigDecimal.valueOf(8831L, 2),
+        previouslyReportedPublic = BigDecimal.valueOf(2133L, 2),
+        previouslyReportedAutoPublic = BigDecimal.valueOf(2633L, 2),
+        previouslyReportedPrivate = BigDecimal.valueOf(3033L, 2),
+        previouslyReportedSum = BigDecimal.valueOf(7063L, 2),
         previouslyReportedParkedPartner = BigDecimal.valueOf(9),
         previouslyReportedParkedPublic = BigDecimal.valueOf(2),
         previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
@@ -556,12 +582,12 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         previouslyReportedSpfPublic = BigDecimal.valueOf(12),
         previouslyReportedSpfAutoPublic = BigDecimal.valueOf(13),
         previouslyReportedSpfPrivate = BigDecimal.valueOf(14),
-        previouslyReportedSpfSum = BigDecimal.valueOf(50),
-        previouslyValidatedPartner = BigDecimal.valueOf(4941L, 2),
-        previouslyValidatedPublic = BigDecimal.valueOf(943L, 2),
-        previouslyValidatedAutoPublic = BigDecimal.valueOf(1343L, 2),
-        previouslyValidatedPrivate = BigDecimal.valueOf(1643L, 2),
-        previouslyValidatedSum = BigDecimal.valueOf(5573L, 2),
+        previouslyReportedSpfSum = BigDecimal.valueOf(15),
+        previouslyValidatedPartner = BigDecimal.valueOf(8841L, 2),
+        previouslyValidatedPublic = BigDecimal.valueOf(2143L, 2),
+        previouslyValidatedAutoPublic = BigDecimal.valueOf(2643L, 2),
+        previouslyValidatedPrivate = BigDecimal.valueOf(3043L, 2),
+        previouslyValidatedSum = BigDecimal.valueOf(7073L, 2),
     )
 
     private val zeros = BudgetCostsCalculationResultFull(
@@ -597,21 +623,6 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { installment.isPaymentConfirmed } returns true
         return installment
     }
-
-    private val investmentSummaries = listOf(
-        InvestmentSummary(
-            id = 1L,
-            investmentNumber = 1,
-            workPackageNumber = 1,
-            deactivated = false,
-        ),
-        InvestmentSummary(
-            id = 2L,
-            investmentNumber = 2,
-            workPackageNumber = 1,
-            deactivated = false,
-        )
-    )
 
      private val expectedValidatedLumpSums = mapOf(Pair(14, BigDecimal.valueOf(5)), Pair(15, BigDecimal.valueOf(6)), Pair(16, BigDecimal.valueOf(10)))
      private val expectedValidatedUnitCost = mapOf(Pair(6L, BigDecimal.TEN))
@@ -651,16 +662,10 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     lateinit var reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence
 
     @MockK
-    lateinit var reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
-
-    @MockK
-    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
-
-    @MockK
-    lateinit var projectWorkPackagePersistence: WorkPackagePersistence
-
-    @MockK
     lateinit var reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence
+
+    @MockK
+    lateinit var reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
 
     @MockK
     private lateinit var reportProjectPersistence: ProjectReportPersistence
@@ -671,6 +676,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
 
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(reportProjectSpfClaimPersistence)
+    }
+
     @Test
     fun createReportBudget() {
         val partnerId = 76L
@@ -678,14 +688,6 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val version = "v4.2"
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
-
-        every {
-            projectWorkPackagePersistence.getProjectInvestmentSummaries(
-                projectId,
-                version
-            )
-        } returns investmentSummaries
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L) } returns emptyList()
 
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing, investments)
 
@@ -741,19 +743,29 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         assertThat(result.previouslyReportedCoFinancing).isEqualTo(expectedPreviouslyReportedCoFinancing)
 
-        assertThat(result.contributions.contributions).hasSize(3)
+        assertThat(result.contributions.contributions).hasSize(5)
         // this we cannot mock
-        val newUuid = result.contributions.contributions[0].historyIdentifier
-        assertThat(result.contributions.contributions[0]).isEqualTo(expectedContribution1.copy(historyIdentifier = newUuid))
-        assertThat(result.contributions.contributions[1]).isEqualTo(expectedContribution2)
+        val newUuid1 = result.contributions.contributions[0].historyIdentifier
+        val newUuid2 = result.contributions.contributions[1].historyIdentifier
+        assertThat(result.contributions.contributions[0]).isEqualTo(expectedContribution1.copy(historyIdentifier = newUuid1))
+        assertThat(result.contributions.contributions[1]).isEqualTo(expectedContribution2.copy(historyIdentifier = newUuid2))
         assertThat(result.contributions.contributions[2]).isEqualTo(expectedContribution3)
+        assertThat(result.contributions.contributions[3]).isEqualTo(expectedContribution4)
+        assertThat(result.contributions.contributions[4]).isEqualTo(expectedContribution5)
 
-        assertThat(result.contributions.contributionsSpf).hasSize(2)
-        val newUuidSpf = result.contributions.contributionsSpf[0].historyIdentifier
-        assertThat(result.contributions.contributionsSpf[0]).isEqualTo(expectedContribution1.copy(
-            historyIdentifier = newUuidSpf, idFromApplicationForm = 110L
+        assertThat(result.contributions.contributionsSpf).hasSize(3)
+        val newUuidSpf1 = result.contributions.contributionsSpf[0].historyIdentifier
+        val newUuidSpf2 = result.contributions.contributionsSpf[1].historyIdentifier
+        val newUuidSpf3 = result.contributions.contributionsSpf[2].historyIdentifier
+        assertThat(result.contributions.contributionsSpf[0]).isEqualTo(expectedContribution2.copy(
+            sourceOfContribution = "H", historyIdentifier = newUuidSpf1, idFromApplicationForm = null
         ))
-        assertThat(result.contributions.contributionsSpf[1].idFromApplicationForm).isEqualTo(310L)
+        assertThat(result.contributions.contributionsSpf[1]).isEqualTo(expectedContribution1.copy(
+            sourceOfContribution = "G", historyIdentifier = newUuidSpf2, idFromApplicationForm = 110L
+        ))
+        assertThat(result.contributions.contributionsSpf[2]).isEqualTo(expectedContribution3.copy(
+            sourceOfContribution = "I", historyIdentifier = newUuidSpf3, idFromApplicationForm = 310L, previouslyReported = BigDecimal.ZERO
+        ))
     }
 
     @Test
@@ -764,13 +776,16 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
 
-        every {
-            projectWorkPackagePersistence.getProjectInvestmentSummaries(
-                projectId,
-                version
-            )
-        } returns investmentSummaries
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L) } returns emptyList()
+        every { reportProjectSpfClaimPersistence.getPreviouslyReportedSpfContributions(setOf(SUBMITTED_PROJECT_REPORT_ID)) } returns
+                ReportExpenditureCoFinancingColumn(
+                    funds = emptyMap(),
+                    partnerContribution = BigDecimal.ZERO,
+                    publicContribution = BigDecimal.ZERO,
+                    automaticPublicContribution = BigDecimal.ZERO,
+                    privateContribution = BigDecimal.ZERO,
+                    sum = BigDecimal.ZERO,
+                )
+
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L, 409L), setOf(409L)) } returns ExpenditureCoFinancingPrevious(
             previous = previousReportedCoFinancing.copy(funds = emptyMap()),
             previousParked = previousReportedCoFinancing.copy(funds = emptyMap()),
@@ -790,7 +805,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         assertThat(result.previouslyReportedCoFinancing)
             .isEqualTo(
-                expectedPreviouslyReportedCoFinancing.copy(
+                PreviouslyReportedCoFinancing(
                     fundsSorted = listOf(
                         PreviouslyReportedFund(
                             fundId = -1L,
@@ -817,7 +832,35 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             disabled = true,
                         ),
                     ),
+                    totalPartner = BigDecimal.valueOf(2),
+                    totalPublic = BigDecimal.valueOf(0),
+                    totalAutoPublic = BigDecimal.valueOf(2),
+                    totalPrivate = BigDecimal.valueOf(0),
+                    totalSum = BigDecimal.valueOf(19),
+
                     previouslyReportedPartner = BigDecimal.valueOf(4931, 2),
+                    previouslyReportedPublic = BigDecimal.valueOf(933, 2),
+                    previouslyReportedAutoPublic = BigDecimal.valueOf(1333, 2),
+                    previouslyReportedPrivate = BigDecimal.valueOf(1633, 2),
+                    previouslyReportedSum = BigDecimal.valueOf(5563, 2),
+
+                    previouslyReportedParkedPartner = BigDecimal.valueOf(9),
+                    previouslyReportedParkedPublic = BigDecimal.valueOf(2),
+                    previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
+                    previouslyReportedParkedPrivate = BigDecimal.valueOf(4),
+                    previouslyReportedParkedSum = BigDecimal.valueOf(5),
+
+                    previouslyReportedSpfPartner = BigDecimal.ZERO,
+                    previouslyReportedSpfPublic = BigDecimal.ZERO,
+                    previouslyReportedSpfAutoPublic = BigDecimal.ZERO,
+                    previouslyReportedSpfPrivate = BigDecimal.ZERO,
+                    previouslyReportedSpfSum = BigDecimal.ZERO,
+
+                    previouslyValidatedPartner = BigDecimal.valueOf(4941L, 2),
+                    previouslyValidatedPublic = BigDecimal.valueOf(943L, 2),
+                    previouslyValidatedAutoPublic = BigDecimal.valueOf(1343L, 2),
+                    previouslyValidatedPrivate = BigDecimal.valueOf(1643L, 2),
+                    previouslyValidatedSum = BigDecimal.valueOf(5573L, 2),
                 )
             )
     }
@@ -900,6 +943,23 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             paymentInstallment_1(),
             paymentInstallment_2()
         )
+        // SPF
+        every { reportProjectPersistence.getSubmittedProjectReports(projectId) } returns listOf(
+            ProjectReportStatusAndType(SUBMITTED_PROJECT_REPORT_ID, ProjectReportStatus.Submitted, ContractingDeadlineType.Both)
+        )
+        every { reportProjectSpfClaimPersistence.getPreviouslyReportedSpfContributions(setOf(SUBMITTED_PROJECT_REPORT_ID)) } returns
+                ReportExpenditureCoFinancingColumn(
+                    funds = mapOf(
+                        fund.id to BigDecimal.valueOf(15L),
+                        -1L to BigDecimal.valueOf(11L),
+                        null to BigDecimal.valueOf(26L),
+                    ),
+                    partnerContribution = BigDecimal.valueOf(39),
+                    publicContribution = BigDecimal.valueOf(12),
+                    automaticPublicContribution = BigDecimal.valueOf(13),
+                    privateContribution = BigDecimal.valueOf(14),
+                    sum = BigDecimal.valueOf(15),
+                )
         // previously reported
         every { paymentPersistence.getFtlsCumulativeForPartner(partnerId) } returns previousPayments
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L, 409L), setOf(409L)) } returns previousExpenditures
@@ -914,5 +974,5 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         return partner
     }
-*/
+
 }

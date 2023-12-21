@@ -216,7 +216,7 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
         correctedPrivateContribution: correction.correctedPrivateContribution,
         comment: correction.comment,
       } as PaymentToEcInclusionRow))
-    }
+    };
   }
 
   get ecCorrections(): FormArray {

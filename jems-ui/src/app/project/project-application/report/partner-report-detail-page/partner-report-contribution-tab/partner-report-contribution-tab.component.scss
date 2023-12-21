@@ -6,3 +6,10 @@
 .hidden {
   display: none !important;
 }
+
+.mat-icon-waring {
+  color: var(--warn-color);
+  &::before {
+    content: 'warning_amber';
+  }
+}

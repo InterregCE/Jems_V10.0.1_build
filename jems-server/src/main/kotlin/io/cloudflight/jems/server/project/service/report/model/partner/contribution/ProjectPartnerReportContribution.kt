@@ -9,5 +9,6 @@ data class ProjectPartnerReportContribution(
     val legalStatus: ProjectPartnerContributionStatus?,
     val createdInThisReport: Boolean,
     val numbers: ProjectPartnerReportContributionRow,
+    val removedInAf: Boolean,
     val attachment: JemsFileMetadata?,
 )
