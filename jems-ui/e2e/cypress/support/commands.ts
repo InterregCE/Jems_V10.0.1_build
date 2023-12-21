@@ -62,7 +62,7 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
 // https://stackoverflow.com/a/63519375/4876320
 Cypress.on('uncaught:exception', (err) => {
   /* returning false here prevents Cypress from failing the test */
-  if (err.message.includes('ResizeObserver loop completed with undelivered notifications')) {
+  if (err.message.includes('ResizeObserver loop')) {
     return false
   }
 })

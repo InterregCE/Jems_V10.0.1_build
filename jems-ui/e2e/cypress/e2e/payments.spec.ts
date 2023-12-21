@@ -62,6 +62,7 @@ context('Payments tests', () => {
                 testData.projectLumpSums[3].programmeLumpSumId = lumpSumId2;
 
                 application.lumpSums = testData.projectLumpSums;
+                application.contractMonitoring.fastTrackLumpSums = testData.contractingFastTrackLumpSums;
                 cy.loginByRequest(user.applicantUser.email);
                 cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
                   cy.visit('/');
@@ -70,8 +71,6 @@ context('Payments tests', () => {
 
                   cy.loginByRequest(paymentsUser.email);
                   cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
-
-                  setReadyForPayment(true, 1);
 
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
