@@ -27,9 +27,9 @@ class ProgrammeChecklistComponentEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: ProgrammeChecklistComponentType,
+    var type: ProgrammeChecklistComponentType,
 
-    val positionOnTable: Int,
+    var positionOnTable: Int,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_checklist_id")

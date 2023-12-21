@@ -120,7 +120,10 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
     );
     this.maxTotalScore = questionsScored;
 
-    this.formService.resetEditable();
+    if(this.status) {
+      // only reset the form when it's an instance
+      this.formService.resetEditable();
+    }
   }
 
   private getInstanceForm(component: ChecklistComponentInstanceDTO): FormGroup | null {

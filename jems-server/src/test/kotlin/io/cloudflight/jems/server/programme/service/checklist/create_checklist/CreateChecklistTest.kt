@@ -76,7 +76,7 @@ internal class CreateChecklistTest : UnitTest() {
         every { persistence.countAll() } returns 1
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
-        every { persistence.createOrUpdate(checkList) } returns checkList
+        every { persistence.saveChecklist(checkList) } returns checkList
         Assertions.assertThat(createProgrammeChecklist.create(checkList)).isEqualTo(checkList)
     }
 

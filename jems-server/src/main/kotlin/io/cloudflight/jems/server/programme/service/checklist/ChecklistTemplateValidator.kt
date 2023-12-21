@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.programme.service.checklist.update.IllegalUpdateProgrammeChecklistException
 import org.springframework.stereotype.Service
 
 @Service
@@ -73,5 +74,21 @@ class ChecklistTemplateValidator(private val validator: GeneralValidatorService)
             ProgrammeChecklistComponentType.SCORE -> { }
         }
     }
+
+    fun validateAllowedChanges(existingChecklist: ProgrammeChecklistDetail, updatedChecklist: ProgrammeChecklistDetail) {
+        val notAllowedChange = listOf(
+            existingChecklist.type != updatedChecklist.type,
+            existingChecklist.minScore?.compareTo(updatedChecklist.minScore) != 0,
+            existingChecklist.maxScore?.compareTo(updatedChecklist.maxScore) != 0,
+            existingChecklist.allowsDecimalScore != updatedChecklist.allowsDecimalScore,
+            existingChecklist.components?.size != updatedChecklist.components?.size,
+            existingChecklist.components?.map { "${it.id} ${it.type}" }?.toSet() != updatedChecklist.components?.map { "${it.id} ${it.type}" }?.toSet(),
+        ).anyNotAllowed()
+        if(notAllowedChange) {
+            throw IllegalUpdateProgrammeChecklistException()
+        }
+    }
+
+    private fun List<Boolean>.anyNotAllowed() = reduce { a, b -> a || b }
 
 }

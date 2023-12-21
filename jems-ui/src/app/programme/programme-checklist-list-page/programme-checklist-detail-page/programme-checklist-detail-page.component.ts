@@ -89,16 +89,23 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
   save(): void {
     this.updateScoreValues();
     this.components.controls.forEach(
-      (component, index) => component.get('position')?.setValue(index)
+        (component, index) => component.get('position')?.setValue(index)
     );
-    this.pageStore.saveChecklist(this.form.value)
-      .pipe(
-        tap(() => this.formService.setSuccess('programme.checklists.saved.successfully')),
-        catchError(error => this.formService.setError(error))
-      )
-      .subscribe();
+    this.pageStore.saveChecklist(<ProgrammeChecklistDetailDTO>{
+      id: this.form.get('id')?.value,
+      type: this.form.get('type')?.value,
+      name: this.form.get('name')?.value,
+      minScore: this.form.get('minScore')?.value,
+      maxScore: this.form.get('maxScore')?.value,
+      allowsDecimalScore: this.form.get('allowsDecimalScore')?.value,
+      components: this.form.get('components')?.value
+    })
+        .pipe(
+            tap(() => this.formService.setSuccess('programme.checklists.saved.successfully')),
+            catchError(error => this.formService.setError(error))
+        )
+        .subscribe();
   }
-
 
   discard(checklist: ProgrammeChecklistDetailDTO): void {
     if (!checklist?.id) {
@@ -129,7 +136,7 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
   }
 
   getTableConfig(): TableConfig[] {
-    return [...this.form.enabled ? [{maxInRem: 3}] : [], {maxInRem: 15}, {}, {maxInRem: 3}];
+    return [...this.componentsEditable ? [{maxInRem: 3}] : [], {maxInRem: 15}, {}, {maxInRem: 3}];
   }
 
   get components(): FormArray {
@@ -144,11 +151,18 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
     return Object.values(this.COMPONENT_TYPE);
   }
 
+  get componentsEditable(): boolean {
+    return this.form.get('components')?.enabled ?? false
+  }
+
   private resetForm(checklist: ProgrammeChecklistDetailDTO) {
     this.form.patchValue(checklist);
     this.components.clear();
     checklist?.components?.forEach(component => this.addComponent(component));
     this.formService.resetEditable();
+    if (this.pageStore.isNameEditable$.value) {
+      this.form.get('name')?.enable();
+    }
   }
 
   private getPreviewComponents(components: ProgrammeChecklistComponentDTO[]): ChecklistComponentInstanceDTO[] {
