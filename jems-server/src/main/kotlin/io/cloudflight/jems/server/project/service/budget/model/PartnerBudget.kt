@@ -16,4 +16,6 @@ data class PartnerBudget(
     val unitCosts: BigDecimal = BigDecimal.ZERO,
     val spfCosts: BigDecimal = BigDecimal.ZERO,
     val totalCosts: BigDecimal = BigDecimal.ZERO,
-)
+) {
+    fun totalBudgetWithoutSpf() = totalCosts.minus(spfCosts)
+}

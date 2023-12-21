@@ -21,16 +21,18 @@ class GetPartnerReportFinancialData(
     @Transactional(readOnly = true)
     fun retrievePartnerReportFinancialData(reportId: Long): PartnerReportFinancialData {
         val partnerId = projectPartnerReportPersistence.getPartnerReportByIdUnsecured(reportId).partnerId
+        val costCategories = reportExpenditureCostCategoryPersistence
+            .getCostCategories(partnerId = partnerId, reportId = reportId)
 
         return PartnerReportFinancialData(
             coFinancingFromAF = reportPartnerPersistence
                 .getPartnerReportById(partnerId = partnerId, reportId = reportId).identification.coFinancing,
             contributionsFromAF = reportContributionPersistence
                 .getPartnerReportContribution(partnerId = partnerId, reportId = reportId).extractOverview(),
-            totalEligibleBudgetFromAF = reportExpenditureCoFinancingPersistence
-                .getCoFinancing(partnerId = partnerId, reportId = reportId).totalsFromAF.sum,
-            flatRatesFromAF = reportExpenditureCostCategoryPersistence
-                .getCostCategories(partnerId = partnerId, reportId = reportId).options,
+            totalEligibleBudgetFromAFWithoutSpf = reportExpenditureCoFinancingPersistence
+                .getCoFinancing(partnerId = partnerId, reportId = reportId).totalsFromAF.sum
+                .minus(costCategories.totalsFromAF.spfCost),
+            flatRatesFromAF = costCategories.options,
         )
     }
 }
