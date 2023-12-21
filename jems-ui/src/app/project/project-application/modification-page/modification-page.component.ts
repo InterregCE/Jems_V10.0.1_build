@@ -124,4 +124,16 @@ export class ModificationPageComponent {
       ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
     ].includes(currentStatus);
   }
+  isModificationOpened(currentStatus: ProjectStatusDTO.StatusEnum) {
+    return [
+      ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING,
+      ProjectStatusDTO.StatusEnum.INMODIFICATION,
+    ].includes(currentStatus);
+  }
+  isModificationSubmitted(currentStatus: ProjectStatusDTO.StatusEnum) {
+    return [
+      ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED,
+      ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+    ].includes(currentStatus);
+  }
 }
