@@ -76,13 +76,19 @@ class ChecklistTemplateValidator(private val validator: GeneralValidatorService)
     }
 
     fun validateAllowedChanges(existingChecklist: ProgrammeChecklistDetail, updatedChecklist: ProgrammeChecklistDetail) {
-        if(existingChecklist.type != updatedChecklist.type
-          || existingChecklist.minScore?.compareTo(updatedChecklist.minScore) != 0
-          || existingChecklist.maxScore?.compareTo(updatedChecklist.maxScore) != 0
-          || existingChecklist.allowsDecimalScore != updatedChecklist.allowsDecimalScore
-          || existingChecklist.components?.size != updatedChecklist.components?.size
-          || existingChecklist.components?.map { "${it.id} ${it.type}" }?.toSet() != updatedChecklist.components?.map { "${it.id} ${it.type}" }?.toSet()) {
+        val notAllowedChange = listOf(
+            existingChecklist.type != updatedChecklist.type,
+            existingChecklist.minScore?.compareTo(updatedChecklist.minScore) != 0,
+            existingChecklist.maxScore?.compareTo(updatedChecklist.maxScore) != 0,
+            existingChecklist.allowsDecimalScore != updatedChecklist.allowsDecimalScore,
+            existingChecklist.components?.size != updatedChecklist.components?.size,
+            existingChecklist.components?.map { "${it.id} ${it.type}" }?.toSet() != updatedChecklist.components?.map { "${it.id} ${it.type}" }?.toSet(),
+        ).anyNotAllowed()
+        if(notAllowedChange) {
             throw IllegalUpdateProgrammeChecklistException()
         }
     }
+
+    private fun List<Boolean>.anyNotAllowed() = reduce { a, b -> a || b }
+
 }
