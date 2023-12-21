@@ -20,12 +20,27 @@ table {
   > * {
     padding: 0.5rem;
   }
+  &.jems-multi-column-row {
+    > * {
+      flex: 0;
+    }
+  }
+
 }
 
 // payment columns
 .column-installment-number {
   min-width: 5rem;
   max-width: 5rem;
+}
+.column-installment-corrections {
+  min-width: 5rem;
+  max-width: 12rem;
+  width: auto;
+}
+.column-comment {
+  min-width: 10rem !important;
+  width: auto;
 }
 .column-partner-id {
   min-width: 4rem;
@@ -42,7 +57,6 @@ table {
 }
 .column-partner-name {
   min-width: 9rem;
-  max-width: 100%;
   width: auto;
 }
 .column-installment-authorise-checkbox, .column-installment-confirm-checkbox {

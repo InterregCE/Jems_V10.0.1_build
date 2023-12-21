@@ -69,8 +69,8 @@
                                     <mat-icon *ngIf="this.showPaymentIndicatorForIndex(index)" class="open-payment-indicator">circle</mat-icon>
                                 </span>
                         </div>
-                        <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
-                        <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-left">
+                        <div class="column-partner-name justify-start">{{partnerPayment.partnerAbbreviation}}</div>
+                        <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-start">
                             <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId +'/reporting/'+ partnerPayment.partnerId +'/reports/' + partnerPayment.partnerReportId">
                                 {{'payment.detail.table.partner.report.number.abbreviation' | translate : {number: partnerPayment.partnerReportNumber} }}
                             </a>
@@ -100,25 +100,27 @@
                             <div class="table-row">
                                 <div class="column-installment-number justify-start">{{ 'payments.detail.table.header.installment.installment.number' | translate }}</div>
                                 <div class="column-installment-amount-paid justify-end">{{ 'payments.detail.table.header.installment.amount.paid' | translate }}</div>
-                                <div class="column-installment-comment">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
+                                <div class="column-comment">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
                                 <div class="column-installment-authorise-checkbox justify-start">
-                                    {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
-                                    <jems-context-info
-                                            infoPosition="right"
-                                            infoText="{{ 'payments.detail.table.header.installment.user.saving.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
-                                    </jems-context-info>
+                                    <span>
+                                        {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
+                                        <jems-context-info
+                                                infoPosition="right"
+                                                infoText="{{ 'payments.detail.table.header.installment.user.saving.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                                        </jems-context-info>
+                                    </span>
                                 </div>
                                 <div class="column-installment-date justify-start">{{ 'payments.detail.table.header.installment.payment.date' | translate }}</div>
-
                                 <div class="column-installment-confirm-checkbox justify-start">
-                                    {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
-                                    <jems-context-info
-                                            infoPosition="right"
-                                            infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
-                                    </jems-context-info>
+                                    <span>
+                                        {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
+                                        <jems-context-info
+                                                infoPosition="right"
+                                                infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                                        </jems-context-info>
+                                    </span>
                                 </div>
-
-                                <div>
+                                <div class="column-installment-corrections justify-start">
                                     <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId + '/corrections'">
                                         {{'payments.detail.table.header.installment.corrections' | translate}}
                                     </a>
@@ -132,8 +134,8 @@
                                         *ngFor="let installment of installmentsArray(index).controls; let installmentIndex = index"
                                         [formArrayName]="constants.FORM_CONTROL_NAMES.installments">
                                     <div [formGroupName]="installmentIndex">
-                                        <div>{{installmentIndex + 1}}</div>
-                                        <div>
+                                        <div class="column-installment-number justify-start">{{installmentIndex + 1}}</div>
+                                        <div class="column-installment-amount-paid justify-end">
                                             <mat-form-field class="w-100">
                                                 <input matInput type="decimal" currencyMask
                                                        [options]="{allowNegative: true, max: constants.MAX_VALUE, align:'right'}"
@@ -141,7 +143,7 @@
                                                        aria-label="value">
                                             </mat-form-field>
                                         </div>
-                                        <div>
+                                        <div class="column-comment justify-start">
                                             <mat-form-field class="w-100">
                                                 <input matInput #comment class="text-overflow-ellipsis"
                                                        [formControlName]="constants.FORM_CONTROL_NAMES.comment"
@@ -171,7 +173,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div class="column-installment-date justif start">
                                             <mat-form-field class="w-100">
                                                 <input name="paymentDate"
                                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
@@ -200,7 +202,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div class="column-installment-corrections justify-start">
                                             <mat-form-field class="w-100">
                                                 <mat-label>{{'payments.detail.table.header.installment.corrections' | translate}}</mat-label>
                                                 <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.correction"
