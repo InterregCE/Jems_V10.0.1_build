@@ -1,4 +1,4 @@
-CREATE TABLE payment_application_to_ec_audit_export_metadata
+CREATE TABLE payment_audit_export_metadata
 (
     id                 INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     plugin_key         VARCHAR(255) NOT NULL,
@@ -60,6 +60,6 @@ ALTER TABLE file_metadata
     'CallTranslation',
     'CallTranslationArchive',
     'AuditControl',
-    'PaymentToEcAuditExport',
+    'PaymentAuditExport',
     'PaymentAuditAttachment'
     ) NOT NULL;

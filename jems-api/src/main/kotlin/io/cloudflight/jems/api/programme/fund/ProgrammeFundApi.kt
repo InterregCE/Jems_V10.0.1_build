@@ -19,10 +19,6 @@ interface ProgrammeFundApi {
     @GetMapping(ENDPOINT_API_PROGRAMME_FUND)
     fun getProgrammeFundList(): List<ProgrammeFundDTO>
 
-    @ApiOperation("Retrieve all selected programme funds")
-    @GetMapping("$ENDPOINT_API_PROGRAMME_FUND/selected")
-    fun getAvailableProgrammeFunds(): List<ProgrammeFundDTO>
-
     @ApiOperation("Specify available Funds for this programme")
     @PutMapping(ENDPOINT_API_PROGRAMME_FUND, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeFundList(@RequestBody funds: Set<ProgrammeFundDTO>): List<ProgrammeFundDTO>

@@ -28,7 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 class JemsSystemFileServiceTest : UnitTest() {
 
@@ -76,9 +76,9 @@ class JemsSystemFileServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction (type {0})")
-    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment"])
+    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment"])
     fun persistFileAndPerformAction(type: JemsFileType) {
-        val expectedBucket = if (type == JemsFileType.PaymentToEcAttachment) "payment" else "jems-translation-file-bucket"
+        val expectedBucket = if (type == JemsFileType.CallTranslation) "jems-translation-file-bucket" else "payment"
 
         every { minioStorage.saveFile(any(), any(), any(), any(), true) } returns Unit
 
@@ -124,7 +124,7 @@ class JemsSystemFileServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction wrong type (type {0})")
-    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment"], mode = EnumSource.Mode.EXCLUDE)
     fun `persistProjectFileAndPerformAction - wrong type`(type: JemsFileType) {
         val file = file(type = type)
         assertThrows<WrongFileTypeException> {

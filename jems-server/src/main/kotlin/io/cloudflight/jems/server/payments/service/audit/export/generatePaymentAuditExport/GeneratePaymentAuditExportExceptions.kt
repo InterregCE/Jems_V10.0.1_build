@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.audit.export.generatePaymentApplicationToEcAuditExport
+package io.cloudflight.jems.server.payments.service.audit.export.generatePaymentAuditExport
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableExcep
 private const val GENERATE_PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_ERROR_CODE_PREFIX = "S-GPATECAE"
 private const val GENERATE_PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_ERROR_KEY_PREFIX = "use.case.generate.payment.application.to.ec.audit.export"
 
-class GeneratePaymentApplicationToEcAuditExportException(cause: Throwable) : ApplicationException(
+class GeneratePaymentAuditExportException(cause: Throwable) : ApplicationException(
     code = GENERATE_PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$GENERATE_PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_ERROR_KEY_PREFIX.failed"),
     cause = cause

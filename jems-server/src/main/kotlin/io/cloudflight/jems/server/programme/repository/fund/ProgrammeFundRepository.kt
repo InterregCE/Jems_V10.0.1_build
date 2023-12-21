@@ -20,7 +20,4 @@ interface ProgrammeFundRepository : JpaRepository<ProgrammeFundEntity, Long> {
     )
     fun getFundsAlreadyInUse(): Iterable<Long>
 
-
-    fun getAllBySelectedTrue(): List<ProgrammeFundEntity>
-
 }

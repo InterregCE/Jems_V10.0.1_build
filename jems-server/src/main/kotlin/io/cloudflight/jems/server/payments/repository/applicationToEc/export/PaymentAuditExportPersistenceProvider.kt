@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.payments.repository.applicationToEc.export
 
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
-import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcAuditExportEntity
+import io.cloudflight.jems.server.payments.entity.PaymentAuditExportEntity
 import io.cloudflight.jems.server.payments.model.ec.export.PaymentToEcExportMetadata
-import io.cloudflight.jems.server.payments.service.audit.export.PaymentApplicationToEcAuditExportPersistence
-import io.cloudflight.jems.server.payments.service.audit.export.generatePaymentApplicationToEcAuditExport.PaymentAuditExportMetaDataNotFoundException
+import io.cloudflight.jems.server.payments.service.audit.export.PaymentAuditExportPersistence
+import io.cloudflight.jems.server.payments.service.audit.export.generatePaymentAuditExport.PaymentAuditExportMetaDataNotFoundException
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import org.springframework.data.domain.Page
@@ -15,11 +15,12 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 
 @Repository
-class PaymentApplicationToEcAuditExportPersistenceProvider(
-    private val paymentApplicationToEcAuditExportRepository: PaymentApplicationToEcAuditExportRepository,
+class PaymentAuditExportPersistenceProvider(
+    private val paymentAuditExportRepository: PaymentAuditExportRepository,
     private val minioStorage: MinioStorage,
-    private val fundRepository: ProgrammeFundRepository, private val accountingYearRepository: AccountingYearRepository
-) : PaymentApplicationToEcAuditExportPersistence {
+    private val fundRepository: ProgrammeFundRepository,
+    private val accountingYearRepository: AccountingYearRepository
+) : PaymentAuditExportPersistence {
 
     companion object {
         const val EC_PAYMENT_AUDIT_EXPORT_BUCKET = "ec-payment-audit-export"
@@ -27,12 +28,12 @@ class PaymentApplicationToEcAuditExportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun listPaymentApplicationToEcAuditExport(pageable: Pageable): Page<PaymentToEcExportMetadata> =
-        paymentApplicationToEcAuditExportRepository.findAllByOrderByRequestTimeDesc(pageable).toModel()
+        paymentAuditExportRepository.findAllByOrderByRequestTimeDesc(pageable).toModel()
 
 
     @Transactional(readOnly = true)
     override fun getById(fileId: Long): PaymentToEcExportMetadata =
-        paymentApplicationToEcAuditExportRepository.findById(fileId).get()
+        paymentAuditExportRepository.findById(fileId).get()
             .toModel()
 
     override fun getExportFile(pluginKey: String, fundType: ProgrammeFundType?, accountingYear: Short?): ByteArray =
@@ -59,8 +60,8 @@ class PaymentApplicationToEcAuditExportPersistenceProvider(
         pluginKey: String,
         fundId: Long?,
         accountingYearId: Long?
-    ): PaymentApplicationToEcAuditExportEntity =
-        paymentApplicationToEcAuditExportRepository.findByPluginKeyAndProgrammeFundIdAndAccountingYearId(
+    ): PaymentAuditExportEntity =
+        paymentAuditExportRepository.findByPluginKeyAndProgrammeFundIdAndAccountingYearId(
             pluginKey,
             fundId,
             accountingYearId
@@ -95,8 +96,8 @@ class PaymentApplicationToEcAuditExportPersistenceProvider(
         val programmeFundEntity = programmeFundId?.let { fundRepository.getById(programmeFundId) }
         val accountingYearEntity = accountingYearId?.let { accountingYearRepository.getById(accountingYearId) }
 
-        return paymentApplicationToEcAuditExportRepository.save(
-            PaymentApplicationToEcAuditExportEntity(
+        return paymentAuditExportRepository.save(
+            PaymentAuditExportEntity(
                 pluginKey = pluginKey,
                 programmeFund = programmeFundEntity,
                 accountingYear = accountingYearEntity,
@@ -107,10 +108,10 @@ class PaymentApplicationToEcAuditExportPersistenceProvider(
 
     @Transactional
     override fun deleteExportMetaData(id: Long) =
-        paymentApplicationToEcAuditExportRepository.deleteById(id)
+        paymentAuditExportRepository.deleteById(id)
 
     @Transactional(readOnly = true)
     override fun listExportMetadata(): List<PaymentToEcExportMetadata> =
-        paymentApplicationToEcAuditExportRepository.findAllByOrderByRequestTimeDesc().toModel()
+        paymentAuditExportRepository.findAllByOrderByRequestTimeDesc().toModel()
 
 }

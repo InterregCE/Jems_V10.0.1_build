@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.audit.export.generatePaymentApplicationToEcAuditExport
+package io.cloudflight.jems.server.payments.service.audit.export.generatePaymentAuditExport
 
 import io.cloudflight.jems.plugin.contract.export.PaymentApplicationToEcAuditExportPlugin
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
@@ -13,17 +13,17 @@ import org.springframework.transaction.annotation.Transactional
 
 
 @Service
-class GeneratePaymentApplicationToEcAuditExport(
+class GeneratePaymentAuditExport(
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val exportEcPaymentAuditService: GeneratePaymentAuditExportService,
     private val programmeFundPersistence: ProgrammeFundPersistence,
     private val accountingYearPersistence: AccountingYearPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-) : GeneratePaymentApplicationToEcAuditExportInteractor {
+) : GeneratePaymentAuditExportInteractor {
 
     @CanRetrievePaymentsAudit
     @Transactional
-    @ExceptionWrapper(GeneratePaymentApplicationToEcAuditExportException::class)
+    @ExceptionWrapper(GeneratePaymentAuditExportException::class)
     override fun export(pluginKey: String, programmeFundId: Long?, accountingYearId: Long?) {
         val programmeFund = programmeFundId?.let { programmeFundPersistence.getById(programmeFundId) }
         val accountingYear =  accountingYearId?.let { accountingYearPersistence.getById(accountingYearId) }

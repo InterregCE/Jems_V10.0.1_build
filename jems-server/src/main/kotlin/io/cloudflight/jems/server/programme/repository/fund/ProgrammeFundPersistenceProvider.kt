@@ -28,9 +28,4 @@ class ProgrammeFundPersistenceProvider(
     override fun getFundsAlreadyInUse(): Iterable<Long> =
         repository.getFundsAlreadyInUse()
 
-    @Transactional(readOnly = true)
-    override fun getSelectedFunds(): List<ProgrammeFund> =
-        repository.getAllBySelectedTrue().distinctBy { it.type }.map{ it.toModel()}
-
-
 }

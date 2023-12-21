@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.controller
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.ProjectSharedFolderFileApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.project.toProjectFile
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.DeleteFileFromSharedFolderInteractor
@@ -13,8 +14,6 @@ import io.cloudflight.jems.server.project.service.sharedFolderFile.upload.Upload
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -41,12 +40,6 @@ class ProjectSharedFolderFileController(
         deleteFileFromSharedFolder.delete(projectId, fileId)
 
     override fun downloadSharedFolderFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadSharedFolderFile.download(projectId, fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadSharedFolderFile.download(projectId, fileId).toResponseFile()
 }
 

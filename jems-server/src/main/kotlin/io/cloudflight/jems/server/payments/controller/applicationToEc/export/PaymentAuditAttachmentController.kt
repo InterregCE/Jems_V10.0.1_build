@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.controller.applicationToEc.export
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.payments.applicationToEc.PaymentAuditAttachmentApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.payments.service.audit.export.attachment.deletePaymentAuditAttachment.DeletePaymentAuditAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.audit.export.attachment.downloadPaymentAuditAttachment.DownloadPaymentAuditAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.audit.export.attachment.getPaymentAuditAttchament.GetPaymentAuditAttachmentInteractor
@@ -13,8 +14,6 @@ import io.cloudflight.jems.server.project.controller.report.partner.toProjectFil
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -32,13 +31,7 @@ class PaymentAuditAttachmentController(
         getPaymentAuditAttachment.list(pageable).map { it.toDto() }
 
     override fun downloadAttachment(fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadPaymentAuditAttachment.download(fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadPaymentAuditAttachment.download(fileId = fileId).toResponseFile()
 
     override fun deleteAttachment(fileId: Long) =
         deletePaymentAuditAttachment.delete(fileId)

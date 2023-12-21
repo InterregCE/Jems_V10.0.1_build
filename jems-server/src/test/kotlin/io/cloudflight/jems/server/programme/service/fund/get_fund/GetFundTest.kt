@@ -32,7 +32,7 @@ internal class GetFundTest : UnitTest() {
     lateinit var getFund: GetFund
 
     @Test
-    fun getLegalStatuses() {
+    fun getFunds() {
         every { persistence.getMax20Funds() } returns listOf(fund)
         assertThat(getFund.getFunds()).containsExactly(fund)
     }

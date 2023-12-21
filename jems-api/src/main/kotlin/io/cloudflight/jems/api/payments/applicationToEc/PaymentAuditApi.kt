@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 
-@Api("Payment to EC audit")
-interface PaymentToEcAuditApi {
+@Api("Payment Audit")
+interface PaymentAuditApi {
+
     companion object {
-        private const val ENDPOINT_API_PAYMENT_TO_EC_AUDIT = "/api/paymentApplicationsToEc/audit"
+        private const val ENDPOINT_API_PAYMENT_TO_EC_AUDIT = "${PaymentApplicationToEcApi.ENDPOINT_API_EC_PAYMENTS}/audit"
     }
+
     @ApiOperation("Trigger payment to ec audit exportation")
     @PostMapping("${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/export")
     fun export(
@@ -29,10 +31,7 @@ interface PaymentToEcAuditApi {
     fun list() : List<PaymentToEcExportMetadataDTO>
 
     @ApiOperation("Download payment to ec audit export")
-    @GetMapping(
-        "${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/download/{fileId}",
-        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
-    )
+    @GetMapping("${ENDPOINT_API_PAYMENT_TO_EC_AUDIT}/download/{fileId}", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     fun download(
         @PathVariable fileId: Long,
         @RequestParam pluginKey: String

@@ -10,8 +10,8 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
-@Entity(name = "payment_application_to_ec_audit_export_metadata")
-class PaymentApplicationToEcAuditExportEntity (
+@Entity(name = "payment_audit_export_metadata")
+class PaymentAuditExportEntity (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
