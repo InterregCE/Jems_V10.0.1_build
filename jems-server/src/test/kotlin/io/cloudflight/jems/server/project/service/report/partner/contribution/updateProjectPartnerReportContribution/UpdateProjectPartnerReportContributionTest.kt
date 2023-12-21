@@ -107,6 +107,19 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             attachment = file(48L),
         )
 
+        private val notAllowedToBeReported = ProjectPartnerReportEntityContribution(
+            id = 49L,
+            sourceOfContribution = "this value needs to be zero because it is removed from AF",
+            legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
+            idFromApplicationForm = 333L,
+            historyIdentifier = UUID.randomUUID(),
+            createdInThisReport = false,
+            amount = BigDecimal.ZERO,
+            previouslyReported = BigDecimal.valueOf(4L),
+            currentlyReported = BigDecimal.valueOf(9778L),
+            attachment = null,
+        )
+
         private val newContribution = ProjectPartnerReportEntityContribution(
             id = 45L,
             sourceOfContribution = "source public 1",
@@ -144,6 +157,10 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentlyReported = BigDecimal.ONE,
             attachment = file(48L),
+        )
+
+        private val notAllowedToBeReportedUpdated = notAllowedToBeReported.copy(
+            currentlyReported = BigDecimal.ZERO,
         )
 
         private val expectedContribution1 = ProjectPartnerReportContribution(
@@ -206,6 +223,21 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             attachment = file(48L),
         )
 
+        private val expectedContribution5 = ProjectPartnerReportContribution(
+            id = 49L,
+            removedInAf = true,
+            sourceOfContribution = "this value needs to be zero because it is removed from AF",
+            legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
+            createdInThisReport = false,
+            numbers = ProjectPartnerReportContributionRow(
+                amount = BigDecimal.ZERO,
+                previouslyReported = BigDecimal.valueOf(4L),
+                currentlyReported = BigDecimal.ZERO,
+                totalReportedSoFar = BigDecimal.valueOf(4L),
+            ),
+            attachment = null,
+        )
+
         private val expectedOverview = ProjectPartnerReportContributionOverview(
             public = ProjectPartnerReportContributionRow(
                 amount = 20L.toBigDecimal(),
@@ -215,9 +247,9 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             ),
             automaticPublic = ProjectPartnerReportContributionRow(
                 amount = 0L.toBigDecimal(),
-                previouslyReported = 0L.toBigDecimal(),
+                previouslyReported = 4L.toBigDecimal(),
                 currentlyReported = 0L.toBigDecimal(),
-                totalReportedSoFar = 0L.toBigDecimal(),
+                totalReportedSoFar = 4L.toBigDecimal(),
             ),
             private = ProjectPartnerReportContributionRow(
                 amount = 0L.toBigDecimal(),
@@ -227,9 +259,9 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             ),
             total = ProjectPartnerReportContributionRow(
                 amount = 20L.toBigDecimal(),
-                previouslyReported = 5L.toBigDecimal(),
+                previouslyReported = 9L.toBigDecimal(),
                 currentlyReported = 83L.toBigDecimal(),
-                totalReportedSoFar = 88L.toBigDecimal(),
+                totalReportedSoFar = 92L.toBigDecimal(),
             ),
         )
 
@@ -245,6 +277,13 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             currentlyReported = BigDecimal.ONE,
             sourceOfContribution = "this value has been updated",
             legalStatus = ProjectPartnerContributionStatus.Private,
+        )
+
+        private val toNotAllowCurrentValueChange = UpdateProjectPartnerReportContributionExisting(
+            id = 49L,
+            currentlyReported = BigDecimal.ZERO,
+            sourceOfContribution = "this value needs to be zero because it is removed from AF",
+            legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
         )
     }
 
@@ -275,8 +314,8 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
     fun update() {
 
         every { reportContributionPersistence.getPartnerReportContribution(partnerId = PARTNER_ID, reportId = 8L) } returnsMany listOf(
-            listOf(oldContribution, toBeDeletedUnsuccessfully, toBeDeleted, oldContributionFromThisReport),
-            listOf(newContribution, toBeDeletedUnsuccessfully, createdContribution, oldContributionFromThisReportUpdated),
+            listOf(oldContribution, toBeDeletedUnsuccessfully, toBeDeleted, oldContributionFromThisReport, notAllowedToBeReported),
+            listOf(newContribution, toBeDeletedUnsuccessfully, createdContribution, oldContributionFromThisReportUpdated, notAllowedToBeReportedUpdated),
         )
 
         val slotToDelete = slot<Set<Long>>()
@@ -289,7 +328,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         every { callPersistence.getCallByProjectId(PROJECT_ID) } returns mockk { every { isDirectContributionsAllowed } returns true }
 
         val changes = UpdateProjectPartnerReportContributionWrapper(
-            toBeUpdated = setOf(toUpdateModelFromAf, toUpdateModelFromPreviousReport),
+            toBeUpdated = setOf(toUpdateModelFromAf, toUpdateModelFromPreviousReport, toNotAllowCurrentValueChange),
             toBeDeletedIds = setOf(-1L /*will not fail*/, 46L /*will not be done*/, 47L /*will be done*/),
             toBeCreated = listOf(
                 UpdateProjectPartnerReportContributionCustom(
@@ -302,7 +341,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         assertThat(updateContribution.update(PARTNER_ID, reportId = 8L, changes)).isEqualTo(
             ProjectPartnerReportContributionData(
-                contributions = listOf(expectedContribution1, expectedContribution2, expectedContribution3, expectedContribution4),
+                contributions = listOf(expectedContribution1, expectedContribution2, expectedContribution3, expectedContribution4, expectedContribution5),
                 overview = expectedOverview,
             )
         )
@@ -311,7 +350,9 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
         assertThat(slotToDelete.captured).containsExactly(47L)
 
         verify(exactly = 1) { reportContributionPersistence.updateExisting(any()) }
-        assertThat(slotToUpdate.captured).containsExactly(toUpdateModelFromAf, toUpdateModelFromPreviousReport)
+        assertThat(slotToUpdate.captured).containsExactly(
+            toUpdateModelFromAf, toUpdateModelFromPreviousReport, toNotAllowCurrentValueChange
+        )
 
         verify(exactly = 1) { reportContributionPersistence.addNew(8L, any()) }
         assertThat(slotToCreate.captured).hasSize(1)

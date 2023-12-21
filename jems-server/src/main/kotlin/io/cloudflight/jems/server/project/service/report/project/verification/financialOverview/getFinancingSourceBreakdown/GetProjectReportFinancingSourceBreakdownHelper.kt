@@ -167,7 +167,7 @@ private fun PartnerReportFinancialData.splitThisValue(valueToSplit: BigDecimal) 
     toSplit = valueToSplit,
     contributions = contributionsFromAF,
     funds = coFinancingFromAF,
-    total = totalEligibleBudgetFromAF,
+    total = totalEligibleBudgetFromAFWithoutSpf,
 )
 
 private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
@@ -189,7 +189,7 @@ private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
             toSplit = totalForFund,
             contributions = reportFinancialData.contributionsFromAF,
             funds = reportFinancialData.coFinancingFromAF,
-            total = reportFinancialData.totalEligibleBudgetFromAF,
+            total = reportFinancialData.totalEligibleBudgetFromAFWithoutSpf,
         )
 
         FinancingSourceBreakdownSplitLine(

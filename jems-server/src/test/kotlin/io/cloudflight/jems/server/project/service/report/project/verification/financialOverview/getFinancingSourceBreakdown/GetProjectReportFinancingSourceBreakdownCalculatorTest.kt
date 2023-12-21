@@ -204,7 +204,7 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = 124999.96.toScaledBigDecimal(),
                 ),
             ),
-            totalEligibleBudgetFromAF = 124999.96.toScaledBigDecimal(),
+            totalEligibleBudgetFromAFWithoutSpf = 124999.96.toScaledBigDecimal(),
             flatRatesFromAF = ProjectPartnerBudgetOptions(
                 partnerId = 125L,
                 officeAndAdministrationOnStaffCostsFlatRate = 0,
