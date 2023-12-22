@@ -60,7 +60,8 @@ class CloseAuditControlCorrection(
     }
 
     private fun validateReportAndFundAreAlreadySelected(correction: AuditControlCorrectionDetail) {
-        if (correction.partnerReportId == null || correction.programmeFundId == null)
+        val invalidPartnerReportAndLumpSum = correction.partnerReportId == null && correction.lumpSumOrderNr == null
+        if (invalidPartnerReportAndLumpSum || correction.programmeFundId == null)
             throw PartnerOrReportOrFundNotSelectedException()
     }
 
