@@ -75,7 +75,7 @@ export class AuditControlCorrectionDetailComponent {
       filter(answer => !!answer),
       switchMap(() => this.auditControlCorrectionDetailPageStore.closeCorrection(projectId, auditControlId, correction.id)),
       tap(() => this.redirectToCorrectionsOverview(projectId, auditControlId)),
-      catchError(error => this.showErrorMessage(error.error$)),
+      catchError(error => this.showErrorMessage(error.error)),
       finalize(() => this.pendingAction$.next(false)),
     ).subscribe();
   }

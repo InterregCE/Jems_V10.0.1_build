@@ -85,6 +85,7 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         private fun correctionIdentification(
             status: AuditControlStatus,
             reportId: Long?,
+            lumpSumOrderNr: Int?,
             programmeFundId: Long?,
             id: Long = AUDIT_CONTROL_ID,
         ): AuditControlCorrectionDetail {
@@ -92,6 +93,7 @@ class CloseAuditControlCorrectionTest : UnitTest() {
             every { correction.status } returns status
             every { correction.auditControlId } returns id
             every { correction.partnerReportId } returns reportId
+            every { correction.lumpSumOrderNr } returns lumpSumOrderNr
             every { correction.programmeFundId } returns programmeFundId
             return correction
         }
@@ -122,7 +124,7 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     @Test
     fun closeCorrection() {
         every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
-            correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, programmeFundId = 60L, id = AUDIT_CONTROL_ID)
+            correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, lumpSumOrderNr = null, programmeFundId = 60L, id = AUDIT_CONTROL_ID)
         every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
                 projectAuditControl(AuditControlStatus.Ongoing).copy(id = AUDIT_CONTROL_ID)
         every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel
@@ -155,7 +157,7 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     @Test
     fun `closeCorrection - correction is already closed exception`() {
         every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
-                correctionIdentification(AuditControlStatus.Closed, null, null)
+                correctionIdentification(AuditControlStatus.Closed, null, null, null)
         every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
                 projectAuditControl(AuditControlStatus.Ongoing)
 
@@ -167,7 +169,7 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     @Test
     fun `closeCorrection - audit control is closed exception`() {
         every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
-                correctionIdentification(AuditControlStatus.Ongoing, null, null)
+                correctionIdentification(AuditControlStatus.Ongoing, null, null, null)
         every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
                 projectAuditControl(AuditControlStatus.Closed)
 
@@ -178,15 +180,18 @@ class CloseAuditControlCorrectionTest : UnitTest() {
 
     @ParameterizedTest
     @CsvSource(value = [
-        "true,false",
-        "false,true",
-        "false,false",
+        "true,true,false",
+        "true,false,false",
+        "false,true,false",
+        "false,false,true",
+        "false,false,false",
     ])
-    fun `closeCorrection - report and_or fund not selected yet`(reportSelected: Boolean, fundSelected: Boolean) {
+    fun `closeCorrection - (report or lumpsum) and_or fund not selected yet`(reportSelected: Boolean, lumpSumSelected: Boolean, fundSelected: Boolean) {
         val reportId = if (reportSelected) 70L else null
+        val lumpSumOrderNr = if(lumpSumSelected) 75 else null
         val fundId = if (fundSelected) 80L else null
         every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
-                correctionIdentification(AuditControlStatus.Ongoing, reportId, fundId)
+                correctionIdentification(AuditControlStatus.Ongoing, reportId, lumpSumOrderNr, fundId)
         every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
                 projectAuditControl(AuditControlStatus.Ongoing)
 
