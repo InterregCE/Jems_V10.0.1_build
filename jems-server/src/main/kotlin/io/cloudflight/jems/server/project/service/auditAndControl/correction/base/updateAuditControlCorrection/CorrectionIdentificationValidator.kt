@@ -54,14 +54,15 @@ class CorrectionIdentificationValidator(
     }
 
     private fun validatePartnerReportAndLumpSum(correctionUpdate: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
-        val validPartnerIds = availableData.map { it.partnerId }
-        val validPartnerReportIds = availableData.flatMap { it.availableReports.map { report -> report.id } }
-        if (correctionUpdate.lumpSumOrderNr != null && correctionUpdate.partnerId !in validPartnerIds) {
-            throw LumpSumAndPartnerNotValidException()
-        } else if (correctionUpdate.partnerReportId !in validPartnerReportIds) {
-            throw PartnerReportNotValidException()
+        if (correctionUpdate.lumpSumOrderNr != null) {
+            val validPartnerIds = availableData.map { it.partnerId }
+            if (correctionUpdate.partnerId !in validPartnerIds)
+                throw LumpSumAndPartnerNotValidException()
+        } else {
+            val validPartnerReportIds = availableData.flatMap { it.availableReports.map { report -> report.id } }
+            if (correctionUpdate.partnerReportId !in validPartnerReportIds)
+                throw PartnerReportNotValidException()
         }
-
     }
 
     private fun validateLinkedToInvoiceCorrectionScope(correctionUpdate: AuditControlCorrectionUpdate, correction: AuditControlCorrectionDetail) {
