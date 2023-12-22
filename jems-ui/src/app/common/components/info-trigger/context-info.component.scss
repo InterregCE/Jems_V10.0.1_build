@@ -9,10 +9,6 @@
   opacity: 0.7;
   display: inline;
 
-  mat-icon {
-    display: inline-block;
-  }
-
   &:hover {
     opacity: 1
   }
@@ -41,7 +37,7 @@
 
   &.right {
     display: inline-block;
-    width: 0;
+    width: 1.5rem;
     vertical-align: top;
     mat-icon {
       margin-top: -0.15rem;
@@ -56,4 +52,13 @@
     margin-left: -1.25em;
   }
 
+  // Used if you get line break issues on normal inline positioning e.g. in table-style flex-divs of payment details
+  &.noWidth {
+    width: 0 !important;
+    mat-icon {
+      display: inline-block !important;
+    }
+  }
+
 }
+

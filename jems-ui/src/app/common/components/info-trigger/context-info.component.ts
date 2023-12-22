@@ -21,4 +21,7 @@ export class ContextInfoComponent {
   @Input()
   infoPosition: TooltipPosition = 'after';
 
+  @Input()
+  noWidth: Boolean = false;
+
 }
