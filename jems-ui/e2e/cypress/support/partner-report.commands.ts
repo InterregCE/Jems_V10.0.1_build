@@ -12,8 +12,6 @@ declare global {
 
       submitPartnerReport(partnerId: number, reportId: number);
 
-      startControlWork(partnerId: number, reportId: number);
-
       addPublicProcurement(partnerId: number, reportId: number, procurementDetails);
 
       addBeneficialOwnerToProcurement(partnerId: number, reportId: number, procurementId: number, beneficialOwnerDetails: any);
@@ -73,13 +71,6 @@ Cypress.Commands.add('submitPartnerReport', (partnerId: number, reportId: number
     method: 'POST',
     url: `api/project/report/partner/submit/${partnerId}/${reportId}`,
   });
-});
-
-Cypress.Commands.add('startControlWork', (partnerId: number, reportId: number) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/report/partner/startControl/${partnerId}/${reportId}`,
-  })
 });
 
 Cypress.Commands.add('addPublicProcurement', (partnerId: number, reportId: number, procurementDetails) => {

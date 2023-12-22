@@ -1,3 +1,5 @@
+import institutionAssignment from '@fixtures/api/control/assignment.json';
+import {loginByRequest} from "./login.commands";
 
 declare global {
 
@@ -6,6 +8,8 @@ declare global {
       createInstitution(institution);
 
       assignInstitution(assignment);
+      
+      assignDefaultInstitution(partnerId, assigningUser?);
     }
   }
 }
@@ -26,6 +30,23 @@ Cypress.Commands.add('assignInstitution', (assignment) => {
     url: 'api/controller/institution/assign',
     body: assignment
   });
+});
+
+Cypress.Commands.add('assignDefaultInstitution', (partnerId, assigningUser?) => {
+  if (assigningUser) {
+    loginByRequest(assigningUser);
+  }
+  institutionAssignment.assignmentsToAdd[0].partnerId = partnerId;
+  cy.request({
+    method: 'POST',
+    url: 'api/controller/institution/assign',
+    body: institutionAssignment
+  });
+  if (assigningUser) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
 export {}

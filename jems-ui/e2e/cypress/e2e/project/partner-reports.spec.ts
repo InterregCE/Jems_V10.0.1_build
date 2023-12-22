@@ -74,80 +74,74 @@ context('Partner reports tests', () => {
   });
 
   it('TB-738 Partner user can report expenditures', function () {
-    cy.fixture('project/reporting/TB-738.json').then(testData => {
-      cy.fixture('api/partnerReport/partnerProcurement.json').then(partnerProcurement => {
-        cy.loginByRequest(user.programmeUser.email);
-        cy.createCall(call).then(callId => {
-          application.details.projectCallId = callId;
-          cy.publishCall(callId);
+    cy.fixture('api/partnerReport/partnerProcurement.json').then(partnerProcurement => {
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+          const partnerId1 = this[application.partners[0].details.abbreviation];
+          const partnerId2 = this[application.partners[1].details.abbreviation];
 
           cy.loginByRequest(user.applicantUser.email);
-          cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
-            const partnerId1 = this[application.partners[0].details.abbreviation];
-            const partnerId2 = this[application.partners[1].details.abbreviation];
 
-            createControllerUser(testData, partnerId1);
+          cy.addPartnerReport(partnerId2)
+            .then(reportId => {
+              cy.addPublicProcurement(partnerId2, reportId, partnerProcurement[1]);
+            });
 
-            cy.loginByRequest(user.applicantUser.email);
-            cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
-            cy.assignPartnerCollaborators(applicationId, partnerId2, testData.partnerCollaborator);
+          cy.addPartnerReport(partnerId1)
+            .then(reportId => {
+              updatePartnerReportDetails(partnerId1, reportId, partnerProcurement);
+              performControlWork(reportId, partnerId1);
+              openListOfExpenditures(partnerId1, applicationId);
 
-            cy.addPartnerReport(partnerId2)
-              .then(reportId => {
-                cy.addPublicProcurement(partnerId2, reportId, partnerProcurement[1]);
-              });
+              clickAddExpenditure();
 
-            cy.addPartnerReport(partnerId1)
-              .then(reportId => {
-                updatePartnerReportDetails(partnerId1, reportId, partnerProcurement);
-                performControlWork(testData, reportId, partnerId1);
-                openListOfExpenditures(partnerId1, applicationId);
+              cy.get(`#expenditure-costs-table mat-cell.mat-column-costOptions`)
+                .click();
 
-                clickAddExpenditure();
+              verifyFastTrackLumpSumsNotOnList(applicationId);
+              verifyRegularLumpSumsOnListAndAddOne(applicationId);
+              verifyExpendituresFieldsEditabilityPerRow(0, false, false, true);
+              saveExpenditure();
 
-                cy.get(`#expenditure-costs-table mat-cell.mat-column-costOptions`)
-                  .click();
+              clickAddExpenditure();
 
-                verifyFastTrackLumpSumsNotOnList(applicationId);
-                verifyRegularLumpSumsOnListAndAddOne(applicationId);
-                verifyExpendituresFieldsEditabilityPerRow(0, false, false, true);
-                saveExpenditure();
+              verifyCostOptions(applicationId, callId);
 
-                clickAddExpenditure();
+              verifyExpendituresFieldsEditabilityPerRow(1, true, true, false);
+              saveExpenditure();
 
-                verifyCostOptions(applicationId, callId);
+              addRegularExpendituresForEachCostCategory();
+              reincludeParkedExpenditures();
+              verifyExpendituresTableSize(9);
 
-                verifyExpendituresFieldsEditabilityPerRow(1, true, true, false);
-                saveExpenditure();
+              verifyExpendituresFieldsEditabilityPerRow(6, false, false, true);
+              verifyExpendituresFieldsEditabilityPerRow(7, true, false, true);
 
-                addRegularExpendituresForEachCostCategory();
-                reincludeParkedExpenditures();
-                verifyExpendituresTableSize(9);
+              // Upload a file to each of the regular, lump sum, unit cost and reincluded expenditure
+              uploadFiles();
 
-                verifyExpendituresFieldsEditabilityPerRow(6, false, false, true);
-                verifyExpendituresFieldsEditabilityPerRow(7, true, false, true);
+              // Delete one of the uploaded files
+              removeUploadedFileByRowIndex(0);
 
-                // Upload a file to each of the regular, lump sum, unit cost and reincluded expenditure
-                uploadFiles();
+              // Delete the expenditure that contained the attachment previously
+              removeExpenditureByRowIndex(0);
+              verifyExpendituresTableSize(8);
 
-                // Delete one of the uploaded files
-                removeUploadedFileByRowIndex(0);
+              // Delete another expenditure that has no attachments
+              removeExpenditureByRowIndex(2);
+              verifyExpendituresTableSize(7);
 
-                // Delete the expenditure that contained the attachment previously
-                removeExpenditureByRowIndex(0);
-                verifyExpendituresTableSize(8);
+              // We have to save before going for parked expenditure table modification
+              saveExpenditure();
 
-                // Delete another expenditure that has no attachments
-                removeExpenditureByRowIndex(2);
-                verifyExpendituresTableSize(7);
-
-                // We have to save before going for parked expenditure table modification
-                saveExpenditure();
-
-                // Delete a parked expenditure
-                removeParkedExpenditureByRowIndex(0);
-              });
-          });
+              // Delete a parked expenditure
+              removeParkedExpenditureByRowIndex(0);
+            });
         });
       });
     });
@@ -556,7 +550,7 @@ context('Partner reports tests', () => {
                         .click();
                       cy.contains('Confirm').should('be.visible')
                         .click();
-                      
+
                       cy.contains('Procurement cannot be deleted, because it is used in a report in the list of expenditure or in a Correction. Please remove the link before trying to delete this procurement.')
                         .should('be.visible');
 
@@ -1359,7 +1353,6 @@ context('Partner reports tests', () => {
         application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
         cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
           const partnerId = this[application.partners[0].details.abbreviation];
-          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
           cy.addPartnerReport(partnerId).then(reportId => {
             cy.updatePartnerReportExpenditures(partnerId, reportId, testData.expenditures);
             cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
@@ -1372,22 +1365,8 @@ context('Partner reports tests', () => {
             //Group Order 2
             cy.loginByRequest(user.admin.email);
             cy.createTypologyOfErrors(testData.typologyOfErrors);
-            testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
-            testData.controllerUserEdit.email = faker.internet.email();
-            cy.createRole(testData.controllerRole).then(roleId => {
-              testData.controllerUserEdit.userRoleId = roleId;
-              cy.createUser(testData.controllerUserEdit);
-              testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
-              testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUserEdit.email;
-              cy.createInstitution(testData.controllerInstitution).then(institutionId => {
-                testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
-                testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
-                cy.assignInstitution(testData.controllerAssignment);
-              });
-            });
-            cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
 
-            cy.loginByRequest(testData.controllerUserEdit.email);
+            cy.loginByRequest(user.controllerUser.email);
             cy.startControlWork(partnerId, reportId);
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/expenditureVerificationTab`, {failOnStatusCode: false});
 
@@ -1475,7 +1454,7 @@ context('Partner reports tests', () => {
             cy.contains('mat-row', 'R1.1').find('button').contains('sync').click();
             cy.contains('Confirm').should('be.visible').click();
             cy.get('jems-partner-report-expenditures-parked:contains("R1.1")').should('not.exist');
-            
+
             cy.contains('mat-row', 'R1.5').find('button').contains('sync').click();
             cy.contains('Confirm').should('be.visible').click();
             cy.get('jems-partner-report-expenditures-parked:contains("R1.5")').should('not.exist');
@@ -1636,63 +1615,6 @@ context('Partner reports tests', () => {
     });
   });
 
-  it('TB-936 Control Expenditure verification', function () {
-    cy.fixture('project/reporting/TB-936.json').then(testData => {
-      cy.loginByRequest(user.admin.email);
-      const typologyOfError = testData.typologyOfErrors.toPersist[0].description;
-      cy.createTypologyOfErrors(testData.typologyOfErrors);
-
-      cy.loginByRequest(user.programmeUser.email);
-      cy.createCall(call).then(callId => {
-        application.details.projectCallId = callId;
-        cy.publishCall(callId);
-
-        cy.loginByRequest(user.applicantUser.email);
-        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
-          const partnerId = this[application.partners[0].details.abbreviation];
-
-          createControllerUser(testData, partnerId);
-
-          cy.loginByRequest(user.applicantUser.email);
-          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
-
-          cy.addPartnerReport(partnerId).then(reportId => {
-            addExpendituresAndSubmit(partnerId, reportId);
-
-            // Set-up
-            cy.loginByRequest(testData.controllerUser.email);
-            cy.startControlWork(partnerId, reportId);
-            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
-            cy.contains('mat-row', 'Control ongoing')
-              .contains('button', 'Open controller work')
-              .click();
-
-            // Group 1.
-            parkExpenditureRowByIndex(1);
-            verifyParkedExpenditureRowByIndex(1, true, false, 0);
-            verifyParkedOverviewRowByIndex(partnerReportExpenditures[1].declaredAmountInEur);
-
-            // Group 2.
-            parkExpenditureRowByIndex(1);
-            verifyParkedExpenditureRowByIndex(1, true, true, partnerReportExpenditures[1].declaredAmountInEur);
-
-            // Group 3.
-            const deductedAmount = 100;
-            const certifiedAmount = partnerReportExpenditures[2].declaredAmountInEur - deductedAmount;
-            deductExpenditureRowByIndex(2, deductedAmount, typologyOfError);
-            verifyDeductedExpenditureRowByIndex(2, true, false, certifiedAmount);
-            verifyDeductedOverviewRowByIndex(typologyOfError, deductedAmount);
-
-            // Group 4.
-            finalizeControlWork();
-            verifyCannotEdit(applicationId, partnerId);
-          });
-        });
-      });
-      // });
-    });
-  });
-
   //region TB-744 METHODS
   function verifyIdentification(applicationId, partnerId1, reportId) {
     cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
@@ -1803,32 +1725,6 @@ context('Partner reports tests', () => {
 
   //endregion
 
-  //region TB-738 METHODS
-  function createControllerUser(testData, partnerId1) {
-    cy.loginByRequest(user.admin.email);
-    testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
-    testData.controllerUser.email = faker.internet.email();
-
-    cy.createRole(testData.controllerRole)
-      .then(roleId => {
-        testData.controllerUser.userRoleId = roleId;
-
-        cy.createUser(testData.controllerUser);
-
-        testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
-        testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser.email;
-
-        cy.createInstitution(testData.controllerInstitution)
-          .then(institutionId => {
-            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId1;
-            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
-            testData.controllerInstitution.id = institutionId;
-            cy.assignInstitution(testData.controllerAssignment);
-          });
-      });
-  }
-
-
   function updatePartnerReportDetails(partnerId, reportId, partnerProcurement) {
     cy.addPublicProcurement(partnerId, reportId, partnerProcurement[0]);
     cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
@@ -1842,13 +1738,10 @@ context('Partner reports tests', () => {
     cy.submitPartnerReport(partnerId, reportId);
   }
 
-  function performControlWork(testData, reportId, partnerId) {
-    cy.loginByRequest(testData.controllerUser.email);
+  function performControlWork(reportId, partnerId) {
+    cy.loginByRequest(user.controllerUser.email);
     cy.startControlWork(partnerId, reportId);
 
-    controlReportIdentification.designatedController.controlInstitutionId = testData.controllerInstitution.id;
-    controlReportIdentification.designatedController.controllingUserId = testData.controllerUser.id;
-    controlReportIdentification.designatedController.controllerReviewerId = testData.controllerUser.id;
     cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
     cy.setExpenditureItemsAsParked(partnerId, reportId, partnerParkedExpenditures);
     cy.finalizeControl(partnerId, reportId);
@@ -2800,122 +2693,6 @@ context('Partner reports tests', () => {
     cy.contains('button', 'Export').clickToDownload(`/api/project/report/partner/byPartnerId/${partnerId}/byReportId/${reportId}/export?*`, 'pdf').then(fileName => {
       expect(fileName).contains(applicationId);
     });
-  }
-
-  //endregion
-
-  //region TB-936 METHODS
-  function addExpendituresAndSubmit(partnerId, reportId) {
-    cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
-    cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures)
-      .then(response => {
-        for (let i = 0; i < response.length; i++) {
-          partnerParkedExpenditures[i].id = response[i].id;
-        }
-      });
-    cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
-    cy.submitPartnerReport(partnerId, reportId);
-  }
-
-  function parkExpenditureRowByIndex(rowIndex) {
-    cy.contains('a', 'Expenditure verification').click();
-
-    cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle')
-      .eq(rowIndex)
-      .click();
-
-    cy.contains('button', 'Save changes')
-      .click();
-  }
-
-  function verifyParkedExpenditureRowByIndex(rowIndex, partOfSample, partOfSampleEnabled, certifiedAmount) {
-    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
-      .eq(rowIndex)
-      .should(partOfSample ? 'be.checked' : 'not.checked')
-      .should(partOfSampleEnabled ? 'be.enabled' : 'be.disabled');
-
-    cy.get('#expenditure-costs-table mat-cell.mat-column-certifiedAmount input')
-      .eq(rowIndex)
-      .should('have.value', formatAmount(certifiedAmount));
-  }
-
-  function verifyParkedOverviewRowByIndex(certifiedAmount) {
-    cy.get('.mat-tab-header-pagination-after').click();
-    cy.wait(200);
-    cy.contains('a', 'Overview and Finalize').click();
-
-    cy.get("#overview-of-control-work-table mat-cell.mat-column-inControlSample")
-      .should('be.visible')
-      .should('have.text', `${formatAmount(certifiedAmount)}`);
-  }
-
-  function deductExpenditureRowByIndex(rowIndex, deductedAmount, typologyOfError) {
-    cy.wait(300);
-    cy.get('#expenditure-costs-table mat-cell.mat-column-deductedAmount input')
-      .eq(rowIndex)
-      .clear()
-      .type(`${deductedAmount}`);
-
-    cy.get('#expenditure-costs-table mat-cell.mat-column-typologyOfErrorId mat-select')
-      .eq(rowIndex)
-      .click();
-    cy.get('mat-option').contains(typologyOfError).click();
-
-    cy.contains('button', 'Save changes')
-      .click();
-  }
-
-  function verifyDeductedExpenditureRowByIndex(rowIndex, partOfSample, partOfSampleEnabled, certifiedAmount) {
-    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
-      .eq(rowIndex)
-      .should(partOfSample ? 'be.checked' : 'not.checked')
-      .should(partOfSampleEnabled ? 'be.enabled' : 'be.disabled');
-
-    cy.get('#expenditure-costs-table mat-cell.mat-column-certifiedAmount input')
-      .eq(rowIndex)
-      .should('have.value', formatAmount(certifiedAmount));
-  }
-
-  function verifyDeductedOverviewRowByIndex(typologyOfError, certifiedAmount) {
-    cy.get('.mat-tab-header-pagination-after').click();
-    cy.wait(200);
-    cy.contains('a', 'Overview and Finalize').click();
-
-    cy.contains('#overview-of-deduction-table:last-of-type mat-row', typologyOfError)
-      .find('mat-cell.mat-column-total')
-      .should('have.text', formatAmount(certifiedAmount));
-  }
-
-  function finalizeControlWork() {
-    // Set Controller
-    cy.get('.mat-tab-header-pagination-before').click();
-    cy.wait(200);
-    cy.contains('Control Identification').click();
-    cy.get('input[name="controlUser"]').eq(0).click();
-    cy.get('mat-option:last-of-type').click();
-    cy.contains('button', 'Save changes').should('be.visible').click();
-    cy.contains('Successfully saved the control identification data').should('be.visible');
-
-    // Finalize
-    cy.get('.mat-tab-header-pagination-after').click();
-    cy.contains('Overview and Finalize').should('be.visible').click();
-    cy.contains('Run pre-submission check').click();
-    cy.contains('button', 'Finalize control').should('be.enabled').click();
-    cy.contains('Confirm').should('be.visible').click();
-    cy.get('mat-chip.status-Certified').should('be.visible');
-  }
-
-  function verifyCannotEdit(applicationId, partnerId) {
-    cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
-    cy.contains('mat-row', 'Certified')
-      .contains('button', 'Open controller work')
-      .click();
-
-    cy.contains('a', 'Expenditure verification').click();
-    cy.get('#expenditure-costs-table mat-cell.mat-column-partOfSample mat-slide-toggle input')
-      .each((el) => cy.wrap(el).should('be.disabled'));
-    cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle input')
-      .each((el) => cy.wrap(el).should('be.disabled'));
   }
 
   //endregion

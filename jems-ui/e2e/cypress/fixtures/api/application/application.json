@@ -2508,7 +2508,8 @@
             "level": "EDIT",
             "gdpr": true
           }
-        ]
+        ],
+        "institutionId": 1
       }, {
         "cypressPartnerReference": "Project Partner",
         "users": [
@@ -2517,7 +2518,8 @@
             "level": "EDIT",
             "gdpr": true
           }
-        ]
+        ],
+        "institutionId": 1
       }
     ]
   },
@@ -2686,8 +2688,9 @@
       "linkedDraftProjectReportNumbers": []
     }
   ],
-  "partnerDetails": {
-    "Lead Partner": {
+  "partnerDetails": [
+    {
+      "cypressPartnerReference": "Lead Partner",
       "beneficialOwners": [
         {
           "birth": "1995-06-08T00:00:00.000Z",
@@ -2755,7 +2758,8 @@
         ]
       }
     },
-    "Project Partner": {
+    {
+      "cypressPartnerReference": "Project Partner",
       "beneficialOwners": [
         {
           "birth": "1993-06-08T00:00:00.000Z",
@@ -2804,5 +2808,5 @@
         "nutsThreeRegionCode": "NC000"
       }
     }
-  }
+  ]
 }

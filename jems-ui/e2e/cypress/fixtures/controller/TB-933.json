@@ -13,20 +13,5 @@
         "accessLevel": "Edit"
       }
     ]
-  },
-  "partnerCollaborator": [
-    {
-      "userEmail": "applicant.user@jems.eu",
-      "level": "EDIT"
-    }
-  ],
-  "controllerAssignment": {
-    "assignmentsToAdd": [
-      {
-        "partnerId": null,
-        "institutionId": null
-      }
-    ],
-    "assignmentsToRemove": []
   }
 }

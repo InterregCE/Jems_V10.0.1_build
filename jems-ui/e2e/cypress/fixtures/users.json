@@ -2,6 +2,13 @@
   "admin": {
     "email": "admin@jems.eu"
   },
+  "programmeUser": {
+    "email": "programme.user@jems.eu",
+    "name": "Programme",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
+  },
   "applicantUser": {
     "email": "applicant.user@jems.eu",
     "name": "Applicant",
@@ -9,11 +16,18 @@
     "userRoleId": 3,
     "userStatus": "ACTIVE"
   },
-  "programmeUser": {
-    "email": "programme.user@jems.eu",
-    "name": "Programme",
+  "controllerUser": {
+    "email": "controller.user@jems.eu",
+    "name": "Controller",
     "surname": "User",
-    "userRoleId": 2,
+    "userRoleId": 4,
+    "userStatus": "ACTIVE"
+  },
+  "verificationUser": {
+    "email": "verification.user@jems.eu",
+    "name": "Verification",
+    "surname": "User",
+    "userRoleId": 5,
     "userStatus": "ACTIVE"
   }
 }
