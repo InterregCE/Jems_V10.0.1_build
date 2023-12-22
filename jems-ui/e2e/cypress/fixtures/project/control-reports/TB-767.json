@@ -1,26 +1,16 @@
 {
-  "partnerCollaborator": [
-    {
-      "userEmail": "applicant.user@jems.eu",
-      "level": "EDIT"
-    }
-  ],
-  "controllerRole": {
-    "name": "controllerRole",
-    "permissions": ["ProjectReportingView", "ProjectFormRetrieve", "ProjectsWithOwnershipRetrieve"]
-  },
   "controllerUserEdit": {
     "email": "randomize",
     "name": "Report Control",
     "surname": "User",
-    "userRoleId": null,
+    "userRoleId": 4,
     "userStatus": "ACTIVE"
   },
   "controllerUserView": {
     "email": "randomize",
     "name": "Report Control",
     "surname": "User",
-    "userRoleId": null,
+    "userRoleId": 4,
     "userStatus": "ACTIVE"
   },
   "controllerInstitution": {
@@ -37,14 +27,5 @@
         "accessLevel": "View"
       }
     ]
-  },
-  "controllerAssignment": {
-    "assignmentsToAdd": [
-      {
-        "partnerId": null,
-        "institutionId": null
-      }
-    ],
-    "assignmentsToRemove": []
   }
 }

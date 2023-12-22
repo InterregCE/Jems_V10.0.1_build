@@ -57,8 +57,6 @@
       }
     }
   },
-
-
   "expectedResultsR2": {
     "co-financing": {
       "ERDF": {
@@ -72,8 +70,6 @@
       }
     }
   },
-
-
   "expectedResultsR3": {
     "co-financing": {
       "ERDF": {
@@ -87,65 +83,11 @@
       }
     }
   },
-
-
-  "partnerCollaborator": [
-    {
-      "userEmail": "applicant.user@jems.eu",
-      "level": "EDIT"
-    }
-  ],
-
-  "controllerRole": {
-    "name": "controllerRole",
-    "permissions": [
-      "ProjectReportingView",
-      "ProjectFormRetrieve",
-      "ProjectsWithOwnershipRetrieve",
-      "ProjectReportingProjectEdit",
-      "ProjectReportingVerificationProjectEdit",
-      "ProjectReportingVerificationFinalize",
-      "ProjectRetrieve"
-    ]
-  },
-
-  "controllerUser": {
-    "email": "randomize",
-    "name": "Report Control",
-    "surname": "User",
-    "userRoleId": null,
-    "userStatus": "ACTIVE"
-  },
-
-  "controllerInstitution": {
-    "name": "randomize",
-    "description": "Controller institution for control-report description",
-    "institutionNuts": ["FRK27", "AT13", "AT130"],
-    "institutionUsers": [
-      {
-        "userEmail": "randomize",
-        "accessLevel": "Edit"
-      }
-    ]
-  },
-
-  "controllerAssignment": {
-    "assignmentsToAdd": [
-      {
-        "partnerId": null,
-        "institutionId": null
-      }
-    ],
-    "assignmentsToRemove": []
-  },
-
-
   "fastTrackLumpSum": {
     "name": "Closure Lump sum",
     "amount": "900,16",
     "period": "Closure"
   },
-
   "expectedFtlsPayments": {
     "OTHER": {
       "amountApprovedPerFund": "293.19",
@@ -162,7 +104,6 @@
       }
     }
   },
-
   "authorizedPayments": [
     {
       "projectCustomIdentifier": "setDuringTest",

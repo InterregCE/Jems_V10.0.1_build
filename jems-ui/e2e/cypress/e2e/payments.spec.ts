@@ -140,7 +140,7 @@ context('Payments tests', () => {
 
                   cy.startModification(applicationId, user.programmeUser.email);
                   partner.cofinancing = testData.partnerCofinancingAfterModification;
-                  testData.partnerCofinancingAfterModification.finances[2].fundId = this.fundId;
+                  testData.partnerCofinancingAfterModification.finances[2].fundId = this['fundId'];
                   cy.loginByRequest(user.applicantUser.email);
                   cy.updatePartnerCofinancing(this[partner.details.abbreviation], partner.cofinancing);
                   cy.runPreSubmissionCheck(applicationId);

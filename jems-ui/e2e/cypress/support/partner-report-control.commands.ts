@@ -2,6 +2,8 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
+      startControlWork(partnerId: number, reportId: number);
+      
       updateControlReportIdentification(partnerId: number, reportId: number, controlReportIdentification);
       
       setExpenditureItemsAsParked(partnerId: number, reportId: number, partnerReportExpenditures);
@@ -14,6 +16,13 @@ declare global {
     }
   }
 }
+
+Cypress.Commands.add('startControlWork', (partnerId: number, reportId: number) => {
+  cy.request({
+    method: 'POST',
+    url: `api/project/report/partner/startControl/${partnerId}/${reportId}`,
+  })
+});
 
 Cypress.Commands.add('updateControlReportIdentification', (partnerId: number, reportId: number, controlReportIdentification) => {
   cy.request({

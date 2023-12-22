@@ -215,14 +215,7 @@ context('Project report tests', () => {
       application.reportingDeadlines = [];
       application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
-        cy.loginByRequest(user.programmeUser.email);
         const partnerId1 = this[application.partners[0].details.abbreviation];
-
-        cy.loginByRequest(user.applicantUser.email);
-        createControllerUser(testData, partnerId1);
-
-        cy.loginByRequest(user.applicantUser.email);
-        cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
 
         // add partner report
         cy.addPartnerReport(partnerId1)
@@ -238,30 +231,31 @@ context('Project report tests', () => {
             cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
             cy.submitPartnerReport(partnerId1, reportId);
 
-            performControlWorkAndFinalize(testData, reportId, partnerId1);
+            performControlWorkAndFinalize(reportId, partnerId1);
           });
 
-        cy.loginByRequest(user.applicantUser.email);
         // first project report
+        cy.loginByRequest(user.applicantUser.email);
         createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Finance);
         cy.url().then(url => {
           const reportId = Number(url.replace('/identification', '').split('/').pop());
           cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
           projectReportPage.verifyAmountsInTables(testData.expectedResultsR1);
           cy.submitProjectReport(applicationId, reportId);
-          cy.loginByRequest(testData.controllerUser.email);
+          cy.loginByRequest(user.verificationUser.email);
           cy.startProjectReportVerification(applicationId, reportId);
           cy.finalizeProjectReportVerification(applicationId, reportId);
         });
 
         // second project report
+        cy.loginByRequest(user.applicantUser.email);
         createProjectReportWithoutReportingSchedule(applicationId, ProjectReportType.Finance);
         cy.url().then(url => {
           const reportId = Number(url.replace('/identification', '').split('/').pop());
           cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
           projectReportPage.verifyAmountsInTables(testData.expectedResultsR2);
           cy.submitProjectReport(applicationId, reportId);
-          cy.loginByRequest(testData.controllerUser.email);
+          cy.loginByRequest(user.verificationUser.email);
           cy.startProjectReportVerification(applicationId, reportId);
           cy.finalizeProjectReportVerification(applicationId, reportId);
         });
@@ -313,7 +307,6 @@ context('Project report tests', () => {
         // Set-up:
         // Partner Report & Control
         const partnerId = this[application.partners[0].details.abbreviation];
-        cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
         cy.addPartnerReport(partnerId).then(reportId => {
           cy.wrap(reportId).as('reportId');
           cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
@@ -321,19 +314,11 @@ context('Project report tests', () => {
           cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
           cy.submitPartnerReport(partnerId, reportId);
 
-          createControllerUser(testData, partnerId);
-          cy.loginByRequest(testData.controllerUser.email);
+          cy.loginByRequest(user.controllerUser.email);
           cy.startControlWork(partnerId, reportId);
 
-          cy.get<number>('@controllerUserId').then((controllerUserId) => {
-            controlReportIdentification.designatedController.controlInstitutionId = testData.controllerInstitution.id;
-            controlReportIdentification.designatedController.controllingUserId = controllerUserId;
-            controlReportIdentification.designatedController.controllingUserName = `Report Control User - ${testData.controllerUser.email}`;
-            controlReportIdentification.designatedController.controllerReviewerId = controllerUserId;
-            controlReportIdentification.designatedController.controllerReviewerName = `Report Control User - ${testData.controllerUser.email}`;
-            cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
-            cy.finalizeControl(partnerId, reportId);
-          });
+          cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
+          cy.finalizeControl(partnerId, reportId);
         });
 
         // Contract monitoring
@@ -428,13 +413,10 @@ function formatAmount(amount) {
   return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
 }
 
-function performControlWorkAndFinalize(testData, reportId, partnerId) {
-  cy.loginByRequest(testData.controllerUser.email);
+function performControlWorkAndFinalize(reportId, partnerId) {
+  cy.loginByRequest(user.controllerUser.email);
   cy.startControlWork(partnerId, reportId);
 
-  controlReportIdentification.designatedController.controlInstitutionId = testData.controllerInstitution.id;
-  controlReportIdentification.designatedController.controllingUserId = testData.controllerUser.id;
-  controlReportIdentification.designatedController.controllerReviewerId = testData.controllerUser.id;
   cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
   cy.finalizeControl(partnerId, reportId);
 }
@@ -455,29 +437,6 @@ function createReportingDeadlines(applicationId, testData) {
   testData.deadlines[1].date = yesterday;
 
   return cy.createReportingDeadlines(applicationId, testData.deadlines);
-}
-
-function createControllerUser(testData, partnerId) {
-  cy.loginByRequest(user.admin.email);
-  testData.controllerRole.name = `controllerRole_${faker.string.alphanumeric(5)}`;
-  testData.controllerUser.email = faker.internet.email();
-
-  cy.createRole(testData.controllerRole).then(roleId => {
-    testData.controllerUser.userRoleId = roleId;
-
-    cy.createUser(testData.controllerUser).as('controllerUserId');
-
-    testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
-    testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser.email;
-
-    cy.createInstitution(testData.controllerInstitution)
-      .then(institutionId => {
-        testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
-        testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
-        testData.controllerInstitution.id = institutionId;
-        cy.assignInstitution(testData.controllerAssignment);
-      });
-  });
 }
 
 function createJsMaUser(testData) {

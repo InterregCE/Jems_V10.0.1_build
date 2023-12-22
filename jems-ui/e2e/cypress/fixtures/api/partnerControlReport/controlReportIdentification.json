@@ -6,18 +6,18 @@
   ],
   "type": "PartnerReport",
   "designatedController": {
-    "controlInstitutionId": 11,
-    "controllingUserId": 46,
-    "controllingUserName": "Report Control User - Kevon_Rolfson98@yahoo.com",
+    "controlInstitutionId": 1,
+    "controllingUserId": 4,
+    "controllingUserName": "Controller User - controller.user@jems.eu",
     "jobTitle": "API generated job title",
     "divisionUnit": "API generated division/unit/department",
     "address": "API generated address",
     "country": "Chad (TD)",
     "countryCode": "TD",
     "telephone": "+0123456789",
-    "controllerReviewerId": 46,
-    "controllerReviewerName": "Report Control User - Kevon_Rolfson98@yahoo.com",
-    "controlInstitution": "agitated laboratory"
+    "controllerReviewerId": 4,
+    "controllerReviewerName": "Controller User - controller.user@jems.eu",
+    "controlInstitution": "controller institution"
   },
   "reportVerification": {
     "generalMethodologies": [

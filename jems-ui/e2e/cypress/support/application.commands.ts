@@ -1,4 +1,5 @@
 import {faker} from '@faker-js/faker';
+import users from '@fixtures/users.json';
 import {createPartners, updatePartnerData} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
@@ -124,6 +125,7 @@ Cypress.Commands.add('createContractedApplication', (application, contractingUse
     runPreSubmissionCheck(applicationId);
     submitProjectApplication(applicationId);
     approveApplication(applicationId, application.assessments, contractingUserEmail);
+    updateProjectPrivileges(applicationId, application.projectPrivileges);
     updateContractingSections(applicationId, application, contractingUserEmail);
     cy.wrap(applicationId).as('applicationId');
   });
@@ -399,26 +401,23 @@ function updateApplicationSections(applicationId, application) {
 }
 
 function updateContractingSections(applicationId, application, contractingUserEmail) {
-
   cy.then(function () {
     updateContractsAndAgreements(applicationId, application.contractsAndAgreements);
     updateProjectManagers(applicationId, application.projectManagers);
 
-    application.projectPrivileges.partnerCollaborators.forEach(partnerCollaborator => {
-      const partnerId = this[partnerCollaborator.cypressPartnerReference];
-      const partnerDetails = application.partnerDetails[partnerCollaborator.cypressPartnerReference];
-      updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborator.users);
-      updatePartnerBeneficialOwners(applicationId, partnerId, partnerDetails.beneficialOwners);
-      updatePartnerBankDetails(applicationId, partnerId, partnerDetails.bankDetails);
-      updatePartnerLocationOfDocuments(applicationId, partnerId, partnerDetails.locationOfDocuments);
-      if (partnerDetails.minimis) {
+    application.partnerDetails.forEach(partnerDetail => {
+      const partnerId = this[partnerDetail.cypressPartnerReference];
+      updatePartnerBeneficialOwners(applicationId, partnerId, partnerDetail.beneficialOwners);
+      updatePartnerBankDetails(applicationId, partnerId, partnerDetail.bankDetails);
+      updatePartnerLocationOfDocuments(applicationId, partnerId, partnerDetail.locationOfDocuments);
+      if (partnerDetail.minimis) {
         loginByRequest(contractingUserEmail); // only programme user can edit state aid fields
-        updatePartnerMinimis(partnerId, partnerDetails.minimis);
+        updatePartnerMinimis(partnerId, partnerDetail.minimis);
         cy.get('@currentUser').then((currentUser: any) => {
           loginByRequest(currentUser.name);
         });
       }
-    })
+    });
 
     loginByRequest(contractingUserEmail);
     application.contractMonitoring.fastTrackLumpSums.forEach(fastTrackLumpSum => {
@@ -434,6 +433,16 @@ function updateContractingSections(applicationId, application, contractingUserEm
       loginByRequest(currentUser.name);
     });
   })
+}
+
+function updateProjectPrivileges(applicationId, projectPrivileges) {
+  cy.then(function () {
+    projectPrivileges.partnerCollaborators.forEach(partnerCollaborator => {
+      const partnerId = this[partnerCollaborator.cypressPartnerReference];
+      updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborator.users);
+      cy.assignDefaultInstitution(partnerId, users.admin.email);
+    });
+  });
 }
 
 function updateIdentification(applicationId: number, projectIdentification) {
