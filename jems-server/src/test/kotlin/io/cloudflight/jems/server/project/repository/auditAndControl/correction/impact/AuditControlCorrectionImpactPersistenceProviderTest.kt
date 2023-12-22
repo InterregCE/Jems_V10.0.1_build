@@ -33,6 +33,8 @@ class AuditControlCorrectionImpactPersistenceProviderTest : UnitTest() {
             repaymentDate = null,
             lateRepayment = null,
             partnerReport = null,
+            lumpSum = null,
+            lumpSumPartnerId = null,
             programmeFund = null,
             impact = CorrectionImpactAction.AdjustmentInNextPayment,
             impactComment = "old comment",

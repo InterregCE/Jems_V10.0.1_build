@@ -6,10 +6,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
+  CorrectionAvailableFtlsDTO,
   CorrectionAvailableFundDTO,
   CorrectionAvailablePartnerDTO,
   CorrectionAvailablePartnerReportDTO,
-  CorrectionEcPaymentDTO,
+  CorrectionEcPaymentDTO, ProgrammeFundDTO,
   ProjectAuditControlCorrectionDTO,
   ProjectCorrectionProgrammeMeasureDTO,
   ProjectCorrectionProgrammeMeasureUpdateDTO
@@ -118,7 +119,9 @@ export class AuditControlCorrectionDetailMeasureComponent {
   private filterEcPayment(partnerData: CorrectionAvailablePartnerDTO[], identification: ProjectAuditControlCorrectionDTO): CorrectionEcPaymentDTO | undefined {
     const partner = partnerData.find((it: CorrectionAvailablePartnerDTO) => it.partnerId === identification.partnerId);
     const report = partner?.availableReports.find((it: CorrectionAvailablePartnerReportDTO) => it.id === identification.partnerReportId);
-    const fund = report?.availableFunds.find((it: CorrectionAvailableFundDTO) => it.fund.id === identification.programmeFundId);
+    const ftls = partner?.availableFtls.find((it: CorrectionAvailableFtlsDTO) => it.orderNr === identification.lumpSumOrderNr);
+    const availableFunds = report?.availableFunds ?? ftls?.availableFunds ?? [];
+    const fund = availableFunds.find(it => it.fund.id === identification.programmeFundId);
 
     return fund?.ecPayment;
   }

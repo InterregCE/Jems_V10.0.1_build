@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.auditAndControl
 
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -15,6 +16,8 @@ import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -53,8 +56,18 @@ class AuditControlCorrectionEntity (
 
     var lateRepayment: LocalDate?,
 
-    @ManyToOne
+
+    @ManyToOne(optional = true)
     var partnerReport: ProjectPartnerReportEntity?,
+
+    @ManyToOne(optional = true)
+    @JoinColumns(
+        JoinColumn(name = "project_lump_sum_id", referencedColumnName = "project_id"),
+        JoinColumn(name = "project_lump_sum_order_nr", referencedColumnName = "order_nr")
+    )
+    var lumpSum: ProjectLumpSumEntity?,
+
+    var lumpSumPartnerId: Long?,
 
     @ManyToOne
     var programmeFund: ProgrammeFundEntity?,

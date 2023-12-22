@@ -3,15 +3,14 @@ package io.cloudflight.jems.server.project.service.auditAndControl.getAvailableR
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
-import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtls
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFund
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartnerReport
@@ -28,6 +27,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
 
@@ -92,12 +92,25 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         ecPaymentAccountingYear = year2,
     )
 
+    private val ftls = CorrectionAvailableFtlsTmp(
+        partnerId = 16L,
+        programmeLumpSumId = 23L,
+        orderNr = 8,
+        name = setOf(),
+        availableFund = ProgrammeFund(4L, true, ProgrammeFundType.ERDF, emptySet(), emptySet()),
+        ecPaymentId = 9L,
+        ecPaymentStatus = PaymentEcStatus.Finished,
+        ecPaymentAccountingYear = AccountingYear(1, 2022, LocalDate.now(), LocalDate.now())
+    )
+
     @MockK
     private lateinit var partnerReportPersistence: ProjectPartnerReportPersistence
     @MockK
     private lateinit var partnerPersistence: PartnerPersistence
     @MockK
     private lateinit var versionPersistence: ProjectVersionPersistence
+    @MockK
+    private lateinit var paymentPersistence: PaymentPersistence
 
     @InjectMockKs
     private lateinit var service: GetPartnerAndPartnerReportDataService
@@ -126,6 +139,9 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         every { partnerReportPersistence.getAvailableReports(setOf(15L, 16L)) } returns listOf(
             report1, report2, report3, report4,
         )
+        every { paymentPersistence.getAvailableFtlsPayments(setOf(15L, 16L)) } returns listOf(
+            ftls
+        )
 
         assertThat(service.getPartnerAndPartnerReportData(75L)).containsExactly(
             CorrectionAvailablePartner(
@@ -152,7 +168,19 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         ),
                     ),
                 ),
-                availableFtls = emptyList(),
+                availableFtls = listOf(
+                    CorrectionAvailableFtls(
+                        programmeLumpSumId = 23L,
+                        orderNr = 8,
+                        name = setOf(),
+                        availableFunds = listOf(
+                            CorrectionAvailableFund(
+                                fund = ProgrammeFund(4L, true, ProgrammeFundType.ERDF, emptySet(), emptySet()),
+                                ecPayment = CorrectionEcPayment(9L, PaymentEcStatus.Finished, ftls.ecPaymentAccountingYear!!)
+                            )
+                        )
+                    )
+                ),
             ),
             CorrectionAvailablePartner(
                 partnerId = 15L,

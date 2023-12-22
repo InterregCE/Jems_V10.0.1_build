@@ -9,7 +9,9 @@ data class AuditControlCorrectionUpdate(
     val repaymentFrom: LocalDate?,
     val lateRepaymentTo: LocalDate?,
 
-    val partnerReportId: Long,
+    val partnerId: Long?,
+    val partnerReportId: Long?,
+    val lumpSumOrderNr: Int?,
     val programmeFundId: Long,
 
     val costCategory: BudgetCostCategory?,

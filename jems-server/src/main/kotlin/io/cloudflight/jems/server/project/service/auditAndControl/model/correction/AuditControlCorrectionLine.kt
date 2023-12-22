@@ -21,6 +21,7 @@ data class AuditControlCorrectionLine(
     val partnerRole: ProjectPartnerRole?,
     val partnerNumber: Int?,
     var partnerDisabled: Boolean,
+    val lumpSumOrderNr: Int?,
     val followUpAuditNr: Int?,
     val followUpCorrectionNr: Int?,
     val fund: ProgrammeFund?,

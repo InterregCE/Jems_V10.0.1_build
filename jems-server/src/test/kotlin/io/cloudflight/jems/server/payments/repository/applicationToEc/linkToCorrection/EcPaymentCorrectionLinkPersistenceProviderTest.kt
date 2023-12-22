@@ -136,6 +136,8 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             repaymentDate = submissionDate,
             lateRepayment = submissionDate.plusDays(1),
             partnerReport = null,
+            lumpSum = null,
+            lumpSumPartnerId = null,
             programmeFund = null,
             impact = CorrectionImpactAction.AdjustmentInNextPayment,
             impactComment = "Impact comment",

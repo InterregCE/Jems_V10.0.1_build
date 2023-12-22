@@ -91,6 +91,21 @@
             <p>{{'project.application.reporting.corrections.identification.correction.define.scope.info.two' | translate}}</p>
         </jems-alert>
 
+        <div>
+            <p>{{'project.application.reporting.corrections.identification.partner.report.or.ftls' | translate }}</p>
+            <mat-button-toggle-group [value]="linkedToCostOptionType"
+                                     [disabled]="!data.canEdit || data.isLinkedToInvoice">
+                <mat-button-toggle [value]="LinkedToCostOptionType.PR"
+                                   (change)="linkedToCostOptionType = LinkedToCostOptionType.PR; clearValues()">
+                    {{'project.application.reporting.corrections.identification.partner.report' | translate }}
+                </mat-button-toggle>
+                <mat-button-toggle [value]="LinkedToCostOptionType.FTLS"
+                                   (change)="linkedToCostOptionType = LinkedToCostOptionType.FTLS; clearValues()">
+                    {{'project.application.reporting.corrections.identification.ftls' | translate }}
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
         <div jemsMultiColumnRow stretch="1" class="mt-2">
             <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.identification.partner.id' | translate}}</mat-label>
@@ -122,7 +137,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field>
+            <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.PR">
                 <mat-label
                         *ngIf="data.canEdit && partnerReports?.length > 0">{{'project.application.reporting.corrections.identification.partner.report.id' | translate}}</mat-label>
                 <mat-select formControlName="partnerReportId"
@@ -140,9 +155,23 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field>
+            <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.PR">
                 <mat-label>{{'project.application.reporting.corrections.identification.project.report' | translate}}</mat-label>
                 <input formControlName="projectReportNumber" matInput disabled>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.FTLS">
+                <mat-label>{{'project.application.reporting.corrections.identification.ftls' | translate}}</mat-label>
+                <mat-select formControlName="lumpSumOrderNr"
+                            [disabled]="!data.canEdit || partnerReports?.length === 0"
+                            (selectionChange)="selectFtls($event.value)"
+                            class="placeholder-required"
+                            [placeholder]="'common.not.applicable.option' | translate"
+                            required>
+                    <mat-option *ngFor="let ftls of ftls" [value]="ftls.orderNr">
+                        {{ftls.name | translateBySystemLanguage | async}}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
         </div>
 
@@ -162,8 +191,8 @@
             </mat-form-field>
         </div>
 
-        <div jemsMultiColumnRow *ngIf="!data.isLinkedToInvoice">
-            <mat-form-field jemsFormFieldWidth="xxx-large">
+        <div jemsMultiColumnRow stretch="1" *ngIf="!data.isLinkedToInvoice">
+            <mat-form-field>
                 <mat-label>{{'project.application.reporting.corrections.select.category.label' | translate}}</mat-label>
                 <mat-select formControlName="costCategory"
                             [disabled]="!data.isMandatoryScopeDefined"
@@ -176,7 +205,7 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.PR">
                 <mat-label>{{'project.application.reporting.corrections.select.procurement.label' | translate}}</mat-label>
                 <mat-select
                         formControlName="procurementId"

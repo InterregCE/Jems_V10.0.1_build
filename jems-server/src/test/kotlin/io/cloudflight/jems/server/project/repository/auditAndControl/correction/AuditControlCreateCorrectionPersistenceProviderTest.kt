@@ -50,6 +50,7 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
             lateRepaymentTo = null,
             partnerId = null,
             partnerReportId = null,
+            lumpSumOrderNr = null,
             programmeFundId = null,
             impact = AuditControlCorrectionImpact(
                 action = CorrectionImpactAction.AdjustmentInNextPayment,

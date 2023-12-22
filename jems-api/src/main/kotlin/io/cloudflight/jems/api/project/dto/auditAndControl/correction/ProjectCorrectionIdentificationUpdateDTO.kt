@@ -8,7 +8,9 @@ data class ProjectCorrectionIdentificationUpdateDTO(
     val repaymentFrom: LocalDate?,
     val lateRepaymentTo: LocalDate?,
 
-    val partnerReportId: Long,
+    val partnerReportId: Long?,
+    val partnerId: Long?,
+    val lumpSumOrderNr: Int?,
     val programmeFundId: Long,
 
     val costCategory: CorrectionCostCategoryDTO?,

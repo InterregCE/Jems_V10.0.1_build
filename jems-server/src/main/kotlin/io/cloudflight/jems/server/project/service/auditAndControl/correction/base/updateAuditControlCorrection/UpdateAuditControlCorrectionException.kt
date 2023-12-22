@@ -23,7 +23,7 @@ class AuditControlCorrectionClosedException: ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.ac.correction.closed"),
 )
 
-class CombinationOfReportAndFundIsInvalidException: ApplicationUnprocessableException(
+class CombinationOfSelectedFundIsInvalidException: ApplicationUnprocessableException(
     code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.fund.not.found"),
 )
@@ -41,4 +41,14 @@ class InvalidCorrectionScopeException: ApplicationUnprocessableException(
 class ProcurementNotValidException: ApplicationUnprocessableException(
     code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-006",
     i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.procurement.not.valid"),
+)
+
+class LumpSumAndPartnerNotValidException: ApplicationUnprocessableException(
+    code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-007",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.lumpsum.and.partner.not.valid"),
+)
+
+class PartnerReportNotValidException: ApplicationUnprocessableException(
+    code =  "$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_CODE_PREFIX-008",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_AUDIT_CONTROL_CORRECTION_ERROR_KEY_PREFIX.partner.report.not.valid"),
 )

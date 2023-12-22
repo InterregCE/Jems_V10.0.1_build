@@ -20,6 +20,7 @@ data class ProjectAuditControlCorrectionLineDTO(
     val partnerRole: ProjectPartnerRoleDTO?,
     val partnerNumber: Int?,
     val partnerDisabled: Boolean,
+    val lumpSumOrderNr: Int?,
     val followUpAuditNr: Int?,
     val followUpCorrectionNr: Int?,
     val fund: ProgrammeFundDTO?,

@@ -5,6 +5,7 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
+import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -19,19 +20,24 @@ import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentContributionMetaEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.entity.QAccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
@@ -46,16 +52,19 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegular
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.fund.toEntity
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
+import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -71,6 +80,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -1071,7 +1081,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
     @Test
     fun getPaymentIdsInstallmentsExistsByProjectReportId() {
         every { paymentPartnerInstallmentRepository.findAllByPaymentPartnerPaymentProjectReportId(projectReportId) } returns
-            listOf(installmentEntity())
+                listOf(installmentEntity())
         assertThat(paymentPersistenceProvider.getPaymentIdsInstallmentsExistsByProjectReportId(projectReportId)).isEqualTo(
             setOf(paymentId)
         )
@@ -1091,6 +1101,58 @@ class PaymentPersistenceProviderTest : UnitTest() {
         paymentPersistenceProvider.deleteRegularPayments(projectReportId)
         verify(exactly = 1) { fileRepository.deleteBatch(fileList) }
         verify(exactly = 1) { paymentRepository.delete(paymentRegularEntity) }
+    }
+
+    @Test
+    fun getAvailableFtlsPayments() {
+        val partnerIds = setOf(22L, 23L, 24L)
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { query.from(QPaymentEntity.paymentEntity) } returns query
+        every { query.leftJoin(QPaymentPartnerEntity.paymentPartnerEntity) } returns query
+        every { query.leftJoin(QProjectLumpSumEntity.projectLumpSumEntity) } returns query
+        every { query.leftJoin(QProgrammeFundEntity.programmeFundEntity) } returns query
+        every { query.leftJoin(QPaymentToEcExtensionEntity.paymentToEcExtensionEntity) } returns query
+        every { query.leftJoin(QPaymentApplicationToEcEntity.paymentApplicationToEcEntity) } returns query
+        every { query.leftJoin(QAccountingYearEntity.accountingYearEntity) } returns query
+        every { query.on(any()) } returns query
+        val where = slot<Predicate>()
+        every { query.where(capture(where)) } returns query
+        val tupleFtls = mockk<Tuple> {
+            every { get(0, Long::class.java) } returns 22L
+            every { get(1, ProgrammeLumpSumEntity::class.java) } returns mockk {
+                every { id } returns 23L
+                every { translatedValues } returns mutableSetOf()
+            }
+            every { get(2, Int::class.java) } returns 8
+            every { get(3, ProgrammeFundEntity::class.java) } returns fund
+            every { get(4, Long::class.java) } returns 9L
+            every { get(5, PaymentEcStatus::class.java) } returns PaymentEcStatus.Finished
+            every { get(6, AccountingYearEntity::class.java) } returns null
+        }
+        every { query.fetch() } returns listOf(tupleFtls)
+
+        assertThat(paymentPersistenceProvider.getAvailableFtlsPayments(partnerIds)).usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    CorrectionAvailableFtlsTmp(
+                        partnerId = 22,
+                        programmeLumpSumId = 23L,
+                        orderNr = 8,
+                        name = setOf(),
+                        availableFund = fund.toModel(),
+                        ecPaymentId = 9L,
+                        ecPaymentStatus = PaymentEcStatus.Finished,
+                        ecPaymentAccountingYear = null
+                    )
+                )
+            )
+
+        assertThat(where.captured.toString())
+            .isEqualTo("paymentPartnerEntity.projectPartner.id in [22, 23, 24] " +
+                    "&& projectLumpSumEntity.isReadyForPayment = true " +
+                    "&& projectLumpSumEntity.programmeLumpSum.isFastTrack = true")
     }
 
 }

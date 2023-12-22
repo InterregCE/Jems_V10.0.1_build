@@ -667,6 +667,7 @@
     <ID>UnusedPrivateMember:AuditControlCorrectionControllerTest.kt$AuditControlCorrectionControllerTest$@MockK private lateinit var updateCorrection: UpdateAuditControlCorrectionInteractor</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var partnerReportRepository: ProjectPartnerReportRepository</ID>
     <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var programmeFundRepository: ProgrammeFundRepository</ID>
+    <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var projectLumpSumRepository: ProjectLumpSumRepository</ID>
     <ID>UnusedPrivateMember:CreateProjectReportTest.kt$CreateProjectReportTest$@MockK private lateinit var callPersistence: CallPersistence</ID>
     <ID>UnusedPrivateMember:CreateProjectReportTest.kt$CreateProjectReportTest$@MockK private lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence</ID>
     <ID>UnusedPrivateMember:CreateProjectReportTest.kt$CreateProjectReportTest$@MockK private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence</ID>

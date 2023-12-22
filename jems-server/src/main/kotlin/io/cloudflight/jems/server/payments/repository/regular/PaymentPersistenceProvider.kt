@@ -1,13 +1,20 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
+import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.entity.QAccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
@@ -18,6 +25,7 @@ import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
@@ -41,7 +49,11 @@ import io.cloudflight.jems.server.payments.repository.toRegularPaymentModel
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
@@ -54,6 +66,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
@@ -452,6 +465,59 @@ class PaymentPersistenceProvider(
         }
     }
 
+    @Transactional(readOnly = true)
+    override fun getAvailableFtlsPayments(partnerIds: Set<Long>): List<CorrectionAvailableFtlsTmp> {
+        val specPayment = QPaymentEntity.paymentEntity
+        val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
+        val specProjectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
+        val specFund = QProgrammeFundEntity.programmeFundEntity
+        val specPaymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+        val specPaymentToEc = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+        val specAccountingYear = QAccountingYearEntity.accountingYearEntity
+
+        return jpaQueryFactory.select(
+            specPaymentPartner.projectPartner.id,
+            specProjectLumpSum.programmeLumpSum,
+            specProjectLumpSum.id.orderNr,
+            specFund,
+            specPaymentToEc.id,
+            specPaymentToEc.status,
+            specAccountingYear,
+        )
+            .from(specPayment)
+            .leftJoin(specPaymentPartner).on(specPaymentPartner.payment.id.eq(specPayment.id))
+            .leftJoin(specProjectLumpSum).on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
+            .leftJoin(specFund).on(specFund.id.eq(specPayment.fund.id))
+            .leftJoin(specPaymentToEcExtension).on(specPaymentToEcExtension.payment.id.eq(specPayment.id))
+            .leftJoin(specPaymentToEc).on(specPaymentToEc.id.eq(specPaymentToEcExtension.paymentApplicationToEc.id))
+            .leftJoin(specAccountingYear).on(specAccountingYear.id.eq(specPaymentToEc.accountingYear.id))
+            .where(
+                ExpressionUtils.allOf(
+                    specPaymentPartner.projectPartner.id.`in`(partnerIds),
+                    specProjectLumpSum.isReadyForPayment.isTrue,
+                    specProjectLumpSum.programmeLumpSum.isFastTrack.isTrue
+                )
+            )
+            .fetch()
+            .map { it.toTmpModel() }
+    }
+
+    private fun Tuple.toTmpModel(): CorrectionAvailableFtlsTmp {
+        val programmeLumpSum = get(1, ProgrammeLumpSumEntity::class.java)!!
+        val lumpSumName = programmeLumpSum.translatedValues.map { InputTranslation(it.translationId.language, it.name) }.toSet()
+
+        return CorrectionAvailableFtlsTmp(
+            partnerId = get(0, Long::class.java)!!,
+            programmeLumpSumId = programmeLumpSum.id,
+            orderNr = get(2, Int::class.java)!!,
+            name = lumpSumName,
+            availableFund = get(3, ProgrammeFundEntity::class.java)!!.toModel(),
+            ecPaymentId = get(4, Long::class.java),
+            ecPaymentStatus = get(5, PaymentEcStatus::class.java),
+            ecPaymentAccountingYear = get(6, AccountingYearEntity::class.java)?.toModel(),
+        )
+    }
+
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
             userRepository.getById(userId)
@@ -464,3 +530,4 @@ class PaymentPersistenceProvider(
         CaseBuilder().`when`(this.isSavePaymentInfo.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
 
 }
+

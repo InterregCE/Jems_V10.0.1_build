@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.auditAndControl.model.correct
 import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class CorrectionAvailableFtls(
-    val orderNr: Int,
     val programmeLumpSumId: Long,
+    val orderNr: Int,
     val name: Set<InputTranslation>,
 
     val availableFunds: List<CorrectionAvailableFund>,
