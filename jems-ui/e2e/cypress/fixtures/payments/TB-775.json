@@ -104,7 +104,7 @@
     },
     {
       "orderNr": 2,
-      "programmeLumpSumId": 10,
+      "programmeLumpSumId": 8,
       "period": 2,
       "lumpSumContributions": [
         {
@@ -120,7 +120,7 @@
     },
     {
       "orderNr": 3,
-      "programmeLumpSumId": 10,
+      "programmeLumpSumId": 8,
       "period": 255,
       "lumpSumContributions": [
         {
@@ -141,7 +141,7 @@
     },
     {
       "orderNr": 4,
-      "programmeLumpSumId": 11,
+      "programmeLumpSumId": 9,
       "period": 7,
       "lumpSumContributions": [
         {
