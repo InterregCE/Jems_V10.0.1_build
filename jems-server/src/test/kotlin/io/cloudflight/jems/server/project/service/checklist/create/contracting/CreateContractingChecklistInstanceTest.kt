@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.checklist.create.contracting
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -13,11 +12,10 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
-import io.cloudflight.jems.server.project.service.checklist.ContractingChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,7 +26,6 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -87,7 +84,7 @@ internal class CreateContractingChecklistInstanceTest : UnitTest() {
     )
 
     @MockK
-    lateinit var persistence: ContractingChecklistInstancePersistence
+    lateinit var persistence: ChecklistInstancePersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -112,16 +109,11 @@ internal class CreateContractingChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `create contracting checklist - OK`() {
-        val currentUser = LocalCurrentUser(
-            AuthorizationUtil.userApplicant, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
-        )
-        every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.userApplicant.id
         every {
             persistence.create(
                 createContractingChecklist,
-                creatorId,
-                projectId
+                creatorId
             )
         } returns createdContractingChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()

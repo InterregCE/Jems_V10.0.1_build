@@ -3,7 +3,9 @@ import {
   ChecklistInstanceDTO,
   ChecklistInstanceSelectionDTO,
   ChecklistInstanceService,
-  IdNamePairDTO, PluginInfoDTO, PluginService,
+  IdNamePairDTO,
+  PluginInfoDTO,
+  PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService,
   UserRoleDTO
@@ -14,8 +16,6 @@ import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {SecurityService} from '../../../../security/security.service';
 import {MatSort} from '@angular/material/sort';
-import {ExportCategoryTypeEnum} from '@project/project-application/export/export-category-type';
-import {PluginType} from '@project/project-application/export/export-plugin-type';
 
 @Injectable()
 export class ChecklistInstanceListStore {
@@ -25,6 +25,7 @@ export class ChecklistInstanceListStore {
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
   userCanConsolidate$: Observable<boolean>;
+  userCanClone$: Observable<boolean>;
   availablePlugins$: Observable<PluginInfoDTO[]>;
 
   private listChanged$ = new Subject();
@@ -46,6 +47,7 @@ export class ChecklistInstanceListStore {
     this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.currentUserEmail$ = this.currentUserEmail();
     this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate);
+    this.userCanClone$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistUpdate);
     this.availablePlugins$ = this.availablePlugins();
   }
 
@@ -103,6 +105,15 @@ export class ChecklistInstanceListStore {
         take(1),
         tap(checklistInstance => Log.info('Created a new checklist instance', this, checklistInstance)),
         map(checklistInstance => checklistInstance.id)
+      );
+  }
+
+  cloneInstance(checklistId: number): Observable<number> {
+    return this.checklistInstanceService.cloneChecklistInstance(checklistId)
+      .pipe(
+        take(1),
+        tap(clonedInstance => Log.info('Cloned checklist instance', this, checklistId, clonedInstance)),
+        map(clonedInstance => clonedInstance.id)
       );
   }
 

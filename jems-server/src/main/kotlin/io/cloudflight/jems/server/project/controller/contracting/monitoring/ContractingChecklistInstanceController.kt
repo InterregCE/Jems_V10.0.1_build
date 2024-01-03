@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.controller.checklist.toDetailDto
 import io.cloudflight.jems.server.project.controller.checklist.toDetailModel
 import io.cloudflight.jems.server.project.controller.checklist.toDto
 import io.cloudflight.jems.server.project.controller.checklist.toModel
+import io.cloudflight.jems.server.project.service.checklist.clone.contracting.CloneContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.contracting.CreateContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.contracting.DeleteContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.contracting.ExportContractingChecklistInstanceInteractor
@@ -32,6 +33,7 @@ class ContractingChecklistInstanceController(
     private val createInteractor: CreateContractingChecklistInstanceInteractor,
     private val deleteInteractor: DeleteContractingChecklistInstanceInteractor,
     private val exportInteractor: ExportContractingChecklistInstanceInteractor,
+    private val cloneInteractor: CloneContractingChecklistInstanceInteractor
 ) : ContractingChecklistInstanceApi {
 
     override fun getAllContractingChecklistInstances(projectId: Long): List<ChecklistInstanceDTO> =
@@ -77,4 +79,7 @@ class ContractingChecklistInstanceController(
         pluginKey: String?
     ): ResponseEntity<ByteArrayResource> =
         exportInteractor.export(projectId, checklistId, exportLanguage, pluginKey).toResponseEntity()
+
+    override fun cloneContractingChecklistInstance(projectId: Long, checklistId: Long): ChecklistInstanceDetailDTO =
+        cloneInteractor.clone(projectId, checklistId).toDetailDto()
 }

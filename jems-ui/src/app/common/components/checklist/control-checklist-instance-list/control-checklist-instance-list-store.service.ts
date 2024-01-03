@@ -2,7 +2,9 @@ import {Injectable} from '@angular/core';
 import {
   ChecklistInstanceDTO,
   ControlChecklistInstanceService,
-  IdNamePairDTO, PluginInfoDTO, PluginService,
+  IdNamePairDTO,
+  PluginInfoDTO,
+  PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService
 } from '@cat/api';
@@ -94,5 +96,14 @@ export class ControlChecklistInstanceListStore {
         tap(checklistInstance => Log.info('Updated control checklist instance description', this, checklistInstance)),
         map(checklistInstance => checklistInstance.id)
       );
+  }
+
+  clone(partnerId: number, reportId: number, checklistId: number): Observable<number> {
+    return this.controlChecklistInstanceService.cloneControlChecklistInstance(checklistId, partnerId, reportId)
+     .pipe(
+         take(1),
+         tap(checklistInstance => Log.info('Cloned a control checklist instance', this, checklistInstance, checklistId)),
+         map(clonedInstance => clonedInstance.id)
+     );
   }
 }

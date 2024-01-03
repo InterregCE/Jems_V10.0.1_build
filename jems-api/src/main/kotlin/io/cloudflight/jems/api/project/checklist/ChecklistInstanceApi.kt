@@ -6,8 +6,8 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOption
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
-import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
@@ -57,6 +57,10 @@ interface ChecklistInstanceApi {
     @PostMapping(ENDPOINT_API_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createChecklistInstance(@RequestBody checklist: CreateChecklistInstanceDTO): ChecklistInstanceDetailDTO
 
+    @ApiOperation("Clone a checklist instance")
+    @PostMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{checklistId}/clone")
+    fun cloneChecklistInstance(@PathVariable checklistId: Long): ChecklistInstanceDetailDTO
+
     @ApiOperation("Update a checklist instance")
     @PutMapping(ENDPOINT_API_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateChecklistInstance(@RequestBody checklist: ChecklistInstanceDetailDTO): ChecklistInstanceDetailDTO
@@ -71,7 +75,7 @@ interface ChecklistInstanceApi {
 
     @ApiOperation("Update selection of checklist instances")
     @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateChecklistInstanceSelection(@RequestBody selection: Map<Long,  Boolean>)
+    fun updateChecklistInstanceSelection(@RequestBody selection: Map<Long, Boolean>)
 
     @ApiOperation("Update description for checklist instance")
     @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/description/{checklistId}", consumes = [MediaType.TEXT_PLAIN_VALUE])

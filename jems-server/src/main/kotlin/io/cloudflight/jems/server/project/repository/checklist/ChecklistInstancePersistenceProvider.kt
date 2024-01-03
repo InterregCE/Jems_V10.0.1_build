@@ -65,7 +65,6 @@ class ChecklistInstancePersistenceProvider(
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,
                 components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet(),
-                description = "",
                 createdAt = ZonedDateTime.now()
             ).also {
                 it.components?.forEach { component -> component.checklistComponentId.checklist = it }

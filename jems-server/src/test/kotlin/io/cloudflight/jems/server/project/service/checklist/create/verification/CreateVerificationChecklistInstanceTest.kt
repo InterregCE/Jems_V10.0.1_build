@@ -1,16 +1,14 @@
 package io.cloudflight.jems.server.project.service.checklist.create.verification
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
-import io.cloudflight.jems.server.project.service.checklist.VerificationChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,8 +20,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.time.ZonedDateTime
 
 internal class CreateVerificationChecklistInstanceTest : UnitTest() {
 
@@ -38,14 +34,14 @@ internal class CreateVerificationChecklistInstanceTest : UnitTest() {
         programmeChecklistId
     )
 
-    private fun report(status:ProjectReportStatus): ProjectReportModel {
+    private fun report(status: ProjectReportStatus): ProjectReportModel {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
         return report
     }
 
     @MockK
-    private lateinit var persistence: VerificationChecklistInstancePersistence
+    private lateinit var persistence: ChecklistInstancePersistence
 
     @MockK
     private lateinit var projectReportPersistence: ProjectReportPersistence
@@ -62,30 +58,30 @@ internal class CreateVerificationChecklistInstanceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "create verification checklist - OK - {0}")
-    @EnumSource(value = ProjectReportStatus::class,
-        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "Finalized", "ReOpenFinalized"])
+    @EnumSource(
+        value = ProjectReportStatus::class,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "Finalized", "ReOpenFinalized"]
+    )
     fun `create verification checklist - OK`() {
-        val currentUser = LocalCurrentUser(
-            AuthorizationUtil.userApplicant, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
-        )
-        every{ projectReportPersistence.getReportById(projectId, reportId) } returns
+        every { projectReportPersistence.getReportById(projectId, reportId) } returns
                 report(ProjectReportStatus.InVerification)
-        every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.userApplicant.id
         val result = mockk<ChecklistInstanceDetail>()
-        every { persistence.create(createControlChecklist, creatorId, reportId) } returns result
+        every { persistence.create(createControlChecklist, creatorId) } returns result
 
         assertThat(createVerificationChecklistInstance.create(projectId, reportId, createControlChecklist)).isEqualTo(result)
     }
 
     @ParameterizedTest(name = "create verification checklist - failed - report is locked {0}")
-    @EnumSource(value = ProjectReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "Finalized", "ReOpenFinalized"])
+    @EnumSource(
+        value = ProjectReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "Finalized", "ReOpenFinalized"]
+    )
     fun `create verification checklist - failed - report is locked`(status: ProjectReportStatus) {
         every { projectReportPersistence.getReportById(projectId, reportId) } returns report(status)
         assertThrows<CreateVerificationChecklistInstanceStatusNotAllowedException> {
             createVerificationChecklistInstance.create(projectId, reportId, createControlChecklist)
         }
-        verify(exactly = 0) { persistence.create(any(), any(), any()) }
+        verify(exactly = 0) { persistence.create(any(), any()) }
     }
 }

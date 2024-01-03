@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.controller.checklist.toDetailDto
 import io.cloudflight.jems.server.project.controller.checklist.toDetailModel
 import io.cloudflight.jems.server.project.controller.checklist.toDto
 import io.cloudflight.jems.server.project.controller.checklist.toModel
+import io.cloudflight.jems.server.project.service.checklist.clone.control.CloneControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.control.CreateControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.control.DeleteControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.control.ExportControlChecklistInstanceInteractor
@@ -30,6 +31,7 @@ class ControlChecklistInstanceController(
     private val createInteractor: CreateControlChecklistInstanceInteractor,
     private val deleteInteractor: DeleteControlChecklistInstanceInteractor,
     private val exportInteractor: ExportControlChecklistInstanceInteractor,
+    private val cloneInteractor: CloneControlChecklistInstanceInteractor
 ) : ControlChecklistInstanceApi {
 
     override fun getAllControlChecklistInstances(partnerId: Long, reportId: Long): List<ChecklistInstanceDTO> =
@@ -67,4 +69,6 @@ class ControlChecklistInstanceController(
     ): ResponseEntity<ByteArrayResource> =
         exportInteractor.export(partnerId, reportId, checklistId, exportLanguage, pluginKey).toResponseEntity()
 
+    override fun cloneControlChecklistInstance(partnerId: Long, reportId: Long, checklistId: Long): ChecklistInstanceDetailDTO =
+        cloneInteractor.clone(partnerId, reportId, checklistId).toDetailDto()
 }

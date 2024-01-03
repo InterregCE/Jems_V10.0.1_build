@@ -11,9 +11,10 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.controller.checklist.toModel
-import io.cloudflight.jems.server.project.service.checklist.delete.DeleteChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.clone.CloneChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstancesInteractor
@@ -32,6 +33,7 @@ class ChecklistInstanceController(
     private val deleteInteractor: DeleteChecklistInstanceInteractor,
     private val consolidateInteractor: ConsolidateChecklistInstanceInteractor,
     private val exportInteractor: ExportChecklistInstanceInteractor,
+    private val cloneInteractor: CloneChecklistInstanceInteractor
 ) : ChecklistInstanceApi {
 
     override fun getMyChecklistInstances(relatedToId: Long, type: ProgrammeChecklistTypeDTO): List<ChecklistInstanceDTO> =
@@ -51,6 +53,9 @@ class ChecklistInstanceController(
 
     override fun createChecklistInstance(checklist: CreateChecklistInstanceDTO): ChecklistInstanceDetailDTO =
         createInteractor.create(checklist.toModel()).toDetailDto()
+
+    override fun cloneChecklistInstance(checklistId: Long): ChecklistInstanceDetailDTO =
+        cloneInteractor.clone(checklistId).toDetailDto()
 
     override fun updateChecklistInstance(checklist: ChecklistInstanceDetailDTO): ChecklistInstanceDetailDTO =
         updateInteractor.update(checklist.toDetailModel()).toDetailDto()
@@ -77,5 +82,4 @@ class ChecklistInstanceController(
         pluginKey: String?,
     ): ResponseEntity<ByteArrayResource> =
         exportInteractor.export(relatedToId = projectId, checklistId, exportLanguage, pluginKey).toResponseEntity()
-
 }
