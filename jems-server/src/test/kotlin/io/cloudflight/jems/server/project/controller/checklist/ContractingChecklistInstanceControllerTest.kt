@@ -4,7 +4,11 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistCompone
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.checklist.*
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.server.UnitTest
@@ -12,8 +16,10 @@ import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.project.controller.contracting.monitoring.ContractingChecklistInstanceController
+import io.cloudflight.jems.server.project.service.checklist.clone.contracting.CloneContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.contracting.CreateContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.contracting.DeleteContractingChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.contracting.ExportContractingChecklistInstanceInteractor
@@ -35,7 +41,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-internal class ContractingChecklistInstanceControllerTest: UnitTest()  {
+internal class ContractingChecklistInstanceControllerTest : UnitTest() {
 
     companion object {
         const val projectId = 1L
@@ -147,6 +153,9 @@ internal class ContractingChecklistInstanceControllerTest: UnitTest()  {
     @MockK
     lateinit var exportInteractor: ExportContractingChecklistInstanceInteractor
 
+    @MockK
+    lateinit var cloneInteractor: CloneContractingChecklistInstanceInteractor
+
     @InjectMockKs
     lateinit var controller: ContractingChecklistInstanceController
 
@@ -196,5 +205,13 @@ internal class ContractingChecklistInstanceControllerTest: UnitTest()  {
         every { exportInteractor.export(projectId, checklistId, SystemLanguage.EL, null) } returns exportResult
         Assertions.assertThat(controller.exportContractingChecklistInstance(projectId, checklistId, SystemLanguage.EL, null))
             .isEqualTo(exportResult.toResponseEntity())
+    }
+
+    @Test
+    fun `clone contracting checklist`() {
+        every { cloneInteractor.clone(projectId, checklistId) } returns checklistDetail
+        Assertions.assertThat(controller.cloneContractingChecklistInstance(projectId, checklistId))
+            .usingRecursiveComparison()
+            .isEqualTo(checklistDetailDTO)
     }
 }

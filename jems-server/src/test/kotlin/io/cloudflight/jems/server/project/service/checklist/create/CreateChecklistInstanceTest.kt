@@ -2,12 +2,10 @@ package io.cloudflight.jems.server.project.service.checklist.create
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
@@ -15,9 +13,9 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,7 +26,6 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -107,16 +104,12 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
-            AppInputValidationException(emptyMap())
+                AppInputValidationException(emptyMap())
     }
 
     @Test
     fun `create - successfully`() {
-        val currentUser = LocalCurrentUser(
-            AuthorizationUtil.userApplicant, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
-        )
-        every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.userApplicant.id
         every { persistence.create(createChecklist, CREATOR_ID) } returns createdCheckLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

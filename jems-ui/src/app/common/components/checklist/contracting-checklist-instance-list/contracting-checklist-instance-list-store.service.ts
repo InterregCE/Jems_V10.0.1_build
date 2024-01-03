@@ -4,7 +4,9 @@ import {
   ChecklistInstanceSelectionDTO,
   ChecklistInstanceService,
   ContractingChecklistInstanceService,
-  IdNamePairDTO, PluginInfoDTO, PluginService,
+  IdNamePairDTO,
+  PluginInfoDTO,
+  PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService,
   UserRoleDTO
@@ -23,6 +25,7 @@ export class ContractingChecklistInstanceListStore {
 
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
+  userCanClone$: Observable<boolean>;
   availablePlugins$: Observable<PluginInfoDTO[]>;
 
   private listChanged$ = new Subject();
@@ -45,6 +48,7 @@ export class ContractingChecklistInstanceListStore {
               private pluginService: PluginService) {
     this.currentUserEmail$ = this.currentUserEmail();
     this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectSetToContracted);
+    this.userCanClone$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectSetToContracted);
     this.availablePlugins$ = this.availablePlugins();
   }
 
@@ -110,6 +114,15 @@ export class ContractingChecklistInstanceListStore {
         take(1),
         tap(checklistInstance => Log.info('Updated contracting checklist instance description', this, checklistInstance)),
         map(checklistInstance => checklistInstance.id)
+      );
+  }
+
+  clone(projectId: number, checklistId: number): Observable<number> {
+    return this.contractingChecklistInstanceService.cloneContractingChecklistInstance(checklistId, projectId)
+      .pipe(
+        take(1),
+        tap(clonedInstance => Log.info('Cloned contracting checklist instance', this, clonedInstance, checklistId)),
+        map(clonedInstance => clonedInstance.id)
       );
   }
 }

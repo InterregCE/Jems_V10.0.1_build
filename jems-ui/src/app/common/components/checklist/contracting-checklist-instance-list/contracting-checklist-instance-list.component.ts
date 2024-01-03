@@ -214,4 +214,15 @@ export class ContractingChecklistInstanceListComponent implements OnInit {
         }
       })).subscribe();
   }
+
+  clone(checklistId: number) {
+    this.pageStore.clone(this.projectId, checklistId)
+        .pipe(
+          tap(instanceId => this.routingService.navigate(
+                ['checklist', instanceId],
+                {relativeTo: this.activatedRoute}
+          )
+        )
+    ).subscribe();
+  }
 }

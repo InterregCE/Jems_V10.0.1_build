@@ -31,6 +31,10 @@ annotation class CanViewChecklistAssessment
 @PreAuthorize("@authorization.hasPermission('ProjectAssessmentChecklistSelectedUpdate')")
 annotation class CanUpdateChecklistAssessmentSelection
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectAssessmentChecklistUpdate')")
+annotation class CanCloneChecklistInstance
+
 @Component
 class ProjectChecklistAuthorization(
     override val securityService: SecurityService,

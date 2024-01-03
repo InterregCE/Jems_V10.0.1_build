@@ -88,6 +88,14 @@
         </button>
     </ng-container>
 
+    <button class="ml-1" [disabled]="(pageStore.userCanClone$ | async) !== true"
+            mat-icon-button color="primary"
+            (click)="clone(checklist.id);$event.stopPropagation();"
+            matTooltip="{{'common.clone.entry.tooltip' | translate}}"
+            aria-label="clone">
+        <mat-icon>file_copy</mat-icon>
+    </button>
+
     <ng-container>
         <button
                 (click)="delete(projectId, checklist);$event.stopPropagation();"

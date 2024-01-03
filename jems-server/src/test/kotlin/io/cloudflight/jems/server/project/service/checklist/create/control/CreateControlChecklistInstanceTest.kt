@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.checklist.create.control
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -13,14 +12,13 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
-import io.cloudflight.jems.server.project.service.checklist.ControlChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -34,7 +32,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -102,7 +99,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
         )
 
     @MockK
-    lateinit var persistence: ControlChecklistInstancePersistence
+    lateinit var persistence: ChecklistInstancePersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -130,15 +127,11 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `create control checklist - OK`() {
-        val currentUser = LocalCurrentUser(
-            AuthorizationUtil.userApplicant, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
-        )
-        every{
+        every {
             reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
         } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
-        every { securityService.currentUser } returns currentUser
-        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlChecklistDetail
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.userApplicant.id
+        every { persistence.create(createControlChecklist, creatorId) } returns createdControlChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
@@ -148,13 +141,15 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified", "Certified"])
+    @EnumSource(
+        value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified", "Certified"]
+    )
     fun `create control checklist - failed - report is locked`(status: ReportStatus) {
-        every{
+        every {
             reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
         } returns getProjectPartnerReportStatusAndVersion(status)
-        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlChecklistDetail
+        every { persistence.create(createControlChecklist, creatorId) } returns createdControlChecklistDetail
         assertThrows<CreateControlChecklistInstanceStatusNotAllowedException> {
             createControlChecklistInstance.create(partnerId, reportId, createControlChecklist)
         }

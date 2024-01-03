@@ -10,9 +10,7 @@ import {
   UserRoleDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  ControlChecklistInstanceListStore
-} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-store.service';
+import {ControlChecklistInstanceListStore} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-store.service';
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -21,9 +19,7 @@ import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
 import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
 import {FormBuilder, Validators} from '@angular/forms';
@@ -33,10 +29,10 @@ import {Alert} from '@common/components/forms/alert';
 import {SecurityService} from '../../../../security/security.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ReportUtil} from '@project/common/report-util';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {LanguageStore} from '@common/services/language-store.service';
 import {DownloadService} from '@common/services/download.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -271,5 +267,16 @@ export class ControlChecklistInstanceListComponent implements OnInit {
           this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
+  }
+
+  clone(checklistId: number) {
+    this.pageStore.clone(this.partnerId, this.reportId, checklistId)
+        .pipe(
+            tap(clonedInstanceId => this.routingService.navigate(
+                    ['checklist', clonedInstanceId],
+                    {relativeTo: this.activatedRoute}
+                )
+            )
+        ).subscribe();
   }
 }

@@ -1,9 +1,12 @@
 import {Injectable} from '@angular/core';
 import {
   ChecklistInstanceDTO,
-  IdNamePairDTO, PluginInfoDTO, PluginService,
+  IdNamePairDTO,
+  PluginInfoDTO,
+  PluginService,
   ProgrammeChecklistDetailDTO,
-  ProgrammeChecklistService, VerificationChecklistInstanceService
+  ProgrammeChecklistService,
+  VerificationChecklistInstanceService
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -93,5 +96,14 @@ export class VerificationChecklistInstanceListStore {
         tap(checklistInstance => Log.info('Updated verification checklist instance description', this, checklistInstance)),
         map(checklistInstance => checklistInstance.id)
       );
+  }
+
+  clone(projectId: number, reportId: number, checklistId: number): Observable<number> {
+    return this.verificationChecklistInstanceService.cloneVerificationChecklistInstance(checklistId, projectId, reportId)
+     .pipe(
+       take(1),
+       tap(clonedInstance => Log.info('Created a new verification checklist instance', this, clonedInstance, checklistId)),
+       map(clonedInstance => clonedInstance.id)
+     );
   }
 }

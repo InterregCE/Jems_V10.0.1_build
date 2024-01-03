@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.controller.checklist.toDetailDto
 import io.cloudflight.jems.server.project.controller.checklist.toDetailModel
 import io.cloudflight.jems.server.project.controller.checklist.toDto
 import io.cloudflight.jems.server.project.controller.checklist.toModel
+import io.cloudflight.jems.server.project.service.checklist.clone.verification.CloneVerificationChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.verification.CreateVerificationChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.verification.DeleteVerificationChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.verification.ExportVerificationChecklistInstanceInteractor
@@ -30,6 +31,7 @@ class VerificationChecklistInstanceController(
     private val createInteractor: CreateVerificationChecklistInstanceInteractor,
     private val deleteInteractor: DeleteVerificationChecklistInstanceInteractor,
     private val exportInteractor: ExportVerificationChecklistInstanceInteractor,
+    private val cloneInteractor: CloneVerificationChecklistInstanceInteractor,
 ) : VerificationChecklistInstanceApi {
 
     override fun getAllVerificationChecklistInstances(projectId: Long, reportId: Long): List<ChecklistInstanceDTO> =
@@ -72,4 +74,6 @@ class VerificationChecklistInstanceController(
     ): ResponseEntity<ByteArrayResource> =
         exportInteractor.export(projectId, reportId, checklistId, exportLanguage, pluginKey).toResponseEntity()
 
+    override fun cloneVerificationChecklistInstance(projectId: Long, reportId: Long, checklistId: Long): ChecklistInstanceDetailDTO =
+        cloneInteractor.clone(projectId, reportId, checklistId).toDetailDto()
 }

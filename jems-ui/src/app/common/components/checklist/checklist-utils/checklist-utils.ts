@@ -4,11 +4,9 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Component, TemplateRef} from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableComponent} from '@common/components/table/table.component';
+import {ChecklistInstanceListStore} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
 import {
-    ChecklistInstanceListStore
-} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
-import {
-    ContractingChecklistInstanceListStore
+  ContractingChecklistInstanceListStore
 } from '@common/components/checklist/contracting-checklist-instance-list/contracting-checklist-instance-list-store.service';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {v4 as uuid} from 'uuid';
@@ -106,7 +104,7 @@ export class ChecklistUtilsComponent {
         {
           displayedColumn: 'file.table.column.name.action',
           customCellTemplate: actions,
-          columnWidth: ColumnWidth.MediumColumn,
+          columnWidth: ColumnWidth.WideColumn,
           clickable: false
         }
       ]

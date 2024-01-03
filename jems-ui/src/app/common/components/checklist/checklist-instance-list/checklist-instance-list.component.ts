@@ -100,13 +100,7 @@ export class ChecklistInstanceListComponent implements OnInit {
   ngOnInit(): void {
     this.formService.init(this.form, this.pageStore.userCanChangeSelection$);
     this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
-    this.checklistInstancesSorted$ = combineLatest([
-      this.checklistInstances$,
-      this.pageStore.getInstancesSort$,
-    ]).pipe(
-      map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
-      tap(data => this.checklistInstances = data)
-    );
+    this.checklistInstancesSorted$ = this.getChecklistInstancesSorted();
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
     this.selectedChecklists$ = this.pageStore.selectedInstances(this.relatedType, this.relatedId)
       .pipe(
@@ -122,6 +116,16 @@ export class ChecklistInstanceListComponent implements OnInit {
 
     this.instancesTableConfiguration = this.initializeTableConfiguration(false);
     this.selectionTableConfiguration = this.initializeTableConfiguration(true);
+  }
+
+  private getChecklistInstancesSorted() {
+    return combineLatest([
+      this.checklistInstances$,
+      this.pageStore.getInstancesSort$
+    ]).pipe(
+        map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
+        tap(data => this.checklistInstances = data)
+    )
   }
 
   delete(checklist: ChecklistInstanceDTO): void {
@@ -201,9 +205,9 @@ export class ChecklistInstanceListComponent implements OnInit {
           customCellTemplate: this.descriptionCell,
         },
         ...selection ? [{
-          displayedColumn: 'checklists.instance.export',
+          displayedColumn: 'common.action',
           customCellTemplate: this.downloadCell,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           clickable: false
         }]: [],
         ...selection ? [{
@@ -216,6 +220,7 @@ export class ChecklistInstanceListComponent implements OnInit {
         ] : [{
           displayedColumn: 'common.action',
           customCellTemplate: this.actionsCell,
+          columnWidth: ColumnWidth.WideColumn,
           clickable: false
         }],
       ]
@@ -347,5 +352,16 @@ export class ChecklistInstanceListComponent implements OnInit {
           this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
+  }
+
+  clone(checklistId: number) {
+    this.pageStore.cloneInstance(checklistId)
+        .pipe(
+            tap(clonedInstanceId => this.routingService.navigate(
+                    ['checklist', clonedInstanceId],
+                    {relativeTo: this.activatedRoute}
+            ))
+        )
+        .subscribe()
   }
 }

@@ -92,4 +92,12 @@ interface ControlChecklistInstanceApi {
         @RequestParam exportLanguage: SystemLanguage,
         @RequestParam(required = false) pluginKey: String?,
     ): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Clone an existing control checklist instance")
+    @PostMapping("$ENDPOINT_API_CONTROL_CHECKLIST_INSTANCE/clone/{checklistId}")
+    fun cloneControlChecklistInstance(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable checklistId: Long
+    ): ChecklistInstanceDetailDTO
 }
