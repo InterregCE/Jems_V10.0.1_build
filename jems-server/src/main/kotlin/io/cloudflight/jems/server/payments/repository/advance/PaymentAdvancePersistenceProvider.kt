@@ -75,7 +75,7 @@ class PaymentAdvancePersistenceProvider(
     @Transactional
     override fun updateAdvancePaymentStatus(paymentId: Long, status: AdvancePaymentStatus, currentUserId: Long): AdvancePaymentDetail {
         return advancePaymentRepository.getById(paymentId).apply {
-            if (isPaymentAuthorizedInfo == false && status == AdvancePaymentStatus.AUTHORIZED) {
+            if (isPaymentAuthorizedInfo != true && status == AdvancePaymentStatus.AUTHORIZED) {
                 isPaymentAuthorizedInfo = true
                 paymentAuthorizedDate = LocalDate.now()
                 paymentAuthorizedInfoUser = getUserOrNull(currentUserId)
