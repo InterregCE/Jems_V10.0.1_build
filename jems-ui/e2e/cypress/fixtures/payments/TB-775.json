@@ -113,7 +113,7 @@
           "amount": 1999
         }
       ],
-      "comment": "",
+      "comment": "FTLS ready for payment",
       "readyForPayment": true,
       "fastTrack": true,
       "installmentsAlreadyCreated": false
@@ -134,7 +134,7 @@
           "amount": 999
         }
       ],
-      "comment": "",
+      "comment": "FTLS not ready for payment",
       "readyForPayment": false,
       "fastTrack": true,
       "installmentsAlreadyCreated": false
@@ -150,7 +150,7 @@
           "amount": 649.99
         }
       ],
-      "comment": "",
+      "comment": "FTLS also not ready for payment",
       "readyForPayment": false,
       "fastTrack": true,
       "installmentsAlreadyCreated": false
