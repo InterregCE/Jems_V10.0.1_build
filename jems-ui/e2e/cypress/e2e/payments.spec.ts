@@ -62,6 +62,10 @@ context('Payments tests', () => {
                 testData.projectLumpSums[3].programmeLumpSumId = lumpSumId2;
 
                 application.lumpSums = testData.projectLumpSums;
+                
+                testData.contractingFastTrackLumpSums[1].programmeLumpSumId = lumpSumId1;
+                testData.contractingFastTrackLumpSums[2].programmeLumpSumId = lumpSumId1;
+                testData.contractingFastTrackLumpSums[3].programmeLumpSumId = lumpSumId2;
                 application.contractMonitoring.fastTrackLumpSums = testData.contractingFastTrackLumpSums;
                 cy.loginByRequest(user.applicantUser.email);
                 cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
