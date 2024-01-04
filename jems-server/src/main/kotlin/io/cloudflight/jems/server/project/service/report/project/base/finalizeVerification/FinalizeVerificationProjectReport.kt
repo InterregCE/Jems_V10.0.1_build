@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -48,7 +47,6 @@ class FinalizeVerificationProjectReport(
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
     private val paymentRegularPersistence: PaymentPersistence,
     private val partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
-    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence,
     private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence,
@@ -65,28 +63,28 @@ class FinalizeVerificationProjectReport(
         validateReportIsInVerification(report)
         val projectReportVerificationExpenditures = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId)
 
-        val financialData = calculateSourcesAndSplits(
+        val financialDataForCertificateId = projectReportVerificationExpenditures.mapTo(HashSet()) { it.expenditure.partnerReportId }
+            .associateWith { certificateId -> getPartnerReportFinancialData.retrievePartnerReportFinancialData(certificateId) }
+
+        val sourcesAndSplits = calculateSourcesAndSplits(
             verification = projectReportVerificationExpenditures,
             availableFundsResolver = { certificateId -> partnerReportCoFinancingPersistence.getAvailableFunds(certificateId) },
-            partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
+            partnerReportFinancialDataResolver = { certificateId -> financialDataForCertificateId[certificateId]!! },
         )
 
         val spfContributionSplit = reportSpfClaimPersistence.getCurrentSpfContributionSplit(reportId)
         if (spfContributionSplit != null) {
             spfContributionSplit.fillInAdditionalSplitsForSpf()
-            financialData.add(spfContributionSplit)
+            sourcesAndSplits.add(spfContributionSplit)
         }
         val reportPartnerCertificateSplits = projectReportFinancialOverviewPersistence
-            .storeOverviewPerFund(reportId, toStore = financialData, spfPartnerIdInCaseOfSpf = report.spfPartnerId)
-        saveAfterVerificationCoFinancing(financialData.sumUp().totalLineToColumn(), report) // table 1
+            .storeOverviewPerFund(reportId, toStore = sourcesAndSplits, spfPartnerIdInCaseOfSpf = report.spfPartnerId)
+        saveAfterVerificationCoFinancing(sourcesAndSplits.sumUp().totalLineToColumn(), report) // table 1
 
         val expendituresByCertificate = projectReportVerificationExpenditures.groupBy({ it.toIdentifiers() }, { it.toVerification() })
-        val budgetOptionsByCertificate =
-            reportExpenditureCostCategoryPersistence.getCostCategoriesFor(expendituresByCertificate.keys.mapTo(HashSet()) { it.partnerReportId })
-                .mapValues { it.value.options }
 
         val afterVerificationCostCategories = expendituresByCertificate
-            .calculateCostCategoriesCurrentVerified(budgetOptionsByCertificate)
+            .calculateCostCategoriesCurrentVerified(financialDataForCertificateId.mapValues { it.value.flatRatesFromAF })
             .plusSpf(spfContributionSplit?.total ?: BigDecimal.ZERO)
 
         saveAfterVerificationCostCategories(afterVerificationCostCategories, report) // table 2

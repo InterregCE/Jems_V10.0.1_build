@@ -80,7 +80,7 @@ class CreateProjectPartnerReportBudget(
     private val reportProjectSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
 ) {
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun retrieveBudgetDataFor(
         projectId: Long,
         partner: ProjectPartnerSummary,

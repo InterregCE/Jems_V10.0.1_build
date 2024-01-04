@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.project.base.finalizeV
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -15,25 +17,30 @@ import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ProjectReportCertificateCostCategoryPersistenceProvider
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.Finalized
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.InVerification
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerReportFinancialData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
@@ -47,7 +54,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -67,9 +73,9 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
     companion object {
         private const val PROJECT_ID = 21L
 
-        private val reportSubmissionSummary = ProjectReportSubmissionSummary(
-            id = 52L,
-            reportNumber = 4,
+        private fun reportSubmissionSummary(reportId: Long, reportNumber: Int) = ProjectReportSubmissionSummary(
+            id = reportId,
+            reportNumber = reportNumber,
             status = Finalized,
             version = "5.6.1",
             firstSubmission = ZonedDateTime.now(),
@@ -79,11 +85,12 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             projectId = PROJECT_ID,
         )
 
-        private fun report(status: ProjectReportStatus): ProjectReportModel {
+        private fun report(reportId: Long, status: ProjectReportStatus, spfPartnerId: Long?): ProjectReportModel {
             val report = mockk<ProjectReportModel>()
-            every { report.id } returns 52L
+            every { report.id } returns reportId
             every { report.status } returns status
             every { report.projectId } returns PROJECT_ID
+            every { report.spfPartnerId } returns spfPartnerId
             return report
         }
 
@@ -208,24 +215,32 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 parkedOn = YESTERDAY
             )
 
-        private val partner_costs = ReportExpenditureCostCategory(
-            options = ProjectPartnerBudgetOptions(
-                partnerId = PARTNER_ID,
-                officeAndAdministrationOnStaffCostsFlatRate = null,
-                officeAndAdministrationOnDirectCostsFlatRate = null,
-                travelAndAccommodationOnStaffCostsFlatRate = null,
-                staffCostsFlatRate = null,
-                otherCostsOnStaffCostsFlatRate = null,
-            ),
-            totalsFromAF = mockk(),
-            currentlyReported = mockk(),
-            totalEligibleAfterControl = mockk(),
-            previouslyReported = mockk(),
-            previouslyValidated = mockk(),
-            currentlyReportedParked = mockk(),
-            currentlyReportedReIncluded = mockk(),
-            previouslyReportedParked = mockk(),
-        )
+        private val verification =
+            ProjectReportVerificationExpenditureLine(
+                expenditure = mockk<ProjectPartnerReportExpenditureItem> {
+                    every { id } returns 724L
+                    every { partnerId } returns PARTNER_ID
+                    every { partnerRole } returns ProjectPartnerRole.PARTNER
+                    every { partnerNumber } returns 2
+                    every { partnerReportId } returns PARTNER_REPORT_ID
+                    every { partnerReportNumber } returns 12
+                    every { costCategory } returns ReportBudgetCategory.Multiple
+                    every { lumpSum } returns dummyLineLumpSum
+                    every { unitCost } returns null
+                    every { investment } returns dummyInvestmentLine
+                    every { declaredAmountAfterSubmission } returns BigDecimal.valueOf(-999) // not used
+                    every { certifiedAmount } returns BigDecimal.valueOf(600)
+                    every { parkingMetadata } returns null
+                },
+                partOfVerificationSample = false,
+                deductedByJs = BigDecimal.valueOf(100),
+                deductedByMa = BigDecimal.valueOf(200),
+                amountAfterVerification = BigDecimal.valueOf(300),
+                typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+                parked = true,
+                verificationComment = "VERIFICATION COMM",
+                parkedOn = YESTERDAY
+            )
 
         private fun parkedExpenditure(): ProjectReportVerificationExpenditureLine {
             val expenditure = mockk<ProjectPartnerReportExpenditureItem>()
@@ -251,6 +266,64 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 InputTranslation(SystemLanguage.EN, "EN desc"),
                 InputTranslation(SystemLanguage.SK, "SK desc")
             )
+        )
+
+        fun spfContribution() = FinancingSourceBreakdownLine(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            spfLine = true,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = listOf(
+                Pair(ERDF, BigDecimal.valueOf(140L)),
+            ),
+            partnerContribution = BigDecimal.valueOf(60L),
+            publicContribution = BigDecimal.valueOf(18L),
+            automaticPublicContribution = BigDecimal.valueOf(20L),
+            privateContribution = BigDecimal.valueOf(22L),
+            total = BigDecimal.valueOf(200L),
+            split = emptyList(),
+        )
+
+        val options = mockk<PartnerReportFinancialData> {
+            every { coFinancingFromAF } returns listOf(
+                ProjectPartnerCoFinancing(PartnerContribution, null, BigDecimal.valueOf(25)),
+                ProjectPartnerCoFinancing(MainFund, ERDF, BigDecimal.valueOf(75)),
+            )
+            every { contributionsFromAF } returns ProjectPartnerReportContributionOverview(
+                public = mockk { every { amount } returns BigDecimal.valueOf(65L) },
+                automaticPublic = mockk { every { amount } returns BigDecimal.valueOf(84L) },
+                private = mockk { every { amount } returns BigDecimal.valueOf(101L) },
+                total = mockk(),
+            )
+            every { totalEligibleBudgetFromAFWithoutSpf } returns BigDecimal.valueOf(1000L)
+            every { flatRatesFromAF } returns ProjectPartnerBudgetOptions(-1L, 10, null, 12, 30, null)
+        }
+
+        val afterSaveSplits = listOf(
+            PartnerCertificateFundSplit(
+                partnerReportId = PARTNER_REPORT_ID,
+                partnerId = PARTNER_ID,
+                fundId = ERDF.id,
+                value = BigDecimal.valueOf(225L),
+                defaultPartnerContribution = BigDecimal.valueOf(75L),
+                defaultOfWhichPublic = BigDecimal.valueOf(1950L, 2),
+                defaultOfWhichAutoPublic = BigDecimal.valueOf(2520L, 2),
+                defaultOfWhichPrivate = BigDecimal.valueOf(3030L, 2),
+                total = BigDecimal.valueOf(300L),
+            ),
+            PartnerCertificateFundSplit(
+                partnerReportId = null,
+                partnerId = PARTNER_ID,
+                fundId = ERDF.id,
+                value = BigDecimal.valueOf(140L),
+                defaultPartnerContribution = BigDecimal.valueOf(60L),
+                defaultOfWhichPublic = BigDecimal.valueOf(18L),
+                defaultOfWhichAutoPublic = BigDecimal.valueOf(20L),
+                defaultOfWhichPrivate = BigDecimal.valueOf(22L),
+                total = BigDecimal.valueOf(200L),
+            ),
         )
 
         val reportCertificatesOverviewPerFund = listOf(PartnerCertificateFundSplit(
@@ -329,6 +402,86 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     defaultPartnerContribution = BigDecimal.ZERO
                 )
             )
+
+        private val expectedFinanceFund = FinancingSourceBreakdownLine(
+            partnerReportId = PARTNER_REPORT_ID,
+            partnerReportNumber = 12,
+            spfLine = false,
+            partnerId = PARTNER_ID,
+            partnerRole = ProjectPartnerRole.PARTNER,
+            partnerNumber = 2,
+            fundsSorted = listOf(
+                Pair(ERDF, BigDecimal.valueOf(225_00L, 2))
+            ),
+            partnerContribution = BigDecimal.valueOf(7500L, 2),
+            publicContribution = BigDecimal.valueOf(1950L, 2),
+            automaticPublicContribution = BigDecimal.valueOf(2520L, 2),
+            privateContribution = BigDecimal.valueOf(3030L, 2),
+            total = BigDecimal.valueOf(30000L, 2),
+            split = listOf(
+                FinancingSourceBreakdownSplitLine(
+                    fundId = 1L,
+                    value = BigDecimal.valueOf(225_00L, 2),
+                    partnerContribution = BigDecimal.valueOf(7500L, 2),
+                    publicContribution = BigDecimal.valueOf(1950L, 2),
+                    automaticPublicContribution = BigDecimal.valueOf(2520L, 2),
+                    privateContribution = BigDecimal.valueOf(3030L, 2),
+                    total = BigDecimal.valueOf(30000L, 2),
+                ),
+            ),
+        )
+
+        private val expectedFinanceSpf = FinancingSourceBreakdownLine(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            spfLine = true,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = listOf(
+                Pair(ERDF, BigDecimal.valueOf(140L))
+            ),
+            partnerContribution = BigDecimal.valueOf(60L),
+            publicContribution = BigDecimal.valueOf(18L),
+            automaticPublicContribution = BigDecimal.valueOf(20L),
+            privateContribution = BigDecimal.valueOf(22L),
+            total = BigDecimal.valueOf(200L),
+            split = listOf(
+                FinancingSourceBreakdownSplitLine(
+                    fundId = 1L,
+                    value = BigDecimal.valueOf(140L),
+                    partnerContribution = BigDecimal.valueOf(6000L, 2),
+                    publicContribution = BigDecimal.valueOf(1800L, 2),
+                    automaticPublicContribution = BigDecimal.valueOf(2000L, 2),
+                    privateContribution = BigDecimal.valueOf(2200L, 2),
+                    total = BigDecimal.valueOf(20000L, 2),
+                ),
+            ),
+        )
+
+        private val expectedCoFin = ReportCertificateCoFinancingColumn(
+            funds = mapOf(1L to BigDecimal.valueOf(36500L, 2), null to BigDecimal.valueOf(13500L, 2)),
+            partnerContribution = BigDecimal.valueOf(13500L, 2),
+            publicContribution = BigDecimal.valueOf(3750L, 2),
+            automaticPublicContribution = BigDecimal.valueOf(4520L, 2),
+            privateContribution = BigDecimal.valueOf(5230L, 2),
+            sum = BigDecimal.valueOf(50000L, 2),
+        )
+
+        private val expectedCostCategory = BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(0L, 2),
+            office = BigDecimal.valueOf(0L, 2),
+            travel = BigDecimal.valueOf(0L, 2),
+            external = BigDecimal.valueOf(0L),
+            equipment = BigDecimal.valueOf(0L),
+            infrastructure = BigDecimal.valueOf(0L),
+            other = BigDecimal.valueOf(0L),
+            lumpSum = BigDecimal.valueOf(300L),
+            unitCost = BigDecimal.valueOf(0L),
+            spfCost = BigDecimal.valueOf(200L),
+            sum = BigDecimal.valueOf(500_00L, 2),
+        )
+
     }
 
     @MockK
@@ -338,28 +491,25 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var expenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
+    private lateinit var expenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
 
-    @RelaxedMockK
-    lateinit var projectReportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence
+    @MockK
+    private lateinit var projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence
 
-    @RelaxedMockK
-    lateinit var getPartnerReportFinancialData: GetPartnerReportFinancialData
+    @MockK
+    private lateinit var getPartnerReportFinancialData: GetPartnerReportFinancialData
 
-    @RelaxedMockK
-    lateinit var projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence
-
-    @RelaxedMockK
-    lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    private lateinit var paymentRegularPersistence: PaymentPersistence
 
     @MockK
     private lateinit var partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
 
     @MockK
-    private lateinit var projectReportCertificateCostCategoryPersistenceProvider: ProjectReportCertificateCostCategoryPersistenceProvider
+    private lateinit var reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistenceProvider
 
     @MockK
-    private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+    private lateinit var reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence
 
     @MockK
     private lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
@@ -378,52 +528,47 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, paymentPersistence, auditPublisher)
+        clearMocks(reportPersistence, auditPublisher, expenditureVerificationPersistence, paymentRegularPersistence,
+            projectReportFinancialOverviewPersistence)
     }
 
-    /*@Test
-    fun finalizeVerification() {
-        val reportId = 52L
-        val report = report(InVerification)
-
+    @ParameterizedTest(name = "finalizeVerification (status {0})")
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "ReOpenFinalized"])
+    fun finalizeVerification(status: ProjectReportStatus) {
+        val reportId = 52L + status.ordinal
+        val spfPartnerId = if (status == InVerification) 666L else null
+        val report = report(reportId, status, spfPartnerId = spfPartnerId)
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
-        every { expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId) } returns listOf(parkedExpenditure())
 
-        val slotTime = slot<ZonedDateTime>()
-        every {
-            reportPersistence.finalizeVerificationOnReportById(
-                PROJECT_ID,
-                reportId,
-                capture(slotTime),
-            )
-        } returns reportSubmissionSummary
-
-
-        every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(
-            aggregatedExpenditures
-        )
+        // financialData
+        every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(verification)
         every { partnerReportCoFinancingPersistence.getAvailableFunds(PARTNER_REPORT_ID) } returns listOf(ERDF)
-        every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(reportId) } returns mockk()
+        every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(PARTNER_REPORT_ID) } returns options
+        every { reportSpfClaimPersistence.getCurrentSpfContributionSplit(reportId) } returns spfContribution()
 
-
+        val financeToStore = slot<List<FinancingSourceBreakdownLine>>()
         every {
-            projectReportFinancialOverviewPersistence.storeOverviewPerFund(
-                PROJECT_REPORT_ID,
-                any(),
-                null,
-            )
-        } returns emptyList()
+            projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, capture(financeToStore), spfPartnerId)
+        } returns afterSaveSplits
 
-        every {  reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(PARTNER_REPORT_ID)) } returns mapOf(PARTNER_REPORT_ID to partner_costs)
-        every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
-        every { projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
+        val coFinToStore = slot<ReportCertificateCoFinancingColumn>()
+        every { reportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, capture(coFinToStore)) } answers { }
+        val costCategoryToStore = slot<BudgetCostsCalculationResultFull>()
+        every { reportCertificateCostCategoryPersistence.updateAfterVerification(PROJECT_ID, reportId, capture(costCategoryToStore)) } answers { }
 
         every { reportCertificateLumpSumPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
         every { reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
         every { reportInvestmentPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
 
-        every { paymentPersistence.saveRegularPayments(PROJECT_REPORT_ID, emptyMap()) } returns Unit
+        val slotPayments = slot<Map<Long, PaymentRegularToCreate>>()
+        every { paymentRegularPersistence.saveRegularPayments(reportId, capture(slotPayments)) } returns Unit
 
+        every { expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId) } returns listOf(parkedExpenditure())
+
+        val slotTime = slot<ZonedDateTime>()
+        every {
+            reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId, capture(slotTime))
+        } returns reportSubmissionSummary(reportId, 12)
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -431,24 +576,44 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
         assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
 
+        assertThat(financeToStore.captured).containsExactly(expectedFinanceFund, expectedFinanceSpf)
+        assertThat(coFinToStore.captured).isEqualTo(expectedCoFin)
+        assertThat(costCategoryToStore.captured).isEqualTo(expectedCostCategory)
+        assertThat(slotPayments.captured).containsExactlyEntriesOf(
+            mapOf(
+                1L to PaymentRegularToCreate(
+                    PROJECT_ID,
+                    partnerPayments = listOf(
+                        PaymentPartnerToCreate(PARTNER_ID, PARTNER_REPORT_ID, BigDecimal.valueOf(225L)),
+                        PaymentPartnerToCreate(PARTNER_ID, null, BigDecimal.valueOf(140L)),
+                    ),
+                    amountApprovedPerFund = BigDecimal.valueOf(365L),
+                    defaultPartnerContribution = BigDecimal.valueOf(135L),
+                    defaultOfWhichPublic = BigDecimal.valueOf(3750L, 2),
+                    defaultOfWhichAutoPublic = BigDecimal.valueOf(4520L, 2),
+                    defaultOfWhichPrivate = BigDecimal.valueOf(5230L, 2),
+                ),
+            ),
+        )
+
         verify(exactly = 1) { reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId, any()) }
         assertThat(slotTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(slotTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_REPORT_VERIFICATION_FINALIZED)
-        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
+        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo("21")
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("NS-AQ01")
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(reportId)
         assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [PP4] - item [R48.71]")
-    }*/
+            .isEqualTo("[NS-AQ01] Project report R.12 verification was finalised and following expenditure items were parked:  [PP4] - item [R48.71]")
+    }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")
     @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "ReOpenFinalized"], mode = EnumSource.Mode.EXCLUDE)
     fun `finalizeVerification - wrong status`(reportStatus: ProjectReportStatus) {
-        val reportId = 52L
-        val report = report(reportStatus)
+        val reportId = 40L
+        val report = report(reportId, reportStatus, null)
 
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         assertThrows<ReportVerificationNotStartedException> { interactor.finalizeVerification(reportId) }
@@ -457,10 +622,10 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 
-    /*@Test
+    @Test
     fun `Regular payments data is generated correctly`() {
         val reportId = 52L
-        val report = report(InVerification)
+        val report = report(reportId, InVerification, null)
 
         val expectedPaymentsToSave = mapOf(
             1L to PaymentRegularToCreate(
@@ -529,12 +694,13 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             aggregatedExpenditures
         )
 
+        val finalReport = reportSubmissionSummary(reportId, 4)
         every {
             reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId, any())
-        } returns reportSubmissionSummary
+        } returns finalReport
 
 
-        every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId) } returns listOf(ERDF)
+        every { reportCertificateCoFinancingPersistence.getAvailableFunds(reportId) } returns listOf(ERDF)
         every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(aggregatedExpenditures)
 
 
@@ -542,11 +708,11 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { partnerReportCoFinancingPersistence.getAvailableFunds(101L) } returns listOf(
             ERDF
         )
-        every {  reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(PARTNER_REPORT_ID)) } returns mapOf(PARTNER_REPORT_ID to partner_costs)
+        every { reportSpfClaimPersistence.getCurrentSpfContributionSplit(reportId) } returns null
 
         every { projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, any(), null) } returns reportCertificatesOverviewPerFund
-        every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
-        every { projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
+        every { reportCertificateCostCategoryPersistence.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
         every { reportCertificateLumpSumPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
         every { reportCertificateUnitCostPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
         every { reportInvestmentPersistence.updateCurrentlyVerifiedValues(PROJECT_ID, reportId, any()) } returns Unit
@@ -557,17 +723,17 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(slotStatusChanged)) } answers { }
 
         val paymentsToSaveSlot = slot<Map<Long, PaymentRegularToCreate>>()
-        every { paymentPersistence.saveRegularPayments(reportId, capture(paymentsToSaveSlot)) } returns Unit
+        every { paymentRegularPersistence.saveRegularPayments(reportId, capture(paymentsToSaveSlot)) } returns Unit
 
         assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
         assertThat(paymentsToSaveSlot.captured).isEqualTo(expectedPaymentsToSave)
 
-        assertThat(slotAudit.captured.projectReportSummary).isEqualTo(reportSubmissionSummary)
+        assertThat(slotAudit.captured.projectReportSummary).isEqualTo(finalReport)
         assertThat(slotAudit.captured.previousReportStatus).isEqualTo(InVerification)
         assertThat(slotStatusChanged.captured.auditCandidate).isEqualTo(
             AuditCandidate(AuditAction.PROJECT_REPORT_VERIFICATION_FINALIZED,
                 AuditProject("21", "NS-AQ01", "acronym"), 52L,
                 "[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [LP1] - item [R1.1]")
         )
-    }*/
+    }
 }
