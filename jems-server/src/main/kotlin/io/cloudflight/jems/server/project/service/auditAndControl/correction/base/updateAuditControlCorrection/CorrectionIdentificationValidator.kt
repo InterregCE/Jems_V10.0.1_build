@@ -138,9 +138,10 @@ class CorrectionIdentificationValidator(
 
 
     private fun validateSelectedFundCombinationValid(input: AuditControlCorrectionUpdate, availableData: List<CorrectionAvailablePartner>) {
-        val availableFunds =
-            availableData.flatMap { it.availableReports }.firstOrNull { it.id == input.partnerReportId }?.availableFunds
-                ?: availableData.flatMap { it.availableFtls }.firstOrNull { it.orderNr == input.lumpSumOrderNr }?.availableFunds
+        val availablePartner = availableData.firstOrNull { it.partnerId == input.partnerId }
+        val availableReports = availablePartner?.availableReports?.firstOrNull { it.id == input.partnerReportId }
+        val availableFtls = availablePartner?.availableFtls?.firstOrNull { it.orderNr == input.lumpSumOrderNr }
+        val availableFunds = availableReports?.availableFunds ?: availableFtls?.availableFunds
 
         availableFunds?.firstOrNull { it.fund.id == input.programmeFundId }
             ?: throw CombinationOfSelectedFundIsInvalidException()
