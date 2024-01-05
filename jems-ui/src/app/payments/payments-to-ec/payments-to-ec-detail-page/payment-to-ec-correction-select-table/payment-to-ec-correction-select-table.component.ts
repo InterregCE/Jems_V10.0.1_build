@@ -43,10 +43,16 @@ export class PaymentToEcCorrectionSelectTableComponent {
   dataSource: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
 
   @Input()
-  dialogTitle: string;
+  selectDialogTitle: string;
 
   @Input()
-  dialogMessage: string;
+  selectDialogMessage: string;
+
+  @Input()
+  unselectDialogTitle: string;
+
+  @Input()
+  unselectDialogMessage: string;
 
   @Input()
   discardChanges$: ReplaySubject<void>;
@@ -143,9 +149,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
     Forms.confirm(
       this.confirmDialog,
       {
-        title: this.dialogTitle,
+        title: this.selectDialogTitle,
         message: {
-          i18nKey: this.dialogMessage
+          i18nKey: this.selectDialogMessage
         },
       }).pipe(
       take(1),
@@ -165,9 +171,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
     Forms.confirm(
       this.confirmDialog,
       {
-        title: this.dialogTitle,
+        title: this.unselectDialogTitle,
         message: {
-          i18nKey: this.dialogMessage
+          i18nKey: this.unselectDialogMessage
         },
       }).pipe(
       take(1),

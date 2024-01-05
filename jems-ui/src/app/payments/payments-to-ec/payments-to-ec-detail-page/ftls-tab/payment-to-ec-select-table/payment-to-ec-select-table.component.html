@@ -47,7 +47,7 @@
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.claim.no' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let i = index">
-                {{data.paymentToEcLinking.content[i].payment.paymentClaimNo}}
+                {{'payments.to.ec.detail.regular.projects.regular.payments.table.claim.no' | translate: {claimNr: data.paymentToEcLinking.content[i].payment.paymentClaimNo} }}
             </mat-cell>
         </ng-container>
 
