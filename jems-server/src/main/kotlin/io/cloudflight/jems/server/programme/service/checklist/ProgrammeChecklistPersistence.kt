@@ -12,7 +12,7 @@ interface ProgrammeChecklistPersistence {
 
     fun getChecklistDetail(id: Long): ProgrammeChecklistDetail
 
-    fun saveChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail
+    fun createChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail
 
     fun updateChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail
 

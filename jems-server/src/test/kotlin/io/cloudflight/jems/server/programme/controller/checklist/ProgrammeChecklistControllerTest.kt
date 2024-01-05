@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMet
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.ScoreMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.checklist.clone.CloneProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetProgrammeChecklistDetailInteractor
@@ -217,6 +218,9 @@ class ProgrammeChecklistControllerTest : UnitTest() {
     lateinit var createInteractor: CreateProgrammeChecklistInteractor
 
     @MockK
+    lateinit var cloneInteractor: CloneProgrammeChecklistInteractor
+
+    @MockK
     lateinit var getChecklistDetailInteractor: GetProgrammeChecklistDetailInteractor
 
     @MockK
@@ -254,6 +258,14 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         val checklistSlot = slot<ProgrammeChecklistDetail>()
         every { createInteractor.create(capture(checklistSlot)) } returnsArgument 0
         assertThat(controller.createProgrammeChecklist(checklistDetailDTO))
+            .usingRecursiveComparison()
+            .isEqualTo(checklistDetailDTO)
+    }
+
+    @Test
+    fun `clone checklist`() {
+        every { cloneInteractor.clone(ID) } returns checklistDetail
+        assertThat(controller.cloneProgrammeChecklist(ID))
             .usingRecursiveComparison()
             .isEqualTo(checklistDetailDTO)
     }
