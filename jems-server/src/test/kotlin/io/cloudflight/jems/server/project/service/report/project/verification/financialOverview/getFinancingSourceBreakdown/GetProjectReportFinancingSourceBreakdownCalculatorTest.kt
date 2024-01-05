@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
@@ -36,7 +35,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 
@@ -45,54 +44,45 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
     companion object {
         const val PROJECT_ID = 13L
         const val REPORT_ID = 14L
+        const val PARTNER_REPORT_ID = 38L
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
         val finalizedExpenditureLine = FinancingSourceBreakdownLine(
-            partnerReportId = 1L,
+            partnerReportId = PARTNER_REPORT_ID,
             partnerReportNumber = 2,
             spfLine = false,
             partnerId = 3,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = 4,
             fundsSorted = listOf(
-                Pair(ERDF_FUND, 74999.97.toScaledBigDecimal()),
-                Pair(IPA_III_FUND, 6249.99.toScaledBigDecimal()),
-                Pair(NDCI_FUND, 24999.99.toScaledBigDecimal()),
+                Pair(ERDF_FUND, mockk()),
+                Pair(NDCI_FUND, mockk()),
             ),
-            partnerContribution = 18750.01.toScaledBigDecimal(),
-            publicContribution = 11612.21.toScaledBigDecimal(),
-            automaticPublicContribution = 5938.23.toScaledBigDecimal(),
-            privateContribution = 1199.51.toScaledBigDecimal(),
-            total = 124999.96.toScaledBigDecimal(),
-            split = listOf(
-                FinancingSourceBreakdownSplitLine(
-                    fundId = 1L,
-                    value = 74999.97.toScaledBigDecimal(),
-                    partnerContribution = 13235.30.toScaledBigDecimal(),
-                    publicContribution = 8196.86.toScaledBigDecimal(),
-                    automaticPublicContribution = 4191.69.toScaledBigDecimal(),
-                    privateContribution = 846.72.toScaledBigDecimal(),
-                    total = 88235.27.toScaledBigDecimal(),
-                ),
-                FinancingSourceBreakdownSplitLine(
-                    fundId = 4L,
-                    value = 6249.99.toScaledBigDecimal(),
-                    partnerContribution = 1102.94.toScaledBigDecimal(),
-                    publicContribution = 683.07.toScaledBigDecimal(),
-                    automaticPublicContribution = 349.30.toScaledBigDecimal(),
-                    privateContribution = 70.55.toScaledBigDecimal(),
-                    total = 7352.93.toScaledBigDecimal(),
-                ),
-                FinancingSourceBreakdownSplitLine(
-                    fundId = 5L,
-                    value = 24999.99.toScaledBigDecimal(),
-                    partnerContribution = 4411.77.toScaledBigDecimal(),
-                    publicContribution = 2732.28.toScaledBigDecimal(),
-                    automaticPublicContribution = 1397.23.toScaledBigDecimal(),
-                    privateContribution = 282.24.toScaledBigDecimal(),
-                    total = 29411.76.toScaledBigDecimal(),
-                ),
-            )
+            partnerContribution = mockk(),
+            publicContribution = mockk(),
+            automaticPublicContribution = mockk(),
+            privateContribution = mockk(),
+            total = mockk(),
+            split = mockk(),
+        )
+
+        val spfExpenditureLine = FinancingSourceBreakdownLine(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            spfLine = true,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = listOf(
+                Pair(IPA_III_FUND, mockk()),
+                Pair(NDCI_FUND, mockk()),
+            ),
+            partnerContribution = mockk(),
+            publicContribution = mockk(),
+            automaticPublicContribution = mockk(),
+            privateContribution = mockk(),
+            total = mockk(),
+            split = mockk(),
         )
 
         private val finalizedCoFinancingCurrentVerified = ReportCertificateCoFinancingColumn(
@@ -116,7 +106,7 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                 partnerId = 3L,
                 partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                 partnerNumber = 4,
-                partnerReportId = 1L,
+                partnerReportId = PARTNER_REPORT_ID,
                 partnerReportNumber = 2,
                 lumpSum = mockk(),
                 unitCost = mockk(),
@@ -126,24 +116,24 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                 contract = mockk(),
                 internalReferenceNumber = "internal-1",
                 invoiceNumber = "invoice-1",
-                invoiceDate = LocalDate.of(2022, 1, 1),
-                dateOfPayment = LocalDate.of(2022, 2, 1),
+                invoiceDate = mockk(),
+                dateOfPayment = mockk(),
                 description = emptySet(),
                 comment = emptySet(),
-                totalValueInvoice = 22.toScaledBigDecimal(),
-                vat = 18.toScaledBigDecimal(),
-                numberOfUnits = 0.00.toScaledBigDecimal(),
-                pricePerUnit = 0.00.toScaledBigDecimal(),
-                declaredAmount = 31.2.toScaledBigDecimal(),
-                currencyCode = "CZK",
-                currencyConversionRate = 24.toScaledBigDecimal(),
-                declaredAmountAfterSubmission = 1.30.toScaledBigDecimal(),
+                totalValueInvoice = mockk(),
+                vat = mockk(),
+                numberOfUnits = mockk(),
+                pricePerUnit = mockk(),
+                declaredAmount = mockk(),
+                currencyCode = "mockk",
+                currencyConversionRate = mockk(),
+                declaredAmountAfterSubmission = mockk(),
                 attachment = null,
 
                 partOfSample = false,
                 partOfSampleLocked = false,
-                certifiedAmount = 101.toScaledBigDecimal(),
-                deductedAmount = 101.toScaledBigDecimal(),
+                certifiedAmount = mockk(),
+                deductedAmount = mockk(),
                 typologyOfErrorId = null,
                 parked = false,
                 verificationComment = null,
@@ -151,13 +141,13 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                 parkingMetadata = null
             ),
             partOfVerificationSample = false,
-            deductedByJs = 0.00.toScaledBigDecimal(),
-            deductedByMa = 0.00.toScaledBigDecimal(),
-            amountAfterVerification = 124999.96.toScaledBigDecimal(),
+            deductedByJs = mockk(),
+            deductedByMa = mockk(),
+            amountAfterVerification = BigDecimal.valueOf(6500L),
             typologyOfErrorId = null,
             parked = true,
             verificationComment = "VERIFICATION COMM",
-            parkedOn = YESTERDAY
+            parkedOn = YESTERDAY,
         )
 
         private val inVerificationPartnerReportFinancialData = PartnerReportFinancialData(
@@ -165,58 +155,77 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                 ProjectPartnerCoFinancing(
                     fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                     fund = ERDF_FUND,
-                    percentage = 60.toScaledBigDecimal(),
+                    percentage = BigDecimal.valueOf(60L),
                 ),
                 ProjectPartnerCoFinancing(
                     fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                     fund = IPA_III_FUND,
-                    percentage = 5.toScaledBigDecimal(),
+                    percentage = BigDecimal.valueOf(5L),
                 ),
                 ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = NDCI_FUND,
-                    percentage = 20.toScaledBigDecimal(),
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                    fund = null,
+                    percentage = BigDecimal.valueOf(35L),
                 ),
             ),
             contributionsFromAF = ProjectPartnerReportContributionOverview(
                 public = ProjectPartnerReportContributionRow(
-                    amount = 11612.22.toScaledBigDecimal(),
-                    previouslyReported = 0.00.toScaledBigDecimal(),
-                    currentlyReported = 11612.22.toScaledBigDecimal(),
-                    totalReportedSoFar = 11612.22.toScaledBigDecimal(),
+                    amount = BigDecimal.valueOf(15_700L),
+                    previouslyReported = mockk(),
+                    currentlyReported = mockk(),
+                    totalReportedSoFar = mockk(),
                 ),
                 automaticPublic = ProjectPartnerReportContributionRow(
-                    amount = 5938.24.toScaledBigDecimal(),
-                    previouslyReported = 0.toScaledBigDecimal(),
-                    currentlyReported = 5938.24.toScaledBigDecimal(),
-                    totalReportedSoFar = 5938.24.toScaledBigDecimal(),
+                    amount = BigDecimal.valueOf(18_050L),
+                    previouslyReported = mockk(),
+                    currentlyReported = mockk(),
+                    totalReportedSoFar = mockk(),
                 ),
                 private = ProjectPartnerReportContributionRow(
-                    amount = 1199.52.toScaledBigDecimal(),
-                    previouslyReported = 0.00.toScaledBigDecimal(),
-                    currentlyReported = 1199.52.toScaledBigDecimal(),
-                    totalReportedSoFar = 1199.52.toScaledBigDecimal(),
+                    amount = BigDecimal.valueOf(10_000L),
+                    previouslyReported = mockk(),
+                    currentlyReported = mockk(),
+                    totalReportedSoFar = mockk(),
                 ),
                 total = ProjectPartnerReportContributionRow(
-                    amount = 124999.96.toScaledBigDecimal(),
-                    previouslyReported = 0.00.toScaledBigDecimal(),
-                    currentlyReported = 124999.96.toScaledBigDecimal(),
-                    totalReportedSoFar = 124999.96.toScaledBigDecimal(),
+                    amount = BigDecimal.valueOf(43_750L),
+                    previouslyReported = mockk(),
+                    currentlyReported = mockk(),
+                    totalReportedSoFar = mockk(),
                 ),
             ),
-            totalEligibleBudgetFromAFWithoutSpf = 124999.96.toScaledBigDecimal(),
+            totalEligibleBudgetFromAFWithoutSpf = BigDecimal.valueOf(125_000L),
             flatRatesFromAF = ProjectPartnerBudgetOptions(
-                partnerId = 125L,
-                officeAndAdministrationOnStaffCostsFlatRate = 0,
-                officeAndAdministrationOnDirectCostsFlatRate = 0,
-                travelAndAccommodationOnStaffCostsFlatRate = 0,
-                staffCostsFlatRate = 0,
-                otherCostsOnStaffCostsFlatRate = 0,
+                partnerId = 3L,
+                officeAndAdministrationOnStaffCostsFlatRate = null,
+                officeAndAdministrationOnDirectCostsFlatRate = null,
+                travelAndAccommodationOnStaffCostsFlatRate = null,
+                staffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
             ),
         )
 
-        private val financingSourceBreakdown = FinancingSourceBreakdown(
-            sources = listOf(finalizedExpenditureLine),
+        private val inVerificationSpf = FinancingSourceBreakdownLine(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            spfLine = true,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = listOf(
+                ERDF_FUND to BigDecimal.valueOf(1),
+                NDCI_FUND to BigDecimal.valueOf(2),
+            ),
+            partnerContribution = BigDecimal.valueOf(6),
+            publicContribution = BigDecimal.valueOf(1),
+            automaticPublicContribution = BigDecimal.valueOf(2),
+            privateContribution = BigDecimal.valueOf(3),
+            total = BigDecimal.valueOf(9),
+            split = emptyList(),
+        )
+
+        private val breakdownFinalized = FinancingSourceBreakdown(
+            sources = listOf(finalizedExpenditureLine, spfExpenditureLine),
             total = FinancingSourceBreakdownLine(
                 partnerReportId = null,
                 partnerReportNumber = null,
@@ -226,14 +235,112 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
                 partnerNumber = null,
                 fundsSorted = listOf(
                     ERDF_FUND to 74999.97.toScaledBigDecimal(),
-                    IPA_III_FUND to 6249.99.toScaledBigDecimal(),
                     NDCI_FUND to 24999.99.toScaledBigDecimal(),
+                    IPA_III_FUND to 6249.99.toScaledBigDecimal(),
                 ),
                 partnerContribution = 18750.01.toScaledBigDecimal(),
                 publicContribution = 11612.21.toScaledBigDecimal(),
                 automaticPublicContribution = 5938.23.toScaledBigDecimal(),
                 privateContribution = 1199.51.toScaledBigDecimal(),
                 total = 124999.96.toScaledBigDecimal(),
+                split = emptyList(),
+            )
+        )
+
+        private val breakdownInVerification = FinancingSourceBreakdown(
+            sources = listOf(
+                FinancingSourceBreakdownLine(
+                    partnerReportId = 38L,
+                    partnerReportNumber = 2,
+                    spfLine = false,
+                    partnerId = 3L,
+                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                    partnerNumber = 4,
+                    fundsSorted = listOf(
+                        Pair(ERDF_FUND, BigDecimal.valueOf(3900_00L, 2)),
+                        Pair(IPA_III_FUND, BigDecimal.valueOf(325_00L, 2)),
+                    ),
+                    partnerContribution = BigDecimal.valueOf(2275_00L, 2),
+                    publicContribution = BigDecimal.valueOf(816_40L, 2),
+                    automaticPublicContribution = BigDecimal.valueOf(938_60L, 2),
+                    privateContribution = BigDecimal.valueOf(520_00L, 2),
+                    total = BigDecimal.valueOf(6500_00L, 2),
+                    split = listOf(
+                        FinancingSourceBreakdownSplitLine(
+                            fundId = 1,
+                            value = BigDecimal.valueOf(3900_00L, 2),
+                            partnerContribution = BigDecimal.valueOf(2100_00L, 2),
+                            publicContribution = BigDecimal.valueOf(753_60L, 2),
+                            automaticPublicContribution = BigDecimal.valueOf(866_40L, 2),
+                            privateContribution = BigDecimal.valueOf(480_00L, 2),
+                            total = BigDecimal.valueOf(6000_00L, 2),
+                        ),
+                        FinancingSourceBreakdownSplitLine(
+                            fundId = 4,
+                            value = BigDecimal.valueOf(325_00L, 2),
+                            partnerContribution = BigDecimal.valueOf(175_00L, 2),
+                            publicContribution = BigDecimal.valueOf(62_80L, 2),
+                            automaticPublicContribution = BigDecimal.valueOf(72_20L, 2),
+                            privateContribution = BigDecimal.valueOf(40_00L, 2),
+                            total = BigDecimal.valueOf(500_00L, 2),
+                        ),
+                    ),
+                ),
+                FinancingSourceBreakdownLine(
+                    partnerReportId = null,
+                    partnerReportNumber = null,
+                    spfLine = true,
+                    partnerId = null,
+                    partnerRole = null,
+                    partnerNumber = null,
+                    fundsSorted = listOf(
+                        Pair(ERDF_FUND, BigDecimal.valueOf(1L)),
+                        Pair(NDCI_FUND, BigDecimal.valueOf(2L)),
+                    ),
+                    partnerContribution = BigDecimal.valueOf(6L),
+                    publicContribution = BigDecimal.valueOf(1L),
+                    automaticPublicContribution = BigDecimal.valueOf(2L),
+                    privateContribution = BigDecimal.valueOf(3L),
+                    total = BigDecimal.valueOf(9L),
+                    split = listOf(
+                        FinancingSourceBreakdownSplitLine(
+                            fundId = 1,
+                            value = BigDecimal.valueOf(1L),
+                            partnerContribution = BigDecimal.valueOf(1_99L, 2),
+                            publicContribution = BigDecimal.valueOf(33L, 2),
+                            automaticPublicContribution = BigDecimal.valueOf(66L, 2),
+                            privateContribution = BigDecimal.valueOf(99L, 2),
+                            total = BigDecimal.valueOf(2_99L, 2),
+                        ),
+                        FinancingSourceBreakdownSplitLine(
+                            fundId = 5,
+                            value = BigDecimal.valueOf(2L),
+                            partnerContribution = BigDecimal.valueOf(3_99L, 2),
+                            publicContribution = BigDecimal.valueOf(66L, 2),
+                            automaticPublicContribution = BigDecimal.valueOf(1_33L, 2),
+                            privateContribution = BigDecimal.valueOf(1_99L, 2),
+                            total = BigDecimal.valueOf(5_99L, 2),
+                        ),
+                    ),
+                ),
+            ),
+            total = FinancingSourceBreakdownLine(
+                partnerReportId = null,
+                partnerReportNumber = null,
+                spfLine = false,
+                partnerId = null,
+                partnerRole = null,
+                partnerNumber = null,
+                fundsSorted = listOf(
+                    ERDF_FUND to BigDecimal.valueOf(3901_00L, 2),
+                    IPA_III_FUND to BigDecimal.valueOf(325_00L, 2),
+                    NDCI_FUND to BigDecimal.valueOf(2L),
+                ),
+                partnerContribution = BigDecimal.valueOf(2281_00L, 2),
+                publicContribution = BigDecimal.valueOf(817_40L, 2),
+                automaticPublicContribution = BigDecimal.valueOf(940_60L, 2),
+                privateContribution = BigDecimal.valueOf(523_00L, 2),
+                total = BigDecimal.valueOf(6509_00L, 2),
                 split = emptyList(),
             )
         )
@@ -272,28 +379,29 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
             projectReportVerificationExpenditurePersistence,
             getPartnerReportFinancialData,
             partnerReportCoFinancingPersistence,
+            reportSpfClaimPersistence,
         )
     }
 
-    /*@Test
+    @Test
     fun `getFinancingSource - ProjectReport Finalized`() {
         every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns mockk { every { status } returns ProjectReportStatus.Finalized }
         every { projectReportFinancialOverviewPersistence.getOverviewPerFund(REPORT_ID) } returns listOf(finalizedExpenditureLine)
-        val coFinancing = mockk<ReportCertificateCoFinancing> { every { currentVerified } returns finalizedCoFinancingCurrentVerified }
-        every { projectReportCertificateCoFinancingPersistence.getCoFinancing(PROJECT_ID, REPORT_ID) } returns coFinancing
-        every { partnerReportCoFinancingPersistence.getAvailableFunds(1L) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
+        every { projectReportFinancialOverviewPersistence.getOverviewSpfPerFund(REPORT_ID) } returns spfExpenditureLine
+        every { projectReportCertificateCoFinancingPersistence.getCoFinancing(PROJECT_ID, REPORT_ID).currentVerified } returns
+                finalizedCoFinancingCurrentVerified
 
-        assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(financingSourceBreakdown)
+        assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(breakdownFinalized)
     }
 
     @Test
     fun `getFinancingSource - ProjectReport InVerification`() {
         every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns mockk { every { status } returns ProjectReportStatus.InVerification }
         every { projectReportVerificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns listOf(inVerificationExpenditure)
-        every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(inVerificationExpenditure.expenditure.partnerReportId) } returns
-                inVerificationPartnerReportFinancialData
-        every { partnerReportCoFinancingPersistence.getAvailableFunds(1L) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
+        every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(PARTNER_REPORT_ID) } returns inVerificationPartnerReportFinancialData
+        every { partnerReportCoFinancingPersistence.getAvailableFunds(PARTNER_REPORT_ID) } returns listOf(ERDF_FUND, IPA_III_FUND)
+        every { reportSpfClaimPersistence.getCurrentSpfContributionSplit(REPORT_ID) } returns inVerificationSpf
 
-        assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(financingSourceBreakdown)
-    }*/
+        assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(breakdownInVerification)
+    }
 }
