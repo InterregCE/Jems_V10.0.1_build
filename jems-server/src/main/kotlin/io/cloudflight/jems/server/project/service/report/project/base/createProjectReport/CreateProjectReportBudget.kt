@@ -62,7 +62,7 @@ class CreateProjectReportBudget(
     private val getBudgetTotalCost: GetBudgetTotalCost,
 ) {
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun retrieveBudgetDataFor(
         projectId: Long,
         version: String?,

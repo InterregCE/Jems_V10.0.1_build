@@ -805,7 +805,7 @@ internal class CreateProjectReportTest : UnitTest() {
         )
     }
 
-    /*@ParameterizedTest(name = "createReportFor {0}")
+    @ParameterizedTest(name = "createReportFor {0}")
     @EnumSource(
         value = ApplicationStatus::class,
         names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
@@ -853,6 +853,9 @@ internal class CreateProjectReportTest : UnitTest() {
         every { workPlanPersistence.getReportWorkPlanById(projectId, reportId = 11L) } returns listOf(report11wp)
         every { projectResultPersistence.getResultsForProject(projectId, "version") } returns listOf(projectResult())
         every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns projectManagement
+        every { callPersistence.getCallByProjectId(projectId) } returns mockk {
+            every { isSpf() } returns false
+        }
         every { projectReportResultPersistence.getResultCumulative(setOf(11L)) } returns mapOf(
             1 to BigDecimal.valueOf(
                 15L,
@@ -904,7 +907,47 @@ internal class CreateProjectReportTest : UnitTest() {
                 description = "[proj-custom-iden] Project report PR.8 added",
             )
         )
-    }*/
+    }
+
+    @ParameterizedTest(name = "createReportFor spf but no partner {0}")
+    @EnumSource(
+        value = ApplicationStatus::class,
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+    )
+    fun `createReportFor spf but no partner`(status: ApplicationStatus) {
+        val projectId = 454L + status.ordinal
+        every { reportPersistence.countForProject(projectId) } returns 1
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
+        every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
+        every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
+        every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns emptyList()
+        every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns null
+        every { reportPersistence.getSubmittedProjectReports(projectId) } returns emptyList()
+        every {
+            projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version")
+        } returns emptyList()
+        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(emptySet()) } returns emptyMap()
+
+        every { projectResultPersistence.getResultsForProject(projectId, "version") } returns emptyList()
+        every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns null
+        every { projectReportResultPersistence.getResultCumulative(emptySet()) } returns emptyMap()
+        every { callPersistence.getCallByProjectId(projectId) } returns mockk {
+            every { isSpf() } returns true
+        }
+
+        val data = ProjectReportUpdate(
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+        )
+        assertThrows<NoPartnerForSpfProject> { interactor.createReportFor(projectId, data) }
+    }
 
     @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
     @EnumSource(
