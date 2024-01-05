@@ -26,7 +26,7 @@ export class AdvancePaymentsDetailPageStoreStore {
   savedAdvancePaymentDetail$ = new Subject<AdvancePaymentDetailDTO>();
   refresh$ = new Subject();
   searchProjectsByName$ = new ReplaySubject<string>(1);
-  getProjectPartnersByProjectId$ = new ReplaySubject<number>(1);
+  getProjectPartnersByProjectId$ = new Subject<number>();
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
