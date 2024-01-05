@@ -29,7 +29,7 @@ class ProgrammeChecklistPersistenceProvider(
     }
 
     @Transactional
-    override fun saveChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
+    override fun createChecklist(checklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
         return repository.save(checklist.toEntity()).toDetailModel()
     }
 

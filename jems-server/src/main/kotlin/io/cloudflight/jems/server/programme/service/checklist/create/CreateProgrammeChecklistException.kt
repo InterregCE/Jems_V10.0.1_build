@@ -9,7 +9,8 @@ const val CREATE_PROGRAMME_CHECKLIST_ERROR_KEY_PREFIX = "use.case.create.program
 
 class CreateProgrammeChecklistException(cause: Throwable) : ApplicationException(
     code = "$CREATE_PROGRAMME_CHECKLIST_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$CREATE_PROGRAMME_CHECKLIST_ERROR_KEY_PREFIX.failed"), cause = cause
+    i18nMessage = I18nMessage("$CREATE_PROGRAMME_CHECKLIST_ERROR_KEY_PREFIX.failed"),
+    cause = cause
 )
 
 class MaxAmountOfProgrammeChecklistReached(maxAmount: Int) : ApplicationUnprocessableException(

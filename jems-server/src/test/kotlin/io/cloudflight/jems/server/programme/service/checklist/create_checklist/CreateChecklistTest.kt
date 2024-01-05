@@ -68,7 +68,7 @@ internal class CreateChecklistTest : UnitTest() {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
-            AppInputValidationException(emptyMap())
+                AppInputValidationException(emptyMap())
     }
 
     @Test
@@ -76,7 +76,7 @@ internal class CreateChecklistTest : UnitTest() {
         every { persistence.countAll() } returns 1
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
-        every { persistence.saveChecklist(checkList) } returns checkList
+        every { persistence.createChecklist(checkList) } returns checkList
         Assertions.assertThat(createProgrammeChecklist.create(checkList)).isEqualTo(checkList)
     }
 

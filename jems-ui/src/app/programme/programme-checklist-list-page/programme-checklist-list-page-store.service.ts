@@ -35,6 +35,15 @@ export class ProgrammeChecklistListPageStore {
       );
   }
 
+  cloneChecklist(id: number): Observable<number> {
+    return this.checklistService.cloneProgrammeChecklist(id)
+      .pipe(
+        take(1),
+        tap(clonedChecklist => Log.info('Cloned programme checklist ', this, clonedChecklist, id)),
+        map(clonedChecklist => clonedChecklist.id)
+      )
+  }
+
   private checklists(): Observable<ProgrammeChecklistDTO[]> {
     return combineLatest([
       this.checklistsChanged$.pipe(startWith(null)),
