@@ -144,7 +144,7 @@ context('Control report tests', () => {
     });
   });
 
-  it.only('TB-768 Control report checklist instantiation', () => {
+  it('TB-768 Control report checklist instantiation', () => {
     cy.fixture('project/control-reports/TB-768.json').then(testData => {
 
       cy.loginByRequest(user.applicantUser.email);
