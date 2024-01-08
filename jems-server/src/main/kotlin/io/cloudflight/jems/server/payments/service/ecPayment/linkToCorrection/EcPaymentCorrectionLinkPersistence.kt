@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import java.math.BigDecimal
 
 interface EcPaymentCorrectionLinkPersistence {
 
@@ -23,7 +24,11 @@ interface EcPaymentCorrectionLinkPersistence {
 
     fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
-    fun createCorrectionExtension(financialDescription: ProjectCorrectionFinancialDescription)
+    fun createCorrectionExtension(
+        financialDescription: ProjectCorrectionFinancialDescription,
+        totalEligibleWithoutArt94or95: BigDecimal,
+        unionContribution: BigDecimal
+    )
 
     fun getCorrectionIdsAvailableForEcPayments(fundId: Long): Set<Long>
 

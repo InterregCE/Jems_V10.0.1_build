@@ -119,7 +119,9 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
                     fundAmount = BigDecimal.valueOf(101),
                     partnerContribution = BigDecimal(201),
                     ofWhichPublic = BigDecimal(301),
-                    ofWhichAutoPublic = BigDecimal(401)
+                    ofWhichAutoPublic = BigDecimal(401),
+                    correctedFundAmount = BigDecimal(405),
+                    unionContribution = BigDecimal(0)
                 ),
                 106L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 106L,
@@ -127,7 +129,9 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
                     fundAmount = BigDecimal.valueOf(102),
                     partnerContribution = BigDecimal(202),
                     ofWhichPublic = BigDecimal(302),
-                    ofWhichAutoPublic = BigDecimal(402)
+                    ofWhichAutoPublic = BigDecimal(402),
+                    correctedFundAmount = BigDecimal(405),
+                    unionContribution = BigDecimal(0)
                 ),
             ),
         )
@@ -146,7 +150,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(PAYMENT_TO_EC_ID) } returns paymentApplicationDetail(
             status = PaymentEcStatus.Draft
         )
-        every { ecPaymentLinkPersistence.calculateAndGetOverview(PAYMENT_TO_EC_ID) } returns paymentToEcAmountSummaryTmpMap
+        every { ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(PAYMENT_TO_EC_ID) } returns paymentToEcAmountSummaryTmpMap
 
         val expectedSummary = PaymentToEcAmountSummary(expectedPaymentsIncludedInPaymentsToEc, expectedTotal)
 
@@ -168,7 +172,7 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
             status = PaymentEcStatus.Draft
         )
         every {
-            ecPaymentLinkPersistence.calculateAndGetOverview(
+            ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(
                 PAYMENT_TO_EC_ID
             )
         } returns paymentToEcAmountSummaryTmpMap

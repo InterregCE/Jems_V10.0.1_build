@@ -89,6 +89,8 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             it.correctedPublicContribution = it.publicContribution
             it.correctedAutoPublicContribution = it.autoPublicContribution
             it.correctedPrivateContribution = it.privateContribution
+            it.correctedUnionContribution = it.unionContribution
+            it.correctedTotalEligibleWithoutArt94or95 = it.totalEligibleWithoutArt94or95
         }
     }
 
@@ -101,6 +103,9 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             this.correctedAutoPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = ecPaymentCorrectionLinkingUpdate.correctedPrivateContribution
+            this.correctedTotalEligibleWithoutArt94or95 = ecPaymentCorrectionLinkingUpdate.correctedTotalEligibleWithoutArt94or95
+            this.correctedUnionContribution = ecPaymentCorrectionLinkingUpdate.correctedUnionContribution
+            this.correctedFundAmount = ecPaymentCorrectionLinkingUpdate.correctedFundAmount
             this.comment = ecPaymentCorrectionLinkingUpdate.comment
         }.toModel()
 
@@ -108,17 +113,27 @@ class EcPaymentCorrectionLinkPersistenceProvider(
     override fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>) {
         ecPaymentCorrectionExtensionRepository.findAllById(toUpdate.keys).forEach {
             it.finalScoBasis = toUpdate[it.correctionId]!!
+            if (toUpdate[it.correctionId]!! == PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) {
+                it.correctedFundAmount = it.fundAmount
+                it.correctedTotalEligibleWithoutArt94or95 = it.totalEligibleWithoutArt94or95
+                it.correctedUnionContribution = BigDecimal.ZERO
+            }
         }
     }
 
     @Transactional
-    override fun createCorrectionExtension(financialDescription: ProjectCorrectionFinancialDescription) {
+    override fun createCorrectionExtension(
+        financialDescription: ProjectCorrectionFinancialDescription,
+        totalEligibleWithoutArt94or95: BigDecimal,
+        unionContribution: BigDecimal
+    ) {
         val correctionEntity = auditControlCorrectionRepository.getById(financialDescription.correctionId)
         val correctionExtensionEntity = PaymentToEcCorrectionExtensionEntity(
             correctionId = financialDescription.correctionId,
             correction = correctionEntity,
             paymentApplicationToEc = null,
             fundAmount = financialDescription.fundAmount,
+            correctedFundAmount = financialDescription.fundAmount,
             publicContribution = financialDescription.publicContribution,
             correctedPublicContribution = financialDescription.publicContribution,
             autoPublicContribution = financialDescription.autoPublicContribution,
@@ -126,7 +141,11 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             privateContribution = financialDescription.privateContribution,
             correctedPrivateContribution = financialDescription.privateContribution,
             comment = null,
-            finalScoBasis = null
+            finalScoBasis = null,
+            totalEligibleWithoutArt94or95 = totalEligibleWithoutArt94or95,
+            correctedTotalEligibleWithoutArt94or95 = totalEligibleWithoutArt94or95,
+            unionContribution = unionContribution,
+            correctedUnionContribution = unionContribution
         )
 
         ecPaymentCorrectionExtensionRepository.save(correctionExtensionEntity)

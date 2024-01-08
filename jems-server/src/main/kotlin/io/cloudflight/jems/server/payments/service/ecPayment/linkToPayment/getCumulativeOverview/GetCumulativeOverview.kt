@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getC
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.mergeBothScoBases
@@ -12,7 +11,6 @@ import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class GetCumulativeOverview(
@@ -31,7 +29,7 @@ class GetCumulativeOverview(
         val currentOverview = (if (ecPayment.status.isFinished())
             ecPaymentLinkPersistence.getTotalsForFinishedEcPayment(ecPaymentId)
         else
-            ecPaymentLinkPersistence.calculateAndGetOverview(ecPaymentId).sumUpProperColumns()
+            ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(ecPaymentId).sumUpProperColumns()
         ).mergeBothScoBases()
 
         val cumulativeOverviewLines = currentOverview.plus(cumulativeOverviewForThisEcPayment)

@@ -95,6 +95,8 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     partnerContribution = BigDecimal(201),
                     ofWhichPublic = BigDecimal(301),
                     ofWhichAutoPublic = BigDecimal(401),
+                    correctedFundAmount = BigDecimal(405),
+                    unionContribution = BigDecimal(0)
                 ),
                 26L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 26L,
@@ -103,6 +105,8 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     partnerContribution = BigDecimal(202),
                     ofWhichPublic = BigDecimal(302),
                     ofWhichAutoPublic = BigDecimal(402),
+                    correctedFundAmount = BigDecimal(405),
+                    unionContribution = BigDecimal(0)
                 )
             )
         )
@@ -114,8 +118,8 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     auditControlNr = 1,
                     correctionNr = 1,
                     projectId = PROJECT_ID,
-                    finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
-                    typologyProv94 = ContractingMonitoringExtendedOption.Yes,
+                    finalScoBasis = null,
+                    typologyProv94 = ContractingMonitoringExtendedOption.No,
                     typologyProv95 = ContractingMonitoringExtendedOption.No,
                 ),
             22L to
@@ -194,7 +198,7 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             ),
         )
         every {
-            ecPaymentLinkPersistence.calculateAndGetOverview(
+            ecPaymentLinkPersistence.calculateAndGetOverviewForDraftEcPayment(
                 PAYMENT_ID
             )
         } returns paymentToEcAmountSummaryTmpMap

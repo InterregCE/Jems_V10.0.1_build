@@ -9,11 +9,13 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.fin
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.projectAuditControlCorrectionClosed
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class CloseAuditControlCorrection(
@@ -39,7 +41,11 @@ class CloseAuditControlCorrection(
         val correctionMeasure = correctionMeasurePersistence.getProgrammeMeasure(correctionId)
         if (correctionMeasure.scenario.scenarioAllowsLinkingToEcPayment()) {
             val correctionFinance = correctionFinancePersistence.getCorrectionFinancialDescription(correctionId)
-            correctionExtensionLinkingPersistence.createCorrectionExtension(correctionFinance)
+            correctionExtensionLinkingPersistence.createCorrectionExtension(
+                correctionFinance,
+                totalEligibleWithoutArt94or95 = correctionFinance.calculateTotalEligibleWithoutArt94or95(),
+                unionContribution = BigDecimal.ZERO
+            )
         }
 
         return correctionPersistence.closeCorrection(correctionId).also {
@@ -64,5 +70,8 @@ class CloseAuditControlCorrection(
         if (invalidPartnerReportAndLumpSum || correction.programmeFundId == null)
             throw PartnerOrReportOrFundNotSelectedException()
     }
+
+    private fun ProjectCorrectionFinancialDescription.calculateTotalEligibleWithoutArt94or95() : BigDecimal =
+        this.fundAmount + this.publicContribution + this.autoPublicContribution + this.privateContribution
 
 }

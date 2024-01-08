@@ -83,6 +83,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   resetAmounts(rowIndex: number, row: PaymentToEcInclusionRow) {
     this.array.at(rowIndex).patchValue({
+      totalEligibleWithoutArt94or95: row.totalEligibleWithoutArt94or95,
+      unionContribution: row.unionContribution,
+      fundAmount: row.amountApprovedPerFund,
       autoPublicContribution: row.autoPublicContribution,
       publicContribution: row.publicContribution,
       privateContribution: row.privateContribution
@@ -95,6 +98,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
       correctedPublicContribution: this.array.at(rowIndex).get('publicContribution')?.value,
       correctedAutoPublicContribution: this.array.at(rowIndex).get('autoPublicContribution')?.value,
       correctedPrivateContribution: this.array.at(rowIndex).get('privateContribution')?.value,
+      correctedTotalEligibleWithoutArt94or95: this.array.at(rowIndex).get('totalEligibleWithoutArt94or95')?.value,
+      correctedUnionContribution: this.array.at(rowIndex).get('unionContribution')?.value,
+      correctedFundAmount: this.array.at(rowIndex).get('fundAmount')?.value,
       comment: this.array.at(rowIndex).get('comment')?.value,
       correctionId
     } as PaymentToEcAmountUpdate;
@@ -105,6 +111,9 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   discardChanges(rowIndex: number, unchangedRow: PaymentToEcInclusionRow) {
     this.array.at(rowIndex).patchValue({
+      totalEligibleWithoutArt94or95: unchangedRow.correctedTotalEligibleWithoutArt94or95,
+      unionContribution: unchangedRow.correctedUnionContribution,
+      fundAmount: unchangedRow.correctedFundAmount,
       autoPublicContribution: unchangedRow.correctedAutoPublicContribution,
       publicContribution: unchangedRow.correctedPublicContribution,
       privateContribution: unchangedRow.correctedPrivateContribution,
@@ -170,5 +179,11 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   canSave(): boolean {
     return this.form.valid;
+  }
+
+  changeUnionContribution(rowIndex: number) {
+    const updatedUnionContribution = this.array.at(rowIndex).get('unionContribution')?.value;
+    const totalCorrection = this.data.content[rowIndex].amountApprovedPerFund + this.data.content[rowIndex].partnerContribution;
+    this.array.at(rowIndex).patchValue({totalEligibleWithoutArt94or95: totalCorrection - updatedUnionContribution});
   }
 }

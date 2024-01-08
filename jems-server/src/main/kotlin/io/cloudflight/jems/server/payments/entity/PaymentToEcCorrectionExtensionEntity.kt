@@ -3,13 +3,7 @@ package io.cloudflight.jems.server.payments.entity
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import java.math.BigDecimal
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.MapsId
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "payment_to_ec_correction_extension")
@@ -29,6 +23,8 @@ class PaymentToEcCorrectionExtensionEntity (
 
     @field:NotNull
     val fundAmount: BigDecimal,
+    @field:NotNull
+    var correctedFundAmount: BigDecimal,
 
     @field:NotNull
     val publicContribution: BigDecimal,
@@ -50,4 +46,16 @@ class PaymentToEcCorrectionExtensionEntity (
     @Enumerated(EnumType.STRING)
     var finalScoBasis: PaymentSearchRequestScoBasis?,
 
+    @Column(name = "total_eligible_without_art_94_or_95")
+    @field:NotNull
+    var totalEligibleWithoutArt94or95: BigDecimal,
+
+    @Column(name = "corrected_total_eligible_without_art_94_or_95")
+    @field:NotNull
+    var correctedTotalEligibleWithoutArt94or95: BigDecimal,
+
+    @field:NotNull
+    val unionContribution: BigDecimal,
+    @field:NotNull
+    var correctedUnionContribution: BigDecimal,
 )

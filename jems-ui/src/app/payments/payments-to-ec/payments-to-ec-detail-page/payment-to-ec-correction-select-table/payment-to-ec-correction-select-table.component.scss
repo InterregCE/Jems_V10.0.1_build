@@ -20,15 +20,17 @@ $input-col-width: 9rem;
 .mat-column-projectAcronym {
   min-width: 8rem;
 }
+
 .mat-column-priorityAxis {
   min-width: 4rem;
 }
-.mat-column-correctionNo {
+
+.mat-column-correctionNo,
+.mat-column-projectFlagged94Or95 {
   min-width: 5rem;
 }
 
 .mat-column-totalEligible,
-.mat-column-fundAmount,
 .mat-column-controllingBody,
 .mat-column-comment {
   min-width: 8rem;
@@ -38,6 +40,9 @@ $input-col-width: 9rem;
   max-width: 5rem;
 }
 
+.mat-column-totalEligibleWithoutArt94or95,
+.mat-column-unionContribution,
+.mat-column-fundAmount,
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-autoPublicContribution,
@@ -54,10 +59,13 @@ $input-col-width: 9rem;
 .mat-column-projectId,
 .mat-column-projectAcronym,
 .mat-column-priorityAxis,
+.mat-column-projectFlagged94Or95,
 .mat-column-scenario,
 .mat-column-correctionNo,
 .mat-column-controllingBody,
 .mat-column-totalEligible,
+.mat-column-totalEligibleWithoutArt94or95,
+.mat-column-unionContribution,
 .mat-column-fundAmount,
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
@@ -99,4 +107,8 @@ $input-col-width: 9rem;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.button-cell {
+  margin-top: 2rem;
 }

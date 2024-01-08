@@ -10,4 +10,6 @@ interface EcPaymentCorrectionExtensionRepository: JpaRepository<PaymentToEcCorre
     fun getAllByPaymentApplicationToEcIdNull(): List<PaymentToEcCorrectionExtensionEntity>
 
     fun getByCorrectionId(correctionId: Long): PaymentToEcCorrectionExtensionEntity?
+
+    fun getAllByPaymentApplicationToEcId(paymentApplicationToEcId: Long): List<PaymentToEcCorrectionExtensionEntity>
 }

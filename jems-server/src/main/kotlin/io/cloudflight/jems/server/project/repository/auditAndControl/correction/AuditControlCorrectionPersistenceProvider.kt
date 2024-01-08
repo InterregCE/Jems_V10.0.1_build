@@ -2,10 +2,13 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import com.querydsl.core.Tuple
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionTmp
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorrection.toModel
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
@@ -269,6 +272,7 @@ class AuditControlCorrectionPersistenceProvider(
         val specProgrammePriorityEntity = QProgrammePriorityEntity.programmePriorityEntity
         val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
         val specProjectContractingMonitoringEntity = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        val specPaymentApplicationToEcEntity = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
 
         val results = jpaQueryFactory
             .select(
@@ -282,7 +286,8 @@ class AuditControlCorrectionPersistenceProvider(
                 specProjectContractingMonitoringEntity.typologyProv94,
                 specProjectContractingMonitoringEntity.typologyProv95,
 
-                specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id,
+                specPaymentApplicationToEcEntity.id,
+                specPaymentApplicationToEcEntity.status,
                 specPaymentToEcCorrectionExtensionEntity.fundAmount,
                 specPaymentToEcCorrectionExtensionEntity.publicContribution,
                 specPaymentToEcCorrectionExtensionEntity.correctedPublicContribution,
@@ -291,7 +296,14 @@ class AuditControlCorrectionPersistenceProvider(
                 specPaymentToEcCorrectionExtensionEntity.privateContribution,
                 specPaymentToEcCorrectionExtensionEntity.correctedPrivateContribution,
                 specPaymentToEcCorrectionExtensionEntity.comment,
-                specCorrectionProgrammeMeasure.scenario
+                specCorrectionProgrammeMeasure.scenario,
+
+                specPaymentToEcCorrectionExtensionEntity.finalScoBasis,
+                specPaymentToEcCorrectionExtensionEntity.correctedFundAmount,
+                specPaymentToEcCorrectionExtensionEntity.totalEligibleWithoutArt94or95,
+                specPaymentToEcCorrectionExtensionEntity.correctedTotalEligibleWithoutArt94or95,
+                specPaymentToEcCorrectionExtensionEntity.unionContribution,
+                specPaymentToEcCorrectionExtensionEntity.correctedUnionContribution,
             )
             .from(specCorrection)
             .leftJoin(specProjectAuditControl)
@@ -308,6 +320,8 @@ class AuditControlCorrectionPersistenceProvider(
                 .on(specCorrectionProgrammeMeasure.correctionId.eq(specCorrection.id))
             .leftJoin(specProjectContractingMonitoringEntity)
                 .on(specProjectContractingMonitoringEntity.projectId.eq(specProjectEntity.id))
+            .leftJoin(specPaymentApplicationToEcEntity)
+                .on(specPaymentApplicationToEcEntity.id.eq(specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id))
             .where(
                 filter.transformToWhereClause(specCorrection, specCorrectionProgrammeMeasure, specPaymentToEcCorrectionExtensionEntity)
             ).apply{
@@ -350,22 +364,28 @@ class AuditControlCorrectionPersistenceProvider(
                 priorityAxis = it.get(5, String::class.java),
                 controllingBody = it.get(6, ControllingBody::class.java)!!,
                 isProjectFlagged94Or95 = checkProjectFallsUnderArticle94Or95(
-                    it.get(
-                        7,
-                        ContractingMonitoringExtendedOption::class.java
-                    ), it.get(8, ContractingMonitoringExtendedOption::class.java)
+                    it.get(7, ContractingMonitoringExtendedOption::class.java),
+                    it.get(8, ContractingMonitoringExtendedOption::class.java),
+                    it.get(10, PaymentEcStatus::class.java),
+                    it.get(20, PaymentSearchRequestScoBasis::class.java),
                 ),
                 paymentToEcId = it.get(9, Long::class.java),
 
-                fundAmount = it.get(10, BigDecimal::class.java)!!,
-                publicContribution = it.get(11, BigDecimal::class.java)!!,
-                correctedPublicContribution = it.get(12, BigDecimal::class.java)!!,
-                autoPublicContribution = it.get(13, BigDecimal::class.java)!!,
-                correctedAutoPublicContribution = it.get(14, BigDecimal::class.java)!!,
-                privateContribution = it.get(15, BigDecimal::class.java)!!,
-                correctedPrivateContribution = it.get(16, BigDecimal::class.java)!!,
-                comment = it.get(17, String::class.java),
-                scenario = it.get(18, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
+                fundAmount = it.get(11, BigDecimal::class.java)!!,
+                publicContribution = it.get(12, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(13, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(14, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(15, BigDecimal::class.java)!!,
+                privateContribution = it.get(16, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(17, BigDecimal::class.java)!!,
+                comment = it.get(18, String::class.java),
+                scenario = it.get(19, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
+
+                correctedFundAmount = it.get(21, BigDecimal::class.java)!!,
+                totalEligibleWithoutArt94or95 = it.get(22, BigDecimal::class.java)!!,
+                correctedTotalEligibleWithoutArt94or95 = it.get(23, BigDecimal::class.java)!!,
+                unionContribution = it.get(24, BigDecimal::class.java)!!,
+                correctedUnionContribution = it.get(25, BigDecimal::class.java)!!,
             )
         },
         pageable,
@@ -375,9 +395,13 @@ class AuditControlCorrectionPersistenceProvider(
 
     private fun checkProjectFallsUnderArticle94Or95(
         flaggedArticle94: ContractingMonitoringExtendedOption?,
-        flaggedArticle95: ContractingMonitoringExtendedOption?
+        flaggedArticle95: ContractingMonitoringExtendedOption?,
+        paymentToEcStatus: PaymentEcStatus?,
+        finalScoFlag: PaymentSearchRequestScoBasis?
     ) =
-        if (flaggedArticle94 == null || flaggedArticle95 == null)
+        if (paymentToEcStatus == PaymentEcStatus.Finished)
+            finalScoFlag == PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+        else if (flaggedArticle94 == null || flaggedArticle95 == null)
             false
         else flaggedArticle94.isYes() || flaggedArticle95.isYes()
 

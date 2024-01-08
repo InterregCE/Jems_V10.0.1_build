@@ -161,6 +161,7 @@
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
     <ID>NestedBlockDepth:BrokenReportCurrencyCheck.kt$BrokenReportCurrencyCheck$private fun List&lt;ExpenditureWithBrokenRate&gt;.toNiceFormat(): String</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
+    <ID>NestedBlockDepth:UpdateContractingMonitoring.kt$UpdateContractingMonitoring$@CanSetProjectToContracted @Transactional @ExceptionWrapper(UpdateContractingMonitoringException::class) override fun updateContractingMonitoring( projectId: Long, contractMonitoring: ProjectContractingMonitoring ): ProjectContractingMonitoring</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>

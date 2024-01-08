@@ -17,6 +17,7 @@ data class PaymentToEcCorrectionTmp(
     val paymentToEcId: Long?,
 
     val fundAmount: BigDecimal,
+    val correctedFundAmount: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
     val autoPublicContribution: BigDecimal,
@@ -24,5 +25,10 @@ data class PaymentToEcCorrectionTmp(
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
     val comment: String?,
-    val scenario: ProjectCorrectionProgrammeMeasureScenario
+    val scenario: ProjectCorrectionProgrammeMeasureScenario,
+
+    val totalEligibleWithoutArt94or95: BigDecimal,
+    val correctedTotalEligibleWithoutArt94or95: BigDecimal,
+    val unionContribution: BigDecimal,
+    val correctedUnionContribution: BigDecimal,
 )

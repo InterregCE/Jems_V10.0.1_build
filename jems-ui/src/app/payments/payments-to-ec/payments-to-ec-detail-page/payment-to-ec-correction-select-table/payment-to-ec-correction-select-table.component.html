@@ -40,6 +40,16 @@
       </mat-cell>
     </ng-container>
 
+      <ng-container matColumnDef="projectFlagged94Or95">
+          <mat-header-cell *matHeaderCellDef>
+              <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.article.94.or.95.project' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index">
+              <span *ngIf="data.content[i].projectFlagged94Or95">{{ 'common.yes' | translate }}</span>
+              <span *ngIf="!data.content[i].projectFlagged94Or95">{{ 'common.no' | translate }}</span>
+          </mat-cell>
+      </ng-container>
+
     <ng-container matColumnDef="correctionNo">
       <mat-header-cell *matHeaderCellDef>
         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.correction.no' | translate }}</span>
@@ -81,26 +91,73 @@
       </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="fundAmount">
-      <mat-header-cell class="text-right" *matHeaderCellDef>
-        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let i = index" class="text-right">
-        {{ data.content[i].amountApprovedPerFund | asMoney}}
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="partnerContribution">
-      <mat-header-cell class="text-right" *matHeaderCellDef>
-        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let i = index" class="text-right">
-        {{ data.content[i].partnerContribution | asMoney}}
-      </mat-cell>
-    </ng-container>
 
     <form [formGroup]="form">
       <ng-container formArrayName="array">
+
+      <ng-container matColumnDef="totalEligibleWithoutArt94or95">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible.without.sco.art.94.95' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+              <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+                {{ row.get('totalEligibleWithoutArt94or95').value | asMoney}}
+              </div>
+              <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+                <mat-form-field [formGroup]="row" class="limit-input-width">
+                    <input  matInput formControlName="totalEligibleWithoutArt94or95"
+                      [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                      currencyMask matInput type="decimal">
+                </mat-form-field>
+              </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="unionContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.union.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+            <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+              {{ row.get('unionContribution').value | asMoney}}
+            </div>
+            <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+              <mat-form-field [formGroup]="row" class="limit-input-width">
+                 <input matInput formControlName="unionContribution" (keyup)="changeUnionContribution(i)"
+                    [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                    currencyMask matInput type="decimal">
+              </mat-form-field>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="fundAmount">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+              <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+            <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+              {{ row.get('fundAmount').value | asMoney}}
+            </div>
+            <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+              <mat-form-field [formGroup]="row" class="limit-input-width">
+                <input matInput formControlName="fundAmount"
+                  [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                  currencyMask matInput type="decimal">
+                </mat-form-field>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="partnerContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index" class="text-right">
+            {{ data.content[i].partnerContribution | asMoney}}
+          </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="publicContribution">
           <mat-header-cell class="text-right" *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
@@ -110,7 +167,7 @@
               {{ row.get('publicContribution').value | asMoney}}
             </div>
             <div *ngIf="i === editedRowIndex">
-              <mat-form-field [formGroup]="row" class="limit-input-width">
+              <mat-form-field [formGroup]="row" class="limit-input-width button-cell">
                 <input  matInput formControlName="publicContribution"
                         [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                         currencyMask matInput type="decimal">
@@ -133,7 +190,7 @@
                                     {{ row.get('autoPublicContribution').value | asMoney}}
                                 </span>
             <div *ngIf="i === editedRowIndex">
-              <mat-form-field  class="limit-input-width">
+              <mat-form-field  class="limit-input-width button-cell">
                 <input matInput formControlName="autoPublicContribution"
                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                        currencyMask matInput type="decimal">
@@ -156,7 +213,7 @@
                                     {{ row.get('privateContribution').value | asMoney}}
                                 </span>
             <div *ngIf="i === editedRowIndex">
-              <mat-form-field [formGroup]="row" class="limit-input-width">
+              <mat-form-field [formGroup]="row" class="limit-input-width button-cell">
                 <input matInput formControlName="privateContribution"
                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                        currencyMask matInput type="decimal">
@@ -182,7 +239,7 @@
                 {{ row.get('comment').value }}
              </span>
               <jems-expandable-textarea *ngIf="i === editedRowIndex"
-                class="vertical-align comment-display"
+                class="vertical-align comment-display button-cell"
                 [control]="row.get('comment')"
                 [errors]="row.get('comment')?.errors"
                 [characterLimit]="500"

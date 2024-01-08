@@ -72,7 +72,12 @@ class GetAvailableCorrections : UnitTest() {
             correctedPrivateContribution = BigDecimal(105),
             correctedPublicContribution = BigDecimal(106),
             correctedAutoPublicContribution = BigDecimal(107),
-            comment = "Comment"
+            comment = "Comment",
+            correctedFundAmount = BigDecimal(107),
+            unionContribution = BigDecimal(0),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(108),
+            correctedUnionContribution = BigDecimal(55),
+            totalEligibleWithoutArt94or95 = BigDecimal(800),
         )
 
         val correctionNotLinked = PaymentToEcCorrectionLinking(
@@ -94,7 +99,12 @@ class GetAvailableCorrections : UnitTest() {
             correctedPrivateContribution = BigDecimal(105),
             correctedPublicContribution = BigDecimal(106),
             correctedAutoPublicContribution = BigDecimal(107),
-            comment = "Comment"
+            comment = "Comment",
+            correctedFundAmount = BigDecimal(107),
+            unionContribution = BigDecimal(0),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(108),
+            correctedUnionContribution = BigDecimal(55),
+            totalEligibleWithoutArt94or95 = BigDecimal(800),
         )
     }
 

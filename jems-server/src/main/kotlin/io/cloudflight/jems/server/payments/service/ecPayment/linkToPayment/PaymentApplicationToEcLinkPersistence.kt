@@ -26,7 +26,7 @@ interface PaymentApplicationToEcLinkPersistence {
     fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
 
-    fun calculateAndGetOverview(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>
+    fun calculateAndGetOverviewForDraftEcPayment(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>
 
     fun saveTotalsWhenFinishingEcPayment(
         ecPaymentId: Long,
@@ -45,4 +45,5 @@ interface PaymentApplicationToEcLinkPersistence {
     fun getCumulativeTotalForEcPayment(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLine>
 
     fun getPaymentToEcIdsProjectReportIncluded(projectReportId: Long): Set<Long>
+
 }

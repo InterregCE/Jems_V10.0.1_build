@@ -39,6 +39,11 @@ class SelectCorrectionToEcTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
+            correctedFundAmount = BigDecimal.valueOf(75.00),
+            unionContribution = BigDecimal.valueOf(0.00),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(46.00),
+            correctedUnionContribution = BigDecimal.valueOf(80.50),
+            totalEligibleWithoutArt94or95 = BigDecimal.valueOf(90.00),
         )
 
     }

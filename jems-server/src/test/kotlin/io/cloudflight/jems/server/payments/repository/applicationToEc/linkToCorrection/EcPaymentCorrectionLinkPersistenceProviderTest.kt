@@ -147,7 +147,10 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             projectModificationId = null
         )
 
-        private fun paymentToEcExtensionEntity(paymentApplicationToEcEntity: PaymentApplicationToEcEntity?) =
+        private fun paymentToEcExtensionEntity(
+            paymentApplicationToEcEntity: PaymentApplicationToEcEntity?,
+            finalScoBasis: PaymentSearchRequestScoBasis? = null
+        ) =
             PaymentToEcCorrectionExtensionEntity(
                 correctionId = CORRECTION_ID,
                 correction = correctionEntity,
@@ -159,8 +162,13 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
                 privateContribution = BigDecimal.valueOf(45.00),
                 correctedPrivateContribution = BigDecimal.valueOf(46.20),
                 paymentApplicationToEc = paymentApplicationToEcEntity,
-                finalScoBasis = null,
-                comment = "Comment"
+                finalScoBasis = finalScoBasis,
+                comment = "Comment",
+                correctedFundAmount = BigDecimal.valueOf(80.00),
+                correctedUnionContribution = BigDecimal.valueOf(25.00),
+                unionContribution = BigDecimal.valueOf(0.00),
+                totalEligibleWithoutArt94or95 = BigDecimal.valueOf(90.00),
+                correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(5.00)
             )
 
         private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
@@ -176,13 +184,21 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(5.00),
+            totalEligibleWithoutArt94or95 = BigDecimal.valueOf(90.00),
+            unionContribution = BigDecimal.valueOf(0.00),
+            correctedUnionContribution = BigDecimal.valueOf(25.00),
+            correctedFundAmount = BigDecimal.valueOf(80.00)
         )
 
         private val correctionUpdate = PaymentToEcCorrectionLinkingUpdate(
             correctedPrivateContribution = BigDecimal(205),
             correctedPublicContribution = BigDecimal(206),
             correctedAutoPublicContribution = BigDecimal(207),
-            comment = "Updated comment"
+            comment = "Updated comment",
+            correctedFundAmount = BigDecimal.valueOf(80.00),
+            correctedUnionContribution = BigDecimal.valueOf(35.00),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(55.00)
         )
 
         private fun financialDescription(isDeduction: Boolean) = ProjectCorrectionFinancialDescription(
@@ -315,7 +331,11 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0
 
-        persistenceProvider.createCorrectionExtension(financialDescription(true))
+        persistenceProvider.createCorrectionExtension(
+            financialDescription(true),
+            BigDecimal.valueOf(55),
+            BigDecimal.ZERO
+        )
 
         assertThat(extensionSlot.captured.publicContribution).isEqualTo(BigDecimal.valueOf(-11))
         assertThat(extensionSlot.captured.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(-11))
@@ -332,7 +352,11 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0
 
-        persistenceProvider.createCorrectionExtension(financialDescription(false))
+        persistenceProvider.createCorrectionExtension(
+            financialDescription(false),
+            BigDecimal.valueOf(55),
+            BigDecimal.ZERO
+        )
 
         assertThat(extensionSlot.captured.publicContribution).isEqualTo(BigDecimal.valueOf(11))
         assertThat(extensionSlot.captured.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(11))

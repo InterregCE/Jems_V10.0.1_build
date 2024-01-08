@@ -9,6 +9,7 @@ data class EcPaymentCorrectionExtensionDTO(
     val comment: String?,
 
     val fundAmount: BigDecimal,
+    val correctedFundAmount: BigDecimal,
 
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
@@ -18,4 +19,10 @@ data class EcPaymentCorrectionExtensionDTO(
 
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
+
+    val totalEligibleWithoutArt94or95: BigDecimal,
+    val correctedTotalEligibleWithoutArt94or95: BigDecimal,
+
+    val unionContribution: BigDecimal,
+    val correctedUnionContribution: BigDecimal,
 )

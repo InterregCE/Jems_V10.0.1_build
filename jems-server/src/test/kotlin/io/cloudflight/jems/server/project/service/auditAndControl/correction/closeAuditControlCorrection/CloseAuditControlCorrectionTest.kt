@@ -129,7 +129,9 @@ class CloseAuditControlCorrectionTest : UnitTest() {
                 projectAuditControl(AuditControlStatus.Ongoing).copy(id = AUDIT_CONTROL_ID)
         every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel
         every { auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(CORRECTION_ID) } returns financialDescription
-        every { correctionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) } returns Unit
+        every { correctionExtensionLinkingPersistence.createCorrectionExtension(
+            financialDescription, BigDecimal.valueOf(11), BigDecimal.ZERO
+        ) } returns Unit
 
         every { auditControlCorrectionPersistence.closeCorrection(CORRECTION_ID) } returns mockk {
             every { orderNr } returns 4
@@ -142,7 +144,9 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         assertThat(closeProjectAuditControlCorrection.closeCorrection(CORRECTION_ID))
             .isEqualTo(AuditControlStatus.Closed)
 
-        verify(exactly = 1) { correctionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) }
+        verify(exactly = 1) { correctionExtensionLinkingPersistence.createCorrectionExtension(
+            financialDescription, BigDecimal.valueOf(11), BigDecimal.ZERO
+        ) }
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
