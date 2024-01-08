@@ -1,29 +1,20 @@
 package io.cloudflight.jems.server.programme.service.model
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.server.programme.service.exportProgrammeData.EXPORT_TIMEOUT_IN_MINUTES
+import io.cloudflight.jems.server.common.model.AsyncDataExportMetadata
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 
 data class ProgrammeDataExportMetadata(
-    val pluginKey: String,
-    val fileName: String?,
-    val contentType: String?,
     var exportLanguage: SystemLanguage,
     var inputLanguage: SystemLanguage,
-    var requestTime: ZonedDateTime,
-    var exportStartedAt: ZonedDateTime?,
-    var exportEndedAt: ZonedDateTime?,
-) {
-    fun isTimedOut() =
-        exportEndedAt == null && requestTime.isBefore(ZonedDateTime.now().minusMinutes(EXPORT_TIMEOUT_IN_MINUTES))
 
-    fun isFailed() =
-        exportEndedAt != null && fileName == null && contentType == null
+    override val pluginKey: String,
+    override val fileName: String?,
+    override val contentType: String?,
 
-    fun isReadyToDownload() =
-        exportEndedAt != null && fileName != null && contentType != null
-
-    fun getExportationTimeInSeconds() =
-        requestTime.until(exportEndedAt ?: ZonedDateTime.now(), ChronoUnit.SECONDS)
-}
+    override var requestTime: ZonedDateTime,
+    override var exportStartedAt: ZonedDateTime?,
+    override var exportEndedAt: ZonedDateTime?,
+) : AsyncDataExportMetadata(
+    pluginKey, fileName, contentType, requestTime, exportStartedAt, exportEndedAt
+)

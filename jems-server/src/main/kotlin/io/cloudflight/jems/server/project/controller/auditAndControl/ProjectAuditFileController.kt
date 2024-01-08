@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.controller.auditAndControl
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.auditAndControl.ProjectAuditAndControlFileApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import io.cloudflight.jems.server.project.service.auditAndControl.file.delete.DeleteAuditControlFileInteractor
@@ -13,8 +14,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.file.upload.Up
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -44,13 +43,7 @@ class ProjectAuditFileController(
         )
 
     override fun download(projectId: Long, auditControlId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadAuditControlFileInteractor.download(projectId = projectId, auditControlId = auditControlId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadAuditControlFileInteractor.download(projectId = projectId, auditControlId = auditControlId, fileId = fileId).toResponseFile()
 
     override fun delete(projectId: Long, auditControlId: Long, fileId: Long) =
         deleteAuditControlFileInteractor.delete(projectId = projectId, auditControlId = auditControlId, fileId = fileId)

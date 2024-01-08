@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.plugin.dto.PluginTypeDTO
 import io.cloudflight.jems.plugin.contract.JemsPlugin
 import io.cloudflight.jems.plugin.contract.export.ApplicationFormExportPlugin
 import io.cloudflight.jems.plugin.contract.export.BudgetExportPlugin
+import io.cloudflight.jems.plugin.contract.export.PaymentApplicationToEcAuditExportPlugin
 import io.cloudflight.jems.plugin.contract.export.ProgrammeDataExportPlugin
 import io.cloudflight.jems.plugin.contract.export.checklist.ChecklistExportPlugin
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportCertificatePlugin
@@ -35,6 +36,7 @@ fun JemsPlugin.toPluginType(): PluginTypeDTO =
         is ProjectReportExportPlugin -> PluginTypeDTO.REPORT_PROJECT_EXPORT
         is ProjectReportVerificationCertificatePlugin -> PluginTypeDTO.REPORT_PROJECT_EXPORT
         is ChecklistExportPlugin -> PluginTypeDTO.CHECKLIST_EXPORT
+        is PaymentApplicationToEcAuditExportPlugin -> PluginTypeDTO.PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT
         else -> throw UnknownPluginTypeException(this.javaClass.name)
     }
 
@@ -54,6 +56,7 @@ fun PluginTypeDTO.toType() =
         PluginTypeDTO.REPORT_PROJECT_EXPORT -> ProjectReportExportPlugin::class
         PluginTypeDTO.REPORT_PROJECT_VERIFICATION_CERTIFICATE -> ProjectReportVerificationCertificatePlugin::class
         PluginTypeDTO.CHECKLIST_EXPORT -> ChecklistExportPlugin::class
+        PluginTypeDTO.PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT -> PaymentApplicationToEcAuditExportPlugin::class
         PluginTypeDTO.ALL -> JemsPlugin::class
         else -> throw UnknownPluginTypeException(this.javaClass.name)
     }

@@ -279,6 +279,20 @@ fun paymentApplicationToEcDeleted(
         .build()
 )
 
+fun paymentApplicationToEcAuditExportCreated(
+    context: Any,
+    programmeFundType: String?,
+    accountingYear: Short?
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_TRIGGERED)
+        .description(
+            "An audit export was generated for payments to ec with programme fund type ${programmeFundType} and accounting year " +
+                    "${accountingYear}"
+        )
+        .build()
+)
+
 private fun getAnswer(state: Boolean): String {
     return if (state) {
         "YES"

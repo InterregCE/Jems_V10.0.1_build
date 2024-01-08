@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.fund.get_fund.GetFundInteractor
+import io.cloudflight.jems.server.programme.service.fund.getFund.GetFundInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFundsInteractor

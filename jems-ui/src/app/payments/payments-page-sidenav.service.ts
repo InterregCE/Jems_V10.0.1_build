@@ -31,6 +31,12 @@ export class PaymentsPageSidenavService {
     baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/paymentApplicationsToEc`,
   };
 
+  private auditPage = {
+    headline: {i18nKey: 'payments.audit.header'},
+    route: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+    baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+  };
+
 
   constructor(private sideNavService: SideNavService,
               private permissionService: PermissionService,
@@ -60,6 +66,9 @@ export class PaymentsPageSidenavService {
     if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
       bullets.push(this.paymentsToEcPage);
     }
+    if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsAuditRetrieve || permission === PermissionsEnum.PaymentsAuditUpdate)) {
+      bullets.push(this.auditPage);
+    }
 
     this.sideNavService.setHeadlines(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH, [
       ...this.hasAccessToPayments(permissions) ?
@@ -74,7 +83,8 @@ export class PaymentsPageSidenavService {
   hasAccessToPayments(permissions: PermissionsEnum[]): boolean {
     return permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsRetrieve ||
       permission === PermissionsEnum.AdvancePaymentsRetrieve ||
-      permission === PermissionsEnum.PaymentsToEcRetrieve
+      permission === PermissionsEnum.PaymentsToEcRetrieve ||
+      permission === PermissionsEnum.PaymentsAuditRetrieve
     );
   }
 
@@ -84,11 +94,15 @@ export class PaymentsPageSidenavService {
   }
 
   public goToAdvancePayments(): void {
-    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
+    this.routingService.navigate([this.advancePaymentsPage.route], {replaceUrl: true});
   }
 
   public goToPaymentsToEc(): void {
-    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
+    this.routingService.navigate([this.paymentsToEcPage.route], {replaceUrl: true});
+  }
+
+  public goToAudit(): void {
+    this.routingService.navigate([this.auditPage.route], {replaceUrl: true});
   }
 
 }

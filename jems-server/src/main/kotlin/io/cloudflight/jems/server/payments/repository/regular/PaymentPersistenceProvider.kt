@@ -192,9 +192,13 @@ class PaymentPersistenceProvider(
             .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
             .groupBy(specPayment)
             .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(pageable.sort.toQueryDslOrderBy())
+            .apply {
+                if (pageable.isPaged) {
+                    this.offset(pageable.offset)
+                        .limit(pageable.pageSize.toLong())
+                        .orderBy(pageable.sort.toQueryDslOrderBy())
+                }
+            }
             .fetchResults()
 
         return results.toPageResult(pageable)

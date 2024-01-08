@@ -128,6 +128,8 @@ enum class UserRolePermissionDTO(val key: String) {
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
     PaymentsToEcRetrieve("PaymentsToEcRetrieve"),
     PaymentsToEcUpdate("PaymentsToEcUpdate"),
+    PaymentsAuditRetrieve("PaymentsAuditRetrieve"),
+    PaymentsAuditUpdate("PaymentsAuditUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

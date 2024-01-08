@@ -33,7 +33,7 @@ fun exportMetaData(
     exportStartedAt: ZonedDateTime? = null, exportEndedAt: ZonedDateTime? = null
 ) =
     ProgrammeDataExportMetadata(
-        pluginKey!!, fileName, contentType, exportLanguage, inputLanguage,
+        exportLanguage, inputLanguage, pluginKey!!, fileName, contentType,
         requestTime, exportStartedAt, exportEndedAt
     )
 

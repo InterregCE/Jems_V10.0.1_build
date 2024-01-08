@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.controller
 import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.payments.PaymentAttachmentApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment.DeletePaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.regular.attachment.downloadPaymentAttachment.DownloadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.regular.attachment.getPaymentAttchament.GetPaymentAttachmentInteractor
@@ -13,8 +14,6 @@ import io.cloudflight.jems.server.project.controller.report.partner.toProjectFil
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -32,13 +31,7 @@ class PaymentAttachmentController(
         getPaymentAttachment.list(paymentId, pageable).map { it.toDto() }
 
     override fun downloadAttachment(fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadPaymentAttachment.download(fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadPaymentAttachment.download(fileId = fileId).toResponseFile()
 
     override fun deleteAttachment(fileId: Long) =
         deletePaymentAttachment.delete(fileId)

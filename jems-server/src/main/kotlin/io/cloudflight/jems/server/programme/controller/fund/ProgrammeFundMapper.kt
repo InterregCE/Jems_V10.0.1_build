@@ -25,3 +25,11 @@ fun ProgrammeFundDTO.toModel() = ProgrammeFund(
     abbreviation = abbreviation,
     description = description
 )
+
+fun List<ProgrammeFundType>.toDto() = map { it.toDto() }
+
+fun ProgrammeFundType.toDto() =
+    ProgrammeFundTypeDTO.valueOf(this.toString())
+
+fun ProgrammeFundTypeDTO.toModel() =
+    ProgrammeFundType.valueOf(this.toString())

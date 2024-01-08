@@ -8,6 +8,9 @@ enum class JemsFileTypeDTO {
         PaymentAdvanceAttachment,
       Ec,
         PaymentToEcAttachment,
+      Audit,
+         PaymentAuditExport,
+         PaymentAuditAttachment,
 
     Project,
       Report,
