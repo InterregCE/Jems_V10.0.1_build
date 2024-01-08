@@ -56,7 +56,6 @@ context('Application contracting tests', () => {
 
       // create contracting role/user
       cy.loginByRequest(user.admin.email);
-      testData.contractingRole.name = `contractingRole_${faker.string.alphanumeric(5)}`;
       testData.contractingUser.email = faker.internet.email();
       cy.createRole(testData.contractingRole).then(roleId => {
         testData.contractingUser.userRoleId = roleId;

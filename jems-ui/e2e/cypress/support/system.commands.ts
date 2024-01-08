@@ -1,5 +1,5 @@
 import {loginByRequest} from './login.commands';
-import {faker} from "@faker-js/faker";
+import {faker} from '@faker-js/faker';
 
 declare global {
 
@@ -22,11 +22,12 @@ Cypress.Commands.add('createRole', (role, userEmail?: string) => {
     body: role
   }).then(response => {
     if (userEmail) {
+      // noinspection CYUnresolvedAlias
       cy.get('@currentUser').then((currentUser: any) => {
         loginByRequest(currentUser.name);
       });
     }
-    cy.wrap(response.body.id).as('roleId');
+    return response.body.id;
   });
 });
 

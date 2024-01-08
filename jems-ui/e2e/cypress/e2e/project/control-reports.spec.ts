@@ -581,6 +581,8 @@ context('Control report tests', () => {
 
           cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
 
+          testData.checklist[0].relatedToId = reportId;
+          testData.checklist[1].relatedToId = reportId;
           cy.startControlChecklist(partnerId, reportId, testData.checklist[0]);
           cy.startControlChecklist(partnerId, reportId, testData.checklist[1]).then(checklistId => {
             cy.finishControlChecklist(partnerId, reportId, checklistId);

@@ -1,6 +1,6 @@
 {
   "programmeRole": {
-    "name": "randomize",
+    "name": "programmeRole",
     "permissions": [
       "ProjectReportingEdit",
       "ProjectReportingView",

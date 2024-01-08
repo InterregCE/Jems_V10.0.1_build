@@ -441,7 +441,6 @@ function createReportingDeadlines(applicationId, testData) {
 
 function createJsMaUser(testData) {
   cy.loginByRequest(user.admin.email);
-  testData.jsmaRole.name = `jsmaRole_${faker.string.alphanumeric(5)}`;
   testData.jsmaUser.email = faker.internet.email();
 
   cy.createRole(testData.jsmaRole).then(roleId => {
