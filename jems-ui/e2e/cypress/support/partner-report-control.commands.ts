@@ -61,7 +61,7 @@ function startControlChecklist(partnerId, reportId, checklist) {
     url: `api/controlChecklist/byPartnerId/${partnerId}/byReportId/${reportId}`,
     body: checklist
   }).then(response => {
-    cy.wrap(response.body.id).as('checklistId');
+    return response.body.id;
   });
 }
 

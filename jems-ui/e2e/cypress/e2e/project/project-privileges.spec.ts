@@ -57,7 +57,6 @@ context('Project privileges tests', () => {
   it('TB-364 Restrict management of project specific privileges', () => {
     cy.fixture('project/project-privileges/TB-364.json').then(testData => {
       cy.loginByRequest(user.admin.email);
-      testData.programmeRole.name = `programmeRole_${faker.string.alphanumeric(5)}`;
       cy.createRole(testData.programmeRole).then(roleId => {
         testData.programmeUser.userRoleId = roleId;
         testData.programmeUser.email = faker.internet.email();
@@ -187,7 +186,6 @@ context('Project privileges tests', () => {
     cy.fixture('project/project-privileges/TB-380.json').then(testData => {
       cy.loginByRequest(user.admin.email);
 
-      testData.monitorRole.name = `monitorRole_${faker.string.alphanumeric(5)}`;
       cy.createRole(testData.monitorRole).then(roleId => {
         testData.monitorUser1.userRoleId = roleId;
         testData.monitorUser2.userRoleId = roleId;
