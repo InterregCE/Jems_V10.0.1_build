@@ -135,6 +135,7 @@ fun ProjectReportEntity.toSubmissionSummary() =
         projectId = projectId,
         projectIdentifier = projectIdentifier,
         projectAcronym = projectAcronym,
+        periodNumber = deadline?.periodNumber ?: periodNumber
     )
 
 fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(

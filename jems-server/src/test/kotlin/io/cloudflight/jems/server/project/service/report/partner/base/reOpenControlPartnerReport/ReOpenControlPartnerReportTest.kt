@@ -48,7 +48,8 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
             partnerNumber = 75,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = partnerId,
-            partnerAbbreviation = "LP-75"
+            partnerAbbreviation = "LP-75",
+            periodNumber = 1
         )
 
         fun partnerReport(status: ReportStatus, lastControlReopening: ZonedDateTime?, projectReportId: Long?) = ProjectPartnerReport(
@@ -73,6 +74,7 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
     private lateinit var projectPartnerRepository: ProjectPartnerRepository
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
+
 
     @InjectMockKs
     private lateinit var interactor: ReOpenControlPartnerReport

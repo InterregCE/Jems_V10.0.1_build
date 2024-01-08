@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
@@ -38,7 +39,8 @@ class ProjectPartnerReportPersistenceProvider(
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository,
     private val partnerRepository: ProjectPartnerRepository,
-    private val jpaQueryFactory: JPAQueryFactory
+    private val jpaQueryFactory: JPAQueryFactory,
+    private val identificationRepository: ProjectPartnerReportIdentificationRepository
 ) : ProjectPartnerReportPersistence {
 
     @Transactional
@@ -56,7 +58,7 @@ class ProjectPartnerReportPersistenceProvider(
                 firstSubmission = firstSubmissionTime ?: this.firstSubmission
                 lastReSubmission = lastReSubmissionTime ?: this.lastReSubmission
                 this.lastControlReopening = lastControlReopening ?: this.lastControlReopening
-            }.toSubmissionSummary()
+            }.toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
 
     @Transactional
     override fun finalizeControlOnReportById(
@@ -67,7 +69,7 @@ class ProjectPartnerReportPersistenceProvider(
         .apply {
             this.status = ReportStatus.Certified
             this.controlEnd = controlEnd
-        }.toSubmissionSummary()
+        }.toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
 
     @Transactional(readOnly = true)
     override fun getPartnerReportStatusAndVersion(
@@ -95,14 +97,16 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerReportByIdUnsecured(reportId: Long): ProjectPartnerReportSubmissionSummary =
-        partnerReportRepository.getById(reportId).toSubmissionSummary()
+        partnerReportRepository.getById(reportId).toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
 
     @Transactional(readOnly = true)
     override fun getProjectPartnerReportSubmissionSummary(
         partnerId: Long,
         reportId: Long
     ): ProjectPartnerReportSubmissionSummary =
-        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toSubmissionSummary()
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toSubmissionSummary(
+            identificationRepository.getPartnerReportPeriod(reportId)
+        )
 
     @Transactional(readOnly = true)
     override fun listPartnerReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ProjectPartnerReportSummary> =

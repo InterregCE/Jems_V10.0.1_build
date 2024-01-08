@@ -12,14 +12,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest
-import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReport
-import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportTest
-import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReportCanNotBeReOpened
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,6 +40,7 @@ class ReOpenVerificationProjectReportTest: UnitTest() {
             projectId = PROJECT_ID,
             projectIdentifier = "proj-iden",
             projectAcronym = "proj-acr",
+            periodNumber = 1
         )
     }
 
@@ -70,6 +66,8 @@ class ReOpenVerificationProjectReportTest: UnitTest() {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns ProjectReportStatus.Finalized
         every { report.id } returns REPORT_ID
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
         every { paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(REPORT_ID) } returns setOf()
         every { paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(REPORT_ID) } returns setOf()

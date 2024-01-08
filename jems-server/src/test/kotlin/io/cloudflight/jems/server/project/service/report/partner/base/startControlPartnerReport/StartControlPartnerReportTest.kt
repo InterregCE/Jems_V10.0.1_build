@@ -56,7 +56,8 @@ internal class StartControlPartnerReportTest : UnitTest() {
             partnerAbbreviation = "LP-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private val controllerInstitution = ControllerInstitutionList(
@@ -106,7 +107,6 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
     @MockK
     lateinit var callPersistence: CallPersistence
-
 
     @InjectMockKs
     lateinit var interactor: StartControlPartnerReport
@@ -172,6 +172,7 @@ internal class StartControlPartnerReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.id } returns id
         every { report.status } returns status
+        every { report.version } returns "5.6.1"
         return report
     }
 

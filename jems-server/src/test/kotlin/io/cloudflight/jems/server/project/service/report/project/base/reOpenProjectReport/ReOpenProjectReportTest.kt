@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class ReOpenProjectReportTest : UnitTest() {
@@ -40,6 +41,7 @@ class ReOpenProjectReportTest : UnitTest() {
             projectId = projectId,
             projectIdentifier = "proj-iden",
             projectAcronym = "proj-acr",
+            periodNumber = 1
         )
     }
 
@@ -72,6 +74,8 @@ class ReOpenProjectReportTest : UnitTest() {
         every { report.projectId } returns projectId
         every { report.status } returns statusFrom
         every { report.type } returns ContractingDeadlineType.Finance
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
         every { reportPersistence.getReportById(projectId, reportId) } returns report
 
         val latestReportOfType = mockk<ProjectReportModel>()

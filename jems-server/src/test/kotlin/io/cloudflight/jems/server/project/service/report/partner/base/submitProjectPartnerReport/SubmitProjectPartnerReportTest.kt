@@ -38,6 +38,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
+import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportTest
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction
@@ -47,6 +48,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -89,7 +91,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             partnerAbbreviation = "P-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private val expenditure1 = ProjectPartnerReportExpenditureCost(
@@ -356,6 +359,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { report.id } returns 35L
         every { report.lastControlReopening } returns if (controlReopenedBefore) mockk() else null
         every { report.identification.coFinancing } returns coFinancing
+        every { report.version } returns "5.6.0"
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
@@ -498,6 +502,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { report.id } returns 36L
         every { report.lastControlReopening } returns null
         every { report.identification.coFinancing } returns coFinancing
+        every { report.version } returns "5.6.0"
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 36L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 36L) } returns PreConditionCheckResult(emptyList(), true)

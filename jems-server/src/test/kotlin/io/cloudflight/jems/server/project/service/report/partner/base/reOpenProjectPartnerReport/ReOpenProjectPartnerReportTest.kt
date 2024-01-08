@@ -35,7 +35,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
         id = 160L,
         reportNumber = 7,
         status = status,
-        version = "V7.4",
+        version = "V1",
         firstSubmission = ZonedDateTime.now(),
         controlEnd = ZonedDateTime.now(),
         createdAt = ZonedDateTime.now(),
@@ -44,7 +44,8 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
         partnerNumber = 75,
         partnerRole = ProjectPartnerRole.LEAD_PARTNER,
         partnerId = 18L,
-        partnerAbbreviation = "LP-75"
+        partnerAbbreviation = "LP-75",
+        periodNumber = 1
     )
 
     @MockK private lateinit var reportPersistence: ProjectPartnerReportPersistence
@@ -87,7 +88,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
         every { latestReport.id } returns lastReportId
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId = 18L) } returns latestReport
 
-        every { partnerPersistence.getProjectIdForPartnerId(id = 18L, "V7.4") } returns 886L
+        every { partnerPersistence.getProjectIdForPartnerId(id = 18L, "V1") } returns 886L
 
         val newStatus = slot<ReportStatus>()
         val mockResult = mockResult(expectedStatus)

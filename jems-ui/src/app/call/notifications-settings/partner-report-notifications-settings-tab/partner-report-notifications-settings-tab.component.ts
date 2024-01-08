@@ -29,19 +29,24 @@ export class PartnerReportNotificationsSettingsTabComponent {
 
   partnerReportNotificationVariables = [
     NotificationVariable.PROGRAMME_NAME,
-    NotificationVariable.CALL_ID,
     NotificationVariable.CALL_NAME,
-    NotificationVariable.PROJECT_ID,
     NotificationVariable.PROJECT_IDENTIFIER,
     NotificationVariable.PROJECT_ACRONYM,
-    NotificationVariable.PARTNER_ID,
     NotificationVariable.PARTNER_ROLE,
     NotificationVariable.PARTNER_NUMBER,
     NotificationVariable.PARTNER_ABBREVIATION,
-    NotificationVariable.PARTNER_REPORT_ID,
     NotificationVariable.PARTNER_REPORT_NUMBER,
+    NotificationVariable.REPORTING_PERIOD_NUMBER,
+    NotificationVariable.REPORTING_PERIOD_START,
+    NotificationVariable.REPORTING_PERIOD_END,
     NotificationVariable.FILE_USERNAME,
-    NotificationVariable.FILE_NAME
+    NotificationVariable.FILE_NAME,
+  ];
+  partnerReportNotificationVariablesWithSystemIds = [
+    NotificationVariable.CALL_ID,
+    NotificationVariable.PROJECT_ID,
+    NotificationVariable.PARTNER_ID,
+    NotificationVariable.PARTNER_REPORT_ID,
   ];
   constructor(
     private formBuilder: FormBuilder,

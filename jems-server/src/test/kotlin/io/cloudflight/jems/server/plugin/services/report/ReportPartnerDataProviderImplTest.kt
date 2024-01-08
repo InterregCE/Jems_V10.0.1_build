@@ -427,7 +427,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
-            previouslyValidated = BigDecimal.valueOf(92L, 1)
+            previouslyValidated = BigDecimal.valueOf(92L, 1),
+            totalEligibleAfterControl = BigDecimal.valueOf(8)
         )
 
         private val expectedCoFinancing = ExpenditureCoFinancingBreakdownData(
@@ -477,7 +478,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
-            previouslyValidated = BigDecimal.valueOf(5)
+            previouslyValidated = BigDecimal.valueOf(5),
+            totalEligibleAfterControl = BigDecimal.valueOf(8)
         )
 
         private val expectedCostCategory = ExpenditureCostCategoryBreakdownData(

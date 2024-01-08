@@ -83,6 +83,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             projectIdentifier = "NS-AQ01",
             projectAcronym = "acronym",
             projectId = PROJECT_ID,
+            periodNumber = 1
         )
 
         private fun report(reportId: Long, status: ProjectReportStatus, spfPartnerId: Long?): ProjectReportModel {

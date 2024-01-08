@@ -109,7 +109,7 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         projectId = 0,
     )
 
-fun ProjectPartnerReportEntity.toSubmissionSummary() =
+fun ProjectPartnerReportEntity.toSubmissionSummary(periodNumber: Int?) =
     ProjectPartnerReportSubmissionSummary(
         id = id,
         reportNumber = number,
@@ -123,7 +123,8 @@ fun ProjectPartnerReportEntity.toSubmissionSummary() =
         partnerAbbreviation = identification.partnerAbbreviation,
         partnerNumber = identification.partnerNumber,
         partnerRole = identification.partnerRole,
-        partnerId = partnerId
+        partnerId = partnerId,
+        periodNumber = periodNumber
     )
 
 fun List<ReportIdentificationSummary>.toIdentificationSummaries():List<ProjectPartnerReportIdentificationSummary> = map {
