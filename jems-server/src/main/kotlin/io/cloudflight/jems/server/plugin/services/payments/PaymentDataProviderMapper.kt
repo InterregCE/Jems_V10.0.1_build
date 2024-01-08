@@ -43,7 +43,8 @@ fun PaymentToProject.toDataModel() = PaymentToProjectData(
     amountApprovedPerFund = amountApprovedPerFund,
     amountPaidPerFund = amountPaidPerFund,
     dateOfLastPayment = dateOfLastPayment?.atStartOfDay(ZoneId.systemDefault()),
-    lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
+    lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment,
+    amountAuthorizedPerFund = amountAuthorizedPerFund
 )
 fun List<PaymentToProject>.toDataModelList() = map { it.toDataModel() }
 

@@ -177,7 +177,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
-            projectId = projectId
+            projectId = projectId,
+            periodNumber = 4
         )
     }
 

@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
@@ -164,7 +165,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             partnerAbbreviation = "partnerAbbreviation",
             partnerNumber = 4,
             partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = null
         )
 
         private val programmeFundEntity = ProgrammeFundEntity(
@@ -335,6 +337,9 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
+    @MockK
+    private lateinit var identificationRepository: ProjectPartnerReportIdentificationRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectPartnerReportPersistenceProvider
 
@@ -345,7 +350,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 45L, YESTERDAY, null, ReportStatus.Draft)
         every { partnerReportRepository.findByIdAndPartnerId(45L, 10L) } returns report
-
+        every { identificationRepository.getPartnerReportPeriod(45L) } returns null
         val submittedReport = persistence.updateStatusAndTimes(10L, 45L, ReportStatus.Submitted, NOW)
 
         assertThat(submittedReport).isEqualTo(
@@ -364,6 +369,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 46L, YESTERDAY, null, ReportStatus.ReOpenInControlLast)
         every { partnerReportRepository.findByIdAndPartnerId(46L, 11L) } returns report
+        every { identificationRepository.getPartnerReportPeriod(46L) } returns null
 
         val submittedReport = persistence.updateStatusAndTimes(11L, 46L, ReportStatus.InControl, null, NOW)
 
@@ -382,7 +388,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
         every { partnerReportRepository.findByIdAndPartnerId(47L, 12L) } returns report
-
+        every { identificationRepository.getPartnerReportPeriod(47L) } returns null
         val startedControlReport = persistence.updateStatusAndTimes(12L, 47L, ReportStatus.InControl, null, null)
 
         assertThat(startedControlReport).isEqualTo(
@@ -398,6 +404,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 48L, LAST_YEAR, null, ReportStatus.InControl)
         every { partnerReportRepository.findByIdAndPartnerId(48L, 16L) } returns report
+        every { identificationRepository.getPartnerReportPeriod(48L) } returns null
 
         assertThat(persistence.finalizeControlOnReportById(16L, 48L, YESTERDAY)).isEqualTo(
             draftReportSubmissionEntity(id = 48L, LAST_YEAR).copy(

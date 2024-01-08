@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIde
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
@@ -91,6 +92,8 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
     private lateinit var projectReportRepository: ProjectReportRepository
     @MockK
     private lateinit var partnerReportRepository: ProjectPartnerReportRepository
+    @MockK
+    private lateinit var partnerReportIdentificationRepository: ProjectPartnerReportIdentificationRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportCertificatePersistenceProvider
@@ -215,6 +218,8 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
         val certificate = partnerReport(mockk(), identification, time)
 
         every { partnerReportRepository.findAllByProjectReportId(47L) } returns listOf(certificate)
+        every { partnerReportIdentificationRepository.getPartnerReportPeriod(499L) } returns 1
+
         assertThat(persistence.listCertificatesOfProjectReport(47L)).containsExactly(
             ProjectPartnerReportSubmissionSummary(
                 id = 499L,
@@ -229,7 +234,8 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 partnerAbbreviation = "P-4",
                 partnerNumber = 4,
                 partnerRole = ProjectPartnerRole.PARTNER,
-                partnerId = 72L
+                partnerId = 72L,
+                periodNumber = 1
             )
         )
     }

@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProje
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -45,6 +47,7 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             partnerNumber = PARTNER_NUMBER,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         @JvmStatic
@@ -66,6 +69,9 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
     @MockK
     private lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
 
+    @MockK
+    private lateinit var projectPartnerReportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
+
     @InjectMockKs
     lateinit var listener: PartnerReportNotificationEventListener
 
@@ -83,6 +89,9 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
     ) {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
+        every { projectPartnerReportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, PARTNER_REPORT_ID) } returns listOf(
+            ProjectPartnerReportPeriod(1, mockk(), mockk(), 1, 1)
+        )
 
         val partnerReportSummary = partnerReportSummary(currentStatus)
         listener.sendNotifications(
@@ -102,6 +111,9 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             entry(NotificationVariable.PartnerAbbreviation, "LP-7"),
             entry(NotificationVariable.PartnerReportId, PARTNER_REPORT_ID),
             entry(NotificationVariable.PartnerReportNumber, 1),
+            entry(NotificationVariable.ReportingPeriodNumber, 1),
+            entry(NotificationVariable.ReportingPeriodStart, 1),
+            entry(NotificationVariable.ReportingPeriodEnd, 1),
         )
     }
 

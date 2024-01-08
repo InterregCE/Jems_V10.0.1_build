@@ -24,6 +24,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class StartVerificationProjectReportTest : UnitTest() {
@@ -42,6 +43,7 @@ internal class StartVerificationProjectReportTest : UnitTest() {
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
             projectId = PROJECT_ID,
+            periodNumber = 1
         )
     }
 
@@ -106,6 +108,8 @@ internal class StartVerificationProjectReportTest : UnitTest() {
         val report = mockk<ProjectReportModel>()
         every { report.id } returns id
         every { report.status } returns status
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
         return report
     }
 

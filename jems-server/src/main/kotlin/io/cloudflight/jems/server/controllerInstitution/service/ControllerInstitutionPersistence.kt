@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service
 
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
+import io.cloudflight.jems.plugin.contract.models.controllerInstitutions.InstitutionPartnerDetailsData
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
@@ -47,6 +48,8 @@ interface ControllerInstitutionPersistence {
     fun getControllerInstitutionUsersByInstitutionIds(institutionIds: Set<Long>): List<ControllerInstitutionUser>
 
     fun getInstitutionPartnerAssignments(pageable: Pageable, searchRequest: InstitutionPartnerSearchRequest): Page<InstitutionPartnerDetails>
+
+    fun getAllInstitutionPartnerAssignments(): Sequence<InstitutionPartnerDetailsData>
 
     fun assignInstitutionToPartner(
         partnerIdsToRemove: Set<Long>,

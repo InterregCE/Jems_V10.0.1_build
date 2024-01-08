@@ -589,7 +589,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
                 currentReport = BigDecimal.ONE,
                 totalReportedSoFar = BigDecimal.ONE,
                 totalReportedSoFarPercentage = BigDecimal.ONE,
-                remainingBudget = BigDecimal.valueOf(5)
+                remainingBudget = BigDecimal.valueOf(5),
+                currentVerified = BigDecimal.valueOf(15)
             )
 
         private val certificateCoFinancing = CertificateCoFinancingBreakdown(
@@ -624,7 +625,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             currentReport = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.ONE,
-            remainingBudget = BigDecimal.valueOf(5)
+            remainingBudget = BigDecimal.valueOf(5),
+            currentVerified = BigDecimal.ZERO
         )
 
         private val certificateCostCategoryBreakdown = CertificateCostCategoryBreakdown(
@@ -664,6 +666,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
                 totalReportedSoFar = BigDecimal.valueOf(18),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(19),
                 remainingBudget = BigDecimal.valueOf(20),
+                currentVerified = BigDecimal.ZERO
             ),
             total = expectedCostCategoryLine
         )

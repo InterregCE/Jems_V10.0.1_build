@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
+import io.cloudflight.jems.plugin.contract.models.controllerInstitutions.InstitutionPartnerDetailsData
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPartnerRepository.Companion.buildSearchPredicate
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import kotlin.streams.asSequence
 
 @Repository
 class ControllerInstitutionPersistenceProvider(
@@ -126,6 +128,10 @@ class ControllerInstitutionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getInstitutionPartnerAssignments(pageable: Pageable, searchRequest: InstitutionPartnerSearchRequest): Page<InstitutionPartnerDetails> =
         institutionPartnerRepository.findAll(buildSearchPredicate(searchRequest), pageable).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getAllInstitutionPartnerAssignments(): Sequence<InstitutionPartnerDetailsData> =
+        institutionPartnerRepository.getAllInstitutionPartnerAssignments().asSequence()
 
     @Transactional
     override fun assignInstitutionToPartner(

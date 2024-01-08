@@ -10,6 +10,10 @@
         <ng-container *ngFor="let variable of projectReportNotificationVariables">
             <span>{{'call.detail.notifications.config.placeholder.' + variable | translate}}</span><br>
         </ng-container>
+        <p>{{'call.detail.notifications.config.placeholder.system.id.info' | translate}}</p>
+        <ng-container *ngFor="let variable of projectReportNotificationVariablesWithSystemIds">
+            <span>{{'call.detail.notifications.config.placeholder.' + variable | translate}}</span><br>
+        </ng-container>
     </jems-alert>
 
     <form jemsFormLayout [formGroup]="projectReportNotificationsForm">

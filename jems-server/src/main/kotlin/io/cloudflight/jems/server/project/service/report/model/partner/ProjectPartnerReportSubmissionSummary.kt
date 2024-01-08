@@ -18,4 +18,5 @@ data class ProjectPartnerReportSubmissionSummary(
     val partnerNumber: Int,
     val partnerRole: ProjectPartnerRole,
     val partnerId: Long,
+    val periodNumber: Int?
 )

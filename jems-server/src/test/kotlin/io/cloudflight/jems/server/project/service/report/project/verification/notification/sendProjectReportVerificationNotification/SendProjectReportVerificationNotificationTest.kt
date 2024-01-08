@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.notification.ProjectReportVerificationNotification
@@ -156,6 +157,9 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
                 any()
             )
         } returns verificationNotification
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, "3.0") } returns listOf(
+            ProjectPeriod(1, 1, 1)
+        )
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

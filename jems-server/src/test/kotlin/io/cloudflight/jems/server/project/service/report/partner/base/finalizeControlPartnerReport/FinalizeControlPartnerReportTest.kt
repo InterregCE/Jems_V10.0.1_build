@@ -37,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -74,7 +75,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partnerAbbreviation = "LP-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private val expectedCostCategoryWithParked = BudgetCostsCurrentValuesWrapper(
@@ -411,6 +413,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 percentage = BigDecimal.valueOf(2291, 2)
             ),
         )
+        every { report.version } returns "5.6.1"
         return report
     }
 }

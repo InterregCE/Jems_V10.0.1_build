@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -67,6 +66,7 @@ internal class SubmitProjectReportTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
+            periodNumber = 1
         )
 
         private val spfContrib = ReportCertificateCoFinancingColumn(
@@ -192,6 +192,8 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { report.projectId } returns PROJECT_ID
         every { report.type } returns ContractingDeadlineType.Both
         every { report.lastVerificationReOpening } returns if (hasVerificationBefore) ZonedDateTime.now() else null
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
 
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         every { preSubmissionCheckService.preCheck(PROJECT_ID, reportId).isSubmissionAllowed } returns true
@@ -241,6 +243,9 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { report.type } returns ContractingDeadlineType.Finance
         every { report.projectId } returns PROJECT_ID
         every { report.lastVerificationReOpening } returns null
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
+
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         every { preSubmissionCheckService.preCheck(PROJECT_ID, reportId).isSubmissionAllowed } returns true
 

@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationV
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.service.model.UserEmailNotification
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -26,13 +27,16 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.util.UUID
+import org.springframework.context.support.ReloadableResourceBundleMessageSource
+import java.time.LocalDate
+import java.util.*
 
 class GlobalProjectNotificationServiceTest : UnitTest() {
 
     companion object {
         private const val CALL_ID = 1L
         private const val PROJECT_ID = 5L
+        private val REPORTING_PERIOD = ProjectPeriod(1, 1, 2, LocalDate.of(2024,1,1), LocalDate.of(2025,1,1))
 
         val step1submittedToAll = ProjectNotificationConfiguration(
             id = NotificationType.ProjectSubmittedStep1,
@@ -104,6 +108,9 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
 
     @MockK
     private lateinit var programmeDataPersistence: ProgrammeDataPersistence
+
+    @MockK
+    private lateinit var messageSource: ReloadableResourceBundleMessageSource
 
     @InjectMockKs
     private lateinit var service: GlobalProjectNotificationService
@@ -313,6 +320,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         every { notificationPersistence.saveNotification(capture(slotNotification)) } answers { }
         val slotEmail = slot<JemsAsyncMailEvent>()
         every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
+        every { messageSource.getMessage("common.label.period.without.argument", null, Locale.getDefault()) } answers { "period" }
+        every { messageSource.getMessage("common.label.month", null, Locale.getDefault()) } answers { "month" }
 
         val variables = mapOf(
             NotificationVariable.ProjectId to PROJECT_ID,
@@ -324,6 +333,9 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
             NotificationVariable.PartnerAbbreviation to "LP-1",
             NotificationVariable.PartnerReportId to 92L,
             NotificationVariable.PartnerReportNumber to 1,
+            NotificationVariable.ReportingPeriodNumber to REPORTING_PERIOD.number,
+            NotificationVariable.ReportingPeriodStart to REPORTING_PERIOD.start,
+            NotificationVariable.ReportingPeriodEnd to REPORTING_PERIOD.end,
         )
         service.sendNotifications(notificationType, variables)
 
@@ -402,12 +414,18 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         val slotEmail = slot<JemsAsyncMailEvent>()
         every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
 
+        every { messageSource.getMessage("common.label.period.without.argument", null, Locale.getDefault()) } answers { "period" }
+        every { messageSource.getMessage("common.label.month", null, Locale.getDefault()) } answers { "month" }
+
         val variables = mapOf(
             NotificationVariable.ProjectId to PROJECT_ID,
             NotificationVariable.ProjectIdentifier to "P005",
             NotificationVariable.ProjectAcronym to "5 acr",
             NotificationVariable.ProjectReportId to 91L,
             NotificationVariable.ProjectReportNumber to 1,
+            NotificationVariable.ReportingPeriodNumber to REPORTING_PERIOD.number,
+            NotificationVariable.ReportingPeriodStart to REPORTING_PERIOD.start,
+            NotificationVariable.ReportingPeriodEnd to REPORTING_PERIOD.end
         )
         service.sendNotifications(notificationType, variables)
 
