@@ -154,6 +154,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -182,6 +183,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -206,6 +208,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = true,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -234,6 +237,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = true,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -378,6 +382,7 @@ class PaymentsControllerTest : UnitTest() {
                 projectCustomIdentifier = project.customIdentifier,
                 fundName = fund.type.name,
                 projectAcronym = project.acronym,
+                spf = false,
                 amountApprovedPerFund = BigDecimal.TEN,
                 dateOfLastPayment = null,
                 partnerPayments = listOf(

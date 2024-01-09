@@ -364,6 +364,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = dummyProject.customIdentifier,
             projectAcronym = dummyProject.acronym,
+            spf = false,
             amountApprovedPerFund = BigDecimal(100),
             dateOfLastPayment = null,
             partnerPayments = listOf(

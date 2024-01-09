@@ -241,6 +241,48 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 afterVerificationPercentage = BigDecimal.valueOf(48_43L, 2),
             ),
         )
+
+        private val expectedWithSpfOverview = VerificationWorkOverview(
+            certificates = expectedOverview.certificates.plus(
+                VerificationWorkOverviewLine(
+                    partnerId = 0L,
+                    partnerRole = null,
+                    partnerNumber = 0,
+                    partnerReportId = 0,
+                    partnerReportNumber = 0,
+                    spfLine = true,
+                    requestedByPartner = BigDecimal.valueOf(189L, 1),
+                    requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(189L, 1),
+                    inVerificationSample = BigDecimal.ZERO,
+                    inVerificationSamplePercentage = null,
+                    parked = BigDecimal.ZERO,
+                    deductedByJs = BigDecimal.ZERO,
+                    deductedByMa = BigDecimal.ZERO,
+                    deducted = BigDecimal.ZERO,
+                    afterVerification = BigDecimal.valueOf(189L, 1),
+                    afterVerificationPercentage = BigDecimal.valueOf(100L),
+                ),
+            ),
+            total = VerificationWorkOverviewLine(
+                partnerId = 0L,
+                partnerRole = null,
+                partnerNumber = 0,
+                partnerReportId = 0L,
+                partnerReportNumber = 0,
+                spfLine = false,
+                requestedByPartner = BigDecimal.valueOf(1314_10L, 2),
+                requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(942_10L, 2),
+                inVerificationSample = BigDecimal.valueOf(820L),
+                inVerificationSamplePercentage = BigDecimal.valueOf(87_04L, 2),
+                parked = BigDecimal.valueOf(438_75L, 2),
+                deductedByJs = BigDecimal.valueOf(158_43L, 2),
+                deductedByMa = BigDecimal.valueOf(62_60L, 2),
+                deducted = BigDecimal.valueOf(229_15L, 2),
+                afterVerification = BigDecimal.valueOf(646_20L, 2),
+                afterVerificationPercentage = BigDecimal.valueOf(49_17L, 2),
+            ),
+        )
+
     }
 
     @MockK
@@ -263,14 +305,31 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
             reportPersistence, callPersistence, reportSpfClaimPersistence)
     }
 
-    /*@Test
-    fun getWorkOverviewPerPartner() {
+    @Test
+    fun `getWorkOverviewPerPartner - without spf`() {
         every { verificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns expenditures
         every {
             partnerReportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(400L, 500L,))
         } returns mapOf(400L to partner_4, 500L to partner_5)
 
+        every { reportPersistence.getReportByIdUnSecured(REPORT_ID).projectId } returns 75L
+        every { callPersistence.getCallByProjectId(75L).isSpf() } returns false
+
         assertThat(calculator.getWorkOverviewPerPartner(REPORT_ID)).isEqualTo(expectedOverview)
-    }*/
+    }
+
+    @Test
+    fun `getWorkOverviewPerPartner - with spf`() {
+        every { verificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns expenditures
+        every {
+            partnerReportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(400L, 500L,))
+        } returns mapOf(400L to partner_4, 500L to partner_5)
+
+        every { reportPersistence.getReportByIdUnSecured(REPORT_ID).projectId } returns 76L
+        every { callPersistence.getCallByProjectId(76L).isSpf() } returns true
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(REPORT_ID).sum } returns BigDecimal.valueOf(189L, 1)
+
+        assertThat(calculator.getWorkOverviewPerPartner(REPORT_ID)).isEqualTo(expectedWithSpfOverview)
+    }
 
 }

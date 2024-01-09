@@ -10,6 +10,7 @@ data class PaymentDetailDTO(
     val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+    val spf: Boolean,
 
     val amountApprovedPerFund: BigDecimal,
     val dateOfLastPayment: ZonedDateTime? = null,

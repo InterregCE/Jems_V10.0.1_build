@@ -65,15 +65,20 @@
 
                     <div [formGroupName]="index" jemsMultiColumnRow class="table-row full-payment-row">
                         <div class="column-partner-id justify-start">
-                                <span matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
+                            <span *ngIf="data.paymentDetail.spf">PP1</span>
+                                <span *ngIf="!data.paymentDetail.spf" matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
                                       [matTooltipDisabled]="!this.showPaymentIndicatorForIndex(index)">
                                     {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
                                     <mat-icon *ngIf="this.showPaymentIndicatorForIndex(index)" class="open-payment-indicator">circle</mat-icon>
                                 </span>
                         </div>
-                        <div class="column-partner-name justify-start">{{partnerPayment.partnerAbbreviation}}</div>
+                        <div class="column-partner-name justify-start">
+                            <span *ngIf="data.paymentDetail.spf">{{ 'project.partner.spf.cost.type.spf' | translate }}</span>
+                            <span *ngIf="!data.paymentDetail.spf">{{ partnerPayment.partnerAbbreviation }}</span>
+                        </div>
                         <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-start">
-                            <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId +'/reporting/'+ partnerPayment.partnerId +'/reports/' + partnerPayment.partnerReportId">
+                            <a *ngIf="partnerPayment.partnerReportId"
+                               [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId +'/reporting/'+ partnerPayment.partnerId +'/reports/' + partnerPayment.partnerReportId">
                                 {{'payment.detail.table.partner.report.number.abbreviation' | translate : {number: partnerPayment.partnerReportNumber} }}
                             </a>
                         </div>

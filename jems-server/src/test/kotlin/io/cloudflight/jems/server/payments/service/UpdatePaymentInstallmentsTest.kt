@@ -105,6 +105,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
@@ -131,6 +132,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
@@ -237,6 +239,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
@@ -259,6 +262,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
