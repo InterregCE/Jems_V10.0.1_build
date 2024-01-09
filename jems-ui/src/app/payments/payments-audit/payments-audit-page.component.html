@@ -47,13 +47,13 @@
             </div>
 
             <form jemsFormLayout [formGroup]="exportForm">
-                            <mat-form-field>
-                                <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
-                                <mat-select formControlName="pluginKey">
-                                    <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
-                                        {{plugin.name}} - {{plugin.version}}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                <mat-form-field>
+                    <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
+                    <mat-select formControlName="pluginKey">
+                        <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+                            {{plugin.name}} - {{plugin.version}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
 
                 <jems-alert [show]="true"
                             [type]="Alert.INFO">
@@ -62,8 +62,8 @@
                 </jems-alert>
 
 
-                <div>
-                    <mat-form-field class="parameter-selector-width">
+                <div jemsMultiColumnRow stretch="1">
+                    <mat-form-field>
                         <mat-label>{{'payments.audit.export.fund.dropdown.placeholder' | translate}}</mat-label>
                         <mat-select formControlName="fund">
                             <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
@@ -74,7 +74,7 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <mat-form-field class="parameter-selector-width ml-5">
+                    <mat-form-field>
                         <mat-label>{{'payments.audit.export.accounting.year.dropdown.placeholder' | translate}}</mat-label>
                         <mat-select formControlName="accountingYear">
                             <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
@@ -92,12 +92,11 @@
                                      (clicked)="exportData(pluginKey, fund?.id, accountingYear?.id)">
                     {{'programme.data.export.label.export.button' | translate}}
                 </jems-pending-button>
-
-                <div class="attachments-section">
-                    <jems-payment-to-ec-audit-attachments></jems-payment-to-ec-audit-attachments>
-                </div>
-
             </form>
+        </div>
+
+        <div class="attachments-section">
+            <jems-payment-to-ec-audit-attachments></jems-payment-to-ec-audit-attachments>
         </div>
     </ng-container>
 </jems-main-page-template>

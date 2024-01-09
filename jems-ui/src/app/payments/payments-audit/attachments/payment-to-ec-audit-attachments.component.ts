@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {FormService} from '@common/components/section/form/form.service';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {PageFileList} from '@common/components/file-list/page-file-list';
@@ -28,7 +27,6 @@ import {PaymentAuditAttachmentsStore} from './payment-to-ec-audit-attachments-st
   selector: 'jems-payment-to-ec-audit-attachments',
   templateUrl: './payment-to-ec-audit-attachments.component.html',
   styleUrls: ['./payment-to-ec-audit-attachments.component.scss'],
-  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentToEcAuditAttachmentsComponent {
