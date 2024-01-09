@@ -473,6 +473,12 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return !this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.value;
   }
 
+  isPaymentConfirmationDisabled(): boolean {
+    return this.isPaymentDateEmpty()
+      || !this.isPaymentAuthorised()
+      || this.settlementsArray.value.length > 0;
+  }
+
   isPaymentConfirmed(): boolean {
     return this.advancePayment
       .get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value;
