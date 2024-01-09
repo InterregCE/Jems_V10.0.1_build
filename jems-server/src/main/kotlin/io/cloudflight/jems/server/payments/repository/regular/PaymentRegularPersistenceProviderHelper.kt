@@ -148,24 +148,23 @@ fun PaymentSearchRequest.transformToWhereClause(
             )
     }
 
-    if (scoBasis != null) {
-        if (null in this.ecPaymentIds) {
-            val allAnswersNo = specProjectContracting.notFlagged()
-            val scoBasisFilter = when (scoBasis) {
-                DoesNotFallUnderArticle94Nor95 -> allAnswersNo
-                FallsUnderArticle94Or95 -> allAnswersNo.not()
-            }
-            expressions.add(scoBasisFilter)
-        } else {
-            expressions.add(specPaymentToEcExtension.finalScoBasis.eq(scoBasis))
+    if (contractingScoBasis != null) {
+        val allAnswersNo = specProjectContracting.notFlagged()
+        val scoBasisFilter = when (contractingScoBasis) {
+            DoesNotFallUnderArticle94Nor95 -> allAnswersNo
+            FallsUnderArticle94Or95 -> allAnswersNo.not()
         }
+        expressions.add(scoBasisFilter)
+    }
+    if (finalScoBasis != null) {
+        expressions.add(specPaymentToEcExtension.finalScoBasis.eq(finalScoBasis))
     }
 
     return expressions.joinWithAnd()
 }
 
 fun QProjectContractingMonitoringEntity.notFlagged() =
-    typologyProv94.eq(No).or(typologyProv94.isNull()).and(typologyProv95.eq(No).or(typologyProv95.isNull()))
+    typologyProv94.isNull().or(typologyProv94.eq(No)).and(typologyProv95.isNull().or(typologyProv95.eq(No)))
 
 fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
 fun Collection<BooleanExpression>.joinWithAnd() =

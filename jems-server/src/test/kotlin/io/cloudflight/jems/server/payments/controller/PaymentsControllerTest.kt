@@ -282,7 +282,8 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
             ecPaymentIds = emptySet(),
-            scoBasis = null,
+            contractingScoBasis = null,
+            finalScoBasis = null,
         )
     }
 
@@ -366,7 +367,8 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateFrom = null,
             lastPaymentDateTo = null,
             ecPaymentIds = emptySet(),
-            scoBasis = null,
+            contractingScoBasis = null,
+            finalScoBasis = null,
         ))
     }
 

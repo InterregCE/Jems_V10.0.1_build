@@ -455,7 +455,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
             ecPaymentIds = setOf(null, 693L),
-            scoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+            contractingScoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
+            finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
         )
 
         private val expectedFtlsPayment = PaymentToProject(
@@ -645,8 +646,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     "&& containsIc(paymentEntity.projectAcronym,acr-filter) " +
                     "&& paymentEntity.fund.id in [511, 512] " +
                     "&& (paymentToEcExtensionEntity.paymentApplicationToEc is null || paymentToEcExtensionEntity.paymentApplicationToEc.id = 693) " +
-                    "&& !((projectContractingMonitoringEntity.typologyProv94 = No || projectContractingMonitoringEntity.typologyProv94 is null) " +
-                    "&& (projectContractingMonitoringEntity.typologyProv95 = No || projectContractingMonitoringEntity.typologyProv95 is null))"
+                    "&& !((projectContractingMonitoringEntity.typologyProv94 is null || projectContractingMonitoringEntity.typologyProv94 = No) " +
+                    "&& (projectContractingMonitoringEntity.typologyProv95 is null || projectContractingMonitoringEntity.typologyProv95 = No)) " +
+                    "&& paymentToEcExtensionEntity.finalScoBasis = DoesNotFallUnderArticle94Nor95"
         )
         assertThat(slotHaving.captured.toString()).isEqualTo(
             "max(paymentPartnerInstallmentEntity.paymentDate) >= 2023-07-10 " +
