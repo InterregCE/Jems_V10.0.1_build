@@ -4,14 +4,15 @@
 }
 
 .mat-column-deduct {
-  max-width: 5rem;
+  min-width: 5rem;
 }
-.mat-column-fundContribution,
-.mat-column-privateContribution,
+.mat-column-fundAmount,
+.mat-column-publicContribution,
 .mat-column-autoPublicContribution,
-.mat-column-total,
-.mat-column-publicContribution {
+.mat-column-privateContribution,
+.mat-column-total {
   min-width: 13rem;
+  max-width: 13rem;
   padding-left: 0rem;
 }
 
