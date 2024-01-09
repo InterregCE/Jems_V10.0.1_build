@@ -1,8 +1,8 @@
 <ng-container *ngIf="data$ | async as data">
-    <form jemsFormLayout>
         <h3>{{ 'payments.to.ec.detail.summary.tab.attachments.title' | translate }}</h3>
 
         <jems-file-list jemsNoWidthLimit
+                        jemsFormFieldWidth="full"
                         [fileList]="data.attachments"
                         [setDescriptionCallback]="setDescriptionCallback"
                         [deleteCallback]="deleteCallback"
@@ -36,5 +36,4 @@
             <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
         </jems-alert>
 
-    </form>
 </ng-container>

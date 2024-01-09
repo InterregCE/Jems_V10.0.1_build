@@ -24,8 +24,8 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
   checklists$ = this.pageStore.checklists$;
   tableConfiguration: TableConfiguration;
 
-  @ViewChild('deleteCell', {static: true})
-  deleteCell: TemplateRef<any>;
+  @ViewChild('actionCell', {static: true})
+  actionCell: TemplateRef<any>;
 
   @ViewChild('copyCell', {static: true})
   copyCell: TemplateRef<any>;
@@ -99,15 +99,10 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
           sortProperty: 'lastModificationDate',
         },
         ...canEditProgramme ? [{
-          displayedColumn: 'common.delete.entry',
-          customCellTemplate: this.deleteCell,
+          displayedColumn: 'common.action',
+          customCellTemplate: this.actionCell,
           columnWidth: ColumnWidth.IdColumn
         }] : [],
-        {
-          displayedColumn: 'common.clone.entry.tooltip',
-          customCellTemplate: this.copyCell,
-          columnWidth: ColumnWidth.IdColumn,
-        },
       ]
     });
   }
