@@ -81,7 +81,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
             reportProjectOfOriginId = null,
             originalExpenditureNumber = 2
         )
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(partnerId, reportId) } returns
             mapOf(845L to expenditure)
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(845L)) } answers { }
 
@@ -108,12 +108,13 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
     @ParameterizedTest(name = "deleteParkedExpenditure - not existing - {0}")
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun `deleteParkedExpenditure - not existing`(status: ReportStatus) {
-        val report = report(250L, status)
-        every { reportPersistence.getPartnerReportById(partnerId = 48L, reportId = 250L) } returns report
+        val reportId = 250L
+        val report = report(reportId, status)
+        every { reportPersistence.getPartnerReportById(partnerId = 48L, reportId = reportId) } returns report
 
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(48L) } returns emptyMap()
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(48L,reportId) } returns emptyMap()
         assertThrows<ParkedExpenditureNotFound> {
-            interactor.deleteParkedExpenditure(48L, reportId = 250L, expenditureId = -1L)
+            interactor.deleteParkedExpenditure(48L, reportId = reportId, expenditureId = -1L)
         }
         verify(exactly = 0) { reportParkedExpenditurePersistence.unParkExpenditures(any()) }
     }

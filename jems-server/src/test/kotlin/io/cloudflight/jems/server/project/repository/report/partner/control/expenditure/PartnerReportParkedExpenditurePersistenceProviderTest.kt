@@ -49,6 +49,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         val originalReport = mockk<ProjectPartnerReportEntity>()
         val originalProjectReport = mockk<ProjectReportEntity>()
         val dateTime = ZonedDateTime.now()
+        val reportId = 33L
         every { originalReport.id } returns 40L
         every { originalReport.number } returns 401
 
@@ -65,10 +66,10 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
             parkedOn = dateTime
         )
         every {
-            reportParkedExpenditureRepository.findAllAvailableForPartnerReport(partnerId = 12L)
+            reportParkedExpenditureRepository.findAllAvailableForPartnerReport(partnerId = 12L, reportId)
         } returns listOf(expenditure)
 
-        assertThat(persistence.getParkedExpendituresByIdForPartner(partnerId = 12L)).containsExactlyEntriesOf(
+        assertThat(persistence.getParkedExpendituresByIdForPartnerReport(partnerId = 12L, reportId)).containsExactlyEntriesOf(
             mapOf(
                 5499L to ExpenditureParkingMetadata(
                     reportOfOriginId = 40L,

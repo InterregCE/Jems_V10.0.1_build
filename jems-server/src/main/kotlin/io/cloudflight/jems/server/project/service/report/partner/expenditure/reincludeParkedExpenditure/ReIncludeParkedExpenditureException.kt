@@ -17,3 +17,8 @@ class ReIncludingForbiddenIfReOpenedReportIsNotLast : ApplicationUnprocessableEx
     code = "$ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$ERROR_KEY_PREFIX.reopened.report.not.last"),
 )
+
+class ReIncludeItemParkedInSameReportException : ApplicationUnprocessableException(
+    code = "$ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$ERROR_KEY_PREFIX.same.report.error"),
+)

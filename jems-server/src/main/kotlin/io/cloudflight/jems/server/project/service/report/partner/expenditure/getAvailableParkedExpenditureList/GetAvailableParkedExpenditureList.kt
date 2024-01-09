@@ -29,7 +29,7 @@ class GetAvailableParkedExpenditureList(
     @ExceptionWrapper(GetAvailableParkedExpenditureListException::class)
     override fun getParked(partnerId: Long, reportId: Long, pageable: Pageable): Page<ProjectPartnerReportParkedExpenditure> {
         val parkedExpendituresById = reportParkedExpenditurePersistence
-            .getParkedExpendituresByIdForPartner(partnerId)
+            .getParkedExpendituresByIdForPartnerReport(partnerId, reportId = reportId)
 
         val availableLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId)
             .associateBy { Pair(it.lumpSumProgrammeId, it.orderNr) }
