@@ -60,7 +60,7 @@ class ProjectReportVerificationAuthorization(
 
     fun canViewReportVerificationFinance(reportId: Long): Boolean {
         val report = projectReportPersistence.getReportByIdUnSecured(reportId)
-        val collaboratorIds = userProjectCollaboratorPersistence.getUserIdsForProject(report.projectId)
+        val collaboratorIds = userProjectCollaboratorPersistence.getCollaboratorsForProject(report.projectId)
             .mapTo(HashSet()) { it.userId } union partnerCollaboratorPersistence.findUserIdsByProjectId(report.projectId)
         val controllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(report.projectId)
 

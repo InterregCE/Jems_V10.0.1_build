@@ -31,7 +31,7 @@ class ProjectNotificationRecipientService(
         projectId: Long
     ): Map<String, UserEmailNotification> {
         val managers = if (!notificationConfig.sendToManager) emptyMap() else
-            userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
+            userProjectCollaboratorPersistence.getCollaboratorsForProject(projectId).emails()
 
         val projectAssignedUsers = if (!notificationConfig.sendToProjectAssigned) emptyMap() else
             userProjectPersistence.getUsersForProject(projectId)

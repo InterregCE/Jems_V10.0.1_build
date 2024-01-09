@@ -17,6 +17,6 @@ class SecurityServiceImpl : SecurityService {
         }
 
     override fun getUserIdOrThrow(): Long =
-        currentUser?.user?.id ?: throw CurrentUseIdIsNullException()
+        currentUser?.user?.id ?: throw CurrentUserIdIsNullException()
 
 }

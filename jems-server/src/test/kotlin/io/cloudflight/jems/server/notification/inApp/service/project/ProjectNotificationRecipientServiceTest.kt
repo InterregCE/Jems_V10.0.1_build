@@ -205,7 +205,7 @@ class ProjectNotificationRecipientServiceTest {
 
     @Test
     fun getEmailsForProjectManagersAndAssignedUsers() {
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectManagerDeactivated)
+        every { userProjectCollaboratorPersistence.getCollaboratorsForProject(PROJECT_ID) } returns listOf(projectManager, projectManagerDeactivated)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser, programmeUserDeactivated)
 
         val result = service.getEmailsForProjectManagersAndAssignedUsers(projectNotificationConfigAll, PROJECT_ID)
