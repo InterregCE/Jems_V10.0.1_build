@@ -93,8 +93,8 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.findAll(pageable).toModel()
 
     @Transactional(readOnly = true)
-    override fun findAllWithDetails(): List<PaymentApplicationToEcDetail> =
-        ecPaymentRepository.findAll().toDetailModel()
+    override fun findAllWithDetails(pageable: Pageable): Page<PaymentApplicationToEcDetail> =
+        ecPaymentRepository.findAll(pageable).toDetailModel()
 
     @Transactional(readOnly = true)
     override fun getIdsFinishedForYearAndFund(accountingYearId: Long, fundId: Long): Set<Long> =
