@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.repository
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
@@ -178,6 +179,7 @@ fun PaymentEntity.toDetailModel(
     projectId = project.id,
     projectCustomIdentifier = project.customIdentifier,
     projectAcronym = project.acronym,
+    spf = project.call.type == CallType.SPF,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
     dateOfLastPayment = null,

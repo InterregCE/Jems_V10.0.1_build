@@ -42,6 +42,7 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
+    spf = spf,
     amountApprovedPerFund = amountApprovedPerFund,
     dateOfLastPayment = dateOfLastPayment,
     partnerPayments = partnerPayments.map { it.toDTO() }
