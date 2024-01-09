@@ -61,7 +61,7 @@ export class PaymentsToEcPageComponent implements OnInit, AfterViewInit {
       sortable: true,
       columns: [
         {
-          displayedColumn: 'common.id',
+          displayedColumn: 'payments.to.ec.table.header.id',
           elementProperty: 'id',
           sortProperty: 'id',
           columnWidth: ColumnWidth.IdColumn,
