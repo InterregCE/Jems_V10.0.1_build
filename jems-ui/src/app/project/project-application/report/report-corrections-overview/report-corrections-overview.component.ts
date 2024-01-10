@@ -58,7 +58,7 @@ export class ReportCorrectionsOverviewComponent implements OnInit {
       columns: [
         {
           displayedColumn: 'common.id',
-          columnWidth: ColumnWidth.IdColumn,
+          columnWidth: ColumnWidth.IdLongColumn,
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.idCell,
           sortProperty: 'id'
