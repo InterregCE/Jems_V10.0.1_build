@@ -31,10 +31,10 @@ class GetProjectReportList(
         val reports = reportPersistence.listReports(projectId, pageable)
             .map { it.toServiceSummaryModel(it.periodResolver()) }
 
-        val amountsForDraftReports = getAmountsForDraftReports(reports.content)
+        val amountsForDraftFinanceReports = getAmountsForDraftFinanceReports(reports.content)
 
         return reports
-            .fillInAmountsForDraftReports(amountsForDraftReports)
+            .fillInAmountsForDraftReports(amountsForDraftFinanceReports)
             .removeZeroAmountsFromContentReports()
     }
 
@@ -43,8 +43,8 @@ class GetProjectReportList(
             .firstOrNull { it.number == periodNumber }
     }
 
-    private fun getAmountsForDraftReports(reports: List<ProjectReportSummary>): Map<Long, BigDecimal> {
-        val draftReportIds = reports.filter { it.status.isOpenForNumbersChanges() }.mapTo(HashSet()) { it.id }
+    private fun getAmountsForDraftFinanceReports(reports: List<ProjectReportSummary>): Map<Long, BigDecimal> {
+        val draftReportIds = reports.filter { it.status.isOpenForNumbersChanges() && it.hasFinance() }.mapTo(HashSet()) { it.id }
         if (draftReportIds.isEmpty())
             return emptyMap()
 

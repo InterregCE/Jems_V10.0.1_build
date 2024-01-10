@@ -32,4 +32,5 @@ data class ProjectReportSummary(
     val verificationFollowup: String?
 ) {
     fun doesNotHaveFinance() = type?.hasFinance() != true
+    fun hasFinance() = type?.hasFinance() == true
 }
