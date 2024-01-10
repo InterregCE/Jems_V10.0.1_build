@@ -24,11 +24,12 @@ class PartnerReportParkedExpenditurePersistenceProvider(
         reportParkedExpenditureRepository.getAvailableParkedExpenditureIdsFromPartnerReport(reportId)
 
     @Transactional(readOnly = true)
-    override fun getParkedExpendituresByIdForPartner(
+    override fun getParkedExpendituresByIdForPartnerReport(
         partnerId: Long,
+        reportId: Long
     ): Map<Long, ExpenditureParkingMetadata> =
         reportParkedExpenditureRepository
-            .findAllAvailableForPartnerReport(partnerId)
+            .findAllAvailableForPartnerReport(partnerId = partnerId, reportId = reportId)
             .associate {
                 Pair(
                     it.parkedFromExpenditureId,
@@ -40,6 +41,10 @@ class PartnerReportParkedExpenditurePersistenceProvider(
                     )
                 )
             }
+
+    @Transactional(readOnly = true)
+    override fun getParkedExpenditureById(expenditureId: Long): ExpenditureParkingMetadata
+         = reportParkedExpenditureRepository.getById(expenditureId).toModel()
 
     @Transactional
     override fun parkExpenditures(toPark: Collection<ParkExpenditureData>) {

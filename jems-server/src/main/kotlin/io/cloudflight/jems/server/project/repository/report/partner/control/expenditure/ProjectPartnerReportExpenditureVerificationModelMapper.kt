@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.entity.report.control.expenditure.Part
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.getParkingMetadata
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import java.time.ZonedDateTime
 
@@ -45,4 +46,11 @@ fun PartnerReportExpenditureCostEntity.toModel(expenditureParkedOn: ZonedDateTim
     parkedOn = expenditureParkedOn,
     verificationComment = verificationComment,
     parkingMetadata = getParkingMetadata()
+)
+
+fun PartnerReportParkedExpenditureEntity.toModel() = ExpenditureParkingMetadata (
+    reportOfOriginId = reportOfOrigin.id,
+    reportOfOriginNumber = reportOfOrigin.number,
+    reportProjectOfOriginId = parkedInProjectReport?.id,
+    originalExpenditureNumber = originalNumber
 )
