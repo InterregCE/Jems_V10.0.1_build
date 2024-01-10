@@ -187,7 +187,7 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox [disabled]="isPaymentDateEmpty() || (formService.dirty$ | async)"
+                                <mat-checkbox [disabled]="isPaymentConfirmationDisabled() || (formService.dirty$ | async)"
                                               [checked]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value === true"
                                               (change)="setConfirmPaymentDate($event.checked, data.paymentDetail.id)">
                                 </mat-checkbox>
