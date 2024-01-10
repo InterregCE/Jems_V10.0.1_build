@@ -1,21 +1,33 @@
-.move-buttons {
-  flex-direction: column;
-  margin-top: 0.5rem;
 
-  .move-button {
-    opacity: 0.33;
+:host::ng-deep {
+  .mat-tab-body-wrapper, .mat-tab-body-content, .mat-tab-body {
+      overflow: unset !important;
+    }
+}
 
-    &:hover {
-      opacity: 1
+jems-programme-checklist-detail-page {
+
+  .move-buttons {
+    flex-direction: column;
+    margin-top: 0.5rem;
+
+    .move-button {
+      opacity: 0.33;
+
+      &:hover {
+        opacity: 1
+      }
     }
   }
+
+  .top-cell {
+    margin-top: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .line-bottom-padding {
+    padding-bottom: 0.5rem;
+  }
+
 }
 
-.top-cell {
-  margin-top: 0.5rem;
-  align-items: flex-start;
-}
-
-.line-bottom-padding {
- padding-bottom: 0.5rem;
-}
