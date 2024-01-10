@@ -10,6 +10,7 @@ import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {Permission} from '../../../../security/permissions/permission';
 import {JemsRegionCheckbox} from '@common/models/jems-region-checkbox';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {ProgrammePageSidenavService} from "../../services/programme-page-sidenav.service";
 
 @Component({
   selector: 'jems-programme-area',
@@ -86,7 +87,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
 
   constructor(private nutsService: NutsImportService,
               private programmeDataService: ProgrammeDataService,
-              public programmeEditableStateStore: ProgrammeEditableStateStore) {
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
   }
 

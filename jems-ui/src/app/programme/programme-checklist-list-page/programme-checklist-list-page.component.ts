@@ -10,6 +10,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ProgrammeChecklistDetailDTO} from '@cat/api';
 import {RoutingService} from "@common/services/routing.service";
 import {ActivatedRoute} from '@angular/router';
+import {ProgrammePageSidenavService} from "../programme-page/services/programme-page-sidenav.service";
 
 @Component({
   selector: 'jems-programme-checklist-list-page',
@@ -33,7 +34,8 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
   constructor(public pageStore: ProgrammeChecklistListPageStore,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private programmePageSidenavService: ProgrammePageSidenavService) { }
 
   ngOnInit(): void {
     this.pageStore.canEditProgramme$

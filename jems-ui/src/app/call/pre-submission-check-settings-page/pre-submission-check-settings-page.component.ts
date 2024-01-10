@@ -8,6 +8,7 @@ import {PluginInfoDTO} from '@cat/api';
 import {catchError, map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PluginKeys} from './plugin-keys';
+import {CallPageSidenavService} from "../services/call-page-sidenav.service";
 
 @UntilDestroy()
 @Component({
@@ -42,7 +43,8 @@ export class PreSubmissionCheckSettingsPageComponent {
 
   constructor(private formService: FormService,
               private formBuilder: FormBuilder,
-              private pageStore: PreSubmissionCheckSettingsPageStore) {
+              private pageStore: PreSubmissionCheckSettingsPageStore,
+              private callPageSideNavService: CallPageSidenavService) {
     this.formService.init(this.form);
     this.data$ = combineLatest([
       pageStore.callIsEditable$,
