@@ -43,6 +43,7 @@ import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.c
 import {
   PaymentToEcAuditAttachmentsComponent
 } from './payments-audit/attachments/payment-to-ec-audit-attachments.component';
+import { PaymentToEcFinalizeTabComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component';
 
 @NgModule({
     declarations: [
@@ -64,7 +65,8 @@ import {
         PaymentToEcCorrectionTabComponent,
         PaymentToEcCorrectionSelectTableComponent,
         PaymentsAuditPageComponent,
-      PaymentToEcAuditAttachmentsComponent
+      PaymentToEcAuditAttachmentsComponent,
+      PaymentToEcFinalizeTabComponent
     ],
     imports: [
         SharedModule,
