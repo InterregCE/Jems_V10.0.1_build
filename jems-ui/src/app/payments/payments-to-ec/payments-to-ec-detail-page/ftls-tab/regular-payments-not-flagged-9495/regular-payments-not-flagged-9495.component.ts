@@ -2,7 +2,12 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {PagePaymentToEcLinkingDTO, PaymentApplicationToEcDetailDTO, PaymentToEcLinkingUpdateDTO} from '@cat/api';
+import {
+  PagePaymentToEcLinkingDTO,
+  PaymentApplicationToEcDetailDTO,
+  PaymentDetailDTO,
+  PaymentToEcLinkingUpdateDTO
+} from '@cat/api';
 import {APIError} from '@common/models/APIError';
 import {PaymentToEcRegularProjectsTabStoreService} from '../payment-to-ec-regular-projects-tab-store.service';
 import {PaymentsToEcDetailPageStore} from '../../payment-to-ec-detail-page-store.service';
@@ -12,6 +17,7 @@ import {MatCheckboxChange} from '@angular/material/checkbox';
 import {Alert} from '@common/components/forms/alert';
 import {MatCheckbox} from '@angular/material/checkbox/checkbox';
 import {Forms} from '@common/utils/forms';
+import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -32,6 +38,7 @@ export class RegularPaymentsNotFlagged9495Component implements OnInit {
   Alert = Alert;
   error$ = new BehaviorSubject<APIError | null>(null);
   success$ = new BehaviorSubject(false);
+  PaymentTypeEnum = PaymentTypeEnum;
 
   constructor(
     public pageStore: PaymentToEcRegularProjectsTabStoreService,
