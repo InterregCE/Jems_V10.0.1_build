@@ -29,7 +29,7 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
             <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previously.reported.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right small-text-container block">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="line.translation !== 'project.partner.spf.cost.type.spf'">
             {{ line.previouslyReported | asMoney }}
             <div class="additional-info-text mat-small" *ngIf="line.translation !== 'project.partner.spf.cost.type.spf'">
                 {{'project.application.partner.report.financial.parked.label' | translate}} {{line.previouslyReportedParked | asMoney}}
@@ -47,7 +47,7 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.current.report' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right small-text-container block">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="line.translation !== 'project.partner.spf.cost.type.spf'">
             <div>{{ line.translation !== 'project.partner.spf.cost.type.spf' ? (line.currentReport | asMoney) : ('common.not.applicable.option' | translate) }}</div>
             <div class="additional-info-text mat-small" *ngIf="line.translation !== 'project.partner.spf.cost.type.spf'">
                 {{'project.application.partner.report.financial.reincluded.label' | translate}} {{line.currentReportReIncluded | asMoney}}
