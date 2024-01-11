@@ -1,5 +1,10 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {PagePaymentToEcLinkingDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO} from '@cat/api';
+import {
+  PagePaymentToEcLinkingDTO, PaymentDetailDTO,
+  PaymentToEcLinkingDTO,
+  PaymentToEcLinkingUpdateDTO,
+  PaymentToProjectDTO
+} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -9,6 +14,7 @@ import {MatSort} from '@angular/material/sort';
 import {
   AdvancePaymentsDetailPageConstants
 } from '../../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
+import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
 
 @Component({
   selector: 'jems-payment-to-ec-select-table',
@@ -31,6 +37,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   newSize: Subject<number>;
   @Input()
   newIndex: Subject<number>;
+  @Input()
+  paymentType: PaymentTypeEnum;
 
   @Output()
   selectionChanged = new EventEmitter<{ ecId: number; paymentId: number; checked: boolean; checkbox: MatCheckboxChange }>();
@@ -38,6 +46,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   submitPayment = new EventEmitter<{ paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
 
   constants = AdvancePaymentsDetailPageConstants;
+  PaymentTypeEnum = PaymentTypeEnum;
 
   form = this.formBuilder.group({
     paymentToEcLinking: this.formBuilder.array([]),
@@ -132,6 +141,10 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     });
     this.editedRowIndex = null;
     this.formService.setDirty(false);
+  }
+
+  getRouterLinkForRegularPayment(paymentToProjectDTO: PaymentToProjectDTO): string {
+    return `/app/project/detail/${paymentToProjectDTO.projectId}/projectReports/${paymentToProjectDTO.paymentClaimId}`;
   }
 
 }

@@ -21,6 +21,7 @@
                                          [newSort]="pageStore.regularNewSort$"
                                          [newIndex]="pageStore.regularNewPageIndex$"
                                          [newSize]="pageStore.regularNewPageSize$"
+                                         [paymentType]="PaymentTypeEnum.REGULAR"
                                          (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
                                          (submitPayment)="updateLinkedPayment($event.paymentId, $event.updateDto)"
         ></jems-payment-to-ec-select-table>
