@@ -17,9 +17,6 @@ export class ContextInfoComponent implements OnInit{
   @Input()
   icon?: string = 'info_outline';
 
-  @Input()
-  link?: string;
-
   /*
     InfoPosition
     Position of context-info icon in relation to parent.
@@ -32,6 +29,7 @@ export class ContextInfoComponent implements OnInit{
   @Input()
   noWidth: Boolean = false;
 
+  extractedUrl = '';
   isDisplayed = true;
 
   isLinkActive = false;
@@ -46,19 +44,25 @@ export class ContextInfoComponent implements OnInit{
       return;
     }
 
-    if(this.link) {
-        this.infoText = this.infoText+'\n'
-          + this.translateService.instant('common.infobubble.follow.link.text')+'\n'
-          + this.trimLink(this.link,64);
-        this.isLinkActive = true;
-      } else {
-        this.isLinkActive = false;
+      const urlRegex = /\[\[([^[\]]*)\]\]/;
+      const match = this.infoText.match(urlRegex);
+
+      if (match && match.length > 1) {
+          this.extractedUrl = match[1];
+
+          // remove url from infoText
+          this.infoText = this.infoText.replace(match[0], '');
+
+          this.infoText = this.infoText + '\n'
+              + this.translateService.instant('common.infobubble.follow.link.text') + '\n'
+              + this.trimLink(this.extractedUrl, 64);
+          this.isLinkActive = true;
       }
   }
 
   openLink() {
     if (this.isLinkActive) {
-      window.open(this.link, '_blank');
+      window.open(this.extractedUrl, '_blank');
     }
   }
 
