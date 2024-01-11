@@ -10,6 +10,7 @@ import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcPay
 import io.cloudflight.jems.plugin.contract.services.payments.EcPaymentDataProvider
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.constructCorrectionFilter
 import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
@@ -79,17 +80,23 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
         val filter = if (ecPayment.status.isFinished())
-            filterFtlsAndRegular(ecPaymentIds = setOf(ecPaymentId))
+            filterFtlsAndRegular(setOf(ecPaymentId), finalScoBasis = DoesNotFallUnderArticle94Nor95)
         else
-            filterFtlsAndRegular(ecPaymentIds = setOf(null, ecPaymentId), fundId = fundId)
+            filterFtlsAndRegular(setOf(null, ecPaymentId), fundId = fundId, contractingScoBasis = DoesNotFallUnderArticle94Nor95)
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable.toJpaPage(), filter)
             .toPluginPage { it.toDataModel() }
     }
 
-    private fun filterFtlsAndRegular(ecPaymentIds: Set<Long?>, fundId: Long? = null) = constructFilter(
+    private fun filterFtlsAndRegular(
+        ecPaymentIds: Set<Long?>,
+        fundId: Long? = null,
+        finalScoBasis: PaymentSearchRequestScoBasis? = null,
+        contractingScoBasis: PaymentSearchRequestScoBasis? = null,
+    ) = constructFilter(
         ecPaymentIds = ecPaymentIds,
         fundId = fundId,
-        scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+        finalScoBasis = finalScoBasis,
+        contractingScoBasis = contractingScoBasis,
     )
 }

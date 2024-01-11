@@ -14,7 +14,8 @@ import java.math.BigDecimal
 fun constructFilter(
     ecPaymentIds: Set<Long?>,
     fundId: Long? = null,
-    scoBasis: PaymentSearchRequestScoBasis?,
+    contractingScoBasis: PaymentSearchRequestScoBasis?,
+    finalScoBasis: PaymentSearchRequestScoBasis?,
     paymentType: PaymentType? = null,
 ) = PaymentSearchRequest(
     paymentId = null,
@@ -29,7 +30,8 @@ fun constructFilter(
     lastPaymentDateFrom = null,
     lastPaymentDateTo = null,
     ecPaymentIds = ecPaymentIds,
-    scoBasis = scoBasis,
+    contractingScoBasis = contractingScoBasis,
+    finalScoBasis = finalScoBasis,
 )
 
 fun constructCorrectionFilter(

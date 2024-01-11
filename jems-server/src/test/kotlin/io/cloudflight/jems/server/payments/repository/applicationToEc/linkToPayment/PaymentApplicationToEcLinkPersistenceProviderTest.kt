@@ -471,8 +471,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             .isEqualTo("programmePriorityEntity.id = programmeSpecificObjectiveEntity.programmePriority.id")
         assertThat(slotWhere.captured.toString())
             .isEqualTo("paymentToEcExtensionEntity.paymentApplicationToEc.id = 15 && " +
-                "(projectContractingMonitoringEntity.typologyProv94 = No || projectContractingMonitoringEntity.typologyProv94 is null) " +
-                "&& (projectContractingMonitoringEntity.typologyProv95 = No || projectContractingMonitoringEntity.typologyProv95 is null)")
+                "(projectContractingMonitoringEntity.typologyProv94 is null || projectContractingMonitoringEntity.typologyProv94 = No) " +
+                "&& (projectContractingMonitoringEntity.typologyProv95 is null || projectContractingMonitoringEntity.typologyProv95 = No)")
 
         assertThat(slotCorrectionLeftJoin).hasSize(6)
         assertThat(slotCorrectionLeftJoin[0]).isInstanceOf(QAuditControlCorrectionEntity::class.java)

@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable
 
 interface GetFtlsPaymentsAvailableForArtNot94Not95Interactor {
 
-    fun getPaymentList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcPayment>
+    fun getPaymentList(pageable: Pageable, ecPaymentId: Long): Page<PaymentToEcPayment>
 
 }

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
@@ -22,22 +23,31 @@ class GetFtlsPaymentsAvailableForArtNot94Not95(
     @CanRetrievePaymentApplicationsToEc
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetFtlsPaymentsAvailableForArtNot94Not95Exception::class)
-    override fun getPaymentList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcPayment> {
-        val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecApplicationId)
+    override fun getPaymentList(pageable: Pageable, ecPaymentId: Long): Page<PaymentToEcPayment> {
+        val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecPaymentId)
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
         val filter = if (ecPayment.status.isFinished())
-            filterFtls(ecPaymentIds = setOf(ecPayment.id))
+            filterFtls(ecPaymentId.asSet(), finalScoBasis = DoesNotFallUnderArticle94Nor95)
         else
-            filterFtls(ecPaymentIds = setOf(null, ecPayment.id), fundId = fundId)
+            filterFtls(ecPaymentId.orNull(), fundId = fundId, contractingScoBasis = DoesNotFallUnderArticle94Nor95)
 
         return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)
     }
 
-    private fun filterFtls(ecPaymentIds: Set<Long?>, fundId: Long? = null) = constructFilter(
+    private fun Long.orNull() = setOf(this, null)
+    private fun Long.asSet() = setOf(this)
+
+    private fun filterFtls(
+        ecPaymentIds: Set<Long?>,
+        fundId: Long? = null,
+        finalScoBasis: PaymentSearchRequestScoBasis? = null,
+        contractingScoBasis: PaymentSearchRequestScoBasis? = null,
+    ) = constructFilter(
         ecPaymentIds = ecPaymentIds,
         fundId = fundId,
-        scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+        finalScoBasis = finalScoBasis,
+        contractingScoBasis = contractingScoBasis,
         paymentType = PaymentType.FTLS,
     )
 

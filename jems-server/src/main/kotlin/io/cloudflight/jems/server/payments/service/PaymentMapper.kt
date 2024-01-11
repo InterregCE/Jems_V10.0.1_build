@@ -189,7 +189,8 @@ fun PaymentSearchRequestDTO.toModel() = PaymentSearchRequest(
     lastPaymentDateFrom = lastPaymentDateFrom,
     lastPaymentDateTo = lastPaymentDateTo,
     ecPaymentIds = emptySet(),
-    scoBasis = null,
+    contractingScoBasis = null,
+    finalScoBasis = null,
 )
 
 @Mapper

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
+import com.querydsl.core.QueryResults
 import com.querydsl.core.Tuple
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
@@ -324,14 +325,11 @@ class AuditControlCorrectionPersistenceProvider(
                 .on(specPaymentApplicationToEcEntity.id.eq(specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id))
             .where(
                 filter.transformToWhereClause(specCorrection, specCorrectionProgrammeMeasure, specPaymentToEcCorrectionExtensionEntity)
-            ).apply{
-                if (pageable.isPaged){
-                    this.offset(pageable.offset)
-                        .limit(pageable.pageSize.toLong())
-                        .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
-                }
-            }
-            .fetch()
+            )
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
+            .fetchResults()
 
         return results.toPaymentToEcCorrectionPageResult(pageable)
     }
@@ -354,8 +352,8 @@ class AuditControlCorrectionPersistenceProvider(
     override fun existsByProcurementId(procurementId: Long): Boolean =
         auditControlCorrectionRepository.existsByProcurementId(procurementId)
 
-    fun List<Tuple>.toPaymentToEcCorrectionPageResult(pageable: Pageable) = PageImpl(
-        this.map { it: Tuple ->
+    private fun QueryResults<Tuple>.toPaymentToEcCorrectionPageResult(pageable: Pageable) = PageImpl(
+        results.map { it: Tuple ->
             PaymentToEcCorrectionTmp(
                 correctionEntity = it.get(0, AuditControlCorrectionEntity::class.java)!!,
                 projectId = it.get(2, Long::class.java)!!,
@@ -389,9 +387,8 @@ class AuditControlCorrectionPersistenceProvider(
             )
         },
         pageable,
-        this.size.toLong(),
+        total,
     )
-
 
     private fun checkProjectFallsUnderArticle94Or95(
         flaggedArticle94: ContractingMonitoringExtendedOption?,

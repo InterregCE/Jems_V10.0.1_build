@@ -63,7 +63,8 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
                 lastPaymentDateFrom = null,
                 lastPaymentDateTo = null,
                 ecPaymentIds = setOf(null, 28L),
-                scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                contractingScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                finalScoBasis = null,
             )
         )
     }
@@ -95,7 +96,8 @@ internal class GetFtlsPaymentsAvailableForArtNot94Not95Test : UnitTest() {
                 lastPaymentDateFrom = null,
                 lastPaymentDateTo = null,
                 ecPaymentIds = setOf(29L),
-                scoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
+                contractingScoBasis = null,
+                finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
             )
         )
     }

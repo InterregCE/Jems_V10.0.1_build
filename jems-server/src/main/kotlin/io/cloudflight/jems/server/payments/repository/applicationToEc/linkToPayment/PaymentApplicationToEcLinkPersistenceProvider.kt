@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.*
@@ -40,6 +41,20 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     private val programmePriorityRepository: ProgrammePriorityRepository,
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentApplicationToEcLinkPersistence {
+
+    companion object {
+        private fun whereEcPaymentAndBasis(ecPaymentId: Long, scoBasis: PaymentSearchRequestScoBasis): BooleanExpression? {
+            val paymentExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+            val contractingMonitoringEntity = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+
+            return paymentExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId).and(
+                when (scoBasis) {
+                    PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 -> contractingMonitoringEntity.notFlagged()
+                    PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 -> contractingMonitoringEntity.notFlagged().not()
+                }
+            )
+        }
+    }
 
     @Transactional(readOnly = true)
     override fun getPaymentExtension(paymentId: Long): PaymentToEcExtension =
@@ -119,12 +134,13 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     @Transactional(readOnly = true)
     override fun calculateAndGetOverviewForDraftEcPayment(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>> =
         mapOf(
-            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to calculateForPayments(ecPaymentId),
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to
+                    calculateForPayments(ecPaymentId, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95),
             PaymentToEcOverviewType.FallsUnderArticle94Or95 to emptyMap(),
             PaymentToEcOverviewType.Correction to calculateForCorrections(ecPaymentId),
         )
 
-    private fun calculateForPayments(ecPaymentId: Long): Map<Long?, PaymentToEcAmountSummaryLineTmp> {
+    private fun calculateForPayments(ecPaymentId: Long, scoBasis: PaymentSearchRequestScoBasis): Map<Long?, PaymentToEcAmountSummaryLineTmp> {
         val paymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val paymentEntity = QPaymentEntity.paymentEntity
         val priorityPolicy = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
@@ -150,9 +166,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                 .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
             .leftJoin(projectContractingMonitoringEntity)
                 .on(projectContractingMonitoringEntity.projectId.eq(paymentEntity.project.id))
-            .where(paymentToEcExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId).and(
-                projectContractingMonitoringEntity.notFlagged()
-            ))
+            .where(whereEcPaymentAndBasis(ecPaymentId, scoBasis))
             .groupBy(programmePriority.id)
             .fetch()
             .map { it: Tuple ->
