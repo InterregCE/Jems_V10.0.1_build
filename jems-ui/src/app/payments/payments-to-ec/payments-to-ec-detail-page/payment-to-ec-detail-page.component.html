@@ -24,16 +24,6 @@
                 </mat-chip-list>
             </span>
 
-            <span class="finish-button" *ngIf="data.canFinalize">
-                 <jems-pending-button
-                         [confirm]="{title: 'payments.to.ec.table.action.finalize.dialog.title', message: 'payments.to.ec.table.action.finalize.dialog.message', warnMessage: 'payments.to.ec.table.action.finalize.dialog.warning'}"
-                         [disabled]="data.finalizationDisabled"
-                         [pending]="statusChangePending$ | async"
-                         (clicked)="finalizePaymentApplication(data.paymentDetail.id)">
-                    {{'payments.to.ec.table.action.finalize.button' | translate}}
-                </jems-pending-button>
-            </span>
-
             <span class="finish-button" *ngIf="data.canReOpen">
                  <jems-pending-button
                          [confirm]="{title: 'payments.to.ec.table.action.reopen.dialog.title', message: 'payments.to.ec.table.action.reopen.dialog.message', warnMessage: 'payments.to.ec.table.action.reopen.dialog.warning'}"
@@ -64,6 +54,12 @@
                 {{'payments.to.ec.detail.corrections.tab' | translate}}
             </span>
         </a>
+
+      <a *ngIf="data.paymentDetail.id" [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.finalize.tab.title' | translate}}
+            </span>
+      </a>
     </nav>
     <router-outlet></router-outlet>
 

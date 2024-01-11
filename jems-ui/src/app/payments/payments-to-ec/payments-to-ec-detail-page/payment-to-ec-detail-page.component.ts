@@ -28,8 +28,6 @@ export class PaymentToEcDetailPageComponent {
     paymentDetail: PaymentApplicationToEcDetailDTO;
     userCanView: boolean;
     userCanEdit: boolean;
-    finalizationDisabled: boolean;
-    canFinalize: boolean;
     isAvailableToReOpen: boolean;
     canReOpen: boolean;
   }>;
@@ -49,8 +47,6 @@ export class PaymentToEcDetailPageComponent {
               paymentDetail: this.getUpdatePayment(paymentDetail, paymentStatus),
               userCanView,
               userCanEdit,
-              finalizationDisabled: this.isFinalizationDisabled(paymentStatus, userCanEdit),
-              canFinalize: (paymentDetail.id && paymentDetail.status === PaymentEcStatusEnum.Draft && userCanEdit) || false,
               isAvailableToReOpen: availableToReOpen && userCanEdit,
               canReOpen: paymentDetail.status === PaymentEcStatusEnum.Finished && userCanEdit
             })
@@ -62,19 +58,6 @@ export class PaymentToEcDetailPageComponent {
     const updatedPayment = savedPayment;
     updatedPayment.status = newStatus;
     return updatedPayment;
-  }
-
-  finalizePaymentApplication(paymentId: number) {
-    this.statusChangePending$.next(true);
-
-    this.pageStore.finalizePaymentApplicationToEc(paymentId).pipe(
-      take(1),
-      catchError((err) =>
-        this.showErrorMessage(err)
-      ),
-      finalize(() => this.statusChangePending$.next(false)),
-      untilDestroyed(this)
-    ).subscribe();
   }
 
   setPaymentApplicationBackToDraft(paymentId: number) {
@@ -96,10 +79,6 @@ export class PaymentToEcDetailPageComponent {
       this.finalizeError$.next(null);
     }, 4000);
     return of(null);
-  }
-
-  private isFinalizationDisabled(paymentStatus: PaymentApplicationToEcDetailDTO.StatusEnum, userCanEdit: boolean): boolean {
-    return paymentStatus == this.paymentStatusEnum.Finished || !userCanEdit;
   }
 
   activeTab(route: string): boolean {
