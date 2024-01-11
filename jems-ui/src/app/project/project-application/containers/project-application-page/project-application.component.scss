@@ -2,3 +2,8 @@
   display: inline-block;
   width: 100%;
 }
+:host::ng-deep {
+  .mat-tab-body-wrapper, .mat-tab-body-content, .mat-tab-body {
+    overflow: unset !important;
+  }
+}
