@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
   AdvancePaymentSettlementDTO,
@@ -49,6 +49,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   tableData: AbstractControl[] = [];
   paymentId = this.activatedRoute.snapshot.params.advancePaymentId;
   columnsToDisplay = ['partner', 'partnerName', 'amountApproved', 'addInstallment'];
+  successfulAuthorizationMessage = false;
+  successfulConfirmationMessage = false;
+  error$ = new BehaviorSubject<APIError | null>(null);
 
   advancePaymentForm = this.formBuilder.group({
     id: '',
@@ -421,6 +424,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   setPaymentAuthorised(isChecked: boolean, paymentId: number) {
     this.advancePaymentsDetailPageStore.updateStatus(
       paymentId, isChecked ? AdvancePaymentStatusUpdateDTO.StatusEnum.AUTHORIZED : AdvancePaymentStatusUpdateDTO.StatusEnum.DRAFT
+    ).pipe(
+      tap(() => this.showSuccessMessageAfterPaymentAuthorised()),
+      catchError((error) => this.showErrorMessage(error.error)),
     ).subscribe();
   }
 
@@ -456,6 +462,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   setConfirmPaymentDate(isChecked: boolean, paymentId: number) {
     this.advancePaymentsDetailPageStore.updateStatus(
       paymentId, isChecked ? AdvancePaymentStatusUpdateDTO.StatusEnum.CONFIRMED : AdvancePaymentStatusUpdateDTO.StatusEnum.AUTHORIZED
+    ).pipe(
+      tap(() => this.showSuccessMessageAfterPaymentConfirmed()),
+      catchError((error) => this.showErrorMessage(error.error)),
     ).subscribe();
   }
 
@@ -540,6 +549,30 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       return {incorrect: true};
     }
     return null;
+  }
+
+  private showSuccessMessageAfterPaymentAuthorised(): void {
+    this.successfulAuthorizationMessage = true;
+    setTimeout(() => {
+      this.successfulAuthorizationMessage = false;
+      this.changeDetectorRef.markForCheck();
+    }, 4000);
+  }
+
+  private showSuccessMessageAfterPaymentConfirmed(): void {
+    this.successfulConfirmationMessage = true;
+    setTimeout(() => {
+      this.successfulConfirmationMessage = false;
+      this.changeDetectorRef.markForCheck();
+    }, 4000);
+  }
+
+  public showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    }, 4000);
+    return of(null);
   }
 
 }

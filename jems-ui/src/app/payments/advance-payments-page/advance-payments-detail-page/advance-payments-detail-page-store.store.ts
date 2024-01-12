@@ -25,7 +25,7 @@ export class AdvancePaymentsDetailPageStoreStore {
   advancePaymentDetail$: Observable<AdvancePaymentDetailDTO>;
   savedAdvancePaymentDetail$ = new Subject<AdvancePaymentDetailDTO>();
   refresh$ = new Subject();
-  searchProjectsByName$ = new ReplaySubject<string>(1);
+  searchProjectsByName$ = new Subject<string>();
   getProjectPartnersByProjectId$ = new Subject<number>();
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
