@@ -22,6 +22,22 @@
             <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
         </jems-alert>
 
+        <jems-alert [show]="successfulAuthorizationMessage"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payment.advance.authorise.payment.update.successful' | translate}}</p>
+        </jems-alert>
+
+        <jems-alert [show]="successfulConfirmationMessage"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payment.advance.confirmation.payment.update.successful' | translate}}</p>
+        </jems-alert>
+
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+
         <ng-container>
             <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
 
@@ -171,10 +187,12 @@
 
                         <div class="column-date">
                             <mat-form-field class="w-100">
+                                <span [ngClass]="{'marked-as-required' : advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true && !advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.value}">
                                 <input name="paymentDate"
                                        class="placeholder-required"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
                                        [matDatepicker]="paymentDatePicker">
+                                </span>
                                 <mat-error>
                                     <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
                                                             [messages]="constants.inputErrorMessages"
