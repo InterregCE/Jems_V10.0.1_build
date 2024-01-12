@@ -19,7 +19,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MatSelect} from '@angular/material/select';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {ControllersPageSidenavService} from "../controllers-page-sidenav.service";
+import {ControllersPageSidenavService} from '../controllers-page-sidenav.service';
 
 @UntilDestroy()
 @Component({

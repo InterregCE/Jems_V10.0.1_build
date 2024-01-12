@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.service.fund.updateFunds
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdateFunds(
     private val persistence: ProgrammeFundPersistence,
+    private val paymentAccountPersistence: PaymentAccountPersistence,
     private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val generalValidator: GeneralValidatorService,
     private val auditPublisher: ApplicationEventPublisher
@@ -49,6 +51,14 @@ class UpdateFunds(
         val fundsAlreadyInUse = persistence.getFundsAlreadyInUse()
         throwIfAnyOfToDeleteFundsInUse(toDeleteFunds, fundsAlreadyInUse)
         throwIfAnyOfDeselectedFundsInUse(toDeselectFundIds, fundsAlreadyInUse)
+
+        val paymentAccountFundIdsToBeCreated = funds.filterNot{ it in currentFunds }
+            .mapTo(HashSet()) { it.id }
+        val paymentAccountFundIdsToBeDeleted = funds.filter { !it.selected }.filter{ it.id in fundsAlreadyInUse }
+            .mapTo(HashSet()) { it.id }
+
+        paymentAccountPersistence.persistPaymentAccountsByFunds(paymentAccountFundIdsToBeCreated)
+        paymentAccountPersistence.deletePaymentAccountsByFunds(paymentAccountFundIdsToBeDeleted)
 
         return persistence.updateFunds(toDeleteIds = toDeleteFunds.map { it.id }.toSet(), funds.toSet()).also {
             auditPublisher.publishEvent(programmeFundsChanged(this, it))

@@ -45,6 +45,9 @@ export class Permission {
     PermissionsEnum.PaymentsToEcUpdate,
     PermissionsEnum.PaymentsAuditRetrieve,
     PermissionsEnum.PaymentsAuditUpdate,
+    PermissionsEnum.PaymentsAccountRetrieve,
+    PermissionsEnum.PaymentsAccountUpdate,
+
   ];
 
   public static readonly MONITORING_PERMISSIONS = [
@@ -599,6 +602,13 @@ export class Permission {
           viewPermissions: [PermissionsEnum.PaymentsAuditRetrieve],
           editPermissions: [PermissionsEnum.PaymentsAuditUpdate]
         },
+      {
+          name: 'permission.payments.accounts',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsAccountRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsAccountUpdate],
+          editTooltip: 'permission.payments.accounts.edit.tooltip',
+      },
       ],
     },
     {

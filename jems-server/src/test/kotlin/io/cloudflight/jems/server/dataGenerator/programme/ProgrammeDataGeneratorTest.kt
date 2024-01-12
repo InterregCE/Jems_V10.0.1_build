@@ -86,9 +86,9 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(15)
     @ExpectUpdate(7)
-    @ExpectInsert(0)
+    @ExpectInsert(63)
     @ExpectDelete(2)
     fun `select all funds to be available for the calls`() {
         SELECTED_PROGRAMME_FUNDS =

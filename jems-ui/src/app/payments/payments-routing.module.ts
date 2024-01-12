@@ -30,7 +30,7 @@ import {
 import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.component';
 import {
   PaymentToEcFinalizeTabComponent
-} from "./payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component";
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component';
 
 export const paymentsRoutes: Routes = [
   {

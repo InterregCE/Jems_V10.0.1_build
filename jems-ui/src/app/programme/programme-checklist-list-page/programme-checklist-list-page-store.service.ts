@@ -41,7 +41,7 @@ export class ProgrammeChecklistListPageStore {
         take(1),
         tap(clonedChecklist => Log.info('Cloned programme checklist ', this, clonedChecklist, id)),
         map(clonedChecklist => clonedChecklist.id)
-      )
+      );
   }
 
   private checklists(): Observable<ProgrammeChecklistDTO[]> {

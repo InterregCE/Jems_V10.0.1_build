@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -46,6 +47,9 @@ internal class UpdateFundsTest : UnitTest() {
 
     @MockK
     lateinit var persistence: ProgrammeFundPersistence
+
+    @MockK
+    lateinit var paymentAccountPersistence: PaymentAccountPersistence
 
     @MockK
     lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
@@ -87,6 +91,8 @@ internal class UpdateFundsTest : UnitTest() {
         every { persistence.getMax20Funds() } returns listOf(toDelete, toUpdate)
         every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getFundsAlreadyInUse() } returns emptyList()
+        every { paymentAccountPersistence.persistPaymentAccountsByFunds(any()) } returnsArgument 0
+        every { paymentAccountPersistence.deletePaymentAccountsByFunds(any()) } returnsArgument 0
 
         val slotToDeleteIds = slot<Set<Long>>()
         val slotFunds = slot<Set<ProgrammeFund>>()
