@@ -30,7 +30,7 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control.euro' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right block">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="!line.spfLine">
             <div>{{ line.requestedByPartner | asMoney }}</div>
             <span jemsText maxLines="1" class="additional-info-text mat-small" *ngIf="!line.spfLine">
                 {{ 'project.application.verification.overview.table.withoutFlatRates' | translate }} {{ line.requestedByPartnerWithoutFlatRates | asMoney }}
