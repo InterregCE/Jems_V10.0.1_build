@@ -106,25 +106,22 @@ context('Application modification tests', () => {
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain', 'Modification precontracted submitted');
       cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
-
+        
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain', 'Approved');
 
       cy.visit(`app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
       cy.get('textarea').should('have.value', 'New title');
-
-      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-
-      cy.wait(1000);
-      cy.contains('span', 'Application form').should('be.visible').click();
+      
       cy.get('mat-select-trigger').should('contain', '(current)').should('contain', 'V.2.0').click();
-      cy.contains('V.1.0').should('be.visible').click();
-
-      cy.wait(1000);
-      cy.contains('span', 'Application form').should('be.visible').click();
-      cy.contains('.link', 'A - Project identification').should('be.visible').click();
-      cy.contains('You are currently viewing an old version of this application').should('be.visible');
+      cy.contains('span.mat-option-text', 'V.1.0').should('be.visible').click();
       cy.get('textarea').should('have.value', 'API generated application title DE');
+      
+      cy.contains('.link', 'A - Project overview tables').click();
+      cy.wait(1000);
+      cy.get('mat-select-trigger:contains("(current)")').should('contain', 'V.2.0').click();
+      cy.contains('span.mat-option-text', 'V.1.0').should('be.visible').click();
+      cy.contains('You are currently viewing an old version of this application').should('be.visible');
     });
   });
 
