@@ -63,7 +63,6 @@ export class AdvancePaymentsDetailPageStoreStore {
       map(page => page.content),
       tap(page => Log.info('Fetched filtered contracted projects:', this, page)),
       untilDestroyed(this),
-      shareReplay(1)
     );
   }
 

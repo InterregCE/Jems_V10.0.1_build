@@ -99,9 +99,13 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.partnerData$ = this.advancePaymentsDetailPageStore.getPartnerData();
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.valueChanges
       .pipe(
-        debounceTime(150),
+        debounceTime(1000),
         map((searchTerm) => typeof searchTerm === 'string' ? searchTerm : searchTerm.customIdentifier),
-        tap((searchedAcronym) => this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym)),
+        tap((searchedAcronym) => {
+            if (searchedAcronym) {
+              this.advancePaymentsDetailPageStore.searchProjectsByName$.next(searchedAcronym);
+            }
+        }),
         untilDestroyed(this)
       ).subscribe();
 
@@ -185,7 +189,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO, userCanEdit: boolean) {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue('');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(paymentDetail?.projectCustomIdentifier ?? '');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue('');
 
