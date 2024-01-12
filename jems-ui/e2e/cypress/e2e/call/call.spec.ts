@@ -66,7 +66,7 @@ context('Call management tests', () => {
       cy.get('input[name="name"]').should('have.value', this.callName);
 
       // Budget settings
-      cy.get('jems-side-nav span.title').contains('Budget Settings').click();
+      cy.get('jems-side-nav span.mat-content').contains('Budget Settings').click();
 
       // Flat Rates
       const flatRate1 = 'Staff cost flat rate based on direct cost';
