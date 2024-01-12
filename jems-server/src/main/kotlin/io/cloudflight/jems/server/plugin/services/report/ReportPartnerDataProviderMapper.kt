@@ -51,6 +51,8 @@ fun ProjectPartnerReport.toDataModel(projectId: Long): ProjectPartnerReportData 
     version = version,
     firstSubmission = firstSubmission,
     controlEnd = controlEnd,
+    lastResubmission = lastResubmission,
+    lastControlReopening = lastControlReopening,
 
     projectId = projectId,
     projectIdentifier = identification.projectIdentifier,
