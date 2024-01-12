@@ -67,7 +67,6 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption.No
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
@@ -425,13 +424,12 @@ class PaymentPersistenceProvider(
             specPaymentToEcExtension.paymentApplicationToEc.isNull(),
         )
 
-        val scoBasisFilter = specProjectContracting.typologyProv94.eq(No)
-            .and(specProjectContracting.typologyProv95.eq(No))
-
-        if (basis == PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95)
-            whereExpressions.add(scoBasisFilter)
-        else
-            whereExpressions.add(scoBasisFilter.not())
+        val allAnswersNo = specProjectContracting.notFlagged()
+        val scoBasisFilter = when (basis) {
+            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 -> allAnswersNo
+            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 -> allAnswersNo.not()
+        }
+        whereExpressions.add(scoBasisFilter)
 
         return jpaQueryFactory
             .select(specPayment.id)
@@ -441,7 +439,8 @@ class PaymentPersistenceProvider(
             .leftJoin(specProjectContracting)
             .on(specProjectContracting.projectId.eq(specPayment.project.id))
             .where(whereExpressions.joinWithAnd())
-            .fetch().toSet()
+            .fetch()
+            .toSet()
     }
 
     @Transactional(readOnly = true)

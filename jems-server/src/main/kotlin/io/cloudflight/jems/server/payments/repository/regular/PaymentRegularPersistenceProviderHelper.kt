@@ -163,7 +163,7 @@ fun PaymentSearchRequest.transformToWhereClause(
     return expressions.joinWithAnd()
 }
 
-fun QProjectContractingMonitoringEntity.notFlagged() =
+fun QProjectContractingMonitoringEntity.notFlagged(): BooleanExpression =
     typologyProv94.isNull().or(typologyProv94.eq(No)).and(typologyProv95.isNull().or(typologyProv95.eq(No)))
 
 fun Collection<BooleanExpression>.joinWithOr() = reduce { f, s -> f.or(s) }
