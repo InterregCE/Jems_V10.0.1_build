@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRe
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.report.partner.base.canCreateProjectPartnerReport.CanCreateProjectPartnerReportInteractor
@@ -114,13 +115,7 @@ class ProjectPartnerReportController(
         partnerId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> =
-        with(downloadReportFile.download(partnerId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-    }
+        downloadReportFile.download(partnerId, fileId = fileId).toResponseFile()
 
     override fun deleteReportFile(partnerId: Long, reportId: Long, fileId: Long) =
         deleteReportFile.delete(partnerId = partnerId, reportId = reportId, fileId = fileId)
@@ -149,13 +144,7 @@ class ProjectPartnerReportController(
         reportId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> =
-        with(downloadControlReportFile.download(partnerId, reportId = reportId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-    }
+        downloadControlReportFile.download(partnerId, reportId = reportId, fileId = fileId).toResponseFile()
 
     override fun deleteControlReportFile(partnerId: Long, reportId: Long, fileId: Long) =
         deleteControlReportFile.delete(partnerId = partnerId, reportId = reportId, fileId = fileId)

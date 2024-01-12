@@ -174,7 +174,7 @@ internal class ProjectFileControllerTest : UnitTest() {
                     ResponseEntity.ok()
                         .contentLength(fileMetadata.size)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${fileMetadata.name}\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''${fileMetadata.name}")
                         .body(ByteArrayResource(fileByteArray))
                 )
         }

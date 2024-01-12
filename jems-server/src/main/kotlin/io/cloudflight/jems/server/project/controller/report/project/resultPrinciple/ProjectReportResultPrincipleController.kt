@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportResultPrincipleApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.project.toProjectFile
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.attachment.delete.DeleteAttachmentFromProjectReportResultPrincipleInteractor
@@ -12,8 +13,6 @@ import io.cloudflight.jems.server.project.service.report.project.resultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.getResultPrinciple.GetProjectReportResultPrincipleInteractor
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.updateResultPrinciple.UpdateProjectReportResultPrincipleInteractor
 import org.springframework.core.io.ByteArrayResource
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -46,11 +45,6 @@ class ProjectReportResultPrincipleController(
         projectId: Long,
         reportId: Long,
         resultNumber: Int,
-    ): ResponseEntity<ByteArrayResource> = with(downloadAttachment.download(projectId, reportId, resultNumber)) {
-        ResponseEntity.ok()
-            .contentLength(this.second.size.toLong())
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-            .body(ByteArrayResource(this.second))
-    }
+    ): ResponseEntity<ByteArrayResource> =
+        downloadAttachment.download(projectId, reportId, resultNumber).toResponseFile()
 }
