@@ -18,6 +18,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherTotal,
         lumpSum = lumpSumTotal,
         unitCost = unitCostTotal,
+        spfCost = spfCostTotal,
         sum = sumTotal,
     ),
     currentlyReported = BudgetCostsCalculationResultFull(
@@ -30,6 +31,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherCurrent,
         lumpSum = lumpSumCurrent,
         unitCost = unitCostCurrent,
+        spfCost = spfCostCurrent,
         sum = sumCurrent,
     ),
 
@@ -43,6 +45,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherPreviouslyReported,
         lumpSum = lumpSumPreviouslyReported,
         unitCost = unitCostPreviouslyReported,
+        spfCost = spfCostPreviouslyReported,
         sum = sumPreviouslyReported,
     ),
     currentVerified = BudgetCostsCalculationResultFull(
@@ -55,6 +58,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherCurrentVerified,
         lumpSum = lumpSumCurrentVerified,
         unitCost = unitCostCurrentVerified,
+        spfCost = spfCostCurrentVerified,
         sum = sumCurrentVerified,
     ),
     previouslyVerified = BudgetCostsCalculationResultFull(
@@ -67,6 +71,7 @@ fun ReportProjectCertificateCostCategoryEntity.toModel() = ReportCertificateCost
         other = otherPreviouslyVerified,
         lumpSum = lumpSumPreviouslyVerified,
         unitCost = unitCostPreviouslyVerified,
+        spfCost = spfCostPreviouslyVerified,
         sum = sumPreviouslyVerified,
     )
 )
@@ -98,6 +103,7 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
                 other = it.otherCurrent,
                 lumpSum = it.lumpSumCurrent,
                 unitCost = it.unitCostCurrent,
+                spfCost = it.spfCostCurrent,
                 sum = it.sumCurrent,
             ),
             deduction = BudgetCostsCalculationResultFull(
@@ -110,6 +116,7 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
                 other = it.otherDeduction,
                 lumpSum = it.lumpSumDeduction,
                 unitCost = it.unitCostDeduction,
+                spfCost = it.spfCostDeduction,
                 sum = it.sumDeduction,
             ),
         )

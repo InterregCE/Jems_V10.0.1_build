@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.project.base.startVeri
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
@@ -16,12 +18,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class StartVerificationProjectReportTest : UnitTest() {
@@ -40,6 +43,7 @@ internal class StartVerificationProjectReportTest : UnitTest() {
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
             projectId = PROJECT_ID,
+            periodNumber = 1
         )
     }
 
@@ -70,22 +74,22 @@ internal class StartVerificationProjectReportTest : UnitTest() {
         every { reportPersistence.startVerificationOnReportById(any(), any()) } returns mockedResult
         every { projectReportExpenditureVerificationPersistence.initiateEmptyVerificationForProjectReport(any()) } returns Unit
 
-        val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
-        every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
+        val slotAudit = slot<ProjectReportStatusChanged>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers { }
+        val slotStatusChanged = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotStatusChanged)) } answers { }
 
         interactor.startVerification(PROJECT_ID, 37L)
 
         verify(exactly = 1) { reportPersistence.startVerificationOnReportById(PROJECT_ID, 37L) }
 
-        Assertions.assertThat(auditSlot.captured.auditCandidate.action)
-            .isEqualTo(AuditAction.PROJECT_REPORT_VERIFICATION_ONGOING)
-        Assertions.assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
-        Assertions.assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
-        Assertions.assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
-        Assertions.assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(37L)
-        Assertions.assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("[FG01_654] Project report R.4 verification started")
+        assertThat(slotAudit.captured.projectReportSummary).isEqualTo(mockedResult)
+        assertThat(slotAudit.captured.previousReportStatus).isEqualTo(ProjectReportStatus.Submitted)
+        assertThat(slotStatusChanged.captured.auditCandidate).isEqualTo(
+            AuditCandidate(AuditAction.PROJECT_REPORT_VERIFICATION_ONGOING,
+                AuditProject("256", "FG01_654", "acronym"), 37L,
+                "[FG01_654] Project report PR.4 verification started")
+        )
     }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")
@@ -104,6 +108,8 @@ internal class StartVerificationProjectReportTest : UnitTest() {
         val report = mockk<ProjectReportModel>()
         every { report.id } returns id
         every { report.status } returns status
+        every { report.linkedFormVersion } returns "v1.0"
+        every { report.periodNumber } returns 1
         return report
     }
 

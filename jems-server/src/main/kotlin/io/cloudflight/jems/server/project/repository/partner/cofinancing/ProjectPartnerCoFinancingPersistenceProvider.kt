@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionSpfEntity
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -18,9 +19,11 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.sql.Timestamp
 
 @Repository
@@ -153,9 +156,6 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             .map { it.setupId.programmeFund }
             .associateBy { it.id }
 
-        projectPartnerContributionSpfRepository.deleteByPartnerId(partnerId)
-        val contributions = projectPartnerContributionSpfRepository.saveAll(partnerContributions.toEntity(partnerId))
-
         projectPartnerSpfCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId)
         val financesSaved = projectPartnerSpfCoFinancingRepository.saveAll(
             finances.toSpfCoFinancingEntity(
@@ -163,10 +163,11 @@ class ProjectPartnerCoFinancingPersistenceProvider(
                 availableFundsGroupedById
             )
         )
+        val contributionsSaved = updatePartnerSpfContributions(partnerId, partnerContributions)
 
         return ProjectPartnerCoFinancingAndContributionSpf(
             finances = financesSaved.toSpfCoFinancingModel(),
-            partnerContributions = contributions.toContributionSpfModel()
+            partnerContributions = contributionsSaved.toContributionSpfModel()
         )
     }
 
@@ -205,6 +206,31 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             finances = finances,
             partnerContributions = partnerContributions
         )
+    }
+
+
+    private fun updatePartnerSpfContributions(partnerId: Long, newData: List<ProjectPartnerContributionSpf>): List<ProjectPartnerContributionSpfEntity> {
+
+        val existingContributions = projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId)
+
+        val toUpdate = newData.filter { it.id != null && it.id > 0L }.associateBy { it.id }
+        existingContributions.filter { it.id in toUpdate.keys }
+            .forEach { existing -> existing.updateWith(toUpdate[existing.id]!!) }
+
+        val toDeleteIds = existingContributions.filter { it.id !in toUpdate.keys }.map { it.id }
+        projectPartnerContributionSpfRepository.deleteAllById(toDeleteIds)
+
+        val newContributions = newData.filter { it.id !in toUpdate.keys }
+        projectPartnerContributionSpfRepository.saveAll(newContributions.toEntity(partnerId))
+
+        return projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId)
+    }
+
+
+    fun  ProjectPartnerContributionSpfEntity.updateWith(newData: ProjectPartnerContributionSpf) {
+        name = newData.name
+        status = newData.status
+        amount = newData.amount ?: BigDecimal.ZERO
     }
 
 }

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.service.advance
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -24,5 +25,7 @@ interface PaymentAdvancePersistence {
     fun deletePaymentAdvanceAttachment(fileId: Long)
 
     fun getConfirmedPaymentsForProject(projectId: Long, pageable: Pageable): Page<AdvancePayment>
+
+    fun updateAdvancePaymentStatus(paymentId: Long, status: AdvancePaymentStatus, currentUserId: Long): AdvancePaymentDetail
 
 }

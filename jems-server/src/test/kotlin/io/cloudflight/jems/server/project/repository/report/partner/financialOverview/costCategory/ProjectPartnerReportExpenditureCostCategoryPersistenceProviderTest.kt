@@ -47,6 +47,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherTotal = BigDecimal.valueOf(16),
             lumpSumTotal = BigDecimal.valueOf(17),
             unitCostTotal = BigDecimal.valueOf(18),
+            spfCostTotal = BigDecimal.valueOf(185L, 1),
             sumTotal = BigDecimal.valueOf(19),
 
             staffCurrent = BigDecimal.valueOf(20),
@@ -58,6 +59,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherCurrent = BigDecimal.valueOf(26),
             lumpSumCurrent = BigDecimal.valueOf(27),
             unitCostCurrent = BigDecimal.valueOf(28),
+            spfCostCurrent = BigDecimal.valueOf(285, 1),
             sumCurrent = BigDecimal.valueOf(29),
 
             staffTotalEligibleAfterControl = BigDecimal.valueOf(40),
@@ -69,6 +71,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherTotalEligibleAfterControl = BigDecimal.valueOf(46),
             lumpSumTotalEligibleAfterControl = BigDecimal.valueOf(47),
             unitCostTotalEligibleAfterControl = BigDecimal.valueOf(48),
+            spfCostTotalEligibleAfterControl = BigDecimal.valueOf(485, 1),
             sumTotalEligibleAfterControl = BigDecimal.valueOf(49),
 
             staffPreviouslyReported = BigDecimal.valueOf(30),
@@ -80,6 +83,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherPreviouslyReported = BigDecimal.valueOf(36),
             lumpSumPreviouslyReported = BigDecimal.valueOf(37),
             unitCostPreviouslyReported = BigDecimal.valueOf(38),
+            spfCostPreviouslyReported = BigDecimal.valueOf(385, 1),
             sumPreviouslyReported = BigDecimal.valueOf(39),
 
             staffPreviouslyReportedParked = BigDecimal.valueOf(50),
@@ -91,6 +95,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherPreviouslyReportedParked = BigDecimal.valueOf(56),
             lumpSumPreviouslyReportedParked = BigDecimal.valueOf(57),
             unitCostPreviouslyReportedParked = BigDecimal.valueOf(58),
+            spfCostPreviouslyReportedParked = BigDecimal.valueOf(585, 1),
             sumPreviouslyReportedParked = BigDecimal.valueOf(59),
 
             staffCurrentParked = BigDecimal.valueOf(60),
@@ -102,6 +107,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherCurrentParked = BigDecimal.valueOf(66),
             lumpSumCurrentParked = BigDecimal.valueOf(67),
             unitCostCurrentParked = BigDecimal.valueOf(68),
+            spfCostCurrentParked = BigDecimal.valueOf(685, 1),
             sumCurrentParked = BigDecimal.valueOf(69),
 
             staffCurrentReIncluded = BigDecimal.valueOf(70),
@@ -113,6 +119,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherCurrentReIncluded = BigDecimal.valueOf(76),
             lumpSumCurrentReIncluded = BigDecimal.valueOf(77),
             unitCostCurrentReIncluded = BigDecimal.valueOf(78),
+            spfCostCurrentReIncluded = BigDecimal.valueOf(785, 1),
             sumCurrentReIncluded = BigDecimal.valueOf(79),
 
             staffPreviouslyValidated = BigDecimal.valueOf(80),
@@ -124,6 +131,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             otherPreviouslyValidated = BigDecimal.valueOf(86),
             lumpSumPreviouslyValidated = BigDecimal.valueOf(87),
             unitCostPreviouslyValidated = BigDecimal.valueOf(88),
+            spfCostPreviouslyValidated = BigDecimal.valueOf(885, 1),
             sumPreviouslyValidated = BigDecimal.valueOf(89),
         )
 
@@ -146,6 +154,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(16),
                 lumpSum = BigDecimal.valueOf(17),
                 unitCost = BigDecimal.valueOf(18),
+                spfCost = BigDecimal.valueOf(185L, 1),
                 sum = BigDecimal.valueOf(19),
             ),
             currentlyReported = BudgetCostsCalculationResultFull(
@@ -158,6 +167,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(26),
                 lumpSum = BigDecimal.valueOf(27),
                 unitCost = BigDecimal.valueOf(28),
+                spfCost = BigDecimal.valueOf(285L, 1),
                 sum = BigDecimal.valueOf(29),
             ),
             currentlyReportedParked = BudgetCostsCalculationResultFull(
@@ -170,6 +180,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(66),
                 lumpSum = BigDecimal.valueOf(67),
                 unitCost = BigDecimal.valueOf(68),
+                spfCost = BigDecimal.valueOf(685L, 1),
                 sum = BigDecimal.valueOf(69),
             ),
             currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -182,6 +193,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(76),
                 lumpSum = BigDecimal.valueOf(77),
                 unitCost = BigDecimal.valueOf(78),
+                spfCost = BigDecimal.valueOf(785L, 1),
                 sum = BigDecimal.valueOf(79),
             ),
             totalEligibleAfterControl = BudgetCostsCalculationResultFull(
@@ -194,6 +206,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(46),
                 lumpSum = BigDecimal.valueOf(47),
                 unitCost = BigDecimal.valueOf(48),
+                spfCost = BigDecimal.valueOf(485L, 1),
                 sum = BigDecimal.valueOf(49),
             ),
             previouslyReported = BudgetCostsCalculationResultFull(
@@ -206,6 +219,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(36),
                 lumpSum = BigDecimal.valueOf(37),
                 unitCost = BigDecimal.valueOf(38),
+                spfCost = BigDecimal.valueOf(385L, 1),
                 sum = BigDecimal.valueOf(39),
             ),
             previouslyValidated = BudgetCostsCalculationResultFull(
@@ -218,6 +232,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(86),
                 lumpSum = BigDecimal.valueOf(87),
                 unitCost = BigDecimal.valueOf(88),
+                spfCost = BigDecimal.valueOf(885L, 1),
                 sum = BigDecimal.valueOf(89),
             ),
             previouslyReportedParked = BudgetCostsCalculationResultFull(
@@ -230,6 +245,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(56),
                 lumpSum = BigDecimal.valueOf(57),
                 unitCost = BigDecimal.valueOf(58),
+                spfCost = BigDecimal.valueOf(585L, 1),
                 sum = BigDecimal.valueOf(59),
             ),
         )
@@ -245,6 +261,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(106),
                 lumpSum = BigDecimal.valueOf(107),
                 unitCost = BigDecimal.valueOf(108),
+                spfCost = BigDecimal.valueOf(1085L, 1),
                 sum = BigDecimal.valueOf(109),
             ),
             BudgetCostsCalculationResultFull(
@@ -257,6 +274,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(116),
                 lumpSum = BigDecimal.valueOf(117),
                 unitCost = BigDecimal.valueOf(118),
+                spfCost = BigDecimal.valueOf(1185L, 1),
                 sum = BigDecimal.valueOf(119),
             )
         )
@@ -272,6 +290,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(106),
                 lumpSum = BigDecimal.valueOf(107),
                 unitCost = BigDecimal.valueOf(108),
+                spfCost = BigDecimal.valueOf(1085L, 1),
                 sum = BigDecimal.valueOf(109),
             ),
             previouslyReportedParked = BudgetCostsCalculationResultFull(
@@ -284,6 +303,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(116),
                 lumpSum = BigDecimal.valueOf(117),
                 unitCost = BigDecimal.valueOf(118),
+                spfCost = BigDecimal.valueOf(1185L, 1),
                 sum = BigDecimal.valueOf(119),
             ),
             previouslyValidated = BudgetCostsCalculationResultFull(
@@ -296,6 +316,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(126),
                 lumpSum = BigDecimal.valueOf(127),
                 unitCost = BigDecimal.valueOf(128),
+                spfCost = BigDecimal.valueOf(1285L, 1),
                 sum = BigDecimal.valueOf(129),
             )
         )
@@ -312,6 +333,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(206),
                 lumpSum = BigDecimal.valueOf(207),
                 unitCost = BigDecimal.valueOf(208),
+                spfCost = BigDecimal.valueOf(2085L, 1),
                 sum = BigDecimal.valueOf(209),
             ),
             BudgetCostsCalculationResultFull(
@@ -324,6 +346,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 other = BigDecimal.valueOf(216),
                 lumpSum = BigDecimal.valueOf(217),
                 unitCost = BigDecimal.valueOf(218),
+                spfCost = BigDecimal.valueOf(2185L, 1),
                 sum = BigDecimal.valueOf(219),
             ),
         )

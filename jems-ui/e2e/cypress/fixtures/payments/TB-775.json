@@ -84,5 +84,76 @@
         }
       ]
     }
+  ],
+  "contractingFastTrackLumpSums": [
+    {
+      "orderNr": 1,
+      "programmeLumpSumId": 2,
+      "period": 0,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Lead Partner",
+          "partnerId": null,
+          "amount": 5555.56
+        }
+      ],
+      "comment": "",
+      "readyForPayment": false,
+      "fastTrack": false,
+      "installmentsAlreadyCreated": false
+    },
+    {
+      "orderNr": 2,
+      "programmeLumpSumId": 8,
+      "period": 2,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Lead Partner",
+          "partnerId": null,
+          "amount": 1999
+        }
+      ],
+      "comment": "FTLS ready for payment",
+      "readyForPayment": true,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    },
+    {
+      "orderNr": 3,
+      "programmeLumpSumId": 8,
+      "period": 255,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Lead Partner",
+          "partnerId": null,
+          "amount": 1000
+        },
+        {
+          "cypressPartnerReference": "Project Partner",
+          "partnerId": null,
+          "amount": 999
+        }
+      ],
+      "comment": "FTLS not ready for payment",
+      "readyForPayment": false,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    },
+    {
+      "orderNr": 4,
+      "programmeLumpSumId": 9,
+      "period": 7,
+      "lumpSumContributions": [
+        {
+          "cypressPartnerReference": "Project Partner",
+          "partnerId": null,
+          "amount": 649.99
+        }
+      ],
+      "comment": "FTLS also not ready for payment",
+      "readyForPayment": false,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    }
   ]
 }

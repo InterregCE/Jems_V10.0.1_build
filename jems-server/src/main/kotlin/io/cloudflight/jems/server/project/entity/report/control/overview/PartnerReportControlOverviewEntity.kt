@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull
 class PartnerReportControlOverviewEntity(
 
     @Id
-    val partnerReportId: Long = 0,
+    val partnerReportId: Long,
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
@@ -20,12 +20,13 @@ class PartnerReportControlOverviewEntity(
     @field:NotNull
     val startDate: LocalDate,
 
-    val requestsForClarifications: String? = null,
-    val receiptOfSatisfactoryAnswers: String? = null,
-    val endDate: LocalDate? = null,
-    val findingDescription: String? = null,
-    val followUpMeasuresFromLastReport: String? = null,
-    val conclusion: String? = null,
-    val followUpMeasuresForNextReport: String? = null,
-    val lastCertifiedReportIdWhenCreation: Long? = null,
+    val lastCertifiedReportIdWhenCreation: Long?,
+
+    var requestsForClarifications: String?,
+    var receiptOfSatisfactoryAnswers: String?,
+    var endDate: LocalDate?,
+    var findingDescription: String?,
+    var followUpMeasuresFromLastReport: String?,
+    var conclusion: String?,
+    var followUpMeasuresForNextReport: String?,
 )

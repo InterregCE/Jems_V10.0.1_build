@@ -290,7 +290,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 1L
         every { currentUser.user.assignedProjects } returns setOf(1L)
         every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
-        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { projectCollaboratorPersistence.getCollaboratorsForProject(1L) } returns listOf(collaboratorAssignedToProject)
         every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
 
         assertThat(authorization.hasPartnersPermission(1L)).isTrue
@@ -305,7 +305,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 100L
         every { currentUser.user.assignedProjects } returns setOf()
         every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
-        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { projectCollaboratorPersistence.getCollaboratorsForProject(1L) } returns listOf(collaboratorAssignedToProject)
         every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
 
         assertThat(authorization.hasPartnersPermission(1L)).isTrue
@@ -320,7 +320,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 101L
         every { currentUser.user.assignedProjects } returns setOf()
         every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
-        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { projectCollaboratorPersistence.getCollaboratorsForProject(1L) } returns listOf(collaboratorAssignedToProject)
         every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
 
         assertThat(authorization.hasPartnersPermission(1L)).isFalse

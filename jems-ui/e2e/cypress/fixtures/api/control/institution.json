@@ -1,0 +1,16 @@
+{
+  "name": "controller institution",
+  "description": "Default controller institution",
+  "institutionNuts": [
+    "AT", "AT1", "AT11", "AT111", "AT112", "AT113", "AT12", "AT121", "AT122", "AT123", "AT124", "AT125", "AT126",
+    "AT127", "AT13", "AT130", "AT2", "AT21", "AT211", "AT212", "AT213", "AT22", "AT221", "AT222", "AT223", "AT224",
+    "AT226", "AT225", "AT3", "AT31", "AT311", "AT312", "AT313", "AT314", "AT315", "AT32", "AT321", "AT322", "AT323",
+    "AT33", "AT331", "AT332", "AT333", "AT334", "AT335", "AT34", "AT341", "AT342", "AX", "AX0", "AX00", "AX000"
+  ],
+  "institutionUsers": [
+    {
+      "userEmail": "controller.user@jems.eu",
+      "accessLevel": "Edit"
+    }
+  ]
+}

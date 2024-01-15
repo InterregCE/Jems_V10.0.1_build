@@ -3,8 +3,7 @@ import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   ProjectContractingMonitoringService,
   ProjectContractingReportingScheduleDTO,
-  ProjectContractingReportingService,
-  ProjectPeriodForMonitoringDTO,
+  ProjectContractingReportingService, ProjectPeriodDTO,
   ProjectUserCollaboratorDTO,
   UserRoleCreateDTO
 } from '@cat/api';
@@ -28,7 +27,7 @@ export class ContractReportingStore {
   userCanEditDeadlines$: Observable<boolean>;
   userCanViewTimeplan$: Observable<boolean>;
   savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
-  availablePeriods$: Observable<ProjectPeriodForMonitoringDTO[]>;
+  availablePeriods$: Observable<ProjectPeriodDTO[]>;
   contractingMonitoringStartDate$: Observable<string>;
 
   constructor(private projectStore: ProjectStore,
@@ -94,7 +93,7 @@ export class ContractReportingStore {
       );
   }
 
-  private contractReportingAvailablePeriods(): Observable<ProjectPeriodForMonitoringDTO[]> {
+  private contractReportingAvailablePeriods(): Observable<ProjectPeriodDTO[]> {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoringPeriods(projectId)),

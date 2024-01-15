@@ -39,7 +39,7 @@ class GetContractingPartnerStateAidGberService(
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && !hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure)) {
             ContractingPartnerStateAidGberSection(
                 partnerId = partnerData.id,
-                dateOfGrantingAid =  projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+                dateOfGrantingAid =  projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
                 partnerFunds =  fundsSelectedByPartner,
                 amountGrantingAid = gberData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 naceGroupLevel = partnerData.nace,

@@ -8,6 +8,7 @@ data class ExpenditureCoFinancingBreakdownLine(
     override val totalEligibleBudget: BigDecimal,
     override val previouslyReported: BigDecimal,
     val previouslyReportedParked: BigDecimal,
+    val previouslyReportedSpf: BigDecimal,
     override var currentReport: BigDecimal,
     var currentReportReIncluded: BigDecimal,
     val totalEligibleAfterControl: BigDecimal,

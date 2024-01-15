@@ -23,22 +23,28 @@ class SelectCertificate(
     override fun selectCertificate(projectId: Long, reportId: Long, certificateId: Long) {
         val projectReport = projectReportPersistence.getReportById(projectId, reportId = reportId)
         validateIsFinance(projectReport)
+        validateReportStatus(projectReport)
 
         val certificate = partnerReportPersistence.getPartnerReportByProjectIdAndId(projectId, certificateId)
             ?: throw CertificateNotFound()
-        validateIsFinalized(certificate)
+        validateCertificateIsFinalized(certificate)
 
         projectReportCertificatePersistence.selectCertificate(projectReportId = projectReport.id, certificate.reportId)
     }
 
-    private fun validateIsFinalized(certificate: ProjectPartnerReportStatusAndVersion) {
-        if (!certificate.status.isFinalized())
-            throw CertificateIsNotFinalized()
+    private fun validateReportStatus(report: ProjectReportModel) {
+        if (!report.status.isOpenForNumbersChanges())
+            throw CertificatesCannotBeChangedWhenReOpenModeIsLimited()
     }
 
     private fun validateIsFinance(report: ProjectReportModel) {
         if (!report.type!!.hasFinance())
             throw ProjectReportDoesNotIncludeFinance()
+    }
+
+    private fun validateCertificateIsFinalized(certificate: ProjectPartnerReportStatusAndVersion) {
+        if (!certificate.status.isFinalized())
+            throw CertificateIsNotFinalized()
     }
 
 }

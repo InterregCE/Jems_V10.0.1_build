@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.CaseBuilder
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -39,20 +41,41 @@ class ProjectReportPersistenceProvider(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : ProjectReportPersistence {
 
+    companion object {
+        private fun filterProjects(projectIds: Set<Long>, specReport: QProjectReportEntity) =
+            if (projectIds.isEmpty()) null else specReport.projectId.`in`(projectIds)
+        private fun filterStatuses(statuses: Collection<ProjectReportStatus>, specReport: QProjectReportEntity) =
+            if (statuses.isEmpty()) null else specReport.status.`in`(statuses)
+    }
+
     @Transactional(readOnly = true)
     override fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel> =
-        fetchReports(projectId, pageable).map { it.toModel() }
+        fetchReports(projectIds = setOf(projectId), statuses = emptySet(), pageable)
+            .map { it.toModel() }
 
-    private fun fetchReports(projectId: Long, pageable: Pageable): Page<Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>> {
+    override fun listProjectReports(
+        projectIds: Set<Long>,
+        statuses: Set<ProjectReportStatus>,
+        pageable: Pageable
+    ): Page<ProjectReportModel> =
+        fetchReports(projectIds = projectIds, statuses = statuses, pageable)
+            .map { it.toModel() }
+
+    private fun fetchReports(
+        projectIds: Set<Long>,
+        statuses: Collection<ProjectReportStatus>,
+        pageable: Pageable,
+    ): Page<Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>> {
         val specReport = QProjectReportEntity.projectReportEntity
         val specReportCoFinancing = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
 
         val results = jpaQueryFactory
             .select(specReport, specReportCoFinancing)
-            .from(specReport)
-                .leftJoin(specReportCoFinancing)
-                    .on(specReport.id.eq(specReportCoFinancing.reportEntity.id))
-            .where(specReport.projectId.eq(projectId))
+            .from(specReport).leftJoin(specReportCoFinancing).on(specReport.id.eq(specReportCoFinancing.reportEntity.id))
+            .where(ExpressionUtils.allOf(
+                filterProjects(projectIds, specReport),
+                filterStatuses(statuses, specReport),
+            ))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())
@@ -139,8 +162,24 @@ class ProjectReportPersistenceProvider(
     override fun countForProject(projectId: Long): Int =
         projectReportRepository.countAllByProjectId(projectId)
 
+    @Transactional(readOnly = true)
+    override fun existsHavingTypeAndStatusIn(
+        projectId: Long,
+        havingType: ContractingDeadlineType,
+        statuses: Set<ProjectReportStatus>,
+    ): List<Int> {
+        val types = havingType.toEqualTypes()
+
+        val withDeadlineLinked = projectReportRepository
+            .findByProjectIdAndStatusInAndTypeInOrderByIdDesc(projectId, statuses, types).map { it.number }
+        val withoutDeadlineLinked = projectReportRepository
+            .findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(projectId, statuses, types).map { it.number }
+
+        return withDeadlineLinked.plus(withoutDeadlineLinked)
+    }
+
     @Transactional
-    override fun submitReport(
+    override fun submitReportInitially(
         projectId: Long,
         reportId: Long,
         submissionTime: ZonedDateTime
@@ -151,9 +190,22 @@ class ProjectReportPersistenceProvider(
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
 
+    @Transactional
+    override fun reSubmitReport(
+        projectId: Long,
+        reportId: Long,
+        newStatus: ProjectReportStatus,
+        submissionTime: ZonedDateTime,
+    ): ProjectReportSubmissionSummary =
+        projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+            .apply {
+                status = newStatus
+                lastReSubmission = submissionTime
+            }.toSubmissionSummary()
+
     @Transactional(readOnly = true)
     override fun getSubmittedProjectReports(projectId: Long): List<ProjectReportStatusAndType> =
-        projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.SUBMITTED_STATUSES)
+        projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.FINANCIALLY_CLOSED_STATUSES)
             .map { ProjectReportStatusAndType(it.id, it.status, it.fetchType()) }
 
     @Transactional(readOnly = true)
@@ -165,7 +217,7 @@ class ProjectReportPersistenceProvider(
     @Transactional
     override fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int) {
         val lastReports = projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, number)
-        if (lastReports.all { it.status.isOpen() }) {
+        if (lastReports.all { it.status.isOpenInitially() }) {
             lastReports.onEach { it.number -= 1 }
         }
     }
@@ -193,6 +245,37 @@ class ProjectReportPersistenceProvider(
                 verificationEndDate = time
             }.toSubmissionSummary()
 
+    @Transactional(readOnly = true)
+    override fun getCurrentLatestReportOfType(projectId: Long, havingType: ContractingDeadlineType): ProjectReportModel? {
+        val reportCandidateManual = projectReportRepository.findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+            projectId = projectId, statuses = ProjectReportStatus.values().toSet(), types = havingType.toEqualTypes(),
+        ).firstOrNull()
+        val reportCandidateDeadline = projectReportRepository.findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+            projectId = projectId, statuses = ProjectReportStatus.values().toSet(), types = havingType.toEqualTypes(),
+        ).firstOrNull()
+
+        return listOf(reportCandidateManual, reportCandidateDeadline)
+            .mapNotNull { it }
+            .maxByOrNull { it.id }
+            ?.toModel()
+    }
+
+    @Transactional
+    override fun reOpenReportTo(
+        reportId: Long,
+        newStatus: ProjectReportStatus,
+        submissionTime: ZonedDateTime
+    ): ProjectReportSubmissionSummary =
+        projectReportRepository.getById(reportId)
+            .apply {
+                status = newStatus
+                if (newStatus.isProjectReportReOpened()) {
+                    lastReSubmission = submissionTime
+                } else if (newStatus == ProjectReportStatus.ReOpenFinalized) {
+                    verificationEndDate = null
+                    lastVerificationReOpening = submissionTime
+                }
+            }.toSubmissionSummary()
 
     private fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
@@ -208,6 +291,9 @@ class ProjectReportPersistenceProvider(
                 .otherwise(specReport.type)
             "createdAt" -> specReport.createdAt
             "firstSubmission" -> specReport.firstSubmission
+            "status" -> specReport.status
+            "verificationEndDate" -> specReport.verificationEndDate
+            "projectIdentifier" -> specReport.projectIdentifier
 
             else -> specReport.id
         }

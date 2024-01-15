@@ -10,10 +10,10 @@ import io.cloudflight.jems.server.project.service.contracting.model.ProjectContr
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
-import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.common.toLimits
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -104,8 +104,8 @@ class UpdateContractingReporting(
         if (deadlines.size > MAX_DEADLINES_AMOUNT)
             throw MaxAmountOfDeadlinesReached(MAX_DEADLINES_AMOUNT)
 
-        validatePeriods(deadlines, periods)
-        validateDates(deadlines, periods, startDate)
+        validatePeriods(deadlines.filter { it.linkedSubmittedProjectReportNumbers.isEmpty() }, periods)
+        validateDates(deadlines.filter { it.linkedSubmittedProjectReportNumbers.isEmpty() }, periods, startDate)
         validateComments(deadlines)
 
         val linkedDeadlines = projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId)

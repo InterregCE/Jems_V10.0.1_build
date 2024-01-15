@@ -23,6 +23,12 @@ data class PreviouslyReportedCoFinancing(
     val previouslyReportedParkedPrivate: BigDecimal,
     val previouslyReportedParkedSum: BigDecimal,
 
+    val previouslyReportedSpfPartner: BigDecimal,
+    val previouslyReportedSpfPublic: BigDecimal,
+    val previouslyReportedSpfAutoPublic: BigDecimal,
+    val previouslyReportedSpfPrivate: BigDecimal,
+    val previouslyReportedSpfSum: BigDecimal,
+
     val previouslyValidatedPartner: BigDecimal,
     val previouslyValidatedPublic: BigDecimal,
     val previouslyValidatedAutoPublic: BigDecimal,

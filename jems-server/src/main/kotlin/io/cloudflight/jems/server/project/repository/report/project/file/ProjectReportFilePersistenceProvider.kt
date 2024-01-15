@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.repository.report.project.file
 
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.VerificationCertificate
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
@@ -20,6 +23,7 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanOutputRepository: ProjectReportWorkPackageOutputRepository,
     private val projectResultRepository: ProjectReportProjectResultRepository,
     private val fileService: JemsProjectFileService,
+    private val jemsFileMetadataRepository: JemsFileMetadataRepository,
 ) : ProjectReportFilePersistence {
 
     @Transactional
@@ -64,6 +68,20 @@ class ProjectReportFilePersistenceProvider(
     @Transactional
     override fun addAttachmentToProjectReport(file: JemsFileCreate): JemsFile =
         fileService.persistFile(file)
+
+    @Transactional
+    override fun saveVerificationCertificateFile(file: JemsFileCreate): JemsFile =
+        fileService.persistFile(file)
+
+    @Transactional
+    override fun saveAuditControlFile(file: JemsFileCreate): JemsFile =
+        fileService.persistFile(file)
+
+    @Transactional(readOnly = true)
+    override fun countProjectReportVerificationCertificates(projectId: Long, reportId: Long): Long {
+        val pathPrefix = JemsFileType.ProjectReport.generatePath(projectId, reportId)
+        return jemsFileMetadataRepository.countByProjectIdAndPathPrefixAndType(projectId = projectId, pathPrefix = pathPrefix, type = VerificationCertificate)
+    }
 
     private fun persistFileAndUpdateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =
         fileService.persistFileAndPerformAction(file = file, additionalStep = additionalStep)

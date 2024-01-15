@@ -15,10 +15,12 @@ interface PartnerReportParkedExpenditureRepository : JpaRepository<PartnerReport
             LEFT JOIN report_project_partner rpp ON rppe.partnerReport.id = rpp.id
             LEFT JOIN report_project rp ON parked.parkedInProjectReport.id = rp.id
         WHERE rpp.partnerId = :partnerId
+            AND rpp.id !=:reportId
             AND (parked.parkedOn < rpp.controlEnd OR parked.parkedOn < rp.verificationEndDate)
     """)
     fun findAllAvailableForPartnerReport(
         partnerId: Long,
+        reportId: Long
     ): Iterable<PartnerReportParkedExpenditureEntity>
 
     @Query("""

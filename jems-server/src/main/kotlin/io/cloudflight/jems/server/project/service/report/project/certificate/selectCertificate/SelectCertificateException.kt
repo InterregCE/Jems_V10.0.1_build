@@ -28,3 +28,8 @@ class ProjectReportDoesNotIncludeFinance : ApplicationUnprocessableException(
     code = "$ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$ERROR_KEY_PREFIX.project.report.does.not.include.finance"),
 )
+
+class CertificatesCannotBeChangedWhenReOpenModeIsLimited : ApplicationUnprocessableException(
+    code = "$ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$ERROR_KEY_PREFIX.forbidden.when.reOpen.mode.limited"),
+)

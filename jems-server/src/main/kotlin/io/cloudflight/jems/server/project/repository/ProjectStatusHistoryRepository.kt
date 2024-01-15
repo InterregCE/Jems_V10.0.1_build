@@ -8,14 +8,11 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectStatusHistoryRepository : PagingAndSortingRepository<ProjectStatusHistoryEntity, Long> {
 
-    fun findFirstByProjectIdAndStatusNotOrderByUpdatedDesc(
-        projectId: Long,
-        ignoreStatuses: ApplicationStatus
-    ): ProjectStatusHistoryEntity?
-
     fun findTop2ByProjectIdOrderByUpdatedDesc(projectId: Long): List<ProjectStatusHistoryEntity>
 
     fun findAllByProjectIdAndStatusInOrderByUpdatedDesc(projectId: Long, statuses: List<ApplicationStatus>): List<ProjectStatusHistoryEntity>
+
+    fun findFirstByProjectIdAndStatusInOrderByUpdatedDesc(projectId: Long, statuses: List<ApplicationStatus>): ProjectStatusHistoryEntity
 
     fun existsByStatus(status: ApplicationStatus): Boolean
 }

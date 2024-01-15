@@ -39,6 +39,17 @@ interface ProjectReportApi {
         pageable: Pageable,
     ): Page<ProjectReportSummaryDTO>
 
+    @ApiOperation("Returns all project reports (submitted and onwards) of user")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("/api/project/report/mine")
+    fun getMyProjectReports(
+        pageable: Pageable,
+    ): Page<ProjectReportSummaryDTO>
+
     @ApiOperation("Returns project report detail")
     @GetMapping(ENDPOINT_API_PROJECT_REPORT)
     fun getProjectReport(
@@ -79,6 +90,13 @@ interface ProjectReportApi {
         @PathVariable reportId: Long,
     ): ProjectReportStatusDTO
 
+    @ApiOperation("Re-Open project report")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/reOpen")
+    fun reOpenProjectReport(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectReportStatusDTO
+
     @ApiOperation("Start verification on submitted project report")
     @PostMapping("$ENDPOINT_API_PROJECT_REPORT/startVerification")
     fun startVerificationOnProjectReport(
@@ -89,6 +107,13 @@ interface ProjectReportApi {
     @ApiOperation("Finalise verification on project report")
     @PostMapping("$ENDPOINT_API_PROJECT_REPORT/finalizeVerification")
     fun finalizeVerificationOnProjectReport(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectReportStatusDTO
+
+    @ApiOperation("Reopen project verification report")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/reopenVerification")
+    fun reopenVerificationOnProjectReport(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): ProjectReportStatusDTO

@@ -28,7 +28,7 @@ class GetReportCertificateLumpSumBreakdownCalculator(
 
         val data = reportCertificateLumpSumPersistence.getLumpSums(projectId = projectId, reportId = reportId)
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
             val currentLumpSums = reportExpenditureLumpSumPersistence.getLumpSumCumulativeAfterControl(certificates.map {it.id}.toSet())
             data.fillInCurrent(current = currentLumpSums)

@@ -20,13 +20,13 @@ export class DownloadService {
           const objectUrl = window.URL.createObjectURL(new Blob(binaryData));
           const link = document.createElement('a');
           const contentDispositionHeader = response?.headers.get('content-disposition');
-          const indexOfFilenameLabel = contentDispositionHeader?.indexOf('filename=') || -1;
-          const filename = indexOfFilenameLabel ? contentDispositionHeader?.substr(indexOfFilenameLabel + 10, contentDispositionHeader?.length - indexOfFilenameLabel - 11) || defaultFilename : defaultFilename;
+          const indexOfFilenameLabel = contentDispositionHeader?.indexOf('filename*=UTF-8\'\'') || -1;
+          const filename = indexOfFilenameLabel ? contentDispositionHeader?.substr(indexOfFilenameLabel + 17, contentDispositionHeader?.length - indexOfFilenameLabel - 11) || defaultFilename : defaultFilename;
           document.body.appendChild(link);
           link.setAttribute('style', 'display: none');
           link.setAttribute('target', 'blank');
           link.href = objectUrl;
-          link.download = filename;
+          link.download = decodeURIComponent(filename);
           link.click();
           window.URL.revokeObjectURL(objectUrl);
           link.remove();

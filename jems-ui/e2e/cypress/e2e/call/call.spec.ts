@@ -11,7 +11,7 @@ context('Call management tests', () => {
   context('Standard 1-step call', () => {
 
     before(() => {
-      cy.wrap(`Standard 1-step call ${faker.datatype.uuid()}`).as('callName');
+      cy.wrap(`Standard 1-step call ${faker.string.uuid()}`).as('callName');
     });
 
     it('TB-388 Create a new 1-step call', function () {
@@ -62,11 +62,11 @@ context('Call management tests', () => {
 
 
     it('TB-389 Edit and publish 1-step call', function () {
-      cy.contains(this.callName).click();
+      cy.contains(this.callName).parents('mat-row').find('.mat-column-anchor').click();
       cy.get('input[name="name"]').should('have.value', this.callName);
 
       // Budget settings
-      cy.get('jems-side-nav span.title').contains('Budget Settings').click();
+      cy.get('jems-side-nav span.mat-content').contains('Budget Settings').click();
 
       // Flat Rates
       const flatRate1 = 'Staff cost flat rate based on direct cost';
@@ -130,7 +130,7 @@ context('Call management tests', () => {
   context('Standard 2-step call', () => {
 
     before(() => {
-      cy.wrap(`Standard 2-step call ${faker.datatype.uuid()}`).as('callName');
+      cy.wrap(`Standard 2-step call ${faker.string.uuid()}`).as('callName');
     });
 
     it("TB-754 Create a new 2-step call", function () {
@@ -178,12 +178,12 @@ context('Call management tests', () => {
       // Strategies
       cy.contains('EU Strategy for the Alpine Region').click();
       cy.contains('EU Strategy for the Baltic Sea Region').click();
-      
+
       // Fund
       cy.contains('div', 'ERDF').within(() => {
         cy.get('mat-checkbox input').check({force: true});
       });
-      
+
       cy.contains('button', 'Create').click();
       cy.contains('span', 'General call settings').should('be.visible');
       cy.contains('button', 'Publish call').should('be.visible').and('be.disabled');
@@ -191,7 +191,7 @@ context('Call management tests', () => {
     });
 
     it("TB-876 Edit and publish a 2-step call", function () {
-      cy.contains(this.callName).click();
+      cy.contains(this.callName).parents('mat-row').find('.mat-column-anchor').click();
       cy.get('input[name="name"]').should('have.value', this.callName);
 
       cy.contains('Application form configuration').click();

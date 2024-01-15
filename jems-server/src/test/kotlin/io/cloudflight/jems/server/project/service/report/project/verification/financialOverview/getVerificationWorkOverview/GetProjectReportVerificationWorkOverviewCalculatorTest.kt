@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getVerificationWorkOverview
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -11,6 +12,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverviewLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -52,6 +55,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = false,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 
@@ -79,6 +83,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = false,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 
@@ -106,6 +111,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 typologyOfErrorId = 9L,
                 parked = true,
                 verificationComment = "",
+                parkedOn = null
             )
         }
 
@@ -136,6 +142,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(35L),
                 lumpSum = mockk(),
                 unitCost = mockk(),
+                spfCost = mockk(),
                 sum = BigDecimal.valueOf(279_60L, 2),
             ),
             previouslyReported = mockk(),
@@ -166,6 +173,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(125L),
                 lumpSum = mockk(),
                 unitCost = mockk(),
+                spfCost = mockk(),
                 sum = BigDecimal.valueOf(1015_60L, 2),
             ),
             previouslyReported = mockk(),
@@ -183,6 +191,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                     partnerNumber = 41,
                     partnerReportId = 400,
                     partnerReportNumber = 410,
+                    spfLine = false,
                     requestedByPartner = BigDecimal.valueOf(279_60L, 2),
                     requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(204_60L, 2),
                     inVerificationSample = BigDecimal.valueOf(200L),
@@ -200,6 +209,7 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                     partnerNumber = 51,
                     partnerReportId = 500,
                     partnerReportNumber = 510,
+                    spfLine = false,
                     requestedByPartner = BigDecimal.valueOf(1015_60L, 2),
                     requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(718_60L, 2),
                     inVerificationSample = BigDecimal.valueOf(620L),
@@ -213,11 +223,12 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 ),
             ),
             total = VerificationWorkOverviewLine(
-                partnerId = null,
+                partnerId = 0L,
                 partnerRole = null,
-                partnerNumber = null,
-                partnerReportId = null,
-                partnerReportNumber = null,
+                partnerNumber = 0,
+                partnerReportId = 0L,
+                partnerReportNumber = 0,
+                spfLine = false,
                 requestedByPartner = BigDecimal.valueOf(1295_20L, 2),
                 requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(923_20L, 2),
                 inVerificationSample = BigDecimal.valueOf(820L),
@@ -230,29 +241,95 @@ class GetProjectReportVerificationWorkOverviewCalculatorTest : UnitTest() {
                 afterVerificationPercentage = BigDecimal.valueOf(48_43L, 2),
             ),
         )
+
+        private val expectedWithSpfOverview = VerificationWorkOverview(
+            certificates = expectedOverview.certificates.plus(
+                VerificationWorkOverviewLine(
+                    partnerId = 0L,
+                    partnerRole = null,
+                    partnerNumber = 0,
+                    partnerReportId = 0,
+                    partnerReportNumber = 0,
+                    spfLine = true,
+                    requestedByPartner = BigDecimal.valueOf(189L, 1),
+                    requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(189L, 1),
+                    inVerificationSample = BigDecimal.ZERO,
+                    inVerificationSamplePercentage = null,
+                    parked = BigDecimal.ZERO,
+                    deductedByJs = BigDecimal.ZERO,
+                    deductedByMa = BigDecimal.ZERO,
+                    deducted = BigDecimal.ZERO,
+                    afterVerification = BigDecimal.valueOf(189L, 1),
+                    afterVerificationPercentage = BigDecimal.valueOf(100L),
+                ),
+            ),
+            total = VerificationWorkOverviewLine(
+                partnerId = 0L,
+                partnerRole = null,
+                partnerNumber = 0,
+                partnerReportId = 0L,
+                partnerReportNumber = 0,
+                spfLine = false,
+                requestedByPartner = BigDecimal.valueOf(1314_10L, 2),
+                requestedByPartnerWithoutFlatRates = BigDecimal.valueOf(942_10L, 2),
+                inVerificationSample = BigDecimal.valueOf(820L),
+                inVerificationSamplePercentage = BigDecimal.valueOf(87_04L, 2),
+                parked = BigDecimal.valueOf(438_75L, 2),
+                deductedByJs = BigDecimal.valueOf(158_43L, 2),
+                deductedByMa = BigDecimal.valueOf(62_60L, 2),
+                deducted = BigDecimal.valueOf(229_15L, 2),
+                afterVerification = BigDecimal.valueOf(646_20L, 2),
+                afterVerificationPercentage = BigDecimal.valueOf(49_17L, 2),
+            ),
+        )
+
     }
 
     @MockK
     private lateinit var verificationExpenditurePersistence: ProjectReportVerificationExpenditurePersistence
     @MockK
     private lateinit var partnerReportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+    @MockK
+    private lateinit var reportPersistence: ProjectReportPersistence
+    @MockK
+    private lateinit var callPersistence: CallPersistence
+    @MockK
+    private lateinit var reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence
 
     @InjectMockKs
     lateinit var calculator: GetProjectReportVerificationWorkOverviewCalculator
 
     @BeforeEach
     fun setup() {
-        clearMocks(verificationExpenditurePersistence, partnerReportExpenditureCostCategoryPersistence)
+        clearMocks(verificationExpenditurePersistence, partnerReportExpenditureCostCategoryPersistence,
+            reportPersistence, callPersistence, reportSpfClaimPersistence)
     }
 
     @Test
-    fun getWorkOverviewPerPartner() {
+    fun `getWorkOverviewPerPartner - without spf`() {
         every { verificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns expenditures
         every {
             partnerReportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(400L, 500L,))
         } returns mapOf(400L to partner_4, 500L to partner_5)
 
+        every { reportPersistence.getReportByIdUnSecured(REPORT_ID).projectId } returns 75L
+        every { callPersistence.getCallByProjectId(75L).isSpf() } returns false
+
         assertThat(calculator.getWorkOverviewPerPartner(REPORT_ID)).isEqualTo(expectedOverview)
+    }
+
+    @Test
+    fun `getWorkOverviewPerPartner - with spf`() {
+        every { verificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns expenditures
+        every {
+            partnerReportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(400L, 500L,))
+        } returns mapOf(400L to partner_4, 500L to partner_5)
+
+        every { reportPersistence.getReportByIdUnSecured(REPORT_ID).projectId } returns 76L
+        every { callPersistence.getCallByProjectId(76L).isSpf() } returns true
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(REPORT_ID).sum } returns BigDecimal.valueOf(189L, 1)
+
+        assertThat(calculator.getWorkOverviewPerPartner(REPORT_ID)).isEqualTo(expectedWithSpfOverview)
     }
 
 }

@@ -4,7 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
-import {ProjectContractingReportingScheduleDTO, ProjectPeriodForMonitoringDTO} from '@cat/api';
+import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 import {MatDialog} from '@angular/material/dialog';
 import {
@@ -37,7 +37,7 @@ export class ContractReportingComponent implements OnInit {
   error$ = new BehaviorSubject<APIError | null>(null);
   TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
   data$: Observable<{
-    periods: ProjectPeriodForMonitoringDTO[];
+    periods: ProjectPeriodDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
     canView: boolean;
     canEdit: boolean;
@@ -76,7 +76,7 @@ export class ContractReportingComponent implements OnInit {
     ])
       .pipe(
         map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, isLocked, contractingMonitoringStartDate, userCanViewTimeplan]:
-               [ProjectPeriodForMonitoringDTO[], ProjectContractingReportingScheduleDTO[], boolean, boolean, boolean, string, boolean]) => ({
+               [ProjectPeriodDTO[], ProjectContractingReportingScheduleDTO[], boolean, boolean, boolean, string, boolean]) => ({
             periods: availablePeriods,
             reportingDeadlines: contractReportingDeadlines,
             canView: userCanViewDeadlines,
@@ -119,7 +119,7 @@ export class ContractReportingComponent implements OnInit {
     return this.reportingDeadlinesForm.get('deadlines') as FormArray;
   }
 
-  resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean, isSectionLocked: boolean, periods: ProjectPeriodForMonitoringDTO[]) {
+  resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean, isSectionLocked: boolean, periods: ProjectPeriodDTO[]) {
     this.deadlines.clear();
     for (const reportingDeadline of reportingDeadlines) {
       const isDeadlineApplicable = periods.some(p => p.number === reportingDeadline.periodNumber);
@@ -131,8 +131,8 @@ export class ContractReportingComponent implements OnInit {
         deadlineLinkedDraftProjectReportNumbers: [reportingDeadline.linkedDraftProjectReportNumbers],
         deadlineLinkedSubmittedProjectReportNumbers: [reportingDeadline.linkedSubmittedProjectReportNumbers],
         deadlineReportType: [reportingDeadline.type, Validators.required],
-        deadlinePeriod: [isDeadlineApplicable ? reportingDeadline.periodNumber : '', Validators.required],
-        deadlineDate: [isDeadlineApplicable ? reportingDeadline.date : '', Validators.required],
+        deadlinePeriod: [reportingDeadline.periodNumber, isDeadlineApplicable ? Validators.required: []],
+        deadlineDate: [reportingDeadline.date, isDeadlineApplicable ? Validators.required: []],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
         deadlinePeriodStartDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.startDate],
         deadlinePeriodEndDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.endDate],
@@ -161,7 +161,7 @@ export class ContractReportingComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  updateDatePicker(index: number, periods: ProjectPeriodForMonitoringDTO[], periodNum: number): void {
+  updateDatePicker(index: number, periods: ProjectPeriodDTO[], periodNum: number): void {
     const period = periods.find(p => p.number === periodNum);
     this.deadlines.at(index).patchValue({deadlinePeriodStartDate: period?.startDate});
     this.deadlines.at(index).patchValue({deadlinePeriodEndDate: period?.endDate});
@@ -217,12 +217,12 @@ export class ContractReportingComponent implements OnInit {
     ).subscribe();
   }
 
-  projectEndDateString(periods: ProjectPeriodForMonitoringDTO[]): string {
+  projectEndDateString(periods: ProjectPeriodDTO[]): string {
     const period = periods.find(p => p.number === (periods.length));
     return period ? period.endDate : '';
   }
 
-  projectDurationString(periods: ProjectPeriodForMonitoringDTO[]): string {
+  projectDurationString(periods: ProjectPeriodDTO[]): string {
     const period = periods.find(p => p.number === (periods.length));
     return period ? period.end.toString() : '';
   }

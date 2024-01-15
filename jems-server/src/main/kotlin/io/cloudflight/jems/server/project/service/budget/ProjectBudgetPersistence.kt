@@ -15,6 +15,7 @@ interface ProjectBudgetPersistence {
     fun getExternalCosts(partnerIds: Set<Long>, projectId: Long, version: String? = null): List<ProjectPartnerCost>
     fun getEquipmentCosts(partnerIds: Set<Long>, projectId: Long, version: String? = null): List<ProjectPartnerCost>
     fun getInfrastructureCosts(partnerIds: Set<Long>, projectId: Long, version: String? = null): List<ProjectPartnerCost>
+    fun getSpfCosts(partnerIds: Set<Long>, projectId: Long, version: String? = null): List<ProjectPartnerCost>
 
     fun getLumpSumContributionPerPartner(partnerIds: Set<Long>, projectId: Long, version: String? = null): Map<Long, BigDecimal>
     fun getUnitCostsPerPartner(partnerIds: Set<Long>, projectId: Long, version: String? = null): Map<Long, BigDecimal>

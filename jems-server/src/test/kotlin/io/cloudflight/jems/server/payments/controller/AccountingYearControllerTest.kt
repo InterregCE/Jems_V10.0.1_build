@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
+import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.accountingYears.controller.AccountingYearController
 import io.cloudflight.jems.server.payments.accountingYears.service.getAccountingYear.GetAccountingYearInteractor
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

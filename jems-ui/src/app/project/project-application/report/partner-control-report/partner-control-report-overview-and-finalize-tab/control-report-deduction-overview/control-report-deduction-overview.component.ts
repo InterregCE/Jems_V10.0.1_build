@@ -33,7 +33,7 @@ export class ControlReportDeductionOverviewComponent implements OnChanges {
       || !!this.deductionData.travelAndAccommodationFlatRate
       || !!this.deductionData.otherCostsOnStaffCostsFlatRate;
 
-    this.dataSource.data = this.deductionData.deductionRows.filter(row => row.total)
+    this.dataSource.data = this.deductionData.deductionRows;
     this.total = this.deductionData.total;
 
     this.staffCostsFlatRate = this.deductionData.staffCostsFlatRate;

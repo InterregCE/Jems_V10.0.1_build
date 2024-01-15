@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -27,13 +26,14 @@ import io.cloudflight.jems.server.project.service.report.partner.control.expendi
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.toChanges
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.onlyReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getCurrentForInvestments
@@ -62,7 +62,6 @@ class SubmitProjectPartnerReport(
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
     private val reportExpenditureVerificationPersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectPersistence: ProjectPersistence,
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val callPersistence: CallPersistence,
 ) : SubmitProjectPartnerReportInteractor {
@@ -79,7 +78,7 @@ class SubmitProjectPartnerReport(
         }
 
         val newStatus = report.status.submitStatus(report.hasControlReopenedBefore())
-        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId, newStatus)
+        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId, newStatus, oldStatus = report.status)
         val needsRecalculation = report.status.isOpenForNumbersChanges()
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
@@ -96,9 +95,8 @@ class SubmitProjectPartnerReport(
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { partnerReportSummary ->
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, partnerReportSummary.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, partnerReportSummary, report.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, partnerReportSummary, report.status))
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,
@@ -129,7 +127,7 @@ class SubmitProjectPartnerReport(
         saveCurrentCoFinancing( // table 1
             currentReport = currentCostCategories.currentlyReported.sum,
             currentReportReIncluded = currentCostCategories.currentlyReportedReIncluded.sum,
-            totalEligibleBudget = costCategories.totalsFromAF.sum,
+            totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
             report = report, partnerId = partnerId,
         )
         saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, report.id) // table 3
@@ -141,6 +139,7 @@ class SubmitProjectPartnerReport(
         partnerId: Long,
         reportId: Long,
         newStatus: ReportStatus,
+        oldStatus: ReportStatus,
     ): List<ProjectPartnerReportExpenditureCost> {
         val expenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
         val usedCurrencies = expenditures.mapTo(HashSet()) { it.currencyCode }
@@ -156,7 +155,7 @@ class SubmitProjectPartnerReport(
 
         return reportExpenditureVerificationPersistence.updateCurrencyRatesAndPrepareVerification(
             reportId = reportId,
-            newRates = expenditures.fillCurrencyRates(rates).toChanges(),
+            newRates = expenditures.fillCurrencyRates(oldStatus, ratesResolver = { rates }).toChanges(),
             whatToDoWithVerification = if (newStatus.controlNotFullyOpen()) ClearDeductions else UpdateCertified,
         )
     }
@@ -193,14 +192,14 @@ class SubmitProjectPartnerReport(
                         currentValueToSplit = currentReport,
                         funds = report.identification.coFinancing,
                     )
-                ),
+                ).toColumn(),
                 currentReIncluded = getCurrentFrom(
                     contributions.generateCoFinCalculationInputData(
                         totalEligibleBudget = totalEligibleBudget,
                         currentValueToSplit = currentReportReIncluded,
                         funds = report.identification.coFinancing,
                     )
-                )
+                ).toColumn(),
             )
         )
     }

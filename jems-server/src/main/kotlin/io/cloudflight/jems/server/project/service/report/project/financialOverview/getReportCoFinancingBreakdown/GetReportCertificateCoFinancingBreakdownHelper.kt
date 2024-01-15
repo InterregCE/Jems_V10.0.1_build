@@ -18,7 +18,7 @@ fun ReportCertificateCoFinancing.toLinesModel() = CertificateCoFinancingBreakdow
             currentVerified = currentVerified.funds.getOrDefault(it.key, BigDecimal.ZERO),
             previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
-    },
+    }.sortedWith(compareBy(nullsLast()) { it.fundId }),
     partnerContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.partnerContribution,
         previouslyReported = previouslyReported.partnerContribution,
@@ -79,4 +79,18 @@ fun CertificateCoFinancingBreakdown.fillInOverviewFields() = apply {
     automaticPublicContribution.fillInOverviewFields()
     privateContribution.fillInOverviewFields()
     total.fillInOverviewFields()
+}
+
+fun ReportCertificateCoFinancingColumn.plus(other: ReportCertificateCoFinancingColumn): ReportCertificateCoFinancingColumn {
+    val fundIds = funds.keys union other.funds.keys
+    return ReportCertificateCoFinancingColumn(
+        funds = fundIds.associateWith {
+            funds.getOrDefault(it, BigDecimal.ZERO).plus(other.funds.getOrDefault(it, BigDecimal.ZERO))
+        },
+        partnerContribution = partnerContribution.plus(other.partnerContribution),
+        publicContribution = publicContribution.plus(other.publicContribution),
+        automaticPublicContribution = automaticPublicContribution.plus(other.automaticPublicContribution),
+        privateContribution = privateContribution.plus(other.privateContribution),
+        sum = sum.plus(other.sum),
+    )
 }

@@ -8,6 +8,8 @@ import java.time.ZonedDateTime
 
 data class ProjectReportSummary(
     val id: Long,
+    val projectId: Long,
+    val projectIdentifier: String,
     val reportNumber: Int,
     val status: ProjectReportStatus,
     val linkedFormVersion: String,
@@ -18,6 +20,7 @@ data class ProjectReportSummary(
     val reportingDate: LocalDate?,
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
+    val lastReSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
     var deletable: Boolean,
@@ -29,4 +32,5 @@ data class ProjectReportSummary(
     val verificationFollowup: String?
 ) {
     fun doesNotHaveFinance() = type?.hasFinance() != true
+    fun hasFinance() = type?.hasFinance() == true
 }

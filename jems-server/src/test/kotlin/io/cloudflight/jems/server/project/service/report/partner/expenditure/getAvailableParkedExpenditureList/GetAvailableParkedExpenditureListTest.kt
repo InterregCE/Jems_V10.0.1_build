@@ -109,7 +109,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     @Test
     fun getParked() {
         val reportId = 12L
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(45L, reportId) } returns
             mapOf(14L to parkingMetadata)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(45L, reportId) } returns listOf(lumpSum())
@@ -130,7 +130,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     @Test
     fun `getParked - check gdpr anonymization`() {
         val reportId = 12L
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(45L) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(45L, reportId ) } returns
             mapOf(14L to parkingMetadata)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(45L, reportId) } returns listOf(lumpSum())

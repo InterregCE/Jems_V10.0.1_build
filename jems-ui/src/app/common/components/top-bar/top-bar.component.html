@@ -29,11 +29,12 @@
                              'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                              'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                            }">
-                        <button class="nav-link"
-                            (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                        <a class="nav-link"
+                            (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
+                            [routerLink]="item.route">
                             <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                             <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
-                        </button>
+                        </a>
                     </li>
                 </ng-container>
             </ul>

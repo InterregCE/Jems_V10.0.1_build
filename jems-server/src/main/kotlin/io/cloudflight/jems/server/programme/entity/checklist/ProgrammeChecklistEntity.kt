@@ -26,13 +26,13 @@ class ProgrammeChecklistEntity(
     @field:NotNull
     val type: ProgrammeChecklistType,
 
-    val name: String?,
+    var name: String?,
 
-    val minScore: BigDecimal?,
+    var minScore: BigDecimal?,
 
-    val maxScore: BigDecimal?,
+    var maxScore: BigDecimal?,
 
-    val allowsDecimalScore: Boolean? = false,
+    var allowsDecimalScore: Boolean? = false,
 
     var lastModificationDate: ZonedDateTime?,
 

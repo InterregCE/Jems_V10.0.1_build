@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetSpfCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
@@ -87,6 +88,9 @@ class ProjectBudgetPersistenceTest {
     lateinit var projectPartnerUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
 
     @MockK
+    lateinit var budgetSpfRepository: ProjectPartnerBudgetSpfCostRepository
+
+    @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @RelaxedMockK
@@ -107,6 +111,7 @@ class ProjectBudgetPersistenceTest {
             budgetExternalRepository,
             budgetEquipmentRepository,
             budgetInfrastructureRepository,
+            budgetSpfRepository,
             projectPartnerUnitCostRepository,
             projectPartnerLumpSumRepository,
             projectVersionUtils
@@ -205,6 +210,24 @@ class ProjectBudgetPersistenceTest {
         )
 
         assertThat(projectBudgetPersistence.getInfrastructureCosts(PARTNER_IDS, 1L, version))
+            .containsExactlyInAnyOrder(expectedBudget)
+    }
+
+    @Test
+    fun getSpfCosts() {
+        every { budgetSpfRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
+        assertThat(projectBudgetPersistence.getSpfCosts(PARTNER_IDS, 1L))
+            .containsExactlyInAnyOrder(expectedBudget)
+    }
+
+    @Test
+    fun getSpfHistoric() {
+        every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
+        every { budgetSpfRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(
+            mockPBRow
+        )
+
+        assertThat(projectBudgetPersistence.getSpfCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
@@ -364,7 +387,8 @@ class ProjectBudgetPersistenceTest {
             equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
             infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
-            unitCostsPerPeriod = 60.toScaledBigDecimal()
+            unitCostsPerPeriod = 60.toScaledBigDecimal(),
+            spfCostsPerPeriod = BigDecimal.valueOf(70L),
         )
         every { projectPartnerRepository.getAllBudgetsByIds(setOf(partnerId)) } returns listOf(ppBudgetRow)
 
@@ -379,6 +403,7 @@ class ProjectBudgetPersistenceTest {
                     externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
                     infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
                     unitCostsPerPeriod = 60.toScaledBigDecimal(),
+                    spfCostsPerPeriod = BigDecimal.valueOf(70L),
                 )
             )
     }
@@ -396,7 +421,8 @@ class ProjectBudgetPersistenceTest {
             equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
             infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
-            unitCostsPerPeriod = 60.toScaledBigDecimal()
+            unitCostsPerPeriod = 60.toScaledBigDecimal(),
+            spfCostsPerPeriod = BigDecimal.valueOf(70L),
         )
         every {
             projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(
@@ -416,6 +442,7 @@ class ProjectBudgetPersistenceTest {
                     externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
                     infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
                     unitCostsPerPeriod = 60.toScaledBigDecimal(),
+                    spfCostsPerPeriod = BigDecimal.valueOf(70L),
                 )
             )
     }

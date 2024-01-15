@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.de
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportExpenditureDeleted
@@ -27,7 +26,7 @@ class DeleteParkedExpenditure(
         if (!report.status.isOpenForNumbersChanges())
             throw DeletingParkedForbiddenIfReOpenedReportIsNotLast()
 
-        val parked = reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId)
+        val parked = reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(partnerId, reportId = reportId)
         if (expenditureId !in parked.keys)
             throw ParkedExpenditureNotFound(expenditureId)
 

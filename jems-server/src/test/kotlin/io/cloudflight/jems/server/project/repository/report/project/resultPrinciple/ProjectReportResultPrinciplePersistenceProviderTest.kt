@@ -27,6 +27,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -192,6 +194,27 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
             .isEqualTo(expectedResultsAndPrinciplesAfterUpdate)
 
         assertThat(result.currentReport).isEqualTo(BigDecimal.valueOf(42L, 1))
+    }
+
+    @Test
+    fun deleteProjectResultPrinciplesIfExist() {
+        val result = mockk<ProjectReportProjectResultEntity>()
+        every { projectResultRepository.findByProjectReportId(755L) } returns listOf(result)
+        val attachment = mockk<JemsFileMetadataEntity>()
+        every { result.attachment } returns attachment
+
+        every { fileService.delete(attachment) } answers { }
+        val deletedResultsSlot = slot<Iterable<ProjectReportProjectResultEntity>>()
+        every { projectResultRepository.deleteAll(capture(deletedResultsSlot)) } answers { }
+
+        every { horizontalPrincipleRepository.existsById(755L) } returns true
+        every { horizontalPrincipleRepository.deleteById(755L) } answers { }
+
+        persistence.deleteProjectResultPrinciplesIfExist(755L)
+
+        verify(exactly = 1) { fileService.delete(attachment) }
+        assertThat(deletedResultsSlot.captured).containsExactly(result)
+        verify(exactly = 1) { horizontalPrincipleRepository.deleteById(755L) }
     }
 
 }

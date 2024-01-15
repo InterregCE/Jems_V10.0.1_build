@@ -12,16 +12,35 @@ export class DashboardPageStore {
 
   currentUser$: Observable<UserDTO | null>;
   canViewPartnerReports$: Observable<boolean>;
+  canViewProjectReports$: Observable<boolean>;
 
   constructor(private securityService: SecurityService,
               private permissionService: PermissionService) {
     this.currentUser$ = this.securityService.currentUserDetails;
     this.canViewPartnerReports$ = this.canViewPartnerReports();
+    this.canViewProjectReports$ = this.canViewProjectReports();
   }
 
   canViewPartnerReports(): Observable<boolean> {
     return combineLatest([
       this.permissionService.hasPermission(PermissionsEnum.PartnerReportsRetrieve),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
+      this.securityService.currentUser
+    ])
+      .pipe(
+        map(([canRetrievePartnerReports, canViewReportingForMonitoring, currentUser]) => {
+          if (canRetrievePartnerReports) {
+            const isMonitoringUser = this.getArraysIntersection(currentUser?.role.permissions, Permission.MONITORING_PERMISSIONS).length > 0;
+            return isMonitoringUser ? canViewReportingForMonitoring : true;
+          }
+          return false;
+        })
+      );
+  }
+
+  canViewProjectReports(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportsRetrieve),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
       this.securityService.currentUser
     ])

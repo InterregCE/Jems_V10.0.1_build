@@ -1,0 +1,13 @@
+.overflow-auto {
+  overflow: auto;
+}
+
+mat-card {
+  padding: 0;
+
+  mat-card-content {
+    padding: 1.5rem;
+    margin-bottom: 0;
+  }
+}
+

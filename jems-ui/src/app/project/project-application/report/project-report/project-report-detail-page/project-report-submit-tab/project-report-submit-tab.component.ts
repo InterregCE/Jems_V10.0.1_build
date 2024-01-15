@@ -25,6 +25,7 @@ import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ReportUtil} from '@project/common/report-util';
 
 @Component({
   selector: 'jems-project-report-submit-tab',
@@ -41,7 +42,7 @@ export class ProjectReportSubmitTabComponent {
   preConditionCheckResult: PreConditionCheckResultDTO | undefined = undefined;
   preCheckPending = false;
   StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
-
+  ReportUtil = ReportUtil;
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{

@@ -18,6 +18,6 @@ class GetAdvancePayments(
     @CanRetrieveAdvancePayments
     @Transactional(readOnly = true)
     override fun list(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
-        return paymentPersistence.list(pageable, filters).calculateAmountSettled()
+        return paymentPersistence.list(pageable, filters)
     }
 }

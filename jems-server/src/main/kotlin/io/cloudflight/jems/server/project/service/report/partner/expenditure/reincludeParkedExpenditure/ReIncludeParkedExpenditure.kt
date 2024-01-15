@@ -36,6 +36,8 @@ class ReIncludeParkedExpenditure(
         if (!report.status.isOpenForNumbersChanges())
             throw ReIncludingForbiddenIfReOpenedReportIsNotLast()
 
+        validateCanBeReIncluded(expenditureId = expenditureId, reportId = reportId)
+
         val attachment = reportExpenditurePersistence.getExpenditureAttachment(partnerId, expenditureId = expenditureId)
 
         val newExpenditure = reportExpenditurePersistence
@@ -62,6 +64,12 @@ class ReIncludeParkedExpenditure(
                 expenditure = newExpenditure.parkingMetadata!!,
             )
         )
+    }
+
+    private fun validateCanBeReIncluded(expenditureId: Long, reportId: Long) {
+        if (reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId).reportOfOriginId == reportId) {
+            throw ReIncludeItemParkedInSameReportException()
+        }
     }
 
     private fun JemsFile.toCreateFile(

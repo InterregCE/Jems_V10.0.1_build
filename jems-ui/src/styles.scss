@@ -47,6 +47,17 @@ ul li:empty {
   }
 }
 
+// Used to wrap mat-chips when used for status information only.
+// That way the container can show a tooltip, but the chip will let clicks pass through to elements below (e.g. linked table rows)
+.status-chip-container {
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-right: 0.5rem;
+  mat-chip {
+    pointer-events: none;
+  }
+}
+
 mat-card {
   a, a:visited {
     &:not(.mat-button-base)
@@ -60,6 +71,22 @@ mat-card {
       }
     }
   }
+
+  .anchor-column {
+    a, a:hover {
+      box-shadow: none;
+    }
+  }
+
+  .table-wrapper, .mat-table {
+    .layout-wrapper{
+      z-index: 5 !important;
+    }
+    a, button, .mat-tooltip-trigger, .mat-form-field, .mat-checkbox {
+      z-index: 5 !important;
+    }
+  }
+
   a.unstyled-link, .section-link, .support-links a {
     cursor: pointer;
     color: var(--primary-color) !important;
@@ -167,3 +194,5 @@ mat-card {
     }
   }
 }
+
+

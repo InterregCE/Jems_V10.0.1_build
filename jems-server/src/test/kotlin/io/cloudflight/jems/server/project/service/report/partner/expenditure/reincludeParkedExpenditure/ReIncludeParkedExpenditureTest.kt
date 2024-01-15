@@ -70,6 +70,13 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         val report = report(reportId = 40L, status)
         every { reportPersistence.getPartnerReportById(partnerId = 4L, reportId = 40L) } returns report
 
+        val expenditureMetadata = ExpenditureParkingMetadata(
+            reportOfOriginId = 75L,
+            reportOfOriginNumber = 10,
+            reportProjectOfOriginId = null,
+            originalExpenditureNumber = 11
+        )
+
         every { reportExpenditurePersistence.getExpenditureAttachment(4L, 400L) } returns null
         val mockedResult = mockk<ProjectPartnerReportExpenditureCost>()
         every { mockedResult.parkingMetadata } returns
@@ -82,6 +89,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(4L, 40L, 400L) } returns mockedResult
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(400L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(id = 4L) } returns 8L
+        every { reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId = 400L)  } returns expenditureMetadata
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
@@ -98,6 +106,32 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             description = "Parked expenditure R10.11 was re-included in partner report R.16 by partner PP7",
         ))
     }
+
+
+    @ParameterizedTest(name = "reIncludeParkedExpenditure - in same report where it was parked - {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
+    fun `reIncludeParkedExpenditure - in same report where it was parked`(status: ReportStatus) {
+       val reportId = 75L
+        val report = report(reportId = reportId, status)
+        every { reportPersistence.getPartnerReportById(partnerId = 4L, reportId = reportId) } returns report
+
+        val expenditureMetadata = ExpenditureParkingMetadata(
+            reportOfOriginId = reportId,
+            reportOfOriginNumber = 10,
+            reportProjectOfOriginId = null,
+            originalExpenditureNumber = 11
+        )
+        every { reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId = 400L)  } returns expenditureMetadata
+
+        assertThrows<ReIncludeItemParkedInSameReportException> {
+            interactor.reIncludeParkedExpenditure(
+                partnerId = 4L,
+                reportId = reportId,
+                expenditureId = 400L
+            )
+        }
+    }
+
 
     @ParameterizedTest(name = "reIncludeParkedExpenditure - wrong status - {0}")
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
@@ -122,6 +156,13 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             description = "desc",
             indexedPath = ""
         )
+        val expenditureMetadata = ExpenditureParkingMetadata(
+            reportOfOriginId = 19L,
+            reportOfOriginNumber = 10,
+            reportProjectOfOriginId = null,
+            originalExpenditureNumber = 11
+        )
+        every { reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId = 500L)  } returns expenditureMetadata
         every { reportExpenditurePersistence.getExpenditureAttachment(5L, 500L) } returns file
 
         val newExpenditure = mockk<ProjectPartnerReportExpenditureCost>()

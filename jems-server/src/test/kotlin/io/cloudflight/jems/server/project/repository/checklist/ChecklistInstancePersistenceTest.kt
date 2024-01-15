@@ -52,7 +52,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private val PROGRAMME_CHECKLIST_ID = 4L
     private val TODAY = ZonedDateTime.now()
 
-    private val checkLisDetail = ChecklistInstanceDetail(
+    private val checklistDetail = ChecklistInstanceDetail(
         id = ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
@@ -93,7 +93,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         )
     )
 
-    private val createdCheckLisDetail = ChecklistInstanceDetail(
+    private val createdChecklistDetail = ChecklistInstanceDetail(
         id = 0,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
@@ -242,7 +242,6 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         description = "test"
     )
 
-
     @RelaxedMockK
     lateinit var repository: ChecklistInstanceRepository
 
@@ -317,7 +316,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 checkListEntity()
         assertThat(persistence.getChecklistDetail(ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 3L))
             .usingRecursiveComparison()
-            .isEqualTo(checkLisDetail)
+            .isEqualTo(checklistDetail)
     }
 
     @Test
@@ -330,16 +329,16 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         every { ZonedDateTime.now() } returns TODAY
         assertThat(persistence.create(createChecklist, CREATOR_ID))
             .usingRecursiveComparison()
-            .isEqualTo(createdCheckLisDetail)
+            .isEqualTo(createdChecklistDetail)
     }
 
     @Test
     fun update() {
         val optionalCheckList = Optional.of(checkListEntity())
         every { repository.findById(ID) } returns optionalCheckList
-        assertThat(persistence.update(checkLisDetail))
+        assertThat(persistence.update(checklistDetail))
             .usingRecursiveComparison()
-            .isEqualTo(checkLisDetail)
+            .isEqualTo(checklistDetail)
     }
 
     @Test
@@ -367,5 +366,4 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         assertThat(persistence.updateDescription(1L, "test"))
             .isEqualTo(checklist)
     }
-
 }

@@ -35,7 +35,7 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
                     currentValueToSplit = toSplit,
                     funds = funds,
                 )
-            )
+            ).toColumn()
     }
 
     @Transactional(readOnly = true)
@@ -46,23 +46,25 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
         val coFinancing = data.toLinesModel()
 
         if (report.status.isOpenForNumbersChanges()) {
-            val expenditureTotal = reportExpenditureCostCategoryCalculatorService
-                .getSubmittedOrCalculateCurrent(partnerId = partnerId, reportId = reportId).total
+            val expenditureCurrent = reportExpenditureCostCategoryCalculatorService
+                .getSubmittedOrCalculateCurrent(partnerId = partnerId, reportId = reportId)
+            val totalWithoutSpf = expenditureCurrent.totalBudgetWithoutSpf()
+
             val contributions = reportContributionPersistence
                 .getPartnerReportContribution(partnerId, reportId = reportId).extractOverview()
 
             val currentValues = ExpenditureCoFinancingCurrentWithReIncluded(
                 current = split(
-                    toSplit = expenditureTotal.currentReport,
+                    toSplit = expenditureCurrent.total.currentReport,
                     contributions = contributions,
                     funds = report.identification.coFinancing,
-                    total = expenditureTotal.totalEligibleBudget,
+                    total = totalWithoutSpf,
                 ),
                 currentReIncluded = split(
-                    toSplit = expenditureTotal.currentReportReIncluded,
+                    toSplit = expenditureCurrent.total.currentReportReIncluded,
                     contributions = contributions,
                     funds = report.identification.coFinancing,
-                    total = expenditureTotal.totalEligibleBudget,
+                    total = totalWithoutSpf,
                 ),
             )
 

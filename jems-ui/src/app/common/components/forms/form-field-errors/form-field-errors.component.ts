@@ -11,7 +11,7 @@ import {TranslateService} from '@ngx-translate/core';
 export class FormFieldErrorsComponent {
 
   @Input()
-  errors: ValidationErrors | null;
+  errors: ValidationErrors | null | undefined;
 
   @Input()
   messages: { [key: string]: string };

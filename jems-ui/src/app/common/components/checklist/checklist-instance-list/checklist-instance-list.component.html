@@ -65,6 +65,13 @@
             matTooltip="{{'programme.checklists.export' | translate}}">
         <mat-icon>download</mat-icon>
     </button>
+    <button class="ml-1" *ngIf="(pageStore.userCanClone$ | async) === true"
+            mat-icon-button color="primary"
+            (click)="clone(checklist.id);$event.stopPropagation();"
+            matTooltip="{{'common.clone.entry.tooltip' | translate}}"
+            aria-label="clone">
+      <mat-icon>file_copy</mat-icon>
+    </button>
 </ng-template>
 
 <ng-template #actionsCell let-checklist>
@@ -79,6 +86,13 @@
             (click)="download(checklist.id)"
             matTooltip="{{'programme.checklists.export' | translate}}">
         <mat-icon>download</mat-icon>
+    </button>
+    <button class="ml-1" *ngIf="(pageStore.userCanClone$ | async) === true"
+            mat-icon-button color="primary"
+            (click)="clone(checklist.id);$event.stopPropagation();"
+            matTooltip="{{'common.clone.entry.tooltip' | translate}}"
+            aria-label="clone">
+      <mat-icon>file_copy</mat-icon>
     </button>
     <button class="ml-1" *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
@@ -106,7 +120,7 @@
         {{checklist.description}}
     </span>
     <div *ngIf="this.editableChecklistId === checklist.id">
-        <div (click)="$event.stopPropagation()">
+        <div (click)="$event.stopPropagation()" >
             <form [formGroup]="descriptionForm" class="description-form">
                 <jems-expandable-textarea class="w-100"
                                           label="file.table.column.name.description"

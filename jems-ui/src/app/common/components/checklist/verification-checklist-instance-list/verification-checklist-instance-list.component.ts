@@ -1,19 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {
-  ChecklistInstanceDTO,
-  IdNamePairDTO,
-  ProgrammeChecklistDetailDTO, ProjectReportDTO,
-  UserDTO, UserRoleDTO
-} from '@cat/api';
+import {ChecklistInstanceDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO, ProjectReportDTO, UserDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {FormBuilder, Validators} from '@angular/forms';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
 import {TableComponent} from '@common/components/table/table.component';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -22,7 +15,7 @@ import {PermissionService} from '../../../../security/permissions/permission.ser
 import {SecurityService} from '../../../../security/security.service';
 import {LanguageStore} from '@common/services/language-store.service';
 import {DownloadService} from '@common/services/download.service';
-import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {ReportUtil} from '@project/common/report-util';
 import {ChecklistItem} from '@common/components/checklist/checklist-item';
@@ -35,9 +28,7 @@ import {
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import {
-  ProjectReportPageStore
-} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
 
 @Component({
   selector: 'jems-verification-checklist-instance-list',
@@ -57,6 +48,8 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
   relatedId: number;
   @Input()
   verificationReportVerificationFinalizedDate: Date | null;
+  @Input()
+  verificationReportVerificationReopeningDate: Date | null;
 
   projectId = Number(this.routingService.getParameter(this.activatedRoute, 'projectId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -128,7 +121,8 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
           (canEditVerification && ReportUtil.isVerificationReportOpen(reportStatus))
           ||
           (canEditVerification && reportStatus === ProjectReportDTO.StatusEnum.Finalized)
-        )
+        ),
+        shareReplay(1)
       );
   }
 
@@ -251,6 +245,24 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
     return createdAt > this.verificationReportVerificationFinalizedDate;
   }
 
+  isChecklistCreatedAfterVerificationReopening(createdAt: Date): boolean {
+    if (this.verificationReportVerificationReopeningDate === null) {
+      return true;
+    }
+    return createdAt > this.verificationReportVerificationReopeningDate;
+  }
+
+  isChecklistDeletionDisabled(checklist: ChecklistInstanceDTO): Observable<boolean> {
+    const isDraft = checklist.status === this.Status.DRAFT;
+    const isCreator = this.currentUserIsCreator(checklist);
+    const isCreatedAfterReopening = this.isChecklistCreatedAfterVerificationReopening(checklist.createdAt);
+    const isCreatedAfterFinalization = this.isAfterVerificationChecklist(checklist.createdAt);
+
+    return this.userCanEditVerificationChecklists$.pipe(
+      map(userCanEditChecklists => !isCreatedAfterReopening || !isDraft || !isCreator || !isCreatedAfterFinalization || !userCanEditChecklists)
+    );
+  }
+
   download(checklistId: number) {
     combineLatest([
       this.pageStore.availablePlugins$,
@@ -264,5 +276,16 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
           this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
+  }
+
+  clone(checklistId: number): void {
+    this.pageStore.clone(this.projectId, this.reportId, checklistId)
+        .pipe(
+            tap(instanceId => this.routingService.navigate(
+                    ['checklist', instanceId],
+                    {relativeTo: this.activatedRoute}
+                )
+            )
+        ).subscribe();
   }
 }

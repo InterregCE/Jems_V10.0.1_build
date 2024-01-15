@@ -1,0 +1,78 @@
+{
+  "controllerUser1": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": 4,
+    "userStatus": "ACTIVE"
+  },
+  "controllerUser2": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": 4,
+    "userStatus": "ACTIVE"
+  },
+  "controllerInstitution": {
+    "name": "randomize",
+    "description": "Controller institution for control-report description",
+    "institutionNuts": ["FRK27", "AT13", "AT130"],
+    "institutionUsers": [
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      },
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      }
+    ]
+  },
+  "controlChecklist": {
+    "type": "CONTROL",
+    "name": "randomize",
+    "minScore": 0,
+    "maxScore": 10,
+    "allowDecimalRange": false,
+    "components": [
+      {
+        "type": "OPTIONS_TOGGLE",
+        "position": 1,
+        "metadata": {
+          "type": "OPTIONS_TOGGLE",
+          "question": "Did I change this question?",
+          "firstOption": "Sure",
+          "secondOption": "Why not?",
+          "thirdOption": "I don't care"
+        }
+      },
+      {
+        "type": "SCORE",
+        "position": 0,
+        "metadata": {
+          "type": "SCORE",
+          "question": "This is a question text",
+          "weight": 2
+        }
+      },
+      {
+        "type": "HEADLINE",
+        "position": 0,
+        "metadata": {
+          "value": "This is a head line text",
+          "type": "HEADLINE"
+        }
+      },
+      {
+        "type": "TEXT_INPUT",
+        "position": 2,
+        "metadata": {
+          "type": "TEXT_INPUT",
+          "question": "This is a question text",
+          "explanationLabel": "Pls just enter something",
+          "explanationMaxLength": 5000
+        }
+      }
+    ]
+  }
+}

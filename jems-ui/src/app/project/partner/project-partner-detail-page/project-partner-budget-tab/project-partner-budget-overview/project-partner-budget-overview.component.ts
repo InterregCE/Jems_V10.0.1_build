@@ -27,10 +27,11 @@ export class ProjectPartnerBudgetOverviewComponent {
       this.budgetStore.totalBudget$,
       this.budgetStore.budgetOptions$,
       this.budgetStore.partnerTotalLumpSum$,
-      this.budgetStore.partner$
+      this.budgetStore.partner$,
+      this.budgetStore.totalSpfBudget$,
     ]).pipe(
-      map(([budgets, total, options, lumpSumTotal, partner]) =>
-        this.calculateDataForTable(budgets, total, options, lumpSumTotal, partner)
+      map(([budgets, total, options, lumpSumTotal, partner, spfCosts]) =>
+        this.calculateDataForTable(budgets, total, options, lumpSumTotal, partner, spfCosts)
       ),
     );
 
@@ -49,6 +50,7 @@ export class ProjectPartnerBudgetOverviewComponent {
     options: BudgetOptions,
     lumpSumTotal: number,
     partner: ProjectPartnerDetailDTO,
+    spfCosts: number,
   ): ProjectPartnerBudgetDTO[] {
     const staffCostsTotal = ProjectPartnerDetailPageStore.calculateStaffCostsTotal(
       options,
@@ -95,6 +97,7 @@ export class ProjectPartnerBudgetOverviewComponent {
         totalSum: total,
         lumpSumContribution: lumpSumTotal,
         unitCosts: budgets.unitCosts.total,
+        spfCosts,
       } as ProjectPartnerBudgetDTO
     ];
   }

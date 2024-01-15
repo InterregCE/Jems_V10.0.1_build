@@ -1,14 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -22,6 +21,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -29,6 +29,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class UpdateProjectReportTest : UnitTest() {
 
@@ -40,18 +43,20 @@ internal class UpdateProjectReportTest : UnitTest() {
         private val WEEK_AGO = ZonedDateTime.now().minusWeeks(1)
         private val NEXT_MONTH = ZonedDateTime.now().plusMonths(1)
 
-        private fun deadline(id: Long): ProjectContractingReportingSchedule {
+        private fun deadline(id: Long, type: ContractingDeadlineType = ContractingDeadlineType.Finance): ProjectContractingReportingSchedule {
             val deadline = mockk<ProjectContractingReportingSchedule>()
             every { deadline.id } returns id
-            every { deadline.type } returns ContractingDeadlineType.Finance
+            every { deadline.type } returns type
             return deadline
         }
 
-        private fun report(version: String): ProjectReportModel {
+        private fun report(version: String, status: ProjectReportStatus, type: ContractingDeadlineType, deadlineId: Long? = null): ProjectReportModel {
             val report = mockk<ProjectReportModel>()
             every { report.linkedFormVersion } returns version
-            every { report.deadlineId } returns null
-            every { report.type } returns ContractingDeadlineType.Both
+            every { report.deadlineId } returns deadlineId
+            every { report.type } returns type
+            every { report.status } returns status
+            every { report.id } returns 222L
             return report
         }
 
@@ -73,12 +78,15 @@ internal class UpdateProjectReportTest : UnitTest() {
             projectAcronym = "acron",
             leadPartnerNameInOriginalLanguage = "orig",
             leadPartnerNameInEnglish = "en",
+            spfPartnerId = null,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
+            lastReSubmission = mockk(),
             verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO,
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -104,7 +112,8 @@ internal class UpdateProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
-            verificationEndDate = NEXT_MONTH
+            verificationEndDate = NEXT_MONTH,
+            verificationLastReOpenDate = null
         )
     }
 
@@ -116,22 +125,32 @@ internal class UpdateProjectReportTest : UnitTest() {
     private lateinit var deadlinePersistence: ContractingReportingPersistence
     @MockK
     private lateinit var certificatePersistence: ProjectReportCertificatePersistence
+    @MockK
+    private lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    private lateinit var paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
+
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence, deadlinePersistence)
+        clearMocks(reportPersistence, projectPersistence, deadlinePersistence,
+            certificatePersistence, paymentPersistence, paymentApplicationToEcLinkPersistence)
     }
 
-    @Test
-    fun `update with deadline link`() {
-        val projectId = 50L
-        every { reportPersistence.getReportById(projectId, reportId = 87L) } returns report("version")
+    @ParameterizedTest(name = "update with deadline link - {0}")
+    @EnumSource(value = ProjectReportStatus::class)
+    fun `update with deadline link`(status: ProjectReportStatus) {
+        val projectId = 50L + status.ordinal
+        every { reportPersistence.getReportById(projectId, reportId = 87L) } returns
+                report("version", status, ContractingDeadlineType.Finance, deadlineId = 7L)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns
             listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
         every { deadlinePersistence.getContractingReportingDeadline(projectId, deadlineId = 7L) } returns deadline(7L)
+        every { paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(222L) } returns setOf()
+        every { paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(222L) } returns setOf()
 
         val slotStartDate = slot<LocalDate>()
         val slotEndDate = slot<LocalDate>()
@@ -139,7 +158,6 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { reportPersistence.updateReport(projectId, reportId = 87L,
             startDate = capture(slotStartDate), endDate = capture(slotEndDate), capture(slotDeadline))
         } returns mockedResult
-        every { certificatePersistence.listCertificatesOfProjectReport(87L) } returns listOf()
 
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
@@ -160,12 +178,15 @@ internal class UpdateProjectReportTest : UnitTest() {
         ))
     }
 
-    @Test
-    fun `update manually without deadline link`() {
-        val projectId = 52L
-        every { reportPersistence.getReportById(projectId, reportId = 82L) } returns report("5.2a")
+    @ParameterizedTest(name = "update manually without deadline link {0}")
+    @EnumSource(value = ProjectReportStatus::class)
+    fun `update manually without deadline link`(status: ProjectReportStatus) {
+        val projectId = 60L + status.ordinal
+        every { reportPersistence.getReportById(projectId, reportId = 82L) } returns report("5.2a", status, ContractingDeadlineType.Content)
         every { projectPersistence.getProjectPeriods(projectId, "5.2a") } returns
             listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
+        every { paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(222L) } returns setOf()
+        every { paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(222L) } returns setOf()
 
         val slotStartDate = slot<LocalDate>()
         val slotEndDate = slot<LocalDate>()
@@ -173,24 +194,6 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { reportPersistence.updateReport(projectId, reportId = 82L,
             startDate = capture(slotStartDate), endDate = capture(slotEndDate), capture(slotDeadline))
         } returns mockedResult
-        every { certificatePersistence.listCertificatesOfProjectReport(82L) } returns listOf(
-            ProjectPartnerReportSubmissionSummary(
-                id = 499L,
-                reportNumber = 4,
-                status = ReportStatus.Certified,
-                version = "v",
-                firstSubmission = null,
-                controlEnd = null,
-                createdAt = ZonedDateTime.now(),
-                projectIdentifier = "projectIdentifier",
-                projectAcronym = "projectAcronym",
-                partnerAbbreviation = "P-4",
-                partnerNumber = 4,
-                partnerRole = ProjectPartnerRole.PARTNER,
-                partnerId = 72L
-            )
-        )
-        every { certificatePersistence.deselectCertificate(82L, 499L) } returnsArgument 0
 
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
@@ -211,10 +214,74 @@ internal class UpdateProjectReportTest : UnitTest() {
         ))
     }
 
+    @ParameterizedTest(name = "update type and deadline when reopened {0}")
+    @CsvSource(value = [
+        "Submitted,Finance,Finance,15,26",
+        "Submitted,Finance,Content,16,16",
+        "Submitted,Content,Finance,17,28",
+        "ReOpenSubmittedLast,Finance,Finance,18,18",
+        "ReOpenSubmittedLimited,Finance,Finance,19,19",
+        "InVerification,Finance,Finance,20,20",
+        "VerificationReOpenedLast,Finance,Finance,21,21",
+        "VerificationReOpenedLimited,Finance,Finance,22,22",
+    ])
+    fun `update type and deadline when reopened`(
+        status: ProjectReportStatus,
+        oldType: ContractingDeadlineType,
+        newType: ContractingDeadlineType,
+        oldDeadlineId: Long,
+        newDeadlineId: Long,
+    ) {
+        val projectId = 70L
+        every { reportPersistence.getReportById(projectId, reportId = 82L) } returns report("5.2a", status, oldType, oldDeadlineId)
+        every { projectPersistence.getProjectPeriods(projectId, "5.2a") } returns
+            listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
+
+        if (newDeadlineId > 0L)
+            every { deadlinePersistence.getContractingReportingDeadline(projectId, deadlineId = newDeadlineId) } returns
+                    deadline(newDeadlineId, newType)
+
+        val data = ProjectReportUpdate(
+            startDate = MONTH_AGO,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = newType,
+            periodNumber = 12,
+            reportingDate = YESTERDAY,
+        )
+        assertThrows<TypeChangeIsForbiddenWhenReportIsReOpened> { interactor.updateReport(projectId, reportId = 82L, data) }
+    }
+
+    @ParameterizedTest(name = "update type and deadline when type changed {0} -> {1}")
+    @CsvSource(value = ["Finance,Content", "Both,Content"])
+    fun `update type and deadline when type changed`(
+        oldType: ContractingDeadlineType,
+        newType: ContractingDeadlineType,
+    ) {
+        val projectId = 70L
+        every { reportPersistence.getReportById(projectId, reportId = 82L) } returns report("5.2a", ProjectReportStatus.Draft, oldType)
+        every { projectPersistence.getProjectPeriods(projectId, "5.2a") } returns
+            listOf(ProjectPeriod(mockedResult.periodNumber!!, 7, 15))
+
+        every { certificatePersistence.deselectCertificatesOfProjectReport(82L) } answers { }
+        val data = ProjectReportUpdate(
+            startDate = MONTH_AGO,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = newType,
+            periodNumber = 12,
+            reportingDate = YESTERDAY,
+        )
+        every { reportPersistence.updateReport(projectId, reportId = 82L, any(), any(), any()) } returns mockedResult
+        interactor.updateReport(projectId, 82L, data)
+        verify(exactly = 1) { reportPersistence.updateReport(projectId, 82L, any(), any(), any()) }
+        verify(exactly = 1) { certificatePersistence.deselectCertificatesOfProjectReport(82L) }
+    }
+
     @Test
     fun `update manually - wrong period number`() {
         val projectId = 54L
-        every { reportPersistence.getReportById(projectId, reportId = 84L) } returns report("5.4a")
+        every { reportPersistence.getReportById(projectId, reportId = 84L) } returns report("5.4a", mockk(), mockk())
         every { projectPersistence.getProjectPeriods(projectId, "5.4a") } returns emptyList()
 
         val data = ProjectReportUpdate(
@@ -231,7 +298,7 @@ internal class UpdateProjectReportTest : UnitTest() {
     @Test
     fun `update manually - missing mandatory fields`() {
         val projectId = 56L
-        every { reportPersistence.getReportById(projectId, reportId = 86L) } returns report("5.6a")
+        every { reportPersistence.getReportById(projectId, reportId = 86L) } returns report("5.6a", mockk(), mockk())
         every { projectPersistence.getProjectPeriods(projectId, "5.6a") } returns emptyList()
 
         val data = ProjectReportUpdate(
@@ -256,7 +323,7 @@ internal class UpdateProjectReportTest : UnitTest() {
     @Test
     fun `update with deadline - forbidden data provided`() {
         val projectId = 58L
-        every { reportPersistence.getReportById(projectId, reportId = 88L) } returns report("version8")
+        every { reportPersistence.getReportById(projectId, reportId = 88L) } returns report("version8", mockk(), mockk())
         every { projectPersistence.getProjectPeriods(projectId, "version8") } returns emptyList()
 
         val data = ProjectReportUpdate(

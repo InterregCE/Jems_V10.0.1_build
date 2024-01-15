@@ -61,7 +61,8 @@ class UploadFileToControlReportTest : UnitTest() {
                 partnerId = PARTNER_ID,
                 partnerNumber = 1,
                 partnerRole = ProjectPartnerRole.PARTNER,
-                projectAcronym = "project"
+                projectAcronym = "project",
+                periodNumber = 1
             )
         }
 

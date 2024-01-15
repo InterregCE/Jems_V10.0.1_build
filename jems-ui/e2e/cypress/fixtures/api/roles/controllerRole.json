@@ -1,9 +1,9 @@
 {
-  "name": "controllerRole",
+  "name": "controller user",
   "permissions": [
     "ProjectReportingProjectEdit", "ProjectReportingProjectView", "ProjectReportingEdit", "ProjectReportingView",
-    "ProjectContractingView", "ProjectContractsView", "ProjectContractingManagementView",
-    "ProjectContractingReportingView", "ProjectContractingPartnerView", "ProjectFormRetrieve",
-    "ProjectsWithOwnershipRetrieve"
+    "ProjectReportingChecklistAfterControl", "ProjectContractingView", "ProjectContractsView",
+    "ProjectContractingManagementView", "ProjectContractingReportingView", "ProjectContractingPartnerView",
+    "ProjectFormRetrieve", "ProjectsWithOwnershipRetrieve"
   ]
 }

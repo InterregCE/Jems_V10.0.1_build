@@ -1,0 +1,46 @@
+<mat-card *ngIf="data$ | async as data"
+          class="mt-3">
+    <mat-card-content class="content">
+
+        <h3>{{'project.application.reporting.corrections.audit.control.attachments' | translate}}</h3>
+
+        <div jemsNoWidthLimit class="overflow-auto">
+
+            <jems-file-list-table jemsNoWidthLimit class="pb-2"
+                                  [fileList]="data.attachments"
+                                  [sortingEnabled]="true"
+                                  [setDescriptionCallback]="setDescriptionCallback"
+                                  [deleteCallback]="deleteCallback"
+                                  (onSortChange)="newSort$.next($event)"
+                                  (onDownload)="downloadFile($event)"
+                                  (refresh)="filesChanged$.next()">
+            </jems-file-list-table>
+
+            <div *ngIf="data.canEdit">
+                <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                       type="file" [accept]="acceptedFilesTypes" [hidden]="true"
+                       aria-label="file to upload">
+                <jems-pending-button (clicked)="selectFile.click()"
+                                     type="secondary"
+                                     icon="file_upload"
+                                     [disabled]="data.attachments.length >= 40"
+                                     [buttonOptions]="{class: 'mr-1 font-size-medium', fontSet: 'material-icons-outlined'}"
+                                     [pending]="isUploadInProgress">
+                    {{ 'file.upload.add.new' | translate }}
+                </jems-pending-button>
+            </div>
+
+            <jems-alert *ngIf="error$ | async as error"
+                        [show]="error"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+            <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                        [show]="showError"
+                        [type]="Alert.ERROR">
+                <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+            </jems-alert>
+
+        </div>
+    </mat-card-content>
+</mat-card>

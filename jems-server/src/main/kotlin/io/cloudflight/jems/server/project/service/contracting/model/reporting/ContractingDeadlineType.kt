@@ -8,4 +8,6 @@ enum class ContractingDeadlineType {
     fun hasContent() = this == Content || this == Both
     fun hasFinance() = this == Finance || this == Both
 
+    fun toEqualTypes() = if (this == Both) setOf(Content, Finance, Both) else setOf(this, Both)
+
 }

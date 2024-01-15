@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportAnnexesApi
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toModel
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
@@ -15,8 +16,6 @@ import io.cloudflight.jems.server.project.service.report.project.annexes.upload.
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -81,11 +80,5 @@ class ProjectReportAnnexesController(
         reportId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> =
-        with(downloadProjectReportAnnexesFile.download(projectId, reportId, fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadProjectReportAnnexesFile.download(projectId, reportId, fileId).toResponseFile()
 }

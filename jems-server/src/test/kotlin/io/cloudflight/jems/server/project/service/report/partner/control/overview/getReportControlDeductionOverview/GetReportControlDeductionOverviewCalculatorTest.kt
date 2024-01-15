@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -10,7 +9,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverviewRow
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -25,7 +23,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
-import java.time.LocalDate
 
 class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
 
@@ -70,7 +67,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(0L, 2),
                 lumpSum = BigDecimal.valueOf(0L, 2),
                 unitCost = BigDecimal.valueOf(0L, 2),
-                sum = BigDecimal.valueOf(957738L, 2),
+                spfCost = BigDecimal.valueOf(15000L, 2),
+                sum = BigDecimal.valueOf(972738L, 2),
             )
 
             every { it.currentlyReportedParked } returns BudgetCostsCalculationResultFull(
@@ -83,7 +81,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(110L, 2),
                 lumpSum = BigDecimal.valueOf(120L, 2),
                 unitCost = BigDecimal.valueOf(130L, 2),
-                sum = BigDecimal.valueOf(435451L, 2),
+                spfCost = BigDecimal.valueOf(140L, 2),
+                sum = BigDecimal.valueOf(435591L, 2),
             )
 
             // used when call open
@@ -97,7 +96,8 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
                 other = BigDecimal.valueOf(3),
                 lumpSum = BigDecimal.valueOf(2),
                 unitCost = BigDecimal.valueOf(1),
-                sum = BigDecimal.valueOf(45),
+                spfCost = BigDecimal.valueOf(10),
+                sum = BigDecimal.valueOf(55),
             )
         }
 
@@ -150,7 +150,7 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
             expenditure(
                 id = 553L,
                 costCategory = ReportBudgetCategory.ExternalCosts,
-                typologyOfErrorId = null,
+                typologyOfErrorId = TYPOLOGY_ID,
                 partOfSample = false,
                 declaredAmount = BigDecimal.valueOf(50000L, 2),
                 deductedAmount = BigDecimal.ZERO,
@@ -189,7 +189,7 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
             ),
             expenditure(
                 id = 557L,
-                typologyOfErrorId = null,
+                typologyOfErrorId = TYPOLOGY_ID_THIRD,
                 costCategory = ReportBudgetCategory.InfrastructureCosts,
                 declaredAmount = BigDecimal.valueOf(120000L, 2),
                 deductedAmount = BigDecimal.ZERO,
@@ -274,7 +274,9 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, REPORT_ID) } returns
                 costOptionsWithFlatRate
 
-        every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
+        every {
+            typologyOfErrorsPersistence.findAllByIdIn( setOf(TYPOLOGY_ID, TYPOLOGY_ID_SECOND, TYPOLOGY_ID_THIRD))
+        } returns typologyOfErrors
 
         val expectedDeductionRows = listOf(
             expectedTypo_1,
@@ -337,7 +339,9 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, REPORT_ID) } returns
                 costOptionsWithFlatRate
 
-        every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
+        every {
+            typologyOfErrorsPersistence.findAllByIdIn( setOf(TYPOLOGY_ID, TYPOLOGY_ID_SECOND, TYPOLOGY_ID_THIRD))
+        } returns typologyOfErrors
 
         val expectedDeductionRows = listOf(
             expectedTypo_1,

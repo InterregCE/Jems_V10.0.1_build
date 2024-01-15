@@ -31,6 +31,7 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull val otherTotal: BigDecimal,
     @field:NotNull val lumpSumTotal: BigDecimal,
     @field:NotNull val unitCostTotal: BigDecimal,
+    @field:NotNull val spfCostTotal: BigDecimal,
     @field:NotNull val sumTotal: BigDecimal,
 
     @field:NotNull var staffCurrent: BigDecimal,
@@ -42,6 +43,7 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull var otherCurrent: BigDecimal,
     @field:NotNull var lumpSumCurrent: BigDecimal,
     @field:NotNull var unitCostCurrent: BigDecimal,
+    @field:NotNull var spfCostCurrent: BigDecimal,
     @field:NotNull var sumCurrent: BigDecimal,
 
     @field:NotNull val staffPreviouslyReported: BigDecimal,
@@ -53,6 +55,7 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull val otherPreviouslyReported: BigDecimal,
     @field:NotNull val lumpSumPreviouslyReported: BigDecimal,
     @field:NotNull val unitCostPreviouslyReported: BigDecimal,
+    @field:NotNull val spfCostPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
     @field:NotNull val staffPreviouslyVerified: BigDecimal,
@@ -64,6 +67,7 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull val otherPreviouslyVerified: BigDecimal,
     @field:NotNull val lumpSumPreviouslyVerified: BigDecimal,
     @field:NotNull val unitCostPreviouslyVerified: BigDecimal,
+    @field:NotNull val spfCostPreviouslyVerified: BigDecimal,
     @field:NotNull val sumPreviouslyVerified: BigDecimal,
 
     @field:NotNull var staffCurrentVerified: BigDecimal,
@@ -75,6 +79,7 @@ class ReportProjectCertificateCostCategoryEntity(
     @field:NotNull var otherCurrentVerified: BigDecimal,
     @field:NotNull var lumpSumCurrentVerified: BigDecimal,
     @field:NotNull var unitCostCurrentVerified: BigDecimal,
+    @field:NotNull var spfCostCurrentVerified: BigDecimal,
     @field:NotNull var sumCurrentVerified: BigDecimal,
 
     ) : Serializable

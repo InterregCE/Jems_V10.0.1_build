@@ -19,3 +19,7 @@
     background-color: var(--status-declined);
   }
 }
+
+::ng-deep .mat-option.correction .mat-pseudo-checkbox {
+  display: none !important;
+}

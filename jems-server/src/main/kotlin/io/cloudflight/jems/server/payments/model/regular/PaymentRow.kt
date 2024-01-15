@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.payments.model.regular
 
-import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import java.math.BigDecimal
 
 interface PaymentRow {
@@ -9,6 +8,5 @@ interface PaymentRow {
     val orderNr: Int
     val programmeLumpSumId: Long
     val programmeFundId: Long
-    val partnerPayments: List<PaymentPerPartner>
     val amountApprovedPerPartner: BigDecimal
 }

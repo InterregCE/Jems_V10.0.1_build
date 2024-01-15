@@ -4,11 +4,11 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,20 +28,10 @@ import java.util.stream.Stream
 class PartnerReportNotificationEventListenerTest : UnitTest() {
 
     companion object {
-        private const val CALL_ID = 1L
         private const val PROJECT_ID = 2L
         private const val PARTNER_ID = 3L
         private const val PARTNER_NUMBER = 7
         private const val PARTNER_REPORT_ID = 4L
-
-        private fun projectSummary() = ProjectSummary(
-            id = PROJECT_ID,
-            customIdentifier = "01",
-            callId = CALL_ID,
-            callName = "call",
-            acronym = "project acronym",
-            status = ApplicationStatus.CONTRACTED,
-        )
 
         private fun partnerReportSummary(status: ReportStatus) = ProjectPartnerReportSubmissionSummary(
             id = PARTNER_REPORT_ID,
@@ -57,6 +47,7 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             partnerNumber = PARTNER_NUMBER,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         @JvmStatic
@@ -78,6 +69,9 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
     @MockK
     private lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
 
+    @MockK
+    private lateinit var projectPartnerReportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
+
     @InjectMockKs
     lateinit var listener: PartnerReportNotificationEventListener
 
@@ -95,10 +89,13 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
     ) {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
+        every { projectPartnerReportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, PARTNER_REPORT_ID) } returns listOf(
+            ProjectPartnerReportPeriod(1, mockk(), mockk(), 1, 1)
+        )
 
         val partnerReportSummary = partnerReportSummary(currentStatus)
         listener.sendNotifications(
-            PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary, previousStatus)
+            PartnerReportStatusChanged(mockk(), PROJECT_ID, partnerReportSummary, previousStatus)
         )
         val notificationType = currentStatus.toNotificationType(previousStatus)!!
         verify(exactly = 1) { notificationProjectService.sendNotifications(notificationType, any()) }
@@ -114,6 +111,9 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             entry(NotificationVariable.PartnerAbbreviation, "LP-7"),
             entry(NotificationVariable.PartnerReportId, PARTNER_REPORT_ID),
             entry(NotificationVariable.PartnerReportNumber, 1),
+            entry(NotificationVariable.ReportingPeriodNumber, 1),
+            entry(NotificationVariable.ReportingPeriodStart, 1),
+            entry(NotificationVariable.ReportingPeriodEnd, 1),
         )
     }
 

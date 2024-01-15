@@ -1,5 +1,4 @@
-FROM cypress/included:12.14.0
-
+FROM currentsdev/cypress-included:12.17.4
 WORKDIR e2e
 
 # copy test files

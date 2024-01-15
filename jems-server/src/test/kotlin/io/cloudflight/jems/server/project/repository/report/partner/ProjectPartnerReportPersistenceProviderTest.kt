@@ -1,9 +1,22 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.EntityPath
+import com.querydsl.core.types.dsl.BooleanOperation
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
+import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QAccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -13,10 +26,15 @@ import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIde
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -33,7 +51,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
@@ -42,16 +65,17 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.util.stream.Stream
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 10L
+        private const val PARTNER_ID_2 = 11L
+        private const val PARTNER_REPORT_ID = 21L
+        private const val PROJECT_REPORT_ID = 32L
+        private const val EC_PAYMENT_ID = 43L
+        private const val ACCOUNTING_YEAR_ID = 54L
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
         private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
@@ -141,7 +165,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             partnerAbbreviation = "partnerAbbreviation",
             partnerNumber = 4,
             partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = null
         )
 
         private val programmeFundEntity = ProgrammeFundEntity(
@@ -235,6 +260,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = programmeFundEntity,
                 percentage = ONE,
+                percentageSpf = valueOf(15),
                 total = ZERO,
                 current = ONE,
                 totalEligibleAfterControl = ZERO,
@@ -244,12 +270,14 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 currentParked = ONE,
                 currentReIncluded = ONE,
                 previouslyReportedParked = ZERO,
+                previouslyReportedSpf = valueOf(428L, 1),
                 disabled = true,
             ),
             ProjectPartnerReportCoFinancingEntity(
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = null,
                 percentage = TEN,
+                percentageSpf = valueOf(35),
                 total = TEN,
                 current = ZERO,
                 totalEligibleAfterControl = ZERO,
@@ -259,6 +287,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 currentParked = ONE,
                 currentReIncluded = ONE,
                 previouslyReportedParked = ONE,
+                previouslyReportedSpf = valueOf(296L, 1),
                 disabled = false,
             ),
         )
@@ -275,6 +304,25 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 percentage = TEN,
             ),
         )
+
+        private val accountingYearEntity = AccountingYearEntity(
+            id = ACCOUNTING_YEAR_ID,
+            year = 1,
+            startDate = LAST_WEEK,
+            endDate = NEXT_WEEK
+        )
+
+        private val expectedCorrectionAvailableReportTmp = CorrectionAvailableReportTmp(
+            partnerId = PARTNER_ID,
+            id = PARTNER_REPORT_ID,
+            reportNumber = 1,
+            projectReportId = PROJECT_REPORT_ID,
+            projectReportNumber = 2,
+            availableFund = programmeFund,
+            ecPaymentId = EC_PAYMENT_ID,
+            ecPaymentStatus = PaymentEcStatus.Draft,
+            ecPaymentAccountingYear = accountingYearEntity.toModel(),
+        )
     }
 
     @MockK
@@ -286,6 +334,12 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var partnerRepository: ProjectPartnerRepository
 
+    @MockK
+    private lateinit var jpaQueryFactory: JPAQueryFactory
+
+    @MockK
+    private lateinit var identificationRepository: ProjectPartnerReportIdentificationRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectPartnerReportPersistenceProvider
 
@@ -296,7 +350,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 45L, YESTERDAY, null, ReportStatus.Draft)
         every { partnerReportRepository.findByIdAndPartnerId(45L, 10L) } returns report
-
+        every { identificationRepository.getPartnerReportPeriod(45L) } returns null
         val submittedReport = persistence.updateStatusAndTimes(10L, 45L, ReportStatus.Submitted, NOW)
 
         assertThat(submittedReport).isEqualTo(
@@ -315,6 +369,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 46L, YESTERDAY, null, ReportStatus.ReOpenInControlLast)
         every { partnerReportRepository.findByIdAndPartnerId(46L, 11L) } returns report
+        every { identificationRepository.getPartnerReportPeriod(46L) } returns null
 
         val submittedReport = persistence.updateStatusAndTimes(11L, 46L, ReportStatus.InControl, null, NOW)
 
@@ -333,7 +388,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
         every { partnerReportRepository.findByIdAndPartnerId(47L, 12L) } returns report
-
+        every { identificationRepository.getPartnerReportPeriod(47L) } returns null
         val startedControlReport = persistence.updateStatusAndTimes(12L, 47L, ReportStatus.InControl, null, null)
 
         assertThat(startedControlReport).isEqualTo(
@@ -349,6 +404,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         val report = reportEntity(id = 48L, LAST_YEAR, null, ReportStatus.InControl)
         every { partnerReportRepository.findByIdAndPartnerId(48L, 16L) } returns report
+        every { identificationRepository.getPartnerReportPeriod(48L) } returns null
 
         assertThat(persistence.finalizeControlOnReportById(16L, 48L, YESTERDAY)).isEqualTo(
             draftReportSubmissionEntity(id = 48L, LAST_YEAR).copy(
@@ -409,7 +465,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(id = 35L)
         every { partnerReportRepository.findByIdAndPartnerId(35L, 10L) } returns report
         every { partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(35L) } returns
-            coFinancingEntities(report)
+                coFinancingEntities(report)
 
         assertThat(persistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 35L))
             .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing))
@@ -437,12 +493,14 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun listPartnerReports() {
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
-        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(
-            setOf(PARTNER_ID),
-            ReportStatus.values().toSet(),
-            Pageable.unpaged()
-        ) } returns
-            PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
+        every {
+            partnerReportRepository.findAllByPartnerIdInAndStatusIn(
+                setOf(PARTNER_ID),
+                ReportStatus.values().toSet(),
+                Pageable.unpaged()
+            )
+        } returns
+                PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
 
         assertThat(persistence.listPartnerReports(setOf(PARTNER_ID), ReportStatus.values().toSet(), Pageable.unpaged()).content)
             .containsExactly(reportSummaryModel(id = 18L, createdAt = twoWeeksAgo, status = ReportStatus.Draft, partnerId = 99L))
@@ -453,13 +511,18 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         val partnerIds = setOf(99L, 100L)
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
-        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(partnerIds,
-            ReportStatus.FINANCIALLY_CLOSED_STATUSES,
-            Pageable.unpaged())
-        } returns PageImpl(listOf(
-            reportSummary(101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
-            reportSummary(102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
-        ))
+        every {
+            partnerReportRepository.findAllByPartnerIdInAndStatusIn(
+                partnerIds,
+                ReportStatus.FINANCIALLY_CLOSED_STATUSES,
+                Pageable.unpaged()
+            )
+        } returns PageImpl(
+            listOf(
+                reportSummary(101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
+                reportSummary(102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
+            )
+        )
 
         assertThat(persistence.listPartnerReports(partnerIds, ReportStatus.FINANCIALLY_CLOSED_STATUSES, Pageable.unpaged()).content)
             .containsExactly(
@@ -483,7 +546,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { certificate.projectReportNumber } returns 15
 
         every { partnerReportRepository.findAllCertificates(partnerIds = setOf(PARTNER_ID), Pageable.unpaged()) } returns
-            PageImpl(listOf(certificate))
+                PageImpl(listOf(certificate))
 
         assertThat(persistence.listCertificates(setOf(PARTNER_ID), Pageable.unpaged())).containsExactly(
             PartnerReportCertificate(
@@ -506,16 +569,19 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { report18.id } returns 18L
         every { report18.status } returns ReportStatus.InControl
         every { report18.applicationFormVersion } returns "AFv2"
-        every { partnerReportRepository
-            .findAllByPartnerIdAndStatusInOrderByNumberDesc(PARTNER_ID, setOf(
-                // it's important to verify those statuses, as they are considered as "closed" financially-wise
-                ReportStatus.Submitted,
-                ReportStatus.ReOpenSubmittedLimited,
-                ReportStatus.InControl,
-                ReportStatus.ReOpenInControlLimited,
-                ReportStatus.Certified,
-                ReportStatus.ReOpenCertified,
-            ))
+        every {
+            partnerReportRepository
+                .findAllByPartnerIdAndStatusInOrderByNumberDesc(
+                    PARTNER_ID, setOf(
+                        // it's important to verify those statuses, as they are considered as "closed" financially-wise
+                        ReportStatus.Submitted,
+                        ReportStatus.ReOpenSubmittedLimited,
+                        ReportStatus.InControl,
+                        ReportStatus.ReOpenInControlLimited,
+                        ReportStatus.Certified,
+                        ReportStatus.ReOpenCertified,
+                    )
+                )
         } returns listOf(report18)
         assertThat(persistence.getSubmittedPartnerReports(PARTNER_ID)).containsExactly(
             ProjectPartnerReportStatusAndVersion(18L, ReportStatus.InControl, "AFv2")
@@ -553,5 +619,62 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { partnerReportRepository.deleteById(PARTNER_ID) } answers {}
         persistence.deletePartnerReportById(PARTNER_ID)
         verify(exactly = 1) { partnerReportRepository.deleteById(PARTNER_ID) }
+    }
+
+    @Test
+    fun getAvailableReports() {
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
+        val slotFrom = slot<EntityPath<Any>>()
+        every { query.from(capture(slotFrom)) } returns query
+        val slotLeftJoin = mutableListOf<EntityPath<Any>>()
+        every { query.leftJoin(capture(slotLeftJoin)) } returns query
+        val slotLeftJoinOn = mutableListOf<BooleanOperation>()
+        every { query.on(capture(slotLeftJoinOn)) } returns query
+        val slotWhere = slot<BooleanOperation>()
+        every { query.where(capture(slotWhere)) } returns query
+        every { query.groupBy(any()) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, Long::class.java) } returns PARTNER_ID
+        every { tuple.get(1, Long::class.java) } returns PARTNER_REPORT_ID
+        every { tuple.get(2, Int::class.java) } returns 1 // report number
+        every { tuple.get(3, Long::class.java) } returns PROJECT_REPORT_ID
+        every { tuple.get(4, Int::class.java) } returns 2
+        every { tuple.get(5, ProgrammeFundEntity::class.java) } returns programmeFundEntity
+        every { tuple.get(6, Long::class.java) } returns EC_PAYMENT_ID
+        every { tuple.get(7, PaymentEcStatus::class.java) } returns PaymentEcStatus.Draft
+        every { tuple.get(8, AccountingYearEntity::class.java) } returns accountingYearEntity
+
+        val result = mockk<List<Tuple>>()
+        every { result.size } returns 1
+        every { query.fetch() } returns listOf(tuple)
+
+        assertThat(persistence.getAvailableReports(setOf(PARTNER_ID, PARTNER_ID_2)))
+            .isEqualTo(listOf(expectedCorrectionAvailableReportTmp))
+
+        assertThat(slotFrom.captured).isInstanceOf(QProjectPartnerReportEntity::class.java)
+        assertThat(slotLeftJoin.size).isEqualTo(7)
+        assertThat(slotLeftJoin[0]).isInstanceOf(QProjectReportEntity::class.java)
+        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("projectReportEntity = projectPartnerReportEntity.projectReport")
+        assertThat(slotLeftJoin[1]).isInstanceOf(QProjectPartnerReportCoFinancingEntity::class.java)
+        assertThat(slotLeftJoinOn[1].toString())
+            .isEqualTo("projectPartnerReportCoFinancingEntity.id.report = projectPartnerReportEntity")
+        assertThat(slotLeftJoin[2]).isInstanceOf(QProgrammeFundEntity::class.java)
+        assertThat(slotLeftJoinOn[2].toString()).isEqualTo("programmeFundEntity = projectPartnerReportCoFinancingEntity.programmeFund")
+        assertThat(slotLeftJoin[3]).isInstanceOf(QPaymentEntity::class.java)
+        assertThat(slotLeftJoinOn[3].toString()).isEqualTo("paymentEntity.fund = programmeFundEntity && paymentEntity.projectReport = projectReportEntity")
+        assertThat(slotLeftJoin[4]).isInstanceOf(QPaymentToEcExtensionEntity::class.java)
+        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("paymentToEcExtensionEntity.payment = paymentEntity")
+        assertThat(slotLeftJoin[5]).isInstanceOf(QPaymentApplicationToEcEntity::class.java)
+        assertThat(slotLeftJoinOn[5].toString()).isEqualTo("paymentApplicationToEcEntity = paymentToEcExtensionEntity.paymentApplicationToEc")
+        assertThat(slotLeftJoin[6]).isInstanceOf(QAccountingYearEntity::class.java)
+        assertThat(slotLeftJoinOn[6].toString()).isEqualTo("accountingYearEntity = paymentApplicationToEcEntity.accountingYear")
+        assertThat(slotWhere.captured.toString()).isEqualTo(
+            "projectPartnerReportEntity.partnerId in [10, 11] && projectPartnerReportEntity.controlEnd is not null && " +
+                "projectPartnerReportCoFinancingEntity.programmeFund is not null"
+        )
+
     }
 }

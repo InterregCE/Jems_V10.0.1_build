@@ -13,6 +13,7 @@ interface MinioStorage {
     fun getFileAsStream(bucket: String, filePath: String): FilterInputStream
 
     fun deleteFile(bucket: String, filePath: String)
+    fun deleteFiles(bucket: String, filePaths: List<String>)
 
     fun exists(bucket: String, filePath: String): Boolean
 

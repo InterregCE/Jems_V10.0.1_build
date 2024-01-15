@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
+  CertificateVerificationDeductionOverviewDTO,
   FinancingSourceBreakdownDTO,
   ProjectReportVerificationOverviewService,
   VerificationWorkOverviewDTO
@@ -21,6 +22,7 @@ export class ProjectVerificationReportOverviewTabStoreService {
   private reportId$: Observable<number>;
   financingSourceBreakdown$: Observable<FinancingSourceBreakdownDTO>;
   verificationWorkOverview$: Observable<VerificationWorkOverviewDTO>;
+  certificatesVerificationDeductionOverview$: Observable<CertificateVerificationDeductionOverviewDTO[]>;
 
   constructor(
     private projectStore: ProjectStore,
@@ -31,6 +33,7 @@ export class ProjectVerificationReportOverviewTabStoreService {
     this.reportId$ = this.projectReportDetailStore.projectReportId$;
     this.financingSourceBreakdown$ = this.financingSourceBreakdown();
     this.verificationWorkOverview$ = this.verificationWorkOverview();
+    this.certificatesVerificationDeductionOverview$ = this.certificatesVerificationDeductionOverview();
   }
 
   private financingSourceBreakdown(): Observable<FinancingSourceBreakdownDTO> {
@@ -53,9 +56,25 @@ export class ProjectVerificationReportOverviewTabStoreService {
     ])
       .pipe(
         switchMap(([projectId, reportId]) =>
-          this.projectReportVerificationOverviewService.getDeductionBreakdown(projectId, reportId)
+          this.projectReportVerificationOverviewService.getDeductionBreakdown(projectId, reportId),
         ),
         tap(data => Log.info('Fetched verification work overview', this, data)),
       );
   }
+
+  private certificatesVerificationDeductionOverview(): Observable<CertificateVerificationDeductionOverviewDTO[]> {
+    return combineLatest([
+      this.projectId$,
+      this.reportId$,
+    ])
+        .pipe(
+            switchMap(([projectId, reportId]) =>
+                this.projectReportVerificationOverviewService.getDeductionsByTypologyOfErrors(projectId, reportId),
+            ),
+            tap(data => Log.info('Fetched certificates verification deduction overview', this, data)),
+        );
+  }
+
 }
+
+

@@ -1,0 +1,62 @@
+<jems-project-page-template titleKey="project.application.reporting.title"
+                            subTitleKey="project.breadcrumb.applicationForm.reporting.overview.corrections"
+                            [isVersionedData]="false">
+    <ng-container *ngIf="data$ | async as data">
+        <mat-card>
+            <mat-card-content class="content">
+                <h3 jemsMultiColumnRow>
+                    <button color="primary" class="mr-1" mat-icon-button
+                            [matTooltip]="'project.applicationForm.reporting.audit.back.to.list' | translate"
+                            (click)="redirectToCorrectionsOverview(data.projectId, data.auditControlId)">
+                        <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+                    </button>
+
+                    <span>{{'project.application.reporting.corrections.audit.control.correction.title' | translate:
+                        {auditControlNumber: data.correction?.auditControlNumber, correctionNumber: data.correction?.orderNr} }}</span>
+                </h3>
+
+                <div class="mb-3 status-wrapper">
+                    <span class="status-label mr-2">{{'common.status' | translate}}</span>
+                    <jems-audit-control-correction-status
+                            [status]="data?.correction?.status"></jems-audit-control-correction-status>
+                    <jems-pending-button *ngIf="data.canEdit" class="ml-2"
+                                         [pending]="pendingAction$ | async"
+                                         [disabled]="!data.canClose"
+                                         (clicked)="closeCorrection(data.projectId, data.auditControlId, data?.correction)">
+                        {{'project.application.reporting.corrections.close.correction' | translate}}
+                    </jems-pending-button>
+                    <jems-context-info *ngIf="!data.canClose" infoPosition="right"
+                                       infoText="{{'project.application.reporting.corrections.close.correction.info' | translate}}"></jems-context-info>
+                </div>
+
+                <p>{{'project.application.reporting.corrections.audit.control.detail.one' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.two' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.three' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.four' | translate}}</p>
+                <p>{{'project.application.reporting.corrections.audit.control.detail.five' | translate}}</p>
+
+                <jems-alert *ngIf="error$ | async as error"
+                            [show]="!!error.i18nMessage?.i18nKey"
+                            [type]="Alert.ERROR">
+                    <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+                </jems-alert>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="mt-3">
+            <jems-audit-control-correction-detail-identity>></jems-audit-control-correction-detail-identity>
+        </div>
+
+        <div class="mt-3">
+            <jems-correction-detail-financial-description></jems-correction-detail-financial-description>
+        </div>
+
+        <div class="mt-3">
+            <jems-audit-control-correction-impact></jems-audit-control-correction-impact>
+        </div>
+
+        <div class="mt-3">
+            <jems-audit-control-correction-detail-measure></jems-audit-control-correction-detail-measure>
+        </div>
+    </ng-container>
+</jems-project-page-template>

@@ -1,0 +1,11 @@
+{
+  "typologyOfErrors": {
+    "toPersist": [
+      {
+        "id": null,
+        "description": "Typology-TB936"
+      }
+    ],
+    "toDeleteIds": []
+  }
+}

@@ -79,7 +79,7 @@
 
   .notification-body {
     padding: .75rem 0 1.5rem 1rem;
-    white-space: pre-line;
+    white-space: pre-wrap;
   }
 
   .d-flex-and-vcenter {
@@ -87,4 +87,8 @@
     align-items: center;
   }
 
+}
+
+.system-message {
+  font-weight: 600;
 }

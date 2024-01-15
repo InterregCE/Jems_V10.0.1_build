@@ -54,13 +54,13 @@ class ProjectReportResultPrinciplePersistenceProvider(
         projectResultRepository.getCumulativeValues(reportIds).toMap()
 
     @Transactional
-    override fun deleteProjectResultPrinciples(reportId: Long) {
+    override fun deleteProjectResultPrinciplesIfExist(reportId: Long) {
         val projectResults = projectResultRepository.findByProjectReportId(reportId)
-        projectResults.onEach {
-            it.attachment.deleteIfPresent()
-        }
+        projectResults.forEach { it.attachment.deleteIfPresent() }
         projectResultRepository.deleteAll(projectResults)
-        horizontalPrincipleRepository.deleteById(reportId)
+
+        if (horizontalPrincipleRepository.existsById(reportId))
+            horizontalPrincipleRepository.deleteById(reportId)
     }
 
     private fun fetchAvailablePeriodsFor(results: List<ProjectReportProjectResultEntity>) =

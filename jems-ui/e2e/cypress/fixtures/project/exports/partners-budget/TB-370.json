@@ -135,13 +135,17 @@
     "partnerAbbreviation": "PP v4"
   },
   "approvalInfo": {
-    "note": "API modification approved",
-    "date": "2022-04-01",
-    "entryIntoForceDate": "2022-04-01"
+    "actionInfo": {
+      "note": "API modification approved",
+      "date": "2022-04-01",
+      "entryIntoForceDate": "2022-04-01"
+    }
   },
   "rejectionInfo": {
-    "note": "API modification rejected",
-    "date": "2022-04-01",
-    "entryIntoForceDate": "2022-04-01"
+    "actionInfo": {
+      "note": "API modification rejected",
+      "date": "2022-04-01",
+      "entryIntoForceDate": "2022-04-01"
+    }
   }
 }

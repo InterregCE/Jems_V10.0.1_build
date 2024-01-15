@@ -82,7 +82,7 @@ export class ProjectVerificationReportFinalizeTabComponent {
         conclusions,
         reportId: report.id,
         projectId: report.projectId,
-        finalizationAllowed: canFinalize,
+        finalizationAllowed: canFinalize && report.status !== ProjectReportDTO.StatusEnum.VerificationReOpenedLast && report.status !== ProjectReportDTO.StatusEnum.VerificationReOpenedLimited,
         reportFinalised: report.status === ProjectReportDTO.StatusEnum.Finalized,
         userCanEdit,
         userCanView,

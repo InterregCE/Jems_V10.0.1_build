@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceSummaryModel
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -20,6 +21,7 @@ class GetProjectReportList(
     private val reportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val certificateCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
+    private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence
 ) : GetProjectReportListInteractor {
 
     @CanRetrieveProjectReport
@@ -29,10 +31,10 @@ class GetProjectReportList(
         val reports = reportPersistence.listReports(projectId, pageable)
             .map { it.toServiceSummaryModel(it.periodResolver()) }
 
-        val amountsForDraftReports = getAmountsForDraftReports(reports.content)
+        val amountsForDraftFinanceReports = getAmountsForDraftFinanceReports(reports.content)
 
         return reports
-            .fillInAmountsForDraftReports(amountsForDraftReports)
+            .fillInAmountsForDraftReports(amountsForDraftFinanceReports)
             .removeZeroAmountsFromContentReports()
     }
 
@@ -41,10 +43,20 @@ class GetProjectReportList(
             .firstOrNull { it.number == periodNumber }
     }
 
-    private fun getAmountsForDraftReports(reports: List<ProjectReportSummary>): Map<Long, BigDecimal> {
-        val draftReportIds = reports.filter { it.status.isOpen() }.mapTo(HashSet()) { it.id }
-        return if (draftReportIds.isEmpty()) emptyMap() else
-            certificateCoFinancingPersistence.getTotalsForProjectReports(projectReportIds = draftReportIds)
+    private fun getAmountsForDraftFinanceReports(reports: List<ProjectReportSummary>): Map<Long, BigDecimal> {
+        val draftReportIds = reports.filter { it.status.isOpenForNumbersChanges() && it.hasFinance() }.mapTo(HashSet()) { it.id }
+        if (draftReportIds.isEmpty())
+            return emptyMap()
+
+        val currentFromCoFinancing = certificateCoFinancingPersistence.getTotalsForProjectReports(projectReportIds = draftReportIds)
+        val currentFromSpfContributions = reportSpfClaimPersistence.getCurrentSpfContributions(draftReportIds)
+
+        return currentFromCoFinancing.plus(currentFromSpfContributions)
+    }
+
+    private fun Map<Long, BigDecimal>.plus(other: Map<Long, BigDecimal>): Map<Long, BigDecimal> {
+        val keys = this.keys.plus(other.keys)
+        return keys.associateWith { this.getOrDefault(it, BigDecimal.ZERO).plus(other.getOrDefault(it, BigDecimal.ZERO)) }
     }
 
     private fun Page<ProjectReportSummary>.fillInAmountsForDraftReports(byId: Map<Long, BigDecimal>) = this.onEach {

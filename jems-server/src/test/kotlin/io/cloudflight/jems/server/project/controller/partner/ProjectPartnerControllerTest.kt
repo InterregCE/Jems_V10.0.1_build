@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.deactivate_project_partner.DeactivateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
@@ -83,7 +84,7 @@ class ProjectPartnerControllerTest {
                 ProjectPartnerContribution(
                     id = 1,
                     name = "contribution 1 test",
-                    status = ProjectPartnerContributionStatusDTO.Public,
+                    status = ProjectPartnerContributionStatus.Public,
                     isPartner = true,
                     amount = BigDecimal(100)
                 )

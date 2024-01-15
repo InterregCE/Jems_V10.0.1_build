@@ -39,6 +39,7 @@ import {ActivatedRoute} from '@angular/router';
 import {
   ProjectReportIdentificationExtensionStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 
 @Injectable({providedIn: 'root'})
@@ -49,7 +50,8 @@ export class ProjectReportAnnexesFileManagementStore {
     fileList$: Observable<PageJemsFileDTO>;
     fileCategories$: Observable<CategoryNode>;
     isEditable$: Observable<boolean>;
-    isInDraft$: Observable<boolean>;
+    isReportOpen$: Observable<boolean>;
+    isInLimitedReopened$: Observable<boolean>;
     currentProjectReport$: Observable<ProjectReportSummaryDTO>;
 
     selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
@@ -74,7 +76,8 @@ export class ProjectReportAnnexesFileManagementStore {
         this.currentProjectReport$ = this.getCurrentProjectReport();
         this.fileList$ = this.fileList();
         this.isEditable$ = this.isEditable();
-        this.isInDraft$ = this.isInDraft();
+        this.isReportOpen$ = this.isReportOpen();
+        this.isInLimitedReopened$ = this.isInLimitedReopened();
     }
 
     private projectReportId(): Observable<any> {
@@ -106,10 +109,18 @@ export class ProjectReportAnnexesFileManagementStore {
         );
     }
 
-    private isInDraft(): Observable<boolean> {
+    private isInLimitedReopened(): Observable<boolean> {
+      return this.currentProjectReport$.pipe(
+        map((projectReport: ProjectReportSummaryDTO) => {
+          return projectReport.status === ProjectReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited || projectReport.status === ProjectReportSummaryDTO.StatusEnum.VerificationReOpenedLimited;
+        })
+      );
+    }
+
+    private isReportOpen(): Observable<boolean> {
         return this.currentProjectReport$.pipe(
             map((projectReport: ProjectReportSummaryDTO) => {
-                return projectReport.status === ProjectReportSummaryDTO.StatusEnum.Draft;
+                return ReportUtil.isProjectReportOpen(projectReport.status);
             })
         );
     }
@@ -117,10 +128,10 @@ export class ProjectReportAnnexesFileManagementStore {
     private isEditable(): Observable<boolean> {
         return combineLatest([
             this.selectedCategory$,
-            this.isInDraft()
+            this.isReportOpen()
         ]).pipe(
-            map(([selectedCategory, isInDraft]) => {
-                return selectedCategory?.type === ProjectReportCategoryTypeEnum.PROJECT_REPORT && isInDraft;
+            map(([selectedCategory, isReportOpen]) => {
+                return selectedCategory?.type === ProjectReportCategoryTypeEnum.PROJECT_REPORT && isReportOpen;
             })
         );
     }

@@ -1,0 +1,10 @@
+<mat-chip-list aria-label="status" *ngIf="status">
+  <ng-container *ngFor="let currentChip of statuses; let first = first">
+    <mat-chip *ngIf="currentChip.status === status"
+              [class]="'status-' + currentChip.status"
+              [matTooltip]="('project.application.reporting.corrections.audit.control.status.' + currentChip.status) | translate">
+      <mat-icon class="mr-2">{{ currentChip.icon }}</mat-icon>
+      <span class="chip-label">{{ ('project.application.reporting.corrections.audit.control.status.' + currentChip.status) | translate }}</span>
+    </mat-chip>
+  </ng-container>
+</mat-chip-list>

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,7 +20,6 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L
-        private const val REPORT_ID = 2L
 
         private val current = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(11L),
@@ -31,7 +31,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             other = BigDecimal.valueOf(17L),
             lumpSum = BigDecimal.valueOf(18L),
             unitCost = BigDecimal.valueOf(19L),
-            sum = BigDecimal.valueOf(135L),
+            spfCost = BigDecimal.valueOf(20L),
+            sum = BigDecimal.valueOf(155L),
         )
         private val afterControl = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(21L),
@@ -43,7 +44,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             other = BigDecimal.valueOf(27L),
             lumpSum = BigDecimal.valueOf(28L),
             unitCost = BigDecimal.valueOf(29L),
-            sum = BigDecimal.valueOf(225L),
+            spfCost = BigDecimal.valueOf(30L),
+            sum = BigDecimal.valueOf(255L),
         )
 
         private val perPartner_15 = PerPartnerCostCategoryBreakdownLine(
@@ -116,7 +118,8 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.valueOf(34L),
                 lumpSum = BigDecimal.valueOf(36L),
                 unitCost = BigDecimal.valueOf(38L),
-                sum = BigDecimal.valueOf(270L),
+                spfCost = BigDecimal.valueOf(40L),
+                sum = BigDecimal.valueOf(310L),
             ),
             totalDeduction = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(42L),
@@ -128,7 +131,56 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.valueOf(54L),
                 lumpSum = BigDecimal.valueOf(56L),
                 unitCost = BigDecimal.valueOf(58L),
-                sum = BigDecimal.valueOf(450L),
+                spfCost = BigDecimal.valueOf(60L),
+                sum = BigDecimal.valueOf(510L),
+            ),
+        )
+
+        private val expectedPerPartnerWithSpf = PerPartnerCostCategoryBreakdown(
+            partners = listOf(
+                PerPartnerCostCategoryBreakdownLine(
+                    partnerId = 15L,
+                    partnerNumber = 5,
+                    partnerAbbreviation = "abbr",
+                    partnerRole = ProjectPartnerRole.PARTNER,
+                    country = "country",
+                    officeAndAdministrationOnStaffCostsFlatRate = null,
+                    officeAndAdministrationOnDirectCostsFlatRate = 12,
+                    travelAndAccommodationOnStaffCostsFlatRate = 18,
+                    staffCostsFlatRate = 79,
+                    otherCostsOnStaffCostsFlatRate = 24,
+                    current = current.copy(
+                        spfCost = BigDecimal.valueOf(20_07L, 2),
+                        sum = BigDecimal.valueOf(155_07L, 2),
+                    ),
+                    deduction = afterControl.copy(),
+                ),
+            ),
+            totalCurrent = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(11L),
+                office = BigDecimal.valueOf(12L),
+                travel = BigDecimal.valueOf(13L),
+                external = BigDecimal.valueOf(14L),
+                equipment = BigDecimal.valueOf(15L),
+                infrastructure = BigDecimal.valueOf(16L),
+                other = BigDecimal.valueOf(17L),
+                lumpSum = BigDecimal.valueOf(18L),
+                unitCost = BigDecimal.valueOf(19L),
+                spfCost = BigDecimal.valueOf(2007L, 2),
+                sum = BigDecimal.valueOf(15507L, 2),
+            ),
+            totalDeduction = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(21L),
+                office = BigDecimal.valueOf(22L),
+                travel = BigDecimal.valueOf(23L),
+                external = BigDecimal.valueOf(24L),
+                equipment = BigDecimal.valueOf(25L),
+                infrastructure = BigDecimal.valueOf(26L),
+                other = BigDecimal.valueOf(27L),
+                lumpSum = BigDecimal.valueOf(28L),
+                unitCost = BigDecimal.valueOf(29L),
+                spfCost = BigDecimal.valueOf(30L),
+                sum = BigDecimal.valueOf(255L),
             ),
         )
 
@@ -144,6 +196,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.ZERO,
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
             totalDeduction = BudgetCostsCalculationResultFull(
@@ -156,6 +209,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.ZERO,
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
         )
@@ -163,6 +217,9 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
 
     @MockK
     private lateinit var reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence
+
+    @MockK
+    private lateinit var reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence
 
     @InjectMockKs
     lateinit var interactor: GetPerPartnerCostCategoryBreakdown
@@ -174,15 +231,34 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
 
     @Test
     fun get() {
-        every { reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(PROJECT_ID, REPORT_ID) } returns
+        val reportId = 8L
+        every { reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(PROJECT_ID, reportId) } returns
             listOf(perPartner_15, perPartner_16)
-        assertThat(interactor.get(PROJECT_ID, REPORT_ID)).isEqualTo(expectedPerPartner)
+
+        // spf ignored if more partners
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(reportId).sum } returns BigDecimal.valueOf(999L)
+
+        assertThat(interactor.get(PROJECT_ID, reportId)).isEqualTo(expectedPerPartner)
+    }
+
+    @Test
+    fun `get with spf`() {
+        val reportId = 10L
+        every { reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(PROJECT_ID, reportId) } returns
+            listOf(perPartner_15)
+
+        // spf ignored if more partners
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(reportId).sum } returns BigDecimal.valueOf(7L, 2)
+
+        assertThat(interactor.get(PROJECT_ID, reportId)).isEqualTo(expectedPerPartnerWithSpf)
     }
 
     @Test
     fun `get - empty`() {
-        every { reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(PROJECT_ID, REPORT_ID) } returns emptyList()
-        assertThat(interactor.get(PROJECT_ID, REPORT_ID)).isEqualTo(expectedPerPartnerEmpty)
+        val reportId = 12L
+        every { reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(PROJECT_ID, reportId) } returns emptyList()
+        every { reportSpfClaimPersistence.getCurrentSpfContribution(reportId).sum } returns BigDecimal.ZERO
+        assertThat(interactor.get(PROJECT_ID, reportId)).isEqualTo(expectedPerPartnerEmpty)
     }
 
 }

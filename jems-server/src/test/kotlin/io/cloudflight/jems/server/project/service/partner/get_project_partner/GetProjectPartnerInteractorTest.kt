@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
@@ -108,7 +109,7 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
             ProjectPartnerContribution(
                 id = 1,
                 name = "contribution 1 test",
-                status = ProjectPartnerContributionStatusDTO.Public,
+                status = ProjectPartnerContributionStatus.Public,
                 isPartner = true,
                 amount = BigDecimal(100)
             )

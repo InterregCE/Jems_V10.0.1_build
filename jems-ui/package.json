@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "8.0.3-SNAPSHOT",
+  "version": "9.0.0-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "serve:local": "ng serve --proxy-config proxy-conf.local.json",
@@ -34,7 +34,6 @@
     "material-icons": "^1.10.4",
     "moment": "~2.29.1",
     "ngx-currency": "~2.5.3",
-    "ngx-mat-select-search": "^5.0.0",
     "ngx-permissions": "~8.1.1",
     "npm-font-open-sans": "^1.1.0",
     "rxjs": "~6.6.3",

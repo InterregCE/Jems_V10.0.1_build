@@ -14,8 +14,7 @@ class GetBudgetTotalCostCalculator(
     private val budgetCostsCalculator: BudgetCostsCalculatorService
 ) {
 
-    @Transactional(readOnly = true)
-    fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal {
+    private fun getBudgetTotal(partnerId: Long, withSpf: Boolean, version: String?): BigDecimal {
         val budgetUnitCostTotal = budgetCostsPersistence.getBudgetUnitCostTotal(partnerId, version)
         val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerId, version)
 
@@ -30,8 +29,9 @@ class GetBudgetTotalCostCalculator(
             fetchTravelCostsOrZero(partnerId, budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate, version)
 
         val staffCostTotal = fetchStaffCostsOrZero(partnerId, budgetOptions?.staffCostsFlatRate, version)
+        val spfCosts = budgetCostsPersistence.getBudgetSpfCostTotal(partnerId, version)
 
-        return budgetCostsCalculator.calculateCosts(
+        val result = budgetCostsCalculator.calculateCosts(
             budgetOptions,
             budgetUnitCostTotal,
             lumpSumsTotal,
@@ -39,9 +39,19 @@ class GetBudgetTotalCostCalculator(
             equipmentCostTotal,
             infrastructureCostTotal,
             travelCostTotal,
-            staffCostTotal
+            staffCostTotal,
+            spfCosts = spfCosts,
         ).totalCosts
+        return if (withSpf) result else result.minus(spfCosts)
     }
+
+    @Transactional(readOnly = true)
+    fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal =
+        getBudgetTotal(partnerId, withSpf = true, version)
+
+    @Transactional(readOnly = true)
+    fun getBudgetTotalManagementCost(partnerId: Long, version: String?): BigDecimal =
+        getBudgetTotal(partnerId, withSpf = false, version)
 
     @Transactional(readOnly = true)
     fun getBudgetTotalSpfCost(partnerId: Long, version: String?): BigDecimal {

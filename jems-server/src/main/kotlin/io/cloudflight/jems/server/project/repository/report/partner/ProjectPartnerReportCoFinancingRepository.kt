@@ -39,4 +39,5 @@ interface ProjectPartnerReportCoFinancingRepository :
 
     fun findAllByIdReportIdAndDisabledFalse(reportId: Long): List<ProjectPartnerReportCoFinancingEntity>
 
+
 }

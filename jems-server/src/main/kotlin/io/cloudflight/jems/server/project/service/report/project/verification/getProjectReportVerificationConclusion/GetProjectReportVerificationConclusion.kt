@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.report.project.verification.g
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationPrivileged
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -29,7 +28,7 @@ class GetProjectReportVerificationConclusion(
     }
 
     private fun validateReportStatus(report: ProjectReportModel) {
-        if (report.status != ProjectReportStatus.InVerification && report.status != ProjectReportStatus.Finalized) {
+        if (report.status.verificationNotStartedYet()) {
             throw ReportVerificationStatusNotValidException()
         }
     }

@@ -9,8 +9,10 @@ interface ProjectContribution {
 
     val name: String?
 
-    val status: ProjectPartnerContributionStatusDTO?
+    val status: ProjectPartnerContributionStatus?
 
     val amount: BigDecimal?
+
+    fun isNotPartner(): Boolean
 
 }

@@ -4,7 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:CallValidator.kt$CallValidator$call.is2StepProcedureEnabled() &amp;&amp; (call.endDateStep1 == null || call.endDateStep1!!.isBefore(call.startDate) || call.endDateStep1!!.isAfter(call.endDate))</ID>
     <ID>ComplexCondition:DeleteControlChecklistInstance.kt$DeleteControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(checklistToBeDeleted, report.controlEnd) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
-    <ID>ComplexCondition:DeleteVerificationChecklistInstance.kt$DeleteVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(checklistToBeDeleted, report.verificationEndDate) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
+    <ID>ComplexCondition:DeleteVerificationChecklistInstance.kt$DeleteVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(checklistToBeDeleted.createdAt, report) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
     <ID>ComplexCondition:GetChecklistInstanceDetail.kt$GetChecklistInstanceDetail$checklistDetail.relatedToId != relatedToId || (isNotAllowedToUpdate(relatedToId, checklistDetail) &amp;&amp; (isNotVisible(checklistDetail) || canNotViewChecklist(relatedToId)))</ID>
     <ID>ComplexCondition:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)</ID>
     <ID>ComplexCondition:ProgrammeUnitCostValidation.kt$costPerUnit == null || costPerUnit &lt;= BigDecimal.ZERO || costPerUnit &gt; MAX_COST || costPerUnit.scale() &gt; 2</ID>
@@ -17,20 +17,22 @@
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UpdateLumpSum.kt$UpdateLumpSum$existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 || existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed || existingLumpSum.phase != updatedLumpSum.phase || existingLumpSum.categories != updatedLumpSum.categories</ID>
-    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
-    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || statusNotChanged || isFinishedNotByAuthor</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(existing.createdAt, report) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedBeforeDateLimits(existing.createdAt, report) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UploadProjectFile.kt$UploadProjectFile$fileTypeCategory.type == ProjectFileCategoryType.ALL || fileTypeCategory.type == ProjectFileCategoryType.PARTNER &amp;&amp; fileTypeCategory.id == null || fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT &amp;&amp; fileTypeCategory.id == null</ID>
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:CreateProjectPartnerReportHelper.kt$fun List&lt;ProjectWorkPackageFull&gt;.toCreateEntity( previouslyReportedDeliverables: Map&lt;Int, Map&lt;Int, Map&lt;Int, BigDecimal&gt;&gt;&gt; = emptyMap(), previouslyReportedOutputs: Map&lt;Int, Map&lt;Int, BigDecimal&gt;&gt; = emptyMap(), lastWorkPlan: List&lt;ProjectReportWorkPackage&gt; = emptyList(), )</ID>
     <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
+    <ID>ComplexMethod:PaymentRegularPersistenceProviderHelper.kt$fun PaymentSearchRequest.transformToWhereClause( qPayment: QPaymentEntity, qProjectLumpSum: QProjectLumpSumEntity, qProjectReport: QProjectReportEntity, specProjectContracting: QProjectContractingMonitoringEntity, specPaymentToEcExtension: QPaymentToEcExtensionEntity, ): BooleanExpression?</ID>
     <ID>ComplexMethod:PluginMapper.kt$fun JemsPlugin.toPluginType(): PluginTypeDTO</ID>
     <ID>ComplexMethod:PluginMapper.kt$fun PluginTypeDTO.toType()</ID>
     <ID>ComplexMethod:ProgrammeLumpSum.kt$ProgrammeLumpSum$fun getDiff(old: ProgrammeLumpSum? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:ProgrammeUnitCost.kt$ProgrammeUnitCost$fun getDiff(old: ProgrammeUnitCost? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
+    <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ProjectReportStatus.toNotificationType(previousReportStatus: ProjectReportStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ReportStatus.toNotificationType(previousReportStatus: ReportStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>ComplexMethod:ProjectReportCreateModelMapper.kt$fun List&lt;ProjectReportWorkPackageInvestmentCreate&gt;.toEntity( wp: ProjectReportWorkPackageEntity )</ID>
@@ -41,16 +43,19 @@
     <ID>LargeClass:CreateProjectPartnerReportBudgetTest.kt$CreateProjectPartnerReportBudgetTest : UnitTest</ID>
     <ID>LargeClass:CreateProjectReportTest.kt$CreateProjectReportTest$Companion</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
+    <ID>LargeClass:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest$Companion</ID>
     <ID>LargeClass:GetReportExpenditureCostCategoryCalculatorServiceTest.kt$GetReportExpenditureCostCategoryCalculatorServiceTest$Companion</ID>
     <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
     <ID>LargeClass:ProjectReportDataProviderImplTest.kt$ProjectReportDataProviderImplTest$Companion</ID>
     <ID>LargeClass:ReportPartnerDataProviderImplTest.kt$ReportPartnerDataProviderImplTest$Companion</ID>
-    <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal )</ID>
+    <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal, spfCosts: BigDecimal, )</ID>
+    <ID>LongParameterList:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget$( coFinancing: PartnerReportCoFinancing, partnerTotal: BigDecimal, partnerSpf: BigDecimal, contributions: ProjectPartnerReportContributionWithSpf, previouslyReportedFastTrack: ReportExpenditureCoFinancingColumn, previouslyReportedSpf: ReportExpenditureCoFinancingColumn, paymentPaid: Map&lt;Long, BigDecimal&gt;, )</ID>
     <ID>LongParameterList:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
-    <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
+    <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, spfCosts: BigDecimal, )</ID>
     <ID>LongParameterList:GetReportControlDeductionOverviewCalculatorTest.kt$GetReportControlDeductionOverviewCalculatorTest.Companion$( id: Long, partOfSample: Boolean, declaredAmount: BigDecimal, deductedAmount: BigDecimal, certified: BigDecimal, isParked: Boolean, costCategory: ReportBudgetCategory, typologyOfErrorId: Long?, lumpSumId: Long? = null, )</ID>
     <ID>LongParameterList:JemsFileAuditFactory.kt$( context: Any, fileMeta: JemsFileMetadata, location: String, oldValue: String, newValue: String, projectSummary: ProjectSummary, )</ID>
     <ID>LongParameterList:JemsFileAuditFactory.kt$( context: Any, id: Long, type: String, name: String, location: String, projectSummary: ProjectSummary, )</ID>
+    <ID>LongParameterList:PaymentAuditExportPersistence.kt$PaymentAuditExportPersistence$( pluginKey: String, fundId: Long?, accountingYearId: Long?, fileName: String?, contentType: String?, startTime: ZonedDateTime?, endTime: ZonedDateTime )</ID>
     <ID>LongParameterList:ProjectDescriptionMapper.kt$( projectId: Long, projectCoordination: Set&lt;InputTranslation&gt;, projectQualityAssurance: Set&lt;InputTranslation&gt;, projectCommunication: Set&lt;InputTranslation&gt;, projectFinancialManagement: Set&lt;InputTranslation&gt;, projectJointDevelopmentDescription: Set&lt;InputTranslation&gt;, projectJointImplementationDescription: Set&lt;InputTranslation&gt;, projectJointStaffingDescription: Set&lt;InputTranslation&gt;, projectJointFinancingDescription: Set&lt;InputTranslation&gt;, sustainableDevelopmentDescription: Set&lt;InputTranslation&gt;, equalOpportunitiesDescription: Set&lt;InputTranslation&gt;, sexualEqualityDescription: Set&lt;InputTranslation&gt;, )</ID>
     <ID>LongParameterList:ProjectModelMapper.kt$( project: ProjectEntity, periods: List&lt;ProjectPeriod&gt;, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, stateAidEntities: MutableSet&lt;ProjectCallStateAidEntity&gt;, applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;, priority: ProgrammePriorityEntity?, jsNotifiable: Boolean )</ID>
     <ID>LongParameterList:ProjectPartnerControlReportHelper.kt$( report: ProjectPartnerReport, programmeTitle: String?, projectTitle: Set&lt;InputTranslation&gt;?, startAndEndDate: Pair&lt;LocalDate, LocalDate?&gt;?, identification: ProjectPartnerReportIdentification, designatedController: ReportDesignatedController, reportVerification: ReportVerification )</ID>
@@ -59,6 +64,8 @@
     <ID>LongParameterList:ProjectPartnerReportExportInteractor.kt$ProjectPartnerReportExportInteractor$( partnerId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
     <ID>LongParameterList:ProjectPersistenceProvider.kt$ProjectPersistenceProvider$( projectId: Long, timestamp: Timestamp, project: ProjectEntity, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, jsNotifiable: Boolean, )</ID>
     <ID>LongParameterList:ProjectReportExportInteractor.kt$ProjectReportExportInteractor$( projectId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
+    <ID>LongParameterList:ProjectReportVerificationDeductionOverviewCalculatorTest.kt$ProjectReportVerificationDeductionOverviewCalculatorTest.Companion$( expenditureItem: ProjectPartnerReportExpenditureItem, deductedByJs: BigDecimal, deductedByMa: BigDecimal, amountAfterVerification: BigDecimal, typologyOfErrorId: Long?, budgetCostCategory: BudgetCostCategory, parked: Boolean )</ID>
+    <ID>LongParameterList:ProjectReportVerificationDeductionOverviewCalculatorTest.kt$ProjectReportVerificationDeductionOverviewCalculatorTest.Companion$( partnerId: Long, partnerRole: ProjectPartnerRole, partnerNumber: Int, partnerReportId: Long, partnerReportNumber: Int, reportCostCategory: ReportBudgetCategory, budgetCostCategory: BudgetCostCategory, certifiedAmount: BigDecimal )</ID>
     <ID>LongParameterList:UpdateProjectPartnerReportExpenditure.kt$UpdateProjectPartnerReportExpenditure$( newProcurementId: Long?, newDescription: Set&lt;InputTranslation&gt;, newComment: Set&lt;InputTranslation&gt;, newGdpr: Boolean, canEditPartnerSensitiveData: Boolean, canEditSensitivenessFlag: Boolean )</ID>
     <ID>LongParameterList:UploadFileToProjectPartnerReportWorkPlanInteractor.kt$UploadFileToProjectPartnerReportWorkPlanInteractor$( partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
     <ID>LongParameterList:UploadFileToProjectReportWorkPlanInteractor.kt$UploadFileToProjectReportWorkPlanInteractor$( projectId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
@@ -80,9 +87,6 @@
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
     <ID>MaxLineLength:OutputIndicatorControllerTest.kt$OutputIndicatorControllerTest$fun</ID>
     <ID>MaxLineLength:OutputIndicatorRepository.kt$OutputIndicatorRepository$fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable&lt;OutputIndicatorEntity&gt;</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)</ID>
     <ID>MaxLineLength:PartnerPersistenceProvider.kt$PartnerPersistenceProvider$)</ID>
     <ID>MaxLineLength:ProgrammeAuditFactory.kt$.</ID>
     <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "FAILED upload of document $fileName to project application $projectId for Investment ${projectFileCategory.id} by $userId"</ID>
@@ -155,7 +159,9 @@
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
+    <ID>NestedBlockDepth:BrokenReportCurrencyCheck.kt$BrokenReportCurrencyCheck$private fun List&lt;ExpenditureWithBrokenRate&gt;.toNiceFormat(): String</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
+    <ID>NestedBlockDepth:UpdateContractingMonitoring.kt$UpdateContractingMonitoring$@CanSetProjectToContracted @Transactional @ExceptionWrapper(UpdateContractingMonitoringException::class) override fun updateContractingMonitoring( projectId: Long, contractMonitoring: ProjectContractingMonitoring ): ProjectContractingMonitoring</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
@@ -286,8 +292,6 @@
     <ID>PackageNaming:GetCoFinancingInteractor.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing</ID>
     <ID>PackageNaming:GetDefaultUserRole.kt$package io.cloudflight.jems.server.programme.service.userrole.get_role</ID>
     <ID>PackageNaming:GetDefaultUserRoleInteractor.kt$package io.cloudflight.jems.server.programme.service.userrole.get_role</ID>
-    <ID>PackageNaming:GetFund.kt$package io.cloudflight.jems.server.programme.service.fund.get_fund</ID>
-    <ID>PackageNaming:GetFundInteractor.kt$package io.cloudflight.jems.server.programme.service.fund.get_fund</ID>
     <ID>PackageNaming:GetLanguages.kt$package io.cloudflight.jems.server.programme.service.language.get_languages</ID>
     <ID>PackageNaming:GetLanguagesInteractor.kt$package io.cloudflight.jems.server.programme.service.language.get_languages</ID>
     <ID>PackageNaming:GetLegalStatus.kt$package io.cloudflight.jems.server.programme.service.legalstatus.get_legal_statuses</ID>
@@ -589,6 +593,7 @@
     <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
     <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
     <ID>ReturnCount:GetInstitutionPartnerAssignment.kt$GetInstitutionPartnerAssignment$private fun getAvailableInstitutionsForPartner( partnerDetails: InstitutionPartnerDetails, nuts3CodeToInstitutionsMap: Map&lt;String, List&lt;IdNamePair&gt;&gt;, countryCodeToInstitutionsMap: Map&lt;String, MutableSet&lt;IdNamePair&gt;&gt;, allInstitutions: List&lt;IdNamePair&gt; ): Set&lt;IdNamePair&gt;</ID>
+    <ID>ReturnCount:ProjectAuditControlAuthorization.kt$ProjectAuditControlAuthorization$fun canViewAuditAndControl(projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
@@ -601,21 +606,24 @@
     <ID>ReturnCount:StateAidHelper.kt$fun stateAidSectionShouldBeDisplayed(partnerStateAid: ProjectPartnerStateAid): Boolean</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
-    <ID>ThrowsCount:AdvancePaymentValidator.kt$AdvancePaymentValidator$fun validateDetail(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?)</ID>
+    <ID>ThrowsCount:AdvancePaymentValidator.kt$AdvancePaymentValidator$fun validateStatus(status: AdvancePaymentStatus, saved: AdvancePaymentDetail)</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
+    <ID>ThrowsCount:ReOpenVerificationProjectReport.kt$ReOpenVerificationProjectReport$private fun validateReportCanBeReOpened(report: ProjectReportModel)</ID>
     <ID>ThrowsCount:UpdateContractingReporting.kt$UpdateContractingReporting$private fun validateInputData( deadlines: Collection&lt;ProjectContractingReportingSchedule&gt;, oldDeadlines: Map&lt;Long, ProjectContractingReportingSchedule&gt;, periods: Map&lt;Int, ProjectPeriod&gt;, startDate: LocalDate, projectId: Long )</ID>
     <ID>ThrowsCount:UpdateProjectResults.kt$UpdateProjectResults$private fun validateProjectResultsWithProjectStatus(projectId: Long, projectResults: List&lt;ProjectResult&gt;)</ID>
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
     <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
+    <ID>TooManyFunctions:AuditControlCorrectionPersistenceProvider.kt$AuditControlCorrectionPersistenceProvider : AuditControlCorrectionPersistence</ID>
     <ID>TooManyFunctions:CallDTOMapper.kt$io.cloudflight.jems.server.call.controller.CallDTOMapper.kt</ID>
     <ID>TooManyFunctions:CallEntityMapper.kt$io.cloudflight.jems.server.call.repository.CallEntityMapper.kt</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
+    <ID>TooManyFunctions:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
     <ID>TooManyFunctions:JemsFilePersistence.kt$JemsFilePersistence</ID>
@@ -639,7 +647,9 @@
     <ID>TooManyFunctions:ProjectPartnerReportPersistenceProvider.kt$ProjectPartnerReportPersistenceProvider : ProjectPartnerReportPersistence</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
+    <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
+    <ID>TooManyFunctions:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider : ProjectWorkflowPersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
@@ -654,11 +664,20 @@
     <ID>UnnecessaryAbstractClass:UnitTest.kt$UnitTest</ID>
     <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
     <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:AuditControlCorrectionControllerTest.kt$AuditControlCorrectionControllerTest$@MockK private lateinit var updateCorrection: UpdateAuditControlCorrectionInteractor</ID>
+    <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var partnerReportRepository: ProjectPartnerReportRepository</ID>
+    <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var programmeFundRepository: ProgrammeFundRepository</ID>
+    <ID>UnusedPrivateMember:AuditControlCorrectionPersistenceProviderTest.kt$AuditControlCorrectionPersistenceProviderTest$@MockK private lateinit var projectLumpSumRepository: ProjectLumpSumRepository</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$@MockK private lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence</ID>
+    <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$@MockK private lateinit var auditControlPersistence: AuditControlPersistence</ID>
+    <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$isPartnerCollaborator: Boolean</ID>
+    <ID>UnusedPrivateMember:ProjectAuditControlAuthorizationTest.kt$ProjectAuditControlAuthorizationTest$isProjectCollaborator: Boolean</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
+    <ID>UnusedPrivateMember:SelectCertificateTest.kt$SelectCertificateTest$private fun provideStatusesInWhichSelectIsNotAllowed(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>
     <ID>UnusedPrivateMember:UpdateLegalStatusInteractorTest.kt$UpdateLegalStatusInteractorTest$private fun providePreDefinedLegalStatusTypes()</ID>

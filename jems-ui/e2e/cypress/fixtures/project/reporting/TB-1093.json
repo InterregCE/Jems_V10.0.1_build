@@ -1,0 +1,167 @@
+{
+  "expectedResultsR1": {
+    "co-financing": {
+      "ERDF": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Neighbourhood CBC": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Other fund EN": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Partner contribution": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      }
+    },
+    "cost-category": {
+      "Staff costs": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Office and administrative costs": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Travel and accommodation": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "External expertise and services": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Equipment": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Infrastructure and works": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Other costs": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Lump sum": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      },
+      "Unit Costs": {
+        "previouslyReported": "0,00",
+        "previouslyVerified": "0,00"
+      }
+    }
+  },
+  "expectedResultsR2": {
+    "co-financing": {
+      "ERDF": {
+        "previouslyPaid": "0,00"
+      },
+      "Neighbourhood CBC": {
+        "previouslyPaid": "0,00"
+      },
+      "Other fund EN": {
+        "previouslyPaid": "0,00"
+      }
+    }
+  },
+  "expectedResultsR3": {
+    "co-financing": {
+      "ERDF": {
+        "previouslyPaid": "1.199,99"
+      },
+      "Neighbourhood CBC": {
+        "previouslyPaid": "0,00"
+      },
+      "Other fund EN": {
+        "previouslyPaid": "293,19"
+      }
+    }
+  },
+  "fastTrackLumpSum": {
+    "name": "Closure Lump sum",
+    "amount": "900,16",
+    "period": "Closure"
+  },
+  "expectedFtlsPayments": {
+    "OTHER": {
+      "amountApprovedPerFund": "293.19",
+      "amountAuthorizedPerFund": "0",
+      "amountPaidPerFund": "0",
+      "totalEligibleAmount": "1999.99"
+    },
+    "ERDF": {
+      "OTHER": {
+        "amountApprovedPerFund": "1199.99",
+        "amountAuthorizedPerFund": "0",
+        "amountPaidPerFund": "0",
+        "totalEligibleAmount": "1999.99"
+      }
+    }
+  },
+  "authorizedPayments": [
+    {
+      "projectCustomIdentifier": "setDuringTest",
+      "fundName": "ERDF",
+      "partnerPayments": [
+        {
+          "id": 0,
+          "partnerId": 0,
+          "partnerType": "LEAD_PARTNER",
+          "partnerAbbreviation": "Lead Partner",
+          "amountApproved": 1199.99,
+          "installments": [
+            {
+              "amountPaid": 1199.99,
+              "paymentDate": "2023-09-27T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2023-09-27",
+              "paymentConfirmed": true,
+              "paymentConfirmedDate": "2023-09-27"
+            }
+          ]
+        }
+      ],
+      "paymentType": "FTLS",
+      "projectId": 0,
+      "projectAcronym": "cross-platform program",
+      "amountApprovedPerFund": 1199.99
+    },
+
+    {
+      "projectCustomIdentifier": "setDuringTest",
+      "fundName": "OTHER",
+      "partnerPayments": [
+        {
+          "id": 0,
+          "partnerId": 0,
+          "partnerType": "LEAD_PARTNER",
+          "partnerAbbreviation": "Lead Partner",
+          "amountApproved": 293.19,
+          "installments": [
+            {
+              "amountPaid": 293.19,
+              "paymentDate": "2023-09-27T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2023-09-27",
+              "paymentConfirmed": true,
+              "paymentConfirmedDate": "2023-09-27"
+            }
+          ]
+        }
+      ],
+      "paymentType": "FTLS",
+      "projectId": 0,
+      "projectAcronym": "cross-platform program",
+      "amountApprovedPerFund": 293.19
+    }
+  ]
+}
+

@@ -82,4 +82,11 @@ interface ContractingChecklistInstanceApi {
         @RequestParam exportLanguage: SystemLanguage,
         @RequestParam(required = false) pluginKey: String?,
     ): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Clone contracting checklist instance")
+    @PostMapping("$ENDPOINT_API_CONTRACTING_CHECKLIST_INSTANCE/clone/{checklistId}")
+    fun cloneContractingChecklistInstance(
+        @PathVariable projectId: Long,
+        @PathVariable checklistId: Long
+    ): ChecklistInstanceDetailDTO
 }

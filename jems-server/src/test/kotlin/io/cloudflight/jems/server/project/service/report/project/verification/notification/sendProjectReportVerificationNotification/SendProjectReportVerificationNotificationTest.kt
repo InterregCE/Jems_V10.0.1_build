@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.notification.ProjectReportVerificationNotification
@@ -27,6 +28,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -65,13 +67,16 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
             projectAcronym = "projectAcronym",
             leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
             leadPartnerNameInEnglish = "nameInEnglish",
+            spfPartnerId = null,
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
@@ -152,6 +157,9 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
                 any()
             )
         } returns verificationNotification
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, "3.0") } returns listOf(
+            ProjectPeriod(1, 1, 1)
+        )
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.project.base.getProjectReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -13,6 +15,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -28,6 +31,7 @@ internal class GetProjectReportTest : UnitTest() {
         private val MONTH_AGO = LocalDate.now().minusMonths(1)
         private val NOW = ZonedDateTime.now()
         private val WEEK_AGO = ZonedDateTime.now().minusWeeks(1)
+        private val DAY_AGO = ZonedDateTime.now().minusDays(1)
         private val NEXT_MONTH = ZonedDateTime.now().plusMonths(1)
 
         val report = ProjectReportModel(
@@ -46,12 +50,15 @@ internal class GetProjectReportTest : UnitTest() {
             projectAcronym = "project acronym",
             leadPartnerNameInOriginalLanguage = "LP orig",
             leadPartnerNameInEnglish = "LP english",
+            spfPartnerId = null,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
+            lastReSubmission = DAY_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.valueOf(15L),
             totalEligibleAfterVerification = BigDecimal.valueOf(19L),
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -78,11 +85,14 @@ internal class GetProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
-            verificationEndDate = NEXT_MONTH
+            verificationEndDate = NEXT_MONTH,
+            verificationLastReOpenDate = null
         )
 
         val expectedReportSummary = ProjectReportSummary(
             id = 14L,
+            projectId = 114L,
+            projectIdentifier = "proj identifier",
             reportNumber = 4,
             status = ProjectReportStatus.Draft,
             linkedFormVersion = "v4",
@@ -93,6 +103,7 @@ internal class GetProjectReportTest : UnitTest() {
             reportingDate = MONTH_AGO,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
+            lastReSubmission = DAY_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             deletable = false,
             verificationEndDate = NEXT_MONTH,
@@ -109,13 +120,18 @@ internal class GetProjectReportTest : UnitTest() {
     private lateinit var reportPersistence: ProjectReportPersistence
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    private lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    private lateinit var paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
+
 
     @InjectMockKs
     lateinit var interactor: GetProjectReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence)
+        clearMocks(reportPersistence, projectPersistence, paymentPersistence, paymentApplicationToEcLinkPersistence)
     }
 
     @Test

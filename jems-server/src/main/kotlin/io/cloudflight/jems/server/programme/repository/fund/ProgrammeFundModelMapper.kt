@@ -19,20 +19,24 @@ fun ProgrammeFundEntity.toModel() = ProgrammeFund(
 fun Iterable<ProgrammeFundEntity>.toModel() = map { it.toModel() }.sortedBy { it.id }
 
 fun Collection<ProgrammeFund>.toEntity() = map { model ->
+    model.toEntity()
+}
+
+fun ProgrammeFund.toEntity() =
     ProgrammeFundEntity(
-        id = model.id, type = model.type, selected = model.selected, translatedValues = mutableSetOf()
+        id = id, type = type, selected = selected, translatedValues = mutableSetOf()
     ).apply {
         translatedValues.addTranslationEntities(
             { language ->
                 ProgrammeFundTranslationEntity(
                     translationId = TranslationId(this, language),
-                    abbreviation = model.abbreviation.extractTranslation(language),
-                    description = model.description.extractTranslation(language),
+                    abbreviation = abbreviation.extractTranslation(language),
+                    description = description.extractTranslation(language),
                 )
-            }, arrayOf(model.abbreviation, model.description)
+            }, arrayOf(abbreviation, description)
         )
     }
-}
+
 
 
 

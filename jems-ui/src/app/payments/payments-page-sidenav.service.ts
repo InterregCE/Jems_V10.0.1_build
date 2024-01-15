@@ -5,8 +5,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {combineLatest} from 'rxjs';
 import {UserRoleDTO} from '@cat/api';
 import {PermissionService} from '../security/permissions/permission.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Injectable()
@@ -31,20 +31,28 @@ export class PaymentsPageSidenavService {
     baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/paymentApplicationsToEc`,
   };
 
+  private auditPage = {
+    headline: {i18nKey: 'payments.audit.header'},
+    route: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+    baseRoute: `${PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH}/audit`,
+  };
+
 
   constructor(private sideNavService: SideNavService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
-    combineLatest([this.routingService.routeChanges(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH), this.permissionService.permissionsChanged()])
-      .pipe(
-        filter(([paymentsPath]) => paymentsPath),
-        tap(([paymentsPath, permissions]) => this.init(permissions as PermissionsEnum[])),
-        untilDestroyed(this)
-      ).subscribe();
+    combineLatest([
+      this.routingService.routeChanges(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH),
+      this.permissionService.permissionsChanged()
+    ]).pipe(
+      filter(([paymentsPath, permissions]) => paymentsPath),
+      tap(([paymentsPath, permissions]) => this.init(permissions as PermissionsEnum[])),
+      untilDestroyed(this)
+    ).subscribe();
   }
 
   private init(permissions: PermissionsEnum[]): void {
-      this.setSideNavLinks(permissions);
+    this.setSideNavLinks(permissions);
   }
 
   setSideNavLinks(permissions: PermissionsEnum[]) {
@@ -55,10 +63,12 @@ export class PaymentsPageSidenavService {
     if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.AdvancePaymentsRetrieve || permission === PermissionsEnum.AdvancePaymentsUpdate)) {
       bullets.push(this.advancePaymentsPage);
     }
-    //Will be enabled in V9: MP2-3852
-    /*if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
+    if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsToEcRetrieve || permission === PermissionsEnum.PaymentsToEcUpdate)) {
       bullets.push(this.paymentsToEcPage);
-    }*/
+    }
+    if (permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsAuditRetrieve || permission === PermissionsEnum.PaymentsAuditUpdate)) {
+      bullets.push(this.auditPage);
+    }
 
     this.sideNavService.setHeadlines(PaymentsPageSidenavService.PAYMENTS_DETAIL_PATH, [
       ...this.hasAccessToPayments(permissions) ?
@@ -73,20 +83,26 @@ export class PaymentsPageSidenavService {
   hasAccessToPayments(permissions: PermissionsEnum[]): boolean {
     return permissions.some((permission: PermissionsEnum) => permission === PermissionsEnum.PaymentsRetrieve ||
       permission === PermissionsEnum.AdvancePaymentsRetrieve ||
-      permission === PermissionsEnum.PaymentsToEcRetrieve
+      permission === PermissionsEnum.PaymentsToEcRetrieve ||
+      permission === PermissionsEnum.PaymentsAuditRetrieve
     );
   }
 
   public goToPaymentsToProjects(): void {
-    this.sideNavService.navigate(this.paymentsToProjectsPage);
+    // replaceUrl because if you navigate back to /payments, you will be caught in infinite loop
+    this.routingService.navigate([this.paymentsToProjectsPage.route], {replaceUrl: true});
   }
 
   public goToAdvancePayments(): void {
-    this.sideNavService.navigate(this.advancePaymentsPage);
+    this.routingService.navigate([this.advancePaymentsPage.route], {replaceUrl: true});
   }
 
-  public goToPaymentsToEc(): void{
-    this.sideNavService.navigate(this.paymentsToEcPage);
+  public goToPaymentsToEc(): void {
+    this.routingService.navigate([this.paymentsToEcPage.route], {replaceUrl: true});
+  }
+
+  public goToAudit(): void {
+    this.routingService.navigate([this.auditPage.route], {replaceUrl: true});
   }
 
 }

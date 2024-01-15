@@ -19,6 +19,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MatSelect} from '@angular/material/select';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {ControllersPageSidenavService} from "../controllers-page-sidenav.service";
 
 @UntilDestroy()
 @Component({
@@ -104,7 +105,8 @@ export class InstitutionsAssignmentsPageComponent{
               private permissionService: PermissionService,
               private controllerInstitutionStore: InstitutionsPageStore,
               private formService: FormService,
-              private formBuilder: FormBuilder
+              private formBuilder: FormBuilder,
+              private controllersPageSidenavService: ControllersPageSidenavService
 ) {
     this.filterData$ = combineLatest([
       this.institutionAssignmentStore.nutsDefinedForCurrentUser$

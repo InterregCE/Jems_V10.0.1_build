@@ -1,0 +1,43 @@
+<ng-container *ngIf="data$ | async as data">
+    <p *ngIf="data.page.content.length">
+        {{'user.project.reports.info' | translate}}
+    </p>
+
+    <jems-table *ngIf="data.page.content.length"
+                [configuration]="tableConfiguration"
+                [rows]="data.page.content"
+                [totalElements]="data.page?.totalElements"
+                [pageIndex]="projectReportListStoreService.newPageIndex$ | async"
+                [currentPageSize]="currentPageSize"
+                [disableTopPaginator]="true"
+                (newPageIndex)="projectReportListStoreService.newPageIndex$.next($event)"
+                (newPageSize)="projectReportListStoreService.newPageSize$.next($event)"
+                (sortRows)="projectReportListStoreService.newSort$.next($event)">
+    </jems-table>
+</ng-container>
+
+<ng-template #projectReportNumberCell let-report>
+    <span>PR.{{report.reportNumber}}</span>
+</ng-template>
+
+<ng-template #projectReportStatusCell let-report>
+    <jems-project-report-status [status]="report.status"></jems-project-report-status>
+</ng-template>
+
+<ng-template #reportingPeriodCell let-report>
+    <span *ngIf="report.periodDetail" matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
+        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+            periodNumber: report.periodDetail.number,
+            start: report.periodDetail.start,
+            end: report.periodDetail.end
+        } }}
+    </span>
+</ng-template>
+
+<ng-template #projectReportTypeCell let-report>
+    <mat-icon *ngIf="report.type === 'Content' || report.type === 'Both'" class="icon-content">description</mat-icon>
+    <mat-icon *ngIf="report.type === 'Finance' || report.type === 'Both'" class="icon-finance">savings</mat-icon>
+    <span>{{ report.type ? (('project.application.project.report.table.type.' + report.type) | translate) : '' }}</span>
+</ng-template>
+
+

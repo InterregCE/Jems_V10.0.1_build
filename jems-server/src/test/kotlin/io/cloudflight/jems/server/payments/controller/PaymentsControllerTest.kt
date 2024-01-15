@@ -43,7 +43,7 @@ import java.time.ZonedDateTime
 class PaymentsControllerTest : UnitTest() {
 
     companion object {
-        private val currentTime = ZonedDateTime.now()
+        val currentTime = ZonedDateTime.now()
         private val currentDate = LocalDate.now()
         private const val ftlsPaymentId = 1L
         private const val regularPaymentId = 11L
@@ -51,6 +51,7 @@ class PaymentsControllerTest : UnitTest() {
         private const val projectId = 2L
         private const val partnerId = 3L
         private const val lumpSumId = 4L
+        private const val paymentClaimId = 5L
 
         private val call = createTestCallEntity(2)
         private val account = UserEntity(
@@ -76,12 +77,15 @@ class PaymentsControllerTest : UnitTest() {
             selected = true,
             type = ProgrammeFundType.OTHER
         )
-        private val ftlsPaymentToProject = PaymentToProject(
+        val ftlsPaymentToProject = PaymentToProject(
             id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
+            projectId = project.id,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            paymentClaimId = null,
             paymentClaimNo = 0,
+            paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
@@ -93,12 +97,15 @@ class PaymentsControllerTest : UnitTest() {
             lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
 
-        private val regularPaymentToProject = PaymentToProject(
+        val regularPaymentToProject = PaymentToProject(
             id = regularPaymentId,
             paymentType = PaymentType.REGULAR,
+            projectId = project.id,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            paymentClaimId = paymentClaimId,
             paymentClaimNo = projectReportNumber,
+            paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
@@ -120,7 +127,8 @@ class PaymentsControllerTest : UnitTest() {
             savePaymentDate = currentTime.toLocalDate().plusDays(1),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(3L, "paymentConfirmed@User", "name", "surname"),
-            paymentConfirmedDate = currentTime.toLocalDate().plusDays(2)
+            paymentConfirmedDate = currentTime.toLocalDate().plusDays(2),
+            correction = null,
         )
         private val installmentFirst = PaymentPartnerInstallment(
             id = installmentFirstDTO.id,
@@ -135,7 +143,8 @@ class PaymentsControllerTest : UnitTest() {
             savePaymentDate = installmentFirstDTO.savePaymentDate,
             isPaymentConfirmed = installmentFirstDTO.paymentConfirmed,
             paymentConfirmedUser = installmentFirstDTO.paymentConfirmedUser,
-            paymentConfirmedDate = installmentFirstDTO.paymentConfirmedDate
+            paymentConfirmedDate = installmentFirstDTO.paymentConfirmedDate,
+            correction = null,
         )
 
         private val ftlsPaymentDetail = PaymentDetail(
@@ -145,6 +154,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -173,6 +183,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -197,6 +208,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = true,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -225,6 +237,7 @@ class PaymentsControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            spf = true,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
             partnerPayments = listOf(
@@ -268,6 +281,9 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = setOf(511L, 512L),
             lastPaymentDateFrom = currentDate.minusDays(1),
             lastPaymentDateTo = currentDate.minusDays(1),
+            ecPaymentIds = emptySet(),
+            contractingScoBasis = null,
+            finalScoBasis = null,
         )
     }
 
@@ -293,9 +309,12 @@ class PaymentsControllerTest : UnitTest() {
             PaymentToProjectDTO(
                 id = ftlsPaymentId,
                 paymentType = PaymentTypeDTO.FTLS,
+                projectId = ftlsPaymentToProject.projectId,
                 projectCustomIdentifier = ftlsPaymentToProject.projectCustomIdentifier,
                 projectAcronym = ftlsPaymentToProject.projectAcronym,
+                paymentClaimId = null,
                 paymentClaimNo = ftlsPaymentToProject.paymentClaimNo,
+                paymentToEcId = ftlsPaymentToProject.paymentToEcId,
                 paymentClaimSubmissionDate = ftlsPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = ftlsPaymentToProject.totalEligibleAmount,
@@ -309,9 +328,12 @@ class PaymentsControllerTest : UnitTest() {
             PaymentToProjectDTO(
                 id = regularPaymentId,
                 paymentType = PaymentTypeDTO.REGULAR,
+                projectId = regularPaymentToProject.projectId,
                 projectCustomIdentifier = regularPaymentToProject.projectCustomIdentifier,
                 projectAcronym = regularPaymentToProject.projectAcronym,
+                paymentClaimId = regularPaymentToProject.paymentClaimId,
                 paymentClaimNo = regularPaymentToProject.paymentClaimNo,
+                paymentToEcId = regularPaymentToProject.paymentToEcId,
                 paymentClaimSubmissionDate = regularPaymentToProject.paymentClaimSubmissionDate,
                 paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = regularPaymentToProject.totalEligibleAmount,
@@ -344,6 +366,9 @@ class PaymentsControllerTest : UnitTest() {
             fundIds = emptySet(),
             lastPaymentDateFrom = null,
             lastPaymentDateTo = null,
+            ecPaymentIds = emptySet(),
+            contractingScoBasis = null,
+            finalScoBasis = null,
         ))
     }
 
@@ -359,6 +384,7 @@ class PaymentsControllerTest : UnitTest() {
                 projectCustomIdentifier = project.customIdentifier,
                 fundName = fund.type.name,
                 projectAcronym = project.acronym,
+                spf = false,
                 amountApprovedPerFund = BigDecimal.TEN,
                 dateOfLastPayment = null,
                 partnerPayments = listOf(

@@ -123,6 +123,18 @@
         </mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="spfCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.SpfCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+            <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.category.SpfCost' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+            <span>{{ partner.current.spfCost | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+            <span>{{ breakdown.totalCurrent.spfCost | asMoney }}</span>
+        </mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="totalBudget">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.total.budget' | translate}}</span>

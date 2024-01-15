@@ -5,7 +5,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 
 interface PartnerReportParkedExpenditurePersistence {
 
-    fun getParkedExpendituresByIdForPartner(partnerId: Long): Map<Long, ExpenditureParkingMetadata>
+    fun getParkedExpendituresByIdForPartnerReport(partnerId: Long, reportId: Long): Map<Long, ExpenditureParkingMetadata>
+
+    fun getParkedExpenditureById(expenditureId: Long): ExpenditureParkingMetadata
 
     fun parkExpenditures(toPark: Collection<ParkExpenditureData>)
 

@@ -66,7 +66,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
             idFromApplicationForm = 900L,
             historyIdentifier = UUID.randomUUID(),
             createdInThisReport = false,
-            amount = 100L.toBigDecimal(),
+            amount = 0L.toBigDecimal(),
             previouslyReported = 40L.toBigDecimal(),
             currentlyReported = 30L.toBigDecimal(),
             attachment = JemsFileMetadata(48L, "file_automatic.txt", UPLOADED),
@@ -74,6 +74,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution1 = ProjectPartnerReportContribution(
             id = 1L,
+            removedInAf = false,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             createdInThisReport = true,
@@ -88,6 +89,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution2 = ProjectPartnerReportContribution(
             id = 2L,
+            removedInAf = false,
             sourceOfContribution = "source public 2",
             legalStatus = ProjectPartnerContributionStatus.Public,
             createdInThisReport = false,
@@ -102,6 +104,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution3 = ProjectPartnerReportContribution(
             id = 3L,
+            removedInAf = false,
             sourceOfContribution = "source private",
             legalStatus = ProjectPartnerContributionStatus.Private,
             createdInThisReport = false,
@@ -116,11 +119,12 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
 
         private val expectedContribution4 = ProjectPartnerReportContribution(
             id = 4L,
+            removedInAf = true,
             sourceOfContribution = "source automaticPublic",
             legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
             createdInThisReport = false,
             numbers = ProjectPartnerReportContributionRow(
-                amount = 100L.toBigDecimal(),
+                amount = 0L.toBigDecimal(),
                 previouslyReported = 40L.toBigDecimal(),
                 currentlyReported = 30L.toBigDecimal(),
                 totalReportedSoFar = 70L.toBigDecimal(),
@@ -136,7 +140,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 totalReportedSoFar = 9L.toBigDecimal(),
             ),
             automaticPublic = ProjectPartnerReportContributionRow(
-                amount = 100L.toBigDecimal(),
+                amount = 0L.toBigDecimal(),
                 previouslyReported = 40L.toBigDecimal(),
                 currentlyReported = 30L.toBigDecimal(),
                 totalReportedSoFar = 70L.toBigDecimal(),
@@ -148,7 +152,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 totalReportedSoFar = 32L.toBigDecimal(),
             ),
             total = ProjectPartnerReportContributionRow(
-                amount = 180L.toBigDecimal(),
+                amount = 80L.toBigDecimal(),
                 previouslyReported = 65L.toBigDecimal(),
                 currentlyReported = 46L.toBigDecimal(),
                 totalReportedSoFar = 111L.toBigDecimal(),

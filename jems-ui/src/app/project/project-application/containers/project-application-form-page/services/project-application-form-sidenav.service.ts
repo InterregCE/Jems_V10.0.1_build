@@ -47,11 +47,18 @@ export class ProjectApplicationFormSidenavService {
   private readonly canSeeAdvancePayment$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
     this.projectStore.collaboratorLevel$,
-      ])
-      .pipe(
-        switchMap(([hasPermission, collaboratorLevel]) => (hasPermission || collaboratorLevel) ? this.advancePaymentStore.projectAdvancePaymentDTO$ : of(null)),
-        map(advancePaymentsPage => !advancePaymentsPage?.empty),
-      );
+  ]).pipe(
+    switchMap(([hasPermission, collaboratorLevel]) =>
+      (hasPermission || collaboratorLevel) ? this.advancePaymentStore.projectAdvancePaymentDTO$ : of(null)),
+    map(advancePaymentsPage => !advancePaymentsPage?.empty),
+  );
+
+  private readonly canSeeCorrections$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorAuditAndControlView),
+    this.projectStore.collaboratorLevel$,
+  ]).pipe(
+    map(([hasViewPermission, collaboratorLevel]) => hasViewPermission || !!collaboratorLevel)
+  );
 
   private readonly canSeeProjectManagement$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementView),
@@ -374,7 +381,8 @@ export class ProjectApplicationFormSidenavService {
       this.contractingPartnerSection$,
       this.contractingSectionLockStore.lockedSections$,
       this.canSeeSharedFolder$,
-      this.canSeeAdvancePayment$
+      this.canSeeAdvancePayment$,
+      this.canSeeCorrections$,
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
@@ -402,11 +410,12 @@ export class ProjectApplicationFormSidenavService {
                contractingPartnerSection,
                lockedContractingSections,
                canSeeSharedFolder,
-               canSeeAdvancePayment
+               canSeeAdvancePayment,
+               canSeeCorrections,
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
-            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id, canSeeProjectReporting, canSeeAdvancePayment) : [],
+            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id, canSeeProjectReporting, canSeeAdvancePayment, canSeeCorrections) : [],
             ...!canSeeReporting && canSeeProjectReporting ? this.getPartialReportingHeadline(project.id) : [],
             ...(canSeeProjectManagement || canSeeProjectContracts || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
               this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
@@ -514,23 +523,19 @@ export class ProjectApplicationFormSidenavService {
     partners: HeadlineRoute[],
     projectId: number,
     canSeeProjectReporting: boolean,
-    canSeeAdvancedPayments: boolean
+    canSeeAdvancedPayments: boolean,
+    canSeeCorrections: boolean,
   ): HeadlineRoute[] {
     return [
       {
-      headline: {i18nKey: 'project.application.reporting.title'},
-      bullets: [
-        ...canSeeAdvancedPayments ? [{
-          headline: {i18nKey: 'project.application.reporting.payments.overview.title'},
-          bullets: [{
-            headline: {i18nKey: 'project.application.reporting.advance.payments.title'},
-            route: `/app/project/detail/${projectId}/advancePayments`
-          }]
-        }] : [],
-        ...canSeeProjectReporting ? this.getProjectReportingHeadline(projectId) : [],
-        ...this.getPartnerReportingSections(partners)
-      ]
-    }];
+        headline: {i18nKey: 'project.application.reporting.title'},
+        bullets: [
+          ...canSeeAdvancedPayments ? this.getAdvancePaymentsHeadline(projectId) : [],
+          ...canSeeCorrections ? this.getCorrectionsHeadline(projectId) : [],
+          ...canSeeProjectReporting ? this.getProjectReportingHeadline(projectId) : [],
+          ...this.getPartnerReportingSections(partners)
+        ]
+      }];
   }
 
   private getPartialReportingHeadline(projectId: number): HeadlineRoute[] {
@@ -539,6 +544,23 @@ export class ProjectApplicationFormSidenavService {
       bullets: [
         ...this.getProjectReportingHeadline(projectId)
       ]
+    }];
+  }
+
+  private getAdvancePaymentsHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.reporting.payments.overview.title'},
+      bullets: [{
+        headline: {i18nKey: 'project.application.reporting.advance.payments.title'},
+        route: `/app/project/detail/${projectId}/advancePayments`
+      }]
+    }];
+  }
+
+  private getCorrectionsHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.breadcrumb.applicationForm.reporting.overview.corrections'},
+      route: `/app/project/detail/${projectId}/corrections`,
     }];
   }
 

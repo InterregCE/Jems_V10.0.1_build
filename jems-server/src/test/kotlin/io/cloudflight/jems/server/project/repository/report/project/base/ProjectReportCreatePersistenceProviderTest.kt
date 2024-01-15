@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportSpfContributionClaimEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateInvestmentEntity
@@ -47,6 +48,7 @@ import io.cloudflight.jems.server.project.repository.report.project.identificati
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
+import io.cloudflight.jems.server.project.repository.report.project.spfContributionClaim.ProjectReportSpfContributionClaimRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageInvestmentRepository
@@ -57,6 +59,7 @@ import io.cloudflight.jems.server.project.service.contracting.model.reporting.Co
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
@@ -71,6 +74,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
@@ -94,6 +98,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     companion object {
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
+        private val DAY_AGO = ZonedDateTime.now().minusDays(1)
+        private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val MONTH_AGO = LocalDate.now().minusMonths(1)
 
@@ -114,13 +120,16 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             projectAcronym = "projectAcronym",
             leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
             leadPartnerNameInEnglish = "nameInEnglish",
+            spfPartnerId = null,
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = DAY_AGO,
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = HOUR_AGO,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -261,6 +270,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(165),
                     lumpSum = BigDecimal.valueOf(175),
                     unitCost = BigDecimal.valueOf(185),
+                    spfCost = BigDecimal.valueOf(1855L, 1),
                     sum = BigDecimal.valueOf(195),
                 ),
                 currentlyReported = BudgetCostsCalculationResultFull(
@@ -273,6 +283,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(1865L, 1),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyReported = BudgetCostsCalculationResultFull(
@@ -285,6 +296,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(1875L, 1),
                     sum = BigDecimal.valueOf(197),
                 ),
                 currentVerified = BudgetCostsCalculationResultFull(
@@ -297,6 +309,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(1865L, 1),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyVerified = BudgetCostsCalculationResultFull(
@@ -309,6 +322,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(1875L, 1),
                     sum = BigDecimal.valueOf(197),
                 )
             ),
@@ -343,6 +357,17 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     total = BigDecimal.TEN,
                     previouslyReported = BigDecimal.ONE,
                     previouslyVerified = BigDecimal.ONE,
+                )
+            ),
+            spfContributionClaims = listOf(
+                ProjectReportSpfContributionClaimCreate(
+                    fundId = 1L,
+                    idFromApplicationForm = null,
+                    sourceOfContribution = null,
+                    legalStatus = null,
+                    amountInAf = BigDecimal.valueOf(3999.92),
+                    previouslyReported = BigDecimal.ZERO,
+                    currentlyReported = BigDecimal.valueOf(999.92)
                 )
             )
         )
@@ -447,6 +472,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var reportInvestmentRepository: ReportProjectCertificateInvestmentRepository
 
+    @MockK
+    private lateinit var reportSpfContributionClaimRepository: ProjectReportSpfContributionClaimRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportCreatePersistenceProvider
 
@@ -476,7 +504,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             programmeLumpSumRepository,
             programmeUnitCostRepository,
             reportProjectCertificateUnitCostRepository,
-            reportInvestmentRepository
+            reportInvestmentRepository,
+            reportSpfContributionClaimRepository
         )
     }
 
@@ -547,6 +576,13 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         // investments
         val investmentSlot = slot<Iterable<ReportProjectCertificateInvestmentEntity>>()
         every { reportInvestmentRepository.saveAll(capture(investmentSlot)) } returnsArgument 0
+
+        // spfContributions
+        val fund01 = mockk<ProgrammeFundEntity>()
+        every { fund01.id } returns 1L
+        every { programmeFundRepository.getById(1L) } returns fund01
+        val spfContributions = slot<Iterable<ProjectReportSpfContributionClaimEntity>>()
+        every {reportSpfContributionClaimRepository.saveAll(capture(spfContributions)) } returnsArgument 0
 
         // fill certificates
         val partner = mockk<ProjectPartnerEntity>()
@@ -740,6 +776,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(investmentSlot.captured.first().reportEntity).isEqualTo(saveSlot.captured)
         assertThat(investmentSlot.captured.first().total).isEqualTo(BigDecimal.TEN)
         assertThat(investmentSlot.captured.first().previouslyReported).isEqualTo(BigDecimal.ONE)
+
+        assertThat(spfContributions.captured).hasSize(1)
+        assertThat(spfContributions.captured.first().reportEntity).isEqualTo(saveSlot.captured)
+        assertThat(spfContributions.captured.first().programmeFund).isNotNull
+        assertThat(spfContributions.captured.first().programmeFund?.id).isEqualTo(1L)
 
         assertThat(partnerReport.projectReport).isEqualTo(saveSlot.captured)
     }

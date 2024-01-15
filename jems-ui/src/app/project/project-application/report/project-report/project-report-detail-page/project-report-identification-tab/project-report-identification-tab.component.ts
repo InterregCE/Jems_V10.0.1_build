@@ -74,6 +74,7 @@ export class ProjectReportIdentificationTabComponent {
   availablePeriods: ProjectPeriodDTO[] = [];
   availableDeadlines: ProjectContractingReportingScheduleDTO[] = [];
   displayReportTypeWarningMessage = false;
+  invalidPeriodSelected = false;
 
   constructor(public pageStore: ProjectReportDetailPageStore,
               public formService: FormService,
@@ -94,7 +95,7 @@ export class ProjectReportIdentificationTabComponent {
     ]).pipe(
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
           this.availablePeriods = availablePeriods;
-          this.availableDeadlines = reportingDeadlines;
+          this.availableDeadlines = reportingDeadlines.filter(d => availablePeriods.map(p => p.number).includes(d.periodNumber));
       }),
       map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,
@@ -120,16 +121,21 @@ export class ProjectReportIdentificationTabComponent {
       this.form.patchValue(identification);
       this.selectedType = identification.type;
     }
+    if (identification?.periodDetail) {
+      this.invalidPeriodSelected = this.reportId != null && !this.availablePeriods.map(p => p.number).includes(identification.periodDetail.number);
+    }
     this.form.patchValue({
-      periodNumber: identification?.periodDetail?.number,
+      periodNumber: this.invalidPeriodSelected ? 'N/A' : identification?.periodDetail?.number,
     });
-    if (identification?.deadlineId === null || !this.reportId){
+
+    if (identification?.deadlineId === null || !this.reportId) {
       this.form.get('deadlineId')?.patchValue(0);
     } else if (identification?.deadlineId) {
       this.form.get('type')?.disable();
       this.form.get('periodNumber')?.disable();
       this.form.get('reportingDate')?.disable();
     }
+    this.disableFieldsIfReopened(identification?.status);
     this.displayReportTypeWarningMessage = false;
   }
 
@@ -198,6 +204,19 @@ export class ProjectReportIdentificationTabComponent {
       ['..', report.id, 'identification'],
       {relativeTo: this.activatedRoute}
     );
+  }
+
+  private disableFieldsIfReopened(status: ProjectReportDTO.StatusEnum | undefined): void {
+    const reopenedStatuses = [
+      ProjectReportDTO.StatusEnum.ReOpenSubmittedLast,
+      ProjectReportDTO.StatusEnum.ReOpenSubmittedLimited,
+      ProjectReportDTO.StatusEnum.VerificationReOpenedLast,
+      ProjectReportDTO.StatusEnum.VerificationReOpenedLimited
+    ];
+    if (status && reopenedStatuses.includes(status)) {
+        this.form.get('deadlineId')?.disable();
+        this.form.get('type')?.disable();
+    }
   }
 
 }

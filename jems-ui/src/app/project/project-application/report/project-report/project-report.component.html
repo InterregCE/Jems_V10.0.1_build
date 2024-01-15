@@ -73,14 +73,15 @@
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.reporting.period' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
-                    <span *ngIf="projectReport.periodDetail"
-                          matTooltip="{{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
+                    <span *ngIf="projectReport.periodDetail && availablePeriodNumbers.includes(projectReport.periodDetail.number)"
+                          matTooltip="{{ 'project.application.project.report.table.reporting.period.tooltip' | translate }} {{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
                         {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
                         periodNumber: projectReport.periodDetail.number,
                         start: projectReport.periodDetail.start,
                         end: projectReport.periodDetail.end
                     } }}
                     </span>
+                    <span *ngIf="projectReport.periodDetail && !availablePeriodNumbers.includes(projectReport.periodDetail.number)"> {{ 'common.not.applicable.option' | translate }} </span>
                 </mat-cell>
             </ng-container>
 
@@ -119,8 +120,20 @@
                 </mat-cell>
             </ng-container>
 
+            <ng-container matColumnDef="lastSubmission">
+                <mat-header-cell *matHeaderCellDef class="text-left" mat-sort-header="lastSubmission">
+                    <span jemsText maxLines="3">{{ 'project.application.project.report.table.last.submission.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.lastReSubmission | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.lastReSubmission | localeDate: 'LT'}}</div>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
             <ng-container matColumnDef="verificationEndDate">
-                <mat-header-cell *matHeaderCellDef class="text-left">
+                <mat-header-cell *matHeaderCellDef class="text-left" mat-sort-header="verificationEndDate">
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.verification.end.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
@@ -176,6 +189,11 @@
                         </button>
                     </span>
                 </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="anchor">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let row" class="anchor-column-header"> <a [routerLink]="[row.id]"></a> </mat-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

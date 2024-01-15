@@ -16,8 +16,5 @@ data class AdvancePaymentUpdateDTO(
     val paymentDate: LocalDate? = null,
     val comment: String?,
 
-    val paymentAuthorized: Boolean? = null,
-    val paymentConfirmed: Boolean? = null,
-
     val paymentSettlements: List<AdvancePaymentSettlementDTO>,
 )

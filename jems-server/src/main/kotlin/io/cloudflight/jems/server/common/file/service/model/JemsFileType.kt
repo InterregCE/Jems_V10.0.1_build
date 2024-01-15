@@ -10,9 +10,17 @@ enum class JemsFileType(
         PaymentAttachment(Regular, false),
       Advance(Payment, true),
         PaymentAdvanceAttachment(Advance, false),
+      Ec(Payment, true),
+        PaymentToEcAttachment(Ec, false),
+      Audit(Payment, false),
+        PaymentToEcAuditExport(Audit, false),
+        PaymentAuditAttachment(Audit, false),
 
     Project(null, true, "application"),
       Report(Project, false),
+        Corrections(Report, false),
+            AuditControl(Corrections, true),
+
         ProjectReport(Report, true),
           ProjectResult(ProjectReport, true),
           WorkPlanProjectReport(ProjectReport, false),
@@ -23,6 +31,7 @@ enum class JemsFileType(
 
           ProjectReportVerification(ProjectReport, false),
             VerificationDocument(ProjectReportVerification, false),
+            VerificationCertificate(ProjectReportVerification, false),
 
         Partner(Report, true),
           PartnerReport(Partner, true),

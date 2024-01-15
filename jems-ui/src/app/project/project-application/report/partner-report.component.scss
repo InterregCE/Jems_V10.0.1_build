@@ -6,6 +6,7 @@
 
 mat-row {
   cursor: pointer;
+  z-index: 1;
 }
 mat-row, mat-header-row {
   mat-cell, mat-header-cell {
@@ -55,4 +56,31 @@ mat-row, mat-header-row {
 .mat-column-delete {
   min-width: 3rem;
   max-width: 3rem;
+}
+
+.mat-row, .mat-header-row {
+  position: relative;
+}
+
+.mat-column-anchor {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index:2;
+  margin: 0 !important;
+  padding: 0 !important;
+  a:focus {
+    background: none !important;
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
+}
+
+a {
+  display: block;
+  height: 100%;
+  width: 100%;
 }

@@ -1,5 +1,6 @@
 export enum ColumnWidth {
     IdColumn,
+    IdLongColumn,
     DateColumn,
     DescriptionColumn,
     WideColumn = 3,
@@ -7,6 +8,7 @@ export enum ColumnWidth {
     NarrowColumn,
     ChipColumn,
     MediumColumn,
+    MediumColumnNoLimit,
     SmallColumn,
-    DeletionColumn
+    ThinColumn,
 }

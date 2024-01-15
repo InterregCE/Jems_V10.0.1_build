@@ -11,5 +11,5 @@ interface ProjectPartnerReportControlOverviewPersistence {
 
     fun updatePartnerControlReportOverview(partnerId: Long, reportId: Long, controlOverview: ControlOverview): ControlOverview
 
-    fun updatePartnerControlReportOverviewEndDate(partnerId: Long, reportId: Long, endDate: LocalDate): ControlOverview
+    fun updatePartnerControlReportOverviewEndDate(partnerId: Long, reportId: Long, endDate: LocalDate)
 }

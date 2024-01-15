@@ -92,4 +92,12 @@ interface VerificationChecklistInstanceApi {
         @RequestParam exportLanguage: SystemLanguage,
         @RequestParam(required = false) pluginKey: String?,
     ): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Clone verification checklist instance")
+    @PutMapping("$ENDPOINT_API_VERIFICATION_CHECKLIST_INSTANCE/clone/{checklistId}")
+    fun cloneVerificationChecklistInstance(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable checklistId: Long
+    ): ChecklistInstanceDetailDTO
 }

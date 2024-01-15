@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.report.model.partner.financia
 
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import org.springframework.validation.annotation.Validated
 
 data class ReportExpenditureCostCategory(
     val options: ProjectPartnerBudgetOptions,
@@ -16,4 +15,6 @@ data class ReportExpenditureCostCategory(
     val currentlyReportedParked: BudgetCostsCalculationResultFull,
     val currentlyReportedReIncluded: BudgetCostsCalculationResultFull,
     val previouslyReportedParked: BudgetCostsCalculationResultFull,
-)
+) {
+    fun totalBudgetWithoutSpf() = totalsFromAF.sum.minus(totalsFromAF.spfCost)
+}

@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.payments.entity
 
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import java.math.BigDecimal
+import java.time.LocalDate
 import javax.persistence.Id
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -27,6 +29,17 @@ class PaymentApplicationToEcEntity(
     @JoinColumn(name = "accounting_year_id")
     @field:NotNull
     var accountingYear: AccountingYearEntity,
+
+    var nationalReference: String?,
+
+    @field:NotNull
+    var technicalAssistanceEur: BigDecimal,
+
+    var submissionToSfcDate: LocalDate?,
+
+    var sfcNumber: String?,
+
+    var comment: String?,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

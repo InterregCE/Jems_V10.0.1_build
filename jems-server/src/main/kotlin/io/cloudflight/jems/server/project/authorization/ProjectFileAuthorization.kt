@@ -101,7 +101,8 @@ class ProjectFileAuthorization(
         fileCategories.any { targetCategories.contains(it) }
 
     private fun canRetrieveAssessmentAttachments(projectId: Long) =
-        hasPermissionForProject(ProjectFileAssessmentRetrieve, projectId)
+        hasPermissionForProject(ProjectFileAssessmentRetrieve, projectId) ||
+                authorizationUtilService.hasPermissionAsController(ProjectFileAssessmentRetrieve, projectId)
 
     private fun canUpdateAssessmentAttachments(projectId: Long) =
         hasPermissionForProject(ProjectFileAssessmentUpdate, projectId)

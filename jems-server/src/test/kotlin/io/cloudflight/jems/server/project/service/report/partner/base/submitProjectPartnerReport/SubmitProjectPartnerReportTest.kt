@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -39,6 +38,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
+import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportTest
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.VerificationAction
@@ -48,6 +48,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -90,7 +91,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             partnerAbbreviation = "P-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private val expenditure1 = ProjectPartnerReportExpenditureCost(
@@ -167,17 +169,27 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             parkingMetadata = null,
         )
 
-        val options = mockk<ReportExpenditureCostCategory>().also {
-            every { it.options } returns ProjectPartnerBudgetOptions(
+        val options = ReportExpenditureCostCategory(
+            options =  ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
                 officeAndAdministrationOnStaffCostsFlatRate = null,
                 officeAndAdministrationOnDirectCostsFlatRate = 10,
                 travelAndAccommodationOnStaffCostsFlatRate = 15,
                 staffCostsFlatRate = null,
                 otherCostsOnStaffCostsFlatRate = null,
-            )
-            every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
-        }
+            ),
+            totalsFromAF = mockk<BudgetCostsCalculationResultFull> {
+                every { spfCost } returns BigDecimal.valueOf(50L)
+                every { sum } returns BigDecimal.valueOf(550L)
+            },
+            currentlyReported = mockk(),
+            totalEligibleAfterControl = mockk(),
+            previouslyReported = mockk(),
+            previouslyValidated = mockk(),
+            currentlyReportedParked = mockk(),
+            currentlyReportedReIncluded = mockk(),
+            previouslyReportedParked = mockk(),
+        )
 
         private val expectedPersistedExpenditureCostCategory = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
             currentlyReported = BudgetCostsCalculationResultFull(
@@ -190,6 +202,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(3700L, 2),
             ),
             currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -202,6 +215,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(623L, 2),
             )
         )
@@ -311,9 +325,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var projectPersistence: ProjectPersistence
-
-    @MockK
     private lateinit var jemsPluginRegistry: JemsPluginRegistry
 
     @MockK
@@ -348,6 +359,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { report.id } returns 35L
         every { report.lastControlReopening } returns if (controlReopenedBefore) mockk() else null
         every { report.identification.coFinancing } returns coFinancing
+        every { report.version } returns "5.6.0"
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
@@ -392,7 +404,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             every { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, expectedNewStatus, null, capture(submissionTime), null) } returns mockedResult
 
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -448,6 +459,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(888L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted [Contains sensitive data]")
+
         assertThat(slotRates.captured).containsExactly(
             ProjectPartnerReportExpenditureCurrencyRateChange(630L, BigDecimal.valueOf(254855L, 4), BigDecimal.valueOf(999L, 2)),
             ProjectPartnerReportExpenditureCurrencyRateChange(631L, BigDecimal.valueOf(77895L, 4), BigDecimal.valueOf(623L, 2)),
@@ -490,6 +502,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { report.id } returns 36L
         every { report.lastControlReopening } returns null
         every { report.identification.coFinancing } returns coFinancing
+        every { report.version } returns "5.6.0"
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 36L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 36L) } returns PreConditionCheckResult(emptyList(), true)
@@ -500,7 +513,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

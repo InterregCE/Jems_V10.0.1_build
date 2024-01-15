@@ -7,7 +7,7 @@ interface UserProjectCollaboratorPersistence {
 
     fun getProjectIdsForUser(userId: Long): Set<Long>
 
-    fun getUserIdsForProject(projectId: Long): List<CollaboratorAssignedToProject>
+    fun getCollaboratorsForProject(projectId: Long): List<CollaboratorAssignedToProject>
 
     fun getLevelForProjectAndUser(projectId: Long, userId: Long): ProjectCollaboratorLevel?
 

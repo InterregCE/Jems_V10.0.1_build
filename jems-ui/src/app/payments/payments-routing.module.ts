@@ -15,8 +15,22 @@ import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.co
 import {AdvancePaymentsPageComponent} from './advance-payments-page/advance-payments-page.component';
 import {PaymentsToProjectPageComponent} from './payments-to-projects-page/payments-to-project-page.component';
 import {
-  PaymentsToEcDetailPageComponent
-} from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+  PaymentToEcDetailPageComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
+import {PermissionGuard} from '../security/permission.guard';
+import {
+  PaymentToEcRegularProjectsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-regular-projects-tab.component';
+import {
+  PaymentToEcSummaryTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
+import {
+  PaymentToEcCorrectionTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
+import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.component';
+import {
+  PaymentToEcFinalizeTabComponent
+} from "./payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component";
 
 export const paymentsRoutes: Routes = [
   {
@@ -30,15 +44,31 @@ export const paymentsRoutes: Routes = [
         PermissionsEnum.AdvancePaymentsUpdate,
         PermissionsEnum.PaymentsToEcRetrieve,
         PermissionsEnum.PaymentsToEcUpdate,
+        PermissionsEnum.PaymentsAuditRetrieve,
+        PermissionsEnum.PaymentsAuditUpdate
       ],
     },
     children: [
       {
         path: '',
         component: PaymentsPageComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          permissionsOnly: [
+            PermissionsEnum.PaymentsRetrieve,
+            PermissionsEnum.PaymentsUpdate,
+            PermissionsEnum.AdvancePaymentsRetrieve,
+            PermissionsEnum.AdvancePaymentsUpdate,
+            PermissionsEnum.PaymentsToEcRetrieve,
+            PermissionsEnum.PaymentsToEcUpdate,
+            PermissionsEnum.PaymentsAuditRetrieve,
+            PermissionsEnum.PaymentsAuditUpdate
+          ],
+        },
       },
       {
         path: 'paymentsToProjects',
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'payments.projects.header',
           permissionsOnly: [
@@ -50,6 +80,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments',
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
           permissionsOnly: [
@@ -61,6 +92,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc',
+        canActivate: [PermissionGuard],
         component: PaymentsToEcPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
@@ -68,10 +100,11 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
           ],
-        },
+        }
       },
       {
         path: 'paymentsToProjects/:paymentId',
+        canActivate: [PermissionGuard],
         component: PaymentsToProjectDetailPageComponent,
         data: {
           dynamicBreadcrumb: true,
@@ -86,6 +119,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments/create',
+        canActivate: [PermissionGuard],
         component: AdvancePaymentsDetailPageComponent,
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
@@ -97,6 +131,7 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'advancePayments/:advancePaymentId',
+        canActivate: [PermissionGuard],
         component: AdvancePaymentsDetailPageComponent,
         data: {
           breadcrumb: 'advance.payments.breadcrumb',
@@ -108,7 +143,8 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc/create',
-        component: PaymentsToEcDetailPageComponent,
+        component: PaymentToEcDetailPageComponent,
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
           permissionsOnly: [
@@ -116,10 +152,21 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcUpdate,
           ],
         },
+        children: [
+          {
+            path: '',
+            redirectTo: 'summary',
+          },
+          {
+            path: 'summary',
+            component: PaymentToEcSummaryTabComponent,
+          },
+        ]
       },
       {
         path: 'paymentApplicationsToEc/:paymentToEcId',
-        component: PaymentsToEcDetailPageComponent,
+        component: PaymentToEcDetailPageComponent,
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
           permissionsOnly: [
@@ -127,6 +174,40 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.PaymentsToEcUpdate,
           ],
         },
+        children: [
+          {
+            path: '',
+            redirectTo: 'summary',
+          },
+          {
+            path: 'summary',
+            component: PaymentToEcSummaryTabComponent,
+          },
+          {
+            path: 'regular',
+            component: PaymentToEcRegularProjectsTabComponent,
+          },
+          {
+            path: 'corrections',
+            component: PaymentToEcCorrectionTabComponent,
+          },
+          {
+            path: 'finalize',
+            component: PaymentToEcFinalizeTabComponent,
+          },
+        ]
+      },
+      {
+        path: 'audit',
+        canActivate: [PermissionGuard],
+        data: {
+          breadcrumb: 'payments.audit.breadcrumb',
+          permissionsOnly: [
+            PermissionsEnum.PaymentsAuditRetrieve,
+            PermissionsEnum.PaymentsAuditUpdate,
+          ],
+        },
+        component: PaymentsAuditPageComponent,
       },
     ]
   }

@@ -36,6 +36,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -43,6 +44,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
@@ -98,7 +100,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected class PreviousVersionOfContribution(
         override val id: Long,
         override val name: String?,
-        override val status: ProjectPartnerContributionStatusDTO?,
+        override val status: ProjectPartnerContributionStatus?,
         override val amount: BigDecimal
     ) : PartnerContributionRow
 
@@ -122,14 +124,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatusDTO.Public,
+            status = ProjectPartnerContributionStatus.Public,
             amount = BigDecimal.ONE
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
+            status = ProjectPartnerContributionStatus.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
@@ -139,14 +141,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatusDTO.Public,
+            status = ProjectPartnerContributionStatus.Public,
             amount = BigDecimal.TEN
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
+            status = ProjectPartnerContributionStatus.AutomaticPublic,
             amount = BigDecimal.ONE
         )
     )
@@ -212,13 +214,13 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         PreviousVersionOfContribution(
             id = 1,
             name = null,
-            status = ProjectPartnerContributionStatusDTO.Public,
+            status = ProjectPartnerContributionStatus.Public,
             amount = BigDecimal.ONE
         ),
         PreviousVersionOfContribution(
             id = 2,
             name = "BMW",
-            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
+            status = ProjectPartnerContributionStatus.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
@@ -274,7 +276,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 2,
         partnerId = 1,
         name = "name",
-        status = ProjectPartnerContributionStatusDTO.Public,
+        status = ProjectPartnerContributionStatus.Public,
         amount = BigDecimal.valueOf(20.5)
     )
     private val programmeFund = ProgrammeFund(
@@ -368,7 +370,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             ProjectPartnerContributionSpf(
                 id = 2,
                 name = "name",
-                status = ProjectPartnerContributionStatusDTO.Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.valueOf(20.5)
             )
         )
@@ -393,7 +395,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         val previousSpfContributionValue = PreviousVersionOfContribution(
             id = 2,
             name = "name",
-            status = ProjectPartnerContributionStatusDTO.Public,
+            status = ProjectPartnerContributionStatus.Public,
             amount = BigDecimal.valueOf(20.5)
         )
         every { projectPartnerSpfCoFinancingRepository
@@ -413,7 +415,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             ProjectPartnerContributionSpf(
                 id = 2,
                 name = "name",
-                status = ProjectPartnerContributionStatusDTO.Public,
+                status = ProjectPartnerContributionStatus.Public,
                 amount = BigDecimal.valueOf(20.5)
             )
         )
@@ -421,6 +423,40 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     @Test
     fun `should update SPF coFinancing`() {
+        val existingContributions = mutableListOf(
+            ProjectPartnerContributionSpfEntity(
+                id = 1,
+                partnerId = 1,
+                name = "name one",
+                status = ProjectPartnerContributionStatus.Private,
+                amount = BigDecimal.valueOf(10)
+            ),
+            ProjectPartnerContributionSpfEntity(
+                id = 2,
+                partnerId = 1,
+                name = "name two",
+                status = ProjectPartnerContributionStatus.Public,
+                amount = BigDecimal.valueOf(20.5)
+            )
+        )
+
+        val newUpdatedContributions = mutableListOf(
+            ProjectPartnerContributionSpfEntity(
+                id = 2,
+                partnerId = 1,
+                name = "name two",
+                status = ProjectPartnerContributionStatus.Public,
+                amount = BigDecimal.valueOf(90)
+            ),
+            ProjectPartnerContributionSpfEntity(
+                id = 3,
+                partnerId = 1,
+                name = "name three",
+                status = ProjectPartnerContributionStatus.AutomaticPublic,
+                amount = BigDecimal.valueOf(200)
+            )
+        )
+
         every { mockPartner.project.call.funds } returns mutableSetOf(callFundRate)
         every { projectPartnerRepository
             .findById(partnerId) } returns Optional.of(mockPartner)
@@ -428,19 +464,45 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             fundId = 1,
             percentage = BigDecimal.valueOf(30.5)
         )
-        val spfContribution = ProjectPartnerContributionSpf(
-            name = "name",
-            status = ProjectPartnerContributionStatusDTO.Public,
-            amount = BigDecimal.valueOf(20.5)
+        val spfContributionsUpdate = listOf(
+            ProjectPartnerContributionSpf(
+                id = 2,
+                name = "name two",
+                status = ProjectPartnerContributionStatus.Public,
+                amount = BigDecimal.valueOf(90)
+            ),
+            ProjectPartnerContributionSpf(
+                id = 0,
+                name = "name three",
+                status = ProjectPartnerContributionStatus.AutomaticPublic,
+                amount = BigDecimal.valueOf(200)
+            ),
         )
-        every { projectPartnerContributionSpfRepository.deleteByPartnerId(partnerId) } returns Unit
+
+        val newEntity = ProjectPartnerContributionSpfEntity(
+            id = 3,
+            partnerId = 1,
+            name = "name three",
+            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            amount = BigDecimal.valueOf(200)
+        )
+
+
+        every { projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId) } returns existingContributions andThen newUpdatedContributions
+
+        val deletedIdsSlot = slot<List<Long>>()
+        every { projectPartnerContributionSpfRepository.deleteAllById(capture(deletedIdsSlot)) } returns Unit
+
+        val contributionToSaveSlot = slot<List<ProjectPartnerContributionSpfEntity>>()
         every { projectPartnerContributionSpfRepository
-            .saveAll(listOf(spfContributionEntity.copy(id = 0))) } returns listOf(spfContributionEntity)
+            .saveAll(capture(contributionToSaveSlot)) } returns listOf(newEntity)
+
+
         every { projectPartnerSpfCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId) } returns Unit
         val capturedEntity = slot<MutableSet<ProjectPartnerCoFinancingSpfEntity>>()
         every { projectPartnerSpfCoFinancingRepository.saveAll(capture(capturedEntity)) } returns listOf(spfFinanceEntity)
 
-        val result = persistence.updateSpfCoFinancingAndContribution(partnerId, listOf(spfFinance), listOf(spfContribution))
+        val result = persistence.updateSpfCoFinancingAndContribution(partnerId, listOf(spfFinance), spfContributionsUpdate)
         assertThat(result.finances).containsExactly(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
@@ -448,13 +510,33 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
                 percentage =  BigDecimal.valueOf(30.5)
             )
         )
+
+        assertThat(deletedIdsSlot.captured).isEqualTo(listOf(1L))
+        assertThat(contributionToSaveSlot.captured).isEqualTo(
+            listOf(
+                ProjectPartnerContributionSpfEntity(
+                    id = 0,
+                    partnerId = 1,
+                    name = "name three",
+                    status = ProjectPartnerContributionStatus.AutomaticPublic,
+                    amount = BigDecimal.valueOf(200)
+                )
+            )
+        )
+
         assertThat(result.partnerContributions).containsExactly(
             ProjectPartnerContributionSpf(
                 id = 2,
-                name = "name",
-                status = ProjectPartnerContributionStatusDTO.Public,
-                amount = BigDecimal.valueOf(20.5)
-            )
+                name = "name two",
+                status = ProjectPartnerContributionStatus.Public,
+                amount = BigDecimal.valueOf(90)
+            ),
+            ProjectPartnerContributionSpf(
+                id = 3,
+                name = "name three",
+                status = ProjectPartnerContributionStatus.AutomaticPublic,
+                amount = BigDecimal.valueOf(200)
+            ),
         )
     }
 }

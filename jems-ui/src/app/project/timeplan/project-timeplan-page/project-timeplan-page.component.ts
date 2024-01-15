@@ -79,7 +79,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
             timelineGroups: getGroups(workPackages, results),
             timelineItems: getItems(workPackages, results, this.translateService),
             timelineTranslations: getInputTranslations(workPackages)[inputLanguage] || [],
-            periods: periods?.length ? [...periods, {projectId: 0, number: periods.length + 1, start: 0, end: 0}] : [],
+            periods: periods?.length ? [...periods, {projectId: 0, number: periods.length + 1, start: 0, end: 0, startDate: '', endDate: ''}] : [],
           });
         }),
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups)),

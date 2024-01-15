@@ -11,22 +11,6 @@
   ],
   "suppressedIssues": [
     {
-      "hash": "22c774bb",
-      "reason": "fill-range has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "b86cbd6a",
-      "reason": "is-absolute has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "6290d4c9",
-      "reason": "micromatch has a broken package.json which can't be parsed"
-    },
-    {
-      "hash": "985635b9",
-      "reason": "plugin calls should take place inside the scope of a transaction even if the plugin's method is not annotated with @Transactional"
-    },
-    {
       "hash": "5d77d119",
       "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
     },
@@ -51,12 +35,80 @@
       "reason": "an indirect npm dependency fails because of it"
     },
     {
-      "hash": "07ecb7ae",
-      "reason": "No classes should throw generic exceptions, but this one is in mapstruct generated Java class"
-    },
-    {
       "hash": "faca5b06",
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
+    },
+    {
+      "hash": "6cea37d6",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "60b8c302",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "3159aa01",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "13285bf0",
+      "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
+    },
+    {
+      "hash": "fe90b98c",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "a15e31cb",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "c4e85ca5",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "7a205810",
+      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "28f75461",
+      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "d50ecbfe",
+      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "e677362b",
+      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "1a2e2e94",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "7c296b17",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "02dfb4b5",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "3263478f",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "4f35a59c",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "459fdfe1",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "4f9636cd",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }
   ]
 }

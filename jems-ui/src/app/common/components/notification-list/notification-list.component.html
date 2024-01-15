@@ -20,7 +20,7 @@
                         <span jemsText maxLines="2">{{ 'project.table.column.name.related' | translate }}</span>
                     </th>
                     <td mat-cell *matCellDef="let notification">
-                        {{notification.project.callName}}
+                        {{notification.project?.callName}}
                     </td>
                 </ng-container>
 
@@ -29,9 +29,9 @@
                         <span jemsText maxLines="2">{{ 'call.detail.notifications.config.tab.project' | translate }}</span>
                     </th>
                     <td mat-cell *matCellDef="let notification">
-                        <a [routerLink]="'/app/project/detail/' + notification.project.projectId" queryParamsHandling="merge"
+                        <a [routerLink]="'/app/project/detail/' + notification.project?.projectId" queryParamsHandling="merge"
                            (click)="$event.stopPropagation()">
-                            <span>{{ notification.project.projectIdentifier }}</span>
+                            <span>{{ notification.project?.projectIdentifier }}</span>
                         </a>
 
                     </td>
@@ -42,7 +42,7 @@
                         <span jemsText maxLines="2">{{ 'project.table.column.name.acronym' | translate }}</span>
                     </th>
                     <td mat-cell *matCellDef="let notification">
-                        <span>{{ notification.project.projectAcronym }}</span>
+                        <span>{{ notification.project?.projectAcronym }}</span>
                     </td>
                 </ng-container>
 
@@ -66,7 +66,7 @@
                     <th mat-header-cell *matHeaderCellDef>
                         <span jemsText maxLines="2">{{ 'notification.table.column.subject' | translate }}</span>
                     </th>
-                    <td mat-cell *matCellDef="let notification">
+                    <td mat-cell *matCellDef="let notification" [class.system-message]="notification.type === 'SystemMessage'">
                         {{notification.subject}}
                     </td>
                 </ng-container>
@@ -86,9 +86,7 @@
                     <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsWithExpanded.length">
                         <div class="element-detail"
                              [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
-                            <div class="notification-body">
-                                {{element.body}}
-                            </div>
+                            <div class="notification-body">{{ element.body }}</div>
                         </div>
                     </td>
                 </ng-container>

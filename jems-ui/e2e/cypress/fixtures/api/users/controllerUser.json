@@ -1,7 +1,7 @@
 {
   "email": "randomize",
-  "name": "Controller User",
+  "name": "Controller",
   "surname": "User",
-  "userRoleId": null,
+  "userRoleId": 4,
   "userStatus": "ACTIVE"
 }

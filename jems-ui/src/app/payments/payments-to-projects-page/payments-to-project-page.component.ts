@@ -31,6 +31,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
   @ViewChild('claimNoCell', {static: true})
   claimNoCell: TemplateRef<any>;
 
+  @ViewChild('paymentToEcCell', {static: true})
+  paymentToEcCell: TemplateRef<any>;
+
   data$: Observable<{
     userCanView: boolean;
     page: PagePaymentToProjectDTO;
@@ -127,6 +130,12 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           sortProperty: 'projectReport.number',
           columnWidth: ColumnWidth.SmallColumn,
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.no.info'
+        },
+        {
+          displayedColumn: 'payments.payment.to.project.table.column.payment.payment.to.ec',
+          customCellTemplate: this.paymentToEcCell,
+          sortProperty: 'ecId',
+          columnWidth: ColumnWidth.SmallColumn,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.claim.submission.date',

@@ -130,14 +130,15 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       this.contributionTotal$,
       this.showTotalContributionWarning$,
       this.partnerContributionErrorsArgs$,
-      this.pageStore.isProjectEditable$
+      this.pageStore.isProjectEditable$,
+      this.pageStore.totalSpfBudget$,
     ]).pipe(
-      map(([financingAndContribution, callFunds, totalBudget, multipleFundsAllowed, privateContributionSubTotal, publicContributionSubTotal, automaticPublicContributionSubTotal, contributionTotal, showTotalContributionWarning, partnerContributionErrorsArgs, editable]: any) => {
+      map(([financingAndContribution, callFunds, totalBudget, multipleFundsAllowed, privateContributionSubTotal, publicContributionSubTotal, automaticPublicContributionSubTotal, contributionTotal, showTotalContributionWarning, partnerContributionErrorsArgs, editable, totalSpfBudget]: any) => {
         this.multipleFundsAllowed = multipleFundsAllowed;
         return {
           financingAndContribution,
           callFunds,
-          totalBudget,
+          totalBudget: NumberService.truncateNumber(totalBudget - totalSpfBudget),
           privateContributionSubTotal,
           publicContributionSubTotal,
           automaticPublicContributionSubTotal,
@@ -340,10 +341,11 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       this.pageStore.totalBudget$,
       this.pageStore.callFunds$,
       this.pageStore.isProjectEditable$,
+      this.pageStore.totalSpfBudget$,
       this.formService.reset$.pipe(startWith(null)),
     ]).pipe(
-      tap(([financingAndContribution, totalBudget, callFunds, isProjectEditable]) =>
-        this.resetForm(financingAndContribution, totalBudget, callFunds, isProjectEditable)
+      tap(([financingAndContribution, totalBudget, callFunds, isProjectEditable, totalSpfBudget]) =>
+        this.resetForm(financingAndContribution, NumberService.minus(totalBudget, totalSpfBudget), callFunds, isProjectEditable)
       ),
       untilDestroyed(this)
     ).subscribe();

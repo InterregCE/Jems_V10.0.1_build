@@ -29,13 +29,15 @@ export class ProjectNotificationsSettingsTabComponent {
 
   projectNotificationVariables = [
     NotificationVariable.PROGRAMME_NAME,
-    NotificationVariable.CALL_ID,
     NotificationVariable.CALL_NAME,
-    NotificationVariable.PROJECT_ID,
     NotificationVariable.PROJECT_IDENTIFIER,
     NotificationVariable.PROJECT_ACRONYM,
     NotificationVariable.FILE_USERNAME,
     NotificationVariable.FILE_NAME
+  ];
+  projectNotificationVariablesWithSystemIds = [
+    NotificationVariable.CALL_ID,
+    NotificationVariable.PROJECT_ID,
   ];
 
   constructor(

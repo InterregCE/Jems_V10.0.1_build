@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.base.reOpenPro
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanReOpenPartnerReport
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -25,7 +24,6 @@ class ReOpenProjectPartnerReport(
     private val reportPersistence: ProjectPartnerReportPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectPersistence: ProjectPersistence,
 ) : ReOpenProjectPartnerReportInteractor {
 
     @CanReOpenPartnerReport
@@ -41,9 +39,8 @@ class ReOpenProjectPartnerReport(
 
         return reportPersistence.updateStatusAndTimes(partnerId = partnerId, reportId = reportId, status).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, reportToBeReOpen.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, it, reportToBeReOpen.status))
             auditPublisher.publishEvent(partnerReportReOpened(this, projectId, it))
         }.status
     }

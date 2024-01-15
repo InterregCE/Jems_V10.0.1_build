@@ -23,12 +23,3 @@ To run any cypress tests on your local Jems environment, you have to start from 
 and `programme` tests one time. This will properly set users and programme configurations.
 All other tests can be run independently, multiple times and in any order. It's just a thing that they expect a certain programme configuration
 that is configured once you run tests from `programme.spec.ts`
-
-
-### Jira integration
-
-To check/develop local test reporting to Jira, set the following env variable in `cypress.config.ts`:
-
-- `jiraApiToken` to a token used to authenticate in Jira (you can create a personal token as well)
-
-Once you run the tests, a new execution will be created in `Jira Test Board` and test results will be reported there.

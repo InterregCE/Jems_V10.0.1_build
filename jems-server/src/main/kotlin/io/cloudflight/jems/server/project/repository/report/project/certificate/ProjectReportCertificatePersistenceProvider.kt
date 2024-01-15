@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.certificate
 
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.partner.toIdentificationSummaries
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.toSubmissionSummary
@@ -18,11 +19,12 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectReportCertificatePersistenceProvider(
     private val projectReportRepository: ProjectReportRepository,
     private val partnerReportRepository: ProjectPartnerReportRepository,
+    private val partnerReportIdentificationRepository: ProjectPartnerReportIdentificationRepository
 ) : ProjectReportCertificatePersistence {
 
     @Transactional
     override fun deselectCertificate(projectReportId: Long, certificateId: Long) {
-        val partnerReport = partnerReportRepository.getById(certificateId)
+        val partnerReport = partnerReportRepository.findById(certificateId).get()
         if (partnerReport.projectReport?.id == projectReportId) {
             partnerReport.projectReport = null
         }
@@ -54,7 +56,9 @@ class ProjectReportCertificatePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun listCertificatesOfProjectReport(projectReportId: Long): List<ProjectPartnerReportSubmissionSummary> =
-        partnerReportRepository.findAllByProjectReportId(projectReportId).map { it.toSubmissionSummary() }
+        partnerReportRepository.findAllByProjectReportId(projectReportId).map {
+            it.toSubmissionSummary(partnerReportIdentificationRepository.getPartnerReportPeriod(it.id))
+        }
 
     @Transactional(readOnly = true)
     override fun getIdentificationSummariesOfProjectReport(projectReportId: Long): List<ProjectPartnerReportIdentificationSummary> =

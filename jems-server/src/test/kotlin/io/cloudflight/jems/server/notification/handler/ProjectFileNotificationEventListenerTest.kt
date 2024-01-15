@@ -7,15 +7,19 @@ import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -90,7 +94,8 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             partnerAbbreviation = "LP-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private fun report(reportId: Long) = ProjectPartnerReportSubmissionSummary(
@@ -107,6 +112,7 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             partnerNumber = 6,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = 1357L,
+            periodNumber = 1
         )
 
         private fun projectReport(reportId: Long) = ProjectReportModel(
@@ -119,20 +125,23 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = 54L,
-            periodNumber = 4,
+            periodNumber = 1,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = PROJECT_ID,
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
             leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
             leadPartnerNameInEnglish = "nameInEnglish",
+            spfPartnerId = null,
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -160,12 +169,19 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
     @MockK
     private lateinit var projectReportPersistence: ProjectReportPersistence
 
+    @MockK
+    private lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    private lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
+
     @InjectMockKs
     private lateinit var listener: ProjectFileNotificationEventListener
 
     @BeforeEach
     internal fun reset() {
-        clearMocks(notificationProjectService, reportPersistence, projectReportPersistence)
+        clearMocks(notificationProjectService, reportPersistence, projectReportPersistence, projectPersistence,
+            reportIdentificationPersistence)
     }
 
     @ParameterizedTest(name = "sendNotifications - {0}, {1}")
@@ -180,8 +196,14 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
     ])
     fun sendNotifications(type: JemsFileType, action: FileChangeAction, reportId: Long?, expectedType: NotificationType, path: String) {
         if (reportId != null) {
+            every { projectPersistence.getProjectPeriods(any(), any()) } returns listOf(
+                ProjectPeriod(1, 1, 1)
+            )
             if(type != JemsFileType.VerificationDocument) {
                 every { reportPersistence.getPartnerReportByIdUnsecured(reportId) } returns report(reportId)
+                every { reportIdentificationPersistence.getAvailablePeriods(any(), reportId) } returns listOf(
+                    ProjectPartnerReportPeriod(1, mockk(), mockk(), 1, 1)
+                )
             } else {
                 every { projectReportPersistence.getReportByIdUnSecured(reportId) } returns projectReport(reportId)
             }
@@ -215,6 +237,9 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
                     mapOf(
                         NotificationVariable.ProjectReportId to reportId,
                         NotificationVariable.ProjectReportNumber to PROJECT_REPORT_NUMBER,
+                        NotificationVariable.ReportingPeriodNumber to 1,
+                        NotificationVariable.ReportingPeriodStart to 1,
+                        NotificationVariable.ReportingPeriodEnd to 1,
                     )
                 )
             } else {
@@ -225,6 +250,9 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
                     NotificationVariable.PartnerAbbreviation to "LP-6",
                     NotificationVariable.PartnerReportId to reportId,
                     NotificationVariable.PartnerReportNumber to 4,
+                    NotificationVariable.ReportingPeriodNumber to 1,
+                    NotificationVariable.ReportingPeriodStart to 1,
+                    NotificationVariable.ReportingPeriodEnd to 1,
                 ))
             }
         }
@@ -278,6 +306,12 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(type, capture(slotVariable)) } answers { }
         every { reportPersistence.getPartnerReportByIdUnsecured(REPORT_ID) } answers { reportSubmissionSummary }
+        every { reportIdentificationPersistence.getAvailablePeriods(any(), REPORT_ID) } returns listOf(
+            ProjectPartnerReportPeriod(1, mockk(), mockk(), 1, 1)
+        )
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, "5.6.1") } answers { listOf(
+            ProjectPeriod(1, 1, 1)
+        ) }
 
         val fileAction = if (type == NotificationType.ControlCommunicationFileUpload) FileChangeAction.Upload else FileChangeAction.Delete
         listener.sendNotifications(
@@ -302,6 +336,9 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             Assertions.entry(NotificationVariable.PartnerAbbreviation, "LP-1"),
             Assertions.entry(NotificationVariable.PartnerReportId, 99L),
             Assertions.entry(NotificationVariable.PartnerReportNumber, 1),
+            Assertions.entry(NotificationVariable.ReportingPeriodNumber, 1),
+            Assertions.entry(NotificationVariable.ReportingPeriodStart, 1),
+            Assertions.entry(NotificationVariable.ReportingPeriodEnd, 1),
         )
     }
 
@@ -311,6 +348,10 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(type, capture(slotVariable)) } answers { }
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } answers { projectReport(REPORT_ID) }
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, "3.0") } answers { listOf(
+            ProjectPeriod(1, 1, 1)
+        ) }
+
         val fileAction = if (type == NotificationType.ProjectReportVerificationFileUpload) FileChangeAction.Upload else FileChangeAction.Delete
         listener.sendNotifications(
             ProjectFileChangeEvent(
@@ -330,6 +371,9 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             Assertions.entry(NotificationVariable.FileName, "attachment.pdf"),
             Assertions.entry(NotificationVariable.ProjectReportId, 99L),
             Assertions.entry(NotificationVariable.ProjectReportNumber, 6),
+            Assertions.entry(NotificationVariable.ReportingPeriodNumber, 1),
+            Assertions.entry(NotificationVariable.ReportingPeriodStart, 1),
+            Assertions.entry(NotificationVariable.ReportingPeriodEnd, 1),
         )
     }
 }

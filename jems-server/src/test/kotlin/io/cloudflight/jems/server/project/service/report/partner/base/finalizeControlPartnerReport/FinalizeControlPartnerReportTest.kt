@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -16,7 +15,6 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
@@ -32,12 +30,14 @@ import io.cloudflight.jems.server.project.service.report.partner.base.submitProj
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -75,7 +75,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partnerAbbreviation = "LP-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
+            partnerId = PARTNER_ID,
+            periodNumber = 1
         )
 
         private val expectedCostCategoryWithParked = BudgetCostsCurrentValuesWrapper(
@@ -89,7 +90,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(485, 1),
                 unitCost = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(37041, 2),
+                spfCost = BigDecimal.valueOf(1942L, 2),
+                sum = BigDecimal.valueOf(38983, 2),
             ),
             currentlyReportedParked = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.ZERO,
@@ -101,21 +103,22 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 other = BigDecimal.ZERO,
                 lumpSum = BigDecimal.valueOf(10, 0),
                 unitCost = BigDecimal.ZERO,
+                spfCost = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(1000, 2),
             )
         )
 
         private val expectedCoFin = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(5174, 2),
-                35L to BigDecimal.valueOf(23380, 2),
-                null to BigDecimal.valueOf(8487, 2),
+                29L to BigDecimal.valueOf(5445, 2),
+                35L to BigDecimal.valueOf(24606, 2),
+                null to BigDecimal.valueOf(8932, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(8487, 2),
-            publicContribution = BigDecimal.valueOf(2222, 2),
-            automaticPublicContribution = BigDecimal.valueOf(2963, 2),
-            privateContribution = BigDecimal.valueOf(3704, 2),
-            sum = BigDecimal.valueOf(37041, 2),
+            partnerContribution = BigDecimal.valueOf(8932, 2),
+            publicContribution = BigDecimal.valueOf(2338, 2),
+            automaticPublicContribution = BigDecimal.valueOf(3118, 2),
+            privateContribution = BigDecimal.valueOf(3898, 2),
+            sum = BigDecimal.valueOf(38983, 2),
         )
 
         private val expectedParkedCoFin = ReportExpenditureCoFinancingColumn(
@@ -193,17 +196,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partOfSampleLocked = false
         )
 
-        private val controlOverview = ControlOverview(
-            startDate = LocalDate.now(),
-            requestsForClarifications = "test",
-            receiptOfSatisfactoryAnswers = "test",
-            endDate = LocalDate.now(),
-            findingDescription = "test",
-            followUpMeasuresFromLastReport = "test",
-            conclusion = "test",
-            followUpMeasuresForNextReport = "test"
-        )
-
         private val controllerInstitution = ControllerInstitutionList(
             id = 1,
             name = "Test institution",
@@ -215,6 +207,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
     @MockK
     private lateinit var reportPersistence: ProjectPartnerReportPersistence
+
+    @MockK
+    private lateinit var preSubmissionCheckService: RunControlPartnerReportPreSubmissionCheckService
 
     @MockK
     private lateinit var partnerPersistence: PartnerPersistence
@@ -252,25 +247,23 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
     @MockK
     private lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 
-    @MockK
-    private lateinit var projectPersistence: ProjectPersistence
-
     @InjectMockKs
     private lateinit var interactor: FinalizeControlPartnerReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, partnerPersistence, reportControlExpenditurePersistence,
+        clearMocks(reportPersistence, preSubmissionCheckService, partnerPersistence, reportControlExpenditurePersistence,
             reportExpenditureCostCategoryPersistence, reportExpenditureCoFinancingPersistence, reportContributionPersistence,
             reportLumpSumPersistence, reportUnitCostPersistence, reportInvestmentPersistence, controlOverviewPersistence,
-            auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence, projectPersistence)
+            auditPublisher, controlInstitutionPersistence, reportDesignatedControllerPersistence)
     }
 
     @ParameterizedTest(name = "finalizeControl (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified"])
     fun finalizeControl(status: ReportStatus) {
         val report = report(42L, status)
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 42L) } returns report
+        every { preSubmissionCheckService.preCheck(PARTNER_ID, 42L).isSubmissionAllowed } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
 
         every {
@@ -289,11 +282,16 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                             originalExpenditureNumber = 3
                         ),
                         parked = true
-                    )
+                    ),
+                    expenditure1.copy(
+                        costCategory = ReportBudgetCategory.SpfCosts,
+                        certifiedAmount = BigDecimal.valueOf(1942L, 2),
+                    ),
                 )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
-        every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
+        val slotToday = slot<LocalDate>()
+        every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, capture(slotToday)) } answers { }
 
         val slotCostCategory = slot<BudgetCostsCurrentValuesWrapper>()
         every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
@@ -318,7 +316,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         } answers { }
 
         every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -327,6 +324,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         assertThat(interactor.finalizeControl(PARTNER_ID, 42L)).isEqualTo(ReportStatus.Certified)
 
         verify(exactly = 1) { reportPersistence.finalizeControlOnReportById(PARTNER_ID, 42L, any()) }
+        verify(exactly = 1) { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, any()) }
+        assertThat(slotToday.captured).isToday()
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
@@ -343,7 +342,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             mapOf(
                 Pair(
                     18L,
-                    ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(25448, 2), currentParked = BigDecimal.ZERO)
+                    ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(27390, 2), currentParked = BigDecimal.ZERO)
                 )
             )
         )
@@ -360,7 +359,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 Pair(
                     10L,
                     ExpenditureInvestmentCurrent(
-                        current = BigDecimal.valueOf(25448, 2),
+                        current = BigDecimal.valueOf(27390, 2),
                         currentParked = BigDecimal.ZERO
                     )
                 )
@@ -375,6 +374,19 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 44L) } returns report
 
         assertThrows<ReportNotInControl> { interactor.finalizeControl(PARTNER_ID, 44L) }
+
+        verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
+    }
+
+    @ParameterizedTest(name = "finalizeControl - fails pre-check (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified"])
+    fun `finalizeControl - fails pre-check`(status: ReportStatus) {
+        val report = report(46L, status)
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 46L) } returns report
+        every { preSubmissionCheckService.preCheck(PARTNER_ID, 46L).isSubmissionAllowed } returns false
+
+        assertThrows<SubmissionNotAllowed> { interactor.finalizeControl(PARTNER_ID, 46L) }
 
         verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -401,6 +413,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 percentage = BigDecimal.valueOf(2291, 2)
             ),
         )
+        every { report.version } returns "5.6.1"
         return report
     }
 }

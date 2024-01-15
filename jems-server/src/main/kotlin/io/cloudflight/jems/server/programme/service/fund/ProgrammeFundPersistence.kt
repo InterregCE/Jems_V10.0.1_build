@@ -11,5 +11,4 @@ interface ProgrammeFundPersistence {
     fun updateFunds(toDeleteIds: Set<Long>, funds: Set<ProgrammeFund>): List<ProgrammeFund>
 
     fun getFundsAlreadyInUse(): Iterable<Long>
-
 }

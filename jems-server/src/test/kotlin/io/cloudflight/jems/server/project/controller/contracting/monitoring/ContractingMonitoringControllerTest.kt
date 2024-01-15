@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.controller.contracting.monitoring
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectiveDimensionDTO
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.contracting.*
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.getLast
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringException
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringInteractor
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -89,7 +91,7 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             )
         )
 
-        private val dummyPeriod = ProjectPeriodForMonitoring(
+        private val dummyPeriod = ProjectPeriod(
             number = 1,
             start = 1,
             end = 6,
@@ -97,7 +99,7 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             endDate = tomorrow,
         )
 
-        private val dummyPeriodExpected = ProjectPeriodForMonitoringDTO(
+        private val dummyPeriodExpected = ProjectPeriodDTO(
             number = 1,
             start = 1,
             end = 6,

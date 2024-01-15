@@ -1,6 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
-import {OutputUser, PaymentDetailDTO, PaymentPartnerDTO, PaymentPartnerInstallmentDTO, UserDTO} from '@cat/api';
+import {
+  AuditControlCorrectionDTO,
+  AvailableCorrectionsForPaymentDTO,
+  OutputUser,
+  PaymentDetailDTO,
+  PaymentPartnerDTO,
+  PaymentPartnerInstallmentDTO,
+  UserDTO
+} from '@cat/api';
 import {PaymentsToProjectPageStore} from '../payments-to-projects-page.store';
 import {ActivatedRoute} from '@angular/router';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -16,6 +24,7 @@ import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {Alert} from '@common/components/forms/alert';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
+import {PaymentsPageSidenavService} from '../../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -58,7 +67,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   data$: Observable<{
     paymentDetail: PaymentDetailDTO;
     currentUser: UserDTO;
+    availableCorrections: AvailableCorrectionsForPaymentDTO[];
   }>;
+  compareCorrections = (c1: AuditControlCorrectionDTO, c2: AuditControlCorrectionDTO) => c1?.id === c2?.id;
 
   constructor(private paymentToProjectsStore: PaymentsToProjectPageStore,
               private activatedRoute: ActivatedRoute,
@@ -68,7 +79,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
               private securityService: SecurityService,
               private localeDatePipe: LocaleDatePipe,
               private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private paymentsPageSidenav: PaymentsPageSidenavService) {
     this.userCanEdit$ = this.paymentToProjectsStore.userCanEdit$;
   }
 
@@ -76,11 +88,13 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       this.data$ = combineLatest([
       this.paymentsDetailPageStore.paymentDetail$,
       this.securityService.currentUserDetails,
+      this.paymentsDetailPageStore.availableCorrections$,
     ])
       .pipe(
-        map(([paymentDetail, currentUser]: any) => ({
+        map(([paymentDetail, currentUser, availableCorrections]: any) => ({
           paymentDetail,
           currentUser,
+          availableCorrections,
         })),
         tap((data) => this.initialPaymentDetail = data.paymentDetail),
         tap(data => this.currentUserDetails = data.currentUser),
@@ -141,6 +155,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       paymentConfirmed: this.formBuilder.control(installment?.paymentConfirmed ? installment.paymentConfirmed : false),
       paymentConfirmedUser: this.formBuilder.control(installment?.paymentConfirmedUser ? this.getOutputUserObject(installment.paymentConfirmedUser) : null),
       paymentConfirmedDate: this.formBuilder.control(installment?.paymentConfirmedDate ? installment.paymentConfirmedDate : null),
+      correction: this.formBuilder.control(installment?.correction || 0),
     });
     this.disableFieldsIfPaymentIsSaved(group);
     this.disableFieldsIfPaymentIsConfirmed(group);
@@ -177,7 +192,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.projectAcronym = data.projectAcronym;
     paymentDetail.amountApprovedPerFund = data.amountApprovedPerFund;
     paymentDetail.dateOfLastPayment = data.dateOfLastPayment;
-      this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
+    paymentDetail.partnerPayments.forEach(pp => // transform 0 into null
+      pp.installments.forEach(i => i.correction = i.correction || null)
+    );
+    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {
@@ -361,6 +379,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  getAvailableCorrectionsForPartner(availableCorrections: AvailableCorrectionsForPaymentDTO[], partnerId: number): AuditControlCorrectionDTO[] {
+    return availableCorrections.find(el => el.partnerId === partnerId)?.corrections ?? [];
   }
 }
 

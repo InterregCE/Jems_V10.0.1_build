@@ -46,10 +46,7 @@
 </ng-template>
 
 <ng-template #budgetCell let-partnerSummary>
-    <div class="ml-auto">
-        {{partnerSummary.totalBudget | asMoney : undefined : {style: 'currency', currency: 'EUR'} }}
-    </div>
-    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" class="ml-2 mr-5 mat-primary"
-              aria-label="navigate directly to partner budget">launch
-    </mat-icon>
+        <a class="ml-auto" [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" alt="navigate directly to partner budget">
+            {{partnerSummary.totalBudget | asMoney : undefined : {style: 'currency', currency: 'EUR'} }}
+        </a>
 </ng-template>

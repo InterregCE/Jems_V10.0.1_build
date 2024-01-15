@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
-import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
@@ -12,10 +11,11 @@ import {InputTranslation, ProjectVersionDTO} from '@cat/api';
 import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
 import {RoutingService} from '@common/services/routing.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router, UrlSerializer} from '@angular/router';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {LongDateFormatKey} from 'moment';
+import {MatTableDataSource} from '@angular/material/table';
 
 @UntilDestroy()
 
@@ -28,10 +28,12 @@ export class TableComponent implements OnInit, OnChanges {
   ColumnType = ColumnType;
   ColumnWidth = ColumnWidth;
 
+  dataSource = new MatTableDataSource();
+
   @Input()
   configuration: TableConfiguration;
   @Input()
-  rows: Observable<any[]> | any[];
+  rows: any[];
   @Input()
   totalElements: number;
   @Input()
@@ -63,11 +65,12 @@ export class TableComponent implements OnInit, OnChanges {
               public languageStore: LanguageStore,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private versionStore: ProjectVersionStore) {
+              private versionStore: ProjectVersionStore,
+              private urlSerializer: UrlSerializer,
+              private router: Router) {
   }
 
   ngOnInit(): void {
-    this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
     this.versionStore.selectedVersion$.pipe(untilDestroyed(this))
       .subscribe((selectedVersion) => this.selectedVersion = selectedVersion);
   }
@@ -148,29 +151,45 @@ export class TableComponent implements OnInit, OnChanges {
     return elementTitle;
   }
 
-  rowClicked(row: any): void {
-    if(!this.configuration.isTableClickable) {
-      return;
+  getRowLink(row: any): string {
+    if (!this.configuration.isTableClickable) {
+      return '';
     }
-
     let queryParams = {};
-    if(this.selectedVersion !== undefined && !this.selectedVersion?.current) {
+    if (this.selectedVersion !== undefined && !this.selectedVersion?.current) {
       queryParams = {queryParams: {version: this.selectedVersion?.version}};
     }
-
-    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0) {
+    let url = '';
+    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0 && this.configuration.routerLink) {
+      url = this.configuration.routerLink;
       this.configuration.extraPathParamFields.forEach((element) => {
-        this.configuration.routerLink = this.configuration.routerLink?.replace(`{${element}}`, row[element]);
+        url = url.replace(`{${element}}`, row[element]);
       });
-      this.routingService.navigate([this.configuration.routerLink], {...queryParams, relativeTo: this.activatedRoute});
+      url = this.urlSerializer.serialize(this.router.createUrlTree([url], {
+        ...queryParams,
+        relativeTo: this.activatedRoute
+      }));
     } else {
-      this.routingService.navigate([this.configuration.routerLink, row.id], {...queryParams, relativeTo: this.activatedRoute});
+      url = this.urlSerializer.serialize(this.router.createUrlTree([this.configuration.routerLink, row.id], {
+        ...queryParams,
+        relativeTo: this.activatedRoute
+      }));
     }
+    return url;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.configuration) {
       this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+      if(this.configuration.isTableClickable) {
+        this.columnsToDisplay.push('anchor');
+      }
+    }
+    if (changes.rows) {
+      this.dataSource.data = this.rows.map(row => ({
+        ...row,
+        link: this.getRowLink(row),
+      }));
     }
   }
 }

@@ -12,13 +12,7 @@ declare global {
 
       submitPartnerReport(partnerId: number, reportId: number);
 
-      startControlWork(partnerId: number, reportId: number);
-
-      setExpenditureItemsAsParked(partnerId: number, reportId: number, partnerReportExpenditures);
-
-      finalizeControl(partnerId: number, reportId: number);
-
-      addPublicProcurement(partnerId: number, reportId: number, procurementDetails)
+      addPublicProcurement(partnerId: number, reportId: number, procurementDetails);
 
       addBeneficialOwnerToProcurement(partnerId: number, reportId: number, procurementId: number, beneficialOwnerDetails: any);
 
@@ -26,17 +20,13 @@ declare global {
 
       addAttachmentToProcurement(fileName:string, filePath: string, partnerId: number, reportId: number, procurementId: number);
 
-      getRegularLumpSums(applicationId: number)
+      getRegularLumpSums(applicationId: number);
 
-      getFastTrackLumpSums(applicationId: number)
+      getFastTrackLumpSums(applicationId: number);
 
-      getUnitCostsByPartnerAndReportIds(partnerId: number, reportId: number)
+      getUnitCostsByPartnerAndReportIds(partnerId: number, reportId: number);
 
-      getLumpSumsByPartnerAndReportIds(partnerId: number, reportId: number)
-
-      startControlChecklist(partnerId: number, reportId: number, checklist);
-
-      finishControlChecklist(partnerId, reportId, checklistId);
+      getLumpSumsByPartnerAndReportIds(partnerId: number, reportId: number);
     }
   }
 }
@@ -81,28 +71,6 @@ Cypress.Commands.add('submitPartnerReport', (partnerId: number, reportId: number
     method: 'POST',
     url: `api/project/report/partner/submit/${partnerId}/${reportId}`,
   });
-});
-
-Cypress.Commands.add('startControlWork', (partnerId: number, reportId: number) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/report/partner/startControl/${partnerId}/${reportId}`,
-  })
-});
-
-Cypress.Commands.add('setExpenditureItemsAsParked', (partnerId: number, reportId: number, parkedExpenditures) => {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/report/partner/control/expenditure/byPartnerId/${partnerId}/byReportId/${reportId}`,
-    body: parkedExpenditures
-  })
-});
-
-Cypress.Commands.add('finalizeControl', (partnerId: number, reportId: number) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/report/partner/finalizeControl/${partnerId}/${reportId}`,
-  })
 });
 
 Cypress.Commands.add('addPublicProcurement', (partnerId: number, reportId: number, procurementDetails) => {
@@ -180,14 +148,6 @@ Cypress.Commands.add('addSubcontractorToProcurement', (partnerId: number, report
   }).then(response => response.body);
 });
 
-Cypress.Commands.add('startControlChecklist', (partnerId, reportId, checklist) => {
-  startControlChecklist(partnerId, reportId, checklist);
-});
-
-Cypress.Commands.add('finishControlChecklist', (partnerId, reportId, checklistId) => {
-    finishControlChecklist(partnerId, reportId, checklistId)
-});
-
 function assignUnitCostIds(partnerId, reportId, partnerReportExpenditures) {
   partnerReportExpenditures.forEach(expenditure => {
     if (expenditure.cypressReferenceUnit === 'shouldHaveUnitCost') {
@@ -196,7 +156,7 @@ function assignUnitCostIds(partnerId, reportId, partnerReportExpenditures) {
           if (unitCost.unitCostProgrammeId === expenditure.unitCostId) expenditure.unitCostId = unitCost.id;
         }));
     }
-  })
+  });
 }
 
 function assignLumpSumIds(partnerId, reportId, partnerReportExpenditures) {
@@ -208,23 +168,6 @@ function assignLumpSumIds(partnerId, reportId, partnerReportExpenditures) {
         }))
     }
   })
-}
-
-function startControlChecklist(partnerId, reportId, checklist) {
-  return cy.request({
-    method: 'POST',
-    url: `api/controlChecklist/byPartnerId/${partnerId}/byReportId/${reportId}`,
-    body: checklist
-  }).then(response => {
-    cy.wrap(response.body.id).as('checklistId');
-  });
-}
-
-function finishControlChecklist(partnerId, reportId, checklistId) {
-    cy.request({
-      method: 'PUT',
-      url: `api/controlChecklist/byPartnerId/${partnerId}/byReportId/${reportId}/status/${checklistId}/FINISHED`
-    });
 }
 
 export {}

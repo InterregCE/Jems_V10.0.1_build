@@ -4,15 +4,18 @@ import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
+import io.cloudflight.jems.plugin.contract.models.controllerInstitutions.InstitutionPartnerDetailsData
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.QControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerSearchRequest
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.stereotype.Repository
+import java.util.stream.Stream
 
 @Repository
 interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstitutionPartnerEntity, Long>,
@@ -175,4 +178,25 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignmentRow>
 
     fun deleteAllByPartnerProjectId(projectId: Long)
+
+
+    @Query(
+        """
+        SELECT new io.cloudflight.jems.plugin.contract.models.controllerInstitutions.InstitutionPartnerDetailsData(
+            cip.institution.id,
+            cip.partnerId,
+            cip.partnerAbbreviation,
+            cip.partnerActive,
+            cip.partnerNumber,
+            cip.addressNuts3Code,
+            cip.partner.project.call.id,
+            cip.partner.project.id,
+            cip.projectIdentifier,
+            cip.projectAcronym
+        )
+        FROM controller_institution_partner_v2 AS cip
+        ORDER BY cip.institution.id
+    """
+    )
+    fun getAllInstitutionPartnerAssignments(): Stream<InstitutionPartnerDetailsData>
 }

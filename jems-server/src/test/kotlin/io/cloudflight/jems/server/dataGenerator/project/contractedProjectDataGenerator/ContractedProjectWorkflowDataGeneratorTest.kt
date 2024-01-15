@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.dataGenerator.project.contractedProjectDataGe
 
 import io.cloudflight.jems.api.project.ProjectStatusApi
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
+import io.cloudflight.jems.api.project.dto.ProjectModificationCreateDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
@@ -13,7 +14,6 @@ import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.project.versionedString
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
-import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -22,12 +22,12 @@ import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
+import java.time.LocalDate
 
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 50)
 class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 
-    private val projectStatusApi =
-        FeignTestClientFactory.createClientApi(ProjectStatusApi::class.java, port, config)
+    private val projectStatusApi = FeignTestClientFactory.createClientApi(ProjectStatusApi::class.java, port, config)
 
     private var version: String = "1.0"
 
@@ -85,8 +85,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
             projectStatusApi.setEligibilityAssessment(
                 CONTRACTED_PROJECT_ID,
                 ProjectAssessmentEligibilityDTO(
-                    ProjectAssessmentEligibilityResult.PASSED,
-                    versionedString("note", version)
+                    ProjectAssessmentEligibilityResult.PASSED, versionedString("note", version)
                 )
             )
         ).isNotNull
@@ -103,8 +102,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
             projectStatusApi.setQualityAssessment(
                 CONTRACTED_PROJECT_ID,
                 ProjectAssessmentQualityDTO(
-                    ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING,
-                    versionedString("note", version)
+                    ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING, versionedString("note", version)
                 )
             )
         ).isNotNull
@@ -172,13 +170,13 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(100)
-    @ExpectSelect(16)
+    @ExpectSelect(18)
     @ExpectUpdate(4)
     fun `reject the first modification of the application`() {
         assertThat(
             projectStatusApi.rejectModification(
                 CONTRACTED_PROJECT_ID,
-                ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), LocalDate.now().plusDays(2))
+                ProjectModificationCreateDTO(ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), LocalDate.now().plusDays(2)))
             )
         ).isEqualTo(ApplicationStatusDTO.MODIFICATION_REJECTED)
     }
@@ -216,14 +214,15 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(130)
-    @ExpectSelect(45)
+    @ExpectSelect(47)
     @ExpectInsert(1)
     @ExpectUpdate(4)
     @ExpectDelete(1)
     fun `approve second modification of the application`() {
         assertThat(
             projectStatusApi.approveModification(
-                CONTRACTED_PROJECT_ID, ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), null)
+                CONTRACTED_PROJECT_ID,
+                ProjectModificationCreateDTO(ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), null))
             )
         ).isEqualTo(
             ApplicationStatusDTO.APPROVED
@@ -298,7 +297,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(190)
-    @ExpectSelect(46)
+    @ExpectSelect(48)
     @ExpectInsert(1)
     @ExpectUpdate(4)
     @ExpectDelete(1)
@@ -306,7 +305,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
         assertThat(
             projectStatusApi.approveModification(
                 CONTRACTED_PROJECT_ID,
-                ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), null)
+                ProjectModificationCreateDTO(ApplicationActionInfoDTO(versionedString("note", version), LocalDate.now(), null), emptySet())
             )
         ).isEqualTo(ApplicationStatusDTO.CONTRACTED)
     }

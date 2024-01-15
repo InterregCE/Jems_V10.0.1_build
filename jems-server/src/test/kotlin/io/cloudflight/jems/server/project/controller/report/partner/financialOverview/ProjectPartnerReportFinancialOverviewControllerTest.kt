@@ -60,6 +60,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
             previouslyReportedParked = BigDecimal.valueOf(100),
+            previouslyReportedSpf = BigDecimal.valueOf(1005L, 1),
             currentReport = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.valueOf(100),
             totalEligibleAfterControl = BigDecimal.ONE,
@@ -133,6 +134,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             other = dummyLine,
             lumpSum = dummyLine,
             unitCost = dummyLine,
+            spfCost = dummyLine,
             total = dummyLine,
         )
 
@@ -193,6 +195,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.valueOf(100),
+            previouslyReportedSpf = BigDecimal.valueOf(1005L, 1),
             currentReportReIncluded = BigDecimal.valueOf(100),
             previouslyValidated = BigDecimal.valueOf(7),
             previouslyPaid = BigDecimal.ONE,
@@ -262,6 +265,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             other = expectedDummyLine,
             lumpSum = expectedDummyLine,
             unitCost = expectedDummyLine,
+            spfCost = expectedDummyLine,
             total = expectedDummyLine,
         )
 

@@ -6,9 +6,9 @@ import {finalize, map, take, tap} from 'rxjs/operators';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {
   ProjectReportVerificationFileStore
-} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-report-verification-file.store';
+} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-report-verification-communication-file-store.service';
 import {Alert} from '@common/components/forms/alert';
-import {JemsFileDTO} from '@cat/api';
+import {JemsFileDTO, ProjectReportDTO} from '@cat/api';
 import {SecurityService} from '../../../../../security/security.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -64,7 +64,7 @@ export class ProjectVerificationReportDocumentTabComponent {
           sizeString: file.sizeString,
           description: file.description,
           editable: canEdit && ReportUtil.isProjectReportAfterVerificationStarted(report.status) && file.author.id === currentUserId,
-          deletable: canEdit && ReportUtil.isProjectReportVerificationOngoing(report.status) && file.author.id === currentUserId,
+          deletable: canEdit && file.author.id === currentUserId && this.isFileDeletable(report.status, file.uploaded, report.verificationLastReOpenDate),
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
         }) as FileListItem),
@@ -127,5 +127,12 @@ export class ProjectVerificationReportDocumentTabComponent {
         children: [],
       }],
     };
+  }
+
+  private isFileDeletable(status: ProjectReportDTO.StatusEnum, uploadedDate: Date, verificationLastReOpenDate: Date) {
+    if (status === ProjectReportDTO.StatusEnum.ReOpenFinalized) {
+      return uploadedDate > verificationLastReOpenDate;
+    }
+    return status === ProjectReportDTO.StatusEnum.InVerification;
   }
 }

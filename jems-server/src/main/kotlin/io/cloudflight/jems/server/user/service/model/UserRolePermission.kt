@@ -24,11 +24,14 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectReportingEdit("ProjectReportingEdit", true),
     ProjectReportingReOpen("ProjectReportingReOpen", true),
     ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen", true),
+
     ProjectReportingProjectView("ProjectReportingProjectView", true),
     ProjectReportingProjectEdit("ProjectReportingProjectEdit", true),
+    ProjectReportingProjectReOpen("ProjectReportingProjectReOpen", true),
     ProjectReportingVerificationProjectView("ProjectReportingVerificationProjectView", true),
     ProjectReportingVerificationProjectEdit("ProjectReportingVerificationProjectEdit", true),
     ProjectReportingVerificationFinalize("ProjectReportingVerificationFinalize", true),
+    ProjectReportingVerificationReOpen("ProjectReportingVerificationReOpen", true),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl", true),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView", true),
@@ -88,10 +91,17 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView", true),
     ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit", true),
+
+    ProjectMonitorAuditAndControlView("ProjectMonitorAuditAndControlView", true),
+    ProjectMonitorAuditAndControlEdit("ProjectMonitorAuditAndControlEdit", true),
+    ProjectMonitorCloseAuditControl("ProjectMonitorCloseAuditControl", true),
+    ProjectMonitorCloseAuditControlCorrection("ProjectMonitorCloseAuditControlCorrection", true),
+    ProjectMonitorReOpenAuditControl("ProjectMonitorReOpenAuditControl", true),
     // endregion Monitor
 
     // region top navigation
     PartnerReportsRetrieve("PartnerReportsRetrieve"),
+    ProjectReportsRetrieve("ProjectReportsRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
     NotificationsRetrieve("NotificationsRetrieve"),
@@ -119,6 +129,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
     PaymentsToEcRetrieve("PaymentsToEcRetrieve"),
     PaymentsToEcUpdate("PaymentsToEcUpdate"),
+    PaymentsAuditRetrieve("PaymentsAuditRetrieve"),
+    PaymentsAuditUpdate("PaymentsAuditUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

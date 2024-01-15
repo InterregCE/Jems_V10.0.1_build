@@ -58,6 +58,7 @@ export class ProjectVerificationReportExpenditureConstants {
       amountAfterVerification: 'amountAfterVerification',
       typologyOfErrorId: 'typologyOfErrorId',
       parked: 'parked',
+      parkedOn: 'parkedOn',
       verificationComment: 'verificationComment',
     }
   };

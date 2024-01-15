@@ -28,6 +28,7 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
     private val infrastructureCostTotal = 773.36.toScaledBigDecimal()
     private val unitCostTotal = 563.36.toScaledBigDecimal()
     private val lumpSumsTotal = 123.4.toScaledBigDecimal()
+    private val spfCostTotal = BigDecimal.valueOf(410_45L, 2)
 
     @MockK
     lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
@@ -50,6 +51,7 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
         every { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) } returns travelCostTotal
         every { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) } returns unitCostTotal
         every { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) } returns lumpSumsTotal
+        every { budgetCostsPersistence.getBudgetSpfCostTotal(partnerId) } returns spfCostTotal
     }
 
     @Test
@@ -65,7 +67,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 travelCostTotal,
-                staffCostTotal
+                staffCostTotal,
+                spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCostTotal, travelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO, expectedTotalCost
@@ -96,7 +99,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 travelCostTotal,
-                staffCostTotal
+                staffCostTotal,
+                spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCostTotal, travelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO, expectedTotalCost
@@ -131,7 +135,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 BigDecimal.ZERO,
-                staffCostTotal
+                staffCostTotal,
+                spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             staffCostTotal, expectedTravelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO, expectedTotalCost
@@ -160,6 +165,7 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
         val expectedTotalCost = expectedTotalCost(staffCosts = expectedStaffCostTotal)
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns budgetOptions
 
+
         every {
             budgetCostsCalculator.calculateCosts(
                 budgetOptions,
@@ -169,7 +175,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 travelCostTotal,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             expectedStaffCostTotal, travelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO, expectedTotalCost
@@ -213,7 +220,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 BigDecimal.ZERO,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                spfCostTotal,
             )
         } returns BudgetCostsCalculationResult(
             expectedStaffCostTotal, expectedTravelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO, expectedTotalCost
@@ -259,7 +267,8 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
                 equipmentCostTotal,
                 infrastructureCostTotal,
                 travelCosts,
-                staffCosts
+                staffCosts,
+                spfCostTotal,
             )
         }
     }
@@ -270,6 +279,7 @@ internal class GetBudgetTotalCostCalculatorTest: UnitTest() {
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetSpfCostTotal(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
     }
 

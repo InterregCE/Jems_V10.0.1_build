@@ -7,10 +7,13 @@ import java.time.ZonedDateTime
 data class PaymentToProjectDTO(
     val id: Long,
     val paymentType: PaymentTypeDTO,
+    val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+    val paymentClaimId: Long?,
     val paymentClaimNo: Int = 0,
     val paymentClaimSubmissionDate: ZonedDateTime?,
+    val paymentToEcId: Long?,
     val paymentApprovalDate: ZonedDateTime?,
     val totalEligibleAmount: BigDecimal,
     val fundName: String,

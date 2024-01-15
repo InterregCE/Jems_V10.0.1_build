@@ -1,0 +1,53 @@
+<jems-project-page-template *ngIf="data$| async as data"
+                            [needsCard]="true"
+                            [isVersionedData]="false"
+                            titleKey="project.application.reporting.title"
+                            subTitleKey="project.breadcrumb.applicationForm.reporting.overview.corrections">
+    <div jemsFormLayout class="mb-4">
+        <h3>{{'project.application.reporting.corrections.title' | translate}}</h3>
+        <p>{{'project.application.reporting.corrections.description' | translate}}</p>
+    </div>
+
+    <ng-container *ngIf="data.canEdit">
+        <p class="mb-3">
+            <button jemsText class="action-button"
+                    color="primary"
+                    mat-raised-button
+                    routerLink="create"
+                    [disabled]="data.page.totalElements > MAX_ALLOWED_AUDITS">
+                <mat-icon>add</mat-icon>
+                {{'project.application.reporting.corrections.add.audit' | translate}}
+            </button>
+        </p>
+    </ng-container>
+
+    <jems-table *ngIf="data.page.numberOfElements"
+                [disableTopPaginator]="true"
+                [configuration]="tableConfiguration"
+                [rows]="data.page.content"
+                [totalElements]="data.page.totalElements"
+                [pageIndex]="overviewStore.newPageIndex$ | async"
+                (newPageIndex)="overviewStore.newPageIndex$.next($event)"
+                (newPageSize)="overviewStore.newPageSize$.next($event)"
+                (sortRows)="overviewStore.newSort$.next($event)">
+    </jems-table>
+
+</jems-project-page-template>
+
+<ng-template #idCell let-auditControl>
+    <span class="id" [matTooltip]="auditControl.projectCustomIdentifier + '_AC_' + auditControl.number">
+        {{auditControl.projectCustomIdentifier}}_AC_{{auditControl.number}}
+    </span>
+</ng-template>
+
+<ng-template #statusCell let-auditControl>
+    <jems-audit-control-status [status]="auditControl.status"></jems-audit-control-status>
+</ng-template>
+
+<ng-template #controllingBody let-auditControl>
+    {{'project.application.reporting.corrections.audit.control.controllingBody.' + auditControl.controllingBody | translate}}
+</ng-template>
+
+<ng-template #controlType let-auditControl>
+    {{'project.application.reporting.corrections.audit.control.controlType.' + auditControl.controlType | translate}}
+</ng-template>

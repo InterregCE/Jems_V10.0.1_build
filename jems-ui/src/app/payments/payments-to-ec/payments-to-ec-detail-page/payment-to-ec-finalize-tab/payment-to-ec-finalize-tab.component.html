@@ -1,0 +1,16 @@
+<div jemsFormLayout *ngIf="data$ | async as data">
+  <h3 class="mt-4">{{ 'payments.to.ec.detail.finalize.tab.title' | translate }}</h3>
+  <div>
+    <p>{{ 'payments.to.ec.detail.finalize.tab.description.1' | translate }}</p>
+    <p>{{ 'payments.to.ec.detail.finalize.tab.description.2' | translate }}</p>
+  </div>
+  <div *ngIf="data.canFinalize">
+       <jems-pending-button
+           [confirm]="{title: 'payments.to.ec.table.action.finalize.dialog.title', message: 'payments.to.ec.table.action.finalize.dialog.message', warnMessage: 'payments.to.ec.table.action.finalize.dialog.warning'}"
+           [disabled]="data.finalizationDisabled"
+           [pending]="statusChangePending$ | async"
+           (clicked)="finalizePaymentApplication(data.paymentDetail.id)">
+          {{'payments.to.ec.table.action.finalize.button' | translate}}
+      </jems-pending-button>
+  </div>
+</div>

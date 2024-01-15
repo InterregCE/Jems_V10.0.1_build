@@ -13,4 +13,5 @@ data class ProjectReportSubmissionSummary(
     val projectId: Long,
     val projectIdentifier: String,
     val projectAcronym: String,
+    val periodNumber: Int?
 )

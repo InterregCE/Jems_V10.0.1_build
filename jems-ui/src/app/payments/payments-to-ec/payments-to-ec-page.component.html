@@ -4,9 +4,9 @@
         <h2>{{'payments.to.ec.header' | translate}}</h2>
         <p>{{'payments.to.ec.sub.header' | translate}}</p>
 
-        <div class="add-payment-to-ec-button" hidden="true"><!--Will be enabled in V9: MP2-3852-->
+        <div class="add-payment-to-ec-button">
             <button *ngIf="userCanEdit$ | async"
-                    mat-stroked-button color="primary"
+                    mat-raised-button color="primary"
                     [routerLink]="'/app/payments/paymentApplicationsToEc/create'">
                 + {{'payments.to.ec.payment.add.button' | translate}}
             </button>
@@ -31,11 +31,10 @@
 </ng-template>
 
 <ng-template #accountingYearCell let-payment>
-    <span>{{ ('accounting.year.' + payment.accountingYear.year) | translate }}:
-        {{ payment.accountingYear.startDate | localeDate }} - {{ payment.accountingYear.endDate | localeDate }}</span>
+    <span>{{ payment.accountingYear | asAccountingYear }}</span>
 </ng-template>
 <ng-template #deleteButtonCell let-payment>
-    <button *ngIf="userCanEdit$ | async"
+    <button *ngIf="payment.status === paymentStatusEnum.Draft && (userCanEdit$ | async)"
             (click)="$event.stopPropagation(); removeItem(payment.id);"
             class="delete-button"
             color="accent" mat-icon-button

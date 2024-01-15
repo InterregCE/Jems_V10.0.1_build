@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.accountingYears.repository
 
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
-import io.cloudflight.jems.server.payments.model.regular.AccountingYear
+import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 

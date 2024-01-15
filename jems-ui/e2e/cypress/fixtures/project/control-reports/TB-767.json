@@ -1,0 +1,31 @@
+{
+  "controllerUserEdit": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": 4,
+    "userStatus": "ACTIVE"
+  },
+  "controllerUserView": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": 4,
+    "userStatus": "ACTIVE"
+  },
+  "controllerInstitution": {
+    "name": "randomize",
+    "description": "Controller institution for control-report description",
+    "institutionNuts": ["FRK27", "AT13", "AT130"],
+    "institutionUsers": [
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      },
+      {
+        "userEmail": "randomize",
+        "accessLevel": "View"
+      }
+    ]
+  }
+}

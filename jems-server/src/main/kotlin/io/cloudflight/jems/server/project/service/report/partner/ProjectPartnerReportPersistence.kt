@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner
 
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
@@ -63,4 +64,6 @@ interface ProjectPartnerReportPersistence {
     fun deletePartnerReportById(reportId: Long)
 
     fun getReportStatusById(reportId: Long): ReportStatus
+
+    fun getAvailableReports(partnerIds: Set<Long>): List<CorrectionAvailableReportTmp>
 }

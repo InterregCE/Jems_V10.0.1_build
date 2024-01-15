@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -49,14 +50,17 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 projectAcronym = "projectAcronym",
                 leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
                 leadPartnerNameInEnglish = "nameInEnglish",
+                spfPartnerId = null,
 
                 createdAt = LAST_WEEK,
                 firstSubmission = LAST_WEEK.plusDays(1),
+                lastReSubmission = mockk(),
                 verificationDate = YESTERDAY.plusDays(2),
                 verificationEndDate = null,
                 verificationConclusionJs = null,
                 verificationConclusionMa = null,
                 verificationFollowup = null,
+                lastVerificationReOpening = mockk(),
                 riskBasedVerification = false,
                 riskBasedVerificationDescription = "Risk based description"
             )

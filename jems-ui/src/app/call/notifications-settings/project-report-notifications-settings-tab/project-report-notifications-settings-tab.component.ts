@@ -29,17 +29,23 @@ export class ProjectReportNotificationsSettingsTabComponent {
 
   projectReportNotificationVariables = [
     NotificationVariable.PROGRAMME_NAME,
-    NotificationVariable.CALL_ID,
     NotificationVariable.CALL_NAME,
-    NotificationVariable.PROJECT_ID,
     NotificationVariable.PROJECT_IDENTIFIER,
     NotificationVariable.PROJECT_ACRONYM,
-    NotificationVariable.PROJECT_REPORT_ID,
     NotificationVariable.PROJECT_REPORT_NUMBER,
+    NotificationVariable.REPORTING_PERIOD_NUMBER,
+    NotificationVariable.REPORTING_PERIOD_START,
+    NotificationVariable.REPORTING_PERIOD_END,
     NotificationVariable.USERNAME,
     NotificationVariable.FILE_USERNAME,
     NotificationVariable.FILE_NAME
   ];
+  projectReportNotificationVariablesWithSystemIds = [
+    NotificationVariable.CALL_ID,
+    NotificationVariable.PROJECT_ID,
+    NotificationVariable.PROJECT_REPORT_ID,
+  ];
+
   constructor(
     private formBuilder: FormBuilder,
     private formService: FormService,

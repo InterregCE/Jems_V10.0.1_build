@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
 class AuditBuilder(action: AuditAction) {
 
@@ -46,6 +47,14 @@ class AuditBuilder(action: AuditAction) {
             id = projectId.toString(),
             customIdentifier = customIdentifier,
             name = acronym,
+        )
+    }
+
+    fun project(report: ProjectReportModel) = apply {
+        this.project = AuditProject(
+            id = report.projectId.toString(),
+            customIdentifier = report.projectIdentifier,
+            name = report.projectAcronym,
         )
     }
 

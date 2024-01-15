@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanCreateProjectReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -53,6 +56,8 @@ class CreateProjectReport(
     private val projectResultPersistence: ProjectResultPersistence,
     private val projectReportResultPersistence: ProjectReportResultPrinciplePersistence,
     private val workPlanPersistence: ProjectReportWorkPlanPersistence,
+    private val deadlinePersistence: ContractingReportingPersistence,
+    private val callPersistence: CallPersistence,
 ) : CreateProjectReportInteractor {
 
     companion object {
@@ -78,6 +83,9 @@ class CreateProjectReport(
             noLinkAndDataMissingExceptionResolver = { LinkToDeadlineNotProvidedAndDataMissing() },
             periodNumberExceptionResolver = { PeriodNumberInvalid(it) },
         )
+        val type = if (data.deadlineId == null) data.type!! else
+            deadlinePersistence.getContractingReportingDeadline(projectId, data.deadlineId).type
+        validateNoReOpenedReports(projectId, type)
 
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
         val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version).toSet()
@@ -96,9 +104,10 @@ class CreateProjectReport(
             .toCreateModel(previouslyReportedByNumber = projectReportResultPersistence.getResultCumulative(submittedReportIds))
         val projectManagement = projectDescriptionPersistence.getProjectManagement(projectId = projectId, version = version)
 
+        val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
         val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.type.hasContent() }?.id
         val reportToCreate = ProjectReportCreateModel(
-            reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
+            reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner, isSpf = isSpf),
             reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
                 projectId = projectId,
                 version = version,
@@ -118,7 +127,7 @@ class CreateProjectReport(
 
         return reportCreatePersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
             auditPublisher.publishEvent(projectReportCreated(this, project, it))
-        }.toServiceModel { periodNumber -> periods[periodNumber]!! }
+        }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
     }
 
     private fun getPreviouslyReportedByPartner(
@@ -143,6 +152,16 @@ class CreateProjectReport(
             throw MaxAmountOfReportsReachedException()
     }
 
+    private fun validateNoReOpenedReports(projectId: Long, type: ContractingDeadlineType) {
+        val newerReOpened = reportPersistence.existsHavingTypeAndStatusIn(
+            projectId = projectId,
+            havingType = type,
+            statuses = ProjectReportStatus.UNLIMITED_REOPEN_STATUSES,
+        )
+        if (newerReOpened.isNotEmpty())
+            throw LastReOpenedReportException(reOpenedReportNumbers = newerReOpened)
+    }
+
     private fun validateProjectIsContracted(project: ProjectFull) {
         if (!project.projectStatus.status.isAlreadyContracted())
             throw ReportCanBeCreatedOnlyWhenContractedException()
@@ -153,6 +172,7 @@ class CreateProjectReport(
         version: String,
         project: ProjectFull,
         leadPartner: ProjectPartnerDetail?,
+        isSpf: Boolean,
     ) = ProjectReportModel(
         reportNumber = latestReportNumber.plus(1),
         status = ProjectReportStatus.Draft,
@@ -168,14 +188,17 @@ class CreateProjectReport(
         projectAcronym = project.acronym,
         leadPartnerNameInOriginalLanguage = leadPartner?.nameInOriginalLanguage ?: "",
         leadPartnerNameInEnglish = leadPartner?.nameInEnglish ?: "",
+        spfPartnerId = if (!isSpf) null else leadPartner?.id ?: throw NoPartnerForSpfProject(),
         createdAt = ZonedDateTime.now(),
         firstSubmission = null,
+        lastReSubmission = null,
         verificationDate = null,
         verificationEndDate = null,
         amountRequested = BigDecimal.ZERO,
         totalEligibleAfterVerification = BigDecimal.ZERO,
+        lastVerificationReOpening = null,
         riskBasedVerification = false,
-        riskBasedVerificationDescription = null
+        riskBasedVerificationDescription = null,
     )
 
     private fun List<ProjectResult>.toCreateModel(

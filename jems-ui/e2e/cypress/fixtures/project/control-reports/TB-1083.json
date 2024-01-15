@@ -1,0 +1,12 @@
+{
+  "checklist": [
+    {
+      "programmeChecklistId": 3,
+      "relatedToId": null
+    },
+    {
+      "programmeChecklistId": 2,
+      "relatedToId": null
+    }
+  ]
+}

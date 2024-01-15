@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerF
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -27,24 +28,18 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
         partners: List<ProjectPartnerSummary>,
         projectFunds: List<ProgrammeFund>,
         coFinancing: List<PartnerBudgetCoFinancing>,
-        spfCoFinancing: List<PartnerBudgetSpfCoFinancing?>
+        spfCoFinancing: List<PartnerBudgetSpfCoFinancing>,
     ): List<ProjectPartnerBudgetPerFund> {
 
-        val totalEligibleBudgetManagement = coFinancing.sumOf { it.total!! }
-        val totalEligibleBudgetSum =
-            if (spfCoFinancing.any { it?.total != null }) {
-                totalEligibleBudgetManagement.add(
-                    spfCoFinancing
-                        .filter { it?.total != null }
-                        .sumOf { it?.total ?: BigDecimal.ZERO }
-                )
-            } else {
-                totalEligibleBudgetManagement
-            }
+        val coFinancingByPartner = coFinancing.associateBy { it.partner.id!! }
+        val coFinancingSpfByPartner = spfCoFinancing.associateBy { it.partner.id!! }
+
+        val totalEligibleBudgetSum = coFinancingByPartner.values.sumOf { it.total!! }
 
         // add partner lines - (management in case of SPF) costs
-        val tableRowsExceptTotal = coFinancing.map {
+        val tableRowsExceptTotal = coFinancingByPartner.map { (partnerId, it) ->
             val coFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+                .minus(coFinancingSpfByPartner[partnerId]?.total ?: BigDecimal.ZERO)
             val partnerContributions = it.projectPartnerCoFinancingAndContribution?.partnerContributions ?: emptyList()
             ProjectPartnerBudgetPerFund(
                 partner = it.partner,
@@ -54,22 +49,20 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
                     it.projectPartnerCoFinancingAndContribution?.finances ?: emptyList(),
                     coFinancingTotal
                 ),
-                publicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Public),
-                autoPublicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.AutomaticPublic),
-                privateContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Private),
+                publicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatus.Public),
+                autoPublicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatus.AutomaticPublic),
+                privateContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatus.Private),
                 totalPartnerContribution = getPartnerContribution(partnerContributions, null),
                 totalEligibleBudget = coFinancingTotal,
                 percentageOfTotalEligibleBudget = calculatePercentage(coFinancingTotal, totalEligibleBudgetSum)
             )
         }.toMutableList()
 
-        // add lines for SPF costs
-        if (spfCoFinancing.any { it != null }) {
-            spfCoFinancing.forEach {
-                if (it != null) {
-                    val spfCoFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
-                    val partnerContributions = it.projectPartnerCoFinancingAndContribution.partnerContributions
-                    tableRowsExceptTotal.add(
+        // add lines for SPF costs if Call is of type SPF
+        coFinancingSpfByPartner.forEach { (_, it) ->
+            val spfCoFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+            val partnerContributions = it.projectPartnerCoFinancingAndContribution.partnerContributions
+            tableRowsExceptTotal.add(
                         ProjectPartnerBudgetPerFund(
                             partner = it.partner,
                             costType = ProjectPartnerCostType.Spf,
@@ -80,15 +73,15 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
                             ),
                             publicContribution = getPartnerContribution(
                                 partnerContributions,
-                                ProjectPartnerContributionStatusDTO.Public
+                                ProjectPartnerContributionStatus.Public
                             ),
                             autoPublicContribution = getPartnerContribution(
                                 partnerContributions,
-                                ProjectPartnerContributionStatusDTO.AutomaticPublic
+                                ProjectPartnerContributionStatus.AutomaticPublic
                             ),
                             privateContribution = getPartnerContribution(
                                 partnerContributions,
-                                ProjectPartnerContributionStatusDTO.Private
+                                ProjectPartnerContributionStatus.Private
                             ),
                             totalPartnerContribution = getPartnerContribution(partnerContributions, null),
                             totalEligibleBudget = spfCoFinancingTotal,
@@ -97,9 +90,7 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
                                 totalEligibleBudgetSum
                             )
                         )
-                    )
-                }
-            }
+            )
         }
 
         val totalBudgetsPerFundTotal = projectFunds.map { fund ->
@@ -182,7 +173,7 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
 
     private fun getPartnerContribution(
         partnerContributions: Collection<ProjectContribution>?,
-        status: ProjectPartnerContributionStatusDTO?
+        status: ProjectPartnerContributionStatus?
     ): BigDecimal {
         var partnerContribution = BigDecimal.ZERO
         if (!partnerContributions.isNullOrEmpty()) {

@@ -9,6 +9,7 @@ table {
 }
 .table-row {
   padding: 0.5rem 0;
+  word-break: break-word;
 
   > :first-child {
     padding-left: 1rem
@@ -19,9 +20,28 @@ table {
   > * {
     padding: 0.5rem;
   }
+  &.jems-multi-column-row {
+    > * {
+      flex: 0;
+    }
+  }
+
 }
 
 // payment columns
+.column-installment-number {
+  min-width: 5rem;
+  max-width: 5rem;
+}
+.column-installment-corrections {
+  min-width: 5rem;
+  max-width: 12rem;
+  width: auto;
+}
+.column-comment {
+  min-width: 10rem !important;
+  width: auto;
+}
 .column-partner-id {
   min-width: 4rem;
   max-width: 4rem;
@@ -37,12 +57,16 @@ table {
 }
 .column-partner-name {
   min-width: 9rem;
-  max-width: 100%;
+  width: auto;
+}
+.column-installment-authorise-checkbox, .column-installment-confirm-checkbox {
+  min-width: 9rem;
+  max-width: 16rem;
   width: auto;
 }
 .column-amount-approved, .column-payments-remaining {
-  min-width: 9rem;
-  max-width: 9rem;
+  min-width: 10rem;
+  max-width: 10rem;
 }
 .column-add-payment {
   min-width: 9rem;
@@ -145,14 +169,19 @@ h3#project-title {
 .display-row {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
 }
 
 .column-checkbox-text-content {
   margin-left: 0.75rem !important;
-  align-items: center;
+  align-items: flex-start;
   font-size: 0.75rem;
   line-height: 1.2em;
+  overflow: hidden;
+}
+
+.overflow-hidden {
+  overflow: hidden;
 }
 

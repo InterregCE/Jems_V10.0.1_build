@@ -78,7 +78,7 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
                     targetValue = BigDecimal.valueOf(2),
                     achievedInReportingPeriod = BigDecimal.valueOf(3),
                     cumulativeValue = BigDecimal.valueOf(4),
-                    periodDetail = ProjectPeriodDTO(0L, 4, 12, 24),
+                    periodDetail = ProjectPeriodDTO(4, 12, 24, null, null),
                     description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
                     attachment = JemsFileMetadataDTO(697L, name = "file.att", time),
@@ -192,7 +192,7 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
 
         val result = controller.downloadAttachmentFromResult(projectId, reportId, resultNumber)
         assertThat(result.body?.byteArray).isEqualTo(file.second)
-        assertThat(result.headers[HttpHeaders.CONTENT_DISPOSITION]).containsExactly("attachment; filename=\"file-name\"")
+        assertThat(result.headers[HttpHeaders.CONTENT_DISPOSITION]).containsExactly("attachment; filename*=UTF-8''file-name")
     }
 
     @Test

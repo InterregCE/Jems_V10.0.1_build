@@ -31,9 +31,11 @@ enum class NotificationType {
 
     // Project Report
     ProjectReportSubmitted,
+    ProjectReportReOpen,
     ProjectReportVerificationOngoing,
     ProjectReportVerificationDoneNotificationSent,
     ProjectReportVerificationFinalized,
+    ProjectReportVerificationReOpen,
 
     // Project File
     SharedFolderFileUpload,
@@ -41,8 +43,10 @@ enum class NotificationType {
     ControlCommunicationFileUpload,
     ControlCommunicationFileDelete,
     ProjectReportVerificationFileUpload,
-    ProjectReportVerificationFileDelete;
+    ProjectReportVerificationFileDelete,
 
+    // System Message
+    SystemMessage;
 
     companion object {
 
@@ -78,9 +82,11 @@ enum class NotificationType {
 
         val projectReportNotifications = setOf(
             ProjectReportSubmitted,
+            ProjectReportReOpen,
             ProjectReportVerificationOngoing,
             ProjectReportVerificationDoneNotificationSent,
-            ProjectReportVerificationFinalized
+            ProjectReportVerificationFinalized,
+            ProjectReportVerificationReOpen,
         )
 
         val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
@@ -101,5 +107,8 @@ enum class NotificationType {
     fun isPartnerReportFileNotification() = this in partnerReportFileControlCommunicationNotifications
 
     fun isProjectReportFileNotification() = this in projectFileVerificationCommunicationNotifications
+
+
+    fun isSystemMessage() = this == SystemMessage
 
 }

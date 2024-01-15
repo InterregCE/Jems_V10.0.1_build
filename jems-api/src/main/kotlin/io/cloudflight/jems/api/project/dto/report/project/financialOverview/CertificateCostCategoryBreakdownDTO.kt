@@ -10,5 +10,6 @@ data class CertificateCostCategoryBreakdownDTO(
     val other: CertificateCostCategoryBreakdownLineDTO,
     val lumpSum: CertificateCostCategoryBreakdownLineDTO,
     val unitCost: CertificateCostCategoryBreakdownLineDTO,
+    val spfCost: CertificateCostCategoryBreakdownLineDTO,
     val total: CertificateCostCategoryBreakdownLineDTO,
 )

@@ -1,8 +1,12 @@
 <jems-form *ngIf="data$ | async as data"
            (save)="saveForm()"
-           (discard)="resetForm(data.workPackages, data.reportEditable)">
+           (discard)="resetForm(data.workPackages, data.reportEditable, data.reopenedLimited)">
 
-    <h3 class="mb-3" [innerText]="'project.application.project.report.tab.work.plan' | translate"></h3>
+    <h3 class="mb-3" [innerText]="'project.application.project.report.tab.work.plan' | translate">
+        <jems-context-info infoPosition="right"
+                           infoText="{{'project.application.project.report.tab.work.plan.infobubble.description' | translate }}">
+        </jems-context-info>
+    </h3>
 
     <form [formGroup]="form" jemsFormLayout>
 
@@ -38,7 +42,7 @@
                     </mat-expansion-panel-header>
 
                     <div>
-                        <mat-checkbox class="my-3" [formControlName]="constants.WORK_PACKAGE_COMPLETED.name">
+                        <mat-checkbox class="my-3" [formControlName]="constants.WORK_PACKAGE_COMPLETED.name" [disabled]="data.reopenedLimited">
                             {{ 'project.application.project.report.tab.work.plan.work.package.completed' | translate }}
                         </mat-checkbox>
                     </div>
@@ -74,7 +78,7 @@
 
                         <mat-form-field class="input-field">
                             <mat-label [innerText]="'project.application.project.report.tab.work.plan.work.package.project.status' | translate"></mat-label>
-                            <mat-select [formControlName]="constants.WORK_PACKAGE_SPECIFIC_STATUS.name">
+                            <mat-select [disabled]="data.reopenedLimited" [formControlName]="constants.WORK_PACKAGE_SPECIFIC_STATUS.name">
                                 <mat-option *ngFor="let status of specificStatus" [value]="status"
                                             [innerText]="('project.application.project.report.tab.work.plan.work.package.project.status.' + status) | translate"></mat-option>
                             </mat-select>
@@ -119,7 +123,7 @@
                         <mat-form-field class="input-field">
                             <mat-label
                                     [innerText]="'project.application.project.report.tab.work.plan.work.package.communication.status' | translate"></mat-label>
-                            <mat-select [formControlName]="constants.WORK_PACKAGE_COMMUNICATION_STATUS.name">
+                            <mat-select [disabled]="data.reopenedLimited" [formControlName]="constants.WORK_PACKAGE_COMMUNICATION_STATUS.name">
                                 <mat-option *ngFor="let status of communicationStatus" [value]="status"
                                             [innerText]="('project.application.project.report.tab.work.plan.work.package.communication.status.' + status) | translate"></mat-option>
                             </mat-select>
@@ -176,9 +180,10 @@
                                         class="input-field">
                                     <mat-label
                                             [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.delivery.period' | translate"></mat-label>
-                                    <input matInput disabled [value]="investment.get(constants.INVESTMENT_PERIOD.name)?.value
-                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                             getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )">
+                                    <input matInput disabled [matTooltip]="investment.get(constants.INVESTMENT_PERIOD.name)?.value && ProjectUtil.getPeriodKey(investment.get(constants.INVESTMENT_PERIOD.name)?.value.startDate) | translate :
+                                             ProjectUtil.getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )"
+                                           [value]="investment.get(constants.INVESTMENT_PERIOD.name)?.value && ProjectUtil.getPeriodKey(investment.get(constants.INVESTMENT_PERIOD.name)?.value.startDate) | translate :
+                                             ProjectUtil.getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )">
                                 </mat-form-field>
 
                                 <mat-form-field jemsFormFieldWidth="xxx-large"
@@ -261,22 +266,20 @@
                                                     class="input-field">
                                         <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.start' | translate"></mat-label>
                                         <input matInput disabled [value]="activity.get(constants.ACTIVITY_START_PERIOD.name)?.value
-                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                             getPeriodArguments(activity.get(constants.ACTIVITY_START_PERIOD.name)?.value )">
+                                             && ProjectUtil.getPeriodKey(activity.get(constants.ACTIVITY_START_PERIOD.name)?.value.startDate) | translate : ProjectUtil.getPeriodArguments(activity.get(constants.ACTIVITY_START_PERIOD.name)?.value )">
                                     </mat-form-field>
 
                                     <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.END_PERIOD"
                                                     class="input-field">
                                         <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.end' | translate "></mat-label>
                                         <input matInput disabled [value]="activity.get(constants.ACTIVITY_END_PERIOD.name)?.value
-                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                             getPeriodArguments(activity.get(constants.ACTIVITY_END_PERIOD.name)?.value )">
+                                               && ProjectUtil.getPeriodKey(activity.get(constants.ACTIVITY_END_PERIOD.name)?.value.startDate) | translate : ProjectUtil.getPeriodArguments(activity.get(constants.ACTIVITY_END_PERIOD.name)?.value )">
                                     </mat-form-field>
 
                                     <mat-form-field class="input-field">
                                         <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.status' | translate"></mat-label>
-                                        <mat-select [formControlName]="constants.ACTIVITY_STATUS.name">
-                                            <mat-option *ngFor="let status of activityStatus" [value]="status"
+                                        <mat-select [formControlName]="constants.ACTIVITY_STATUS.name" [disabled]="data.reopenedLimited">
+                                            <mat-option  *ngFor="let status of activityStatus" [value]="status"
                                                         [innerText]="('project.application.project.report.tab.work.plan.activity.status.' + status) | translate"></mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -334,9 +337,8 @@
                                                 <mat-form-field class="input-field">
                                                     <mat-label
                                                             [innerText]="'project.application.project.report.tab.work.plan.deliverable.period' | translate"></mat-label>
-                                                    <input matInput disabled [value]="deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value
-                                                        && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                                        getPeriodArguments(deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value )">
+                                                    <input matInput disabled [value]="deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value && ProjectUtil.getPeriodKey(deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value.startDate) | translate :
+                                                        ProjectUtil.getPeriodArguments(deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value )">
                                                 </mat-form-field>
 
                                                 <mat-form-field class="input-field">
@@ -443,9 +445,8 @@
                                     <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DELIVERY_PERIOD"
                                                     class="input-field">
                                         <mat-label [innerText]="'project.application.project.report.tab.work.plan.output.period' | translate"></mat-label>
-                                        <input matInput disabled [value]="output.get(constants.OUTPUT_PERIOD.name)?.value
-                                            && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                            getPeriodArguments(output.get(constants.OUTPUT_PERIOD.name)?.value )">
+                                        <input matInput disabled [value]="output.get(constants.OUTPUT_PERIOD.name)?.value && ProjectUtil.getPeriodKey(output.get(constants.OUTPUT_PERIOD.name)?.value.startDate) | translate :
+                                            ProjectUtil.getPeriodArguments(output.get(constants.OUTPUT_PERIOD.name)?.value )">
                                     </mat-form-field>
                                     <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE"
                                                     class="input-field">

@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
@@ -19,7 +18,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
-import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -33,9 +31,6 @@ import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 
 internal class UpdateProjectReportWorkPlanTest : UnitTest() {
 
@@ -259,9 +254,6 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
-
-    @MockK
     lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
 
     @RelaxedMockK
@@ -272,14 +264,11 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(reportPersistence, reportWorkPlanPersistence, generalValidator)
+        clearMocks(reportWorkPlanPersistence, generalValidator)
     }
 
-    @ParameterizedTest(name = "update {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"])
-    fun update(status: ProjectReportStatus) {
-        every { reportPersistence.getReportById(PROJECT_ID, reportId = 11L).status } returns status
-
+    @Test
+    fun update() {
         every { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, reportId = 11) } returnsMany listOf(
                 listOf(oldWorkPlan),
                 listOf(newWorkPlan),
@@ -314,7 +303,6 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
 
     @Test
     fun `update - no changes`() {
-        every { reportPersistence.getReportById(PROJECT_ID, reportId = 12L).status } returns ProjectReportStatus.Draft
         every { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, reportId = 12) } returnsMany listOf(
                 listOf(oldWorkPlan),
                 listOf(oldWorkPlan),
@@ -333,13 +321,6 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
         verify(exactly = 0) { reportWorkPlanPersistence.updateReportWorkPackageOutput(any(), any(), any()) }
 
         verify(exactly = 2) { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, reportId = 12L) }
-    }
-
-    @ParameterizedTest(name = "update - wrong status {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
-    fun `update - wrong status`(status: ProjectReportStatus) {
-        every { reportPersistence.getReportById(PROJECT_ID, reportId = 0L).status } returns status
-        assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PROJECT_ID, reportId = 0L, emptyList()) }
     }
 
 }

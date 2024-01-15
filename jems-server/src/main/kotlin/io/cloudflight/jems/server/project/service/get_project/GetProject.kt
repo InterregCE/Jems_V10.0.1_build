@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjects
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectsWithOwnership
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.getOnlyFormRelatedData
 import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
@@ -17,9 +18,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.common.toLimits
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class GetProject(
@@ -27,6 +30,7 @@ class GetProject(
     private val projectCollaboratorPersistence: UserProjectCollaboratorPersistence,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
     private val securityService: SecurityService,
 ) : GetProjectInteractor {
 
@@ -38,7 +42,8 @@ class GetProject(
     override fun getProjectDetail(projectId: Long, version: String?): ProjectDetail {
         val project = persistence.getProject(projectId, version)
 
-        val hasViewPermissionForAssessments = securityService.currentUser?.hasPermission(UserRolePermission.ProjectAssessmentView)!!
+        val hasViewPermissionForAssessments =
+            securityService.currentUser?.hasPermission(UserRolePermission.ProjectAssessmentView)!!
 
         // remove assessments and decisions from response if User has no permission to retrieve them
         if (!hasViewPermissionForAssessments) {
@@ -50,8 +55,12 @@ class GetProject(
     }
 
     @CanRetrieveProjectForm
-    override fun getProjectForm(projectId: Long, version: String?): ProjectForm =
-        persistence.getProject(projectId, version).getOnlyFormRelatedData()
+    override fun getProjectForm(projectId: Long, version: String?): ProjectForm {
+        val startDate = contractingMonitoringPersistence.getContractingMonitoring(projectId).startDate
+        return persistence.getProject(projectId, version)
+            .getOnlyFormRelatedData()
+            .addStartDatesToPeriods(startDate)
+    }
 
     @CanRetrieveProjects
     override fun getAllProjects(pageable: Pageable, searchRequest: ProjectSearchRequest?): Page<ProjectSummary> =
@@ -62,12 +71,13 @@ class GetProject(
         persistence.getProjectsOfUserPlusExtra(
             pageable = pageable,
             extraProjectIds = getAssignedProjectIdsForMonitorUsers()
-                union getProjectIdsForProjectCollaborators()
-                union getProjectIdsForPartnerCollaborators()
-                union getProjectIdsForPartnerInstitutionControllers()
+                    union getProjectIdsForProjectCollaborators()
+                    union getProjectIdsForPartnerCollaborators()
+                    union getProjectIdsForPartnerInstitutionControllers()
         )
 
-    private fun getAssignedProjectIdsForMonitorUsers() = securityService.currentUser?.user?.assignedProjects ?: emptySet()
+    private fun getAssignedProjectIdsForMonitorUsers() =
+        securityService.currentUser?.user?.assignedProjects ?: emptySet()
 
     private fun getProjectIdsForProjectCollaborators() = projectCollaboratorPersistence
         .getProjectIdsForUser(userId = securityService.getUserIdOrThrow())
@@ -77,5 +87,16 @@ class GetProject(
 
     private fun getProjectIdsForPartnerInstitutionControllers() = controllerInstitutionPersistence
         .getRelatedProjectAndPartnerIdsForUser(userId = securityService.getUserIdOrThrow()).keys
+
+    private fun ProjectForm.addStartDatesToPeriods(startDate: LocalDate?): ProjectForm =
+        also {
+            if (startDate != null) {
+                periods.forEach { period ->
+                    val limits = period.toLimits(startDate)
+                    period.startDate = limits.first
+                    period.endDate = limits.second
+                }
+            }
+        }
 
 }

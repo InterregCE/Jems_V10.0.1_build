@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
@@ -25,11 +26,8 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 fun projectApplicationCreated(
     context: Any,
@@ -377,6 +375,88 @@ fun projectContractingPartnerDocumentsLocationChanged(
             .build()
     )
 }
+
+
+fun projectAuditControlCreated(
+    context: Any,
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CREATED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created")
+        .build()
+)
+
+fun projectAuditControlCorrectionCreated(
+    context: Any,
+    auditControl: AuditControl,
+    correctionNr: Int,
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CREATED)
+            .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+            .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is created.")
+            .build()
+    )
+}
+
+fun projectAuditControlCorrectionClosed(
+    context: Any,
+    auditControl: AuditControl,
+    correctionNr: Int,
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_CLOSED)
+            .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+            .entityRelatedId(auditControl.id)
+            .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed.")
+            .build()
+    )
+}
+
+fun projectAuditControlCorrectionDeleted(
+    context: Any,
+    auditControl: AuditControl,
+    correctionNr: Int,
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.CORRECTION_IS_DELETED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .description("Correction AC${auditControl.number}.$correctionNr for Audit/Control number " +
+                "${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is deleted.")
+        .build()
+    )
+
+
+fun projectAuditControlClosed(
+    context: Any,
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_CLOSED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is closed")
+        .build()
+)
+
+fun projectAuditControlReopened(
+    context: Any,
+    auditControl: AuditControl
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROJECT_AUDIT_CONTROL_IS_REOPENED)
+        .project(auditControl.projectId, auditControl.projectCustomIdentifier, auditControl.projectAcronym)
+        .entityRelatedId(auditControl.id)
+        .description("Audit/Control ${auditControl.projectCustomIdentifier}_AC_${auditControl.number} is set back to draft")
+        .build()
+)
 
 private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {

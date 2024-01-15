@@ -9,7 +9,6 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import {catchError, map, tap} from 'rxjs/operators';
-import {ReportUtil} from '@project/common/report-util';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -36,7 +35,6 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
     checklist: ChecklistInstanceDetailDTO;
     editable: boolean;
     reportEditable: boolean;
-    isAfterVerificationChecklist: boolean;
   }>;
 
   confirmFinish = {
@@ -48,8 +46,6 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
     title: 'checklists.instance.confirm.return.to.initiator.title',
     message: 'checklists.instance.confirm.return.to.initiator'
   };
-
-  userCanEditControlChecklists$: Observable<boolean>;
 
   projectId = Number(this.routingService.getParameter(this.activatedRoute, 'projectId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -72,10 +68,8 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
         checklist,
         editable,
         reportEditable,
-        isAfterVerificationChecklist: this.isAfterVerificationChecklist(checklist.createdAt, report.verificationEndDate)
       })),
     );
-    this.userCanEditControlChecklists$ = this.userCanEditVerificationChecklists();
   }
 
   save(checklist: ChecklistInstanceDetailDTO): void {
@@ -102,29 +96,8 @@ export class ProjectVerificationReportVerificationChecklistPageComponent {
     return this.formService.form.dirty;
   }
 
-  private userCanEditVerificationChecklists(): Observable<boolean> {
-    return combineLatest([
-      this.projectReportDetailPageStore.reportStatus$,
-      this.projectReportPageStore.userCanEditVerification$,
-    ])
-      .pipe(
-        map(([reportStatus, canEditVerification]) =>
-          (canEditVerification && ReportUtil.isVerificationReportOpen(reportStatus))
-          ||
-          (canEditVerification && reportStatus === ProjectReportDTO.StatusEnum.Finalized)
-        )
-      );
-  }
-
   private getFormComponents(): ChecklistComponentInstanceDTO[] {
     return this.formService.form.get('formComponents')?.value;
-  }
-
-  private isAfterVerificationChecklist(createdAt: Date, verificationReportVerificationFinalizedDate: Date): boolean {
-    if (verificationReportVerificationFinalizedDate === null) {
-      return true;
-    }
-    return createdAt > verificationReportVerificationFinalizedDate;
   }
 
 }

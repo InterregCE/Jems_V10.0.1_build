@@ -1,5 +1,9 @@
 <jems-form>
-    <h3 class="mb-3">{{'project.application.project.report.annexes.title' | translate }}</h3>
+    <h3 class="mb-3">{{'project.application.project.report.annexes.title' | translate }}
+        <jems-context-info infoPosition="right"
+                           infoText="{{'project.application.project.report.annexes.title.infobubble.description'| translate }}">
+        </jems-context-info>
+    </h3>
     <div jemsNoWidthLimit id="project-report-files" class="overflow-auto">
         <jems-category-tree
                 [categories]="projectReportFileManagementStore.fileCategories$ | async"

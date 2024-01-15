@@ -23,11 +23,27 @@ import {
 import {PaymentsPageSidenavService} from './payments-page-sidenav.service';
 import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.component';
 import {
-  PaymentsToEcDetailPageComponent
-} from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+  PaymentToEcDetailPageComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {
   PaymentToEcSummaryTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
+import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/attachments/payment-to-ec-summary-attachments.component';
+import {
+  PaymentToEcRegularProjectsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-regular-projects-tab.component';
+import { PaymentToEcCumulativeTableComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-cumulative-table/payment-to-ec-cumulative-table.component';
+import {
+  RegularPaymentsNotFlagged9495Component
+} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/regular-payments-not-flagged-9495/regular-payments-not-flagged-9495.component';
+import { PaymentToEcSelectTableComponent } from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-select-table/payment-to-ec-select-table.component';
+import { PaymentToEcCorrectionTabComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
+import { PaymentToEcCorrectionSelectTableComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-select-table/payment-to-ec-correction-select-table.component';
+import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.component';
+import {
+  PaymentToEcAuditAttachmentsComponent
+} from './payments-audit/attachments/payment-to-ec-audit-attachments.component';
+import { PaymentToEcFinalizeTabComponent } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component';
 
 @NgModule({
     declarations: [
@@ -35,12 +51,22 @@ import {
         PaymentsToProjectPageComponent,
         AdvancePaymentsPageComponent,
         PaymentsToEcPageComponent,
-        PaymentsToEcDetailPageComponent,
+        PaymentToEcDetailPageComponent,
         PaymentToEcSummaryTabComponent,
+        PaymentToEcRegularProjectsTabComponent,
         PaymentsToProjectDetailPageComponent,
         PaymentsToProjectAttachmentsComponent,
         AdvancePaymentsDetailPageComponent,
-        AdvancePaymentsAttachmentsComponent
+        AdvancePaymentsAttachmentsComponent,
+        PaymentToEcSummaryAttachmentsComponent,
+        PaymentToEcCumulativeTableComponent,
+        RegularPaymentsNotFlagged9495Component,
+        PaymentToEcSelectTableComponent,
+        PaymentToEcCorrectionTabComponent,
+        PaymentToEcCorrectionSelectTableComponent,
+        PaymentsAuditPageComponent,
+      PaymentToEcAuditAttachmentsComponent,
+      PaymentToEcFinalizeTabComponent
     ],
     imports: [
         SharedModule,

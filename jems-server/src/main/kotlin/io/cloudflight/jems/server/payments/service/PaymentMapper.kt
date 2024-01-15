@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
@@ -25,26 +27,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.controller.fund.toDto
+import io.cloudflight.jems.server.project.controller.auditAndControl.correction.toSimpleDto
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
-fun PaymentToProject.toDTO() = PaymentToProjectDTO(
-    id = id,
-    paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    projectCustomIdentifier = projectCustomIdentifier,
-    projectAcronym = projectAcronym,
-    paymentClaimNo = paymentClaimNo,
-    paymentClaimSubmissionDate = paymentClaimSubmissionDate,
-    paymentApprovalDate = paymentApprovalDate,
-    totalEligibleAmount = totalEligibleAmount,
-    fundName = fundName,
-    amountApprovedPerFund = amountApprovedPerFund,
-    amountPaidPerFund = amountPaidPerFund,
-    amountAuthorizedPerFund = amountAuthorizedPerFund,
-    dateOfLastPayment = dateOfLastPayment,
-    lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
-)
+fun PaymentToProject.toDTO() = mapper.map(this)
 
 fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
@@ -53,6 +42,7 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
+    spf = spf,
     amountApprovedPerFund = amountApprovedPerFund,
     dateOfLastPayment = dateOfLastPayment,
     partnerPayments = partnerPayments.map { it.toDTO() }
@@ -82,7 +72,8 @@ fun PaymentPartnerInstallment.toDTO() = PaymentPartnerInstallmentDTO(
     savePaymentDate = savePaymentDate,
     paymentConfirmed = isPaymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    correction = correction?.toSimpleDto(),
 )
 
 fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
@@ -96,7 +87,8 @@ fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
         savePaymentDate = it.savePaymentDate,
         isPaymentConfirmed = it.paymentConfirmed,
         paymentConfirmedUserId = it.paymentConfirmedUser?.id,
-        paymentConfirmedDate = it.paymentConfirmedDate
+        paymentConfirmedDate = it.paymentConfirmedDate,
+        correctionId = it.correction?.id,
     )
 }
 
@@ -144,8 +136,6 @@ fun AdvancePaymentUpdateDTO.toModel() = AdvancePaymentUpdate(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,
-    paymentAuthorized = paymentAuthorized,
-    paymentConfirmed = paymentConfirmed,
     paymentSettlements = paymentSettlements.map { it.toModel() }
 )
 
@@ -181,13 +171,30 @@ fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
     comment = comment
 )
 
+fun AdvancePaymentStatusUpdateDTO.toModel() = AdvancePaymentStatus.valueOf(this.status.name)
+
 private val mapper = Mappers.getMapper(PaymentMapper::class.java)
 
 fun AdvancePaymentSearchRequestDTO.toModel(): AdvancePaymentSearchRequest = mapper.map(this)
-fun PaymentSearchRequestDTO.toModel(): PaymentSearchRequest = mapper.map(this)
+fun PaymentSearchRequestDTO.toModel() = PaymentSearchRequest(
+    paymentId = paymentId,
+    paymentType = paymentType?.let { PaymentType.valueOf(it.name) },
+    projectIdentifiers = projectIdentifiers,
+    projectAcronym = projectAcronym,
+    claimSubmissionDateFrom = claimSubmissionDateFrom,
+    claimSubmissionDateTo = claimSubmissionDateTo,
+    approvalDateFrom = approvalDateFrom,
+    approvalDateTo = approvalDateTo,
+    fundIds = fundIds,
+    lastPaymentDateFrom = lastPaymentDateFrom,
+    lastPaymentDateTo = lastPaymentDateTo,
+    ecPaymentIds = emptySet(),
+    contractingScoBasis = null,
+    finalScoBasis = null,
+)
 
 @Mapper
 interface PaymentMapper {
     fun map(dto: AdvancePaymentSearchRequestDTO): AdvancePaymentSearchRequest
-    fun map(dto: PaymentSearchRequestDTO): PaymentSearchRequest
+    fun map(model: PaymentToProject): PaymentToProjectDTO
 }

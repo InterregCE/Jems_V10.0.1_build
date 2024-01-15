@@ -28,6 +28,7 @@ interface ReportProjectCertificateCostCategoryRepository :
             COALESCE(SUM(report.otherCurrent), 0),
             COALESCE(SUM(report.lumpSumCurrent), 0),
             COALESCE(SUM(report.unitCostCurrent), 0),
+            COALESCE(SUM(report.spfCostCurrent), 0),
             COALESCE(SUM(report.sumCurrent), 0)
         )
         FROM #{#entityName} report
@@ -49,6 +50,7 @@ interface ReportProjectCertificateCostCategoryRepository :
             COALESCE(SUM(report.otherCurrentVerified), 0),
             COALESCE(SUM(report.lumpSumCurrentVerified), 0),
             COALESCE(SUM(report.unitCostCurrentVerified), 0),
+            COALESCE(SUM(report.spfCostCurrentVerified), 0),
             COALESCE(SUM(report.sumCurrentVerified), 0)
         )
         FROM #{#entityName} report

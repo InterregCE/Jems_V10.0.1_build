@@ -49,6 +49,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 other = BigDecimal.valueOf(116),
                 lumpSum = BigDecimal.valueOf(117),
                 unitCost = BigDecimal.valueOf(118),
+                spfCost = BigDecimal.valueOf(1185L, 1),
                 sum = BigDecimal.valueOf(119),
             ),
             currentlyReportedParked = BudgetCostsCalculationResultFull(
@@ -61,6 +62,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 other = BigDecimal.valueOf(126),
                 lumpSum = BigDecimal.valueOf(127),
                 unitCost = BigDecimal.valueOf(128),
+                spfCost = BigDecimal.valueOf(1285L, 1),
                 sum = BigDecimal.valueOf(129),
             ),
             currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
@@ -73,6 +75,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 other = BigDecimal.valueOf(136),
                 lumpSum = BigDecimal.valueOf(137),
                 unitCost = BigDecimal.valueOf(138),
+                spfCost = BigDecimal.valueOf(1385L, 1),
                 sum = BigDecimal.valueOf(139),
             ),
             totalEligibleAfterControl = BudgetCostsCalculationResultFull(
@@ -85,6 +88,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 other = BigDecimal.valueOf(13),
                 lumpSum = BigDecimal.valueOf(12),
                 unitCost = BigDecimal.valueOf(11),
+                spfCost = BigDecimal.valueOf(115L, 1),
                 sum = BigDecimal.valueOf(10),
             ),
             previouslyReported = mockk(),
@@ -253,7 +257,8 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 other = BigDecimal.valueOf(116),
                 lumpSum = BigDecimal.valueOf(117),
                 unitCost = BigDecimal.valueOf(118),
-                sum = BigDecimal.valueOf(1026),
+                spfCost = BigDecimal.valueOf(1185L, 1),
+                sum = BigDecimal.valueOf(10445L, 1),
         )
 
         val report = mockk<ProjectPartnerReport>()
@@ -274,12 +279,12 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
 
         assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
-                declaredByPartner = BigDecimal.valueOf(1026L),
+                declaredByPartner = BigDecimal.valueOf(1044_5L, 1),
                 declaredByPartnerFlatRateSum = BigDecimal.valueOf(337L),
                 inControlSample = BigDecimal.valueOf(1L),
-                inControlSamplePercentage = BigDecimal.valueOf(15L, 2),
+                inControlSamplePercentage = BigDecimal.valueOf(14L, 2),
                 parked = BigDecimal.valueOf(0, 2),
-                deductedByControl = BigDecimal.valueOf(102600L, 2),
+                deductedByControl = BigDecimal.valueOf(104450L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(0, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(0, 2),
             )

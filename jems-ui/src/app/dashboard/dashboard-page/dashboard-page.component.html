@@ -8,6 +8,11 @@
         <jems-notification-list jemsNoWidthLimit></jems-notification-list>
     </ng-container>
 
+    <ng-container *ngIf="pageStore.canViewProjectReports$ | async">
+        <h2>{{'user.project.reports' | translate}}</h2>
+        <jems-project-report-list jemsNoWidthLimit></jems-project-report-list>
+    </ng-container>
+
     <ng-container *ngIf="pageStore.canViewPartnerReports$ | async">
         <h2>{{'user.partner.reports' | translate}}</h2>
         <jems-partner-report-list jemsNoWidthLimit></jems-partner-report-list>

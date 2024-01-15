@@ -98,7 +98,9 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         every { projectContractingMonitoringRepository.findByProjectId(projectId) } returns Optional.empty()
 
         assertThat(contractingMonitoringPersistence.getContractingMonitoring(projectId))
-            .isEqualTo(ProjectContractingMonitoring(projectId = projectId, addDates = emptyList(), dimensionCodes = emptyList()))
+            .isEqualTo(ProjectContractingMonitoring(projectId = projectId, addDates = emptyList(), dimensionCodes = emptyList(),
+                typologyProv94 = ContractingMonitoringExtendedOption.No, typologyProv95 = ContractingMonitoringExtendedOption.No,
+                typologyStrategic = ContractingMonitoringOption.No, typologyPartnership = ContractingMonitoringOption.No))
     }
 
     @Test

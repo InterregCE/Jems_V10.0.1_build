@@ -67,14 +67,17 @@ class ProjectReportEntity(
     @field:NotNull
     val leadPartnerNameInEnglish: String,
 
+    val spfPartnerId: Long?,
+
     @field:NotNull
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
     var firstSubmission: ZonedDateTime?,
+    var lastReSubmission: ZonedDateTime?,
 
     var verificationDate: LocalDate?,
-
     var verificationEndDate: ZonedDateTime?,
+    var lastVerificationReOpening: ZonedDateTime?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportIdentificationTranslEntity> = mutableSetOf(),

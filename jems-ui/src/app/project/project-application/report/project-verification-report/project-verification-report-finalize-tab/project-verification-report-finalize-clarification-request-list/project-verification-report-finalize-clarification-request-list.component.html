@@ -27,7 +27,7 @@
           <mat-form-field jemsFormFieldWidth="full"
                           [ngClass]="{'mat-form-field-invalid': control.get('requestDate').errors}">
             <mat-label>{{'project.application.project.verification.work.tab.finalise.table.column.request.date' | translate}}</mat-label>
-            <input formControlName="requestDate" matInput
+            <input formControlName="requestDate" matInput required
                    [matDatepicker]="requestDate">
             <mat-datepicker-toggle matSuffix [for]="requestDate"></mat-datepicker-toggle>
             <mat-datepicker #requestDate></mat-datepicker>

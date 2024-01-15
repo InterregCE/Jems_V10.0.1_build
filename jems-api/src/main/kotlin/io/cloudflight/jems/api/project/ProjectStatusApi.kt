@@ -3,10 +3,11 @@ package io.cloudflight.jems.api.project
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectModificationCreateDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectModificationDecisionDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -105,19 +106,19 @@ interface ProjectStatusApi {
     fun revertApplicationDecision(@PathVariable id: Long): ApplicationStatusDTO
 
     @ApiOperation("Get list of all modification decisions")
-    @GetMapping("$ENDPOINT_API_PROJECT_STATUS/modificationDecisions")
-    fun getModificationDecisions(@PathVariable id: Long): List<ProjectStatusDTO>
+    @GetMapping("$ENDPOINT_API_PROJECT_STATUS/modification-decisions")
+    fun getModificationDecisions(@PathVariable id: Long): List<ProjectModificationDecisionDTO>
 
     @ApiOperation("approve application modification")
-    @PutMapping("$ENDPOINT_API_PROJECT_STATUS/approve modification", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_STATUS/approve-modification", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun approveModification(
-        @PathVariable id: Long, @RequestBody actionInfo: ApplicationActionInfoDTO
+        @PathVariable id: Long, @RequestBody modification: ProjectModificationCreateDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("reject application modification")
     @PutMapping("$ENDPOINT_API_PROJECT_STATUS/reject", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun rejectModification(
-        @PathVariable id: Long, @RequestBody actionInfo: ApplicationActionInfoDTO
+        @PathVariable id: Long, @RequestBody modification: ProjectModificationCreateDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("set application to contracted")

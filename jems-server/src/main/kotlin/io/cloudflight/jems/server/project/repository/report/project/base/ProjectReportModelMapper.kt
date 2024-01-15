@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectCo
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportSpfContributionClaimEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
@@ -39,15 +41,19 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     projectAcronym = projectAcronym,
     leadPartnerNameInOriginalLanguage = leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = leadPartnerNameInEnglish,
+    spfPartnerId = spfPartnerId,
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
     amountRequested = null,
     totalEligibleAfterVerification = null,
+    lastVerificationReOpening = lastVerificationReOpening,
+
     riskBasedVerification = riskBasedVerification,
-    riskBasedVerificationDescription = riskBasedVerificationDescription
+    riskBasedVerificationDescription = riskBasedVerificationDescription,
 )
 
 fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
@@ -68,15 +74,19 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
     projectAcronym = first.projectAcronym,
     leadPartnerNameInOriginalLanguage = first.leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = first.leadPartnerNameInEnglish,
+    spfPartnerId = first.spfPartnerId,
 
     createdAt = first.createdAt,
     firstSubmission = first.firstSubmission,
+    lastReSubmission = first.lastReSubmission,
     verificationDate = first.verificationDate,
     verificationEndDate = first.verificationEndDate,
     amountRequested = second?.sumCurrent,
     totalEligibleAfterVerification = second?.sumCurrentVerified,
+    lastVerificationReOpening = first.lastVerificationReOpening,
+
     riskBasedVerification = first.riskBasedVerification,
-    riskBasedVerificationDescription = first.riskBasedVerificationDescription
+    riskBasedVerificationDescription = first.riskBasedVerificationDescription,
 )
 
 fun ProjectReportModel.toEntity(
@@ -98,17 +108,20 @@ fun ProjectReportModel.toEntity(
     projectAcronym = projectAcronym,
     leadPartnerNameInOriginalLanguage = leadPartnerNameInOriginalLanguage,
     leadPartnerNameInEnglish = leadPartnerNameInEnglish,
+    spfPartnerId = spfPartnerId,
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
-    verificationEndDate = null,
+    verificationEndDate = verificationEndDate,
+    lastVerificationReOpening = lastVerificationReOpening,
 
     verificationConclusionJs = null,
     verificationConclusionMa = null,
     verificationFollowup = null,
     riskBasedVerification = riskBasedVerification,
-    riskBasedVerificationDescription = riskBasedVerificationDescription
+    riskBasedVerificationDescription = riskBasedVerificationDescription,
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =
@@ -122,6 +135,7 @@ fun ProjectReportEntity.toSubmissionSummary() =
         projectId = projectId,
         projectIdentifier = projectIdentifier,
         projectAcronym = projectAcronym,
+        periodNumber = deadline?.periodNumber ?: periodNumber
     )
 
 fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(
@@ -193,6 +207,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherTotal = totalsFromAF.other,
         lumpSumTotal = totalsFromAF.lumpSum,
         unitCostTotal = totalsFromAF.unitCost,
+        spfCostTotal = totalsFromAF.spfCost,
         sumTotal = totalsFromAF.sum,
 
         staffCurrent = ZERO,
@@ -204,6 +219,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherCurrent = ZERO,
         lumpSumCurrent = ZERO,
         unitCostCurrent = ZERO,
+        spfCostCurrent = ZERO,
         sumCurrent = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
@@ -215,6 +231,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherPreviouslyReported = previouslyReported.other,
         lumpSumPreviouslyReported = previouslyReported.lumpSum,
         unitCostPreviouslyReported = previouslyReported.unitCost,
+        spfCostPreviouslyReported = previouslyReported.spfCost,
         sumPreviouslyReported = previouslyReported.sum,
 
         staffPreviouslyVerified = previouslyVerified.staff,
@@ -226,6 +243,7 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherPreviouslyVerified = previouslyVerified.other,
         lumpSumPreviouslyVerified = previouslyVerified.lumpSum,
         unitCostPreviouslyVerified = previouslyVerified.unitCost,
+        spfCostPreviouslyVerified = previouslyVerified.spfCost,
         sumPreviouslyVerified = previouslyVerified.sum,
 
         staffCurrentVerified = ZERO,
@@ -237,9 +255,9 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         otherCurrentVerified = ZERO,
         lumpSumCurrentVerified = ZERO,
         unitCostCurrentVerified = ZERO,
+        spfCostCurrentVerified = ZERO,
         sumCurrentVerified = ZERO,
-
-        )
+    )
 
 fun ProjectReportLumpSum.toEntity(
     report: ProjectReportEntity,
@@ -278,3 +296,18 @@ fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationCo
 )
 
 fun ProjectReportEntity.fetchType() = deadline?.type ?: type!!
+
+fun ProjectReportSpfContributionClaimCreate.toEntity(
+    report: ProjectReportEntity,
+    programmeFundResolver: (Long) -> ProgrammeFundEntity,
+    ) = ProjectReportSpfContributionClaimEntity(
+    id = 0L,
+    reportEntity = report,
+    programmeFund = if (fundId != null) programmeFundResolver.invoke(fundId) else null,
+    sourceOfContribution = sourceOfContribution,
+    legalStatus = legalStatus,
+    applicationFormPartnerContributionId = idFromApplicationForm,
+    amountFromAf = amountInAf,
+    previouslyReported = previouslyReported,
+    currentlyReported = currentlyReported
+)

@@ -8,6 +8,6 @@ import java.math.BigDecimal
 data class PartnerReportFinancialData(
     val coFinancingFromAF: List<ProjectPartnerCoFinancing>,
     val contributionsFromAF: ProjectPartnerReportContributionOverview,
-    val totalEligibleBudgetFromAF: BigDecimal,
+    val totalEligibleBudgetFromAFWithoutSpf: BigDecimal,
     val flatRatesFromAF: ProjectPartnerBudgetOptions,
 )

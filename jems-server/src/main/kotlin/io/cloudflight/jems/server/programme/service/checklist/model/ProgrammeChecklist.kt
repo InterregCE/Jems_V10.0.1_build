@@ -4,12 +4,12 @@ import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 open class ProgrammeChecklist(
-    val id: Long?,
-    val type: ProgrammeChecklistType,
-    val name: String?,
-    val minScore: BigDecimal?,
-    val maxScore: BigDecimal?,
-    val allowsDecimalScore: Boolean?,
-    val lastModificationDate: ZonedDateTime?,
-    var locked: Boolean
+    open val id: Long?,
+    open val type: ProgrammeChecklistType,
+    open val name: String?,
+    open val minScore: BigDecimal?,
+    open val maxScore: BigDecimal?,
+    open val allowsDecimalScore: Boolean?,
+    open val lastModificationDate: ZonedDateTime?,
+    open var locked: Boolean
 )

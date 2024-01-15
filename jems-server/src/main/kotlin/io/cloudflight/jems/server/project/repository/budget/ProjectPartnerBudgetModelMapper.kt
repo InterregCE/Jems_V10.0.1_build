@@ -38,7 +38,8 @@ fun ProjectPartnerTotalBudgetEntry.toModel() = PartnerTotalBudgetPerCostCategory
     infrastructureCostTotal ?: BigDecimal.ZERO,
     travelCostTotal ?: BigDecimal.ZERO,
     staffCostTotal ?: BigDecimal.ZERO,
-    lumpSumsTotal ?: BigDecimal.ZERO
+    lumpSumsTotal ?: BigDecimal.ZERO,
+    spfCostTotal ?: BigDecimal.ZERO,
 )
 
 fun ProjectPeriod.toProjectPeriodBudget(

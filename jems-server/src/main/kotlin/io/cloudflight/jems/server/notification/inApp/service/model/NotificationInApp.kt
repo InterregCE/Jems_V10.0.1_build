@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.notification.inApp.service.model
 
 import java.time.ZonedDateTime
+import java.util.UUID
 
 data class NotificationInApp(
     val subject: String,
@@ -12,4 +13,6 @@ data class NotificationInApp(
 
     val recipientsEmail: Set<String>,
     val emailTemplate: String?,
+
+    val groupId: UUID,
 )

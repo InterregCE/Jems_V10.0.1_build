@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.project.verificatio
 
 import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.verification.expenditure.ProjectReportVerificationExpenditureEntity
+import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
@@ -20,7 +21,8 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
     private val expenditureVerificationRepository: ProjectReportVerificationExpenditureRepository,
     private val procurementRepository: ProjectPartnerReportProcurementRepository,
     private val projectReportRepository: ProjectReportRepository,
-    private val projectReportCertificatePersistence: ProjectReportCertificatePersistence
+    private val projectReportCertificatePersistence: ProjectReportCertificatePersistence,
+    private val reportParkedExpenditureRepository: PartnerReportParkedExpenditureRepository
 ) : ProjectReportVerificationExpenditurePersistence {
 
     @Transactional(readOnly = true)
@@ -36,10 +38,10 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
         val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
+        val expenditures = expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId)
+        val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditures.map { it.expenditureId }.toSet())
 
-        return expenditureVerificationRepository
-            .findAllByExpenditurePartnerReportProjectReportId(projectReportId)
-            .toModels(procurementsById)
+        return expenditures.toModels(procurementsById, parkedInfo.toList())
     }
 
     @Transactional(readOnly = true)
@@ -47,10 +49,11 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
         val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
-
-        return expenditureVerificationRepository
+        val expenditures =  expenditureVerificationRepository
             .findAllByExpenditurePartnerReportProjectReportIdAndParkedIsTrue(projectReportId)
-            .toModels(procurementsById)
+        val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditures.map { it.expenditureId }.toSet())
+
+        return expenditures.toModels(procurementsById, parkedInfo.toList())
     }
 
     @Transactional
@@ -77,8 +80,9 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         expenditureVerification.forEach {
             existingEntities.getValue(it.expenditureId).updateWith(it, existingEntities[it.expenditureId]!!)
         }
+        val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditureVerification.map { it.expenditureId }.toSet())
 
-        return existingEntities.values.toExtendedModel(procurementsById)
+        return existingEntities.values.toExtendedModel(procurementsById, parkedInfo.toList())
     }
 
     @Transactional

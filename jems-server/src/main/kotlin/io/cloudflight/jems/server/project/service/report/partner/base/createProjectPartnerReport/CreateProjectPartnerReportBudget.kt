@@ -13,8 +13,11 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingWithSpfPart
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.AutomaticPublic
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Private
@@ -24,12 +27,14 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCos
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBudget
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedFund
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.ProjectPartnerReportContributionWithSpf
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
@@ -47,6 +52,8 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -69,14 +76,16 @@ class CreateProjectPartnerReportBudget(
     private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
+    private val reportProjectPersistence: ProjectReportPersistence,
+    private val reportProjectSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
 ) {
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun retrieveBudgetDataFor(
         projectId: Long,
         partner: ProjectPartnerSummary,
         version: String?,
-        coFinancing: ProjectPartnerCoFinancingAndContribution,
+        coFinancing: PartnerReportCoFinancing,
         investments: List<PartnerReportInvestmentSummary>,
     ): PartnerReportBudget {
         val partnerId = partner.id!!
@@ -87,7 +96,8 @@ class CreateProjectPartnerReportBudget(
 
         val contributions = generateContributionsFromPreviousReports(
             submittedReportIds = submittedReportIds,
-            partnerContributionsSorted = coFinancing.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
+            partnerContributionsSorted = coFinancing.coFinancing.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
+            partnerContributionsSpfSorted = coFinancing.coFinancingSpf.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
         )
         val budget = getProjectBudget.getBudget(listOf(partner), projectId, version).first()
 
@@ -102,10 +112,15 @@ class CreateProjectPartnerReportBudget(
 
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
 
+        val submittedProjectReportIds = reportProjectPersistence.getSubmittedProjectReports(projectId).mapTo(HashSet()) { it.id }
+
+        val previouslyReportedSpf = reportProjectSpfClaimPersistence.getPreviouslyReportedSpfContributions(submittedProjectReportIds)
         val readyForPaymentLumpSums = paymentPersistence.getFtlsCumulativeForPartner(partnerId)
+
         val previouslyReportedCostCategories = reportExpenditureCostCategoryPersistence
             .getCostCategoriesCumulative(submittedReportIds, finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(readyForPaymentLumpSums.sum)
+            .addExtraSpfFromProjectReport(previouslyReportedSpf.sum)
 
         return PartnerReportBudget(
             contributions = contributions,
@@ -143,8 +158,10 @@ class CreateProjectPartnerReportBudget(
                 .toCreateModel(
                     coFinancing = coFinancing,
                     partnerTotal = budget.totalCosts,
+                    partnerSpf = budget.spfCosts,
                     contributions = contributions,
                     previouslyReportedFastTrack = readyForPaymentLumpSums,
+                    previouslyReportedSpf = previouslyReportedSpf,
                     paymentPaid = installmentsPaid.byFund(),
                 ),
         )
@@ -153,54 +170,77 @@ class CreateProjectPartnerReportBudget(
     private fun generateContributionsFromPreviousReports(
         submittedReportIds: Set<Long>,
         partnerContributionsSorted: List<ProjectPartnerContribution>,
-    ): List<CreateProjectPartnerReportContribution> {
-        val mapIdToHistoricalIdentifier: MutableMap<Long, UUID> = mutableMapOf()
-        val contributionsNotLinkedToApplicationForm: LinkedHashMap<UUID, Pair<String?, ProjectPartnerContributionStatus?>> = LinkedHashMap()
-        val historicalContributions: MutableMap<UUID, MutableList<BigDecimal>> = mutableMapOf()
+        partnerContributionsSpfSorted: List<ProjectPartnerContributionSpf>,
+    ) = ProjectPartnerReportContributionWithSpf(
+        contributions = mergeAfContributionsWithReport(
+            currentContributionsFromProject = partnerContributionsSorted,
+            previouslyReportedContributions = reportContributionPersistence.getAllContributionsForReportIds(submittedReportIds),
+        ),
+        contributionsSpf = mergeAfContributionsWithReport(
+            currentContributionsFromProject = partnerContributionsSpfSorted,
+            previouslyReportedContributions = emptyList(),
+        ),
+    )
 
-        reportContributionPersistence.getAllContributionsForReportIds(reportIds = submittedReportIds).forEach {
+    private fun mergeAfContributionsWithReport(
+        currentContributionsFromProject: List<ProjectContribution>,
+        previouslyReportedContributions: List<ProjectPartnerReportEntityContribution>,
+    ): List<CreateProjectPartnerReportContribution> {
+        val projectContributionIdToUuid: MutableMap<Long, UUID> = mutableMapOf()
+        val contributionsNotLinkedToApplicationForm: LinkedHashMap<UUID, Pair<String?, ProjectPartnerContributionStatus?>> = LinkedHashMap()
+        val contributionsAll: MutableMap<UUID, MutableList<ProjectPartnerReportEntityContribution>> = mutableMapOf()
+
+        previouslyReportedContributions.forEach {
             if (it.idFromApplicationForm != null)
-                mapIdToHistoricalIdentifier[it.idFromApplicationForm] = it.historyIdentifier
+                projectContributionIdToUuid[it.idFromApplicationForm] = it.historyIdentifier
             else
                 contributionsNotLinkedToApplicationForm.putIfAbsent(it.historyIdentifier, it.toModel())
 
-            historicalContributions.getOrPut(it.historyIdentifier) { mutableListOf() }
-                .add(it.currentlyReported)
+            contributionsAll.getOrPut(it.historyIdentifier) { mutableListOf() }
+                .add(it)
         }
 
-        return partnerContributionsSorted
-            .fromApplicationForm(
-                idToUuid = mapIdToHistoricalIdentifier,
-                historicalContributions = historicalContributions
-            )
-            .plus(
-                contributionsNotLinkedToApplicationForm
-                    .accumulatePreviousContributions(historicalContributions = historicalContributions)
-            )
+        val previouslyReported: Map<UUID, BigDecimal> = contributionsAll.mapValues { it.value.sumOf { it.currentlyReported } }
+
+        val removedContributionUuids = projectContributionIdToUuid.keys
+            .minus(currentContributionsFromProject.mapNotNullTo(HashSet()) { it.id })
+            .map { projectContributionIdToUuid[it]!! }
+
+        val contributionsExistingOnProject = currentContributionsFromProject
+            .toContributions(projectContributionIdToUuid, previouslyReported = previouslyReported)
+        val contributionsOnlyRelatedToReport = contributionsNotLinkedToApplicationForm
+            .toContributions(previouslyReported = previouslyReported)
+        val contributionsReportedPreviouslyButRemovedFromProject = removedContributionUuids
+            .toContributions(contributionsAll)
+
+        return buildList {
+            addAll(contributionsExistingOnProject)
+            addAll(contributionsOnlyRelatedToReport)
+            addAll(contributionsReportedPreviouslyButRemovedFromProject)
+        }
     }
 
     private fun ProjectPartnerReportEntityContribution.toModel() = Pair(sourceOfContribution, legalStatus)
 
-    private fun List<ProjectPartnerContribution>.fromApplicationForm(
+    private fun List<ProjectContribution>.toContributions(
         idToUuid: Map<Long, UUID>,
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
-    ) = filter { it.id != null }.map {
-        (idToUuid[it.id] ?: UUID.randomUUID()).let { uuid ->
-            CreateProjectPartnerReportContribution(
-                sourceOfContribution = it.name,
-                legalStatus = it.status?.name?.let { ProjectPartnerContributionStatus.valueOf(it) },
-                idFromApplicationForm = it.id,
-                historyIdentifier = uuid,
-                createdInThisReport = false,
-                amount = it.amount ?: ZERO,
-                previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
-                currentlyReported = ZERO,
-            )
-        }
+        previouslyReported: Map<UUID, BigDecimal>,
+    ) = map {
+        val uuid = idToUuid[it.id] ?: UUID.randomUUID()
+        return@map CreateProjectPartnerReportContribution(
+            sourceOfContribution = it.name,
+            legalStatus = it.status?.name?.let { ProjectPartnerContributionStatus.valueOf(it) },
+            idFromApplicationForm = it.id,
+            historyIdentifier = uuid,
+            createdInThisReport = false,
+            amount = it.amount ?: ZERO,
+            previouslyReported = previouslyReported[uuid] ?: ZERO,
+            currentlyReported = ZERO,
+        )
     }
 
-    private fun Map<UUID, Pair<String?, ProjectPartnerContributionStatus?>>.accumulatePreviousContributions(
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
+    private fun Map<UUID, Pair<String?, ProjectPartnerContributionStatus?>>.toContributions(
+        previouslyReported: Map<UUID, BigDecimal>,
     ) = map { (uuid, formData) ->
         CreateProjectPartnerReportContribution(
             sourceOfContribution = formData.first,
@@ -209,9 +249,29 @@ class CreateProjectPartnerReportBudget(
             historyIdentifier = uuid,
             createdInThisReport = false,
             amount = ZERO,
-            previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
+            previouslyReported = previouslyReported[uuid] ?: ZERO,
             currentlyReported = ZERO,
         )
+    }
+
+    private fun List<UUID>.toContributions(
+        allExistingContributions: Map<UUID, MutableList<ProjectPartnerReportEntityContribution>>,
+    ): List<CreateProjectPartnerReportContribution> {
+        val previouslyReported = allExistingContributions.mapValues { it.value.sumOf { it.currentlyReported } }
+
+        return map {
+            val representative = allExistingContributions[it]!!.first()
+            CreateProjectPartnerReportContribution(
+                sourceOfContribution = representative.sourceOfContribution,
+                legalStatus = representative.legalStatus,
+                idFromApplicationForm = representative.idFromApplicationForm,
+                historyIdentifier = it,
+                createdInThisReport = false,
+                amount = ZERO,
+                previouslyReported = previouslyReported[it] ?: ZERO,
+                currentlyReported = ZERO,
+            )
+        }
     }
 
     private fun List<PartnerReportInvestmentSummary>.toPartnerReportInvestments(
@@ -316,6 +376,7 @@ class CreateProjectPartnerReportBudget(
             other = budget.otherCosts,
             lumpSum = budget.lumpSumContribution,
             unitCost = budget.unitCosts,
+            spfCost = budget.spfCosts,
             sum = budget.totalCosts,
         ),
         currentlyReported = fillZeros(),
@@ -337,47 +398,63 @@ class CreateProjectPartnerReportBudget(
         other = ZERO,
         lumpSum = ZERO,
         unitCost = ZERO,
+        spfCost = ZERO,
         sum = ZERO,
     )
 
-    private fun ExpenditureCoFinancingPrevious.toCreateModel(
-        coFinancing: ProjectPartnerCoFinancingAndContribution,
-        partnerTotal: BigDecimal,
-        contributions: List<CreateProjectPartnerReportContribution>,
-        previouslyReportedFastTrack: ReportExpenditureCoFinancingColumn,
-        paymentPaid: Map<Long, BigDecimal>,
-    ): PreviouslyReportedCoFinancing {
-        val totals = coFinancing.finances.filter { it.fundType == MainFund }
-            .associateBy({ it.fund?.id }, { partnerTotal.applyPercentage(it.percentage) })
+    private fun BigDecimal.splitWith(coFinancing: ProjectCoFinancingAndContribution) =
+        coFinancing.finances.filter { it.fundType == MainFund }
+            .associateBy({ it.fund?.id }, { this.applyPercentage(it.percentage) })
             .toMutableMap()
 
-        // partner contribution = total - all funds
-        totals[null] = partnerTotal.minus(totals.values.sumOf { it })
+    private fun ExpenditureCoFinancingPrevious.toCreateModel(
+        coFinancing: PartnerReportCoFinancing,
+        partnerTotal: BigDecimal,
+        partnerSpf: BigDecimal,
+        contributions: ProjectPartnerReportContributionWithSpf,
+        previouslyReportedFastTrack: ReportExpenditureCoFinancingColumn,
+        previouslyReportedSpf: ReportExpenditureCoFinancingColumn,
+        paymentPaid: Map<Long, BigDecimal>,
+    ): PreviouslyReportedCoFinancing {
+        val partnerWithoutSpf = partnerTotal.minus(partnerSpf)
+        val totals = partnerWithoutSpf.splitWith(coFinancing.coFinancing)
+        val totalsSpf = partnerSpf.splitWith(coFinancing.coFinancingSpf)
 
-        val currentFunds = coFinancing.finances.mapTo(LinkedList()) {
+        // partner contribution = total - all funds
+        totals[null] = partnerWithoutSpf.minus(totals.values.sumOf { it })
+        totalsSpf[null] = partnerSpf.minus(totalsSpf.values.sumOf { it })
+
+        val currentFunds = coFinancing.mergeCoFinancing().mapTo(LinkedList()) {
             PreviouslyReportedFund(
-                fundId = it.fund?.id,
+                fundId = it.fundId,
                 percentage = it.percentage,
-                total = totals[it.fund?.id]!!,
-                previouslyReported = previous.funds.getOrDefault(it.fund?.id, ZERO),
-                previouslyReportedParked = previousParked.funds.getOrDefault(it.fund?.id, ZERO),
-                previouslyValidated = previousValidated.funds.getOrDefault(it.fund?.id, ZERO),
-                previouslyPaid = paymentPaid.getOrDefault(it.fund?.id, ZERO),
+                percentageSpf = it.percentageSpf,
+                total = (totals[it.fundId] ?: ZERO).plus(totalsSpf[it.fundId] ?: ZERO),
+                previouslyReported = previous.funds.getOrDefault(it.fundId, ZERO),
+                previouslyReportedParked = previousParked.funds.getOrDefault(it.fundId, ZERO),
+                previouslyReportedSpf = previouslyReportedSpf.funds.getOrDefault(it.fundId, ZERO),
+                previouslyValidated = previousValidated.funds.getOrDefault(it.fundId, ZERO),
+                previouslyPaid = paymentPaid.getOrDefault(it.fundId, ZERO),
                 disabled = false,
             )
         }
 
+        val previousFundIds = previous.funds.mapNotNullTo(HashSet()) { it.key } union
+                previouslyReportedFastTrack.funds.mapNotNullTo(HashSet()) { it.key } union
+                previouslyReportedSpf.funds.mapNotNullTo(HashSet()) { it.key }
+        val currentFundIds = currentFunds.mapNotNullTo(HashSet()) { it.fundId }
+
         // in case in modification some funds have been removed, we still need it in reporting
-        val removedFunds = previous.funds.mapNotNullTo(LinkedHashSet()) { it.key }.minus(
-            currentFunds.mapNotNullTo(HashSet()) { it.fundId }
-        ).map { fundId ->
+        val removedFunds = previousFundIds.minus(currentFundIds).map { fundId ->
             PreviouslyReportedFund(
                 fundId = fundId,
                 percentage = ZERO,
+                percentageSpf = ZERO,
                 total = ZERO,
-                previouslyReported = previous.funds[fundId]!!,
-                previouslyReportedParked = previousParked.funds[fundId]!!,
-                previouslyValidated = previousValidated.funds[fundId]!!,
+                previouslyReported = previous.funds.getOrDefault(fundId, ZERO),
+                previouslyReportedParked = previousParked.funds.getOrDefault(fundId, ZERO),
+                previouslyReportedSpf = previouslyReportedSpf.funds.getOrDefault(fundId, ZERO),
+                previouslyValidated = previousValidated.funds.getOrDefault(fundId, ZERO),
                 previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO),
                 disabled = true,
             )
@@ -390,9 +467,11 @@ class CreateProjectPartnerReportBudget(
                 PreviouslyReportedFund(
                     fundId = null,
                     percentage = BigDecimal.valueOf(100),
+                    percentageSpf = BigDecimal.valueOf(100),
                     total = ZERO,
                     previouslyReported = previous.funds.getOrDefault(null, ZERO),
                     previouslyReportedParked = previousParked.funds.getOrDefault(null, ZERO),
+                    previouslyReportedSpf = previouslyReportedSpf.funds.getOrDefault(null, ZERO),
                     previouslyValidated = previousValidated.funds.getOrDefault(null, ZERO),
                     previouslyPaid = ZERO,
                     disabled = false,
@@ -400,9 +479,9 @@ class CreateProjectPartnerReportBudget(
             )
 
 
-        val publicTotalAmount = contributions.filter { it.legalStatus == Public }.sumOf { it.amount }
-        val autoPublicTotalAmount = contributions.filter { it.legalStatus == AutomaticPublic }.sumOf { it.amount }
-        val privateTotalAmount = contributions.filter { it.legalStatus == Private }.sumOf { it.amount }
+        val publicTotalAmount = contributions.sumOf(Public)
+        val autoPublicTotalAmount = contributions.sumOf(AutomaticPublic)
+        val privateTotalAmount = contributions.sumOf(Private)
 
         return PreviouslyReportedCoFinancing(
             fundsSorted = currentFunds,
@@ -425,12 +504,19 @@ class CreateProjectPartnerReportBudget(
             previouslyReportedParkedAutoPublic = previousParked.automaticPublicContribution,
             previouslyReportedParkedSum = previousParked.sum,
 
+            previouslyReportedSpfPartner = previouslyReportedSpf.partnerContribution,
+            previouslyReportedSpfPublic = previouslyReportedSpf.publicContribution,
+            previouslyReportedSpfPrivate = previouslyReportedSpf.privateContribution,
+            previouslyReportedSpfAutoPublic = previouslyReportedSpf.automaticPublicContribution,
+            previouslyReportedSpfSum = previouslyReportedSpf.sum,
+
             previouslyValidatedPartner = previousValidated.partnerContribution,
             previouslyValidatedPublic = previousValidated.publicContribution,
             previouslyValidatedAutoPublic = previousValidated.automaticPublicContribution,
             previouslyValidatedPrivate = previousValidated.privateContribution,
             previouslyValidatedSum = previousValidated.sum,
-        ).addExtraLumpSumValues(previouslyReportedFastTrack)
+        ).addExtraToPreviouslyReportedAndValidated(previouslyReportedFastTrack)
+            .addExtraToPreviouslyReportedAndValidated(previouslyReportedSpf)
     }
 
     private fun List<PaymentPartnerInstallment>.byFund() =
@@ -462,7 +548,24 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
-    private fun PreviouslyReportedCoFinancing.addExtraLumpSumValues(paymentLumpSums: ReportExpenditureCoFinancingColumn): PreviouslyReportedCoFinancing {
+    private fun ExpenditureCostCategoryPreviouslyReportedWithParked.addExtraSpfFromProjectReport(
+        previousSpf: BigDecimal,
+    ): ExpenditureCostCategoryPreviouslyReportedWithParked {
+        return this.copy(
+            previouslyReported = previouslyReported.copy(
+                spfCost = previouslyReported.spfCost.plus(previousSpf),
+                sum = previouslyReported.sum.plus(previousSpf),
+            ),
+            previouslyValidated = previouslyValidated.copy(
+                spfCost = previouslyValidated.spfCost.plus(previousSpf),
+                sum = previouslyValidated.sum.plus(previousSpf),
+            )
+        )
+    }
+
+    private fun PreviouslyReportedCoFinancing.addExtraToPreviouslyReportedAndValidated(
+        paymentLumpSums: ReportExpenditureCoFinancingColumn,
+    ): PreviouslyReportedCoFinancing {
         return this.copy(
             fundsSorted = fundsSorted.mergeWith(otherFundSums = paymentLumpSums.funds),
             previouslyReportedPartner = previouslyReportedPartner.plus(paymentLumpSums.partnerContribution),
@@ -487,5 +590,26 @@ class CreateProjectPartnerReportBudget(
                 .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
         )
     }
+
+    private fun PartnerReportCoFinancing.mergeCoFinancing(): List<ProjectPartnerCoFinancingWithSpfPart> {
+        val regular = coFinancing.finances.associateBy { it.fund?.id }
+        val spf = coFinancingSpf.finances.associateBy { it.fund?.id }
+
+        val allFundIds = regular.keys
+            .plus(spf.keys.minus(regular.keys))
+        return allFundIds.map {
+            ProjectPartnerCoFinancingWithSpfPart(
+                fundId = it,
+                percentage = regular[it]?.percentage ?: ZERO,
+                percentageSpf = spf[it]?.percentage ?: ZERO,
+            )
+        }
+    }
+
+    private fun ProjectPartnerReportContributionWithSpf.sumOf(legalStatus: ProjectPartnerContributionStatus) =
+        contributions.filter { it.legalStatus == legalStatus }.sumOf { it.amount }
+            .plus(
+                contributionsSpf.filter { it.legalStatus == legalStatus }.sumOf { it.amount }
+            )
 
 }

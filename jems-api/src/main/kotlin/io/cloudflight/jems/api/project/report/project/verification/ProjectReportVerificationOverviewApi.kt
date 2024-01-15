@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.report.project.verification
 
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.CertificateVerificationDeductionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationWorkOverviewDTO
 import io.swagger.annotations.Api
@@ -15,8 +16,8 @@ interface ProjectReportVerificationOverviewApi {
             "${ProjectReportVerificationApi.ENDPOINT_API_PROJECT_REPORT_VERIFICATION}/overview"
     }
 
-    @ApiOperation("Returns Project Report Expenditure Verification breakdown into funds and contributions")
-    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_VERIFICATION_OVERVIEW}/deductionByTypologyOfErrors")
+    @ApiOperation("Returns Project Report Expenditure Verification deduction breakdown by included certificates")
+    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_VERIFICATION_OVERVIEW}/deductionByCertificates")
     fun getDeductionBreakdown(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
@@ -29,4 +30,10 @@ interface ProjectReportVerificationOverviewApi {
         @PathVariable reportId: Long,
     ): FinancingSourceBreakdownDTO
 
+    @ApiOperation("Returns Project Report Expenditure Verification deduction breakdown by typology of errors")
+    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_VERIFICATION_OVERVIEW}/deductionByTypologyOfErrors")
+    fun getDeductionsByTypologyOfErrors(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): List<CertificateVerificationDeductionOverviewDTO>
 }

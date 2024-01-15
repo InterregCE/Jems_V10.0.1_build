@@ -1,7 +1,11 @@
 package io.cloudflight.jems.server.project.service.model
 
+import java.time.LocalDate
+
 data class ProjectPeriod (
-    val number: Int,
-    val start: Int,
-    val end: Int
-)
+    override val number: Int,
+    override val start: Int,
+    override val end: Int,
+    override var startDate: LocalDate? = null,
+    override var endDate: LocalDate? = null,
+) : ProjectPeriodBase

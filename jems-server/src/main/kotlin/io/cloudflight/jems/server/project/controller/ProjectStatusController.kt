@@ -4,13 +4,16 @@ import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.ProjectStatusApi
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectModificationCreateDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectModificationDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.approve_application_with_conditions.ApproveApplicationWithConditionsInteractor
+import io.cloudflight.jems.server.project.service.application.approve_modification.ApproveModification
 import io.cloudflight.jems.server.project.service.application.approve_modification.ApproveModificationInteractor
 import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.ExecutePreConditionCheckInteractor
 import io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to.GetPossibleStatusToRevertToInteractor
@@ -80,8 +83,8 @@ class ProjectStatusController(
     override fun startModification(id: Long) =
         startModification.startModification(id).toDTO()
 
-    override fun getModificationDecisions(id: Long): List<ProjectStatusDTO> =
-        getModificationDecisionsInteractor.getModificationDecisions(id).toDtos()
+    override fun getModificationDecisions(id: Long): List<ProjectModificationDecisionDTO> =
+        getModificationDecisionsInteractor.getModificationDecisions(id).map { it.toDto() }
 
     override fun handBackToApplicant(id: Long) =
         handBackToApplicant.handBackToApplicant(id).toDTO()
@@ -101,11 +104,11 @@ class ProjectStatusController(
     override fun setEligibilityAssessment(id: Long, data: ProjectAssessmentEligibilityDTO): ProjectDetailDTO =
         setAssessmentEligibilityInteractor.setEligibilityAssessment(id, data.result, data.note).toDto()
 
-    override fun approveModification(id: Long, actionInfo: ApplicationActionInfoDTO): ApplicationStatusDTO =
-        approveModification.approveModification(id, actionInfo.toModel()).toDTO()
+    override fun approveModification(id: Long, modification: ProjectModificationCreateDTO): ApplicationStatusDTO =
+        approveModification.approveModification(id, modification.toModel()).toDTO()
 
-    override fun rejectModification(id: Long, actionInfo: ApplicationActionInfoDTO): ApplicationStatusDTO =
-        rejectModification.reject(id, actionInfo.toModel()).toDTO()
+    override fun rejectModification(id: Long, modification: ProjectModificationCreateDTO): ApplicationStatusDTO =
+        rejectModification.reject(id, modification.toModel()).toDTO()
 
     override fun setToContracted(id: Long): ApplicationStatusDTO =
         setApplicationToContracted.setApplicationToContracted(id).toDTO()

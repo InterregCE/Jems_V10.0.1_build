@@ -19,15 +19,20 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.CorrectionsNotValidException
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.PaymentInstallmentsValidator
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallments
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -59,7 +64,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUserId = 7L,
-            paymentConfirmedDate = currentDate
+            paymentConfirmedDate = currentDate,
+            correctionId = null,
         )
         private val installmentNew = PaymentPartnerInstallment(
             id = 5L,
@@ -72,7 +78,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             isSavePaymentInfo = true,
             savePaymentInfoUser = outputUser,
             savePaymentDate = currentDate,
-            isPaymentConfirmed = false
+            isPaymentConfirmed = false,
+            correction = null,
         )
         private val installmentToUpdateTo = PaymentPartnerInstallment(
             id = 3L,
@@ -87,7 +94,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUser = OutputUser(7L, "savePaymentInfo@User", "name", "surname"),
-            paymentConfirmedDate = currentDate
+            paymentConfirmedDate = currentDate,
+            correction = null,
         )
 
         private val paymentDetail = PaymentDetail(
@@ -97,6 +105,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
@@ -123,6 +132,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PartnerPayment(
@@ -155,7 +165,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             isPaymentConfirmed = false,
             paymentConfirmedUser = null,
-            paymentConfirmedDate = null
+            paymentConfirmedDate = null,
+            correction = null
         )
         private val installmentToDelete = PaymentPartnerInstallment(
             id = 4L,
@@ -166,7 +177,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             paymentDate = currentDate,
             comment = "comment",
             isSavePaymentInfo = false,
-            isPaymentConfirmed = false
+            isPaymentConfirmed = false,
+            correction = null,
         )
         private val installmentUpdateNew = PaymentPartnerInstallmentUpdate(
             id = 5L,
@@ -175,7 +187,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             comment = null,
             isSavePaymentInfo = true,
             savePaymentInfoUserId = 7L,
-            isPaymentConfirmed = false
+            isPaymentConfirmed = false,
+            correctionId = null,
         )
         private val installmentDTO = PaymentPartnerInstallmentDTO(
             id = 3L,
@@ -187,7 +200,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(7L, "savePaymentInfo@User", "name", "surname"),
-            paymentConfirmedDate = currentDate
+            paymentConfirmedDate = currentDate,
+            correction = mockk { every { id } returns 15L },
         )
         private val installmentNewDTO = PaymentPartnerInstallmentDTO(
             id = 5L,
@@ -199,7 +213,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             paymentConfirmed = false,
             paymentConfirmedUser = null,
-            paymentConfirmedDate = null
+            paymentConfirmedDate = null,
+            correction = null,
         )
         private val installmentUpdated = PaymentPartnerInstallment(
             id = 3L,
@@ -214,7 +229,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUser = OutputUser(7L, "savePaymentInfo@User", "name", "surname"),
-            paymentConfirmedDate = currentDate
+            paymentConfirmedDate = currentDate,
+            correction = null,
         )
         private val paymentDetailDTO = PaymentDetailDTO(
             id = paymentId,
@@ -223,6 +239,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
@@ -245,6 +262,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
+            spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(
                 PaymentPartnerDTO(
@@ -260,6 +278,14 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 )
             )
         )
+        private val auditControlCorrection = AuditControlCorrection(
+            id = 15L,
+            orderNr = 5,
+            status = mockk(),
+            type = mockk(),
+            auditControlId = 5L,
+            auditControlNr = 5
+        )
     }
 
     @MockK
@@ -271,6 +297,9 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
     @MockK
     lateinit var validator: PaymentInstallmentsValidator
 
+    @MockK
+    lateinit var auditControlCorrectionPersistence: AuditControlCorrectionPersistence
+
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -279,7 +308,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(paymentPersistence)
+        clearMocks(paymentPersistence, auditControlCorrectionPersistence)
     }
 
     @Test
@@ -289,6 +318,11 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns currentUserId
         every { validator.validateInstallments(any(), any(), any(), any()) } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
         every {
@@ -310,7 +344,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 savePaymentDate = currentDate,
                 isPaymentConfirmed = true,
                 paymentConfirmedUserId = outputUser.id,
-                paymentConfirmedDate = currentDate
+                paymentConfirmedDate = currentDate,
+                correctionId = 15L,
             )
         )
     }
@@ -326,6 +361,12 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             validator.validateInstallments(any(), any(), any(), any())
         } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetailMultipleInstallments
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
+
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
         every {
@@ -349,7 +390,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 savePaymentDate = currentDate,
                 isPaymentConfirmed = true,
                 paymentConfirmedUserId = outputUser.id,
-                paymentConfirmedDate = currentDate
+                paymentConfirmedDate = currentDate,
+                correctionId = 15L,
             ),
             PaymentPartnerInstallmentUpdate(
                 id = installmentNew.id,
@@ -361,7 +403,8 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                 savePaymentDate = currentDate,
                 isPaymentConfirmed = false,
                 paymentConfirmedUserId = null,
-                paymentConfirmedDate = null
+                paymentConfirmedDate = null,
+                correctionId = null,
             )
         )
 
@@ -403,13 +446,19 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             paymentPersistence.updatePaymentPartnerInstallments(paymentPartnerId, emptySet(), any())
         } throws UpdatePaymentInstallmentsException(Exception())
 
-        val exception = assertThrows<UpdatePaymentInstallmentsException> {
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = paymentPartnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
+
+        val exception = assertThrows<CorrectionsNotValidException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
                 paymentDetail = paymentDetailDTO
             )
         }
-        assertThat(exception.code).isEqualTo("S-UPPI")
+        assertThat(exception.code).isEqualTo("S-UPPI-02")
     }
 
     @Test
@@ -419,6 +468,12 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every {
             validator.validateInstallments(any(), any(), any(), any())
         } throws I18nValidationException()
+
+        val availableCorrectionsForPayment = AvailableCorrectionsForPayment(
+            partnerId = partnerId,
+            corrections = listOf(auditControlCorrection)
+        )
+        every { auditControlCorrectionPersistence.getAvailableCorrectionsForPayments(projectId) } returns listOf(availableCorrectionsForPayment)
 
         assertThrows<I18nValidationException> {
             updatePaymentInstallments.updatePaymentInstallments(

@@ -37,7 +37,7 @@ class GetAdvancePaymentsTest: UnitTest() {
             programmeFund = fund,
             amountPaid = 120.87.toScaledBigDecimal(),
             paymentDate = currentDate,
-            amountSettled = BigDecimal.ZERO,
+            amountSettled = 100.00.toScaledBigDecimal(),
             paymentSettlements = listOf(
                 AdvancePaymentSettlement(
                     id = 1L,

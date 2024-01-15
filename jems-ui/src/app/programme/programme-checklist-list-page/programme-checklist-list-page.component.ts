@@ -1,16 +1,16 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {ProgrammeChecklistListPageStore} from './programme-checklist-list-page-store.service';
-import {
-  ProgrammeChecklistDetailPageStore
-} from './programme-checklist-detail-page/programme-checklist-detail-page-store.service';
+import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-page/programme-checklist-detail-page-store.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProgrammeChecklistDetailDTO} from '@cat/api';
+import {RoutingService} from "@common/services/routing.service";
+import {ActivatedRoute} from '@angular/router';
+import {ProgrammePageSidenavService} from "../programme-page/services/programme-page-sidenav.service";
 
 @Component({
   selector: 'jems-programme-checklist-list-page',
@@ -25,12 +25,17 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
   checklists$ = this.pageStore.checklists$;
   tableConfiguration: TableConfiguration;
 
-  @ViewChild('deleteCell', {static: true})
-  deleteCell: TemplateRef<any>;
+  @ViewChild('actionCell', {static: true})
+  actionCell: TemplateRef<any>;
 
-  constructor(private programmePageSidenavService: ProgrammePageSidenavService,
-              public pageStore: ProgrammeChecklistListPageStore,
-              private dialog: MatDialog) { }
+  @ViewChild('copyCell', {static: true})
+  copyCell: TemplateRef<any>;
+
+  constructor(public pageStore: ProgrammeChecklistListPageStore,
+              private routingService: RoutingService,
+              private activatedRoute: ActivatedRoute,
+              private dialog: MatDialog,
+              private programmePageSidenavService: ProgrammePageSidenavService) { }
 
   ngOnInit(): void {
     this.pageStore.canEditProgramme$
@@ -50,6 +55,22 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
         take(1),
         filter(answer => !!answer),
         switchMap(() => this.pageStore.deleteChecklist(checklist.id)),
+      ).subscribe();
+  }
+
+  copy(checklist: ProgrammeChecklistDetailDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: 'programme.checklists.copy.dialog.header',
+        message: {i18nKey: 'programme.checklists.copy.confirm', i18nArguments: {name: checklist.name}}
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        switchMap(() => this.pageStore.cloneChecklist(checklist.id)),
+        tap(cloneChecklistId =>
+          this.routingService.navigate([cloneChecklistId], {relativeTo: this.activatedRoute})
+        )
       ).subscribe();
   }
 
@@ -80,10 +101,10 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
           sortProperty: 'lastModificationDate',
         },
         ...canEditProgramme ? [{
-          displayedColumn: 'common.delete.entry',
-          customCellTemplate: this.deleteCell,
+          displayedColumn: 'common.action',
+          customCellTemplate: this.actionCell,
           columnWidth: ColumnWidth.IdColumn
-        }] : []
+        }] : [],
       ]
     });
   }

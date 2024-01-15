@@ -29,7 +29,7 @@ context('Project privileges tests', () => {
 
         cy.loginByRequest(testData.projectCollaborator.email);
         cy.visit('/');
-        cy.get('jems-project-application-list').contains(application.identification.acronym).should('be.visible');
+        cy.get('jems-project-application-list').contains(application.identification.acronym).should('exist');
 
         // Remove user privileges from the project
         cy.loginByRequest(user.applicantUser.email);
@@ -57,7 +57,6 @@ context('Project privileges tests', () => {
   it('TB-364 Restrict management of project specific privileges', () => {
     cy.fixture('project/project-privileges/TB-364.json').then(testData => {
       cy.loginByRequest(user.admin.email);
-      testData.programmeRole.name = `programmeRole_${faker.random.alphaNumeric(5)}`;
       cy.createRole(testData.programmeRole).then(roleId => {
         testData.programmeUser.userRoleId = roleId;
         testData.programmeUser.email = faker.internet.email();
@@ -111,20 +110,17 @@ context('Project privileges tests', () => {
         // Testing the view privileges
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
-        cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
+        cy.get('jems-table:first').contains('div', applicationId).should('exist');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').parent().parent().should('be.disabled');
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
         cy.contains('Export').click();
         cy.contains('div', 'Export Plugin').find('mat-select').click();
         cy.contains('mat-option', 'Standard application form export').click();
         cy.contains('button', 'Export').should('be.enabled');
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
         cy.contains('annexes').click();
         cy.contains('button', 'Upload').should('not.exist');
         cy.get('jems-file-management').contains('mat-icon', 'download').should('be.visible');
@@ -141,8 +137,7 @@ context('Project privileges tests', () => {
         cy.loginByRequest(testData.applicantEdit.email);
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
-        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
-        cy.contains('button', 'Save changes').should('not.exist');
+        cy.get('mat-button-toggle-group:last').contains('button', 'view').should('be.disabled');
 
         addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantManage, 'manage');
 
@@ -191,7 +186,6 @@ context('Project privileges tests', () => {
     cy.fixture('project/project-privileges/TB-380.json').then(testData => {
       cy.loginByRequest(user.admin.email);
 
-      testData.monitorRole.name = `monitorRole_${faker.random.alphaNumeric(5)}`;
       cy.createRole(testData.monitorRole).then(roleId => {
         testData.monitorUser1.userRoleId = roleId;
         testData.monitorUser2.userRoleId = roleId;
@@ -240,11 +234,11 @@ context('Project privileges tests', () => {
 
           // checking for the added users
           cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
-            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('exist');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('exist');
           })
           cy.contains('mat-row', secondApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('exist');
             cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('not.exist');
           })
 
@@ -268,7 +262,7 @@ context('Project privileges tests', () => {
           cy.loginByRequest(testData.monitorUser1.email);
           cy.visit('/');
           cy.contains(firstApplicationAcronym).should('not.exist');
-          cy.contains(secondApplicationAcronym).should('be.visible');
+          cy.contains(secondApplicationAcronym).should('exist');
           cy.visit(`/app/project/detail/${applicationId2}/applicationFormIdentification`, {failOnStatusCode: false});
           cy.get('textarea.mat-input-element:first').should('have.attr', 'readonly');
 
@@ -316,7 +310,7 @@ context('Project privileges tests', () => {
 
   function testEditPrivileges(applicationId) {
     cy.visit('/');
-    cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
+    cy.get('jems-table:first').contains('div', applicationId).should('exist');
     cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});

@@ -106,28 +106,25 @@ context('Application modification tests', () => {
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain', 'Modification precontracted submitted');
       cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
-
+        
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain', 'Approved');
 
       cy.visit(`app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
       cy.get('textarea').should('have.value', 'New title');
       
-      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-      
-      cy.wait(1000);
-      cy.contains('span', 'Application form').should('be.visible').click();
       cy.get('mat-select-trigger').should('contain', '(current)').should('contain', 'V.2.0').click();
-      cy.contains('V.1.0').should('be.visible').click();
-
-      cy.wait(1000);
-      cy.contains('span', 'Application form').should('be.visible').click();
-      cy.contains('.link', 'A - Project identification').should('be.visible').click();
-      cy.contains('You are currently viewing an old version of this application').should('be.visible');
+      cy.contains('span.mat-option-text', 'V.1.0').should('be.visible').click();
       cy.get('textarea').should('have.value', 'API generated application title DE');
+      
+      cy.contains('.link', 'A - Project overview tables').click();
+      cy.wait(1000);
+      cy.get('mat-select-trigger:contains("(current)")').should('contain', 'V.2.0').click();
+      cy.contains('span.mat-option-text', 'V.1.0').should('be.visible').click();
+      cy.contains('You are currently viewing an old version of this application').should('be.visible');
     });
   });
-  
+
   it('TB-358 Deactivate Partner', () => {
     cy.fixture('project/application-form/modifications/TB-358.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
@@ -146,7 +143,7 @@ context('Application modification tests', () => {
           cy.submitProjectApplication(applicationId);
           cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
           cy.startModification(applicationId, user.programmeUser.email);
-          
+
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
           cy.contains('span', 'Application form').should('be.visible');
           cy.wait(2000);
@@ -155,24 +152,24 @@ context('Application modification tests', () => {
           cy.contains('Partners overview').click();
           cy.contains('mat-row', testData.partner1.abbreviation).contains('button', 'Deactivate partner').should('be.enabled');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'Deactivate partner').should('be.enabled');
-          
+
           cy.contains('mat-row', testData.partner1.abbreviation).contains('button', 'delete').should('not.exist');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'delete').should('not.exist');
-          
+
           // Deactivate Partner 2
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'Deactivate partner').click();
           cy.contains('button', 'Confirm').click();
-          
-          cy.contains('div', `Partner "${testData.partner2.abbreviation}" deactivated successfully`).should('be.visible');
+
+          cy.contains('div', `Partner "${testData.partner2.abbreviation}" deactivated successfully`).should('exist');
           cy.contains('div', `Partner "${testData.partner2.abbreviation}" deactivated successfully`).should('not.exist');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'Deactivate partner').should('be.disabled');
-          cy.contains('mat-row', testData.partner2.abbreviation).contains('Inactive').should('be.visible');
-          cy.contains('mat-row', testData.partner2.abbreviation).contains('mat-icon', 'person_off').should('be.visible');
-          cy.get(`li:contains("${testData.partner2.abbreviation}") mat-icon:contains("person_off")`).should('be.visible');
-          
+          cy.contains('mat-row', testData.partner2.abbreviation).contains('Inactive').should('exist');
+          cy.contains('mat-row', testData.partner2.abbreviation).contains('mat-icon', 'person_off').should('exist');
+          cy.get(`li:contains("${testData.partner2.abbreviation}") mat-icon:contains("person_off")`).should('exist');
+
           cy.contains('li', 'Partners overview').contains(testData.partner2.abbreviation).click();
           cy.contains('You are currently viewing a deactivated partner.').should('be.visible');
-          
+
           cy.contains('mat-form-field', '(current)').click();
           cy.wait(1000);
           cy.contains('V.2.0').should('be.visible').click();

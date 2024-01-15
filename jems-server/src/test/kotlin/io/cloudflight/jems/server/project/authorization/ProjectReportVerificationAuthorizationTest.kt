@@ -79,7 +79,7 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
 
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf()
+        every { userProjectCollaboratorPersistence.getCollaboratorsForProject(PROJECT_ID) } returns listOf()
         every { partnerCollaboratorPersistence.findUserIdsByProjectId(PROJECT_ID) } returns setOf()
         every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf()
 
@@ -97,7 +97,7 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
 
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf()
+        every { userProjectCollaboratorPersistence.getCollaboratorsForProject(PROJECT_ID) } returns listOf()
         every { partnerCollaboratorPersistence.findUserIdsByProjectId(PROJECT_ID) } returns setOf()
         every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(userId)
 
@@ -113,7 +113,7 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
 
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(status, PROJECT_ID)
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(
+        every { userProjectCollaboratorPersistence.getCollaboratorsForProject(PROJECT_ID) } returns listOf(
             collaboratorAssignedToProject(userId, ProjectCollaboratorLevel.EDIT)
         )
         every { partnerCollaboratorPersistence.findUserIdsByProjectId(PROJECT_ID) } returns setOf()
@@ -133,7 +133,7 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
 
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(status, PROJECT_ID)
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(
+        every { userProjectCollaboratorPersistence.getCollaboratorsForProject(PROJECT_ID) } returns listOf(
             collaboratorAssignedToProject(userId, ProjectCollaboratorLevel.EDIT)
         )
         every { partnerCollaboratorPersistence.findUserIdsByProjectId(PROJECT_ID) } returns setOf()

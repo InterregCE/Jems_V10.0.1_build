@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -71,9 +72,9 @@ class CoFinancingOverviewCalculator {
 
                 val contributionsByFund = entriesByFund.flatMap { entry -> entry.value.partnerContributions }
                 val autoPublic =
-                    getContributionTotal(contributionsByFund, ProjectPartnerContributionStatusDTO.AutomaticPublic)
-                val otherPublic = getContributionTotal(contributionsByFund, ProjectPartnerContributionStatusDTO.Public)
-                val private = getContributionTotal(contributionsByFund, ProjectPartnerContributionStatusDTO.Private)
+                    getContributionTotal(contributionsByFund, ProjectPartnerContributionStatus.AutomaticPublic)
+                val otherPublic = getContributionTotal(contributionsByFund, ProjectPartnerContributionStatus.Public)
+                val private = getContributionTotal(contributionsByFund, ProjectPartnerContributionStatus.Private)
                 val totalContribution = listOf(autoPublic, otherPublic, private).sumUp()
                 val totalFundAndContribution = listOf(fundingAmount, totalContribution).sumUp()
 
@@ -95,7 +96,7 @@ class CoFinancingOverviewCalculator {
 
         private fun getContributionTotal(
             contributions: List<ProjectContribution>,
-            status: ProjectPartnerContributionStatusDTO
+            status: ProjectPartnerContributionStatus
         ): BigDecimal = contributions
             .filter { contribution -> contribution.amount != null && contribution.status == status }
             .map { it.amount ?: BigDecimal.ZERO }

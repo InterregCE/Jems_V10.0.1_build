@@ -39,7 +39,7 @@ class GetReportControlDeductionOverviewCalculator(
 
         val totalDeductedSplit = totalDeclared.minus(totalParked).minus(totalEligibleAfterControl)
 
-        val byTypologyError = expenditures.filter { it.typologyOfErrorId != null }
+        val byTypologyError = expenditures
             .filter { it.typologyOfErrorId != null }
             .groupBy { it.typologyOfErrorId!! }
             .mapValues {
@@ -48,7 +48,7 @@ class GetReportControlDeductionOverviewCalculator(
                     .mapValues { it.value.sumOf { it.deductedAmount } }
             }
 
-        val result = this.typologyOfErrorsPersistence.getAllTypologyErrors()
+        val result = this.typologyOfErrorsPersistence.findAllByIdIn(byTypologyError.keys)
             .map { error -> byTypologyError.extractFor(error = error) }
             .plus(options.toRow(totalDeductedSplit))
             .fillInTotal()
@@ -119,6 +119,7 @@ class GetReportControlDeductionOverviewCalculator(
         other = other.minus(subtractor.other),
         lumpSum = lumpSum.minus(subtractor.lumpSum),
         unitCost = unitCost.minus(subtractor.unitCost),
+        spfCost = spfCost.minus(subtractor.spfCost),
         sum = sum.minus(subtractor.sum),
     )
 }

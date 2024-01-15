@@ -1,19 +1,26 @@
 <ng-container>
-    <jems-project-page-template *ngIf="pageStore.projectReport$ | async as projectReport"
-                                [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: projectReport?.reportNumber}"
+    <jems-project-page-template *ngIf="data$ | async as data"
+                                [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: data.projectReport?.reportNumber}"
                                 [subTitleText]=""
                                 [isVersionedData]="false">
 
         <div class="mb-3 status-wrapper">
-            <span class="status-label">Status</span>
-            <span class="ml-2"><jems-project-report-status [status]="projectReport.status" [longVersion]="false"></jems-project-report-status></span>
+            <span class="status-label">{{'common.status' | translate}}</span>
+            <span class="ml-2"><jems-project-report-status [status]="data.projectReport.status" [longVersion]="false"></jems-project-report-status></span>
 
             <jems-start-verification-report *ngIf="projectReportPageStore.userCanViewVerification$ | async"
                                             [showStart]="projectReportPageStore.userHasEditVerificationPrivilege$ | async"
-                                            [reportId]="projectReport.id"
-                                            [reportStatus]="projectReport.status"
+                                            [reportId]="data.projectReport.id"
+                                            [reportStatus]="data.projectReport.status"
                                             (onError)="showErrorMessage($event)">
             </jems-start-verification-report>
+
+            <button *ngIf="data.hasReopenPermission && ReportUtil.projectReportCanBeReopened(data.projectReport.status)"
+                    mat-stroked-button type="button" class="ml-2"
+                    (click)="reopenReport(data.projectReport.projectId, data.projectReport.id, data.projectReport.reportNumber)">
+                <mat-icon>undo</mat-icon>
+                <span>{{'project.application.project.report.reopen' | translate}}</span>
+            </button>
         </div>
 
         <jems-alert *ngIf="error$ | async as error"
@@ -30,24 +37,31 @@
                     </span>
             </a>
 
-            <a *ngIf="projectReport.type !== TypeEnum.Finance" [active]="activeTab('workPlan')" mat-tab-link
+            <a *ngIf="data.projectReport.type !== TypeEnum.Finance" [active]="activeTab('workPlan')" mat-tab-link
                (click)="routeTo('workPlan')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.work.plan' | translate}}
                     </span>
             </a>
 
-            <a *ngIf="projectReport.type !== TypeEnum.Finance" [active]="activeTab('resultsAndPrinciples')" mat-tab-link
+            <a *ngIf="data.projectReport.type !== TypeEnum.Finance" [active]="activeTab('resultsAndPrinciples')" mat-tab-link
                (click)="routeTo('resultsAndPrinciples')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.results.and.principles' | translate}}
                     </span>
             </a>
 
-            <a *ngIf="projectReport.type !== TypeEnum.Content" [active]="activeTab('certificate')" mat-tab-link
+            <a *ngIf="data.projectReport.type !== TypeEnum.Content" [active]="activeTab('certificate')" mat-tab-link
                (click)="routeTo('certificate')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.partner.certificate.list' | translate}}
+                    </span>
+            </a>
+
+            <a *ngIf="data.projectReport.type !== TypeEnum.Content && data.isSpfProject" [active]="activeTab('spfContributions')" mat-tab-link
+               (click)="routeTo('spfContributions')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.spf.contributions' | translate}}
                     </span>
             </a>
 
@@ -58,7 +72,7 @@
                     </span>
             </a>
 
-            <a *ngIf="projectReport.type !== TypeEnum.Content" [active]="activeTab('financialOverview')" mat-tab-link
+            <a *ngIf="data.projectReport.type !== TypeEnum.Content" [active]="activeTab('financialOverview')" mat-tab-link
                (click)="routeTo('financialOverview')">
                     <span jemsText maxWidth="230">
                         {{ 'project.application.partner.report.financial.tab.title' | translate }}
@@ -72,7 +86,7 @@
                     </span>
             </a>
 
-            <a *ngIf="projectReport.status === ProjectReportDTO.StatusEnum.Draft"
+            <a *ngIf="ReportUtil.isProjectReportOpen(data.projectReport.status)"
                [active]="activeTab('submitReport')" mat-tab-link
                (click)="routeTo('submitReport')">
                     <span jemsText maxWidth="230">

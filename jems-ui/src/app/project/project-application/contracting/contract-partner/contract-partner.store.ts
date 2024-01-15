@@ -100,7 +100,7 @@ export class ContractPartnerStore {
   private beneficialOwners(): Observable<ContractingPartnerBeneficialOwnerDTO[]> {
     const initialData$ = combineLatest([this.partnerId$, this.projectId$])
       .pipe(
-        switchMap(([partnerId, projectId]) => this.beneficialOwnerService.getBeneficialOwners(partnerId as number, projectId)),
+        switchMap(([partnerId, projectId]) => this.beneficialOwnerService.getBeneficialOwners(partnerId , projectId)),
       );
 
     return merge(initialData$, this.savedBeneficialOwners$)
@@ -184,7 +184,7 @@ export class ContractPartnerStore {
   updateDocumentsLocation(documentsLocation: ContractingPartnerDocumentsLocationDTO): Observable<ContractingPartnerDocumentsLocationDTO> {
     return combineLatest([this.partnerId$, this.projectId$])
       .pipe(
-        switchMap(([partnerId, projectId]) => this.documentsLocationService.updateDocumentsLocation(partnerId as number, projectId, documentsLocation)),
+        switchMap(([partnerId, projectId]) => this.documentsLocationService.updateDocumentsLocation(partnerId , projectId, documentsLocation)),
         tap(saved => Log.info('Saved contract partner documents location', saved)),
         tap(data => this.savedDocumentsLocation$.next(data))
       );

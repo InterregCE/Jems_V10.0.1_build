@@ -1,0 +1,62 @@
+{
+  "startDate": "2023-01-01T00:00:00.000Z",
+  "addDates": [
+    {
+      "comment": "Entry into force date comment",
+      "entryIntoForceDate": "2023-02-01T00:00:00.000Z"
+    }, {
+      "comment": "Amendment entry into force date comment",
+      "entryIntoForceDate": "2023-03-01T00:00:00.000Z"
+    }
+  ],
+  "typologyProv94": "Yes",
+  "typologyProv94Comment": "Article 94 comment",
+  "typologyProv95": "Partly",
+  "typologyProv95Comment": "Article 95 comment",
+  "typologyStrategic": "No",
+  "typologyStrategicComment": "Strategic importance comment",
+  "typologyPartnership": "Yes",
+  "typologyPartnershipComment": "Public private partnership comment",
+  "dimensionCodes": [
+    {
+      "programmeObjectiveDimension": "TypesOfIntervention",
+      "dimensionCode": "182",
+      "projectBudgetAmountShare": 11111
+    }, {
+      "programmeObjectiveDimension": "TerritorialDeliveryMechanism",
+      "dimensionCode": "033",
+      "projectBudgetAmountShare": 22222
+    }, {
+      "programmeObjectiveDimension": "GenderEquality",
+      "dimensionCode": "003",
+      "projectBudgetAmountShare": 33333
+    }
+  ],
+  "fastTrackLumpSums": [
+    {
+      "orderNr": 1,
+      "programmeLumpSumId": 1,
+      "period": 0,
+      "comment": "Fast track lump sum comment 1",
+      "readyForPayment": true,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    }, {
+      "orderNr": 2,
+      "programmeLumpSumId": 2,
+      "period": 1,
+      "comment": "",
+      "readyForPayment": false,
+      "fastTrack": false,
+      "installmentsAlreadyCreated": false
+    }, {
+      "orderNr": 3,
+      "programmeLumpSumId": 3,
+      "period": 255,
+      "comment": "Fast track lump sum comment 2",
+      "readyForPayment": false,
+      "fastTrack": true,
+      "installmentsAlreadyCreated": false
+    }
+  ]
+}

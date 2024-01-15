@@ -74,8 +74,7 @@ context('Controller tests', () => {
       cy.contains('Controller institution was updated successfully').should('be.visible');
 
       cy.contains('Institutions').click();
-      cy.contains('mat-row', testData.institution.name).should('be.visible');
-      cy.contains(testData.institution.nutsVerification).should('be.visible');
+      cy.contains('mat-row', testData.institution.name).should('exist').contains(testData.institution.nutsVerification).should('exist');
     });
   });
 

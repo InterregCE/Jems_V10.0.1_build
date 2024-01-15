@@ -198,6 +198,7 @@ export class UserRoleDetailPageComponent {
     this.adaptLimitedControllerInstitutionPermissions();
     this.adaptLimitedControllerInstitutionAssignmentsPermissions();
     this.adaptFinalizeReportVerificationPermissions();
+    this.adaptCloseCorrectionPermissions();
 
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
@@ -210,6 +211,8 @@ export class UserRoleDetailPageComponent {
       this.adaptLimitedControllerInstitutionPermissions();
       this.adaptLimitedControllerInstitutionAssignmentsPermissions();
       this.adaptFinalizeReportVerificationPermissions();
+      this.adaptCloseCorrectionPermissions();
+
       this.formChanged();
     }
   }
@@ -408,6 +411,31 @@ export class UserRoleDetailPageComponent {
     }
   }
 
+  private adaptCloseCorrectionPermissions(): void {
+    const correctionPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.subtitle') as any;
+    const correctionAuditClosingPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.close.audit') as any;
+    const correctionAuditReopeningPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.reopen.audit') as any;
+    const correctionClosingPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.reporting.corrections.close.correction') as any;
+    const correctionPermissionValue = this.state(correctionPermission.form)?.value;
+
+    if(correctionPermissionValue === PermissionState.HIDDEN ||  correctionPermissionValue == PermissionState.VIEW) {
+      this.state(correctionClosingPermission.form)?.setValue(PermissionState.HIDDEN);
+      this.state(correctionAuditClosingPermission.form)?.setValue(PermissionState.HIDDEN);
+      this.state(correctionAuditReopeningPermission.form)?.setValue(PermissionState.HIDDEN);
+      correctionClosingPermission.disabled = true;
+      correctionAuditClosingPermission.disabled = true;
+      correctionAuditReopeningPermission.disabled = true;
+    } else {
+      correctionClosingPermission.disabled = false;
+      correctionAuditClosingPermission.disabled = false;
+      correctionAuditReopeningPermission.disabled = false;
+    }
+  }
+
   private adaptLimitedControllerInstitutionAssignmentsPermissions(): void {
     const assignmentsPermission = this.treeControlTopNavigation?.dataNodes
         ?.find(node => node.name === 'topbar.main.institutions.assignment') as any;
@@ -427,13 +455,30 @@ export class UserRoleDetailPageComponent {
       ?.find(node => node.name === 'project.application.project.verification.work.title') as any;
     const verificationFinalisationPermission = this.treeControlInspect?.dataNodes
       ?.find(node => node.name === 'project.application.project.verification.work.finalize.title') as any;
+    const verificationReopenPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.project.report.verification.reopen') as any;
     const verificationPermissionValue = this.state(verificationPermission.form)?.value;
+
+    if(verificationPermissionValue === PermissionState.HIDDEN) {
+      this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationFinalisationPermission.disabled = true;
+      this.state(verificationReopenPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationReopenPermission.disabled = true;
+    } else if(verificationPermissionValue === PermissionState.VIEW) {
+      this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationFinalisationPermission.disabled = true;
+    } else {
+      verificationFinalisationPermission.disabled = false;
+      verificationReopenPermission.disabled = false;
+
+    }
 
     if(verificationPermissionValue === PermissionState.HIDDEN || verificationPermissionValue === PermissionState.VIEW) {
       this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
       verificationFinalisationPermission.disabled = true;
     } else {
       verificationFinalisationPermission.disabled = false;
+      verificationReopenPermission.disabled = false;
     }
   }
 }

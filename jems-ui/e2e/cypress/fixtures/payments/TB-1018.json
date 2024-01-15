@@ -1,0 +1,252 @@
+{
+  "partnerCollaborators": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "contractingFastTrackLumpSums": [
+    {
+      "programmeLumpSumId": 1,
+      "comment": "API added FTLS comment",
+      "readyForPayment": true
+    }
+  ],
+  "contractingFastTrackLumpSumsDisabled": [
+    {
+      "programmeLumpSumId": 1,
+      "comment": "API added FTLS comment",
+      "readyForPayment": false
+    }
+  ],
+  "authorizedPayments": [
+    {
+      "projectCustomIdentifier": "setDuringTest",
+      "fundName": "ERDF",
+      "partnerPayments": [
+        {
+          "id": 0,
+          "partnerId": 0,
+          "partnerType": "LEAD_PARTNER",
+          "partnerAbbreviation": "Lead Partner",
+          "amountApproved": 1199.99,
+          "installments": [
+            {
+              "amountPaid": 1199.99,
+              "paymentDate": "2023-09-27T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2023-09-27",
+              "paymentConfirmed": true,
+              "paymentConfirmedDate": "2023-09-27"
+            }
+          ]
+        }
+      ],
+      "paymentType": "FTLS",
+      "projectId": 0,
+      "projectAcronym": "cross-platform program",
+      "amountApprovedPerFund": 1199.99
+    }
+  ],
+  "modifiedCofinancing": {
+    "finances": [
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 39.99
+      }, {
+        "fundId": 8,
+        "fundType": "MainFund",
+        "percentage": 14.66
+      }, {
+        "percentage": 45.35,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Lead Partner",
+        "status": "Public",
+        "amount": 5698.97,
+        "partner": true
+      }, {
+        "name": "Lead contribution 1",
+        "status": "Private",
+        "amount": 3261.01,
+        "partner": false
+      }, {
+        "name": "Lead contribution 2",
+        "status": "AutomaticPublic",
+        "amount": 18911.42,
+        "partner": false
+      }
+    ]
+  },
+  "expectedResults": {
+    "beforePayment": {
+      "co-financing": {
+        "ERDF": {
+          "previouslyReported": "1.199,99 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "previouslyReported": "293,19 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "506,81 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "185,45 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "215,22 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "106,12 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "previouslyReported": "1.999,99 parked 0,00",
+          "previouslyPaid": "0,00"
+        }
+      }
+    },
+    "afterPayment": {
+      "co-financing": {
+        "ERDF": {
+          "previouslyReported": "1.199,99 parked 0,00",
+          "previouslyPaid": "1.199,99"
+        },
+        "Other fund EN": {
+          "previouslyReported": "293,19 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "506,81 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "185,45 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "215,22 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "106,12 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "previouslyReported": "1.999,99 parked 0,00",
+          "previouslyPaid": "1.199,99"
+        }
+      }
+    },
+    "afterModification": {
+      "co-financing": {
+        "ERDF": {
+          "previouslyReported": "1.199,99 parked 0,00",
+          "previouslyPaid": "1.199,99"
+        },
+        "Neighbourhood CBC": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "previouslyReported": "293,19 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "506,81 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "185,45 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "215,22 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "106,12 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "previouslyReported": "1.999,99 parked 0,00",
+          "previouslyPaid": "1.199,99"
+        }
+      }
+    },
+    "afterDeletePayment": {
+      "co-financing": {
+        "Neighbourhood CBC": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "previouslyReported": "0,00 parked 0,00",
+          "previouslyPaid": "0,00"
+        }
+      }
+    },
+    "afterReadyForPayment": {
+      "co-financing": {
+        "Neighbourhood CBC": {
+          "previouslyReported": "799,79 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "previouslyReported": "293,19 parked 0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "previouslyReported": "907,01 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Public contribution": {
+          "previouslyReported": "185,45 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Automatic public contribution": {
+          "previouslyReported": "615,41 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "of which Private contribution": {
+          "previouslyReported": "106,12 parked 0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "previouslyReported": "1.999,99 parked 0,00",
+          "previouslyPaid": "0,00"
+        }
+      }
+    }
+  }
+}

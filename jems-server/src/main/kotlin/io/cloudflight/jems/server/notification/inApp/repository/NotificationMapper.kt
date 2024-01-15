@@ -15,10 +15,9 @@ import java.time.ZoneOffset
 import java.util.UUID
 
 fun NotificationInApp.toUsers(
-    groupId: UUID,
-    recipientsResolver: (Set<String>) -> Iterable<UserEntity>,
+    recipients: Iterable<UserEntity>,
     projectResolver: (Long) -> ProjectEntity,
-) = recipientsResolver.invoke(recipientsInApp).map {
+) = recipients.map {
     NotificationEntity(
         account = it,
         groupIdentifier = groupId,
@@ -30,6 +29,26 @@ fun NotificationInApp.toUsers(
         partnerId = templateVariables.partnerId(),
         partnerRole = templateVariables.partnerRole(),
         partnerNumber = templateVariables.partnerNumber(),
+        subject = subject,
+        body = body,
+        type = type,
+    )
+}
+
+fun NotificationInApp.toUsersNonProject(
+    recipients: Iterable<UserEntity>,
+) = recipients.map {
+    NotificationEntity(
+        account = it,
+        groupIdentifier = groupId,
+        instanceIdentifier = UUID.randomUUID(),
+        created = LocalDateTime.ofInstant(time.toInstant(), ZoneOffset.UTC),
+        project = null,
+        projectIdentifier = null,
+        projectAcronym = null,
+        partnerId = null,
+        partnerRole = null,
+        partnerNumber = null,
         subject = subject,
         body = body,
         type = type,

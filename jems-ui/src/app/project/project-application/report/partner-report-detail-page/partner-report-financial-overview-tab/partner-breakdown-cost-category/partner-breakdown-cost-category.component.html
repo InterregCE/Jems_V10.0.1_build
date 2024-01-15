@@ -8,7 +8,7 @@
         <mat-footer-cell *matFooterCellDef>{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
     </ng-container>
 
-    <ng-container class="remove-gap" matColumnDef="flatRate" sticky>
+    <ng-container matColumnDef="flatRate" sticky>
         <mat-header-cell *matHeaderCellDef class="justify-center border-cell-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.flat.rate' | translate }}</span>
         </mat-header-cell>
@@ -29,9 +29,9 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
             <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previously.reported.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right small-text-container block">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="line.translation !== 'project.partner.spf.cost.type.spf'">
             {{ line.previouslyReported | asMoney }}
-            <div class="additional-info-text mat-small">
+            <div class="additional-info-text mat-small" *ngIf="line.translation !== 'project.partner.spf.cost.type.spf'">
                 {{'project.application.partner.report.financial.parked.label' | translate}} {{line.previouslyReportedParked | asMoney}}
             </div>
         </mat-cell>
@@ -47,9 +47,9 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.current.report' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right small-text-container block">
-            <div>{{ line.currentReport | asMoney }}</div>
-            <div class="additional-info-text mat-small">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="line.translation !== 'project.partner.spf.cost.type.spf'">
+            <div>{{ line.translation !== 'project.partner.spf.cost.type.spf' ? (line.currentReport | asMoney) : ('common.not.applicable.option' | translate) }}</div>
+            <div class="additional-info-text mat-small" *ngIf="line.translation !== 'project.partner.spf.cost.type.spf'">
                 {{'project.application.partner.report.financial.reincluded.label' | translate}} {{line.currentReportReIncluded | asMoney}}
             </div>
         </mat-cell>
@@ -82,9 +82,9 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far.perc' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
-            <span *ngIf="line.totalEligibleBudget">{{ line.totalReportedSoFarPercentage | asMoney }}&nbsp;%</span>
+            <span *ngIf="line.totalEligibleBudget">{{ line.totalReportedSoFarPercentage | asPercentage }}</span>
         </mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asMoney }}&nbsp;%</mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asPercentage }}</mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="remainingBudget">

@@ -2,11 +2,13 @@ package io.cloudflight.jems.server.project.controller.report.project.verificatio
 
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.CertificateVerificationDeductionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceBreakdownSplitLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.FinancingSourceFundDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification.VerificationWorkOverviewDTO
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.deductionOverview.CertificateVerificationDeductionOverview
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverview
@@ -24,6 +26,7 @@ fun FinancingSourceBreakdown.toDto() = FinancingSourceBreakdownDTO(
 fun FinancingSourceBreakdownLine.toDto() = FinancingSourceBreakdownLineDTO(
     partnerReportId = partnerReportId,
     partnerReportNumber = partnerReportNumber,
+    spfLine = spfLine,
     partnerId = partnerId,
     partnerRole = partnerRole?.let { ProjectPartnerRoleDTO.valueOf(it.name) },
     partnerNumber = partnerNumber,
@@ -53,7 +56,11 @@ fun FinancingSourceBreakdownLine.toDto() = FinancingSourceBreakdownLineDTO(
     },
 )
 
+fun List<CertificateVerificationDeductionOverview>.toDto() = this.map { mapper.map(it) }
+
 @Mapper
 interface ProjectReportVerificationOverviewMapper {
     fun map(overview: VerificationWorkOverview): VerificationWorkOverviewDTO
+
+    fun map(model: CertificateVerificationDeductionOverview): CertificateVerificationDeductionOverviewDTO
 }

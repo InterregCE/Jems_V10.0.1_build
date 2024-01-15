@@ -9,10 +9,13 @@
     <mat-select [disabled]="!periods.length || disabled"
                 [formControl]="control"
                 (selectionChange)="selectionChanged.emit()"
-                [required]="required">
+                [required]="required"
+                #matSelect
+                [matTooltip]="matSelect.triggerValue">
+        <mat-option value="N/A" *ngIf="invalidPeriodSelected">{{ 'common.not.applicable.option' | translate }}</mat-option>
         <mat-option *ngFor="let period of periods" [value]="period.number">
             <ng-container *ngIf="period.number !== 255">
-                {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+                {{ ProjectUtil.getPeriodKey(period.startDate) | translate : ProjectUtil.getPeriodArguments(period) }}
             </ng-container>
             <ng-container *ngIf="period.number === 255">
                 {{ 'project.results.result.delivery.period.last' | translate }}

@@ -88,7 +88,7 @@ class ProjectDataProviderImpl(
     private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
-    private val contractingMonitoringPersistence: ContractingMonitoringPersistence
+    private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
 ) : ProjectDataProvider {
 
     companion object {
@@ -201,7 +201,7 @@ class ProjectDataProviderImpl(
                         PartnerBudgetCoFinancing(
                             partner = partnerSummaries.first { it.id == partner.id },
                             budgetCoFinancingAndContributions[partner.id],
-                            total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
+                            total = partner.budget.projectBudgetCostsCalculationResult.totalCosts - partner.budget.projectPartnerSpfBudgetTotalCost
                         )
                     },
                     spfCoFinancing = emptyList()
@@ -253,7 +253,7 @@ class ProjectDataProviderImpl(
         val programmeTitle = programmeDataRepository.findById(1)
             .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: ""
         return project.toIdentificationDataModel(
-            projectStartDate =  contractMonitoring.startDate,
+            projectStartDate = contractMonitoring.startDate,
             projectEndDate = contractMonitoring.endDate,
             programmeTitle = programmeTitle,
             projectLifecycleData = ProjectLifecycleData(
@@ -344,6 +344,8 @@ class ProjectDataProviderImpl(
         else
             ZERO
 
+        val spfCosts = getBudgetCostsPersistence.getBudgetSpfCostTotal(partnerId, version)
+
         return budgetCostsCalculator.calculateCosts(
             budgetOptions,
             unitCostTotal,
@@ -352,7 +354,8 @@ class ProjectDataProviderImpl(
             equipmentCostTotal,
             infrastructureCostTotal,
             travelCostTotal,
-            staffCostTotal
+            staffCostTotal,
+            spfCosts,
         )
     }
 
@@ -368,7 +371,10 @@ class ProjectDataProviderImpl(
         val managementCoFinancingOverview = CoFinancingOverviewCalculator.calculateCoFinancingOverview(
             partnerIds = partnersByIds.keys,
             getBudgetTotalCost = { partnerId ->
-                partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+                val spfTotal = partnersByIds[partnerId]?.budget?.projectPartnerSpfBudgetTotalCost ?: ZERO
+                val total = partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+                val managementTotal = total.minus(spfTotal)
+                managementTotal
             },
             getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
             funds = funds,
@@ -403,7 +409,18 @@ class ProjectDataProviderImpl(
                     .filter { it.programmeResultIndicatorId != null }
                     .groupBy { it.programmeResultIndicatorId }
                     .toMutableMap()
-            ).toIndicatorOverviewLines()
+            ).toIndicatorOverviewLines(),
+            indicatorLinesWithCodes = ResultOverviewCalculator.calculateProjectResultOverview(
+                projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
+                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
+                    .associateBy { it.id },
+                programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
+                    .associateBy { it.id },
+                projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
+                    .filter { it.programmeResultIndicatorId != null }
+                    .groupBy { it.programmeResultIndicatorId }
+                    .toMutableMap()
+            ).toIndicatorOverviewLinesWithCodes()
         )
     }
 }

@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBaseData
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
@@ -79,7 +80,10 @@ class CreateProjectPartnerReport(
             projectId = projectId,
             partner = partner.toSummary(),
             version = version,
-            coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version),
+            coFinancing = PartnerReportCoFinancing(
+                coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version),
+                coFinancingSpf = partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, version),
+            ),
             investments = workPackages.extractInvestments(),
         )
 

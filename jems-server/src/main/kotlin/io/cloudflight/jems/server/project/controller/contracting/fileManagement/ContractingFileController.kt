@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.contracting.fileManagement
 
 import io.cloudflight.jems.api.project.contracting.ContractingFileApi
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor
@@ -18,8 +19,6 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.set
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -77,34 +76,16 @@ class ContractingFileController(
 
 
     override fun downloadContractFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadContractFile.download(projectId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadContractFile.download(projectId, fileId = fileId).toResponseFile()
 
     override fun downloadInternalFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadInternalFile.download(projectId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadInternalFile.download(projectId, fileId = fileId).toResponseFile()
 
     override fun downloadPartnerFile(
         projectId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> {
-        return with(downloadPartnerFile.downloadPartnerFile(projectId = projectId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        return downloadPartnerFile.downloadPartnerFile(projectId = projectId, fileId = fileId).toResponseFile()
     }
 
     override fun deleteContractFile(projectId: Long, fileId: Long) =

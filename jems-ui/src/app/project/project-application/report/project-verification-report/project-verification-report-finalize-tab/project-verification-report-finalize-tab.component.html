@@ -78,6 +78,11 @@
                                   [maxRows]="5">
         </jems-expandable-textarea>
 
+        <h3>{{'project.application.project.verification.work.tab.finalise.certificate.title' | translate}}</h3>
+        <p>{{'project.application.project.verification.work.tab.finalise.certificate.subtitle' | translate}}</p>
+
+        <jems-project-report-verification-certificate jemsNoWidthLimit></jems-project-report-verification-certificate>
+
         <ng-container *ngIf="data.userCanEdit && !data.reportFinalised && data.finalizationAllowed && !overviewForm.dirty">
           <div jemsNoWidthLimit class="mt-3">
             <jems-pending-button

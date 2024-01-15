@@ -6,6 +6,7 @@ import java.math.BigDecimal
 data class FinancingSourceBreakdownLineDTO(
     val partnerReportId: Long?,
     val partnerReportNumber: Int?,
+    val spfLine: Boolean,
 
     val partnerId: Long?,
     val partnerRole: ProjectPartnerRoleDTO?,

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.repository.fund
 
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import org.springframework.stereotype.Repository

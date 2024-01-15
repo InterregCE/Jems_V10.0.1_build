@@ -288,6 +288,23 @@ import {
 import {
   ReportAdvancePaymentsOverviewComponent
 } from '@project/project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
+import {ReportCorrectionsOverviewComponent} from '@project/project-application/report/report-corrections-overview/report-corrections-overview.component';
+import {
+  ReportCorrectionsAuditControlDetailPageComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.component';
+import {
+  ReportCorrectionsAuditControlCreatePageComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-create-page/report-corrections-audit-control-create-page.component';
+import {
+  ReportCorrectionsAuditControlDetailPageBreadcrumbResolver
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page-breadcrumb.resolver';
+import {
+  AuditControlCorrectionDetailPageBreadcrumbResolver
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail-page-breadcrumb.resolver';
+import {
+  AuditControlCorrectionDetailComponent
+} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
+import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
 
 export const routes: Routes = [
   {
@@ -437,6 +454,42 @@ export const routes: Routes = [
             ]
           },
           {
+            path: 'corrections',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.corrections'
+            },
+            children: [
+              {
+                path: '',
+                component: ReportCorrectionsOverviewComponent,
+              },
+              {
+                path: 'create',
+                component: ReportCorrectionsAuditControlCreatePageComponent,
+                data: {
+                  breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.corrections.create'
+                },
+              },
+              {
+                path: 'auditControl/:auditControlId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ReportCorrectionsAuditControlDetailPageBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: ReportCorrectionsAuditControlDetailPageComponent,
+                  },
+                  {
+                    path: 'correction/:correctionId',
+                    data: {dynamicBreadcrumb: true},
+                    resolve: {breadcrumb$: AuditControlCorrectionDetailPageBreadcrumbResolver},
+                    component: AuditControlCorrectionDetailComponent
+                  }
+                ]
+              }
+            ]
+          },
+          {
             path: 'projectReports',
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.project.reports',
@@ -479,6 +532,10 @@ export const routes: Routes = [
                       {
                         path: 'certificate',
                         component: ProjectReportCertificateTabComponent,
+                      },
+                      {
+                        path: 'spfContributions',
+                        component: ProjectReportSpfContributionsTabComponent,
                       },
                       {
                         path: 'annexes',

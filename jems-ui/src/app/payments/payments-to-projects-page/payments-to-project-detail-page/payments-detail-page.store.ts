@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
-import {PaymentDetailDTO, PaymentsAPIService,} from '@cat/api';
-import {PermissionService} from '../../../security/permissions/permission.service';
+import {AuditControlCorrectionDTO, AvailableCorrectionsForPaymentDTO, PaymentDetailDTO, PaymentsAPIService, ProjectAuditAndControlService,} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
-import {switchMap, tap} from 'rxjs/operators';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 
 @Injectable({
@@ -14,11 +13,13 @@ export class PaymentsDetailPageStore {
 
   paymentDetail$: Observable<PaymentDetailDTO>;
   savedPaymentDetail$ = new Subject<PaymentDetailDTO>();
+  availableCorrections$: Observable<AvailableCorrectionsForPaymentDTO[]>;
 
   constructor(private paymentApiService: PaymentsAPIService,
-              private permissionService: PermissionService,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private auditControlService: ProjectAuditAndControlService) {
     this.paymentDetail$ = this.paymentDetail();
+    this.availableCorrections$ = this.availableCorrections();
   }
 
 
@@ -32,7 +33,13 @@ export class PaymentsDetailPageStore {
     return merge(initialPaymentDetail$, this.savedPaymentDetail$);
   }
 
-   updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO): Observable<PaymentDetailDTO> {
+  updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO): Observable<PaymentDetailDTO> {
     return this.paymentApiService.updatePaymentInstallments(paymentId, paymentDetail);
+  }
+
+  private availableCorrections(): Observable<AvailableCorrectionsForPaymentDTO[]> {
+    return this.paymentDetail$.pipe(
+      switchMap(payment => this.auditControlService.getAvailableCorrectionsForPayment(payment.id, payment.projectId))
+    );
   }
 }

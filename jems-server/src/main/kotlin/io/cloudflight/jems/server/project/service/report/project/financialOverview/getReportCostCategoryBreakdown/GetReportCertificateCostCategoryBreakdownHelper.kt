@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import java.math.BigDecimal
 
 fun ReportCertificateCostCategory.toLinesModel() = CertificateCostCategoryBreakdown(
     staff = CertificateCostCategoryBreakdownLine(
@@ -71,6 +72,13 @@ fun ReportCertificateCostCategory.toLinesModel() = CertificateCostCategoryBreakd
         currentVerified = currentVerified.unitCost,
         previouslyVerified = previouslyVerified.unitCost
     ),
+    spfCost = CertificateCostCategoryBreakdownLine(
+        totalEligibleBudget = totalsFromAF.spfCost,
+        previouslyReported = previouslyReported.spfCost,
+        currentReport = currentlyReported.spfCost,
+        currentVerified = currentVerified.spfCost,
+        previouslyVerified = previouslyVerified.spfCost,
+    ),
     total = CertificateCostCategoryBreakdownLine(
         totalEligibleBudget = totalsFromAF.sum,
         previouslyReported = previouslyReported.sum,
@@ -90,6 +98,7 @@ fun CertificateCostCategoryBreakdown.fillInCurrent(current: BudgetCostsCalculati
     other.currentReport = current.other
     lumpSum.currentReport = current.lumpSum
     unitCost.currentReport = current.unitCost
+    spfCost.currentReport = current.spfCost
     total.currentReport = current.sum
 }
 
@@ -103,6 +112,11 @@ fun CertificateCostCategoryBreakdown.fillInOverviewFields() = apply {
     other.fillInOverviewFields()
     lumpSum.fillInOverviewFields()
     unitCost.fillInOverviewFields()
+    spfCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
 
+fun BudgetCostsCalculationResultFull.plusSpf(spfAmount: BigDecimal) = copy(
+    spfCost = spfCost.plus(spfAmount),
+    sum = sum.plus(spfAmount),
+)

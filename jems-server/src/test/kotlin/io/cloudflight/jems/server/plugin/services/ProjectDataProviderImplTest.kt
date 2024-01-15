@@ -41,6 +41,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLineWithCodes
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
@@ -125,6 +126,8 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
@@ -861,6 +864,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(projectPartner.id)) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(projectPartner.id)) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetSpfCostTotal(projectPartner.id, null) } returns BigDecimal.valueOf(75L)
         every {
             budgetCostsCalculator.calculateCosts(
                 any(),
@@ -870,7 +874,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                spfCosts = BigDecimal.valueOf(75L),
             )
         } returns budgetCostsCalculationResult
         every {
@@ -958,7 +963,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         totalContribution = BigDecimal.ZERO,
                         totalEuContribution = BigDecimal.ZERO,
 
-                        totalFundAndContribution = BigDecimal.TEN,
+                        totalFundAndContribution = BigDecimal.valueOf(10_00L, 2),
                         totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
                     ),
                     projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
@@ -1001,10 +1006,86 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
                             onlyResultWithoutOutputs = false,
+                        ),
+                        IndicatorOverviewLine(
+                            outputIndicatorId = 2L,
+                            outputIndicatorIdentifier = "outputIdentifier2",
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName2"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
+                            outputIndicatorTargetValueSumUp = BigDecimal.ONE,
+                            projectOutputNumber = "1.2",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
+                            projectOutputTargetValue = BigDecimal.ONE,
+                            resultIndicatorId = 3L,
+                            resultIndicatorIdentifier = "resultIdentifier2",
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName2"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false,
+                        )
+                    ),
+                    indicatorLinesWithCodes = listOf(
+                        IndicatorOverviewLineWithCodes(
+                            outputIndicatorId = 1L,
+                            outputIndicatorIdentifier = "outputIdentifier",
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
+                            outputIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            projectOutputNumber = "1.1",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
+                            projectOutputTargetValue = BigDecimal.TEN,
+                            resultIndicatorId = 2L,
+                            resultIndicatorIdentifier = "resultIdentifier",
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false,
                             outputIndicatorCode = "outputCode",
                             resultIndicatorCode = "resultCode"
                         ),
-                        IndicatorOverviewLine(
+                        IndicatorOverviewLineWithCodes(
                             outputIndicatorId = 2L,
                             outputIndicatorIdentifier = "outputIdentifier2",
                             outputIndicatorName = setOf(
@@ -1647,7 +1728,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     ),
                     projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
-                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
+                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList(), emptyList())
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
@@ -1739,13 +1820,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             projectId = projectId,
             startDate = projectStartDate,
             endDate = null,
-            typologyProv94 = null,
+            typologyProv94 = ContractingMonitoringExtendedOption.Yes,
             typologyProv94Comment = null,
-            typologyProv95= null,
+            typologyProv95= ContractingMonitoringExtendedOption.No,
             typologyProv95Comment= null,
-            typologyStrategic= null,
+            typologyStrategic= ContractingMonitoringOption.Yes,
             typologyStrategicComment= null,
-            typologyPartnership= null,
+            typologyPartnership= ContractingMonitoringOption.No,
             typologyPartnershipComment= null,
             addDates= emptyList(),
             dimensionCodes = emptyList(),

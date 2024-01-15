@@ -30,6 +30,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherCurrent), 0),
             COALESCE(SUM(report.lumpSumCurrent), 0),
             COALESCE(SUM(report.unitCostCurrent), 0),
+            COALESCE(SUM(report.spfCostCurrent), 0),
             COALESCE(SUM(report.sumCurrent), 0)
         )
         FROM #{#entityName} report
@@ -48,6 +49,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.lumpSumTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.unitCostTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.spfCostTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
         )
         FROM #{#entityName} report
@@ -66,6 +68,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherCurrentParked), 0),
             COALESCE(SUM(report.lumpSumCurrentParked), 0),
             COALESCE(SUM(report.unitCostCurrentParked), 0),
+            COALESCE(SUM(report.spfCostCurrentParked), 0),
             COALESCE(SUM(report.sumCurrentParked), 0)
         )
         FROM #{#entityName} report
@@ -84,6 +87,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.otherTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.lumpSumTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.unitCostTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.spfCostTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
         )
         FROM #{#entityName} report
@@ -108,6 +112,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             SUM(report.otherTotalEligibleAfterControl),
             SUM(report.lumpSumTotalEligibleAfterControl),
             SUM(report.unitCostTotalEligibleAfterControl),
+            SUM(report.spfCostTotalEligibleAfterControl),
             SUM(report.sumTotalEligibleAfterControl),
             SUM(report.staffCurrent - report.staffTotalEligibleAfterControl - report.staffCurrentParked),
             SUM(report.officeCurrent - report.officeTotalEligibleAfterControl - report.officeCurrentParked),
@@ -118,6 +123,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             SUM(report.otherCurrent - report.otherTotalEligibleAfterControl - report.otherCurrentParked),
             SUM(report.lumpSumCurrent - report.lumpSumTotalEligibleAfterControl - report.lumpSumCurrentParked),
             SUM(report.unitCostCurrent - report.unitCostTotalEligibleAfterControl - report.unitCostCurrentParked),
+            SUM(report.spfCostCurrent - report.spfCostTotalEligibleAfterControl - report.spfCostCurrentParked),
             SUM(report.sumCurrent - report.sumTotalEligibleAfterControl - report.sumCurrentParked)
         )
         FROM #{#entityName} report

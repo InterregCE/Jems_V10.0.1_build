@@ -39,7 +39,7 @@ class GetContractingPartnerStateAidDeMinimisService(
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure) ) {
             ContractingPartnerStateAidDeMinimisSection(
                 partnerId = partnerId,
-                dateOfGrantingAid = projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+                dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
                 amountGrantingAid = deMinimisData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 selfDeclarationSubmissionDate = deMinimisData?.selfDeclarationSubmissionDate,
                 baseForGranting = deMinimisData?.baseForGranting,

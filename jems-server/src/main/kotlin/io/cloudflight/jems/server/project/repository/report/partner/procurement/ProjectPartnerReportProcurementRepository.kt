@@ -24,4 +24,5 @@ interface ProjectPartnerReportProcurementRepository :
 
     fun deleteByReportEntityPartnerIdAndReportEntityIdAndId(partnerId: Long, reportId: Long, id: Long)
 
+    fun existsByIdAndReportEntityIdIn( id: Long, partnerReportIds: Set<Long>): Boolean
 }

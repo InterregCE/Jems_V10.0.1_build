@@ -29,6 +29,9 @@ class JemsProjectFileService(
             JemsFileType.PaymentAttachment,
             JemsFileType.PaymentAdvanceAttachment,
 
+            // Corrections
+            JemsFileType.AuditControl,
+
             // Project Report
             JemsFileType.ProjectReport,
             JemsFileType.ProjectResult,
@@ -38,6 +41,7 @@ class JemsProjectFileService(
 
             // Project Report Verification
             JemsFileType.VerificationDocument,
+            JemsFileType.VerificationCertificate,
 
             // Partner Report
             JemsFileType.PartnerReport,
@@ -122,8 +126,10 @@ class JemsProjectFileService(
 
         auditPublisher.publishEvent(
             fileDeleted(
-                context = this, fileId = fileId,
-                location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel()
+                context = this,
+                fileId = fileId,
+                location = file.minioLocation,
+                projectSummary = projectRepository.getById(projectId).toSummaryModel()
             )
         )
     }

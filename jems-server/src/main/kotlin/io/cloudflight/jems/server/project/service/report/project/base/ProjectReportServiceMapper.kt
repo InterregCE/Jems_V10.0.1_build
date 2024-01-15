@@ -2,12 +2,13 @@ package io.cloudflight.jems.server.project.service.report.project.base
 
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
 fun ProjectReportModel.toServiceModel(
     periodResolver: (Int) -> ProjectPeriod,
+    paymentIdsInstallmentExists: Set<Long> = setOf(),
+    paymentToEcIdsReportIncluded: Set<Long> = setOf()
 ) = ProjectReport(
     id = id,
     reportNumber = reportNumber,
@@ -30,13 +31,19 @@ fun ProjectReportModel.toServiceModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
-    verificationEndDate = verificationEndDate
+    verificationEndDate = verificationEndDate,
+    verificationLastReOpenDate = lastVerificationReOpening,
+
+    paymentIdsInstallmentExists = paymentIdsInstallmentExists,
+    paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded
 )
 
 fun ProjectReportModel.toServiceSummaryModel(
     periodResolver: (Int) -> ProjectPeriod?,
 ) = ProjectReportSummary(
     id = id,
+    projectId = projectId,
+    projectIdentifier = projectIdentifier,
     reportNumber = reportNumber,
     status = status,
     linkedFormVersion = linkedFormVersion,
@@ -49,9 +56,10 @@ fun ProjectReportModel.toServiceSummaryModel(
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
-    deletable = status == ProjectReportStatus.Draft,
+    deletable = status.isOpenInitially(),
     amountRequested = amountRequested,
     totalEligibleAfterVerification = totalEligibleAfterVerification,
 

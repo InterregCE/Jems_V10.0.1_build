@@ -6,7 +6,11 @@ import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadata
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.checklist.*
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
@@ -16,25 +20,23 @@ import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
-import io.cloudflight.jems.server.project.controller.controlChecklist.ControlChecklistInstanceController
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.controller.verificationChecklist.VerificationChecklistInstanceController
-import io.cloudflight.jems.server.project.service.checklist.create.control.CreateControlChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.clone.verification.CloneVerificationChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.verification.CreateVerificationChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.delete.control.DeleteControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.verification.DeleteVerificationChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.export.control.ExportControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.verification.ExportVerificationChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getDetail.control.GetControlChecklistInstanceDetailInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.verification.GetVerificationChecklistInstanceDetailInteractor
-import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistInstancesInteractor
 import io.cloudflight.jems.server.project.service.checklist.getInstances.verification.GetVerificationChecklistsInstancesInteractor
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
-import io.cloudflight.jems.server.project.service.checklist.update.control.UpdateControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.update.verification.UpdateVerificationChecklistInstanceInteractor
 import io.mockk.Runs
 import io.mockk.every
@@ -47,7 +49,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-internal class VerificationChecklistInstanceControllerTest: UnitTest() {
+internal class VerificationChecklistInstanceControllerTest : UnitTest() {
 
     companion object {
         const val projectId = 1L
@@ -191,6 +193,9 @@ internal class VerificationChecklistInstanceControllerTest: UnitTest() {
     @MockK
     lateinit var exportInteractor: ExportVerificationChecklistInstanceInteractor
 
+    @MockK
+    lateinit var cloneInteractor: CloneVerificationChecklistInstanceInteractor
+
     @Test
     fun `get verification checklists`() {
         every { getVerificationChecklistInteractor.getVerificationChecklistInstances(projectId, reportId) } returns listOf(checklist)
@@ -208,7 +213,7 @@ internal class VerificationChecklistInstanceControllerTest: UnitTest() {
 
     @Test
     fun `delete verification checklist`() {
-        every { deleteInteractor.deleteById(projectId, reportId,checklistId) } just Runs
+        every { deleteInteractor.deleteById(projectId, reportId, checklistId) } just Runs
         assertDoesNotThrow { controller.deleteVerificationChecklistInstance(projectId, reportId, checklistId) }
     }
 
@@ -237,5 +242,13 @@ internal class VerificationChecklistInstanceControllerTest: UnitTest() {
         every { exportInteractor.export(projectId, reportId, checklistId, SystemLanguage.CS, null) } returns exportResult
         Assertions.assertThat(controller.exportVerificationChecklistInstance(projectId, reportId, checklistId, SystemLanguage.CS, null))
             .isEqualTo(exportResult.toResponseEntity())
+    }
+
+    @Test
+    fun `clone verification checklist`() {
+        every { cloneInteractor.clone(projectId, reportId, checklistId) } returns checklistDetail
+        Assertions.assertThat(controller.cloneVerificationChecklistInstance(projectId, reportId, checklistId))
+            .usingRecursiveComparison()
+            .isEqualTo(checklistDetailDTO)
     }
 }

@@ -1,10 +1,7 @@
 import {defineConfig} from 'cypress';
-const { cloudPlugin } = require('cypress-cloud/plugin');
-import date from 'date-and-time';
+import { cloudPlugin } from 'cypress-cloud/plugin';
 import xlsx from 'node-xlsx';
-import fetch from 'node-fetch';
 import comparePdf from 'compare-pdf';
-import CypressRunResult = CypressCommandLine.CypressRunResult;
 
 export default defineConfig({
   defaultCommandTimeout: 8000,
@@ -22,8 +19,8 @@ export default defineConfig({
     defaultPassword: '<change-me>',
   },
   e2e: {
-    baseUrl: 'http://localhost:4200',
-    specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**'],
+    baseUrl: 'http://localhost:4200/',
+    specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**/*.spec.ts'],
     async setupNodeEvents(on, config) {
       on('task', {
         async parseXLSX(subject) {
@@ -64,99 +61,6 @@ export default defineConfig({
             .compare();
         }
       });
-
-      // setup reporting to JIRA (only in run mode)
-      const requestDetails = {
-        method: null,
-        headers: {
-          'Authorization': `Bearer ${config.env.jiraApiToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: null
-      };
-
-      if (config.env.jiraApiToken) {
-        const apiUrl = 'https://rtm-api.hexygen.com/api/v2/test-execution/execute/TB-400';
-
-        const today = new Date();
-        const formattedToday = date.format(today, 'YYYY-MM-DD');
-
-        const executionDetails = {
-          parentTestKey: 'F-TB-TE-6',
-          startDate: formattedToday,
-          endDate: formattedToday
-        };
-
-        requestDetails.method = 'post';
-        requestDetails.body = JSON.stringify(executionDetails);
-
-        await fetch(apiUrl, requestDetails).then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-
-          return response.json();
-        }).then((response: any) => {
-          config.env.executionKey = response.testKey;
-        });
-      }
-
-      on('task', {
-        async sendTestResults(test) {
-          const match = /TB-\d+/.exec(test.title);
-          if (match) {
-            const testKey = match[0];
-            const testCaseExecutionDetails = {
-              "result": {
-                "statusName": "Blocked"
-              }
-            }
-            if (test.state === 'failed')
-              testCaseExecutionDetails.result.statusName = "Fail";
-            else if (test.state === 'passed')
-              testCaseExecutionDetails.result.statusName = "Pass";
-
-            const requestDetails = {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${config.env.jiraApiToken}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(testCaseExecutionDetails)
-            };
-            const fetchUrl = `https://rtm-api.hexygen.com/api/v2/test-case-execution/${config.env.executionKey}-${testKey}`;
-            const response = await fetch(fetchUrl, requestDetails);
-            if (response.status !== 200 && response.status !== 204) {
-              const result = await response.json();
-              console.log('Error updating test result to Jira: ', result);
-            }
-          } else {
-            console.log(`Test case title couldn't be matched for project: ${config.env.project}.`);
-          }
-          return null;
-        }
-      });
-
-      on('after:run', async (results: CypressRunResult) => {
-        if (config.env.jiraApiToken) {
-          const executionDetails = {
-            "result": {
-              "name": "Fail"
-            }
-          }
-
-          if (results.totalFailed === 0) {
-            executionDetails.result.name = 'Pass'
-          }
-
-          requestDetails.method = 'put';
-          requestDetails.body = JSON.stringify(executionDetails);
-
-          await fetch(`https://rtm-api.hexygen.com/api/v2/test-execution/${config.env.executionKey}`, requestDetails);
-        }
-      });
-
-      console.log('JIRA executionKey set to: ' + config.env.executionKey);
       return cloudPlugin(on, config);
     }
   },

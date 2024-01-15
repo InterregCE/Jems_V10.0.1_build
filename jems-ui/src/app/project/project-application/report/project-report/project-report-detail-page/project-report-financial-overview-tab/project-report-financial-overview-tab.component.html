@@ -11,11 +11,11 @@
     </jems-project-breakdown-co-financing>
 
     <h3>{{ 'project.application.project.report.financial.breakdown.cost.category' | translate}}</h3>
-    <jems-project-report-cost-category
+    <jems-project-breakdown-cost-category
             [breakdown]="data.perCostCategory"
             [allowedCostCategories]="data.allowedCostCategories"
             [isVerified]="data.isVerified">
-    </jems-project-report-cost-category>
+    </jems-project-breakdown-cost-category>
 
     <ng-container *ngIf="data.perInvestment.investments.length > 0">
         <h3>{{ 'project.application.project.report.financial.breakdown.investment' | translate}}</h3>

@@ -3,8 +3,11 @@ package io.cloudflight.jems.server.notification.handler
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.user.service.model.User
@@ -22,8 +25,10 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Map.entry
 
@@ -45,6 +50,7 @@ class ProjectReportNotificationEventListenerTest : UnitTest() {
             projectId = PROJECT_ID,
             projectIdentifier = "01",
             projectAcronym = "project acronym",
+            periodNumber = 1
         )
 
         private val user = User(
@@ -67,6 +73,9 @@ class ProjectReportNotificationEventListenerTest : UnitTest() {
     private lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
 
     @MockK
+    private lateinit var projectPersistence : ProjectPersistence
+
+    @MockK
     private lateinit var securityService: SecurityService
 
     @InjectMockKs
@@ -78,31 +87,49 @@ class ProjectReportNotificationEventListenerTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "send ProjectReport - {0} notification")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Submitted"], mode = EnumSource.Mode.INCLUDE)
-    fun sendProjectReportNotification(projectReportStatus: ProjectReportStatus) {
+    @CsvSource(value = [
+        "Draft,Submitted,ProjectReportSubmitted",
+        "Submitted,ReOpenSubmittedLast,ProjectReportReOpen",
+        "Submitted,ReOpenSubmittedLimited,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLast,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLimited,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLimited,ProjectReportReOpen",
+        "VerificationReOpenedLast,InVerification,ProjectReportSubmitted",
+        "VerificationReOpenedLimited,InVerification,ProjectReportSubmitted",
+        "Submitted,InVerification,ProjectReportVerificationOngoing",
+        "InVerification,Finalized,ProjectReportVerificationFinalized",
+        "VerificationReOpenedLast,ReOpenFinalized,ProjectReportSubmitted",
+        "VerificationReOpenedLimited,ReOpenFinalized,ProjectReportSubmitted",
+        "Finalized,ReOpenFinalized,ProjectReportVerificationReOpen",
+    ])
+    fun sendProjectReportNotification(statusFrom: ProjectReportStatus, statusTo: ProjectReportStatus, expectedNotifType: NotificationType) {
+        val slotType = slot<NotificationType>()
         val slotVariable = slot<Map<NotificationVariable, Any>>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
+        every { notificationProjectService.sendNotifications(capture(slotType), capture(slotVariable)) } answers { }
         every { securityService.currentUser } returns currentUser
-
-        val projectReportSummary = projectReportSummary(projectReportStatus)
-        listener.sendNotifications(
-            ProjectReportStatusChanged(mockk(), projectReportSummary)
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, "1.0") } returns listOf(
+            ProjectPeriod(1, 1, 1)
         )
 
+        val projectReportSummary = projectReportSummary(statusTo)
 
-        verify(exactly = 1) {
-            notificationProjectService.sendNotifications(
-                projectReportStatus.toNotificationType()!!,
-                any()
-            )
-        }
+        listener.sendNotifications(
+            ProjectReportStatusChanged(mockk(), projectReportSummary, statusFrom)
+        )
+
+        verify(exactly = 1) { notificationProjectService.sendNotifications(any(), any()) }
+        assertThat(slotType.captured).isEqualTo(expectedNotifType)
         assertThat(slotVariable.captured).containsExactly(
             entry(NotificationVariable.ProjectId, PROJECT_ID),
             entry(NotificationVariable.ProjectIdentifier, "01"),
             entry(NotificationVariable.ProjectAcronym, "project acronym"),
             entry(NotificationVariable.ProjectReportId, PROJECT_REPORT_ID),
             entry(NotificationVariable.ProjectReportNumber, 7),
-            entry(NotificationVariable.UserName, user.email)
-        )
+            entry(NotificationVariable.UserName, user.email),
+            entry(NotificationVariable.ReportingPeriodNumber, 1),
+            entry(NotificationVariable.ReportingPeriodStart, 1),
+            entry(NotificationVariable.ReportingPeriodEnd, 1),
+
+            )
     }
 }

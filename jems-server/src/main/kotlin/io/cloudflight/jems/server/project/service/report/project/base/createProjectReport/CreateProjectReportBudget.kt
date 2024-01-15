@@ -1,40 +1,47 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetSpfCoFinancing
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.*
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPrevious
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedByContributionSource
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.SpfPreviouslyReportedContributionRow
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
+import java.math.RoundingMode
 
 @Service
 class CreateProjectReportBudget(
@@ -49,9 +56,13 @@ class CreateProjectReportBudget(
     private val projectBudgetPersistence: ProjectBudgetPersistence,
     private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
+    private val projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider,
+    private val projectReportSpfContributionClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val callPersistence: CallPersistence,
+    private val getBudgetTotalCost: GetBudgetTotalCost,
 ) {
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun retrieveBudgetDataFor(
         projectId: Long,
         version: String?,
@@ -59,9 +70,10 @@ class CreateProjectReportBudget(
         submittedReports: Collection<ProjectReportStatusAndType>,
     ): ProjectReportBudget {
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
-        val finalizedReportIds = submittedReports.filter { it.status == ProjectReportStatus.Finalized }.mapTo(HashSet()) { it.id }
+        val finalizedReportIds = submittedReports.filter { it.status.isFinalized() }.mapTo(HashSet()) { it.id }
 
-        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map {it.id!!}.toSet()
+        val partnerSummaries = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version)
+        val partnerIds = partnerSummaries.map {it.id!!}.toSet()
 
         val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerIds, version)
         val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerIds, version)
@@ -77,10 +89,18 @@ class CreateProjectReportBudget(
             .getCostCategoriesCumulative(submittedReportIds = submittedReportIds, finalizedReportIds = finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
 
-
         val totalFromAF = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
             .first { it.partner === null }
         val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)
+
+        val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
+        val spfProjectReportContributionClaims = if (isSpf) {
+            getSpfProjectReportSpfContributionClaims(
+                spfCoFinancingAndContribution = getSpfCoFinancing(spfPartner = partnerSummaries.first(), version),
+                previouslyReportedContributionClaims =
+                    projectReportSpfContributionClaimPersistence.getSpfContributionCumulative(submittedReportIds)
+            )
+        } else emptyList()
 
         return ProjectReportBudget(
             coFinancing = toCreateModel(
@@ -92,8 +112,7 @@ class CreateProjectReportBudget(
             costCategorySetup = costCategorySetup(
                 budget = costCategoryBreakdownFromAF,
                 previouslyReported = previouslyReportedCostCategories.previouslyReported,
-                previouslyVerified = previouslyReportedCostCategories.previouslyVerified
-
+                previouslyVerified = previouslyReportedCostCategories.previouslyVerified,
             ),
             availableLumpSums = lumpSums.toProjectReportLumpSums(
                 previouslyReported = reportCertificateLumpSumPersistence.getReportedLumpSumCumulative(submittedReportIds),
@@ -113,8 +132,112 @@ class CreateProjectReportBudget(
                 previouslyReported = reportInvestmentPersistence.getReportedInvestmentCumulative(submittedReportIds),
                 previouslyVerified = reportInvestmentPersistence.getVerifiedInvestmentCumulative(finalizedReportIds)
             ),
+            spfContributionClaims = spfProjectReportContributionClaims
         )
     }
+
+    private fun getSpfProjectReportSpfContributionClaims(
+        spfCoFinancingAndContribution: PartnerBudgetSpfCoFinancing,
+        previouslyReportedContributionClaims: SpfPreviouslyReportedByContributionSource
+    ): List<ProjectReportSpfContributionClaimCreate> {
+        val contributionClaims = mutableListOf<ProjectReportSpfContributionClaimCreate>()
+
+        val totalFromAf = spfCoFinancingAndContribution.total ?: ZERO
+        val financesFromAf = spfCoFinancingAndContribution.projectPartnerCoFinancingAndContribution.finances
+            .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
+        val contributionsFromAf =
+            spfCoFinancingAndContribution.projectPartnerCoFinancingAndContribution.partnerContributions
+
+        contributionClaims.addAll(
+            financesFromAf.toFinanceContributionClaims(totalFromAf, previouslyReportedContributionClaims.finances)
+        )
+        contributionClaims.addAll(
+            contributionsFromAf.toPartnerContributionClaims(previouslyReportedContributionClaims.partnerContributions)
+        )
+
+        return contributionClaims
+    }
+
+    private fun getSpfCoFinancing(
+        spfPartner: ProjectPartnerSummary,
+        version: String?
+    ): PartnerBudgetSpfCoFinancing {
+        return PartnerBudgetSpfCoFinancing(
+            partner = spfPartner,
+            projectPartnerCoFinancingAndContribution = projectPartnerCoFinancingPersistence
+                .getSpfCoFinancingAndContributions(spfPartner.id!!, version),
+            total = getBudgetTotalCost.getBudgetTotalSpfCost(spfPartner.id, version),
+        )
+    }
+
+    private fun List<ProjectPartnerCoFinancing>.toFinanceContributionClaims(
+        totalFromAf: BigDecimal, previousReportedContributions: Map<Long, SpfPreviouslyReportedContributionRow>
+    ): List<ProjectReportSpfContributionClaimCreate> {
+
+        val fundIdsFromAf = this.map { it.fund?.id }
+        val previouslyReportedRemovedFromAf = previousReportedContributions.filter { it.key !in fundIdsFromAf }
+
+        return this.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = it.fund?.id,
+                idFromApplicationForm = null,
+                sourceOfContribution = null,
+                legalStatus = null,
+                amountInAf = it.calculateAfAmount(totalFromAf),
+                previouslyReported = previousReportedContributions[it.fund?.id]?.previouslyReportedAmount ?: ZERO ,
+                currentlyReported = ZERO
+
+            )
+        }.plus(previouslyReportedRemovedFromAf.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = it.key,
+                idFromApplicationForm = null,
+                sourceOfContribution = null,
+                legalStatus = null,
+                amountInAf = ZERO,
+                previouslyReported = previousReportedContributions[it.key]?.previouslyReportedAmount ?: ZERO ,
+                currentlyReported = ZERO
+
+            )
+        })
+    }
+
+
+    private fun Collection<ProjectPartnerContributionSpf>.toPartnerContributionClaims(
+        previousReportedAmounts: Map<Long, SpfPreviouslyReportedContributionRow>
+    ): List<ProjectReportSpfContributionClaimCreate> {
+
+        val contributionIdsFromAf = this.map { it.id }
+        val previouslyReportedRemovedFromAf = previousReportedAmounts.filter { it.key !in contributionIdsFromAf }
+
+        return this.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = null,
+                idFromApplicationForm = it.id,
+                sourceOfContribution = it.name,
+                legalStatus = it.status,
+                amountInAf = it.amount ?: ZERO,
+                previouslyReported = previousReportedAmounts[it.id]?.previouslyReportedAmount ?: ZERO,
+                currentlyReported = ZERO
+
+            )
+        }.plus(previouslyReportedRemovedFromAf.map {
+            ProjectReportSpfContributionClaimCreate(
+                fundId = null,
+                idFromApplicationForm = it.key,
+                sourceOfContribution = it.value.sourceOfContribution,
+                legalStatus = it.value.legalStatus,
+                amountInAf = ZERO,
+                previouslyReported = previousReportedAmounts[it.key]?.previouslyReportedAmount ?: ZERO,
+                currentlyReported = ZERO
+
+            )
+        })
+    }
+
+
+    private fun ProjectPartnerCoFinancing.calculateAfAmount(totalFromAF: BigDecimal) =
+        totalFromAF.multiply(this.percentage.divide(BigDecimal(100))).setScale(2, RoundingMode.DOWN) ?: ZERO
 
     private fun costCategorySetup(
         budget: BudgetCostsCalculationResultFull,
@@ -135,6 +258,7 @@ class CreateProjectReportBudget(
             other = ZERO,
             lumpSum = ZERO,
             unitCost = ZERO,
+            spfCost = ZERO,
             sum = ZERO,
         ),
 
@@ -150,6 +274,7 @@ class CreateProjectReportBudget(
         other = ZERO,
         lumpSum = ZERO,
         unitCost = ZERO,
+        spfCost = ZERO,
         sum = ZERO,
     )
 
@@ -263,8 +388,8 @@ class CreateProjectReportBudget(
                 sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
             ),
             previouslyVerified = previouslyVerified.copy(
-                lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
-                sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
+                lumpSum = previouslyVerified.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyVerified.sum.plus(paymentReadyFastTrackLumpSums)
             )
         )
     }
@@ -281,6 +406,7 @@ class CreateProjectReportBudget(
             other = budget.sumOf { it.otherCosts },
             lumpSum = budget.sumOf { it.lumpSumContribution },
             unitCost = budget.sumOf { it.unitCosts },
+            spfCost = budget.sumOf { it.spfCosts },
             sum = budget.sumOf { it.totalCosts },
         )
     }

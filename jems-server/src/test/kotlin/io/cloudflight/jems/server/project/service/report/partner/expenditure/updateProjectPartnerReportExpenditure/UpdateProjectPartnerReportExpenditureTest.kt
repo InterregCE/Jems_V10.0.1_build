@@ -459,15 +459,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         }
     }
 
-    @ParameterizedTest(name = "updatePartnerReportExpenditureCosts - report closed - {0}")
-    @EnumSource(value = ReportStatus::class, names = ["Submitted", "InControl", "Certified"])
-    fun `updatePartnerReportExpenditureCosts - report closed`(status: ReportStatus) {
-        val reportId = 668L
-
-        mockGenericData(reportId, status)
-        assertThrows<ReportAlreadyClosed> { interactor.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId, emptyList()) }
-    }
-
     @ParameterizedTest(name = "updatePartnerReportExpenditureCosts not allowed to change regular to an SCO - {0}")
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun `updatePartnerReportExpenditureCosts - change to SCO throws`(status: ReportStatus) {

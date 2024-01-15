@@ -132,7 +132,7 @@ export class DemimisStateAidComponent {
 
   buildSaveEntity(partnerId: number): ContractingPartnerStateAidDeMinimisDTO {
     return {
-      partnerId: partnerId,
+      partnerId,
       selfDeclarationSubmissionDate: this.deMinimisForm.controls.selfDeclarationSubmissionDate.value,
       baseForGranting: this.deMinimisForm.controls.aidGrantedOnBasis.value,
       aidGrantedByCountry: this.deMinimisForm.controls.country.value,

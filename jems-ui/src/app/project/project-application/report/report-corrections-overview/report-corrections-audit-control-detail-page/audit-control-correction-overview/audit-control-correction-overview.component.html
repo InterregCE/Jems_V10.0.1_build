@@ -1,0 +1,115 @@
+<mat-card *ngIf="data$ | async as data"
+          class="mt-3">
+    <mat-card-content class="content">
+        <div jemsNoWidthLimit class="overflow-auto">
+
+            <h3>{{'project.application.reporting.corrections.title' | translate}}</h3>
+
+            <p>{{'project.application.reporting.corrections.audit.control.overview.one' | translate}}</p>
+            <p>{{'project.application.reporting.corrections.audit.control.overview.two' | translate}}</p>
+            <ng-container *ngIf="data.canEdit">
+                <p class="mb-3">
+                    <jems-pending-button jemsText class="action-button mr-3"
+                                         icon="add"
+                                         [pending]="actionPending"
+                                         (clicked)="createCorrection(data.projectId, data.auditControlId, true)"
+                                         [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS || !data.canEdit">
+                        {{'project.application.reporting.corrections.audit.control.add.correction.linked' | translate}}
+                    </jems-pending-button>
+                    <jems-pending-button jemsText class="action-button"
+                                         icon="add"
+                                         [pending]="actionPending"
+                                         (clicked)="createCorrection(data.projectId, data.auditControlId, false)"
+                                         [disabled]="data.page.totalElements >= MAX_ALLOWED_CORRECTIONS || !data.canEdit">
+                        {{'project.application.reporting.corrections.audit.control.add.correction.not.linked' | translate}}
+                    </jems-pending-button>
+                </p>
+
+                <jems-alert *ngIf="error$ | async as error"
+                            [show]="!!error.i18nMessage?.i18nKey"
+                            [type]="Alert.ERROR">
+                    <jems-api-error-content [error]="error"></jems-api-error-content>
+                </jems-alert>
+            </ng-container>
+
+            <jems-alert [show]="!data.page.numberOfElements" [type]="Alert.INFO">
+                <p>{{'project.application.reporting.corrections.audit.control.correction.table.correction.empty' | translate}}</p>
+            </jems-alert>
+
+            <jems-table *ngIf="data.page.numberOfElements"
+                        [disableTopPaginator]="true"
+                        [configuration]="tableConfiguration"
+                        [rows]="data.page.content"
+                        [totalElements]="data.page.totalElements"
+                        [pageIndex]="correctionsOverviewStore.newPageIndex$ | async"
+                        (newPageIndex)="correctionsOverviewStore.newPageIndex$.next($event)"
+                        (newPageSize)="correctionsOverviewStore.newPageSize$.next($event)"
+                        (sortRows)="correctionsOverviewStore.newSort$.next($event)">
+            </jems-table>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<ng-template #idCell let-correction>
+    <span class="id" [matTooltip]="'AC' + correction.auditControlNr + '.' + correction.orderNr">
+        {{'AC' + correction.auditControlNr}}.{{correction.orderNr}}
+    </span>
+</ng-template>
+
+<ng-template #statusCell let-correction>
+    <jems-audit-control-correction-status [status]="correction.status"></jems-audit-control-correction-status>
+</ng-template>
+
+<ng-template #partnerRoleCell let-correction>
+    <ng-container *ngIf="correction.partnerRole">
+        <mat-icon *ngIf="correction?.partnerDisabled">person_off</mat-icon>
+        <span>
+          {{('common.label.project.partner.role.shortcut.' + correction.partnerRole) | translate:{partner: correction.partnerNumber} }}
+        </span>
+    </ng-container>
+</ng-template>
+
+<ng-template #reportCell let-correction>
+    <span class="id" *ngIf="correction.partnerReport">{{'R' + correction.partnerReport}}</span>
+</ng-template>
+<ng-template #linkedCell let-correction>
+    <ng-container [ngSwitch]="correction.type">
+        <span *ngSwitchCase="TypeEnum.LinkedToInvoice">{{'common.yes' | translate }}</span>
+        <span *ngSwitchCase="TypeEnum.LinkedToCostOption">{{'common.no' | translate }}</span>
+    </ng-container>
+</ng-template>
+
+<ng-template #followUpCell let-correction>
+    <span *ngIf="correction.followUpAuditNr">
+      {{'AC' + correction.followUpAuditNr}}.{{correction.followUpCorrectionNr}}
+    </span>
+    <span *ngIf="!correction.followUpAuditNr"> {{'common.no' | translate }} </span>
+</ng-template>
+
+<ng-template #fundCell let-correction>
+    {{ correction.fund?.abbreviation | translateBySystemLanguage | async }}
+</ng-template>
+
+<ng-template #impactCell let-correction>
+    <span class="text-overflow-ellipsis"
+          [matTooltip]="'auditControl.correction.impact.action.' + correction.impactProjectLevel | translate">
+        {{ 'auditControl.correction.impact.action.' + correction.impactProjectLevel | translate }}
+    </span>
+</ng-template>
+
+<ng-template #scenarioCell let-correction>
+    <span *ngIf="correction.scenario === ScenarioEnum.NA">{{'N/A'}}</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO1">1</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO2">2</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO3">3</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO4">4</span>
+    <span *ngIf="correction.scenario === ScenarioEnum.SCENARIO5">5</span>
+</ng-template>
+
+<ng-template #actionCell let-correction>
+    <button *ngIf="correction.canBeDeleted && canEdit" (click)="delete(correction.id)"
+            color="accent" mat-icon-button
+            aria-label="delete">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

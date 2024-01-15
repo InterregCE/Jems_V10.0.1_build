@@ -29,4 +29,8 @@ data class ProjectReportDTO(
     val firstSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
+    val verificationLastReOpenDate: ZonedDateTime?,
+
+    val paymentIdsInstallmentExists: Set<Long>,
+    val paymentToEcIdsReportIncluded: Set<Long>,
 )

@@ -18,8 +18,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.project.base.createProjectReport.CreateProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.finalizeVerification.FinalizeVerificationProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.getMyProjectReports.GetMyProjectReportsInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenVerificationProjectReport.ReOpenVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
@@ -47,6 +50,7 @@ internal class ProjectReportControllerTest : UnitTest() {
     private val WEEK_AGO = LocalDate.now().minusWeeks(1)
     private val TOMORROW = LocalDate.now().plusDays(1)
     private val MONTH_AGO = ZonedDateTime.now().minusMonths(1)
+    private val DAY_AGO = ZonedDateTime.now().minusDays(1)
     private val YEAR_AGO = ZonedDateTime.now().minusYears(1)
     private val TODAY = ZonedDateTime.now()
 
@@ -69,7 +73,8 @@ internal class ProjectReportControllerTest : UnitTest() {
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
-        verificationEndDate = TODAY
+        verificationEndDate = TODAY,
+        verificationLastReOpenDate = null
     )
 
     private val expectedReport = ProjectReportDTO(
@@ -81,7 +86,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         endDate = TOMORROW,
         deadlineId = 560L,
         type = ContractingDeadlineTypeDTO.Both,
-        periodDetail = ProjectPeriodDTO(0L, 2, 4, 6),
+        periodDetail = ProjectPeriodDTO(2, 4, 6, null, null),
         reportingDate = null,
         projectId = 25L,
         projectIdentifier = "iden",
@@ -92,10 +97,15 @@ internal class ProjectReportControllerTest : UnitTest() {
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         verificationEndDate = TODAY,
+        verificationLastReOpenDate = null,
+        paymentIdsInstallmentExists = setOf(),
+        paymentToEcIdsReportIncluded = setOf()
     )
 
     private val reportSummary = ProjectReportSummary(
         id = 52L,
+        projectId = 25L,
+        projectIdentifier = "iden",
         reportNumber = 6,
         status = ProjectReportStatus.Draft,
         linkedFormVersion = "4.0",
@@ -106,6 +116,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
+        lastReSubmission = DAY_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
         verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
@@ -118,16 +129,19 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     private val expectedReportSummary = ProjectReportSummaryDTO(
         id = 52L,
+        projectId = 25L,
+        projectIdentifier = "iden",
         reportNumber = 6,
         status = ProjectReportStatusDTO.Draft,
         linkedFormVersion = "4.0",
         type = ContractingDeadlineTypeDTO.Both,
-        periodDetail = ProjectPeriodDTO(0L, 2, 4, 6),
+        periodDetail = ProjectPeriodDTO(2, 4, 6, null, null),
         startDate = WEEK_AGO,
         endDate = TOMORROW,
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
+        lastReSubmission = DAY_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
         verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
@@ -160,10 +174,19 @@ internal class ProjectReportControllerTest : UnitTest() {
     private lateinit var submitReport: SubmitProjectReportInteractor
 
     @MockK
+    private lateinit var reOpenReport: ReOpenProjectReportInteractor
+
+    @MockK
     private lateinit var startVerificationReport: StartVerificationProjectReportInteractor
 
     @MockK
     private lateinit var finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor
+
+    @MockK
+    private lateinit var getMyProjectReports: GetMyProjectReportsInteractor
+
+    @MockK
+    private lateinit var reOpenVerificationReport: ReOpenVerificationProjectReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -262,9 +285,14 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @Test
     fun submitProjectReport() {
-        every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
-        controller.submitProjectReport(21L, reportId = 10L)
-        assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
+        every { submitReport.submit(reportId = 10L) } returns ProjectReportStatus.Submitted
+        assertThat(controller.submitProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.Submitted)
+    }
+
+    @Test
+    fun reOpenProjectReport() {
+        every { reOpenReport.reOpen(21L, reportId = 10L) } returns ProjectReportStatus.ReOpenSubmittedLast
+        assertThat(controller.reOpenProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.ReOpenSubmittedLast)
     }
 
     @Test
@@ -277,5 +305,18 @@ internal class ProjectReportControllerTest : UnitTest() {
     fun finalizeVerificationOnProjectReport() {
         every { finalizeVerificationProjectReport.finalizeVerification(6L) } returns ProjectReportStatus.Finalized
         assertThat(controller.finalizeVerificationOnProjectReport(22L, reportId = 6L)).isEqualTo(ProjectReportStatusDTO.Finalized)
+    }
+
+    @Test
+    fun getMyProjectReports() {
+        every { getMyProjectReports.findAllOfMine(Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
+        assertThat(controller.getMyProjectReports(Pageable.unpaged()).content)
+            .containsExactly(expectedReportSummary)
+    }
+
+    @Test
+    fun reOpenVerificationReport() {
+        every { reOpenVerificationReport.reOpen(21L, reportId = 10L) } returns ProjectReportStatus.ReOpenFinalized
+        assertThat(controller.reopenVerificationOnProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.ReOpenFinalized)
     }
 }

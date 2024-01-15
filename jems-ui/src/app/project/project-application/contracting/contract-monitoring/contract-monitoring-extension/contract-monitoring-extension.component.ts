@@ -15,8 +15,7 @@ import {
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
-  ProjectPartnerSummaryDTO,
-  ProjectPeriodForMonitoringDTO,
+  ProjectPartnerSummaryDTO, ProjectPeriodDTO,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
@@ -81,7 +80,7 @@ export class ContractMonitoringExtensionComponent {
     contractMonitoringViewable: boolean;
     contractMonitoringEditable: boolean;
     projectCallLumpSums: ProgrammeLumpSumDTO[];
-    periods: ProjectPeriodForMonitoringDTO[];
+    periods: ProjectPeriodDTO[];
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
     projectBudget: number;
@@ -319,7 +318,7 @@ export class ContractMonitoringExtensionComponent {
     return lumpSum ? lumpSum.name : null;
   }
 
-  getPeriodLabel(periodId: number, periods: ProjectPeriodForMonitoringDTO[]): string {
+  getPeriodLabel(periodId: number, periods: ProjectPeriodDTO[]): string {
     let period: any = periods.find(it => it.number === periodId);
     if (!period && periodId !== 0 && periodId !== 255) {
       return '';

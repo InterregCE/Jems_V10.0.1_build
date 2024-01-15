@@ -1,4 +1,4 @@
-<jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable)">
+<jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable, data.reopenedLimited)">
 
     <form jemsFormLayout [formGroup]="form">
         <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>
@@ -36,8 +36,8 @@
 
                         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD" class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.delivery.period' | translate }}</mat-label>
-                            <input matInput disabled
-                                   [value]="result.get('periodDetail').value && 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(result.get('periodDetail').value)">
+                            <input matInput disabled [matTooltip]="result.get('periodDetail').value && ProjectUtil.getPeriodKey(result.get('periodDetail').value.startDate) | translate : ProjectUtil.getPeriodArguments(result.get('periodDetail').value)"
+                                   [value]="result.get('periodDetail').value && ProjectUtil.getPeriodKey(result.get('periodDetail').value.startDate) | translate : ProjectUtil.getPeriodArguments(result.get('periodDetail').value)">
                         </mat-form-field>
                     </div>
                     <div class="input-field-row">
@@ -97,7 +97,11 @@
         <ng-container
                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.HORIZONTAL_PRINCIPLES" formGroupName="principles">
 
-            <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.2' | translate }}</h3>
+            <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.2' | translate }}
+                <jems-context-info infoPosition="right"
+                                   infoText="{{'project.application.project.report.tab.results.and.principles.header.2.infobubble.description' | translate }}">
+                </jems-context-info>
+            </h3>
             <p>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.description' | translate }}</p>
 
             <jems-multi-language-container jemsNoWidthLimit>

@@ -31,10 +31,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.ProjectPartnerReportContributionWithSpf
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
@@ -69,7 +70,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
     @Transactional
     override fun createPartnerReport(report: ProjectPartnerReportCreate): ProjectPartnerReportSummary {
         val reportEntity = persistReport(report)
-        persistCoFinancingToReport(report, report = reportEntity)
+        persistCoFinancingToReport(report.budget.previouslyReportedCoFinancing, report = reportEntity)
         persistWorkPlanToReport(report.workPackages, report = reportEntity)
         persistTargetGroupsAndSpendingToReport(report.targetGroups, report = reportEntity)
         persistContributionsToReport(report.budget.contributions, report = reportEntity)
@@ -89,18 +90,18 @@ class ProjectPartnerReportCreatePersistenceProvider(
         )
 
     private fun persistCoFinancingToReport(
-        reportData: ProjectPartnerReportCreate,
+        coFinancing: PreviouslyReportedCoFinancing,
         report: ProjectPartnerReportEntity,
     ) {
         partnerReportCoFinancingRepository.saveAll(
-            reportData.budget.previouslyReportedCoFinancing.fundsSorted.toEntity(
+            coFinancing.fundsSorted.toEntity(
                 reportEntity = report,
                 programmeFundResolver = { programmeFundRepository.getById(it) },
             )
         )
 
         reportProjectPartnerExpenditureCoFinancingRepository.save(
-            reportData.budget.previouslyReportedCoFinancing.toEntity(report),
+            coFinancing.toEntity(report),
         )
     }
 
@@ -163,11 +164,11 @@ class ProjectPartnerReportCreatePersistenceProvider(
     }
 
     private fun persistContributionsToReport(
-        contributions: List<CreateProjectPartnerReportContribution>,
+        contributions: ProjectPartnerReportContributionWithSpf,
         report: ProjectPartnerReportEntity,
     ) =
         contributionRepository.saveAll(
-            contributions.map { it.toEntity(report, attachment = null) }
+            contributions.contributions.map { it.toEntity(report, attachment = null) }
         )
 
     private fun persistAvailableLumpSumsToReport(

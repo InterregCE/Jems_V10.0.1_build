@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.model.partner.expendit
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCost(
@@ -31,14 +30,4 @@ data class ProjectPartnerReportExpenditureCost(
     override var declaredAmountAfterSubmission: BigDecimal?,
     val attachment: JemsFileMetadata?,
     override var parkingMetadata: ExpenditureParkingMetadata?,
-): ExpenditureCost {
-    fun clearConversions() {
-        currencyConversionRate = null
-        declaredAmountAfterSubmission = null
-    }
-
-    fun fillInRate(rate: BigDecimal) {
-        currencyConversionRate = rate
-        declaredAmountAfterSubmission = declaredAmount.divide(rate, 2, RoundingMode.HALF_UP)
-    }
-}
+): ExpenditureCost

@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstit
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -31,7 +30,6 @@ class StartControlPartnerReport(
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val expenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val callPersistence: CallPersistence,
-    private val projectPersistence: ProjectPersistence,
 ) : StartControlPartnerReportInteractor {
 
     @CanEditPartnerControlReport
@@ -58,9 +56,8 @@ class StartControlPartnerReport(
             status = ReportStatus.InControl,
         ).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, report.status))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, it, report.status))
             auditPublisher.publishEvent(partnerReportStartedControl(this, projectId, it))
         }.status
     }

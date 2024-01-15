@@ -3,11 +3,9 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods.filterOutPreparationAndClosure
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectPartnerReportIdentification(
-    private val reportPersistence: ProjectPartnerReportPersistence,
     private val reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence,
     private val reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService,
     private val generalValidator: GeneralValidatorService,
@@ -36,9 +33,6 @@ class UpdateProjectPartnerReportIdentification(
         reportId: Long,
         data: UpdateProjectPartnerReportIdentification
     ): ProjectPartnerReportIdentification {
-        val reportMetadata = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId = reportId)
-
-        validateReportNotClosed(status = reportMetadata.status)
         validateInputs(data = data)
         validatePeriod(
             period = data.period,
@@ -59,11 +53,6 @@ class UpdateProjectPartnerReportIdentification(
             currentReport = expendituresCalculated.currentReport,
             previouslyReported = expendituresCalculated.previouslyReported,
         )
-    }
-
-    private fun validateReportNotClosed(status: ReportStatus) {
-        if (status.isClosed())
-            throw ReportAlreadyClosed()
     }
 
     private fun validateInputs(data: UpdateProjectPartnerReportIdentification) {

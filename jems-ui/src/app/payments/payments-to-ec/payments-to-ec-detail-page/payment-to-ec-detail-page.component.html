@@ -1,0 +1,72 @@
+<jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data">
+    <div jemsMultiColumnRow class="back-button">
+        <a color="primary" class="mr-1" mat-icon-button
+           routerLink="../"
+           matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}"
+           aria-label="back">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </a>
+        <h3 class="mb-4 put-icon-to-header-line">{{'payments.to.ec.detail.back.button' | translate}}</h3>
+    </div>
+
+    <h3 *ngIf="data.paymentDetail?.id" class="payment-header">{{'payments.to.ec.detail.header' | translate : {
+        paymentToEcId: data.paymentDetail.id
+    } }}</h3>
+
+        <div id="status" class="status-and-action-header">
+            <span class="status-label">{{'common.status' | translate}}:</span>
+            <span class="ml-1">
+                <mat-chip-list class="mr-1 ml-1" aria-label="status">
+                    <mat-chip [class.draft]="data.paymentDetail.status === paymentStatusEnum.Draft"
+                              [class.finished]="data.paymentDetail.status === paymentStatusEnum.Finished">
+                        {{data.paymentDetail.status}}
+                    </mat-chip>
+                </mat-chip-list>
+            </span>
+
+            <span class="finish-button" *ngIf="data.canReOpen">
+                 <jems-pending-button
+                         [confirm]="{title: 'payments.to.ec.table.action.reopen.dialog.title', message: 'payments.to.ec.table.action.reopen.dialog.message', warnMessage: 'payments.to.ec.table.action.reopen.dialog.warning'}"
+                         [disabled]="!data.isAvailableToReOpen"
+                         matTooltip="{{!data.isAvailableToReOpen ? ('payments.to.ec.table.action.reopen.button.tooltip' | translate) : null}}"
+                         [pending]="statusChangePending$ | async"
+                         (clicked)="setPaymentApplicationBackToDraft(data.paymentDetail.id)">
+                    {{'payments.to.ec.table.action.reopen.button' | translate}}
+                </jems-pending-button>
+            </span>
+        </div>
+
+    <nav mat-tab-nav-bar *ngIf="data.userCanView">
+        <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')" (focusin)="pageStore.tabChanged$.next(true)">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.summary.tab' | translate}}
+            </span>
+        </a>
+
+        <a *ngIf="data.paymentDetail.id" [active]="activeTab('regular')" mat-tab-link (click)="routeTo('regular')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.ftls.tab' | translate}}
+            </span>
+        </a>
+
+        <a *ngIf="data.paymentDetail.id" [active]="activeTab('corrections')" mat-tab-link (click)="routeTo('corrections')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.corrections.tab' | translate}}
+            </span>
+        </a>
+
+      <a *ngIf="data.paymentDetail.id" [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.finalize.tab.title' | translate}}
+            </span>
+      </a>
+    </nav>
+    <router-outlet></router-outlet>
+
+    <jems-alert *ngIf="finalizeError$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+</jems-main-page-template>
+

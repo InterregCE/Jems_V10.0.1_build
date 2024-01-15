@@ -9,8 +9,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
@@ -19,7 +17,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.MockKAnnotations
@@ -117,9 +114,6 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectPartnerReportPersistence
-
-    @MockK
     lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
 
     @MockK
@@ -134,7 +128,6 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
         MockKAnnotations.init(this)
         generalValidator = GeneralValidatorDefaultImpl()
         updateIdentification = UpdateProjectPartnerReportIdentification(
-            reportPersistence,
             reportIdentificationPersistence,
             reportExpenditureCostCategoryCalculatorService,
             generalValidator,
@@ -144,8 +137,6 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     @Test
     fun updateIdentification() {
         val reportId = 66L
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "17.0.1")
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
         val slotData = slot<io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification>()
         every { reportIdentificationPersistence.updatePartnerReportIdentification(PARTNER_ID, reportId = reportId, capture(slotData)) } returns saveResult()
@@ -163,17 +154,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     }
 
     @Test
-    fun `updateIdentification - report closed`() {
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 5L) } returns
-            ProjectPartnerReportStatusAndVersion(5L, ReportStatus.Submitted, "1")
-        assertThrows<ReportAlreadyClosed> { updateIdentification.updateIdentification(PARTNER_ID, reportId = 5L, mockk()) }
-    }
-
-    @Test
     fun `updateIdentification - wrong inputs`() {
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 8L) } returns
-            ProjectPartnerReportStatusAndVersion(8L, ReportStatus.Draft, "4.0.0")
-
         val ex = assertThrows<AppInputValidationException> {
             updateIdentification.updateIdentification(PARTNER_ID, reportId = 8L, updateDataInvalid)
         }
@@ -201,9 +182,6 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     @Test
     fun `updateIdentification - wrong period`() {
         val reportId = 75L
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "8.0")
-
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
 
         val ex = assertThrows<InvalidPeriodNumber> {

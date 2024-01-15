@@ -39,6 +39,10 @@ interface ProgrammeChecklistApi {
     @PostMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/create", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProgrammeChecklist(@RequestBody checklist: ProgrammeChecklistDetailDTO): ProgrammeChecklistDetailDTO
 
+    @ApiOperation("Clone a checklist instance")
+    @PostMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/{checklistId}/clone")
+    fun cloneProgrammeChecklist(@PathVariable checklistId: Long): ProgrammeChecklistDetailDTO
+
     @ApiOperation("Update a programme checklist")
     @PutMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/update", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeChecklist(@RequestBody checklist: ProgrammeChecklistDetailDTO): ProgrammeChecklistDetailDTO

@@ -6,9 +6,16 @@ enum class JemsFileTypeDTO {
         PaymentAttachment,
       Advance,
         PaymentAdvanceAttachment,
+      Ec,
+        PaymentToEcAttachment,
+      Audit,
+         PaymentAuditExport,
+         PaymentAuditAttachment,
 
     Project,
       Report,
+        Corrections,
+          AuditControl,
         ProjectReport,
           ProjectResult,
           WorkPlanProjectReport,
@@ -18,6 +25,8 @@ enum class JemsFileTypeDTO {
               OutputProjectReport,
         ProjectReportVerification,
           VerificationDocument,
+          VerificationCertificate,
+
         Partner,
           PartnerReport,
 

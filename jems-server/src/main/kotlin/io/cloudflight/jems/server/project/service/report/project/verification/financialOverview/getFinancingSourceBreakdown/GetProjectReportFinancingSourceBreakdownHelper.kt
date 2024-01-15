@@ -17,6 +17,7 @@ import java.math.RoundingMode
 private val emptySumUp = FinancingSourceBreakdownLine(
     partnerReportId = null,
     partnerReportNumber = null,
+    spfLine = false,
 
     partnerId = null,
     partnerRole = null,
@@ -39,6 +40,7 @@ fun List<FinancingSourceBreakdownLine>.sumUp(): FinancingSourceBreakdownLine  {
     return  FinancingSourceBreakdownLine(
         partnerReportId = null,
         partnerReportNumber = null,
+        spfLine = false,
 
         partnerId = null,
         partnerRole = null,
@@ -60,6 +62,7 @@ private fun FinancingSourceBreakdownLine.plus(other: FinancingSourceBreakdownLin
     FinancingSourceBreakdownLine(
         partnerReportId = null,
         partnerReportNumber = null,
+        spfLine = false,
 
         partnerId = null,
         partnerRole = null,
@@ -99,6 +102,7 @@ fun ReportCertificateCoFinancingColumn.toTotalLine(availableFunds: List<Programm
     FinancingSourceBreakdownLine(
         partnerReportId = null,
         partnerReportNumber = null,
+        spfLine = false,
 
         partnerId = null,
         partnerRole = null,
@@ -121,7 +125,7 @@ fun calculateSourcesAndSplits(
     verification: List<ProjectReportVerificationExpenditureLine>,
     availableFundsResolver: (Long) -> List<ProgrammeFund>,
     partnerReportFinancialDataResolver: (Long) -> PartnerReportFinancialData,
-): List<FinancingSourceBreakdownLine> {
+): MutableList<FinancingSourceBreakdownLine> {
     val expendituresByCertificate = verification.groupBy { it.expenditure.partnerReportId }
     val certificateLines = expendituresByCertificate.map { (certificateId, verifications) ->
         val reportFinancialData = partnerReportFinancialDataResolver.invoke(certificateId)
@@ -139,6 +143,7 @@ fun calculateSourcesAndSplits(
         return@map FinancingSourceBreakdownLine(
             partnerReportId = certificateId,
             partnerReportNumber = expenditure.partnerReportNumber,
+            spfLine = false,
             partnerId = expenditure.partnerId,
             partnerRole = expenditure.partnerRole,
             partnerNumber = expenditure.partnerNumber,
@@ -154,7 +159,7 @@ fun calculateSourcesAndSplits(
             splitForCertificateLine.sum,
             splitForCertificateLine.partnerContribution
         )
-    }
+    }.toMutableList()
     return certificateLines
 }
 
@@ -162,7 +167,7 @@ private fun PartnerReportFinancialData.splitThisValue(valueToSplit: BigDecimal) 
     toSplit = valueToSplit,
     contributions = contributionsFromAF,
     funds = coFinancingFromAF,
-    total = totalEligibleBudgetFromAF,
+    total = totalEligibleBudgetFromAFWithoutSpf,
 )
 
 private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
@@ -170,11 +175,11 @@ private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
     certificateTotal: BigDecimal,
     partnerContribution: BigDecimal,
 ) = this.apply {
-    split = fundsSorted.mapNotNull {
+    split = fundsSorted.map {
         val allFundsTotal = certificateTotal.minus(partnerContribution)
 
         if ( it.second.compareTo(BigDecimal.ZERO) == 0 ) {
-            return@mapNotNull it.toZeroSplitLine()
+            return@map it.toZeroSplitLine()
         }
 
         val percentagePartOfFunds = it.second.divide(allFundsTotal, 21, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100))
@@ -184,7 +189,7 @@ private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
             toSplit = totalForFund,
             contributions = reportFinancialData.contributionsFromAF,
             funds = reportFinancialData.coFinancingFromAF,
-            total = reportFinancialData.totalEligibleBudgetFromAF,
+            total = reportFinancialData.totalEligibleBudgetFromAFWithoutSpf,
         )
 
         FinancingSourceBreakdownSplitLine(
@@ -199,6 +204,40 @@ private fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForEachFund(
     }
 }
 
+fun FinancingSourceBreakdownLine.fillInAdditionalSplitsForSpf() = this.apply {
+    if (fundsSorted.isEmpty())
+        return@apply
+
+    val allFundsTotal = fundsSorted.sumOf { it.second }
+    if (allFundsTotal.isZero()) {
+        split = listOf(
+            FinancingSourceBreakdownSplitLine(
+                fundId = fundsSorted.first().first.id,
+                value = fundsSorted.first().second,
+                partnerContribution = partnerContribution,
+                publicContribution = publicContribution,
+                automaticPublicContribution = automaticPublicContribution,
+                privateContribution = privateContribution,
+                total = fundsSorted.first().second.plus(partnerContribution),
+            )
+        )
+        return@apply
+    }
+
+    split = fundsSorted.map {
+        val percentagePartOfFunds = it.second.divide(allFundsTotal, 21, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100))
+        return@map FinancingSourceBreakdownSplitLine(
+            fundId = it.first.id,
+            value = it.second,
+            partnerContribution = partnerContribution.applyPercentage(percentagePartOfFunds),
+            publicContribution = publicContribution.applyPercentage(percentagePartOfFunds),
+            automaticPublicContribution = automaticPublicContribution.applyPercentage(percentagePartOfFunds),
+            privateContribution = privateContribution.applyPercentage(percentagePartOfFunds),
+            total = it.second.plus(partnerContribution.applyPercentage(percentagePartOfFunds)),
+        )
+    }
+}
+
 private fun Pair<ProgrammeFund, BigDecimal>.toZeroSplitLine() = FinancingSourceBreakdownSplitLine(
     fundId = this.first.id,
     value = this.second,
@@ -208,3 +247,5 @@ private fun Pair<ProgrammeFund, BigDecimal>.toZeroSplitLine() = FinancingSourceB
     privateContribution = BigDecimal.ZERO,
     total = BigDecimal.ZERO,
 )
+
+fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

@@ -10,9 +10,7 @@ fun <T : BreakdownLine> T.fillInOverviewFields() = apply {
     remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
 }
 
-fun <T : BreakdownLine> List<T>.fillInOverviewFields() = apply {
-    forEach { it.fillInOverviewFields() }
-}
+fun <T : BreakdownLine> List<T>.fillInOverviewFields() = onEach { it.fillInOverviewFields() }
 
 fun BigDecimal.percentageOf(total: BigDecimal): BigDecimal? =
     if (total.compareTo(BigDecimal.ZERO) == 0) null

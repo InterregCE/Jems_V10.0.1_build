@@ -19,7 +19,7 @@ data class ProjectPartnerReportSummary(
     val version: String,
     val firstSubmission: ZonedDateTime?,
     val lastReSubmission: ZonedDateTime?,
-    val controlEnd: ZonedDateTime?,
+    var controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
     val startDate: LocalDate?,
     val endDate: LocalDate?,

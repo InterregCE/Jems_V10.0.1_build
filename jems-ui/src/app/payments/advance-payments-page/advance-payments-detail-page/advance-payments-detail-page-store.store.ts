@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
-  AdvancePaymentsService, AdvancePaymentUpdateDTO,
+  AdvancePaymentsService, AdvancePaymentStatusUpdateDTO, AdvancePaymentUpdateDTO,
   OutputProjectSimple, ProjectPartnerPaymentSummaryDTO, ProjectPartnerService,
   ProjectService,
   UserRoleCreateDTO,
@@ -24,8 +24,9 @@ export class AdvancePaymentsDetailPageStoreStore {
 
   advancePaymentDetail$: Observable<AdvancePaymentDetailDTO>;
   savedAdvancePaymentDetail$ = new Subject<AdvancePaymentDetailDTO>();
-  searchProjectsByName$ = new ReplaySubject<string>(1);
-  getProjectPartnersByProjectId$ = new ReplaySubject<number>(1);
+  refresh$ = new Subject();
+  searchProjectsByName$ = new Subject<string>();
+  getProjectPartnersByProjectId$ = new Subject<number>();
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
@@ -42,9 +43,12 @@ export class AdvancePaymentsDetailPageStoreStore {
 
 
   private paymentDetail(): Observable<AdvancePaymentDetailDTO> {
-    const initialPaymentDetail$ = this.routingService.routeParameterChanges(AdvancePaymentsDetailPageStoreStore.ADVANCE_PAYMENT_PATH, 'advancePaymentId')
-      .pipe(
-        switchMap((paymentId: number) => paymentId ? this.advancePaymentsService.getAdvancePaymentDetail(paymentId) : of({}) as Observable<AdvancePaymentDetailDTO>),
+    const initialPaymentDetail$ =
+      combineLatest([
+        this.routingService.routeParameterChanges(AdvancePaymentsDetailPageStoreStore.ADVANCE_PAYMENT_PATH, 'advancePaymentId'),
+        this.refresh$.pipe(startWith(1)),
+      ]).pipe(
+        switchMap(([paymentId, _]) => paymentId ? this.advancePaymentsService.getAdvancePaymentDetail(Number(paymentId)) : of({}) as Observable<AdvancePaymentDetailDTO>),
         tap(data => Log.info('Fetched advance payment detail', this, data))
       );
 
@@ -59,12 +63,11 @@ export class AdvancePaymentsDetailPageStoreStore {
       map(page => page.content),
       tap(page => Log.info('Fetched filtered contracted projects:', this, page)),
       untilDestroyed(this),
-      shareReplay(1)
     );
   }
 
   private userCanEdit(): Observable<boolean> {
-    return  this.permissionService.hasPermission(PermissionsEnum.AdvancePaymentsUpdate)
+    return this.permissionService.hasPermission(PermissionsEnum.AdvancePaymentsUpdate)
       .pipe(
         map((canUpdate) => canUpdate)
       );
@@ -80,12 +83,20 @@ export class AdvancePaymentsDetailPageStoreStore {
   getPartnerData(): Observable<ProjectPartnerPaymentSummaryDTO[]> {
     return combineLatest([
       this.getProjectPartnersByProjectId$,
-      this.paymentDetail()
+      this.advancePaymentDetail$.pipe(map(paymentDetail => paymentDetail.paymentAuthorized ? paymentDetail.projectVersion : undefined))
     ]).pipe(
-      switchMap(([projectId, paymentDetail]) => this.projectPartnerService.getProjectPartnersAndContributions(projectId, paymentDetail.projectVersion)),
+      switchMap(([projectId, projectVersion]) => this.projectPartnerService.getProjectPartnersAndContributions(projectId, projectVersion)),
       tap(partnerList => Log.info('Fetched filtered partners for project:', this, partnerList)),
       untilDestroyed(this),
       shareReplay(1)
     );
+  }
+
+  updateStatus(paymentId: number, status: AdvancePaymentStatusUpdateDTO.StatusEnum): Observable<any> {
+    return this.advancePaymentsService.updateAdvancePaymentStatus(paymentId, {status})
+      .pipe(
+        tap(() => Log.info(`Advance payment status updated`, this, status)),
+        tap(() => this.refresh$.next())
+      );
   }
 }

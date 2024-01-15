@@ -39,7 +39,7 @@ class UpdateContractingPartnerStateAidDeMinimis(
 
         return ContractingPartnerStateAidDeMinimisSection(
             partnerId = partnerId,
-            dateOfGrantingAid = projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+            dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
             amountGrantingAid = updatedDeMinimis.amountGrantingAid ?: BigDecimal.ZERO,
             selfDeclarationSubmissionDate = updatedDeMinimis.selfDeclarationSubmissionDate,
             baseForGranting = updatedDeMinimis.baseForGranting,

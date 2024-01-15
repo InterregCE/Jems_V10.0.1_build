@@ -168,6 +168,10 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
     override fun existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean =
         reportExpenditureRepository.existsByPartnerReportPartnerIdAndAttachmentIdAndGdprTrue(partnerId = partnerId, fileId = fileId)
 
+    @Transactional(readOnly = true)
+    override fun existsByProcurementId(procurementId: Long): Boolean =
+        reportExpenditureRepository.existsByProcurementId(procurementId)
+
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,

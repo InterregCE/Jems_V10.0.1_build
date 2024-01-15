@@ -9,12 +9,14 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
@@ -156,13 +158,16 @@ internal class CreateProjectReportTest : UnitTest() {
             projectAcronym = "proj-acr",
             leadPartnerNameInOriginalLanguage = "lead-orig",
             leadPartnerNameInEnglish = "lead-en",
+            spfPartnerId = null,
 
             createdAt = ZonedDateTime.now(),
             firstSubmission = null,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO,
+            lastVerificationReOpening = null,
             riskBasedVerification = false,
             riskBasedVerificationDescription = null
         )
@@ -189,7 +194,8 @@ internal class CreateProjectReportTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             firstSubmission = null,
             verificationDate = null,
-            verificationEndDate = null
+            verificationEndDate = null,
+            verificationLastReOpenDate = null
         )
 
         private fun projectRelevanceBenefits() = listOf(
@@ -258,6 +264,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(165),
                     lumpSum = BigDecimal.valueOf(175),
                     unitCost = BigDecimal.valueOf(185),
+                    spfCost = BigDecimal.valueOf(190),
                     sum = BigDecimal.valueOf(195),
                 ),
                 currentlyReported = BudgetCostsCalculationResultFull(
@@ -270,6 +277,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(191),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyReported = BudgetCostsCalculationResultFull(
@@ -282,6 +290,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(192),
                     sum = BigDecimal.valueOf(197),
                 ),
                 currentVerified = BudgetCostsCalculationResultFull(
@@ -294,6 +303,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(166),
                     lumpSum = BigDecimal.valueOf(176),
                     unitCost = BigDecimal.valueOf(186),
+                    spfCost = BigDecimal.valueOf(191),
                     sum = BigDecimal.valueOf(196),
                 ),
                 previouslyVerified = BudgetCostsCalculationResultFull(
@@ -306,6 +316,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     other = BigDecimal.valueOf(167),
                     lumpSum = BigDecimal.valueOf(177),
                     unitCost = BigDecimal.valueOf(187),
+                    spfCost = BigDecimal.valueOf(192),
                     sum = BigDecimal.valueOf(197),
                 )
             ),
@@ -340,7 +351,8 @@ internal class CreateProjectReportTest : UnitTest() {
                     previouslyReported = BigDecimal.ONE,
                     previouslyVerified = BigDecimal.ONE,
                 )
-            )
+            ),
+            spfContributionClaims = emptyList()
         )
 
         val workPackage = ProjectWorkPackageFull(
@@ -456,12 +468,15 @@ internal class CreateProjectReportTest : UnitTest() {
                 projectAcronym = "proj-acr",
                 leadPartnerNameInOriginalLanguage = "lead-orig",
                 leadPartnerNameInEnglish = "lead-en",
+                spfPartnerId = null,
                 createdAt = created,
                 firstSubmission = null,
+                lastReSubmission = null,
                 verificationDate = null,
                 verificationEndDate = null,
                 amountRequested = BigDecimal.ZERO,
                 totalEligibleAfterVerification = BigDecimal.ZERO,
+                lastVerificationReOpening = null,
                 riskBasedVerification = false,
                 riskBasedVerificationDescription = null
                 ),
@@ -503,6 +518,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(165),
                         lumpSum = BigDecimal.valueOf(175),
                         unitCost = BigDecimal.valueOf(185),
+                        spfCost = BigDecimal.valueOf(190),
                         sum = BigDecimal.valueOf(195),
                     ),
                     currentlyReported = BudgetCostsCalculationResultFull(
@@ -515,6 +531,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(166),
                         lumpSum = BigDecimal.valueOf(176),
                         unitCost = BigDecimal.valueOf(186),
+                        spfCost = BigDecimal.valueOf(191),
                         sum = BigDecimal.valueOf(196),
                     ),
                     previouslyReported = BudgetCostsCalculationResultFull(
@@ -527,6 +544,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(167),
                         lumpSum = BigDecimal.valueOf(177),
                         unitCost = BigDecimal.valueOf(187),
+                        spfCost = BigDecimal.valueOf(192),
                         sum = BigDecimal.valueOf(197),
                     ),
                     currentVerified = BudgetCostsCalculationResultFull(
@@ -539,6 +557,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(166),
                         lumpSum = BigDecimal.valueOf(176),
                         unitCost = BigDecimal.valueOf(186),
+                        spfCost = BigDecimal.valueOf(191),
                         sum = BigDecimal.valueOf(196),
                     ),
                     previouslyVerified = BudgetCostsCalculationResultFull(
@@ -551,6 +570,7 @@ internal class CreateProjectReportTest : UnitTest() {
                         other = BigDecimal.valueOf(167),
                         lumpSum = BigDecimal.valueOf(177),
                         unitCost = BigDecimal.valueOf(187),
+                        spfCost = BigDecimal.valueOf(192),
                         sum = BigDecimal.valueOf(197),
                     )
                 ),
@@ -585,7 +605,8 @@ internal class CreateProjectReportTest : UnitTest() {
                         previouslyReported = BigDecimal.ONE,
                         previouslyVerified = BigDecimal.ONE,
                     )
-                )
+                ),
+                    spfContributionClaims = emptyList()
             ),
             workPackages = listOf(
                 ProjectReportWorkPackageCreate(
@@ -757,6 +778,12 @@ internal class CreateProjectReportTest : UnitTest() {
     @MockK
     private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence
 
+    @MockK
+    private lateinit var deadlinePersistence: ContractingReportingPersistence
+
+    @MockK
+    private lateinit var callPersistence: CallPersistence
+
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
 
@@ -773,7 +800,8 @@ internal class CreateProjectReportTest : UnitTest() {
             projectReportIdentificationPersistence,
             createProjectReportBudget,
             projectResultPersistence,
-            projectReportResultPersistence
+            projectReportResultPersistence,
+            deadlinePersistence,
         )
     }
 
@@ -788,6 +816,8 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
@@ -823,6 +853,9 @@ internal class CreateProjectReportTest : UnitTest() {
         every { workPlanPersistence.getReportWorkPlanById(projectId, reportId = 11L) } returns listOf(report11wp)
         every { projectResultPersistence.getResultsForProject(projectId, "version") } returns listOf(projectResult())
         every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns projectManagement
+        every { callPersistence.getCallByProjectId(projectId) } returns mockk {
+            every { isSpf() } returns false
+        }
         every { projectReportResultPersistence.getResultCumulative(setOf(11L)) } returns mapOf(
             1 to BigDecimal.valueOf(
                 15L,
@@ -874,6 +907,73 @@ internal class CreateProjectReportTest : UnitTest() {
                 description = "[proj-custom-iden] Project report PR.8 added",
             )
         )
+    }
+
+    @ParameterizedTest(name = "createReportFor spf but no partner {0}")
+    @EnumSource(
+        value = ApplicationStatus::class,
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+    )
+    fun `createReportFor spf but no partner`(status: ApplicationStatus) {
+        val projectId = 454L + status.ordinal
+        every { reportPersistence.countForProject(projectId) } returns 1
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
+        every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
+        every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
+        every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns emptyList()
+        every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns null
+        every { reportPersistence.getSubmittedProjectReports(projectId) } returns emptyList()
+        every {
+            projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version")
+        } returns emptyList()
+        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(emptySet()) } returns emptyMap()
+
+        every { projectResultPersistence.getResultsForProject(projectId, "version") } returns emptyList()
+        every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns null
+        every { projectReportResultPersistence.getResultCumulative(emptySet()) } returns emptyMap()
+        every { callPersistence.getCallByProjectId(projectId) } returns mockk {
+            every { isSpf() } returns true
+        }
+
+        val data = ProjectReportUpdate(
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+        )
+        assertThrows<NoPartnerForSpfProject> { interactor.createReportFor(projectId, data) }
+    }
+
+    @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
+    @EnumSource(
+        value = ApplicationStatus::class,
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+    )
+    fun `createReportFor - forbidden because other reopened`(status: ApplicationStatus) {
+        val projectId = 354L + status.ordinal
+        every { reportPersistence.countForProject(projectId) } returns 1
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
+        every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
+        every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns listOf(1966, 1985)
+
+        val data = ProjectReportUpdate(
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+        )
+        val ex = assertThrows<LastReOpenedReportException> { interactor.createReportFor(projectId, data) }
+        assertThat(ex.i18nMessage.i18nArguments).containsEntry("blockingReportNumbers", "PR.1966, PR.1985")
+        assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.create.project.report.reopened.report.exists")
     }
 
     @ParameterizedTest(name = "createReportFor - not contracted {0}")

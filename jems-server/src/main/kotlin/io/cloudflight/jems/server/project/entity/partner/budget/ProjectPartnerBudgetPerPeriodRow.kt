@@ -12,5 +12,6 @@ interface ProjectPartnerBudgetPerPeriodRow {
     val externalExpertiseAndServicesCostsPerPeriod: BigDecimal?
     val infrastructureAndWorksCostsPerPeriod: BigDecimal?
     val unitCostsPerPeriod: BigDecimal?
+    val spfCostsPerPeriod: BigDecimal?
 
 }

@@ -1,0 +1,49 @@
+{
+  "controllerFormats": [
+    "Originals",
+    "Copy",
+    "Electronic"
+  ],
+  "type": "PartnerReport",
+  "designatedController": {
+    "controlInstitutionId": 1,
+    "controllingUserId": 4,
+    "controllingUserName": "Controller User - controller.user@jems.eu",
+    "jobTitle": "API generated job title",
+    "divisionUnit": "API generated division/unit/department",
+    "address": "API generated address",
+    "country": "Chad (TD)",
+    "countryCode": "TD",
+    "telephone": "+0123456789",
+    "controllerReviewerId": 4,
+    "controllerReviewerName": "Controller User - controller.user@jems.eu",
+    "controlInstitution": "controller institution"
+  },
+  "reportVerification": {
+    "generalMethodologies": [
+      "AdministrativeVerification",
+      "OnTheSpotVerification"
+    ],
+    "administrativeVerification": true,
+    "onTheSpotVerification": true,
+    "riskBasedVerificationApplied": true,
+    "riskBasedVerificationDescription": "API generated risk-based verification",
+    "verificationInstances": [
+      {
+        "verificationFrom": "2023-10-18T00:00:00.000Z",
+        "verificationTo": "2023-10-19T00:00:00.000Z",
+        "premisesOfProjectPartner": true,
+        "projectEvent": true,
+        "placeOfProjectOutput": true,
+        "virtual": true,
+        "verificationFocus": "API generated on-the-spot verification",
+        "verificationLocations": [
+          "PremisesOfProjectPartner",
+          "ProjectEvent",
+          "PlaceOfPhysicalProjectOutput",
+          "Virtual"
+        ]
+      }
+    ]
+  }
+}

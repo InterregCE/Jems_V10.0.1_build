@@ -1,7 +1,11 @@
 <ng-container *ngIf="savedContribution$ | async as savedContribution">
     <jems-form (save)="saveForm()"
                (discard)="refreshContributions()">
-        <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
+        <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}
+            <jems-context-info infoPosition="right"
+                               infoText="{{'project.application.partner.report.contribution.tab.subtitle.infobubble.description'| translate }}">
+            </jems-context-info>
+        </h3>
         <p>{{'project.application.partner.report.contribution.tab.hint' | translate}}</p>
         <form jemsFormLayout [formGroup]="contributionForm">
             <mat-table jemsNoWidthLimit
@@ -17,6 +21,10 @@
                         </span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                        <mat-icon *ngIf="control.get('removedInAf').value"
+                                  class="mat-icon-waring"
+                                  [matTooltip]="'project.application.partner.contribution.removed.warning' | translate">
+                        </mat-icon>
                         <mat-form-field *ngIf="control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <mat-label>{{'project.partner.coFinancing.contribution.source.name' | translate}}</mat-label>
                             <input #sourceOfContributionInput name="sourceOfContribution" [formControlName]="'sourceOfContribution'" matInput>
@@ -91,9 +99,9 @@
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
-                        <mat-form-field jemsFormFieldWidth="full">
+                        <mat-form-field *ngIf="!control.get('removedInAf').value" jemsFormFieldWidth="full">
                             <input currencyMask type="decimal"
-                                   [options]="{align: 'right', max: MAX_VALUE}"
+                                   [options]="{align: 'right', max: MAX_VALUE, min: MIN_VALUE, allowNegative: true}"
                                    name="currentlyReported"
                                    [formControlName]="'currentlyReported'" matInput
                                    (ngModelChange)="totalsChanged()">

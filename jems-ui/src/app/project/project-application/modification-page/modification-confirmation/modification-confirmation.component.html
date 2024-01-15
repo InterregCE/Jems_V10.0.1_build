@@ -1,4 +1,4 @@
-<mat-expansion-panel [expanded]="!decision" class="mt-4">
+<mat-expansion-panel [expanded]="!projectStatus" class="mt-4">
     <mat-expansion-panel-header>
         <mat-panel-title>
             <div id="status">
@@ -20,11 +20,11 @@
 
     <p>{{'project.application.form.section.modification.decision.intro' | translate}}</p>
     <jems-form [formGroup]="decisionForm"
-              (save)="saveConfirmation()"
-              (discard)="decisionForm.reset()">
+               (save)="saveConfirmation()"
+               (discard)="decisionForm.reset()">
         <form jemsFormLayout [formGroup]="decisionForm">
             <h4 jemsLabel class="mat-required-marker"
-                 [ngClass]="{'empty': !approvedToggle.checked && !rejectedToggle.checked}">
+                [ngClass]="{'empty': !approvedToggle.checked && !rejectedToggle.checked}">
                 {{'project.application.form.section.modification.decision' | translate}}
             </h4>
             <mat-button-toggle-group formControlName="status">
@@ -39,7 +39,7 @@
             </mat-button-toggle-group>
 
             <div jemsMultiColumnRow stretch>
-                <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-form-field>
                     <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
                     <input required formControlName="decisionDate" matInput
                            [matDatepicker]="decisionPicker"
@@ -54,7 +54,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-form-field>
                     <mat-label>{{ 'project.application.form.section.modification.force' | translate | dateFormatInfo }}</mat-label>
                     <input required formControlName="entryIntoForceDate" matInput
                            [matDatepicker]="forcePicker">
@@ -69,12 +69,42 @@
                 </mat-form-field>
             </div>
 
+            <div class="corrections">
+                <mat-form-field class="w-100">
+                    <mat-label>{{'project.application.reporting.corrections.title' | translate}}</mat-label>
+                    <mat-chip-list #chipList
+                                   [disabled]="!canEdit">
+                        <mat-chip *ngFor="let correction of correctionsForm().value;let i = index"
+                                  [selectable]="false"
+                                  [removable]="canEdit"
+                                  (removed)="removeCorrection(i)">
+                            {{'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
+                            :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.correctionNumber} }}
+                            <mat-icon matChipRemove *ngIf="canEdit">cancel</mat-icon>
+                        </mat-chip>
+                        <input [disabled]="!canEdit"
+                               [placeholder]="canEdit ? ('project.application.form.section.modification.search.correction' | translate) : ''"
+                               #filterCorrections
+                               [matAutocomplete]="auto"
+                               [matChipInputFor]="chipList"
+                               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                               aria-label="partner to add">
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addCorrection($event.option.value); filterCorrections.blur();">
+                        <mat-option *ngFor="let correction of availableCorrections" [value]="correction.id">
+                            {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
+                            :{auditControlNumber: correction.auditControlNumber, correctionNumber: correction.orderNr} }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
             <jems-expandable-textarea class="mt-2"
-                                     [control]="decisionForm?.controls?.note"
-                                     [errors]="decisionForm?.controls?.note?.errors"
-                                     [characterLimit]="10000"
-                                     [minRows]="3"
-                                     label="project.assessment.fundingDecision.dialog.field.note">
+                                      [control]="decisionForm?.controls?.note"
+                                      [errors]="decisionForm?.controls?.note?.errors"
+                                      [characterLimit]="10000"
+                                      [minRows]="3"
+                                      label="project.assessment.fundingDecision.dialog.field.note">
             </jems-expandable-textarea>
         </form>
     </jems-form>

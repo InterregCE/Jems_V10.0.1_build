@@ -92,7 +92,6 @@ import {
   ContractingChecklistInstanceListComponent
 } from '@common/components/checklist/contracting-checklist-instance-list/contracting-checklist-instance-list.component';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
-import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {
   FileOperationsActionCellComponent
 } from '@common/components/file-list/file-list-table/file-operations-action-cell/file-operations-action-cell.component';
@@ -108,6 +107,12 @@ import {
 import {
   VerificationChecklistInstanceListComponent
 } from '@common/components/checklist/verification-checklist-instance-list/verification-checklist-instance-list.component';
+import {ProjectReportListComponent} from '@common/components/project-report-list/project-report-list.component';
+import {
+  ProjectReportStatusComponent
+} from '@project/project-application/report/project-report/project-report-status/project-report-status.component';
+import {AccountingYearPipe} from '@common/pipe/accounting-year.pipe';
+import {AsPercentagePipe} from '@common/pipe/as-percentage.pipe';
 
 const modules = [
   CommonModule,
@@ -121,7 +126,6 @@ const modules = [
   MatBadgeModule,
   MatProgressSpinnerModule,
   MatSliderModule,
-  NgxMatSelectSearchModule
 ];
 
 const declarations = [
@@ -139,9 +143,11 @@ const declarations = [
   TranslateContainerLessInputsBySystemLanguagePipe,
   AdaptTranslationKeyByCallTypePipe,
   MoneyPipe,
+  AsPercentagePipe,
   PercentagePipe,
   LocaleDatePipe,
   DateFormatInfoPipe,
+  AccountingYearPipe,
   MultiLanguageContainerComponent,
   BreadcrumbComponent,
   AlertComponent,
@@ -191,7 +197,9 @@ const declarations = [
   FileOperationsActionCellComponent,
   FileListTableWithFileLinkingComponent,
   PartnerReportListComponent,
+  ProjectReportListComponent,
   PartnerReportStatusComponent,
+  ProjectReportStatusComponent,
   VerificationChecklistInstanceListComponent
 ];
 
@@ -199,7 +207,8 @@ const providers = [
   MoneyPipe,
   LocaleDatePipe,
   DateFormatInfoPipe,
-  CustomTranslatePipe
+  CustomTranslatePipe,
+  AccountingYearPipe,
 ];
 
 @NgModule({

@@ -396,6 +396,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalEligibleBudget = BigDecimal.valueOf(1),
             previouslyReported = BigDecimal.valueOf(2),
             previouslyReportedParked = BigDecimal.valueOf(15L, 1),
+            previouslyReportedSpf = BigDecimal.valueOf(175L, 2),
             currentReport = BigDecimal.valueOf(4),
             currentReportReIncluded = BigDecimal.valueOf(35L, 1),
             totalEligibleAfterControl = BigDecimal.valueOf(8),
@@ -426,7 +427,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
-            previouslyValidated = BigDecimal.valueOf(92L, 1)
+            previouslyValidated = BigDecimal.valueOf(92L, 1),
+            totalEligibleAfterControl = BigDecimal.valueOf(8)
         )
 
         private val expectedCoFinancing = ExpenditureCoFinancingBreakdownData(
@@ -462,6 +464,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             other = dummyCostCategoryLine.copy(remainingBudget = BigDecimal.TEN),
             lumpSum = dummyCostCategoryLine.copy(totalEligibleBudget = BigDecimal.TEN),
             unitCost = dummyCostCategoryLine.copy(previouslyReported = BigDecimal.TEN),
+            spfCost = dummyCostCategoryLine.copy(totalEligibleBudget = BigDecimal.valueOf(15)),
             total = dummyCostCategoryLine.copy(currentReport = BigDecimal.TEN),
         )
 
@@ -475,7 +478,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
-            previouslyValidated = BigDecimal.valueOf(5)
+            previouslyValidated = BigDecimal.valueOf(5),
+            totalEligibleAfterControl = BigDecimal.valueOf(8)
         )
 
         private val expectedCostCategory = ExpenditureCostCategoryBreakdownData(

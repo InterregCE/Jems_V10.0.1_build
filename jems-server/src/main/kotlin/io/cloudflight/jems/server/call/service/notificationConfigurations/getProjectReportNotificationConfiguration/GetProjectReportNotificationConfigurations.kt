@@ -16,7 +16,7 @@ class GetProjectReportNotificationConfigurations(
     @ExceptionWrapper(GetProjectReportNotificationConfigurationsException::class)
     override fun get(callId: Long): List<ProjectNotificationConfiguration> {
         val savedNotifications = persistence.getProjectNotificationConfigurations(callId).associateBy { it.id }
-        val notificationTypes = NotificationType.projectReportNotifications union NotificationType.projectFileVerificationCommunicationNotifications
+        val notificationTypes = NotificationType.projectReportNotifications.plus(NotificationType.projectFileVerificationCommunicationNotifications)
 
         return notificationTypes.map {
             savedNotifications.getOrDefault(it, getDefaultProjectNotificationConfiguration(it))

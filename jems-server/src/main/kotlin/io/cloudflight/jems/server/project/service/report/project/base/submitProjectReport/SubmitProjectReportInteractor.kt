@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 
 interface SubmitProjectReportInteractor {
 
-    fun submit(projectId: Long, reportId: Long): ProjectReportStatus
+    fun submit(reportId: Long): ProjectReportStatus
 
 }

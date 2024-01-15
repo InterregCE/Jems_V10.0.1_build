@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.service.checklist.clone.CloneChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.DeleteChecklistInstanceInteractor
@@ -73,7 +74,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         PROGRAMME_CHECKLIST_ID
     )
 
-    private val checkLisDetail = ChecklistInstanceDetail(
+    private val checklistDetail = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
@@ -114,7 +115,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         )
     )
 
-    private val checkLisDetailDTO = ChecklistInstanceDetailDTO(
+    private val checklistDetailDTO = ChecklistInstanceDetailDTO(
         id = CHECKLIST_ID,
         status = ChecklistInstanceStatusDTO.DRAFT,
         finishedDate = null,
@@ -188,7 +189,6 @@ class ChecklistInstanceControllerTest : UnitTest() {
         createdAt = null,
     )
 
-
     @RelaxedMockK
     lateinit var getChecklistInteractor: GetChecklistInstancesInteractor
 
@@ -209,6 +209,9 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var consolidateInteractor: ConsolidateChecklistInstanceInteractor
+
+    @MockK
+    lateinit var cloneInteractor: CloneChecklistInstanceInteractor
 
     @InjectMockKs
     private lateinit var controller: ChecklistInstanceController
@@ -302,26 +305,34 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `get checklist detail`() {
-        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID) } returns checkLisDetail
+        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID) } returns checklistDetail
         assertThat(controller.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
-            .isEqualTo(checkLisDetailDTO)
+            .isEqualTo(checklistDetailDTO)
     }
 
     @Test
     fun `create checklist`() {
-        every { createInteractor.create(createChecklist) } returns checkLisDetail
+        every { createInteractor.create(createChecklist) } returns checklistDetail
         assertThat(controller.createChecklistInstance(createChecklistDTO))
             .usingRecursiveComparison()
-            .isEqualTo(checkLisDetailDTO)
+            .isEqualTo(checklistDetailDTO)
     }
 
     @Test
     fun `update checklist detail`() {
-        every { updateInteractor.update(any()) } returns checkLisDetail
-        assertThat(controller.updateChecklistInstance(checkLisDetailDTO))
+        every { updateInteractor.update(any()) } returns checklistDetail
+        assertThat(controller.updateChecklistInstance(checklistDetailDTO))
             .usingRecursiveComparison()
-            .isEqualTo(checkLisDetailDTO)
+            .isEqualTo(checklistDetailDTO)
+    }
+
+    @Test
+    fun `clone checklist`() {
+        every { cloneInteractor.clone(any()) } returns checklistDetail
+        assertThat(controller.cloneChecklistInstance(CHECKLIST_ID))
+            .usingRecursiveComparison()
+            .isEqualTo(checklistDetailDTO)
     }
 
     @Test
@@ -369,6 +380,4 @@ class ChecklistInstanceControllerTest : UnitTest() {
         assertThat(controller.exportChecklistInstance(RELATED_TO_ID, CHECKLIST_ID, SystemLanguage.DA, null))
             .isEqualTo(exportResult.toResponseEntity())
     }
-
-
 }

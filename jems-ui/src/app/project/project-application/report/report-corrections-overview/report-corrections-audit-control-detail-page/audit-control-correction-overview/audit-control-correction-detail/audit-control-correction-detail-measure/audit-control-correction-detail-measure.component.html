@@ -1,0 +1,68 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.partnerData, data.identification, data.programmeMeasure)"
+           (save)="update()">
+
+    <div jemsFormLayout>
+        <h3>{{'project.application.reporting.corrections.programme.measure' | translate}}</h3>
+        <p>{{'project.application.reporting.corrections.programme.measure.description' | translate}}</p>
+    </div>
+
+    <form [formGroup]="form" jemsFormLayout>
+        <div jemsMultiColumnRow stretch="1">
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.programme.measure.declaredToEc' | translate}}</mat-label>
+                <input matInput disabled
+                       name="declaredToEc"
+                       [value]="(form.get(constants.FORM_CONTROLS.declaredToEc)?.value ? 'common.yes' : 'common.no') | translate">
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.programme.measure.paymentToEcNo' | translate}}</mat-label>
+                <input matInput
+                       name="paymentToEcNumber"
+                       [formControlName]="constants.FORM_CONTROLS.paymentToEcNumber">
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.reporting.corrections.programme.measure.accountingYear' | translate}}</mat-label>
+                <input matInput disabled
+                       name="paymentAccountingYears"
+                       [value]="form.get(constants.FORM_CONTROLS.paymentAccountingYear)?.value | asAccountingYear">
+            </mat-form-field>
+        </div>
+
+        <h4>{{'project.application.reporting.corrections.programme.measure.scenario' | translate}}</h4>
+
+        <mat-radio-group required
+                         [disabled]="!data.canEdit"
+                         [value]="form.get(constants.FORM_CONTROLS.scenario)?.value"
+                         (change)="scenarioChanged($event.value)">
+            <mat-radio-button *ngFor="let option of scenarios" [value]="option">
+                <div class="title">{{('project.application.reporting.corrections.programme.measure.scenario.' + option) | translate}}</div>
+                <p>{{('project.application.reporting.corrections.programme.measure.scenario.' + option + '.description') | translate}}</p>
+            </mat-radio-button>
+        </mat-radio-group>
+        <mat-error>
+            <jems-form-field-errors [errors]="form.get(constants.FORM_CONTROLS.scenario)?.errors"></jems-form-field-errors>
+        </mat-error>
+
+        <jems-expandable-textarea jemsMultiColumnRow
+                                  [control]="form.controls.comment"
+                                  [errors]="form.controls.comment?.errors"
+                                  [label]="'project.application.reporting.corrections.programme.measure.comment'"
+                                  [minRows]="1"
+                                  [maxRows]="5"
+                                  [characterLimit]="constants.COMMENT_LENGTH"
+                                  class="comment">
+        </jems-expandable-textarea>
+
+        <h4>{{'project.application.reporting.corrections.programme.measure.includedInAccountingYear' | translate}}</h4>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.reporting.corrections.programme.measure.accountingYear' | translate}}</mat-label>
+            <input matInput disabled
+                   name="includedInAccountingYear"
+                   [value]="form.get(constants.FORM_CONTROLS.includedInAccountingYear)?.value | asAccountingYear">
+        </mat-form-field>
+    </form>
+</jems-form>

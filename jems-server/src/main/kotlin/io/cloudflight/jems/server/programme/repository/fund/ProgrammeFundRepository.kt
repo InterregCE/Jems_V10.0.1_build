@@ -19,4 +19,5 @@ interface ProgrammeFundRepository : JpaRepository<ProgrammeFundEntity, Long> {
         value = "SELECT DISTINCT programme_fund FROM project_call_fund"
     )
     fun getFundsAlreadyInUse(): Iterable<Long>
+
 }

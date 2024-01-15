@@ -1,31 +1,146 @@
 <ng-container *ngIf="data$ | async as data">
     <jems-form  (discard)="resetForm(data.paymentDetail)"
-                (save)="updatePaymentApplicationToEc()"
+                (save)="savePaymentApplication()"
                [formGroup]="summaryForm">
+    <div jemsFormLayout>
 
         <h3>{{'payments.to.ec.detail.summary.tab.header' | translate}}</h3>
         <p>{{'payments.to.ec.detail.summary.tab.subheader' | translate}}</p>
 
-        <div class="summary-form" jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="xx-large">
-                <mat-label>{{'payments.to.ec.detail.summary.tab.fund.select.label' | translate}}</mat-label>
-                <mat-select formControlName="programmeFund" required>
-                    <mat-option *ngFor="let fund of data.programmeFunds" [value]="fund.id" role="option">
-                        {{fund.abbreviation  | translateBySystemLanguage: true | async}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
-                <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
-                <mat-select formControlName="accountingYear" required>
-                    <mat-option *ngFor="let accountingYear of data.accountingYears" [value]="accountingYear.id" role="option">
-                        <span>{{ ('accounting.year.' + accountingYear.year) | translate }}:
-                            {{ accountingYear.startDate | localeDate }} - {{ accountingYear.endDate | localeDate }}</span>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+        <div class="summary-form" jemsMultiColumnRow>
+            <ng-container [ngTemplateOutlet]="isCreate ? selectFundAndAccountingYear : readOnlyFundAndAccountingYear"
+                          [ngTemplateOutletContext]="{
+                             fundId: summaryForm.get(constants.FORM_CONTROL_NAMES.programmeFundId),
+                             accountingYearId: summaryForm.get(constants.FORM_CONTROL_NAMES.accountingYearId),
+                             programmeFunds: data.programmeFunds,
+                             availableAccountingYearsForFund: availableAccountingYearsForFund,
+                             savedProgrammeFund: data.paymentDetail?.paymentApplicationToEcSummary?.programmeFund,
+                             savedAccountingYear: data.paymentDetail?.paymentApplicationToEcSummary?.accountingYear
+                          }"
+            >
+            </ng-container>
         </div>
 
+        <div>
+            <h3>{{'payments.to.ec.detail.summary.tab.other.details.header' | translate}}</h3>
+            <p>{{'payments.to.ec.detail.summary.tab.other.details.subheader' | translate}}</p>
+
+            <div>
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.national.reference.label' | translate}}</mat-label>
+                    <input [formControlName]="constants.FORM_CONTROL_NAMES.nationalReference" name="nationalReference" matInput #nationalReference>
+                    <mat-hint [jemsHintFor]="nationalReference" [hide]="summaryForm?.get(constants.FORM_CONTROL_NAMES.nationalReference)?.errors !== null">
+                        <jems-text-hint [currentLength]="nationalReference.value.length" [maxLength]="50"></jems-text-hint>
+                    </mat-hint>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="summaryForm?.get(constants.FORM_CONTROL_NAMES.nationalReference)?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.technical.assistance.label' | translate}}</mat-label>
+                    <input [formControlName]="constants.FORM_CONTROL_NAMES.technicalAssistanceEur" name="technicalAssistanceEur" currencyMask matInput type="decimal" [options]="{allowNegative: true}">
+                </mat-form-field>
+            </div>
+
+            <div jemsMultiColumnRow>
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.submission.to.sfc.date.label' | translate}}</mat-label>
+                    <input [formControlName]="constants.FORM_CONTROL_NAMES.submissionToSFCDate" [matDatepicker]="submissionToSFCDatePicker" matInput>
+                    <mat-datepicker-toggle matSuffix [for]="submissionToSFCDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #submissionToSFCDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.sfc.number.label' | translate}}</mat-label>
+                    <input [formControlName]="constants.FORM_CONTROL_NAMES.sfcNumber" name="sfcNumber" matInput #sfcNumber>
+                    <mat-hint [jemsHintFor]="sfcNumber" [hide]="summaryForm?.get(constants.FORM_CONTROL_NAMES.sfcNumber)?.errors !== null">
+                        <jems-text-hint [currentLength]="sfcNumber.value.length" [maxLength]="50"></jems-text-hint>
+                    </mat-hint>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="summaryForm?.get(constants.FORM_CONTROL_NAMES.sfcNumber)?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="full"
+                                      [control]="summaryForm.controls.comment"
+                                      [errors]="summaryForm?.get(constants.FORM_CONTROL_NAMES.comment)?.errors"
+                                      label="payments.to.ec.detail.summary.tab.other.details.comment.label"
+                                      [characterLimit]="5000"
+                                      [minRows]="5"
+                                      [maxRows]="10">
+            </jems-expandable-textarea>
+        </div>
+    </div>
     </jems-form>
+
+    <mat-card jemsFormLayout class="mt-4">
+        <h3>{{'payments.to.ec.detail.summary.tab.overview.amounts.header' | translate}}</h3>
+        <jems-payment-to-ec-cumulative-table [data]="data.overviewPerPriorityAxis"></jems-payment-to-ec-cumulative-table>
+    </mat-card>
+
+    <mat-card jemsFormLayout class="mt-4">
+        <h3>{{'payments.to.ec.detail.summary.tab.cumulative.overview.amounts.header' | translate}}</h3>
+        <jems-payment-to-ec-cumulative-table [data]="data.cumulativeOverviewPerPriorityAxis"></jems-payment-to-ec-cumulative-table>
+    </mat-card>
+
+    <div class="mt-4">
+        <jems-payment-to-ec-summary-attachments *ngIf="data.paymentDetail.id"></jems-payment-to-ec-summary-attachments>
+    </div>
 </ng-container>
+
+
+<ng-template #readOnlyFundAndAccountingYear
+             let-savedProgrammeFund="savedProgrammeFund"
+             let-savedAccountingYear="savedAccountingYear">
+
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-label>{{'payments.to.ec.detail.summary.tab.fund.select.label' | translate}}</mat-label>
+        <mat-select [disabled]="true" [value]=1>
+            <mat-option role="option" [value]=1>
+                {{savedProgrammeFund.abbreviation | translateBySystemLanguage: true | async}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
+        <mat-select  required  [value]="1" disabled>
+            <mat-option  role="option" [value]=1>
+                <span>{{ savedAccountingYear | asAccountingYear }}</span>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+</ng-template>
+
+<ng-template #selectFundAndAccountingYear
+             let-fundIdControl="fundId"
+             let-accountingYearId="accountingYearId"
+             let-programmeFunds="programmeFunds"
+             let-availableAccountingYearsForFund="availableAccountingYearsForFund">
+
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-label>{{'payments.to.ec.detail.summary.tab.fund.select.label' | translate}}</mat-label>
+        <mat-select [formControl]="fundIdControl" required (selectionChange)="fetchAvailableAccountingYearsForFund($event)">
+            <mat-option *ngFor="let fund of programmeFunds" [value]="fund.id" role="option">
+                {{fund.abbreviation  | translateBySystemLanguage: true | async}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
+        <mat-select [formControl]="accountingYearId" required>
+            <mat-option *ngFor="let accountingYear of availableAccountingYearsForFund"
+                        [value]="accountingYear.id" role="option" [disabled]="!accountingYear.available">
+                        <span>{{ accountingYear | asAccountingYear }}</span>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+</ng-template>

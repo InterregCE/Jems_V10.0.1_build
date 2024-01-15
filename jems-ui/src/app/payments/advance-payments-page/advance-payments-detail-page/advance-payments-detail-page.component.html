@@ -22,266 +22,300 @@
             <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
         </jems-alert>
 
+        <jems-alert [show]="successfulAuthorizationMessage"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payment.advance.authorise.payment.update.successful' | translate}}</p>
+        </jems-alert>
+
+        <jems-alert [show]="successfulConfirmationMessage"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payment.advance.confirmation.payment.update.successful' | translate}}</p>
+        </jems-alert>
+
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+
         <ng-container>
-                <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
+            <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
 
-                    <div jemsNoWidthLimit jemsMultiColumnRow class="advance-payment-header table-row" justifyContent="start">
-                        <div class="column-project-id justify-start">{{ 'payments.advance.payment.table.header.project.id' | translate }}</div>
-                        <div class="column-project-acronym justify-start">{{ 'payments.payment.to.project.table.column.project.acronym' | translate }}</div>
-                        <div class="column-partner-name justify-start">{{ 'payments.advance.payment.table.header.partner.name' | translate }}</div>
-                        <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
-                        <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
-                        <div class="column-advance-amount justify-start">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
-                        <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
-                        <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
-                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
-                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
-                        <div class="column-expand"><!-- Empty - just for alignment reasons --></div>
-                    </div>
-                    <ng-container>
-                        <div  jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
-                            <div class="column-project-id">
-                                <mat-form-field class="w-100">
-                                    <mat-select class="placeholder-required"
-                                                [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifier" [compareWith]="getProjectToDisplay"
-                                                placeholder="{{'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate}}"
-                                                (selectionChange)="loadPartnerAndFundsData($event.value)">
-                                        <mat-option [formGroup]="projectCustomIdentifierSearchForm">
-                                            <ngx-mat-select-search placeholderLabel="{{'payments.advance.payments.detail.project.id.dropdown.search.placeholder' | translate}}"
-                                                                   noEntriesFoundLabel="{{'payments.advance.payments.detail.project.id.dropdown.search.no.entries.placeholder' | translate}}"
-                                                                   [clearSearchInput]="false"
-                                                                   [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch"></ngx-mat-select-search>
-                                        </mat-option>
-                                        <mat-option *ngFor="let project of contractedProjects$ | async" [value]="project">
-                                            {{project.customIdentifier}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
+                <div jemsNoWidthLimit jemsMultiColumnRow class="advance-payment-header table-row" justifyContent="start">
+                    <div class="column-project-id justify-start">{{ 'payments.advance.payment.table.header.project.id' | translate }}</div>
+                    <div class="column-project-acronym justify-start">{{ 'payments.payment.to.project.table.column.project.acronym' | translate }}</div>
+                    <div class="column-partner-name justify-start">{{ 'payments.advance.payment.table.header.partner.name' | translate }}</div>
+                    <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
+                    <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
+                    <div class="column-advance-amount justify-end">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
+                    <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
+                    <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
+                    <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
+                    <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
+                    <div class="column-expand"><!-- Empty - just for alignment reasons --></div>
+                </div>
+                <ng-container>
+                    <div jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
+                        <div class="column-project-id">
+                            <mat-form-field class="w-100">
+                                <input matInput required name="projectCustomIdentifier"
+                                       [placeholder]="'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifier"
+                                       [matAutocomplete]="projectCustomIdentifier">
 
-                            <div class="column-project-acronym" #projectAcronym
-                                 [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value">
-                                {{advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value}}
-                            </div>
+                                <mat-autocomplete #projectCustomIdentifier="matAutocomplete"
+                                                  [displayWith]="displayProjectIdentifier"
+                                                  (optionSelected)="projectSelected($event.option?.value)">
+                                    <mat-option *ngFor="let project of contractedProjects$ | async" [value]="project" class="autocomplete-text-size">
+                                        {{project.customIdentifier}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <mat-error>
+                                    <jems-form-field-errors
+                                            [errors]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.errors"
+                                            [messages]="constants.inputErrorMessages">
+                                    </jems-form-field-errors>
+                                </mat-error>
 
-                            <div class="column-partner-name">
-                                <mat-form-field class="w-100">
-                                    <mat-select class="placeholder-required" #partnerSelect
-                                                [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
-                                                (selectionChange)="setFundsAndContributionData($event.value)"
-                                                [compareWith]="getPartnerToDisplay"
-                                                [matTooltip]="partnerSelect.triggerValue"
-                                                placeholder="{{'payments.advance.payments.detail.partner.dropdown.placeholder' | translate}}" >
-                                        <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
-                                            {{partner.partnerSummary.abbreviation}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
+                            </mat-form-field>
+                        </div>
 
-                            <div class="column-partner-role">
-                                <span> {{getPartnerRole(advancePayment.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.value?.partnerSummary)}}</span>
-                            </div>
+                        <div class="column-project-acronym" #projectAcronym
+                             [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value">
+                            {{advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value}}
+                        </div>
 
-                            <div class="column-advance-source">
-                                <mat-form-field  class="w-100">
-                                    <mat-select #advanceSourceSelect
+                        <div class="column-partner-name">
+                            <mat-form-field class="w-100">
+                                <mat-select class="placeholder-required" #partnerSelect
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
+                                            (selectionChange)="setFundsAndContributionData($event.value)"
+                                            [compareWith]="getPartnerToDisplay"
+                                            [matTooltip]="partnerSelect.triggerValue"
+                                            [placeholder]="'payments.advance.payments.detail.partner.dropdown.placeholder' | translate">
+
+                                    <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
+                                        {{partner.partnerSummary.abbreviation}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="column-partner-role">
+                            <span> {{getPartnerRole(advancePayment.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.value?.partnerSummary)}}</span>
+                        </div>
+
+                        <div class="column-advance-source">
+                            <mat-form-field class="w-100">
+                                <mat-select #advanceSourceSelect
                                             class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
                                             [compareWith]="getSourceToDisplay"
                                             [matTooltip]="advanceSourceSelect.triggerValue"
-                                            placeholder="{{'payments.advance.payments.detail.source.dropdown.placeholder' | translate}}">
+                                            [placeholder]="'payments.advance.payments.detail.source.dropdown.placeholder' | translate">
 
-                                            <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
-                                                          label="{{'payments.advance.payments.detail.funds.label' | translate}}">
-                                                <mat-option *ngFor="let fund of fundsAndContributions?.partnerCoFinancing" [value]="{type: 'fund', data: fund}">
-                                                    {{fund.abbreviation | translateBySystemLanguage | async}}
-                                                </mat-option>
-                                            </mat-optgroup>
+                                    <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
+                                                  label="{{'payments.advance.payments.detail.funds.label' | translate}}">
+                                        <mat-option *ngFor="let fund of fundsAndContributions?.partnerCoFinancing" [value]="{type: 'fund', data: fund}">
+                                            {{fund.abbreviation | translateBySystemLanguage | async}}
+                                        </mat-option>
+                                    </mat-optgroup>
 
-                                            <mat-optgroup *ngIf="fundsAndContributions?.partnerContributions?.length > 0"
-                                                          label="{{'payments.advance.payments.detail.contributions.label' | translate}}">
-                                                <mat-option *ngFor="let contribution of fundsAndContributions?.partnerContributions" [value]="{type: 'contribution', data: contribution}">
-                                                    {{contribution.name}}
-                                                </mat-option>
-                                            </mat-optgroup>
+                                    <mat-optgroup *ngIf="fundsAndContributions?.partnerContributions?.length > 0"
+                                                  label="{{'payments.advance.payments.detail.contributions.label' | translate}}">
+                                        <mat-option *ngFor="let contribution of fundsAndContributions?.partnerContributions"
+                                                    [value]="{type: 'contribution', data: contribution}">
+                                            {{contribution.name}}
+                                        </mat-option>
+                                    </mat-optgroup>
 
-                                        <mat-optgroup *ngIf="fundsAndContributions?.partnerContributionsSpf?.length > 0"
-                                                      label="{{'payments.advance.payments.detail.contributions.spf.label' | translate}}">
-                                            <mat-option *ngFor="let spfContribution of fundsAndContributions?.partnerContributionsSpf" [value]="{type: 'spfContribution', data: spfContribution}">
-                                                {{spfContribution.name}}
-                                            </mat-option>
-                                        </mat-optgroup>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
+                                    <mat-optgroup *ngIf="fundsAndContributions?.partnerContributionsSpf?.length > 0"
+                                                  label="{{'payments.advance.payments.detail.contributions.spf.label' | translate}}">
+                                        <mat-option *ngFor="let spfContribution of fundsAndContributions?.partnerContributionsSpf"
+                                                    [value]="{type: 'spfContribution', data: spfContribution}">
+                                            {{spfContribution.name}}
+                                        </mat-option>
+                                    </mat-optgroup>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
 
-                            <div class="column-advance-amount justify-center">
-                                <mat-form-field class="w-100">
+                        <div class="column-advance-amount justify-center">
+                            <mat-form-field class="w-100">
                                     <span [ngClass]="{'marked-as-required' : !isPaymentValueValid(inputAdvanceAmount.value)}">
                                         <input #inputAdvanceAmount matInput type="decimal" currencyMask required
                                                [options]="{max: constants.MAX_VALUE, align:'right'}"
                                                [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
                                     </span>
-                                    <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountPaid)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-
-                            <div class="column-date">
-                                <mat-form-field class="w-100">
-                                    <input name="paymentDate"
-                                           class="placeholder-required"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                           [matDatepicker]="paymentDatePicker">
-                                    <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
-                                        [messages]="constants.inputErrorMessages"
-                                        [args] = "{}"></jems-form-field-errors>
-                                    </mat-error>
-                                    <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
-                                    <mat-datepicker #paymentDatePicker></mat-datepicker>
-                                </mat-form-field>
-                            </div>
+                                <mat-error>
+                                    <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountPaid)?.errors"
+                                                            [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
 
-                            <div class="column-comment">
-                                <mat-form-field class="w-100">
-                                    <input matInput #comment class="text-overflow-ellipsis"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.comment"
-                                           [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.comment)?.value"/>
-                                    <mat-hint [jemsHintFor]="comment">
-                                        <jems-text-hint [currentLength]="comment.value.length" [maxLength]="500"></jems-text-hint>
-                                    </mat-hint>
-                                    <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.comment)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
+                        <div class="column-comment">
+                            <mat-form-field class="w-100">
+                                <input matInput #comment class="text-overflow-ellipsis"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.comment"
+                                       [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.comment)?.value"/>
+                                <mat-hint [jemsHintFor]="comment">
+                                    <jems-text-hint [currentLength]="comment.value.length" [maxLength]="500"></jems-text-hint>
+                                </mat-hint>
+                                <mat-error>
+                                    <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.comment)?.errors"
+                                                            [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
-                            <div class="column-checkbox justify-start">
-                                <div class="display-row">
-                                    <mat-checkbox
-                                            [disabled]="isPaymentAuthorisationDisabled()"
-                                            (change)="setPaymentAuthorised($event.checked)"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
-                                    </mat-checkbox>
-                                    <div class="column-checkbox-text-content">
-                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
-                                        <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                        <div class="column-checkbox justify-start">
+                            <div class="display-row">
+                                <mat-checkbox [disabled]="isPaymentAuthorisationDisabled() || (formService.dirty$ | async)"
+                                              [checked]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true"
+                                              (change)="setPaymentAuthorised($event.checked, data.paymentDetail.id)">
+                                </mat-checkbox>
+                                <div class="column-checkbox-text-content">
+                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
+                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email">
+                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="column-checkbox justify-start">
-                                <div class="display-row">
-                                    <mat-checkbox (change)="setConfirmPaymentDate($event.checked)"
-                                                  [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
-                                    </mat-checkbox>
-                                    <div class="column-checkbox-text-content">
-                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
-                                        <span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="column-expand">
-                                <div class="display-row">
-                                    <button mat-icon-button *ngIf="data.paymentDetail.paymentConfirmed" class="button-expand column-expand-content"
-                                            [ngClass]="{'expanded' : settlementsExpanded}"
-                                            (click)="toggleSettlements()"
-                                            aria-label="expansion toggle">
-                                        <mat-icon>expand_more</mat-icon>
-                                    </button>
-                                </div>
-
                             </div>
                         </div>
 
-                        <div *ngIf="data.paymentDetail.paymentConfirmed" id="settlements-table" class="settlements-table-container"
-                             [ngClass]="{'expanded' : settlementsExpanded}">
-                            <div [jemsTableConfig]="[{maxInRem:9},{maxInRem: 14},{maxInRem: 12},{minInRem: 12}, {maxInRem:5}]">
-                                <div class="table-row">
-                                    <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.number' | translate }}</div>
-                                    <div class="justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
-                                    <div class="justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
-                                    <div>{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
-                                    <div *ngIf="data.userCanEdit">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                        <div class="column-date">
+                            <mat-form-field class="w-100">
+                                <span [ngClass]="{'marked-as-required' : advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true && !advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.value}">
+                                <input name="paymentDate"
+                                       class="placeholder-required"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                       [matDatepicker]="paymentDatePicker">
+                                </span>
+                                <mat-error>
+                                    <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
+                                                            [messages]="constants.inputErrorMessages"
+                                                            [args]="{}"></jems-form-field-errors>
+                                </mat-error>
+                                <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker #paymentDatePicker></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="column-checkbox justify-start">
+                            <div class="display-row">
+                                <mat-checkbox [disabled]="isPaymentConfirmationDisabled() || (formService.dirty$ | async)"
+                                              [checked]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value === true"
+                                              (change)="setConfirmPaymentDate($event.checked, data.paymentDetail.id)">
+                                </mat-checkbox>
+                                <div class="column-checkbox-text-content">
+                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
+                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email">
+                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <div *ngFor="let settlement of settlementsArray.controls; let i=index">
-                                    <ng-container formArrayName="paymentSettlements">
-                                        <ng-container [formGroupName]="i">
-                                            <div class="w-50">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr).value}}</div>
-                                            <div>
-                                                <mat-form-field class="w-100">
-                                                    <input name="amountSettled"
-                                                            matInput type="decimal" currencyMask
-                                                           [options]="{allowNegative: true, max: constants.MAX_VALUE, align:'right'}"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.amountSettled"
-                                                           aria-label="value">
-                                                </mat-form-field>
-                                            </div>
+                        <div class="column-expand">
+                            <div class="display-row">
+                                <button mat-icon-button *ngIf="data.paymentDetail.paymentConfirmed" class="button-expand column-expand-content"
+                                        [ngClass]="{'expanded' : settlementsExpanded}"
+                                        (click)="toggleSettlements()"
+                                        aria-label="expansion toggle">
+                                    <mat-icon>expand_more</mat-icon>
+                                </button>
+                            </div>
 
-                                            <div>
-                                                <mat-form-field class="w-100">
+                        </div>
+                    </div>
+
+                    <div *ngIf="data.paymentDetail.paymentConfirmed" id="settlements-table" class="settlements-table-container"
+                         [ngClass]="{'expanded' : settlementsExpanded}">
+                        <div [jemsTableConfig]="[{maxInRem:9},{maxInRem: 14},{maxInRem: 12},{minInRem: 12}, {maxInRem:5}]">
+                            <div class="table-row">
+                                <div class="column-settlement-number justify-start">{{ 'payments.advance.payments.detail.settlement.number' | translate }}</div>
+                                <div class="column-advance-amount justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
+                                <div class="column-date justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
+                                <div class="column-comment">{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
+                                <div *ngIf="data.userCanEdit" class="column-delete">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                            </div>
+
+                            <div *ngFor="let settlement of settlementsArray.controls; let i=index">
+                                <ng-container formArrayName="paymentSettlements">
+                                    <ng-container [formGroupName]="i">
+                                        <div class="column-settlement-number">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr)?.value}}</div>
+                                        <div class="column-advance-amount">
+                                            <mat-form-field class="w-100">
+                                                <input name="amountSettled"
+                                                       matInput type="decimal" currencyMask
+                                                       [options]="{allowNegative: true, max: constants.MAX_VALUE, align:'right'}"
+                                                       [formControlName]="constants.FORM_CONTROL_NAMES.amountSettled"
+                                                       aria-label="value">
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="column-date">
+                                            <mat-form-field class="w-100">
                                                     <span [ngClass]="{'marked-as-required' : !inputSettlementDate.value}">
                                                         <input #inputSettlementDate name="settlementDate"
                                                                class="placeholder-required empty"
                                                                [formControlName]="constants.FORM_CONTROL_NAMES.settlementDate" matInput
                                                                [matDatepicker]="settlementDatePicker">
                                                     </span>
-                                                    <mat-error>
-                                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementDate)?.errors"
-                                                                                [messages]="constants.inputErrorMessages"
-                                                                                [args] = "{}"></jems-form-field-errors>
-                                                    </mat-error>
-                                                    <mat-datepicker-toggle matSuffix [for]="settlementDatePicker"></mat-datepicker-toggle>
-                                                    <mat-datepicker #settlementDatePicker></mat-datepicker>
-                                                </mat-form-field>
-                                            </div>
+                                                <mat-error>
+                                                    <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementDate)?.errors"
+                                                                            [messages]="constants.inputErrorMessages"
+                                                                            [args]="{}"></jems-form-field-errors>
+                                                </mat-error>
+                                                <mat-datepicker-toggle matSuffix [for]="settlementDatePicker"></mat-datepicker-toggle>
+                                                <mat-datepicker #settlementDatePicker></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
 
-                                            <div>
-                                                <mat-form-field class="w-100">
-                                                    <input matInput #settlementComment class="text-overflow-ellipsis"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.settlementComment"
-                                                           [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.value"/>
-                                                    <mat-hint [jemsHintFor]="settlementComment">
-                                                        <jems-text-hint [currentLength]="settlementComment.value.length" [maxLength]="500"></jems-text-hint>
-                                                    </mat-hint>
-                                                    <mat-error>
-                                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
-                                                    </mat-error>
-                                                </mat-form-field>
-                                            </div>
+                                        <div class="column-comment">
+                                            <mat-form-field class="w-100">
+                                                <input matInput #settlementComment class="text-overflow-ellipsis"
+                                                       [formControlName]="constants.FORM_CONTROL_NAMES.settlementComment"
+                                                       [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.value"/>
+                                                <mat-hint [jemsHintFor]="settlementComment">
+                                                    <jems-text-hint [currentLength]="settlementComment.value.length" [maxLength]="500"></jems-text-hint>
+                                                </mat-hint>
+                                                <mat-error>
+                                                    <jems-form-field-errors
+                                                            [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementComment)?.errors"
+                                                            [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
 
-                                            <div *ngIf="data.userCanEdit">
-                                                <button (click)="removeSettlement(i)"
-                                                        class="delete-button"
-                                                        color="accent" mat-icon-button
-                                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                                        type="button"
-                                                        aria-label="delete">
-                                                    <mat-icon>delete</mat-icon>
-                                                </button>
-                                            </div>
+                                        <div *ngIf="data.userCanEdit" class="column-delete">
+                                            <button (click)="removeSettlement(i)"
+                                                    class="delete-button"
+                                                    color="accent" mat-icon-button
+                                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                                    type="button"
+                                                    aria-label="delete">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
 
-                                        </ng-container>
                                     </ng-container>
-                                </div>
+                                </ng-container>
                             </div>
-                            <button *ngIf="data.userCanEdit && (settlementsArray.length < 25)" mat-stroked-button
-                                    class="mt-2"
-                                    (click)="addSettlement()">
-                                {{'payments.advance.payments.detail.settlement.add.button' | translate}}
-                            </button>
                         </div>
-                    </ng-container>
-                </div>
+                        <button *ngIf="data.userCanEdit && (settlementsArray.length < 25)" mat-stroked-button
+                                class="mt-2"
+                                (click)="addSettlement()">
+                            {{'payments.advance.payments.detail.settlement.add.button' | translate}}
+                        </button>
+                    </div>
+                </ng-container>
+            </div>
         </ng-container>
     </jems-form>
 
     <jems-advance-payments-attachments *ngIf="data.paymentDetail.id > 0"
-                                          [paymentId]="data.paymentDetail.id"></jems-advance-payments-attachments>
+                                       [paymentId]="data.paymentDetail.id"></jems-advance-payments-attachments>
 </jems-main-page-template>

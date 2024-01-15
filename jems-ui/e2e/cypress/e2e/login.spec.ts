@@ -1,15 +1,30 @@
 import {faker} from '@faker-js/faker';
-import user from '../fixtures/users.json';
-import updatedDefaultProgrammeRole from '../fixtures/api/roles/updatedDefaultProgrammeRole.json';
+import user from '@fixtures/users.json';
+import updatedDefaultProgrammeRole from '@fixtures/api/roles/updatedDefaultProgrammeRole.json';
+import controllerRole from '@fixtures/api/roles/controllerRole.json';
+import controllerInstitution from '@fixtures/api/control/institution.json';
+import verificationRole from '@fixtures/api/roles/verificationRole.json';
 
 context('Login tests', () => {
 
   before(() => {
     cy.loginByRequest(user.admin.email);
-    cy.createUser(user.applicantUser);
-    // change default programme role so that it can edit calls
+    
+    // prepare default programme role
     cy.updateRole(updatedDefaultProgrammeRole);
     cy.createUser(user.programmeUser);
+    
+    // prepare applicant user role
+    cy.createUser(user.applicantUser);
+    
+    // prepare controller role, user and institution
+    cy.createRole(controllerRole);
+    cy.createUser(user.controllerUser);
+    cy.createInstitution(controllerInstitution);
+    
+    // prepare verification role and user
+    cy.createRole(verificationRole);
+    cy.createUser(user.verificationUser);
     cy.logoutByRequest();
   });
 
@@ -53,7 +68,7 @@ context('Login tests', () => {
   it('TB-399 Applicant can register', () => {
 
     cy.contains('Create a new account').click();
-    const id = faker.random.alphaNumeric(5);
+    const id = faker.string.alphanumeric(5);
     const email = `cypress1.${id}@Applicant.eu`;
 
     cy.contains('div', 'First name').find('input').type('Cypress');

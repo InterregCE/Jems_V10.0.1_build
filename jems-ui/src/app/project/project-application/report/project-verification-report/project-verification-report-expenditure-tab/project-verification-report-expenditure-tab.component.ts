@@ -14,7 +14,7 @@ import {
   ExpenditureParkingMetadataDTO,
   ProjectPartnerReportExpenditureItemDTO,
   ProjectPartnerReportLumpSumDTO,
-  ProjectPartnerReportProcurementDTO,
+  ProjectPartnerReportProcurementDTO, ProjectReportDTO,
   ProjectReportVerificationExpenditureLineDTO,
   ProjectReportVerificationExpenditureLineUpdateDTO,
   ProjectReportVerificationRiskBasedDTO,
@@ -29,6 +29,9 @@ import {
   ExpenditureItemParkedByChipComponent,
   ExpenditureParkedByEnum,
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
+import {
+  ProjectReportDetailPageStore
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-project-verification-report-expenditure-tab',
@@ -96,6 +99,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
     aggregatedExpenditures: ProjectReportVerificationExpenditureLineDTO[];
     typologyOfErrors: TypologyErrorsDTO[];
     isEditable: boolean;
+    projectReport: ProjectReportDTO;
   }>;
 
   constructor(
@@ -104,7 +108,8 @@ export class ProjectVerificationReportExpenditureTabComponent {
     private formBuilder: FormBuilder,
     private formService: FormService,
     private customTranslatePipe: CustomTranslatePipe,
-    private translateByInputLanguagePipe: TranslateByInputLanguagePipe
+    private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
+    private projectReportDetailStore: ProjectReportDetailPageStore
   ) {
     this.initForm();
 
@@ -113,14 +118,16 @@ export class ProjectVerificationReportExpenditureTabComponent {
       this.expenditureStore.riskBasedVerification$,
       this.expenditureStore.aggregatedExpenditures$,
       this.expenditureStore.typologyOfErrors$,
-      this.expenditureStore.isEditable$
+      this.expenditureStore.isEditable$,
+      this.projectReportDetailStore.projectReport$
     ]).pipe(
-      map(([projectId, riskBasedVerification, aggregatedExpenditures, typologyOfErrors, isEditable]) => ({
+      map(([projectId, riskBasedVerification, aggregatedExpenditures, typologyOfErrors, isEditable, projectReport]) => ({
         projectId,
         riskBasedVerification,
         aggregatedExpenditures,
         typologyOfErrors,
-        isEditable
+        isEditable,
+        projectReport
       })),
       tap(data => this.resetForm(data.aggregatedExpenditures)),
     );
@@ -283,6 +290,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
       amountAfterVerification: this.formBuilder.control(verificationExpenditure.amountAfterVerification),
       typologyOfErrorId: this.formBuilder.control(verificationExpenditure.typologyOfErrorId),
       parked: this.formBuilder.control(verificationExpenditure.parked),
+      parkedOn: this.formBuilder.control(verificationExpenditure.parkedOn),
       parkingMetadata: this.formBuilder.control(verificationExpenditure.parkingMetadata),
       verificationComment: this.formBuilder.control(verificationExpenditure.verificationComment, Validators.maxLength(this.constants.MAX_LENGTH_VERIFY_COMMENT)),
     });
@@ -315,6 +323,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
         this.patchVerificationValue(item, this.VERIFICATION_CONTROL.typologyOfErrorId, verification?.typologyOfErrorId);
         this.patchVerificationValue(item, this.VERIFICATION_CONTROL.parked, verification?.parked);
         this.patchVerificationValue(item, this.VERIFICATION_CONTROL.verificationComment, verification?.verificationComment);
+        this.patchVerificationValue(item, this.VERIFICATION_CONTROL.parkedOn, verification?.parkedOn);
       });
 
   }
@@ -422,11 +431,16 @@ export class ProjectVerificationReportExpenditureTabComponent {
       : this.customTranslatePipe.transform('common.not.applicable.option') as string);
   }
 
-  getTooltipForParkedExpenditures(item: AbstractControl): String {
+  getTooltipForParkedExpenditures(item: AbstractControl, projectReport: ProjectReportDTO): String {
     if (this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked)) {
-      return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message');
-    } else {return '';}
+      return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message.parked.by.controller');
+    } else if (this.isParkedBeforeVerificationReopening(item, projectReport)) {
+      return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message.parked.before.reopening');
+    } else {
+      return '';
+    }
   }
+
   getParkedByControlOrJsMa(item: AbstractControl): boolean {
     return this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked) || this.verificationItem(item, this.VERIFICATION_CONTROL.parked);
   }
@@ -439,6 +453,17 @@ export class ProjectVerificationReportExpenditureTabComponent {
   }
   isExpenditureParkedOrFormDisabled(item: AbstractControl, isFormEditable: boolean): boolean {
     return this.getParkedByControlOrJsMa(item) || !isFormEditable;
+  }
+
+  isParkedBeforeVerificationReopening(item: AbstractControl, projectReport: ProjectReportDTO): boolean {
+    if (projectReport.status === ProjectReportDTO.StatusEnum.ReOpenFinalized) {
+      const parked = this.verification(item)?.get(this.VERIFICATION_CONTROL.parked)?.value;
+      if (parked) {
+        const parkedOn = this.verification(item)?.get(this.VERIFICATION_CONTROL.parkedOn)?.value as Date;
+        return parkedOn < projectReport.verificationLastReOpenDate;
+      }
+    }
+    return false;
   }
 
   private setAndDisablePartOfSample(item: FormControl) {

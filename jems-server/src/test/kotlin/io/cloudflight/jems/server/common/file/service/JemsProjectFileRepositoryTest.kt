@@ -23,7 +23,9 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -80,10 +82,25 @@ class JemsProjectFileRepositoryTest : UnitTest() {
             description = "",
             indexedPath = "/our/indexed/path/",
         )
+
+        private fun metadataFile(id: Long, bucket: String = "", location: String = "") = JemsFileMetadataEntity(
+            id = id,
+            projectId = PROJECT_ID,
+            partnerId = null,
+            path = "",
+            minioBucket = bucket,
+            minioLocation = location,
+            name = "word.docx",
+            type = JemsFileType.ContractInternal,
+            size = 400L,
+            user = mockk(),
+            uploaded = ZonedDateTime.now(),
+            description = "old desc",
+        )
     }
 
     @MockK
-    lateinit var reportFileRepository: JemsFileMetadataRepository
+    lateinit var fileMetadataRepository: JemsFileMetadataRepository
     @MockK
     lateinit var minioStorage: MinioStorage
     @MockK
@@ -98,7 +115,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(reportFileRepository, minioStorage, userRepository, projectRepository, auditPublisher)
+        clearMocks(fileMetadataRepository, minioStorage, userRepository, projectRepository, auditPublisher)
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction (type {0})")
@@ -106,12 +123,15 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "AuditControl",
+
         "ProjectReport",
         "ProjectResult",
         "ActivityProjectReport",
         "DeliverableProjectReport",
         "OutputProjectReport",
         "VerificationDocument",
+        "VerificationCertificate",
 
         "PartnerReport",
         "Activity",
@@ -145,7 +165,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         every { userRepository.getById(USER_ID) } returns userEntity
 
         val slotFileEntity = slot<JemsFileMetadataEntity>()
-        every { reportFileRepository.save(capture(slotFileEntity)) } returnsArgument 0
+        every { fileMetadataRepository.save(capture(slotFileEntity)) } returnsArgument 0
 
         every { projectRepository.getById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
@@ -183,12 +203,15 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "AuditControl",
+
         "ProjectReport",
         "ProjectResult",
         "ActivityProjectReport",
         "DeliverableProjectReport",
         "OutputProjectReport",
         "VerificationDocument",
+        "VerificationCertificate",
 
         "PartnerReport",
         "Activity",
@@ -218,21 +241,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        val file = JemsFileMetadataEntity(
-            id = 85L,
-            projectId = PROJECT_ID,
-            partnerId = null,
-            path = "",
-            minioBucket = "",
-            minioLocation = "",
-            name = "word.docx",
-            type = JemsFileType.ContractInternal,
-            size = 400L,
-            user = mockk(),
-            uploaded = ZonedDateTime.now(),
-            description = "old desc",
-        )
-        every { reportFileRepository.findById(85L) } returns Optional.of(file)
+        val file = metadataFile(85L)
+        every { fileMetadataRepository.findById(85L) } returns Optional.of(file)
         every { projectRepository.getById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
@@ -249,23 +259,9 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
     @Test
     fun delete() {
-        val file = JemsFileMetadataEntity(
-            id = 96L,
-            projectId = PROJECT_ID,
-            partnerId = null,
-            path = "",
-            minioBucket = "file-bucket",
-            minioLocation = "/sample/location",
-            name = "powerpoint.pptx",
-            type = JemsFileType.Deliverable,
-            size = 324L,
-            user = mockk(),
-            uploaded = ZonedDateTime.now(),
-            description = "",
-        )
-
+        val file = metadataFile(96L, "file-bucket", "/sample/location")
         every { minioStorage.deleteFile("file-bucket", "/sample/location") } answers { }
-        every { reportFileRepository.delete(file) } answers { }
+        every { fileMetadataRepository.delete(file) } answers { }
         every { projectRepository.getById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
@@ -273,12 +269,30 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         service.delete(file)
 
         verify(exactly = 1) { minioStorage.deleteFile("file-bucket", "/sample/location") }
-        verify(exactly = 1) { reportFileRepository.delete(file) }
+        verify(exactly = 1) { fileMetadataRepository.delete(file) }
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROJECT_FILE_DELETED,
             project = AuditProject(PROJECT_ID.toString(), "custom-id", "acronym"),
             entityRelatedId = 96L,
             description = "/sample/location",
         ))
+    }
+
+    @Test
+    fun deleteBatch() {
+        val files = listOf(
+            metadataFile(77L, "file-bucket", "file/77"),
+            metadataFile(78L, "file-bucket", "file/78"),
+            metadataFile(79L, "file-bucket", "file/79"),
+        )
+
+        every { minioStorage.deleteFiles("file-bucket", files.map { it.minioLocation }) } just runs
+        every { fileMetadataRepository.deleteAll(files) } just runs
+        service.deleteBatch(files)
+
+        verify(exactly = 1) {
+            minioStorage.deleteFiles("file-bucket", files.map { it.minioLocation })
+            fileMetadataRepository.deleteAll(files)
+        }
     }
 }

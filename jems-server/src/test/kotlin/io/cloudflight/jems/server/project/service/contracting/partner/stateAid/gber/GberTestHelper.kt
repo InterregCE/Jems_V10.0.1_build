@@ -43,7 +43,7 @@ val addDates = listOf(
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 2, entryIntoForceDate = date2),
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 3, entryIntoForceDate = date3),
 )
-val expectedDateOfGrantingAid = addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate
+val expectedDateOfGrantingAid = addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate
 
 val expectedEmptyGberSectionModel = ContractingPartnerStateAidGberSection(
     partnerId = PARTNER_ID,

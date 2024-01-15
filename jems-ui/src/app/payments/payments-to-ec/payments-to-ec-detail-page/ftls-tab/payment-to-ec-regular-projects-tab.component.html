@@ -1,0 +1,47 @@
+<div jemsFormLayout>
+    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
+    <div>
+        <div>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.1' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.description.2' | translate }}</div>
+    </div>
+    <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
+        <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
+    </ng-container>
+</div>
+
+<div class="mt-5">
+    <h3>{{ 'payments.to.ec.detail.ftls.tab.title' | translate }}</h3>
+    <div class="mb-2">
+        <div>{{ 'payments.to.ec.detail.ftls.tab.description.1' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.2' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.3' | translate }}</div>
+        <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.4' | translate }}</div>
+    </div>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <ng-container *ngIf="data$ | async as data">
+        <jems-alert [show]="success$ | async"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+        </jems-alert>
+
+        <jems-payment-to-ec-select-table [data]="data"
+                                         [newSort]="pageStore.ftlsNewSort$"
+                                         [newIndex]="pageStore.ftlsNewPageIndex$"
+                                         [newSize]="pageStore.ftlsNewPageSize$"
+                                         [paymentType]="PaymentTypeEnum.FTLS"
+                                         (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
+                                         (submitPayment)="updateLinkedPayment($event.paymentId, $event.updateDto)"
+        ></jems-payment-to-ec-select-table>
+
+        <jems-alert [show]="data.paymentToEcLinking.content?.length === 0" [type]="Alert.INFO">
+            <p>{{ 'payments.to.ec.detail.ftls.table.empty' | translate }}</p>
+        </jems-alert>
+    </ng-container>
+    <jems-regular-payments-not-flagged-9495></jems-regular-payments-not-flagged-9495>
+</div>

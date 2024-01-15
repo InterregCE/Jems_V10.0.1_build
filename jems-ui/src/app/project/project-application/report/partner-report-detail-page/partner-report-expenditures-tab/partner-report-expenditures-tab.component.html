@@ -1,7 +1,12 @@
 <div *ngIf="data$ | async as data">
     <jems-form (save)="updateReportExpenditures()"
                (discard)="refreshListOfExpenditures()">
-        <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
+        <h3>{{'project.application.partner.report.expenditures.title' | translate}}
+
+            <jems-context-info infoPosition="right"
+                               infoText="{{'project.application.partner.report.expenditures.title.infobubble.description' | translate}}">
+            </jems-context-info>
+        </h3>
         <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
 
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
@@ -478,7 +483,7 @@
 
                                 <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).errors" jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.totalValueInvoice"
-                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           [options]="{min: constants.NEGATIVE_MIN_VALUE, max: constants.MAX_VALUE, align: 'right', allowNegative: true}"
                                            currencyMask matInput
                                            type="decimal" #totalValueInvoiceInput>
                                 </mat-form-field>
@@ -574,7 +579,7 @@
 
                                 <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.declaredAmount).errors" jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmount"
-                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           [options]="{min: constants.NEGATIVE_MIN_VALUE, max: constants.MAX_VALUE, align: 'right', allowNegative: true}"
                                            (keyup)="updateAmountInEur(i, control.value.declaredAmount)"
                                            currencyMask matInput #declaredAmountInput
                                            type="decimal">
@@ -652,7 +657,7 @@
                                 <mat-form-field *ngIf="expenditureFormIndex === i" jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmountInEur"
                                            [readonly]="true"
-                                           [options]="{align: 'right'}"
+                                           [options]="{align: 'right', allowNegative: true}"
                                            currencyMask matInput
                                            type="decimal">
                                 </mat-form-field>

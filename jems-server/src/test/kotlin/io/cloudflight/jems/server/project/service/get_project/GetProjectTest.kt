@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstit
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
@@ -75,6 +76,9 @@ internal class GetProjectTest : UnitTest() {
 
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
+    lateinit var contractingMonitoringPersistence: ContractingMonitoringPersistence
 
     @MockK
     lateinit var securityService: SecurityService

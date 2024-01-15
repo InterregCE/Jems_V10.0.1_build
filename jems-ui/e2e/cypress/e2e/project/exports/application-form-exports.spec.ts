@@ -10,7 +10,7 @@ const baselinePath = '/project/exports/application-form/';
 
 const frontPageProjectIdCoordinates = {x0: 387, x1: 440, y0: 324, y1: 343};
 const frontPageProjectAcronymCoordinates = {x0: 260, x1: 580, y0: 373, y1: 404};
-const frontPageDateCoordinates = {x0: 400, x1: 560, y0: 515, y1: 535};
+const frontPageDateCoordinates = {x0: 250, x1: 570, y0: 515, y1: 535};
 const a1ProjectIdCoordinates = {x0: 400, x1: 450, y0: 207, y1: 224};
 const a1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 370, y1: 390};
 const version1A1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 247, y1: 267};

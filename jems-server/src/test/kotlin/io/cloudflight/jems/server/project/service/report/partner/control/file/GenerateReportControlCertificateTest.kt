@@ -31,14 +31,14 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.io.IOException
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import java.io.IOException
+import java.time.ZonedDateTime
 
 class GenerateReportControlCertificateTest : UnitTest() {
 
@@ -124,7 +124,6 @@ class GenerateReportControlCertificateTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-
         every { securityService.currentUser } returns localControllerUser
         every { securityService.getUserIdOrThrow() } returns localControllerUser.user.id
         clearMocks(auditPublisher)

@@ -7,10 +7,9 @@ import io.cloudflight.jems.server.call.service.translation.deleteTranslationFile
 import io.cloudflight.jems.server.call.service.translation.downloadTranslationFile.DownloadCallTranslationFileInteractor
 import io.cloudflight.jems.server.call.service.translation.getTranslation.GetTranslationInteractor
 import io.cloudflight.jems.server.call.service.translation.uploadTranslationFile.UploadCallTranslationFileInteractor
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import org.springframework.core.io.ByteArrayResource
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -27,13 +26,7 @@ class CallTranslationConfigurationController(
         getTranslation.get(callId).toDto()
 
     override fun downloadTranslationFile(callId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        with(downloadTranslationFile.download(callId, fileId = fileId)) {
-            ResponseEntity.ok()
-                .contentLength(this.second.size.toLong())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${this.first}\"")
-                .body(ByteArrayResource(this.second))
-        }
+        downloadTranslationFile.download(callId, fileId = fileId).toResponseFile()
 
     override fun uploadTranslationFile(
         callId: Long,

@@ -20,9 +20,13 @@ class ContractingReportingPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> {
-        val deadlineEntities = projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId)
-        val linkedReportsByDeadline = projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId).groupBy { it.deadline?.id }
-        return deadlineEntities.map { deadline -> deadline.toModel(linkedReportsByDeadline[deadline.id]) }
+        val linkedReportsByDeadline = projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId)
+            .groupBy { it.deadline!!.id }
+
+        return projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId)
+            .map { deadline ->
+                deadline.toModel(reports = linkedReportsByDeadline[deadline.id] ?: emptyList())
+            }
     }
 
 

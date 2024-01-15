@@ -14,6 +14,8 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
         partnerId: Long,
     ): MutableList<PartnerReportExpenditureCostEntity>
 
+    fun findAllByPartnerReportIdOrderById(reportId: Long, pageable: Pageable): Page<PartnerReportExpenditureCostEntity>
+
     fun findAllByIdIn(ids: Set<Long>, pageable: Pageable): Page<PartnerReportExpenditureCostEntity>
 
     fun findAllByPartnerReportProjectReportId(projectReportId: Long): List<PartnerReportExpenditureCostEntity>
@@ -23,4 +25,6 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
     fun existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 
     fun existsByPartnerReportPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean
+
+    fun existsByProcurementId(procurementId: Long): Boolean
 }

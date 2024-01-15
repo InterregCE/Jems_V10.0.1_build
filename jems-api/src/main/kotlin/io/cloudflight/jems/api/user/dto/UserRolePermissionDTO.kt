@@ -24,9 +24,11 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen"),
     ProjectReportingProjectView("ProjectReportingProjectView"),
     ProjectReportingProjectEdit("ProjectReportingProjectEdit"),
+    ProjectReportingProjectReOpen("ProjectReportingProjectReOpen"),
     ProjectReportingVerificationProjectView("ProjectReportingVerificationProjectView"),
     ProjectReportingVerificationProjectEdit("ProjectReportingVerificationProjectEdit"),
     ProjectReportingVerificationFinalize("ProjectReportingVerificationFinalize"),
+    ProjectReportingVerificationReOpen("ProjectReportingVerificationReOpen"),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl"),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),
@@ -88,10 +90,17 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView"),
     ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit"),
+
+    ProjectMonitorAuditAndControlView("ProjectMonitorAuditAndControlView"),
+    ProjectMonitorAuditAndControlEdit("ProjectMonitorAuditAndControlEdit"),
+    ProjectMonitorCloseAuditControl("ProjectMonitorCloseAuditControl"),
+    ProjectMonitorCloseAuditControlCorrection("ProjectMonitorCloseAuditControlCorrection"),
+    ProjectMonitorReOpenAuditControl("ProjectMonitorReOpenAuditControl"),
     // endregion Monitor
 
     // region top navigation
     PartnerReportsRetrieve("PartnerReportsRetrieve"),
+    ProjectReportsRetrieve("ProjectReportsRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
     NotificationsRetrieve("NotificationsRetrieve"),
@@ -119,6 +128,8 @@ enum class UserRolePermissionDTO(val key: String) {
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
     PaymentsToEcRetrieve("PaymentsToEcRetrieve"),
     PaymentsToEcUpdate("PaymentsToEcUpdate"),
+    PaymentsAuditRetrieve("PaymentsAuditRetrieve"),
+    PaymentsAuditUpdate("PaymentsAuditUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

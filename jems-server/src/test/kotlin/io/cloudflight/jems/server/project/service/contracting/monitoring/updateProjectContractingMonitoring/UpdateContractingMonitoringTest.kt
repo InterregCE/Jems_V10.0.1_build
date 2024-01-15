@@ -2,16 +2,15 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
-import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -35,6 +34,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -65,9 +66,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
         private val project = ProjectFull(
             id = projectId,
-            customIdentifier = "identifier",
+            customIdentifier = "TSTCM",
             callSettings = mockk(),
-            acronym = "acronym",
+            acronym = "TCM",
             applicant = mockk(),
             projectStatus = mockk(),
             duration = 11
@@ -148,15 +149,26 @@ class UpdateContractingMonitoringTest : UnitTest() {
             amountApprovedPerPartner = BigDecimal.ONE
         )
 
-        private fun partnerBudget(partnerId: Long, total: BigDecimal): PartnerBudget {
-            val mock = mockk<PartnerBudget>()
-            every { mock.partner.id } returns partnerId
-            every { mock.totalCosts } returns total
-            return mock
+        private fun partnerBudget(partnerId: Long, total: BigDecimal, spf: BigDecimal): PartnerBudget {
+            val partner = mockk<ProjectPartnerSummary>()
+            every { partner.id } returns partnerId
+            return PartnerBudget(
+                partner = partner,
+                staffCosts = mockk(),
+                travelCosts = mockk(),
+                externalCosts = mockk(),
+                equipmentCosts = mockk(),
+                infrastructureCosts = mockk(),
+                officeAndAdministrationCosts = mockk(),
+                otherCosts = mockk(),
+                lumpSumContribution = mockk(),
+                spfCosts = spf,
+                totalCosts = total,
+            )
         }
 
         val fund = mockk<ProgrammeFund>().also {
-            every { it.id } returns 4452L
+            every { it.id } returns 1L
         }
 
         private val partner_52_coFin = ProjectPartnerCoFinancingAndContribution(
@@ -165,9 +177,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectPartnerCoFinancing(ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal.valueOf(85)),
             ),
             partnerContributions = listOf(
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Public, BigDecimal.valueOf(3750L, 2), true),
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
-                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Private, BigDecimal.valueOf(4750L, 2), false),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.Public, BigDecimal.valueOf(3755L, 2), true),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatus.Private, BigDecimal.valueOf(4750L, 2), false),
             ),
             partnerAbbreviation = "",
         )
@@ -282,11 +294,11 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
-        val payments = slot<Map<PaymentGroupingId, PaymentToCreate>>()
+        val payments = slot<Map<PaymentGroupingId, PaymentFtlsToCreate>>()
         every { paymentPersistence.saveFTLSPayments(projectId, capture(payments)) } answers { }
         every { getProjectBudget.getBudget(projectId, version) } returns listOf(
-            partnerBudget(partnerId = 52L, BigDecimal.valueOf(150L)),
-            partnerBudget(partnerId = 53L, BigDecimal.valueOf(2112L, 2)),
+            partnerBudget(partnerId = 52L, BigDecimal.valueOf(200L), spf = BigDecimal.valueOf(50L)),
+            partnerBudget(partnerId = 53L, BigDecimal.valueOf(2112L, 2), BigDecimal.ZERO),
         )
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(52L, version) } returns partner_52_coFin
         val payContribs = slot<Collection<ContributionMeta>>()
@@ -361,13 +373,17 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
             mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                    PaymentToCreate(
-                        2L,
-                        listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
-                        BigDecimal.ONE,
-                        "identifier",
-                        "acronym"
-                    )
+                PaymentFtlsToCreate(
+                    programmeLumpSumId = 2L,
+                    partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
+                    amountApprovedPerFund = BigDecimal.ONE,
+                    projectCustomIdentifier = "TSTCM",
+                    projectAcronym = "TCM",
+                    defaultPartnerContribution = BigDecimal.valueOf(85.35),
+                    defaultOfWhichPublic = BigDecimal.valueOf(25.13),
+                    defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
+                    defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
+                )
             )
         )
         assertThat(payContribs.captured).containsExactly(
@@ -377,7 +393,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 programmeLumpSumId = 2L,
                 orderNr = 1,
                 partnerContribution = BigDecimal.valueOf(8535L, 2),
-                publicContribution = BigDecimal.valueOf(2510L, 2),
+                publicContribution = BigDecimal.valueOf(2513L, 2),
                 automaticPublicContribution = BigDecimal.valueOf(2844L, 2),
                 privateContribution = BigDecimal.valueOf(3179L, 2),
             )
@@ -449,7 +465,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
-        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
+        every { paymentPersistence.deleteFTLSByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
         val slotDeleted = slot<Set<Int>>()
         every { paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, capture(slotDeleted)) } answers { }

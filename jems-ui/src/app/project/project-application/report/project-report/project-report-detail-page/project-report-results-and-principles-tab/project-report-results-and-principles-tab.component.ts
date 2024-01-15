@@ -2,8 +2,12 @@ import {Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -22,6 +26,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '@common/services/number.service';
+import {ReportUtil} from '@project/common/report-util';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-report-results-and-principles-tab',
@@ -42,6 +48,8 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     }),
   });
 
+  ReportUtil = ReportUtil;
+  ProjectUtil = ProjectUtil;
   isUploadDone = false;
   selection = new SelectionModel<string>(true, []);
   selectedContributionPrincipleDevelopment = '';
@@ -53,6 +61,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     projectId: number;
     projectReportId: number;
     reportEditable: boolean;
+    reopenedLimited: boolean;
     resultsAndPrinciples: ProjectReportResultPrincipleDTO;
   }>;
 
@@ -66,19 +75,19 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     protected translationService: TranslateService,
   ) {
     this.data$ = combineLatest([
-      this.projectStore.projectId$,
-      this.projectReportDetailPageStore.projectReportId$,
+      this.projectReportDetailPageStore.projectReport$,
       this.projectReportDetailPageStore.reportEditable$,
       this.resultsAndPrinciplesTabStore.resultsAndPrinciples$
     ]).pipe(
-      map(([projectId, projectReportId, reportEditable, resultsAndPrinciples]) => ({
-        projectId,
-        projectReportId,
+      map(([projectReport, reportEditable, resultsAndPrinciples]) => ({
+        projectId: projectReport.projectId,
+        projectReportId: projectReport.id,
         reportEditable,
-        resultsAndPrinciples
+        resultsAndPrinciples,
+        reopenedLimited: ReportUtil.isProjectReportLimitedReopened(projectReport.status)
       })),
       tap(data => this.formService.init(this.form, of(data.reportEditable))),
-      tap(data => this.resetForm(data.resultsAndPrinciples, data.reportEditable)),
+      tap(data => this.resetForm(data.resultsAndPrinciples, data.reportEditable, data.reopenedLimited)),
     );
   }
 
@@ -128,7 +137,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
       .subscribe(() => this.results.at(index).patchValue({attachment: null}));
   }
 
-  resetForm(resultsAndPrinciples: ProjectReportResultPrincipleDTO, reportEditable: boolean) {
+  resetForm(resultsAndPrinciples: ProjectReportResultPrincipleDTO, reportEditable: boolean, reopenedLimited: boolean) {
     const attachments: [JemsFileMetadataDTO] = this.results.value.map((result: any) => result.attachment);
     this.initialCumulativeValues = resultsAndPrinciples.projectResults.map((result: ProjectReportProjectResultDTO) => result.cumulativeValue);
     this.results.clear();
@@ -142,7 +151,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
         baseline: this.formBuilder.control({value: resultDTO.baseline, disabled: true}),
         periodDetail: this.formBuilder.control(resultDTO.periodDetail),
         targetValue: this.formBuilder.control({value: resultDTO.targetValue, disabled: true}),
-        achievedInReportingPeriod: this.formBuilder.control({value: resultDTO.achievedInReportingPeriod, disabled: !reportEditable}),
+        achievedInReportingPeriod: this.formBuilder.control({value: resultDTO.achievedInReportingPeriod, disabled: !reportEditable || reopenedLimited}),
         cumulativeValue: this.formBuilder.control({value: resultDTO.cumulativeValue + resultDTO.achievedInReportingPeriod, disabled: true}),
         description: this.formBuilder.control(resultDTO.description ?? [], [Validators.maxLength(2000)]),
         measurementUnit: this.formBuilder.control({value: resultDTO.measurementUnit, disabled: true}),
@@ -187,11 +196,4 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     ));
   }
 
-  getPeriodArguments(period: any): { [key: string]: number } {
-    return {
-      periodNumber: period?.number,
-      start: period?.start,
-      end: period?.end
-    };
-  }
 }

@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.payments.service.paymentInstallmentConfirmed
 import io.cloudflight.jems.server.payments.service.paymentInstallmentDeleted
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.toModelList
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,8 +24,9 @@ class UpdatePaymentInstallments(
     private val paymentPersistence: PaymentPersistence,
     private val securityService: SecurityService,
     private val validator: PaymentInstallmentsValidator,
-    private val auditPublisher: ApplicationEventPublisher
-): UpdatePaymentInstallmentsInteractor {
+    private val auditPublisher: ApplicationEventPublisher,
+    private val auditControlCorrectionPersistence: AuditControlCorrectionPersistence,
+) : UpdatePaymentInstallmentsInteractor {
 
     @CanUpdatePayments
     @Transactional
@@ -33,7 +35,8 @@ class UpdatePaymentInstallments(
         paymentId: Long,
         paymentDetail: PaymentDetailDTO
     ): PaymentDetail {
-        validatePaymentPartners(paymentId, paymentDetail.partnerPayments)
+        validatePartnerPayments(paymentId, paymentDetail.partnerPayments)
+        validateCorrections(paymentDetail)
         for ((index, partnerPayment) in paymentDetail.partnerPayments.withIndex()) {
             val installments = partnerPayment.installments.toModelList()
             val partnerId = partnerPayment.partnerId
@@ -70,21 +73,23 @@ class UpdatePaymentInstallments(
             ).also {
                 deleteInstallments.forEach { deletedInstallment ->
                     val instNr = savedInstallments.indexOfFirst { it.id == deletedInstallment.id }
-                    auditPublisher.publishEvent(paymentInstallmentDeleted(this, payment, partner!!, instNr +1))
+                    auditPublisher.publishEvent(paymentInstallmentDeleted(this, payment, partner!!, instNr + 1))
                 }
                 installments.forEachIndexed { instNr, installment ->
                     val oldInstallment = savedInstallments.find { installment.id == it.id }
 
                     // authorised
                     if (installment.isSavePaymentInfo == true &&
-                        (oldInstallment == null || oldInstallment.isSavePaymentInfo != true)) {
-                        auditPublisher.publishEvent(paymentInstallmentAuthorized(this, payment, partner!!, installment,instNr +1))
+                        (oldInstallment == null || oldInstallment.isSavePaymentInfo != true)
+                    ) {
+                        auditPublisher.publishEvent(paymentInstallmentAuthorized(this, payment, partner!!, installment, instNr + 1))
                     }
 
                     // get all that were confirmed
                     if (installment.isPaymentConfirmed == true &&
-                        (oldInstallment == null || oldInstallment.isPaymentConfirmed != true)) {
-                        auditPublisher.publishEvent(paymentInstallmentConfirmed(this, payment, partner!!, installment,instNr +1))
+                        (oldInstallment == null || oldInstallment.isPaymentConfirmed != true)
+                    ) {
+                        auditPublisher.publishEvent(paymentInstallmentConfirmed(this, payment, partner!!, installment, instNr + 1))
                     }
                 }
             }
@@ -121,11 +126,27 @@ class UpdatePaymentInstallments(
         } // else: unselected - leave null for update
     }
 
-    private fun validatePaymentPartners(paymentId: Long, paymentPartners: List<PaymentPartnerDTO>) {
+    private fun validatePartnerPayments(paymentId: Long, partnerPayment: List<PaymentPartnerDTO>) {
         paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId).also { paymentPartnerIds ->
-            if (paymentPartners.any { it.id !in paymentPartnerIds }) {
+            if (partnerPayment.any { it.id !in paymentPartnerIds }) {
                 throw PaymentPartnerNotValidException()
             }
         }
+    }
+
+    private fun validateCorrections(paymentDetail: PaymentDetailDTO) {
+        val correctionIdsByPartnerId = auditControlCorrectionPersistence
+            .getAvailableCorrectionsForPayments(projectId = paymentDetail.projectId)
+            .associateBy({ it.partnerId }, { it.corrections.mapTo(HashSet()) { it.id } })
+
+        val invalidCorrectionIds = paymentDetail.partnerPayments.map {
+            val correctionIds = it.installments.mapNotNullTo(HashSet()) { it.correction?.id }
+            val allowedCorrectionIds = correctionIdsByPartnerId[it.partnerId] ?: emptySet()
+
+            return@map Pair(it.partnerId, correctionIds.minus(allowedCorrectionIds))
+        }.filter { it.second.isNotEmpty() }.toMap()
+
+        if (invalidCorrectionIds.isNotEmpty())
+            throw CorrectionsNotValidException(invalidCorrectionIds)
     }
 }

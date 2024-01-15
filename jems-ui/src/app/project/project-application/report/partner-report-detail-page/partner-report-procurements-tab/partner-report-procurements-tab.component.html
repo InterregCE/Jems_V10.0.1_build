@@ -1,11 +1,15 @@
 <jems-form *ngIf="data$ | async as data">
-    <h3>{{ 'project.application.partner.report.procurements.title' | translate }}</h3>
+    <h3>{{ 'project.application.partner.report.procurements.title' | translate }}
+        <jems-context-info infoPosition="right"
+                           infoText="{{'project.application.partner.report.procurements.title.infobubble.description'| translate }}">
+        </jems-context-info>
+    </h3>
     <p>{{ 'project.application.partner.report.procurements.subtitle' | translate }}</p>
 
     <a *ngIf="data.isReportEditable" [disabled]="data.limitReached" class="mt-3"
        mat-raised-button color="primary"
        matTooltip="{{ data.limitReached ? ('project.application.partner.report.procurements.maximum.reached' | translate) : null }}"
-       [routerLink]="data.limitReached ? [] : [0]" [class.move-link-into-paginator]="data.procurements.totalElements"
+       [routerLink]="data.limitReached ? [] : [0]"
        aria-label="add">
         <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.add' | translate }}
     </a>
@@ -15,16 +19,12 @@
         <p>{{ 'project.application.partner.report.procurements.tab.no.data' | translate }}</p>
     </jems-alert>
 
-    <ng-container *ngIf="data.procurements.totalElements">
-    <jems-paginator
-            [length]="data.procurements.totalElements"
-            [currentPageIndex]="data.procurements.pageable.pageNumber"
-            [currentPageSize]="data.procurements.pageable.pageSize"
-            (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
-            (pageSizeChanged)="pageStore.newPageSize$.next($event)">
-    </jems-paginator>
+    <jems-alert *ngIf="error$ | async as error" [show]="!!error.i18nMessage?.i18nKey" [type]="Alert.ERROR" jemsFormLayout>
+        <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+    </jems-alert>
 
-    <mat-table matSort (matSortChange)="pageStore.newSort$.next($event)" [dataSource]="dataSource">
+    <ng-container *ngIf="data.procurements.totalElements">
+    <mat-table matSort (matSortChange)="pageStore.newSort$.next($event)" [dataSource]="dataSource" class="mt-3">
 
         <ng-container matColumnDef="reportNumber">
             <mat-header-cell *matHeaderCellDef mat-sort-header="reportEntity.id" class="text-left">

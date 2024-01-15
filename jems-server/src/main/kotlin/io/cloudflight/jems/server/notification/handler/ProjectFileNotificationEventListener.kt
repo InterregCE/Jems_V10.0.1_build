@@ -4,8 +4,10 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
@@ -26,7 +28,9 @@ data class ProjectFileChangeEvent(
 data class ProjectFileNotificationEventListener(
     private val notificationProjectService: GlobalProjectNotificationServiceInteractor,
     private val reportPersistence: ProjectPartnerReportPersistence,
-    private val projectReportPersistence: ProjectReportPersistence
+    private val projectReportPersistence: ProjectReportPersistence,
+    private val projectPersistence: ProjectPersistence,
+    private val reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
 ) {
 
     @EventListener
@@ -52,6 +56,9 @@ data class ProjectFileNotificationEventListener(
 
         if (reportId != null) {
             with (reportPersistence.getPartnerReportByIdUnsecured(reportId)) {
+                val periods = reportIdentificationPersistence.getAvailablePeriods(partnerId, id)
+                val period = periods.firstOrNull { it.number == periodNumber }
+
                 variables.putAll(mapOf(
                     NotificationVariable.PartnerId to partnerId,
                     NotificationVariable.PartnerRole to partnerRole,
@@ -59,6 +66,9 @@ data class ProjectFileNotificationEventListener(
                     NotificationVariable.PartnerAbbreviation to partnerAbbreviation,
                     NotificationVariable.PartnerReportId to id,
                     NotificationVariable.PartnerReportNumber to reportNumber,
+                    NotificationVariable.ReportingPeriodNumber to (period?.number ?: ""),
+                    NotificationVariable.ReportingPeriodStart to (period?.start ?: ""),
+                    NotificationVariable.ReportingPeriodEnd to (period?.end ?: "")
                 ))
             }
         }
@@ -68,9 +78,15 @@ data class ProjectFileNotificationEventListener(
 
         if(projectReportId != null) {
            with (projectReportPersistence.getReportByIdUnSecured(projectReportId)) {
+               val periods = projectPersistence.getProjectPeriods(projectSummary.id, linkedFormVersion)
+               val period = periods.firstOrNull { it.number == periodNumber }
+
                variables.putAll(mapOf(
                    NotificationVariable.ProjectReportId to id,
-                   NotificationVariable.ProjectReportNumber to reportNumber
+                   NotificationVariable.ProjectReportNumber to reportNumber,
+                   NotificationVariable.ReportingPeriodNumber to (period?.number ?: ""),
+                   NotificationVariable.ReportingPeriodStart to (period?.start ?: ""),
+                   NotificationVariable.ReportingPeriodEnd to (period?.end ?: "")
                ))
            }
         }

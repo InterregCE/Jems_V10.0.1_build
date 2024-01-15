@@ -5,11 +5,12 @@ import io.cloudflight.jems.server.project.service.report.percentageOf
 import java.math.BigDecimal
 
 val emptySumUp = VerificationWorkOverviewLine(
-    partnerId = null,
+    partnerId = 0L,
     partnerRole = null,
-    partnerNumber = null,
-    partnerReportId = null,
-    partnerReportNumber = null,
+    partnerNumber = 0,
+    partnerReportId = 0,
+    partnerReportNumber = 0,
+    spfLine = false,
     requestedByPartner = BigDecimal.ZERO,
     requestedByPartnerWithoutFlatRates = BigDecimal.ZERO,
     inVerificationSample = BigDecimal.ZERO,
@@ -32,12 +33,13 @@ private fun VerificationWorkOverviewLine.plus(other: VerificationWorkOverviewLin
     val afterVerificationSum = afterVerification.plus(other.afterVerification)
 
     return VerificationWorkOverviewLine(
-        partnerReportId = null,
-        partnerReportNumber = null,
-
-        partnerId = null,
+        partnerId = 0L,
         partnerRole = null,
-        partnerNumber = null,
+        partnerNumber = 0,
+
+        partnerReportId = 0L,
+        partnerReportNumber = 0,
+        spfLine = false,
 
         requestedByPartner = requestedSum,
         requestedByPartnerWithoutFlatRates = requestedWithoutFlatRatesSum,

@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
-import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -21,7 +22,9 @@ class UpdateProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val deadlinePersistence: ContractingReportingPersistence,
-    private val certificatePersistence: ProjectReportCertificatePersistence
+    private val certificatePersistence: ProjectReportCertificatePersistence,
+    private val paymentPersistence: PaymentPersistence,
+    private val paymentApplicationToEcLinkPersistence: PaymentApplicationToEcLinkPersistence
 ) : UpdateProjectReportInteractor {
 
     companion object {
@@ -82,12 +85,12 @@ class UpdateProjectReport(
 
         private fun ProjectReportUpdate.isManual() = !isLink()
 
-        private fun ProjectReportUpdate.toDeadlineObject(validDeadlineIdResolver: (Long) -> Long) =
+        private fun ProjectReportUpdate.toDeadlineObject() =
             if (isManual())
                 deadlineManual()
             else
                 ProjectReportDeadline(
-                    deadlineId = validDeadlineIdResolver.invoke(deadlineId!!),
+                    deadlineId = deadlineId!!,
                     type = null,
                     periodNumber = null,
                     reportingDate = null,
@@ -99,7 +102,8 @@ class UpdateProjectReport(
     @Transactional
     @ExceptionWrapper(UpdateProjectReportException::class)
     override fun updateReport(projectId: Long, reportId: Long, data: ProjectReportUpdate): ProjectReport {
-        val version = reportPersistence.getReportById(projectId, reportId).linkedFormVersion
+        val report = reportPersistence.getReportById(projectId, reportId)
+        val version = report.linkedFormVersion
         val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
 
         data.validateInput(validPeriodNumbers = periods.keys,
@@ -109,46 +113,40 @@ class UpdateProjectReport(
             periodNumberExceptionResolver = { PeriodNumberInvalid(it) },
         )
 
-        val existingDeadlineType = getExistingDeadlineType(projectId, reportPersistence.getReportById(projectId, reportId))
-        val linkedDeadline = if (data.deadlineId != null) deadlinePersistence.getContractingReportingDeadline(projectId, data.deadlineId) else null
-        if (isFinanceTypeExcluded(existingDeadlineType, data, linkedDeadline)) {
-            val certificates = certificatePersistence.listCertificatesOfProjectReport(reportId)
-            if (certificates.isNotEmpty()) {
-                certificates.forEach {
-                    certificatePersistence.deselectCertificate(reportId, it.id)
-                }
-            }
-        }
+        val oldType = report.type
+        val newType = data.deadlineId?.let { deadlinePersistence.getContractingReportingDeadline(projectId, it).type } ?: data.type
+        val thereAreChangesToBaseData = oldType != newType || report.deadlineId != data.deadlineId
+
+        if (report.status.hasBeenSubmitted() && thereAreChangesToBaseData)
+            throw TypeChangeIsForbiddenWhenReportIsReOpened()
+
+        if (oldType.hasFinance() && newType.doesNotHaveFinance())
+            certificatePersistence.deselectCertificatesOfProjectReport(projectReportId = reportId)
+
+        val paymentIdsInstallmentExists = report.getPaymentIdsInstallmentExists()
+        val paymentToEcIdsReportIncluded = report.getPaymentToEcIdsReportIncluded()
 
         return reportPersistence.updateReport(
             projectId = projectId,
             reportId = reportId,
             startDate = data.startDate,
             endDate = data.endDate,
-            deadline =  data.toDeadlineObject(validDeadlineIdResolver = { getValidDeadlineId(linkedDeadline!!) }),
-        ).toServiceModel(periodResolver = { periodNumber -> periods[periodNumber]!! })
+            deadline =  data.toDeadlineObject(),
+        ).toServiceModel(
+            periodResolver = { periodNumber -> periods[periodNumber]!! },
+            paymentIdsInstallmentExists = paymentIdsInstallmentExists,
+            paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded
+        )
     }
 
-    private fun getValidDeadlineId(deadline: ProjectContractingReportingSchedule) = deadline.id
+    private fun ContractingDeadlineType?.hasFinance() = this?.hasFinance() ?: false
+    private fun ContractingDeadlineType?.doesNotHaveFinance() = this == ContractingDeadlineType.Content
 
-    private fun getExistingDeadlineType(projectId: Long, existingReport: ProjectReportModel): ContractingDeadlineType? {
-        return if (existingReport.deadlineId == null)
-            existingReport.type
-        else
-            deadlinePersistence.getContractingReportingDeadline(projectId, existingReport.deadlineId).type
-    }
+    private fun ProjectReportModel.getPaymentIdsInstallmentExists() =
+        if (this.status.isFinalized()) paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(this.id) else setOf()
 
-    private fun isFinanceTypeExcluded(
-        existingDeadlineType: ContractingDeadlineType?,
-        data: ProjectReportUpdate,
-        newLinkedDeadline: ProjectContractingReportingSchedule?
-    ): Boolean {
-        if (existingDeadlineType == ContractingDeadlineType.Content)
-            return false
-        return if (data.isManual()) {
-            data.type == ContractingDeadlineType.Content
-        } else {
-            newLinkedDeadline?.type == ContractingDeadlineType.Content
-        }
-    }
+    private fun ProjectReportModel.getPaymentToEcIdsReportIncluded() =
+        if (this.status.isFinalized()) paymentApplicationToEcLinkPersistence.getPaymentToEcIdsProjectReportIncluded(this.id) else setOf()
+
+
 }

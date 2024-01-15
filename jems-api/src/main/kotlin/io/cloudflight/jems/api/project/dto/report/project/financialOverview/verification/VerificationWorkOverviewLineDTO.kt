@@ -4,12 +4,13 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 
 data class VerificationWorkOverviewLineDTO(
-    val partnerId: Long?,
+    val partnerId: Long,
     val partnerRole: ProjectPartnerRoleDTO?,
-    val partnerNumber: Int?,
+    val partnerNumber: Int,
 
-    val partnerReportId: Long?,
-    val partnerReportNumber: Int?,
+    val partnerReportId: Long,
+    val partnerReportNumber: Int,
+    val spfLine: Boolean,
 
     val requestedByPartner: BigDecimal,
     val requestedByPartnerWithoutFlatRates: BigDecimal,

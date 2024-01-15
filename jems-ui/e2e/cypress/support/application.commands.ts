@@ -1,4 +1,5 @@
 import {faker} from '@faker-js/faker';
+import users from '@fixtures/users.json';
 import {createPartners, updatePartnerData} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
@@ -80,7 +81,15 @@ declare global {
 
       createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
 
-      findInputContaining(selectorForInput, textToFind: string)
+      updateReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
+
+      getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
+
+      updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
+
+      findInputContaining(selectorForInput, textToFind: string);
+
+      assignUserToProject(applicationId: number, userId: number);
     }
   }
 }
@@ -115,18 +124,9 @@ Cypress.Commands.add('createContractedApplication', (application, contractingUse
     updateApplicationSections(applicationId, application);
     runPreSubmissionCheck(applicationId);
     submitProjectApplication(applicationId);
-    if (contractingUserEmail)
-      loginByRequest(contractingUserEmail);
-    approveApplication(applicationId, application.assessments);
-    cy.request({
-      method: 'PUT',
-      url: `api/project/${applicationId}/set-to-contracted`
-    });
-    if (contractingUserEmail) {
-      cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
-      });
-    }
+    approveApplication(applicationId, application.assessments, contractingUserEmail);
+    updateProjectPrivileges(applicationId, application.projectPrivileges);
+    updateContractingSections(applicationId, application, contractingUserEmail);
     cy.wrap(applicationId).as('applicationId');
   });
 });
@@ -227,12 +227,13 @@ Cypress.Commands.add('startModification', (applicationId: number, userEmail?: st
   }
 });
 
+// TODO:
 Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
   cy.request({
     method: 'PUT',
-    url: `api/project/${applicationId}/approve modification`,
+    url: `api/project/${applicationId}/approve-modification`,
     body: approvalInfo
   });
   if (userEmail) {
@@ -260,10 +261,7 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
 Cypress.Commands.add('setProjectToContracted', (applicationId: number, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/set-to-contracted`
-  });
+  setProjectToContracted(applicationId);
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
       loginByRequest(currentUser.name);
@@ -344,8 +342,21 @@ Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reporti
   createReportingDeadlines(applicationId, reportingDeadlines);
 });
 
+Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
+  // same as create, but need to provide id reference in reportingDeadlines
+  createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
 Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {
   findInputContaining(selectorForInput, textToFind);
+});
+
+Cypress.Commands.add('updateProjectReportWorkPlanProgress', (applicationId: number, reportId: number, workPlans: any[]) => {
+  updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans);
+});
+
+Cypress.Commands.add('getProjectReportWorkPlanProgress', (applicationId: number, reportId: number) => {
+  getProjectReportWorkPlanProgress(applicationId, reportId);
 });
 
 function createApplication(applicationDetails) {
@@ -387,6 +398,51 @@ function updateApplicationSections(applicationId, application) {
 
   // E
   updateLumpSums(applicationId, application.lumpSums);
+}
+
+function updateContractingSections(applicationId, application, contractingUserEmail) {
+  cy.then(function () {
+    updateContractsAndAgreements(applicationId, application.contractsAndAgreements);
+    updateProjectManagers(applicationId, application.projectManagers);
+
+    application.partnerDetails.forEach(partnerDetail => {
+      const partnerId = this[partnerDetail.cypressPartnerReference];
+      updatePartnerBeneficialOwners(applicationId, partnerId, partnerDetail.beneficialOwners);
+      updatePartnerBankDetails(applicationId, partnerId, partnerDetail.bankDetails);
+      updatePartnerLocationOfDocuments(applicationId, partnerId, partnerDetail.locationOfDocuments);
+      if (partnerDetail.minimis) {
+        loginByRequest(contractingUserEmail); // only programme user can edit state aid fields
+        updatePartnerMinimis(partnerId, partnerDetail.minimis);
+        cy.get('@currentUser').then((currentUser: any) => {
+          loginByRequest(currentUser.name);
+        });
+      }
+    });
+
+    loginByRequest(contractingUserEmail);
+    application.contractMonitoring.fastTrackLumpSums.forEach(fastTrackLumpSum => {
+      fastTrackLumpSum.lumpSumContributions.forEach(lumpSumContribution => {
+        lumpSumContribution.partnerId = this[lumpSumContribution.cypressPartnerReference];
+      });
+    });
+
+    updateContractMonitoring(applicationId, application.contractMonitoring);
+    createReportingDeadlines(applicationId, application.reportingDeadlines);
+    setProjectToContracted(applicationId);
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  })
+}
+
+function updateProjectPrivileges(applicationId, projectPrivileges) {
+  cy.then(function () {
+    projectPrivileges.partnerCollaborators.forEach(partnerCollaborator => {
+      const partnerId = this[partnerCollaborator.cypressPartnerReference];
+      updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborator.users);
+      cy.assignDefaultInstitution(partnerId, users.admin.email);
+    });
+  });
 }
 
 function updateIdentification(applicationId: number, projectIdentification) {
@@ -552,6 +608,13 @@ function enterFundingDecision(applicationId, decision) {
   });
 }
 
+function setProjectToContracted(applicationId) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/set-to-contracted`
+  });
+}
+
 function approveApplication(applicationId: number, assessments, approvingUserEmail?: string) {
   if (approvingUserEmail)
     loginByRequest(approvingUserEmail);
@@ -600,10 +663,73 @@ function getContractMonitoring(applicationId) {
 }
 
 function updateContractMonitoring(applicationId, contractMonitoring) {
+  contractMonitoring.projectId = applicationId;
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/monitoring`,
     body: contractMonitoring
+  });
+}
+
+function updateContractsAndAgreements(applicationId, contractsAndAgreements) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/contract`,
+    body: contractsAndAgreements
+  });
+}
+
+function updateProjectManagers(applicationId, projectManagers) {
+  projectManagers[0].projectId = applicationId;
+  projectManagers[1].projectId = applicationId;
+  projectManagers[2].projectId = applicationId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/management`,
+    body: projectManagers
+  });
+}
+
+function updatePartnerBeneficialOwners(applicationId, partnerId, beneficialOwners) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/beneficialOwner/byPartnerId/${partnerId}`,
+    body: beneficialOwners
+  });
+}
+
+function updatePartnerBankDetails(applicationId, partnerId, bankDetails) {
+  bankDetails.partnerId = partnerId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/bankingDetails/byPartnerId/${partnerId}`,
+    body: bankDetails
+  });
+}
+
+function updatePartnerLocationOfDocuments(applicationId, partnerId, locationOfDocuments) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/partner/documentsLocation/byPartnerId/${partnerId}`,
+    body: locationOfDocuments
+  });
+}
+
+function updatePartnerMinimis(partnerId, minimis) {
+  minimis.memberStatesGranting[0].partnerId = partnerId;
+  minimis.memberStatesGranting[1].partnerId = partnerId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/contracting/partner/stateAid/byPartnerId/${partnerId}/minimis`,
+    body: minimis
+  });
+}
+
+function updateProjectPartnerCollaborators(applicationId, partnerId, partnerCollaborators) {
+  cy.request({
+    method: 'PUT',
+    url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
+    body: partnerCollaborators
   });
 }
 
@@ -612,7 +738,22 @@ function createReportingDeadlines(applicationId, reportingDeadlines) {
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/reporting`,
     body: reportingDeadlines
+  }).then((response) => response.body);
+}
+
+function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
+    body: workPlans
   });
+}
+
+function getProjectReportWorkPlanProgress(applicationId, reportId) {
+  cy.request({
+    method: 'GET',
+    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
+  }).then((response) => response.body);
 }
 
 export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
@@ -644,5 +785,18 @@ function findInputContaining(selectorForInput, textToFind) {
       return (el as HTMLInputElement).value === textToFind
     })
 }
+
+Cypress.Commands.add('assignUserToProject', (applicationId: number, userId: number) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/projectUser/updateProjectUserAssignments`,
+    body: [{
+      projectId: applicationId,
+      userIds: [userId],
+      userIdsToAdd: [userId],
+      userIdsToRemove: [],
+    }]
+  });
+});
 
 export {}

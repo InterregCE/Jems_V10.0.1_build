@@ -6,7 +6,10 @@
         <mat-header-cell *matHeaderCellDef class="border-cell-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.id' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="border-cell-right"><span>R.{{ line.partnerReportNumber }}</span></mat-cell>
+        <mat-cell *matCellDef="let line" class="border-cell-right">
+            <span *ngIf="!line.spfLine">R.{{ line.partnerReportNumber }}</span>
+            <span *ngIf="line.spfLine">{{ 'project.partner.spf.cost.type.spf' | translate }}</span>
+        </mat-cell>
         <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
     </ng-container>
 
@@ -15,8 +18,10 @@
             <span jemsText maxLines="2">{{ 'project.application.project.verification.work.tab.overview.table.total.eligible.per.sources.partner' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line">
-            <span *ngIf="line.partnerRole === 'LEAD_PARTNER'">{{ 'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: line.partnerNumber} }}</span>
-            <span *ngIf="line.partnerRole !== 'LEAD_PARTNER'">{{ 'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: line.partnerNumber} }} </span>
+            <span>
+                {{ 'common.label.project.partner.role.shortcut.' +
+                    (line.partnerRole || 'LEAD_PARTNER') | adaptTranslationKeyByCallType | async | translate:{partner: line.partnerNumber} }}
+            </span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
     </ng-container>
@@ -25,9 +30,9 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control.euro' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right block">
+        <mat-cell *matCellDef="let line" class="text-right" [class.block]="!line.spfLine">
             <div>{{ line.requestedByPartner | asMoney }}</div>
-            <span jemsText maxLines="1" class="additional-info-text mat-small">
+            <span jemsText maxLines="1" class="additional-info-text mat-small" *ngIf="!line.spfLine">
                 {{ 'project.application.verification.overview.table.withoutFlatRates' | translate }} {{ line.requestedByPartnerWithoutFlatRates | asMoney }}
             </span>
         </mat-cell>
@@ -53,8 +58,8 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.verification.overview.table.inVerificationSamplePercentage' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right">{{ line.inVerificationSamplePercentage | asMoney }}%</mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.inVerificationSamplePercentage | asMoney }}%</mat-footer-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.inVerificationSamplePercentage | asPercentage }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.inVerificationSamplePercentage | asPercentage }}</mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="parked">
@@ -117,9 +122,9 @@
             <span jemsText maxLines="2">{{ 'project.application.verification.overview.table.eligibleAfterVerificationPercentage' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
-            <span>{{ line.afterVerificationPercentage | asMoney }}%</span>
+            <span>{{ line.afterVerificationPercentage | asPercentage }}</span>
         </mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.afterVerificationPercentage | asMoney }}%</mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ overview.total.afterVerificationPercentage | asPercentage }}</mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -7,19 +7,20 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import java.math.RoundingMode
-import java.time.LocalDate
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
-    project: ProjectSummary,
+    project: ProjectFull,
     ftlsId: Int,
     state: Boolean
 ): AuditCandidateEvent =
@@ -216,28 +217,78 @@ fun paymentApplicationToEcCreated(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_CREATED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "was created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
-                    paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate}"
+                "was created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                    paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}"
         )
         .build()
 )
 
+fun paymentApplicationToEcFinished(
+    context: Any,
+    updatedEcPaymentApplication: PaymentApplicationToEcDetail,
+    includedPayments: Map<Long, PaymentInEcPaymentMetadata> = emptyMap(),
+    includedCorrections: Map<Long, CorrectionInEcPaymentMetadata> = emptyMap(),
+): AuditCandidateEvent {
+    val ftlsPayments = includedPayments.filter { it.value.type == PaymentType.FTLS }
+    val regularPayments = includedPayments.filter { it.value.type == PaymentType.REGULAR }
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
+            .description(
+                updatedEcPaymentApplication
+                    .toDescription(previousStatus = PaymentEcStatus.Draft, newStatus = PaymentEcStatus.Finished) + " " +
+                        "and the following items were included:\n" +
+                        "FTLS [${ftlsPayments.keys.joinToString(", ")}]\n" +
+                        "Regular [${regularPayments.keys.joinToString(", ")}]\n" +
+                        "Correction [${includedCorrections.formCorrectionId().joinToString(", ")}]"
+            )
+            .build()
+    )
+}
+
+fun paymentApplicationToEcReOpened(
+    context: Any,
+    updatedEcPaymentApplication: PaymentApplicationToEcDetail,
+) = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
+        .description(
+            updatedEcPaymentApplication
+                .toDescription(previousStatus = PaymentEcStatus.Finished, newStatus = PaymentEcStatus.Draft)
+        )
+        .build()
+    )
+
 fun paymentApplicationToEcDeleted(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationToEcDetail
+    paymentApplicationToEc: PaymentApplicationToEcDetail,
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
-                        paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate} was deleted"
+                "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                        paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate} was deleted"
+        )
+        .build()
+)
+
+fun paymentApplicationToEcAuditExportCreated(
+    context: Any,
+    programmeFundType: String?,
+    accountingYear: Short?
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_AUDIT_EXPORT_TRIGGERED)
+        .description(
+            "An audit export was generated for payments to ec with programme fund type ${programmeFundType} and accounting year " +
+                    "${accountingYear}"
         )
         .build()
 )
@@ -260,11 +311,3 @@ private fun getFundingSourceName(paymentDetail: AdvancePaymentDetail): String {
         else -> ""
     }
 }
-
-private fun computeYearNumber(startingDate: LocalDate) =
-    startingDate.year - 2020
-
-private fun getPartnerName(partnerRole: ProjectPartnerRole, partnerNumber: Int?): String =
-    partnerRole.isLead.let {
-        if (it) "LP${partnerNumber}" else "PP${partnerNumber}"
-    }

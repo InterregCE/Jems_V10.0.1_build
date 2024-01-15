@@ -11,14 +11,14 @@ data class ProjectContractingMonitoringDTO(
     val entryIntoForceDate: LocalDate? = null,
     val entryIntoForceComment: String? = null,
 
-    val typologyProv94: ContractingMonitoringExtendedOptionDTO? = null,
+    val typologyProv94: ContractingMonitoringExtendedOptionDTO,
     val typologyProv94Comment: String? = null,
-    val typologyProv95: ContractingMonitoringExtendedOptionDTO? = null,
+    val typologyProv95: ContractingMonitoringExtendedOptionDTO,
     val typologyProv95Comment: String? = null,
 
-    val typologyStrategic: ContractingMonitoringOptionDTO? = null,
+    val typologyStrategic: ContractingMonitoringOptionDTO,
     val typologyStrategicComment: String? = null,
-    val typologyPartnership: ContractingMonitoringOptionDTO? = null,
+    val typologyPartnership: ContractingMonitoringOptionDTO,
     val typologyPartnershipComment: String? = null,
 
     val addDates: List<ProjectContractingMonitoringAddDateDTO>,

@@ -8,6 +8,8 @@ import java.time.ZonedDateTime
 
 data class ProjectReportSummaryDTO(
     val id: Long,
+    val projectId: Long,
+    val projectIdentifier: String,
     val reportNumber: Int,
     val status: ProjectReportStatusDTO,
     val linkedFormVersion: String,
@@ -18,6 +20,7 @@ data class ProjectReportSummaryDTO(
     val reportingDate: LocalDate?,
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
+    val lastReSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
     val deletable: Boolean,

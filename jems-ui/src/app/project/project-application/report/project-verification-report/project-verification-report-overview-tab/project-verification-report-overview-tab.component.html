@@ -9,4 +9,14 @@
     <jems-verification-report-total-eligible-per-sources [breakdown]="data.financingSourceBreakdown">
     </jems-verification-report-total-eligible-per-sources>
 
+
+    <ng-container *ngIf="data.certificatesDeductionOverviews.length > 0">
+        <h3>{{'project.application.project.verification.work.tab.overview.table.total.deduction.per.certificate.by.error.title' | translate}}</h3>
+        <p>{{'project.application.project.verification.work.tab.overview.table.total.deduction.per.certificate.description' | translate}}</p>
+
+        <jems-verification-deduction-per-certificate [certificatesDeductionOverviews]="data.certificatesDeductionOverviews">
+        </jems-verification-deduction-per-certificate>
+    </ng-container>
+
+
 </jems-form>

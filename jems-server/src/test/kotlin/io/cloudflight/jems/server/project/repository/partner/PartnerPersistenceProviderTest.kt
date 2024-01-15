@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.service.associatedorganization.Project
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -56,11 +57,6 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.math.BigDecimal
-import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -68,6 +64,11 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.util.Optional
 
 class PartnerPersistenceProviderTest {
 
@@ -520,11 +521,11 @@ class PartnerPersistenceProviderTest {
         every { partnerWithContributionsRow1.language } returns EN
         every { partnerWithContributionsRow1.partnerContributionId } returns 2L
         every { partnerWithContributionsRow1.partnerContributionName } returns "contribution source"
-        every { partnerWithContributionsRow1.partnerContributionStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow1.partnerContributionStatus } returns ProjectPartnerContributionStatus.Public
         every { partnerWithContributionsRow1.partnerContributionAmount } returns BigDecimal(100)
         every { partnerWithContributionsRow1.partnerContributionSpfId } returns 1L
         every { partnerWithContributionsRow1.partnerContributionSpfName } returns "spf contribution"
-        every { partnerWithContributionsRow1.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow1.partnerContributionSpfStatus } returns ProjectPartnerContributionStatus.Public
         every { partnerWithContributionsRow1.partnerContributionSpfAmount } returns BigDecimal(150)
 
         val partnerWithContributionsRow2: PartnerWithContributionsRow = mockk()
@@ -538,14 +539,14 @@ class PartnerPersistenceProviderTest {
         every { partnerWithContributionsRow2.language } returns SystemLanguage.DE
         every { partnerWithContributionsRow2.partnerContributionId } returns 2L
         every { partnerWithContributionsRow2.partnerContributionName } returns "contribution source"
-        every { partnerWithContributionsRow2.partnerContributionStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow2.partnerContributionStatus } returns ProjectPartnerContributionStatus.Public
         every { partnerWithContributionsRow2.partnerContributionAmount } returns BigDecimal(100)
         every { partnerWithContributionsRow2.partnerContributionSpfId } returns 1L
         every { partnerWithContributionsRow2.partnerContributionSpfName } returns "spf contribution"
-        every { partnerWithContributionsRow2.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow2.partnerContributionSpfStatus } returns ProjectPartnerContributionStatus.Public
         every { partnerWithContributionsRow2.partnerContributionSpfAmount } returns BigDecimal(150)
 
-        every { projectVersionPersistenceProvider.getLatestVersionOrNull(PROJECT_ID)} returns version
+        every { projectVersionPersistenceProvider.getLatestApprovedOrCurrent(PROJECT_ID)} returns version
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
 
         every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(1L, any()) } returns listOf(
@@ -576,7 +577,7 @@ class PartnerPersistenceProviderTest {
                     ProjectPartnerContribution(
                         id = 2L,
                         name = "contribution source",
-                        status = ProjectPartnerContributionStatusDTO.Public,
+                        status = ProjectPartnerContributionStatus.Public,
                         isPartner = true,
                         amount = BigDecimal(100)
                     )
@@ -584,7 +585,7 @@ class PartnerPersistenceProviderTest {
                 partnerContributionsSpf = listOf(ProjectPartnerContributionSpf(
                     id = 1L,
                     name = "spf contribution",
-                    status = ProjectPartnerContributionStatusDTO.Public,
+                    status = ProjectPartnerContributionStatus.Public,
                     amount = BigDecimal(150)
                 ))
             )

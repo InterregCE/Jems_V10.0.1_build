@@ -57,7 +57,7 @@ class SendVerificationDoneByJsNotification(
     }
 
     private fun validateReportIsInVerification(projectReport: ProjectReportModel) {
-        if (projectReport.status != ProjectReportStatus.InVerification)
+        if (!projectReport.status.canBeVerified())
             throw ReportVerificationNotStartedException()
     }
 

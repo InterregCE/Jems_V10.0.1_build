@@ -214,7 +214,8 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
                 amountAfterVerification = BigDecimal.valueOf(300),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = true,
-                verificationComment = "VERIFICATION COMM"
+                verificationComment = "VERIFICATION COMM",
+                parkedOn = YESTERDAY
             )
 
         private val expectedExpenditureItem = ProjectPartnerReportExpenditureItemDTO(
@@ -272,7 +273,8 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = true,
                 parkingMetadata = null,
-                verificationComment = "VERIFICATION COMM"
+                verificationComment = "VERIFICATION COMM",
+                parkedOn = YESTERDAY
             )
 
 
@@ -310,7 +312,8 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = true,
                 parkingMetadata = null,
-                verificationComment = "VERIFICATION COMM"
+                verificationComment = "VERIFICATION COMM",
+                parkedOn = YESTERDAY
             )
         )
 

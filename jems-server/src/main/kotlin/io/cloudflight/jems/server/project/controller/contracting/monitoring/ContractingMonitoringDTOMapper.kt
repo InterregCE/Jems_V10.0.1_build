@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.controller.contracting.monitoring
 
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringStartDateDTO
-import io.cloudflight.jems.api.project.dto.contracting.ProjectPeriodForMonitoringDTO
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringStartDate
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -15,7 +15,7 @@ fun ProjectContractingMonitoring.toDTO() = contractingMonitoringMapper.map(this)
 
 fun ProjectContractingMonitoringDTO.toModel() = contractingMonitoringMapper.map(this)
 
-fun List<ProjectPeriodForMonitoring>.toDTO() = map { contractingMonitoringMapper.map(it) }
+fun List<ProjectPeriod>.toDTO() = map { contractingMonitoringMapper.map(it) }
 
 fun ProjectContractingMonitoringStartDate.toDTO() = ProjectContractingMonitoringStartDateDTO(startDate)
 
@@ -26,6 +26,6 @@ interface ContractingMonitoringDTOMapper {
 
     fun map(dto: ProjectContractingMonitoringDTO): ProjectContractingMonitoring
 
-    fun map(model: ProjectPeriodForMonitoring): ProjectPeriodForMonitoringDTO
+    fun map(model: ProjectPeriod): ProjectPeriodDTO
 
 }

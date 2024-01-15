@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.junit.jupiter.api.Test
@@ -48,7 +49,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                         ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                     ),
                     partnerContributions = listOf(
-                        ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)
+                        ProjectPartnerContribution(
+                            id = 1L,
+                            name = "con1",
+                            status = ProjectPartnerContributionStatus.Public,
+                            amount = BigDecimal(600),
+                            isPartner = true
+                        )
                     ),
                     partnerAbbreviation = "LP 1"
                 ),
@@ -62,7 +69,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(10)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 2L,
+                                name = "con2",
+                                status = ProjectPartnerContributionStatus.Public,
+                                amount = BigDecimal(3),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = "PP 1"
                     ),
@@ -75,7 +88,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 3L,
+                                name = "con3",
+                                status = ProjectPartnerContributionStatus.Private,
+                                amount = BigDecimal(580),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = "PP 2"
                     ),
@@ -222,7 +241,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                             ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal(20)),
                         ),
                         partnerContributions = listOf(
-                            ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)
+                            ProjectPartnerContribution(
+                                id = 1L,
+                                name = "con1",
+                                status = ProjectPartnerContributionStatus.Public,
+                                amount = BigDecimal(600),
+                                isPartner = true
+                            )
                         ),
                         partnerAbbreviation = partnerSpf.abbreviation
                     ),
@@ -241,13 +266,13 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                         ProjectPartnerContributionSpf(
                             id = 2L,
                             name = "contribution spf 1",
-                            status = ProjectPartnerContributionStatusDTO.Public,
+                            status = ProjectPartnerContributionStatus.Public,
                             amount = BigDecimal(3),
                         ),
                         ProjectPartnerContributionSpf(
                             id = 3L,
                             name = "contribution spf 1",
-                            status = ProjectPartnerContributionStatusDTO.Private,
+                            status = ProjectPartnerContributionStatus.Private,
                             amount = BigDecimal(7),
                         )
                     )
@@ -269,7 +294,7 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                     fund = fund2,
                     percentage = BigDecimal(80),
                     percentageOfTotal = BigDecimal(100.00).setScale(2, RoundingMode.HALF_UP),
-                    value = BigDecimal(2400).setScale(2)
+                    value = BigDecimal(2376).setScale(2)
                 ),
                 PartnerBudgetPerFund(
                     fund = fund3,
@@ -282,8 +307,8 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
             autoPublicContribution = BigDecimal.ZERO,
             privateContribution = BigDecimal.ZERO,
             totalPartnerContribution = BigDecimal(600),
-            totalEligibleBudget = BigDecimal(3000).setScale(2),
-            percentageOfTotalEligibleBudget = BigDecimal(99.01).setScale(2, RoundingMode.HALF_UP)
+            totalEligibleBudget = BigDecimal(2970).setScale(2),
+            percentageOfTotalEligibleBudget = BigDecimal(99.00).setScale(2, RoundingMode.HALF_UP)
         ),
             ProjectPartnerBudgetPerFund(
                 partner = partnerSpf,
@@ -313,22 +338,22 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                 privateContribution = BigDecimal(7),
                 totalPartnerContribution = BigDecimal(10),
                 totalEligibleBudget = BigDecimal(30).setScale(2),
-                percentageOfTotalEligibleBudget = BigDecimal(0.99).setScale(2, RoundingMode.HALF_UP)
+                percentageOfTotalEligibleBudget = BigDecimal(1).setScale(2, RoundingMode.HALF_UP)
             ),
             ProjectPartnerBudgetPerFund(
                 partner = null,
                 budgetPerFund = setOf(
                     PartnerBudgetPerFund(
                         fund = fund1,
-                        percentage = BigDecimal(0.79).setScale(2, RoundingMode.HALF_UP),
+                        percentage = BigDecimal(0.80).setScale(2, RoundingMode.HALF_UP),
                         percentageOfTotal = BigDecimal.ZERO,
                         value = BigDecimal(24).setScale(2)
                     ),
                     PartnerBudgetPerFund(
                         fund = fund2,
-                        percentage = BigDecimal(79.21).setScale(2, RoundingMode.HALF_UP),
+                        percentage = BigDecimal(79.20).setScale(2, RoundingMode.HALF_UP),
                         percentageOfTotal = BigDecimal.ZERO,
-                        value = BigDecimal(2400).setScale(2)
+                        value = BigDecimal(2376).setScale(2)
                     ),
                     PartnerBudgetPerFund(
                         fund = fund3,
@@ -341,7 +366,7 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                 autoPublicContribution = BigDecimal.ZERO,
                 privateContribution = BigDecimal(7),
                 totalPartnerContribution = BigDecimal(610),
-                totalEligibleBudget = BigDecimal(3030),
+                totalEligibleBudget = BigDecimal(3000),
                 percentageOfTotalEligibleBudget = BigDecimal(100)
             ))
 

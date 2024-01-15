@@ -27,17 +27,17 @@ Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf
 })
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
-  const randomizeDownload = `downloadRequest_${faker.random.alphaNumeric(5)}`;
+  const randomizeDownload = `downloadRequest_${faker.string.alphanumeric(5)}`;
   cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {
-    const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
+    const regex = new RegExp(`filename\\*=UTF-8''(.*\.${fileExtension})`);
     const localDateTime = new URLSearchParams(result.request.url).get('localDateTime');
     const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
     if (!fileNameMatch) {
       throw new Error(`Downloaded file does not have ${fileExtension} extension`);
     }
-    const fileName = fileNameMatch[1];
+    const fileName = decodeURI(fileNameMatch[1]);
     if (fileExtension === 'pdf') {
       cy.readFile('./cypress/downloads/' + fileName, null).then(file => {
         file.fileName = fileName;
@@ -60,10 +60,9 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
 });
 
 // https://stackoverflow.com/a/63519375/4876320
-const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/
 Cypress.on('uncaught:exception', (err) => {
   /* returning false here prevents Cypress from failing the test */
-  if (resizeObserverLoopErrRe.test(err.message)) {
+  if (err.message.includes('ResizeObserver loop')) {
     return false
   }
 })

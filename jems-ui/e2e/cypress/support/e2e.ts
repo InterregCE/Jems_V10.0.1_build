@@ -5,11 +5,8 @@ import './application.commands';
 import './programme.commands';
 import './system.commands';
 import './partner-report.commands';
+import './partner-report-control.commands';
+import './project-report.commands';
 import './controller.commands';
-
-// update test case execution results in Jira
-afterEach(function () {
-  if (Cypress.env('executionKey')) {
-    cy.task('sendTestResults', {state: this.currentTest.state, title: this.currentTest.title});
-  }
-});
+import './contracting.commands';
+import './payments.commands';

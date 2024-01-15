@@ -1,0 +1,272 @@
+<ng-container *ngIf="data?.content?.length">
+  <mat-table jemsNoWidthLimit matSort (matSortChange)="sortChanged$.emit($event)" [dataSource]="dataSource">
+
+    <ng-container matColumnDef="select" sticky>
+      <mat-header-cell *matHeaderCellDef class="text-center border-cell-right">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.select' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">
+        <mat-checkbox [checked]="data.content[i].paymentToEcId !== null"
+                      [disabled]="!data.isEditable || editedRowIndex !== null"
+                      (change)="selectionChanged(data.ecId, data.content[i].correctionId, data.content[i].paymentToEcId !== null, $event)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="projectId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="projectCustomIdentifier">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.id' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        {{data.content[i].projectCustomIdentifier}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="projectAcronym">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="projectAcronym">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.acronym' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        {{data.content[i].projectAcronym}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="priorityAxis">
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.priority.axis' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        {{data.content[i].priorityAxis}}
+      </mat-cell>
+    </ng-container>
+
+      <ng-container matColumnDef="projectFlagged94Or95">
+          <mat-header-cell *matHeaderCellDef>
+              <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.article.94.or.95.project' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index">
+              <span *ngIf="data.content[i].projectFlagged94Or95">{{ 'common.yes' | translate }}</span>
+              <span *ngIf="!data.content[i].projectFlagged94Or95">{{ 'common.no' | translate }}</span>
+          </mat-cell>
+      </ng-container>
+
+    <ng-container matColumnDef="correctionNo">
+      <mat-header-cell *matHeaderCellDef>
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.correction.no' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        AC{{data.content[i].paymentCorrectionNo}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="scenario">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="scenario">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.scenario' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.NA">{{'N/A'}}</span>
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.SCENARIO1">{{'1'}}</span>
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.SCENARIO2">{{'2'}}</span>
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.SCENARIO3">{{'3'}}</span>
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.SCENARIO4">{{'4'}}</span>
+        <span *ngIf="data.content[i].scenario === PaymentToEcCorrectionLinkingDTO.ScenarioEnum.SCENARIO5">{{'5'}}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="controllingBody">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="controllingBody">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.controlling.body' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index">
+        <span jemsText>{{data.content[i].controllingBody}}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalEligible">
+      <mat-header-cell class="text-right" *matHeaderCellDef>
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let i = index" class="text-right">
+        {{ (data.content[i].amountApprovedPerFund + data.content[i].partnerContribution) | asMoney}}
+      </mat-cell>
+    </ng-container>
+
+
+    <form [formGroup]="form">
+      <ng-container formArrayName="array">
+
+      <ng-container matColumnDef="totalEligibleWithoutArt94or95">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible.without.sco.art.94.95' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+              <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+                {{ row.get('totalEligibleWithoutArt94or95').value | asMoney}}
+              </div>
+              <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+                <mat-form-field [formGroup]="row" class="limit-input-width">
+                    <input  matInput formControlName="totalEligibleWithoutArt94or95"
+                      [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                      currencyMask matInput type="decimal">
+                </mat-form-field>
+              </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="unionContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.union.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+            <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+              {{ row.get('unionContribution').value | asMoney}}
+            </div>
+            <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+              <mat-form-field [formGroup]="row" class="limit-input-width">
+                 <input matInput formControlName="unionContribution" (keyup)="changeUnionContribution(i)"
+                    [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                    currencyMask matInput type="decimal">
+              </mat-form-field>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="fundAmount">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+              <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+            <div *ngIf="i !== editedRowIndex || !data.content[i].projectFlagged94Or95">
+              {{ row.get('fundAmount').value | asMoney}}
+            </div>
+            <div *ngIf="i === editedRowIndex && data.content[i].projectFlagged94Or95">
+              <mat-form-field [formGroup]="row" class="limit-input-width">
+                <input matInput formControlName="fundAmount"
+                  [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                  currencyMask matInput type="decimal">
+                </mat-form-field>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="partnerContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index" class="text-right">
+            {{ data.content[i].partnerContribution | asMoney}}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="publicContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+            <div *ngIf="i !== editedRowIndex">
+              {{ row.get('publicContribution').value | asMoney}}
+            </div>
+            <div *ngIf="i === editedRowIndex">
+              <mat-form-field [formGroup]="row" class="limit-input-width button-cell">
+                <input  matInput formControlName="publicContribution"
+                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                        currencyMask matInput type="decimal">
+              </mat-form-field>
+              <div  class="limit-input-width">
+                <button class="w-100" (click)="resetAmounts(i, data.content[i])" mat-stroked-button>
+                  {{ 'payments.to.ec.detail.ftls.update.reset' | translate }}
+                </button>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="autoPublicContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.auto.public.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" [formGroup]="row" class="text-right">
+                                <span *ngIf="i !== editedRowIndex">
+                                    {{ row.get('autoPublicContribution').value | asMoney}}
+                                </span>
+            <div *ngIf="i === editedRowIndex">
+              <mat-form-field  class="limit-input-width button-cell">
+                <input matInput formControlName="autoPublicContribution"
+                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput type="decimal">
+              </mat-form-field>
+              <div class="limit-input-width">
+                <button (click)="discardChanges(i, data.content[i])" class="w-100" mat-stroked-button>
+                  {{'payments.to.ec.detail.ftls.update.discard' | translate}}
+                </button>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="privateContribution">
+          <mat-header-cell class="text-right" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.private.contribution' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index" class="text-right">
+                                <span *ngIf="i !== editedRowIndex">
+                                    {{ row.get('privateContribution').value | asMoney}}
+                                </span>
+            <div *ngIf="i === editedRowIndex">
+              <mat-form-field [formGroup]="row" class="limit-input-width button-cell">
+                <input matInput formControlName="privateContribution"
+                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                       currencyMask matInput type="decimal">
+              </mat-form-field>
+              <div class="limit-input-width">
+                <button
+                        [disabled]="!canSave()"
+                        (click)="submitAmountChanges(i, data.content[i].correctionId)" mat-flat-button type="submit" color="primary" class="w-100">
+                  <mat-icon class="save-icon">save</mat-icon> {{'payments.to.ec.detail.ftls.update.save' | translate}}
+                </button>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="comment">
+          <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.comment' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i = index;">
+             <span *ngIf="i !== editedRowIndex" class="comment-display"
+                [matTooltip]="row.get('comment')?.value">
+                {{ row.get('comment').value }}
+             </span>
+              <jems-expandable-textarea *ngIf="i === editedRowIndex"
+                class="vertical-align comment-display button-cell"
+                [control]="row.get('comment')"
+                [errors]="row.get('comment')?.errors"
+                [characterLimit]="500"
+                [minRows]="1"
+                [maxRows]="1">
+              </jems-expandable-textarea>
+          </mat-cell>
+        </ng-container>
+      </ng-container>
+    </form>
+
+    <ng-container matColumnDef="correction" stickyEnd>
+      <mat-header-cell *matHeaderCellDef class="text-center border-cell-left">
+        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.correct.amounts' | translate }}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let ftls;let i = index" class="text-center border-cell-left">
+        <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
+                [disabled]="!data.isEditable || editedRowIndex !== null"
+                color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"
+                aria-label="edit">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row;let i = index; columns: displayedColumns" [class.edited-row]="i === editedRowIndex"></mat-row>
+
+  </mat-table>
+</ng-container>

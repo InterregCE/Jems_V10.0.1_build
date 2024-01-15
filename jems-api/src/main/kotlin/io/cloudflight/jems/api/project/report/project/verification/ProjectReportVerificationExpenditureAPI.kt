@@ -20,7 +20,7 @@ interface ProjectReportVerificationExpenditureAPI {
             "${ENDPOINT_API_PROJECT_REPORT_VERIFICATION}/expenditure"
     }
 
-    @ApiOperation("Returns all expenditure verification by partner id and report id")
+    @ApiOperation("Returns all expenditure verification by project id and report id")
     @GetMapping(ENDPOINT_API_PROJECT_REPORT_VERIFICATION_EXPENDITURE)
     fun getProjectReportExpenditureVerification(
         @PathVariable projectId: Long,

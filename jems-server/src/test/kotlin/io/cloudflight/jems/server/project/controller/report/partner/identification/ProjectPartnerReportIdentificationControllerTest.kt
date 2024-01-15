@@ -85,7 +85,7 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             type = ReportType.PartnerReport,
         )
 
-        private val expectedDummyPeriod = ProjectPartnerReportPeriodDTO(number = 3, periodBudget = BigDecimal.ONE, BigDecimal.TEN, 7, 9)
+        private val expectedDummyPeriod = ProjectPartnerReportPeriodDTO(number = 3, periodBudget = BigDecimal.ONE, BigDecimal.TEN, 7, 9, null, null)
 
         private val expectedDummyIdentification = ProjectPartnerReportIdentificationDTO(
             startDate = YESTERDAY,

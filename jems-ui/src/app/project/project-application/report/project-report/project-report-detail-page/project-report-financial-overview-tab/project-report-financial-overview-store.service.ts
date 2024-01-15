@@ -9,6 +9,7 @@ import {
   CertificateLumpSumBreakdownDTO,
   CertificateUnitCostBreakdownDTO,
   PerPartnerCostCategoryBreakdownDTO,
+  ProjectCallSettingsDTO,
   ProjectCostOptionService,
   ProjectPartnerReportUnitCostDTO,
   ProjectReportFinancialOverviewService,
@@ -132,8 +133,9 @@ export class ProjectReportFinancialOverviewStoreService {
           of(call.flatRates),
           of(call.lumpSums),
           this.projectUnitCosts(),
+          of(call.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF),
         ])),
-        map(([allowedRealCosts, flatRates, lumpSumsFromCall, unitCosts]) => {
+        map(([allowedRealCosts, flatRates, lumpSumsFromCall, unitCosts, isSpf]) => {
           const setting = new Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>();
 
           setting.set(CategoryEnum.StaffCosts,
@@ -153,6 +155,7 @@ export class ProjectReportFinancialOverviewStoreService {
           setting.set(CategoryEnum.Multiple, flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
           setting.set('LumpSum', !!lumpSumsFromCall.length);
           setting.set('UnitCost', !!unitCosts?.find(cost => !cost.isOneCostCategory));
+          setting.set('SpfCosts', isSpf);
 
           return setting;
         }),

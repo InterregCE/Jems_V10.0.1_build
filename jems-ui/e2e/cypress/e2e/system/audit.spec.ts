@@ -10,13 +10,12 @@ context('Application Audit log tests', () => {
       cy.loginByRequest(user.admin.email);
 
       // create audit role
-      testData.auditRole.name = `${testData.auditRole.name}_${faker.random.numeric(5)}`;
       cy.createRole(testData.auditRole).then(roleId => {
 
         // create audit user
         testData.auditUser.userRoleId = roleId;
         testData.auditUser.email = faker.internet.email();
-        testData.auditUser.name = faker.name.fullName();
+        testData.auditUser.name = faker.person.fullName();
         cy.createUser(testData.auditUser).then(userId => {
           // login with audit user and wait for audit log sync
           cy.loginByRequest(testData.auditUser.email);

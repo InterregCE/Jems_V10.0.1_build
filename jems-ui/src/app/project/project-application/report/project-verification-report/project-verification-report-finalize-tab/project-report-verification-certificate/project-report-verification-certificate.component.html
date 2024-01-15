@@ -1,0 +1,42 @@
+<div *ngIf="data$ | async as data" jemsFormLayout>
+    <form *ngIf="data.canEdit" class="dropdown-and-button-in-one-row" [formGroup]="exportForm">
+        <mat-form-field>
+            <mat-label>{{'project.application.project.verification.work.tab.finalise.certificate.label.plugins' | translate}}</mat-label>
+            <mat-select formControlName="plugin">
+                <mat-option *ngFor="let plugin of data.plugins" [value]="plugin" role="option">
+                    {{plugin.name}} - {{plugin.version}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <jems-pending-button (clicked)="generateVerificationCertificate(plugin)"
+                             [disabled]="(exportInProgress$ | async) || !plugin"
+                             [pending]="(exportInProgress$ | async) ?? false">
+            {{'project.application.project.verification.work.tab.finalise.certificate.label.button' | translate}}
+        </jems-pending-button>
+    </form>
+
+    <div jemsNoWidthLimit id="verification-certificates" class="overflow-auto">
+        <jems-file-list-table jemsNoWidthLimit class="pb-2"
+                [fileList]="data.fileList"
+                [sortingEnabled]="true"
+                [setDescriptionCallback]="setDescriptionCallback"
+                (onSortChange)="certificateStore.newSort$.next($event)"
+                (onDownload)="downloadFile($event)"
+                (refresh)="certificateStore.certificatesChanged$.next()">
+        </jems-file-list-table>
+
+        <jems-paginator (pageIndexChanged)="certificateStore.newPageIndex$.next($event)"
+                        (pageSizeChanged)="certificateStore.newPageSize$.next($event)"
+                        *ngIf="data.certificates.content?.length"
+                        [currentPageIndex]="certificateStore.newPageIndex$ | async"
+                        [currentPageSize]="certificateStore.newPageSize$ | async"
+                        [length]="data.certificates.totalElements">
+        </jems-paginator>
+
+        <jems-alert *ngIf="certificateStore.error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+    </div>
+</div>

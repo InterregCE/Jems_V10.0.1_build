@@ -43,6 +43,8 @@ export class Permission {
     PermissionsEnum.AdvancePaymentsUpdate,
     PermissionsEnum.PaymentsToEcRetrieve,
     PermissionsEnum.PaymentsToEcUpdate,
+    PermissionsEnum.PaymentsAuditRetrieve,
+    PermissionsEnum.PaymentsAuditUpdate,
   ];
 
   public static readonly MONITORING_PERMISSIONS = [
@@ -64,6 +66,14 @@ export class Permission {
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.reporting.corrections.title',
+      mode: PermissionMode.HIDDEN_VIEW_EDIT,
+      viewPermissions: [],
+      editPermissions: [],
+      disabled: true,
+      state: PermissionState.VIEW,
+    },
     {
       name: 'project.application.reporting.title',
       children: [
@@ -226,6 +236,32 @@ export class Permission {
 
   public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
     {
+      name: 'project.application.reporting.corrections.title',
+      children: [
+        {
+          name: 'project.application.reporting.corrections.subtitle',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: ['ProjectMonitorAuditAndControlView'],
+          editPermissions: ['ProjectMonitorAuditAndControlEdit'],
+        },
+        {
+          name: 'project.application.reporting.corrections.close.audit',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: ['ProjectMonitorCloseAuditControl'],
+        },
+        {
+          name: 'project.application.reporting.corrections.reopen.audit',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: ['ProjectMonitorReOpenAuditControl'],
+        },
+        {
+          name: 'project.application.reporting.corrections.close.correction',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: ['ProjectMonitorCloseAuditControlCorrection'],
+        },
+      ]
+    },
+    {
       name: 'project.application.reporting.title',
       children: [
         {
@@ -249,6 +285,17 @@ export class Permission {
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingVerificationFinalize],
               infoMessage: 'permission.inspect.reporting.project.finalize',
+            },
+            {
+              name: 'project.application.project.report.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingProjectReOpen]
+            },
+            {
+              name: 'project.application.project.report.verification.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingVerificationReOpen],
+              infoMessage: 'project.application.project.report.verification.reopen.permission.info',
             },
           ]
         },
@@ -316,21 +363,21 @@ export class Permission {
         {
           name: 'project.application.contract.partner.section.title',
           children: [
-              {
-                name: 'project.application.contract.partner.section.title',
-                mode: PermissionMode.HIDDEN_VIEW_EDIT,
-                viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
-                editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
-                editTooltip: 'permission.inspect.contracting.partner.section',
-              },
-              {
-                  name: 'project.application.contract.partner.state.aid.section.title',
-                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
-                  viewPermissions: [],
-                  editPermissions: [],
-                  disabled: true,
-                  state: PermissionState.EDIT,
-              }
+            {
+              name: 'project.application.contract.partner.section.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
+              editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
+              editTooltip: 'permission.inspect.contracting.partner.section',
+            },
+            {
+              name: 'project.application.contract.partner.state.aid.section.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [],
+              editPermissions: [],
+              disabled: true,
+              state: PermissionState.EDIT,
+            }
           ]
         }
       ]
@@ -485,6 +532,14 @@ export class Permission {
           ],
         },
         {
+          name: 'user.project.reports',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.ProjectReportsRetrieve,
+          ],
+          viewTooltip: 'permission.top.bar.project.reports'
+        },
+        {
           name: 'user.partner.reports',
           mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [
@@ -537,6 +592,12 @@ export class Permission {
           viewPermissions: [PermissionsEnum.PaymentsToEcRetrieve],
           editPermissions: [PermissionsEnum.PaymentsToEcUpdate],
           editTooltip: 'permission.payments.to.ec.edit.tooltip',
+        },
+        {
+          name: 'permission.payments.audit',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsAuditRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsAuditUpdate]
         },
       ],
     },

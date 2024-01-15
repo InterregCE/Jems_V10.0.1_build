@@ -1,4 +1,5 @@
-import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDetailDTO, ProjectPeriodDTO, ProjectStatusDTO} from '@cat/api';
+import {LocaleDatePipeUtil} from '@common/utils/locale-date-pipe-util';
 
 export enum ProjectPaths {
   PROJECT_DETAIL_PATH = '/app/project/detail/',
@@ -72,5 +73,23 @@ export class ProjectUtil {
 
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum | string) {
     return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
+  }
+
+  static getPeriodArguments(period: ProjectPeriodDTO): { [key: string]: number | string } {
+    return {
+      periodNumber: period?.number,
+      start: period?.start,
+      end: period?.end,
+      startDate: LocaleDatePipeUtil.transform(period?.startDate),
+      endDate: LocaleDatePipeUtil.transform(period?.endDate)
+    };
+  }
+
+  static getPeriodKey(hasStartDate: any): string {
+    if(hasStartDate) {
+      return 'project.application.form.work.package.output.delivery.period.entry.contracted';
+    } else {
+      return 'project.application.form.work.package.output.delivery.period.entry';
+    }
   }
 }

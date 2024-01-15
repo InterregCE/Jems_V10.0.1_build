@@ -1,6 +1,8 @@
 <ol class="breadcrumbs" *ngIf="breadcrumbs">
     <li *ngFor="let breadcrumb of breadcrumbs; let first = first; let last = last" [class.active]="last">
-        <a *ngIf="!last" (click)="navigate(breadcrumb.url, {queryParamsHandling: breadcrumb.queryParamsHandling})">
+        <a *ngIf="!last"
+            (click)="navigate(breadcrumb.url, {queryParamsHandling: breadcrumb.queryParamsHandling})"
+            [routerLink]="breadcrumb.url">
             <mat-icon *ngIf="first" color="secondary">home</mat-icon>
             <ng-container *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
         </a>
@@ -9,7 +11,6 @@
             <ng-container *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
         </span>
         <span *ngIf="!last" class="separator">/</span>
-
     </li>
 </ol>
 

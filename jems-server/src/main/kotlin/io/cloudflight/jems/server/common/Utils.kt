@@ -3,9 +3,10 @@ package io.cloudflight.jems.server.common
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
-
+import io.cloudflight.jems.server.project.service.model.ProjectPeriodBase
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.time.LocalDate
 
 
 const val SENSITIVE_TRANSLATION_MAKS = "************"
@@ -41,3 +42,7 @@ fun JemsFile.anonymize() {
     this.description = SENSITIVE_TRANSLATION_MAKS
 }
 
+fun ProjectPeriodBase.toLimits(startDate: LocalDate) = Pair(
+    startDate.plusMonths(start.toLong() - 1),
+    startDate.plusMonths(end.toLong()).minusDays(1)
+)

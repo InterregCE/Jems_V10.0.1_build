@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown
 
-import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -8,11 +7,9 @@ import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterSubmission
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostWithCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import java.math.BigDecimal
 
 fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakdown(
@@ -106,6 +103,16 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         previouslyReportedParked = previouslyReportedParked.unitCost,
         previouslyValidated = previouslyValidated.unitCost,
     ),
+    spfCost = ExpenditureCostCategoryBreakdownLine(
+        flatRate = null,
+        totalEligibleBudget = totalsFromAF.spfCost,
+        previouslyReported = previouslyReported.spfCost,
+        currentReport = currentlyReported.spfCost,
+        totalEligibleAfterControl = totalEligibleAfterControl.spfCost,
+        currentReportReIncluded = currentlyReportedReIncluded.spfCost,
+        previouslyReportedParked = previouslyReportedParked.spfCost,
+        previouslyValidated = previouslyValidated.spfCost,
+    ),
     total = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
         totalEligibleBudget = totalsFromAF.sum,
@@ -128,6 +135,7 @@ fun ExpenditureCostCategoryBreakdown.fillInCurrent(current: BudgetCostsCalculati
     other.currentReport = current.other
     lumpSum.currentReport = current.lumpSum
     unitCost.currentReport = current.unitCost
+    spfCost.currentReport = current.spfCost
     total.currentReport = current.sum
 }
 
@@ -141,6 +149,7 @@ fun ExpenditureCostCategoryBreakdown.fillInCurrentReIncluded(currentReIncluded: 
     other.currentReportReIncluded = currentReIncluded.other
     lumpSum.currentReportReIncluded = currentReIncluded.lumpSum
     unitCost.currentReportReIncluded = currentReIncluded.unitCost
+    spfCost.currentReportReIncluded = currentReIncluded.spfCost
     total.currentReportReIncluded = currentReIncluded.sum
 }
 
@@ -154,6 +163,7 @@ fun ExpenditureCostCategoryBreakdown.fillInOverviewFields() = apply {
     other.fillInOverviewFields()
     lumpSum.fillInOverviewFields()
     unitCost.fillInOverviewFields()
+    spfCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
 
@@ -170,11 +180,6 @@ fun <T: ExpenditureCostWithCategory> Collection<T>.calculateCostCategoriesFor(
         }
 
     return calculateBudget(options, sums)
-}
-
-fun List<ProjectPartnerReportExpenditureCost>.fillActualCurrencyRates(rates: Collection<CurrencyConversion>) = apply {
-    val ratesByCode = rates.associateBy { it.code }
-    this.fillCurrencyRates(ratesByCode)
 }
 
 fun Collection<ExpenditureCost>.onlyReIncluded() =

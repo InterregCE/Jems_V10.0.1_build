@@ -17,3 +17,8 @@ class ReportAlreadyClosed : ApplicationUnprocessableException(
     code = "$DELETE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage(i18nKey = "$DELETE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.report.already.closed"),
 )
+
+class ProcurementIsLinkedToExpenditureOrCorrection : ApplicationUnprocessableException(
+    code = "$DELETE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage(i18nKey = "$DELETE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.blocked.because.linked.to.expenditure.or.correction"),
+)
