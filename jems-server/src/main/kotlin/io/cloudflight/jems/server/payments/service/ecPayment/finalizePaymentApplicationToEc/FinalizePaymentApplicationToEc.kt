@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.Ec
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcFinished
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -60,9 +61,8 @@ class FinalizePaymentApplicationToEc(
     private fun Map<Long, PaymentInEcPaymentMetadata>.toFinalScoBasisChanges() = mapValues { (_, paymentMetadata) ->
         with (paymentMetadata) {
             when {
-                finalScoBasis != null -> finalScoBasis
-                typologyProv94.isNo() && typologyProv95.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-                else -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+                typologyProv94.fallsUnder94Or95() || typologyProv95.fallsUnder94Or95() -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+                else -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             }
         }
     }
@@ -70,8 +70,8 @@ class FinalizePaymentApplicationToEc(
     private fun Map<Long, CorrectionInEcPaymentMetadata>.toCorrectionFinalScoBasisChanges() = mapValues { (_, correctionMetadata) ->
         with (correctionMetadata) {
             when {
-                typologyProv94.isNo() && typologyProv95.isNo() -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-                else -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+                typologyProv94.fallsUnder94Or95() || typologyProv95.fallsUnder94Or95() -> PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+                else -> PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
             }
         }
     }
@@ -85,5 +85,7 @@ class FinalizePaymentApplicationToEc(
     private fun PaymentApplicationToEcDetail.fillInFlagForReOpening() = apply {
         this.isAvailableToReOpen = status.isFinished() && noOtherDraftEcPaymentExistsFor(paymentApplicationToEcSummary)
     }
+
+    private fun ContractingMonitoringExtendedOption?.fallsUnder94Or95() = (this ?: ContractingMonitoringExtendedOption.No).isYes()
 
 }

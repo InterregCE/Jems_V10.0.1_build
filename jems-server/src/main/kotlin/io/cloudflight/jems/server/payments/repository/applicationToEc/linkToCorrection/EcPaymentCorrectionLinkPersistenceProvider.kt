@@ -11,13 +11,13 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
+import io.cloudflight.jems.server.payments.repository.regular.notFlagged
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -53,28 +53,24 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             correction.auditControl.number,
             correction.orderNr,
             correction.auditControl.project.id,
-
-            paymentToEcCorrectionExtension.finalScoBasis,
             contractingMonitoring.typologyProv94,
             contractingMonitoring.typologyProv95,
         )
             .from(paymentToEcCorrectionExtension)
             .leftJoin(correction)
-            .on(correction.id.eq(paymentToEcCorrectionExtension.correction.id))
+                .on(correction.id.eq(paymentToEcCorrectionExtension.correction.id))
             .leftJoin(contractingMonitoring)
-            .on(correction.auditControl.project.id.eq(contractingMonitoring.projectId))
+                .on(correction.auditControl.project.id.eq(contractingMonitoring.projectId))
             .where(paymentToEcCorrectionExtension.paymentApplicationToEc.id.eq(ecPaymentId))
             .fetch()
             .map { it: Tuple ->
                 CorrectionInEcPaymentMetadata(
-                    correctionId = it.get(0, Long::class.java)!!,
-                    auditControlNr = it.get(1, Int::class.java)!!,
-                    correctionNr = it.get(2, Int::class.java)!!,
-                    projectId = it.get(3, Long::class.java)!!,
-
-                    finalScoBasis = it.get(4, PaymentSearchRequestScoBasis::class.java),
-                    typologyProv94 = it.get(5, ContractingMonitoringExtendedOption::class.java)!!,
-                    typologyProv95 = it.get(6, ContractingMonitoringExtendedOption::class.java)!!,
+                    correctionId = it.get(correction.id)!!,
+                    auditControlNr = it.get(correction.auditControl.number)!!,
+                    correctionNr = it.get(correction.orderNr)!!,
+                    projectId = it.get(correction.auditControl.project.id)!!,
+                    typologyProv94 = it.get(contractingMonitoring.typologyProv94),
+                    typologyProv95 = it.get(contractingMonitoring.typologyProv95),
                 )
             }
 

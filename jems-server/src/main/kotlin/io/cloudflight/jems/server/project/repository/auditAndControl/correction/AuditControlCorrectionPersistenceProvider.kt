@@ -395,12 +395,12 @@ class AuditControlCorrectionPersistenceProvider(
         flaggedArticle95: ContractingMonitoringExtendedOption?,
         paymentToEcStatus: PaymentEcStatus?,
         finalScoFlag: PaymentSearchRequestScoBasis?
-    ) =
+    ): Boolean {
         if (paymentToEcStatus == PaymentEcStatus.Finished)
-            finalScoFlag == PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
-        else if (flaggedArticle94 == null || flaggedArticle95 == null)
-            false
-        else flaggedArticle94.isYes() || flaggedArticle95.isYes()
+            return finalScoFlag == PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
 
+        return (flaggedArticle94 ?: ContractingMonitoringExtendedOption.No).isYes()
+                || (flaggedArticle95 ?: ContractingMonitoringExtendedOption.No).isYes()
+    }
 
 }

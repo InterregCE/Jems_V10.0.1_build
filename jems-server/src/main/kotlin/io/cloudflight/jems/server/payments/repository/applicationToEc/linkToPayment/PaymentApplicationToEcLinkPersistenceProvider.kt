@@ -69,7 +69,6 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         val results = jpaQueryFactory.select(
             payment.id,
             payment.type,
-            paymentToEcExtension.finalScoBasis,
             contractingMonitoring.typologyProv94,
             contractingMonitoring.typologyProv95,
         )
@@ -82,11 +81,10 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             .fetch()
             .map { it: Tuple ->
                 PaymentInEcPaymentMetadata(
-                    paymentId = it.get(0, Long::class.java)!!,
-                    type = it.get(1, PaymentType::class.java)!!,
-                    finalScoBasis = it.get(2, PaymentSearchRequestScoBasis::class.java),
-                    typologyProv94 = it.get(3, ContractingMonitoringExtendedOption::class.java)!!,
-                    typologyProv95 = it.get(4, ContractingMonitoringExtendedOption::class.java)!!,
+                    paymentId = it.get(payment.id)!!,
+                    type = it.get(payment.type)!!,
+                    typologyProv94 = it.get(contractingMonitoring.typologyProv94),
+                    typologyProv95 = it.get(contractingMonitoring.typologyProv95),
                 )
             }
 
