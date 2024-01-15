@@ -5,7 +5,6 @@ enum class ContractingMonitoringExtendedOption {
     No,
     Partly;
 
-    fun isNo() = this == No
     fun isYes() = this != No
 
 }

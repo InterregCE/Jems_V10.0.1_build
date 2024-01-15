@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "36e0428e-5c72-4582-9901-61144d046a9b",
+		"_postman_id": "4f2f0d32-a730-4162-82a9-5a61f01ed4be",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -9928,7 +9928,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"note\": \"changed to approved\",\n    \"date\": \"{{decision_date}}\",\n    \"entryIntoForceDate\": \"{{decision_date}}\"\n}\n",
+							"raw": "{\n    \"actionInfo\": {\n        \"note\": \"changed to approved\",\n        \"date\": \"{{decision_date}}\",\n        \"entryIntoForceDate\": \"{{decision_date}}\"\n    }\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10150,7 +10150,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"note\": \"changed to approved\",\n    \"date\": \"{{decision_date}}\",\n    \"entryIntoForceDate\": \"{{decision_date}}\"\n}\n",
+							"raw": "{\n    \"actionInfo\": {\n        \"note\": \"changed to approved\",\n        \"date\": \"{{decision_date}}\",\n        \"entryIntoForceDate\": \"{{decision_date}}\"\n    }\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"

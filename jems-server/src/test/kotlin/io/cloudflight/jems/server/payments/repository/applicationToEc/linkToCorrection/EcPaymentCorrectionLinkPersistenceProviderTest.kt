@@ -5,6 +5,8 @@ import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Expression
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
+import com.querydsl.core.types.dsl.EnumPath
+import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
@@ -230,7 +232,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
     @Test
     fun getCorrectionLinkedToEcPayment() {
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any()) } returns query
         every { query.from(any()) } returns query
         every { query.leftJoin(any<EntityPath<Any>>()) } returns query
         every { query.on(any()) } returns query
@@ -238,28 +240,14 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
         every { query.where(capture(slotWhere)) } returns query
 
         val tuple = mockk<Tuple>()
-        every { tuple.get(0, Long::class.java) } returns CORRECTION_ID
-        every { tuple.get(1, Int::class.java) } returns 1
-        every { tuple.get(2, Int::class.java) } returns 1
-        every { tuple.get(3, Long::class.java) } returns PROJECT_ID
-        every {
-            tuple.get(
-                4,
-                PaymentSearchRequestScoBasis::class.java
-            )
-        } returns PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-        every {
-            tuple.get(
-                5,
-                ContractingMonitoringExtendedOption::class.java
-            )
-        } returns ContractingMonitoringExtendedOption.No
-        every {
-            tuple.get(
-                6,
-                ContractingMonitoringExtendedOption::class.java
-            )
-        } returns ContractingMonitoringExtendedOption.No
+        every { tuple.get<Any>(any()) } returnsMany listOf(
+            CORRECTION_ID,
+            1,
+            1,
+            PROJECT_ID,
+            ContractingMonitoringExtendedOption.No,
+            ContractingMonitoringExtendedOption.No,
+        )
 
         val result = mockk<List<Tuple>>()
         every { result.size } returns 1
@@ -272,7 +260,6 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
                     auditControlNr = 1,
                     correctionNr = 1,
                     projectId = PROJECT_ID,
-                    finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
                     typologyProv94 = ContractingMonitoringExtendedOption.No,
                     typologyProv95 = ContractingMonitoringExtendedOption.No
                 )

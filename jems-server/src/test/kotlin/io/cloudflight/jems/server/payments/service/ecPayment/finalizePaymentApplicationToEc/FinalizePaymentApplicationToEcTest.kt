@@ -118,7 +118,6 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     auditControlNr = 1,
                     correctionNr = 1,
                     projectId = PROJECT_ID,
-                    finalScoBasis = null,
                     typologyProv94 = ContractingMonitoringExtendedOption.No,
                     typologyProv95 = ContractingMonitoringExtendedOption.No,
                 ),
@@ -128,7 +127,6 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     auditControlNr = 1,
                     correctionNr = 2,
                     projectId = PROJECT_ID,
-                    finalScoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
                     typologyProv94 = ContractingMonitoringExtendedOption.Yes,
                     typologyProv95 = ContractingMonitoringExtendedOption.No,
                 )
@@ -171,28 +169,24 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
             14L to PaymentInEcPaymentMetadata(
                 14L,
                 PaymentType.FTLS,
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
                 ContractingMonitoringExtendedOption.No,
                 ContractingMonitoringExtendedOption.No
             ),
             15L to PaymentInEcPaymentMetadata(
                 15L,
                 PaymentType.FTLS,
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
                 ContractingMonitoringExtendedOption.No,
                 ContractingMonitoringExtendedOption.No
             ),
             16L to PaymentInEcPaymentMetadata(
                 16L,
                 PaymentType.REGULAR,
-                PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
                 ContractingMonitoringExtendedOption.No,
                 ContractingMonitoringExtendedOption.No
             ),
             17L to PaymentInEcPaymentMetadata(
                 17,
                 PaymentType.FTLS,
-                PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
                 ContractingMonitoringExtendedOption.Yes,
                 ContractingMonitoringExtendedOption.No
             ),

@@ -4,6 +4,8 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
+import com.querydsl.core.types.dsl.EnumPath
+import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
@@ -290,7 +292,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { ecPaymentExtensionRepository.findAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } returns
             listOf(paymentToEcExtensionEntity(paymentApplicationToEcEntity()))
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any()) } returns query
         every { query.from(any()) } returns query
         every { query.leftJoin(any<EntityPath<Any>>()) } returns query
         every { query.on(any()) } returns query
@@ -298,11 +300,12 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { query.where(capture(slotWhere)) } returns query
 
         val tuple = mockk<Tuple>()
-        every { tuple.get(0, Long::class.java) } returns 1L
-        every { tuple.get(1, PaymentType::class.java) } returns PaymentType.REGULAR
-        every { tuple.get(2, PaymentSearchRequestScoBasis::class.java) } returns PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-        every { tuple.get(3, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.No
-        every { tuple.get(4, ContractingMonitoringExtendedOption::class.java) } returns ContractingMonitoringExtendedOption.No
+        every { tuple.get<Any>(any()) } returnsMany listOf(
+            1L,
+            PaymentType.REGULAR,
+            ContractingMonitoringExtendedOption.No,
+            ContractingMonitoringExtendedOption.No,
+        )
 
         val result = mockk<List<Tuple>>()
         every { result.size } returns 1
@@ -313,7 +316,6 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 1L to PaymentInEcPaymentMetadata(
                     paymentId = 1,
                     type = PaymentType.REGULAR,
-                    finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95,
                     typologyProv94 = ContractingMonitoringExtendedOption.No,
                     typologyProv95 = ContractingMonitoringExtendedOption.No
                 )
