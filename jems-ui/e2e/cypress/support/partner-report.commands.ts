@@ -156,7 +156,7 @@ function assignUnitCostIds(partnerId, reportId, partnerReportExpenditures) {
           if (unitCost.unitCostProgrammeId === expenditure.unitCostId) expenditure.unitCostId = unitCost.id;
         }));
     }
-  })
+  });
 }
 
 function assignLumpSumIds(partnerId, reportId, partnerReportExpenditures) {
