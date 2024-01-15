@@ -79,7 +79,7 @@ internal class ProgrammeDataExportControllerTest : UnitTest() {
                 ResponseEntity.ok()
                     .contentLength(exportResult.content.size.toLong())
                     .header(HttpHeaders.CONTENT_TYPE, exportResult.contentType)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${exportResult.fileName}\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''${exportResult.fileName}")
                     .body(ByteArrayResource(exportResult.content))
             )
     }

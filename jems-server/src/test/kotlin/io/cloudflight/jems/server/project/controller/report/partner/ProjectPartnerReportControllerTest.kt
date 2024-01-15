@@ -505,7 +505,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 ResponseEntity.ok()
                     .contentLength(5)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''fileName.txt")
                     .body(ByteArrayResource(fileContentArray))
             )
     }
@@ -565,7 +565,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 ResponseEntity.ok()
                     .contentLength(5)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''fileName.txt")
                     .body(ByteArrayResource(fileContentArray))
             )
     }

@@ -113,7 +113,7 @@ internal class ProjectReportAnnexesControllerTest : UnitTest() {
                 ResponseEntity.ok()
                     .contentLength(5)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"attachment.pdf\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''attachment.pdf")
                     .body(ByteArrayResource(fileContentArray))
             )
     }
