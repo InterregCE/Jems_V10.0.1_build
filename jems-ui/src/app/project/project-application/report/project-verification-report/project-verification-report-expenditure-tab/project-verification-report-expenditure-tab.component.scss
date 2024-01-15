@@ -2,6 +2,32 @@
   .mat-select-disabled .mat-select-value-text {
     color: rgb(142, 142, 142) !important;
   }
+
+  .mat-table {
+    overflow: auto;
+    max-height: calc(100vh - 15rem);
+    .mat-header-row {
+      position: sticky;
+      top: 3.8rem;
+      z-index: 5000;
+      border-bottom: 1px solid var(--table-border-color) !important;
+      .mat-tooltip-trigger {
+        z-index: 2 !important;
+      }
+      .mat-header-cell {
+        background: var(--table-backaground-color);
+      }
+      &.section-header-row {
+        box-sizing: border-box;
+        top: 0;
+      }
+    }
+  }
+  .language-switcher {
+    position: relative;
+    z-index: 5001;
+  }
+
 }
 
 .end-flex-header-table {

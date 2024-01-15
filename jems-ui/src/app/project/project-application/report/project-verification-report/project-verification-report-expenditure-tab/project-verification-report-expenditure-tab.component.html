@@ -581,7 +581,7 @@
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>
 
-                                <mat-header-row *matHeaderRowDef="['section-expenditure', 'section-spacer', 'section-control', 'section-jsma']"></mat-header-row>
+                                <mat-header-row *matHeaderRowDef="['section-expenditure', 'section-spacer', 'section-control', 'section-jsma']" class="section-header-row"></mat-header-row>
                                 <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
                                 <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex = index"
                                          [class.row-has-error]="form.controls[rowIndex]?.invalid"></mat-row>
