@@ -31,7 +31,7 @@ internal class GetUserCollaboratorsAssignedToProjectsTest : UnitTest() {
 
     @Test
     fun getUserIdsForProject() {
-        every { collaboratorPersistence.getUserIdsForProject(12L) } returns listOf(collaborator)
+        every { collaboratorPersistence.getCollaboratorsForProject(12L) } returns listOf(collaborator)
         assertThat(getCollaborators.getUserIdsForProject(12L)).containsExactly(collaborator)
     }
 

@@ -88,7 +88,7 @@ class ProjectDataProviderImpl(
     private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
-    private val contractingMonitoringPersistence: ContractingMonitoringPersistence
+    private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
 ) : ProjectDataProvider {
 
     companion object {
@@ -253,7 +253,7 @@ class ProjectDataProviderImpl(
         val programmeTitle = programmeDataRepository.findById(1)
             .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: ""
         return project.toIdentificationDataModel(
-            projectStartDate =  contractMonitoring.startDate,
+            projectStartDate = contractMonitoring.startDate,
             projectEndDate = contractMonitoring.endDate,
             programmeTitle = programmeTitle,
             projectLifecycleData = ProjectLifecycleData(
@@ -411,15 +411,15 @@ class ProjectDataProviderImpl(
                     .toMutableMap()
             ).toIndicatorOverviewLines(),
             indicatorLinesWithCodes = ResultOverviewCalculator.calculateProjectResultOverview(
-            projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
-            programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
-                .associateBy { it.id },
-            programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
-                .associateBy { it.id },
-            projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
-                .filter { it.programmeResultIndicatorId != null }
-                .groupBy { it.programmeResultIndicatorId }
-                .toMutableMap()
+                projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
+                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
+                    .associateBy { it.id },
+                programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
+                    .associateBy { it.id },
+                projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
+                    .filter { it.programmeResultIndicatorId != null }
+                    .groupBy { it.programmeResultIndicatorId }
+                    .toMutableMap()
             ).toIndicatorOverviewLinesWithCodes()
         )
     }

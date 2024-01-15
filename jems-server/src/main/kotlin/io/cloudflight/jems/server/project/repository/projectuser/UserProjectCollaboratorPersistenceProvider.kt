@@ -18,7 +18,7 @@ class UserProjectCollaboratorPersistenceProvider(
         collaboratorRepository.findAllByIdUserId(userId = userId).mapTo(HashSet()) { it.id.projectId }
 
     @Transactional(readOnly = true)
-    override fun getUserIdsForProject(projectId: Long): List<CollaboratorAssignedToProject> =
+    override fun getCollaboratorsForProject(projectId: Long): List<CollaboratorAssignedToProject> =
         collaboratorRepository.findAllByProjectId(projectId)
 
     @Transactional(readOnly = true)
@@ -30,7 +30,7 @@ class UserProjectCollaboratorPersistenceProvider(
         projectId: Long,
         usersToPersist: Map<Long, ProjectCollaboratorLevel>
     ): List<CollaboratorAssignedToProject> {
-        val alreadyAssignedUserIds = getUserIdsForProject(projectId).mapTo(HashSet()) { it.userId }
+        val alreadyAssignedUserIds = getCollaboratorsForProject(projectId).mapTo(HashSet()) { it.userId }
 
         collaboratorRepository.deleteAllByIdIn(
             alreadyAssignedUserIds.minus(usersToPersist.keys).map { UserProjectId(userId = it, projectId = projectId) }
@@ -42,7 +42,7 @@ class UserProjectCollaboratorPersistenceProvider(
             }
         )
 
-        return getUserIdsForProject(projectId = projectId)
+        return getCollaboratorsForProject(projectId = projectId)
     }
 
 }

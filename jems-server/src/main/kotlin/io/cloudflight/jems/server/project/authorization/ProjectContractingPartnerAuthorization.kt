@@ -46,7 +46,7 @@ class ProjectContractingPartnerAuthorization(
             return true
 
         val partnerCollaborators = partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId).map { it.userId }
-        val projectCollaborators = projectCollaboratorPersistence.getUserIdsForProject(projectId).map { it.userId }
+        val projectCollaborators = projectCollaboratorPersistence.getCollaboratorsForProject(projectId).map { it.userId }
         val allCollaborators = partnerCollaborators union projectCollaborators
 
         if (isActiveUserIdEqualToOneOf(allCollaborators))

@@ -42,7 +42,7 @@ internal class UserProjectCollaboratorPersistenceProviderTest : UnitTest() {
             CollaboratorAssignedToProject(14203L, "email3", sendNotificationsToEmail = false, userStatus = UserStatus.ACTIVE, ProjectCollaboratorLevel.VIEW),
         )
         every { collaboratorRepository.findAllByProjectId(20L) } returns result
-        assertThat(persistence.getUserIdsForProject(20L)).containsExactlyElementsOf(result)
+        assertThat(persistence.getCollaboratorsForProject(20L)).containsExactlyElementsOf(result)
     }
 
     @Test

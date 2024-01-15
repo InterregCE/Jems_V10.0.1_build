@@ -16,6 +16,6 @@ class GetUserCollaboratorsAssignedToProjects(
     @Transactional
     @ExceptionWrapper(GetUserCollaboratorsAssignedToProjectsException::class)
     override fun getUserIdsForProject(projectId: Long): List<CollaboratorAssignedToProject> =
-        userProjectCollaboratorPersistence.getUserIdsForProject(projectId)
+        userProjectCollaboratorPersistence.getCollaboratorsForProject(projectId)
 
 }
