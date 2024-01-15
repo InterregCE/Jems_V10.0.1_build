@@ -209,7 +209,7 @@ context('Project report tests', () => {
 
   it('TB-1093 Regular payments are properly reflected in following project reports', function () {
     cy.fixture('project/reporting/TB-1093.json').then(testData => {
-      cy.fixture('@fixtures/api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
+      cy.fixture('api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
         cy.loginByRequest(user.applicantUser.email);
         application.reportingDeadlines = [];
         application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
@@ -301,7 +301,7 @@ context('Project report tests', () => {
 
   it('TB-1091 PR - Content report should not include certificates', function () {
     cy.fixture('project/reporting/TB-1091.json').then(testData => {
-      cy.fixture('@fixtures/api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
+      cy.fixture('api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
         cy.loginByRequest(user.applicantUser.email);
         cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
 
@@ -357,7 +357,7 @@ context('Project report tests', () => {
 
   it('TB-1025 PR - Finance report should include certificates', function () {
     cy.fixture('project/reporting/TB-1025.json').then(testData => {
-      cy.fixture('@fixtures/api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
+      cy.fixture('api/partnerReport/partnerReportExpenditures.json').then(partnerReportExpenditures => {
         cy.loginByRequest(user.applicantUser.email);
         cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
 
