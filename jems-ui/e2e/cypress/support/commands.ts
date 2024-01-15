@@ -31,13 +31,13 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
   cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {
-    const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
+    const regex = new RegExp(`filename\\*=UTF-8''(.*\.${fileExtension})`);
     const localDateTime = new URLSearchParams(result.request.url).get('localDateTime');
     const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
     if (!fileNameMatch) {
       throw new Error(`Downloaded file does not have ${fileExtension} extension`);
     }
-    const fileName = fileNameMatch[1];
+    const fileName = decodeURI(fileNameMatch[1]);
     if (fileExtension === 'pdf') {
       cy.readFile('./cypress/downloads/' + fileName, null).then(file => {
         file.fileName = fileName;
