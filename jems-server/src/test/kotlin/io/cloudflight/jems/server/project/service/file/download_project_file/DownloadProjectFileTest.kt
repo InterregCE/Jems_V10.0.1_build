@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.file.ProjectFileNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.utils.FILE_ID
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.PROJECT_ID
-import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.utils.USER_ID
 import io.cloudflight.jems.server.utils.currentUser
 import io.cloudflight.jems.server.utils.fileByteArray
@@ -74,7 +74,7 @@ internal class DownloadProjectFileTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
 
         val file = downloadProjectFile.download(PROJECT_ID, FILE_ID)
-        assertThat(file.first).isEqualTo(fileMetadata)
+        assertThat(file.first).isEqualTo(fileMetadata.name)
         assertThat(file.second).isEqualTo(fileByteArray)
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_DOWNLOADED_SUCCESSFULLY)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(

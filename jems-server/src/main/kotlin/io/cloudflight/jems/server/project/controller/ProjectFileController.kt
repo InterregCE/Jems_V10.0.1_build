@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.controller
 import io.cloudflight.jems.api.project.ProjectFileApi
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
-import io.cloudflight.jems.server.common.toResponseEntity
+import io.cloudflight.jems.server.common.toResponseFile
 import io.cloudflight.jems.server.project.service.file.delete_project_file.DeleteProjectFileInteractor
 import io.cloudflight.jems.server.project.service.file.download_project_file.DownloadProjectFileInteractor
 import io.cloudflight.jems.server.project.service.file.list_project_file_metadata.ListProjectFileMetadataInteractor
@@ -45,5 +45,5 @@ class ProjectFileController(
         deleteProjectFile.delete(projectId, fileId)
 
     override fun downloadFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> =
-        downloadProjectFile.download(projectId, fileId).toResponseEntity()
+        downloadProjectFile.download(projectId, fileId).toResponseFile()
 }
