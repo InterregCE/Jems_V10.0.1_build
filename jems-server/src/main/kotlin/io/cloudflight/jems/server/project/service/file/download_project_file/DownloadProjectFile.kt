@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanDownloadFileFromCategory
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.projectFileDownloadFailed
 import io.cloudflight.jems.server.project.service.projectFileDownloadSucceed
 import org.springframework.context.ApplicationEventPublisher
@@ -23,11 +22,11 @@ class DownloadProjectFile(
     @CanDownloadFileFromCategory
     @Transactional
     @ExceptionWrapper(DownloadProjectFileExceptions::class)
-    override fun download(projectId: Long, fileId: Long): Pair<ProjectFileMetadata, ByteArray> {
+    override fun download(projectId: Long, fileId: Long): Pair<String, ByteArray> {
         projectPersistence.throwIfNotExists(projectId)
         return runCatching {
             filePersistence.getFileMetadata(fileId).let { fileMetadata ->
-                Pair(fileMetadata, filePersistence.getFile(projectId, fileId, fileMetadata.name)).also {
+                Pair(fileMetadata.name, filePersistence.getFile(projectId, fileId, fileMetadata.name)).also {
                     auditPublisher.publishEvent(projectFileDownloadSucceed(this, fileMetadata))
                 }
             }
