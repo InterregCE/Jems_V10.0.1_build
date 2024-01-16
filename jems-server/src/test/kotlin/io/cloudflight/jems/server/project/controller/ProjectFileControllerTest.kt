@@ -2,26 +2,26 @@ package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.utils.FILE_ID
-import io.cloudflight.jems.server.utils.PARTNER_ID
-import io.cloudflight.jems.server.utils.PROJECT_ID
 import io.cloudflight.jems.server.project.service.file.delete_project_file.DeleteProjectFileException
 import io.cloudflight.jems.server.project.service.file.delete_project_file.DeleteProjectFileInteractor
 import io.cloudflight.jems.server.project.service.file.download_project_file.DownloadProjectFileExceptions
 import io.cloudflight.jems.server.project.service.file.download_project_file.DownloadProjectFileInteractor
-import io.cloudflight.jems.server.utils.file
-import io.cloudflight.jems.server.utils.fileByteArray
-import io.cloudflight.jems.server.utils.fileMetadata
 import io.cloudflight.jems.server.project.service.file.list_project_file_metadata.ListProjectFileMetadataExceptions
 import io.cloudflight.jems.server.project.service.file.list_project_file_metadata.ListProjectFileMetadataInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
-import io.cloudflight.jems.server.utils.projectFileCategoryDTO
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionExceptions
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadFileExceptions
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadProjectFileInteractor
+import io.cloudflight.jems.server.utils.FILE_ID
+import io.cloudflight.jems.server.utils.PARTNER_ID
+import io.cloudflight.jems.server.utils.PROJECT_ID
+import io.cloudflight.jems.server.utils.file
+import io.cloudflight.jems.server.utils.fileByteArray
+import io.cloudflight.jems.server.utils.fileMetadata
+import io.cloudflight.jems.server.utils.projectFileCategoryDTO
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -168,7 +168,7 @@ internal class ProjectFileControllerTest : UnitTest() {
         @Test
         fun `should download file when there is no problem`() {
             val fileMetadata = fileMetadata()
-            every { downloadProjectFile.download(PROJECT_ID, FILE_ID) } returns Pair(fileMetadata, fileByteArray)
+            every { downloadProjectFile.download(PROJECT_ID, FILE_ID) } returns Pair(fileMetadata.name, fileByteArray)
             assertThat(projectFileController.downloadFile(PROJECT_ID, FILE_ID))
                 .isEqualTo(
                     ResponseEntity.ok()

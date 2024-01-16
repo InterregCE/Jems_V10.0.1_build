@@ -98,8 +98,7 @@ internal class TranslationFileControllerTest : UnitTest() {
                     .contentLength(file.size)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"${fileType.toModel().getFileNameFor(language)}\""
+                        HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''${fileType.toModel().getFileNameFor(language)}"
                     ).body(ByteArrayResource(fileByteArray))
             )
 
@@ -119,8 +118,7 @@ internal class TranslationFileControllerTest : UnitTest() {
                     .contentLength(file.size)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"${fileType.toModel().getFileNameFor(SystemLanguage.EN)}\""
+                        HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''${fileType.toModel().getFileNameFor(SystemLanguage.EN)}"
                     ).body(ByteArrayResource(fileByteArray))
             )
 
