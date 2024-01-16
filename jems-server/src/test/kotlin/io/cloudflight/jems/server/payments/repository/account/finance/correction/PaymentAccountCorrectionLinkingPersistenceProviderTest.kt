@@ -174,14 +174,14 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getCorrectionExtension() {
-        every { correctionExtensionRepository.getById(CORRECTION_ID) } returns correctionExtensionEntity(paymentAccount)
+        every { correctionExtensionRepository.getReferenceById(CORRECTION_ID) } returns correctionExtensionEntity(paymentAccount)
         assertThat(persistence.getCorrectionExtension(CORRECTION_ID)).isEqualTo(correctionExtension)
-        verify { correctionExtensionRepository.getById(CORRECTION_ID) }
+        verify { correctionExtensionRepository.getReferenceById(CORRECTION_ID) }
     }
 
     @Test
     fun createCorrectionExtension() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
         val slot = slot<PaymentAccountCorrectionExtensionEntity>()
         every { correctionExtensionRepository.save(capture(slot)) } returns correctionExtensionEntity
 
@@ -192,7 +192,7 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
     @Test
     fun selectCorrectionToPaymentAccount() {
         val correction = correctionExtensionEntity(null)
-        every { paymentAccountRepository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccount
+        every { paymentAccountRepository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccount
         every { correctionExtensionRepository.findAllById(setOf(CORRECTION_ID)) } returns listOf(correction)
 
         persistence.selectCorrectionToPaymentAccount(setOf(CORRECTION_ID), PAYMENT_ACCOUNT_ID)
@@ -220,7 +220,7 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
     @Test
     fun updateCorrectionLinkedToPaymentAccountCorrectedAmounts() {
         val correction = correctionExtensionEntity(paymentAccount)
-        every { correctionExtensionRepository.getById(CORRECTION_ID) } returns correction
+        every { correctionExtensionRepository.getReferenceById(CORRECTION_ID) } returns correction
 
         val update = PaymentAccountCorrectionLinkingUpdate(
             correctedPublicContribution = BigDecimal.valueOf(8),
@@ -286,8 +286,8 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
 
     @Test
     fun saveTotalsWhenFinishingPaymentAccount() {
-        every { programmePriorityRepository.findAllById(any()) } returns setOf(priorityAxisEntity)
-        every { paymentAccountRepository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccount
+        every { programmePriorityRepository.findAllById(any()) } returns listOf(priorityAxisEntity)
+        every { paymentAccountRepository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccount
 
         every { priorityAxisOverviewRepository.deleteAllByPaymentAccountId(PAYMENT_ACCOUNT_ID) } just runs
         every { priorityAxisOverviewRepository.flush() } just runs

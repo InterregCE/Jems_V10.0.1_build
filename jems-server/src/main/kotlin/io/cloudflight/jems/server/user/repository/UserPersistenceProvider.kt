@@ -34,7 +34,7 @@ class UserPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserWithPassword =
-        userRepo.getById(id).let {
+        userRepo.getReferenceById(id).let {
             it.toModelWithPassword(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
@@ -79,7 +79,7 @@ class UserPersistenceProvider(
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =
         userRepo.save(
-            user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getById(user.userRoleId))
+            user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getReferenceById(user.userRoleId))
         ).let {
             it.toModel(
                 permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),

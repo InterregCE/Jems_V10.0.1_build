@@ -86,9 +86,9 @@ class ProjectReportVerificationNotificationPersistenceProviderTest : UnitTest() 
     @Test
     fun storeVerificationNotificationMetaData() {
         every { repository.save(any()) } returns verificationNotificationEntity
-        every { userRepository.getById(USER_ID) } returns userEntity
+        every { userRepository.getReferenceById(USER_ID) } returns userEntity
         every { projectReportEntity.id } returns REPORT_ID
-        every { projectReportRepository.getById(REPORT_ID) } returns projectReportEntity
+        every { projectReportRepository.getReferenceById(REPORT_ID) } returns projectReportEntity
 
         assertThat(persistenceProvider.storeVerificationNotificationMetaData(REPORT_ID, USER_ID, createdAtLocal)).isEqualTo(
             expectedVerificationNotification

@@ -188,7 +188,7 @@ class ProjectPartnerReportContributionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun addNew() {
-        every { reportRepository.getById(70L) } returns mockk()
+        every { reportRepository.getReferenceById(70L) } returns mockk()
         val contribSlot = slot<Iterable<ProjectPartnerReportContributionEntity>>()
         every { reportContributionRepository.saveAll(capture(contribSlot)) } returnsArgument 0
 

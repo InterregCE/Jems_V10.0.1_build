@@ -1,5 +1,5 @@
 {
-  "extends": "./build/cleancode/eslintrc.json",
+  "extends": "./cloudflight.eslintrc.json",
   "ignorePatterns": [
     "node_modules/**",
     "build/**",

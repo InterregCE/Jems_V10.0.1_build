@@ -190,8 +190,8 @@ class PartnerPersistenceProvider(
     override fun create(projectId: Long, projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail =
         projectPartnerRepository.save(
             projectPartner.toEntity(
-                project = projectRepo.getById(projectId),
-                legalStatus = legalStatusRepo.getById(projectPartner.legalStatusId!!)
+                project = projectRepo.getReferenceById(projectId),
+                legalStatus = legalStatusRepo.getReferenceById(projectPartner.legalStatusId!!)
             )
         ).also { if(resortByRole) updateSortByRole(projectId) else it.sortNumber = projectPartnerRepository.countByProjectId(projectId).toInt()}.toProjectPartnerDetail()
 
@@ -202,7 +202,7 @@ class PartnerPersistenceProvider(
             projectPartnerRepository.save(
                 entity.copy(
                     projectPartner = projectPartner,
-                    legalStatusRef = projectPartner.legalStatusId?.let { legalStatusRepo.getById(it) },
+                    legalStatusRef = projectPartner.legalStatusId?.let { legalStatusRepo.getReferenceById(it) },
                 )
             ).also { if (resortByRole) updateSortByRole(entity.project.id) }
         }.toProjectPartnerDetail()
@@ -252,11 +252,11 @@ class PartnerPersistenceProvider(
     @Transactional
     override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
         val workPackageActivities =
-            stateAid.activities?.map { workPackageActivityRepository.getById(it.activityId) }.orEmpty()
+            stateAid.activities?.map { workPackageActivityRepository.getReferenceById(it.activityId) }.orEmpty()
         return projectPartnerStateAidRepository.save(stateAid.toEntity(
             partnerId = partnerId,
             workPackageActivities = workPackageActivities,
-            programmeStateAid = stateAid.stateAidScheme?.id?.let {programmeStateAidRepository.getById(it) }
+            programmeStateAid = stateAid.stateAidScheme?.id?.let {programmeStateAidRepository.getReferenceById(it) }
         )).toModel()
     }
 
@@ -270,7 +270,7 @@ class PartnerPersistenceProvider(
 
     @Transactional
     override fun deactivatePartner(partnerId: Long) {
-        projectPartnerRepository.getById(partnerId).apply {
+        projectPartnerRepository.getReferenceById(partnerId).apply {
             active = false
         }
     }

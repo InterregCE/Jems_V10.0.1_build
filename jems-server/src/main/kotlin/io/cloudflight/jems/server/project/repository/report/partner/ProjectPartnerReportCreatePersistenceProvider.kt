@@ -85,7 +85,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
     private fun persistReport(report: ProjectPartnerReportCreate): ProjectPartnerReportEntity =
         partnerReportRepository.save(
             report.toEntity(
-                legalStatus = report.identification.legalStatusId?.let { legalStatusRepository.getById(it) }
+                legalStatus = report.identification.legalStatusId?.let { legalStatusRepository.getReferenceById(it) }
             )
         )
 
@@ -96,7 +96,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
         partnerReportCoFinancingRepository.saveAll(
             coFinancing.fundsSorted.toEntity(
                 reportEntity = report,
-                programmeFundResolver = { programmeFundRepository.getById(it) },
+                programmeFundResolver = { programmeFundRepository.getReferenceById(it) },
             )
         )
 
@@ -176,7 +176,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
         report: ProjectPartnerReportEntity,
     ) =
         reportLumpSumRepository.saveAll(
-            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getById(it) }) }
+            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getReferenceById(it) }) }
         )
 
     private fun persistAvailableUnitCostsToReport(
@@ -184,7 +184,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
         report: ProjectPartnerReportEntity,
     ) =
         reportUnitCostRepository.saveAll(
-            unitCosts.map { uc -> uc.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
+            unitCosts.map { uc -> uc.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getReferenceById(it) }) }
         )
 
     private fun persistAvailableInvestmentsToReport(

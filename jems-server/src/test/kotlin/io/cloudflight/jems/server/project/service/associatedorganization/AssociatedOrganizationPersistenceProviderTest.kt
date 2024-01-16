@@ -282,7 +282,7 @@ class AssociatedOrganizationPersistenceProviderTest {
     fun `should deactivate association organization when there is no problem`() {
         val projectAssociatedOrganization = mockk<ProjectAssociatedOrganization>()
         every { projectAssociatedOrganization.active = false } returns Unit
-        every { projectAssociatedOrganizationRepo.getById(associatedOrganizationId) } returns projectAssociatedOrganization
+        every { projectAssociatedOrganizationRepo.getReferenceById(associatedOrganizationId) } returns projectAssociatedOrganization
         assertDoesNotThrow {(persistence.deactivate(associatedOrganizationId))}
         verify(exactly = 1) { projectAssociatedOrganization.active = false  }
     }

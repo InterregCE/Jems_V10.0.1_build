@@ -130,7 +130,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
     fun getProjectIdForAuditControl() {
         val entity = mockk<AuditControlEntity>()
         every { entity.project.id } returns 65L
-        every { auditControlRepository.getById(47L) } returns entity
+        every { auditControlRepository.getReferenceById(47L) } returns entity
         assertThat(persistence.getProjectIdForAuditControl(47L)).isEqualTo(65L)
     }
 
@@ -140,7 +140,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
         every { project.id } returns 75L
         every { project.customIdentifier } returns "ID75"
         every { project.acronym } returns "PROJ-75"
-        every { projectRepository.getById(75L) } returns project
+        every { projectRepository.getReferenceById(75L) } returns project
 
         val created = slot<AuditControlEntity>()
         every { auditControlRepository.save(capture(created)) } returnsArgument 0
@@ -179,7 +179,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
             totalControlledAmount = BigDecimal.valueOf(396L),
             comment = "old comment",
         )
-        every { auditControlRepository.getById(42L) } returns toUpdateEntity
+        every { auditControlRepository.getReferenceById(42L) } returns toUpdateEntity
 
         val toUpdate = AuditControlUpdate(
             controllingBody = ControllingBody.NationalApprobationBody,
@@ -205,7 +205,7 @@ class AuditControlPersistenceProviderTest: UnitTest() {
 
     @Test
     fun getById() {
-        every { auditControlRepository.getById(51L) } returns dummyEntity(51L)
+        every { auditControlRepository.getReferenceById(51L) } returns dummyEntity(51L)
         mockGetTotalCorrectionsAmount(auditControlId = 51L, total = BigDecimal.valueOf(3475L))
         assertThat(persistence.getById(51L))
             .isEqualTo(expectedAuditAfterUpdate(id = 51L, total = BigDecimal.valueOf(3475L)))

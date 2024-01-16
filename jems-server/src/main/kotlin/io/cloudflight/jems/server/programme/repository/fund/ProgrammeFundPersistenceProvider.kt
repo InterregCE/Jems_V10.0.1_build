@@ -16,7 +16,7 @@ class ProgrammeFundPersistenceProvider(
 
     @Transactional
     override fun getById(fundId: Long): ProgrammeFund =
-        repository.getById(fundId).toModel()
+        repository.getReferenceById(fundId).toModel()
 
     @Transactional
     override fun updateFunds(toDeleteIds: Set<Long>, funds: Set<ProgrammeFund>): List<ProgrammeFund> {

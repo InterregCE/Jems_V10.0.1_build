@@ -75,7 +75,7 @@ class ContractingMonitoringPersistenceProvider(
                 return@map existingEntity
             } else {
                 return@map contractingPartnerPaymentDateRepository.save(
-                    ProjectContractingPartnerPaymentDateEntity(partnerId, partnerRepository.getById(partnerId), date)
+                    ProjectContractingPartnerPaymentDateEntity(partnerId, partnerRepository.getReferenceById(partnerId), date)
                 )
             }
         }.associate { it.partnerId to it.lastPaymentDate }

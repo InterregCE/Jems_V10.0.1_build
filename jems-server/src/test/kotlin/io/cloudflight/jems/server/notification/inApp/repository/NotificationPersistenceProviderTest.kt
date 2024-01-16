@@ -70,7 +70,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
         val project = mockk<ProjectEntity>()
         every { project.id } returns 45L
         every { project.call } returns call
-        every { projectRepository.getById(45L) } returns project
+        every { projectRepository.getReferenceById(45L) } returns project
 
         val savedSlot = slot<Iterable<NotificationEntity>>()
         every { notificationRepository.saveAll(capture(savedSlot)) } returnsArgument 0

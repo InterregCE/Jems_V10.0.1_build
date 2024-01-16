@@ -257,8 +257,8 @@ class PartnerPersistenceProviderTest {
             projectPartnerRequest.role!!,
             legalStatus = legalStatusEntity
         )
-        every { projectRepository.getById(PROJECT_ID) } returns project
-        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getReferenceById(legalStatusEntity.id) } returns legalStatusEntity
 
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
         // also handle sorting
@@ -274,8 +274,8 @@ class PartnerPersistenceProviderTest {
         val projectPartnerEntity = projectPartnerEntity()
         val projectPartnerRequest =
             ProjectPartner(0, "partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        every { projectRepository.getById(PROJECT_ID) } returns project
-        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getReferenceById(legalStatusEntity.id) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
         every { projectPartnerRepository.countByProjectId(any()) } returns 2
 
@@ -286,8 +286,8 @@ class PartnerPersistenceProviderTest {
     @Test
     fun `createProjectPartner not existing`() {
 
-        every { projectRepository.getById(PROJECT_ID) } throws ProjectNotFoundException()
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { projectRepository.getReferenceById(PROJECT_ID) } throws ProjectNotFoundException()
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity()
         assertThrows<ProjectNotFoundException> { persistence.create(PROJECT_ID, projectPartner(), true) }
 
@@ -299,9 +299,9 @@ class PartnerPersistenceProviderTest {
             department = setOf(InputTranslation(EN, "test"))
         )
         val updatedEntity = projectPartnerWithOrganizationEntity()
-        every { projectRepository.getById(0) } throws ProjectNotFoundException()
-        every { projectRepository.getById(PROJECT_ID) } returns project
-        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getReferenceById(0) } throws ProjectNotFoundException()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getReferenceById(legalStatusEntity.id) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns updatedEntity
         // also handle sorting
         val projectPartners = listOf(projectPartnerEntity(), updatedEntity)
@@ -458,8 +458,8 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun `update state aid`() {
-        every { workPackageActivityRepository.getById(activitySummary.activityId) } returns activityEntity
-        every { programmeStateAidRepository.getById(stateAidActivity.stateAidScheme?.id!!) } returns programmeStateAidEntity
+        every { workPackageActivityRepository.getReferenceById(activitySummary.activityId) } returns activityEntity
+        every { programmeStateAidRepository.getReferenceById(stateAidActivity.stateAidScheme?.id!!) } returns programmeStateAidEntity
         val stateAidEntitySlot = slot<ProjectPartnerStateAidEntity>()
         every { projectPartnerStateAidRepository.save(capture(stateAidEntitySlot)) } returnsArgument 0
 
@@ -508,7 +508,7 @@ class PartnerPersistenceProviderTest {
     fun `should deactivate partner when there is no problem`() {
         val partnerEntity: ProjectPartnerEntity = mockk()
         every { partnerEntity.active = false } returns Unit
-        every { projectPartnerRepository.getById(PARTNER_ID) } returns partnerEntity
+        every { projectPartnerRepository.getReferenceById(PARTNER_ID) } returns partnerEntity
         assertDoesNotThrow {(persistence.deactivatePartner(PARTNER_ID))}
         verify(exactly = 1) { partnerEntity.active = false  }
     }

@@ -19,7 +19,7 @@ class SecurityPersistenceProvider(
     override fun savePasswordResetToken(passwordResetToken: PasswordResetToken) {
         passwordResetTokenRepository.save(
             passwordResetToken.toEntity(
-                PasswordResetTokenId(userRepository.getById(passwordResetToken.user.id))
+                PasswordResetTokenId(userRepository.getReferenceById(passwordResetToken.user.id))
             )
         )
     }

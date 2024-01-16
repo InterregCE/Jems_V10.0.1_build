@@ -16,8 +16,8 @@ export class ConfirmLeaveGuard implements CanDeactivate<boolean> {
   dialogRef: MatDialogRef<ConfirmDialogComponent>;
 
   public canDeactivate(component: boolean, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> {
-    const currentStateCreate = currentState?.url.includes("/create");
-    const nextStateNoAuth = nextState?.url.includes("/no-auth");
+    const currentStateCreate = currentState?.url.includes('/create');
+    const nextStateNoAuth = nextState?.url.includes('/no-auth');
 
     return currentStateCreate || nextStateNoAuth || this.canLeavePage()
       ? of(true)
@@ -39,8 +39,9 @@ export class ConfirmLeaveGuard implements CanDeactivate<boolean> {
   }
 
   private confirmToLeaveResult(): Observable<boolean> {
-    if (!this.dialogOpen())
+    if (!this.dialogOpen()) {
       this.dialogRef = this.showDialog();
+    }
 
     return this.dialogRef.afterClosed();
   }

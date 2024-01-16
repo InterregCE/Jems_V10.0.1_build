@@ -31,7 +31,7 @@ export class ProjectPartnerBudgetTabService {
     combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
       tap(([optionsDirty, budgetsDirty]) => {
         if (optionsDirty || budgetsDirty) {
-          this.routingService.confirmLeaveSet.add(this.serviceId)
+          this.routingService.confirmLeaveSet.add(this.serviceId);
         }
       }),
       untilDestroyed(this)

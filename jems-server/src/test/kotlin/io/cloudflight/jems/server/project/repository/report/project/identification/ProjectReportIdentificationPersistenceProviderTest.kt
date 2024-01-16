@@ -195,7 +195,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
     @Test
     fun updateSpendingProfile() {
         val report = mockk<ProjectReportEntity>()
-        every { projectReportRepository.getById(15L) } returns report
+        every { projectReportRepository.getReferenceById(15L) } returns report
 
         val existing514 = ProjectReportSpendingProfileEntity(
             ProjectReportSpendingProfileId(mockk(), 514L),

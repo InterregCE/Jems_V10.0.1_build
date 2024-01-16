@@ -234,7 +234,7 @@ class ControllerInstitutionPersistenceProvider(
     }
 
     private fun saveNew(partner: ProjectPartnerAssignmentMetadata) {
-        val partnerEntity = partnerRepository.getById(partner.partnerId)
+        val partnerEntity = partnerRepository.getReferenceById(partner.partnerId)
         institutionPartnerRepository.save(partner.toNewEntity(partnerEntity))
     }
 }

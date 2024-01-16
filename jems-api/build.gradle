@@ -1,7 +1,5 @@
-cloudflight {
-    swagger {
-        generate = true
-    }
+plugins {
+    id "io.cloudflight.autoconfigure.swagger-api-configure"
 }
 
 dependencies {
@@ -15,7 +13,7 @@ dependencies {
     implementation('com.fasterxml.jackson.core:jackson-annotations')
 
     // to work with Page and Pageable
-    implementation('io.cloudflight.platform:platform-jpa')
+    implementation('io.cloudflight.platform.spring:platform-spring-jpa')
 
     // for some out-dated usages of validation outside business-logic
     implementation('org.springframework.boot:spring-boot-starter-validation')

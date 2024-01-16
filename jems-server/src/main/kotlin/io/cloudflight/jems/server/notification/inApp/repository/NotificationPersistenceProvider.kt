@@ -20,7 +20,7 @@ class NotificationPersistenceProvider(
         val recipients = resolveRecipientsOf(notification)
         val notificationsToSave = notification.toUsers(
             recipients = recipients,
-            projectResolver = { projectRepository.getById(it) },
+            projectResolver = { projectRepository.getReferenceById(it) },
         )
         notificationRepository.saveAll(notificationsToSave)
     }

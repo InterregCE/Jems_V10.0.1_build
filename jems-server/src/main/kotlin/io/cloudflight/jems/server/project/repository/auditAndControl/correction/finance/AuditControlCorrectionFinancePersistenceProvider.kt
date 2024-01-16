@@ -13,14 +13,14 @@ class AuditControlCorrectionFinancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCorrectionFinancialDescription(correctionId: Long): ProjectCorrectionFinancialDescription =
-        projectCorrectionFinancialDescriptionRepository.getById(correctionId).toDescriptionModel()
+        projectCorrectionFinancialDescriptionRepository.getReferenceById(correctionId).toDescriptionModel()
 
     @Transactional
     override fun updateCorrectionFinancialDescription(
         correctionId: Long,
         financialDescription: ProjectCorrectionFinancialDescriptionUpdate
     ): ProjectCorrectionFinancialDescription {
-        return projectCorrectionFinancialDescriptionRepository.getById(correctionId).apply {
+        return projectCorrectionFinancialDescriptionRepository.getReferenceById(correctionId).apply {
             deduction = financialDescription.deduction
             fundAmount = financialDescription.fundAmount
             publicContribution = financialDescription.publicContribution

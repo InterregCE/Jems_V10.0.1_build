@@ -261,12 +261,12 @@ class PaymentPersistenceProvider(
 
     @Transactional
     override fun saveFTLSPayments(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentFtlsToCreate>) {
-        val projectEntity = projectRepository.getById(projectId)
+        val projectEntity = projectRepository.getReferenceById(projectId)
         val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
             model.toFTLSPaymentEntity(
                 projectEntity = projectEntity,
                 lumpSum = projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, id.orderNr),
-                fundEntity = fundRepository.getById(id.programmeFundId),
+                fundEntity = fundRepository.getReferenceById(id.programmeFundId),
             )
         }).associateBy { PaymentGroupingId(it.projectLumpSum!!.id.orderNr, it.fund.id) }
 
@@ -276,7 +276,7 @@ class PaymentPersistenceProvider(
                 toCreate.partnerPayments.map {
                     it.toEntity(
                         paymentEntity = paymentEntity,
-                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
+                        partnerEntity = projectPartnerRepository.getReferenceById(it.partnerId),
                         partnerReportEntity = null
                     )
                 }
@@ -287,8 +287,8 @@ class PaymentPersistenceProvider(
 
     @Transactional
     override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: Map<Long, PaymentRegularToCreate>) {
-        val projectReportEntity = projectReportRepository.getById(projectReportId)
-        val projectEntity = projectRepository.getById(projectReportEntity.projectId)
+        val projectReportEntity = projectReportRepository.getReferenceById(projectReportId)
+        val projectEntity = projectRepository.getReferenceById(projectReportEntity.projectId)
         val fundIdToFundEntity =
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
                 .mapNotNull { it.programmeFund }.associateBy { it.id }
@@ -306,8 +306,8 @@ class PaymentPersistenceProvider(
                 toCreate.partnerPayments.map {
                     it.toEntity(
                         paymentEntity = entity,
-                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
-                        partnerReportEntity = it.partnerReportId?.let { projectPartnerReportRepository.getById(it) },
+                        partnerEntity = projectPartnerRepository.getReferenceById(it.partnerId),
+                        partnerReportEntity = it.partnerReportId?.let { projectPartnerReportRepository.getReferenceById(it) },
                     )
                 }
             )
@@ -317,7 +317,7 @@ class PaymentPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
-        paymentRepository.getById(paymentId).toDetailModel(
+        paymentRepository.getReferenceById(paymentId).toDetailModel(
             partnerPayments = getAllPartnerPayments(paymentId)
         )
 
@@ -369,10 +369,10 @@ class PaymentPersistenceProvider(
         return paymentPartnerInstallmentRepository.saveAll(
             paymentPartnerInstallments.map {
                 it.toEntity(
-                    paymentPartner = paymentPartnerRepository.getById(paymentPartnerId),
+                    paymentPartner = paymentPartnerRepository.getReferenceById(paymentPartnerId),
                     savePaymentInfoUser = getUserOrNull(it.savePaymentInfoUserId),
                     paymentConfirmedUser = getUserOrNull(it.paymentConfirmedUserId),
-                    correction = it.correctionId?.let { correctionId -> auditControlCorrectionRepository.getById(correctionId) },
+                    correction = it.correctionId?.let { correctionId -> auditControlCorrectionRepository.getReferenceById(correctionId) },
                 )
             }
         ).toModelList()
@@ -537,7 +537,7 @@ class PaymentPersistenceProvider(
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
-            userRepository.getById(userId)
+            userRepository.getReferenceById(userId)
         } else null
 
 }

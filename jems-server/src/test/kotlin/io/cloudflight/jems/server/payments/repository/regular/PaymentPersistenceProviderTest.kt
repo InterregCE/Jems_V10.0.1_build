@@ -773,9 +773,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
     @Test
     fun saveFTLSPaymentToProjects() {
         val project = mockk<ProjectEntity>()
-        every { projectRepository.getById(projectId) } returns project
+        every { projectRepository.getReferenceById(projectId) } returns project
         val fund = mockk<ProgrammeFundEntity>()
-        every { fundRepository.getById(any()) } returns fund
+        every { fundRepository.getReferenceById(any()) } returns fund
         every { fund.id } returns fundId
         val lumpSum = mockk<ProjectLumpSumEntity>()
         every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, 7) } returns lumpSum
@@ -787,8 +787,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
         val leadPartner = projectPartnerEntity
         val partner = projectPartnerEntity(partnerId_6, abbreviation = "B", role = ProjectPartnerRole.PARTNER, sortNumber = 2)
 
-        every { projectPartnerRepository.getById(partnerId_5) } returns leadPartner
-        every { projectPartnerRepository.getById(partnerId_6) } returns partner
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns leadPartner
+        every { projectPartnerRepository.getReferenceById(partnerId_6) } returns partner
 
 
         val slotPartners = slot<MutableList<PaymentPartnerEntity>>()
@@ -834,10 +834,10 @@ class PaymentPersistenceProviderTest : UnitTest() {
     @Test
     fun saveRegularPaymentToProjects() {
         val project = mockk<ProjectEntity>()
-        every { projectRepository.getById(projectId) } returns project
+        every { projectRepository.getReferenceById(projectId) } returns project
 
 
-        every { projectReportRepository.getById(projectReportId) } returns
+        every { projectReportRepository.getReferenceById(projectReportId) } returns
                 projectReportEntity(projectReportId, projectIdentifier = "proj-iden", projectAcronym = "proj-acr")
 
         val fundERDFEntity = ERDF_FUND.toEntity()
@@ -854,8 +854,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { paymentRepository.saveAll(capture(slotPayments)) } answers { slotPayments.captured }
 
 
-        every { projectPartnerRepository.getById(partnerId_5) } returns leadPartner
-        every { projectPartnerRepository.getById(partnerId_6) } returns partner
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns leadPartner
+        every { projectPartnerRepository.getReferenceById(partnerId_6) } returns partner
 
 
         val leadPartnerR1 = mockk<ProjectPartnerReportEntity>()
@@ -870,9 +870,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { secondPartnerR3.id } returns 106L
         every { secondPartnerR3.partnerId } returns 6L
 
-        every { projectPartnerReportRepository.getById(107L) } returns leadPartnerR1
-        every { projectPartnerReportRepository.getById(108L) } returns leadPartnerR2
-        every { projectPartnerReportRepository.getById(106L) } returns secondPartnerR3
+        every { projectPartnerReportRepository.getReferenceById(107L) } returns leadPartnerR1
+        every { projectPartnerReportRepository.getReferenceById(108L) } returns leadPartnerR2
+        every { projectPartnerReportRepository.getReferenceById(106L) } returns secondPartnerR3
         val slotExtensions = mutableListOf<PaymentToEcExtensionEntity>()
         every { paymentToEcExtensionRepository.save(capture(slotExtensions)) } returnsArgument 0
 
@@ -947,9 +947,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentDetails() {
-        every { paymentRepository.getById(paymentId) } returns paymentFtlsEntity()
+        every { paymentRepository.getReferenceById(paymentId) } returns paymentFtlsEntity()
         every { paymentPartnerRepository.findAllByPaymentId(paymentId) } returns listOf(partnerPaymentEntity())
-        every { projectPartnerRepository.getById(partnerId_5) } returns projectPartnerEntity
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns projectPartnerEntity
 
         assertThat(paymentPersistenceProvider.getPaymentDetails(paymentId))
             .isEqualTo(paymentDetail)
@@ -972,13 +972,13 @@ class PaymentPersistenceProviderTest : UnitTest() {
     fun updatePaymentPartnerInstallments() {
         val deleteIds = setOf(2L)
         every { paymentPartnerInstallmentRepository.deleteAllByIdInBatch(deleteIds) } returns Unit
-        every { paymentPartnerRepository.getById(1L) } returns partnerPaymentEntity()
-        every { userRepository.getById(paymentConfirmedUser.id) } returns paymentConfirmedUser
-        every { userRepository.getById(savePaymentUser.id) } returns savePaymentUser
+        every { paymentPartnerRepository.getReferenceById(1L) } returns partnerPaymentEntity()
+        every { userRepository.getReferenceById(paymentConfirmedUser.id) } returns paymentConfirmedUser
+        every { userRepository.getReferenceById(savePaymentUser.id) } returns savePaymentUser
         every {
             paymentPartnerInstallmentRepository.saveAll(any<List<PaymentPartnerInstallmentEntity>>())
         } returns listOf(installmentEntity())
-        every { auditControlCorrectionRepository.getById(15L) } returns mockk { every { id } returns 15L }
+        every { auditControlCorrectionRepository.getReferenceById(15L) } returns mockk { every { id } returns 15L }
 
         assertThat(
             paymentPersistenceProvider.updatePaymentPartnerInstallments(

@@ -142,7 +142,7 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
     fun getProjectIdForCorrection() {
         val entity = mockk<AuditControlCorrectionEntity>()
         every { entity.auditControl.project.id } returns 45L
-        every { auditControlCorrectionRepository.getById(256L) } returns entity
+        every { auditControlCorrectionRepository.getReferenceById(256L) } returns entity
 
         assertThat(persistence.getProjectIdForCorrection(256L))
             .isEqualTo(45L)
@@ -166,14 +166,14 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getByCorrectionId() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         assertThat(auditControlCorrectionPersistenceProvider.getByCorrectionId(CORRECTION_ID)).isEqualTo(correction)
     }
 
     @Test
     fun getExtendedByCorrectionId() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         assertThat(auditControlCorrectionPersistenceProvider.getExtendedByCorrectionId(CORRECTION_ID)).isEqualTo(
             extendedCorrection

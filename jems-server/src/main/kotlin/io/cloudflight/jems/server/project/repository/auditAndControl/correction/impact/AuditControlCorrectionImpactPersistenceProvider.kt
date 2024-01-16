@@ -16,7 +16,7 @@ class AuditControlCorrectionImpactPersistenceProvider(
         correctionId: Long,
         impact: AuditControlCorrectionImpact,
     ): AuditControlCorrectionImpact {
-        val entity = correctionRepository.getById(correctionId)
+        val entity = correctionRepository.getReferenceById(correctionId)
 
         entity.impact = impact.action
         entity.impactComment = impact.comment

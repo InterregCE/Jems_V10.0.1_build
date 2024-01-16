@@ -59,8 +59,8 @@ class PaymentAccountReconciliationPersistenceProviderTest : UnitTest() {
             )
         } returns Optional.empty()
 
-        every { paymentAccountRepository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
-        every { programmePriorityRepository.getById(PRIORITY_AXIS_ID) } returns programmePriority
+        every { paymentAccountRepository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+        every { programmePriorityRepository.getReferenceById(PRIORITY_AXIS_ID) } returns programmePriority
         every { accountReconciliationRepository.save(any()) } returnsArgument 0
 
         assertThat(persistence.updateReconciliation(PAYMENT_ACCOUNT_ID, reconciliationUpdate)).isEqualTo(
@@ -78,8 +78,8 @@ class PaymentAccountReconciliationPersistenceProviderTest : UnitTest() {
             )
         } returns Optional.of(paymentAccountReconciliation())
 
-        every { paymentAccountRepository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
-        every { programmePriorityRepository.getById(PRIORITY_AXIS_ID) } returns programmePriority
+        every { paymentAccountRepository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+        every { programmePriorityRepository.getReferenceById(PRIORITY_AXIS_ID) } returns programmePriority
 
         assertThat(persistence.updateReconciliation(PAYMENT_ACCOUNT_ID, reconciliationUpdate).totalComment).isEqualTo(
             "Updated comment"

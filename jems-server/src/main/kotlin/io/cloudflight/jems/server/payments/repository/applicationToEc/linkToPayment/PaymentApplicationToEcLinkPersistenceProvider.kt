@@ -63,7 +63,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentExtension(paymentId: Long): PaymentToEcExtension =
-        ecPaymentExtensionRepository.getById(paymentId).toModel()
+        ecPaymentExtensionRepository.getReferenceById(paymentId).toModel()
 
     @Transactional(readOnly = true)
     override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentInEcPaymentMetadata> {
@@ -98,7 +98,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional
     override fun selectPaymentToEcPayment(paymentIds: Set<Long>, ecPaymentId: Long) {
-        val ecPayment = ecPaymentRepository.getById(ecPaymentId)
+        val ecPayment = ecPaymentRepository.getReferenceById(ecPaymentId)
         ecPaymentExtensionRepository.findAllById(paymentIds).forEach {
             it.paymentApplicationToEc = ecPayment
         }
@@ -120,7 +120,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         paymentId: Long,
         paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate
     ) {
-        ecPaymentExtensionRepository.getById(paymentId).apply {
+        ecPaymentExtensionRepository.getReferenceById(paymentId).apply {
             this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = paymentToEcLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = paymentToEcLinkingUpdate.correctedPrivateContribution
@@ -259,7 +259,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         val priorityAxisIds = totals.values.flatMapTo(HashSet()) { it.keys.mapNotNull { it } }
 
         val priorityById = programmePriorityRepository.findAllById(priorityAxisIds).associateBy { it.id }
-        val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
+        val ecPaymentEntity = ecPaymentRepository.getReferenceById(ecPaymentId)
 
         ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(ecPaymentId)
         ecPaymentPriorityAxisOverviewRepository.flush()
@@ -316,7 +316,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional
     override fun saveCumulativeAmounts(ecPaymentId: Long, totals: Map<Long?, EcPaymentSummaryLine>) {
-        val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
+        val ecPaymentEntity = ecPaymentRepository.getReferenceById(ecPaymentId)
         val priorityById = programmePriorityRepository.findAllById(totals.keys.mapNotNullTo(HashSet()) { it }).associateBy { it.id }
 
         val toSave = totals.mapKeys { (id, _) -> priorityById[id] }

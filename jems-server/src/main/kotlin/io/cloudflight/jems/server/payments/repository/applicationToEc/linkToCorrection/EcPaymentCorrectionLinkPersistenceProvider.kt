@@ -31,11 +31,11 @@ class EcPaymentCorrectionLinkPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCorrectionExtension(correctionId: Long): PaymentToEcCorrectionExtension =
-        ecPaymentCorrectionExtensionRepository.getById(correctionId).toModel()
+        ecPaymentCorrectionExtensionRepository.getReferenceById(correctionId).toModel()
 
     @Transactional
     override fun selectCorrectionToEcPayment(correctionIds: Set<Long>, ecPaymentId: Long) {
-        val ecPayment = ecPaymentRepository.getById(ecPaymentId)
+        val ecPayment = ecPaymentRepository.getReferenceById(ecPaymentId)
         ecPaymentCorrectionExtensionRepository.findAllById(correctionIds).forEach {
             it.paymentApplicationToEc = ecPayment
         }
@@ -94,7 +94,7 @@ class EcPaymentCorrectionLinkPersistenceProvider(
         correctionId: Long,
         ecPaymentCorrectionLinkingUpdate: PaymentToEcCorrectionLinkingUpdate
     ): PaymentToEcCorrectionExtension =
-        ecPaymentCorrectionExtensionRepository.getById(correctionId).apply {
+        ecPaymentCorrectionExtensionRepository.getReferenceById(correctionId).apply {
             this.correctedAutoPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = ecPaymentCorrectionLinkingUpdate.correctedPrivateContribution
@@ -122,7 +122,7 @@ class EcPaymentCorrectionLinkPersistenceProvider(
         totalEligibleWithoutArt94or95: BigDecimal,
         unionContribution: BigDecimal
     ) {
-        val correctionEntity = auditControlCorrectionRepository.getById(financialDescription.correctionId)
+        val correctionEntity = auditControlCorrectionRepository.getReferenceById(financialDescription.correctionId)
         val correctionExtensionEntity = PaymentToEcCorrectionExtensionEntity(
             correctionId = financialDescription.correctionId,
             correction = correctionEntity,

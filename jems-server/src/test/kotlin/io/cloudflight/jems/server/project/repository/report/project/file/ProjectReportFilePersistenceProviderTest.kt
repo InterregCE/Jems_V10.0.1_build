@@ -164,7 +164,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun updateReportActivityAttachment() {
         val oldFile = mockk<JemsFileMetadataEntity>()
 
-        every { workPlanActivityRepository.getById(80L) } returns activity(id = 80L, attachment = oldFile)
+        every { workPlanActivityRepository.getReferenceById(80L) } returns activity(id = 80L, attachment = oldFile)
 
         val fileCreate = fileCreate(type = JemsFileType.ActivityProjectReport)
         every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns dummyResult
@@ -177,7 +177,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun updateReportDeliverableAttachment() {
         val oldFile = mockk<JemsFileMetadataEntity>()
 
-        every { workPlanActivityDeliverableRepository.getById(75L) } returns deliverable(id = 75L, attachment = oldFile)
+        every { workPlanActivityDeliverableRepository.getReferenceById(75L) } returns deliverable(id = 75L, attachment = oldFile)
 
         val fileCreate = fileCreate(type = JemsFileType.DeliverableProjectReport)
         every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns dummyResult
@@ -190,7 +190,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun updateReportOutputAttachment() {
         val oldFile = mockk<JemsFileMetadataEntity>()
 
-        every { workPlanOutputRepository.getById(70L) } returns output(id = 70L, attachment = oldFile)
+        every { workPlanOutputRepository.getReferenceById(70L) } returns output(id = 70L, attachment = oldFile)
 
         val fileCreate = fileCreate(type = JemsFileType.OutputProjectReport)
         every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns dummyResult

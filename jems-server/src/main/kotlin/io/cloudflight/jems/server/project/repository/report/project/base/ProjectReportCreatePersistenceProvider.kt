@@ -116,7 +116,7 @@ class ProjectReportCreatePersistenceProvider(
                 workPlanActivityDeliverableRepository.saveAll(activity.deliverables.toEntity(activityEntity))
             }
             // save WP outputs
-            workPlanOutputRepository.saveAll(wp.outputs.toEntity(wpEntity, { outputIndicatorRepository.getById(it) }))
+            workPlanOutputRepository.saveAll(wp.outputs.toEntity(wpEntity, { outputIndicatorRepository.getReferenceById(it) }))
             // save WP investments
             workPlanInvestmentRepository.saveAll(wp.investments.toEntity(wpEntity))
         }
@@ -170,7 +170,7 @@ class ProjectReportCreatePersistenceProvider(
         projectReportCoFinancingRepository.saveAll(
             coFinancing.fundsSorted.toProjectReportEntity(
                 reportEntity = report,
-                programmeFundResolver = { programmeFundRepository.getById(it) },
+                programmeFundResolver = { programmeFundRepository.getReferenceById(it) },
             )
         )
 
@@ -193,7 +193,7 @@ class ProjectReportCreatePersistenceProvider(
         projectResultRepository.saveAll(
             projectResults.toIndexedEntity(
                 projectReport = projectReport,
-                indicatorEntityResolver = { it?.let { resultIndicatorRepository.getById(it) } },
+                indicatorEntityResolver = { it?.let { resultIndicatorRepository.getReferenceById(it) } },
             )
         )
 
@@ -212,7 +212,7 @@ class ProjectReportCreatePersistenceProvider(
         report: ProjectReportEntity,
     ) =
         reportProjectCertificateLumpSumRepository.saveAll(
-            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getById(it) }) }
+            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getReferenceById(it) }) }
         )
 
     private fun persistUnitCosts(
@@ -220,7 +220,7 @@ class ProjectReportCreatePersistenceProvider(
         report: ProjectReportEntity,
     ) =
         reportProjectCertificateUnitCostRepository.saveAll(
-            unitCosts.map { ls -> ls.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
+            unitCosts.map { ls -> ls.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getReferenceById(it) }) }
         )
 
     private fun persistAvailableInvestmentsToReport(
@@ -234,7 +234,7 @@ class ProjectReportCreatePersistenceProvider(
     private fun persistSpfContributionClaims(spfContributionClaims: List<ProjectReportSpfContributionClaimCreate>, report: ProjectReportEntity) {
         reportSpfContributionClaimRepository.saveAll(spfContributionClaims.map {
             it.toEntity(
-                report, programmeFundResolver = { programmeFundRepository.getById(it) })
+                report, programmeFundResolver = { programmeFundRepository.getReferenceById(it) })
         })
     }
 }

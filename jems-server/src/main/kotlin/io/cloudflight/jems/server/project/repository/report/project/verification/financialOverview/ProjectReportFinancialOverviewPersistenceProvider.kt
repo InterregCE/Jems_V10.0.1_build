@@ -100,7 +100,7 @@ class ProjectReportFinancialOverviewPersistenceProvider(
             val certificateSplits = certificate.split.toEntities(partnerReport, fundsResolver = { availableFunds[it]!! })
             return@flatMap listOf(certificateLine).plus(certificateSplits)
         }
-        val projectReport = projectReportRepository.getById(projectReportId)
+        val projectReport = projectReportRepository.getReferenceById(projectReportId)
         val linesSpf = toStore.filter { it.spfLine }.flatMap { certificate ->
             val certificateLine = certificate.toSpfEntity(projectReport)
             val certificateSplits = certificate.split.toSpfEntities(projectReport, fundsResolver = { availableFunds[it]!! })

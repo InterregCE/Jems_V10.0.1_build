@@ -433,7 +433,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @Test
     fun `getPartnerReportByProjectIdAndId - projectId fits`() {
         val report = reportEntity(id = 50L, LAST_YEAR, null)
-        every { partnerReportRepository.getById(50L) } returns report
+        every { partnerReportRepository.getReferenceById(50L) } returns report
         every { partnerRepository.getProjectIdForPartner(PARTNER_ID) } returns 777L
 
         assertThat(persistence.getPartnerReportByProjectIdAndId(777L, 50L)).isEqualTo(
@@ -448,7 +448,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @Test
     fun `getPartnerReportByProjectIdAndId - projectId does NOT fit`() {
         val report = reportEntity(id = 51L, LAST_YEAR, null)
-        every { partnerReportRepository.getById(51L) } returns report
+        every { partnerReportRepository.getReferenceById(51L) } returns report
         every { partnerRepository.getProjectIdForPartner(PARTNER_ID) } returns -1L // important part here
 
         assertThat(persistence.getPartnerReportByProjectIdAndId(777L, 51L)).isNull()

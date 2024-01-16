@@ -285,7 +285,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentExtension() {
-        every { ecPaymentExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(paymentApplicationToEcEntity())
+        every { ecPaymentExtensionRepository.getReferenceById(99L) } returns paymentToEcExtensionEntity(paymentApplicationToEcEntity())
         assertThat(persistenceProvider.getPaymentExtension(99L)).isEqualTo(paymentToEcExtensionModel)
     }
 
@@ -330,7 +330,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         val paymentToEcExtension = paymentToEcExtensionEntity(null)
         val paymentApplicationToEc = paymentApplicationToEcEntity()
         every { ecPaymentExtensionRepository.findAllById(setOf(99L)) } returns listOf(paymentToEcExtension)
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEc
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationToEc
 
         persistenceProvider.selectPaymentToEcPayment(paymentIds = setOf(99L), ecPaymentId = paymentApplicationsToEcId)
         assertThat(paymentToEcExtension.paymentApplicationToEc).isEqualTo(paymentApplicationToEc)
@@ -351,8 +351,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
     @Test
     fun updatePaymentToEcCorrectedAmounts() {
         val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity())
-        every { ecPaymentExtensionRepository.getById(99L) } returns entity
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity()
+        every { ecPaymentExtensionRepository.getReferenceById(99L) } returns entity
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity()
         val update = PaymentToEcLinkingUpdate(
             correctedPrivateContribution = BigDecimal.TEN,
             correctedPublicContribution = BigDecimal.valueOf(100.00),
@@ -544,7 +544,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             programmePriority1,
             programmePriority2
         )
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity()
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationToEcEntity()
         every { ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(paymentApplicationsToEcId) } answers { }
         every { ecPaymentPriorityAxisOverviewRepository.flush() } answers { }
         every { ecPaymentPriorityAxisOverviewRepository.saveAll(capture(entitySlot)) } returnsArgument 0
@@ -635,7 +635,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
     @Test
     fun saveCumulativeAmounts() {
         val ecPayment = mockk<PaymentApplicationToEcEntity>()
-        every { ecPaymentRepository.getById(14L) } returns ecPayment
+        every { ecPaymentRepository.getReferenceById(14L) } returns ecPayment
 
         val priority63 = mockk<ProgrammePriorityEntity>()
         every { priority63.id } returns 63L

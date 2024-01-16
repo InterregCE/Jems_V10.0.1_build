@@ -11,10 +11,10 @@ import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.elasticsearch.client.RestClient
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 
 const val AUDIT_PROPERTY_PREFIX = "audit-service"
@@ -25,7 +25,7 @@ const val AUDIT_ENABLED = "enabled"
  *   audit-service.enabled: [true|false]
  *   audit-service.url-and-port: [specify URL:PORT of ElasticSearch
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = AUDIT_PROPERTY_PREFIX, name = [AUDIT_ENABLED], havingValue = "true")
 @ConfigurationProperties(prefix = AUDIT_PROPERTY_PREFIX)
 class ElasticsearchConfig {

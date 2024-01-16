@@ -108,7 +108,7 @@ class ProjectPersistenceProvider(
         val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(id)
             .groupBy { it.level }
             .mapValues { it.value.map { collaborator -> collaborator.id.userId }.toSet() }
-        return projectRepository.getById(id).toApplicantAndStatus(
+        return projectRepository.getReferenceById(id).toApplicantAndStatus(
             collaboratorViewIds = (collaboratorsByLevel[VIEW] ?: emptySet()) union partnerCollaborators union partnerControllers,
             collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
             collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
@@ -117,7 +117,7 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectSummary(projectId: Long): ProjectSummary =
-        projectRepository.getById(projectId).toSummaryModel()
+        projectRepository.getReferenceById(projectId).toSummaryModel()
 
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =

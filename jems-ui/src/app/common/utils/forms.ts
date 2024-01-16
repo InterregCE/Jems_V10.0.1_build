@@ -11,7 +11,7 @@ export class Forms {
     return this.confirmRef(
       dialog,
       {title, message: {i18nKey: message, i18nArguments: messageArguments}}
-    ).afterClosed()
+    ).afterClosed();
   }
 
   static confirm(dialog: MatDialog, data: ConfirmDialogData): Observable<boolean> {

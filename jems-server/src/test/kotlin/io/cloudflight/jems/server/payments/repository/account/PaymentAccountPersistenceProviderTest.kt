@@ -66,7 +66,7 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
     @Test
     fun getById() {
         every {
-            repository.getById(
+            repository.getReferenceById(
                 PAYMENT_ACCOUNT_ID
             )
         } returns paymentAccountEntity()
@@ -92,7 +92,7 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
     @Test
     fun updatePaymentAccount() {
         val paymentAccountEntityTmp = paymentAccountEntity()
-        every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntityTmp
+        every { repository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntityTmp
 
         assertThat(persistenceProvider.updatePaymentAccount(PAYMENT_ACCOUNT_ID, paymentAccountUpdate)).isEqualTo(expectedPaymentAccountUpdate)
     }
@@ -112,14 +112,14 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
 
     @Test
     fun finalizePaymentAccount() {
-        every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+        every { repository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
 
         assertThat(persistenceProvider.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatus.FINISHED)
     }
 
     @Test
     fun reOpenPaymentAccount() {
-        every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+        every { repository.getReferenceById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
 
         assertThat(persistenceProvider.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatus.DRAFT)
     }

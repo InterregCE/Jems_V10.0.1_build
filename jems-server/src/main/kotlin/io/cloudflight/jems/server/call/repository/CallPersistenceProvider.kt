@@ -85,7 +85,7 @@ class CallPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCallSimpleByPartnerId(partnerId: Long): CallDetail =
-        partnerRepository.getById(partnerId).project.call.toDetailModel(mutableSetOf(), mutableSetOf())
+        partnerRepository.getReferenceById(partnerId).project.call.toDetailModel(mutableSetOf(), mutableSetOf())
 
     @Transactional(readOnly = true)
     override fun getCallIdForNameIfExists(name: String): Long? =
@@ -98,8 +98,8 @@ class CallPersistenceProvider(
 
         val created = callRepo.saveAndFlush(
             call.toEntity(
-                user = userRepo.getById(userId),
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
+                user = userRepo.getReferenceById(userId),
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getReferenceById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() }
             )
         )
@@ -134,7 +134,7 @@ class CallPersistenceProvider(
         return callRepo.save(
             call.toEntity(
                 user = existingCall.creator,
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getReferenceById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
                 existingEntity = existingCall,
             )

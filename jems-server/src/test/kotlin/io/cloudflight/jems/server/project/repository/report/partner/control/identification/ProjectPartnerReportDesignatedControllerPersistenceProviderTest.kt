@@ -229,11 +229,11 @@ class ProjectPartnerReportDesignatedControllerPersistenceProviderTest: UnitTest(
             designatedControllerRepository.findByReportEntityIdAndReportEntityPartnerId(1L, 1L)
         } returns designatedControllerEntity(report, controlInstitution, controlUser, reviewUser)
         every {
-            userRepo.getById(1L)
+            userRepo.getReferenceById(1L)
         } returns controlUser
 
         every {
-            userRepo.getById(2L)
+            userRepo.getReferenceById(2L)
         } returns reviewUser
 
         assertThat(
