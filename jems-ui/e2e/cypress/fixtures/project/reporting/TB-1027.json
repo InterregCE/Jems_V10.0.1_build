@@ -1,0 +1,675 @@
+{
+  "deadlines": [
+    {
+      "date":"updated",
+      "type":"Content",
+      "periodNumber":1,
+      "comment":"",
+      "id":0,
+      "number":0,
+      "linkedSubmittedProjectReportNumbers":[],
+      "linkedDraftProjectReportNumbers":[]
+    },
+    {
+      "date":"updated",
+      "type":"Finance",
+      "periodNumber":1,
+      "comment":"",
+      "id":0,
+      "number":0,
+      "linkedSubmittedProjectReportNumbers":[],
+      "linkedDraftProjectReportNumbers":[]
+    }
+  ],
+
+
+  "projectReport1Data": {
+
+    "expectedResults": {
+      "co-financing": {
+        "ERDF": {
+          "totalEligibleBudget": "36.875,05",
+          "previouslyReported": "0,00",
+          "currentReport": "10.654,05",
+          "totalReportedSoFar": "10.654,05",
+          "totalReportedSoFarPercentage": "28,89",
+          "remainingBudget": "26.221,00",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Neighbourhood CBC": {
+          "totalEligibleBudget": "3.562,37",
+          "previouslyReported": "0,00",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "0,00",
+          "totalReportedSoFarPercentage": "0,00",
+          "remainingBudget": "3.562,37",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "totalEligibleBudget": "11.147,22",
+          "previouslyReported": "0,00",
+          "currentReport": "2.603,13",
+          "totalReportedSoFar": "2.603,13",
+          "totalReportedSoFarPercentage": "23,35",
+          "remainingBudget": "8.544,09",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "totalEligibleBudget": "24.123,28",
+          "previouslyReported": "0,00",
+          "currentReport": "4.499,57",
+          "totalReportedSoFar": "4.499,57",
+          "totalReportedSoFarPercentage": "18,65",
+          "remainingBudget": "19.623,71",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "totalEligibleBudget": "75.707,92",
+          "previouslyReported": "0,00",
+          "currentReport": "17.756,75",
+          "totalReportedSoFar": "17.756,75",
+          "totalReportedSoFarPercentage": "23,45",
+          "remainingBudget": "57.951,17",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "0,00"
+        }
+      }
+    },
+
+    "expenditureVerification" : [
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": false,
+        "deductedByJs": 0,
+        "deductedByMa": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": true,
+        "deductedByJs": 0,
+        "deductedByMa": 99.33,
+        "typologyOfErrorId": 3,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": false,
+        "deductedByJs": 0,
+        "deductedByMa": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": false,
+        "deductedByJs": 0,
+        "deductedByMa": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": true,
+        "deductedByJs": 0,
+        "deductedByMa": 100.9,
+        "typologyOfErrorId": 1,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": true,
+        "deductedByJs": 0,
+        "deductedByMa": 300,
+        "typologyOfErrorId": 1,
+        "parked": false,
+        "verificationComment": null
+      },
+      {
+        "expenditureId": 0,
+        "partOfVerificationSample": false,
+        "deductedByJs": 0,
+        "deductedByMa": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "verificationComment": null
+      }
+    ]
+  },
+
+  "projectReport2Data": {
+
+    "expectedResults": {
+      "co-financing": {
+        "ERDF": {
+          "totalEligibleBudget": "36.875,05",
+          "previouslyReported": "10.654,05",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "10.654,05",
+          "totalReportedSoFarPercentage": "28,89",
+          "remainingBudget": "26.221,00",
+          "previouslyVerified": "10.327,48",
+          "previouslyPaid": "2.000,00"
+        },
+        "Neighbourhood CBC": {
+          "totalEligibleBudget": "3.562,37",
+          "previouslyReported": "0,00",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "0,00",
+          "totalReportedSoFarPercentage": "0,00",
+          "remainingBudget": "3.562,37",
+          "previouslyVerified": "0,00",
+          "previouslyPaid": "0,00"
+        },
+        "Other fund EN": {
+          "totalEligibleBudget": "11.147,22",
+          "previouslyReported": "2.603,13",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "2.603,13",
+          "totalReportedSoFarPercentage": "23,35",
+          "remainingBudget": "8.544,09",
+          "previouslyVerified": "2.523,34",
+          "previouslyPaid": "0,00"
+        },
+        "Partner contribution": {
+          "totalEligibleBudget": "24.123,28",
+          "previouslyReported": "4.499,57",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "4.499,57",
+          "totalReportedSoFarPercentage": "18,65",
+          "remainingBudget": "19.623,71",
+          "previouslyVerified": "4.361,66",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "totalEligibleBudget": "75.707,92",
+          "previouslyReported": "17.756,75",
+          "currentReport": "0,00",
+          "totalReportedSoFar": "17.756,75",
+          "totalReportedSoFarPercentage": "23,45",
+          "remainingBudget": "57.951,17",
+          "previouslyVerified": "17.212,48",
+          "previouslyPaid": "2.000,00"
+        }
+      }
+    }
+  },
+
+  "partnerReport1Data": {
+
+    "expenditures": [
+      {
+        "costCategory": "TravelAndAccommodationCosts",
+        "internalReferenceNumber": "",
+        "invoiceNumber": "",
+        "id": null,
+        "number": 1,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costGDPR": "",
+        "investmentId": "",
+        "contractId": "",
+        "invoiceDate": "",
+        "dateOfPayment": "",
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": 2991.73,
+        "vat": 0,
+        "numberOfUnits": 0,
+        "pricePerUnit": 0,
+        "declaredAmount": 2991.73,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 2991.73
+      },
+      {
+        "costCategory": "ExternalCosts",
+        "internalReferenceNumber": "",
+        "invoiceNumber": "",
+        "id": null,
+        "number": 2,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costGDPR": "",
+        "investmentId": "",
+        "contractId": "",
+        "invoiceDate": "",
+        "dateOfPayment": "",
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": 3800.95,
+
+        "vat": 0,
+        "numberOfUnits": 0,
+        "pricePerUnit": 0,
+        "declaredAmount": 3800.95,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 3800.95
+      },
+      {
+        "costCategory": "InfrastructureCosts",
+        "internalReferenceNumber": "",
+        "invoiceNumber": "",
+        "id": null,
+        "number": 4,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costGDPR": "",
+        "investmentId": "",
+        "contractId": "",
+        "invoiceDate": "",
+        "dateOfPayment": "",
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": 0.99,
+        "vat": 0,
+        "numberOfUnits": 0,
+        "pricePerUnit": 0,
+        "declaredAmount": 0.99,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 0.99
+      },
+      {
+        "costCategory": "EquipmentCosts",
+        "internalReferenceNumber": null,
+        "invoiceNumber": null,
+        "id": null,
+        "number": 1,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": {
+          "id": 249,
+          "unitCostProgrammeId": 4,
+          "projectDefined": false,
+          "costPerUnit": 1234.56,
+          "total": 1234.56,
+          "numberOfUnits": 1,
+          "costPerUnitForeignCurrency": null,
+          "foreignCurrencyCode": null,
+          "category": "EquipmentCosts",
+          "name": [
+            {
+              "language": "EN",
+              "translation": "Unit cost single - Equipment EN"
+            },
+            {
+              "language": "DE",
+              "translation": "Unit cost single - Equipment DE"
+            }
+          ],
+          "type": "unitCost"
+        },
+        "costGDPR": "",
+        "investmentId": null,
+        "contractId": null,
+        "invoiceDate": null,
+        "dateOfPayment": null,
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": null,
+        "vat": null,
+        "numberOfUnits": 0.7,
+        "pricePerUnit": 1234.56,
+        "declaredAmount": 864.19,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 864.19,
+        "attachment": null,
+        "lumpSumId": null,
+        "unitCostId": 249,
+        "gdpr": ""
+      },
+      {
+        "costCategory": "EquipmentCosts",
+        "internalReferenceNumber": null,
+        "invoiceNumber": null,
+        "id": null,
+        "number": 2,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": {
+          "id": 249,
+          "unitCostProgrammeId": 4,
+          "projectDefined": false,
+          "costPerUnit": 1234.56,
+          "total": 1234.56,
+          "numberOfUnits": 1,
+          "costPerUnitForeignCurrency": null,
+          "foreignCurrencyCode": null,
+          "category": "EquipmentCosts",
+          "name": [
+            {
+              "language": "EN",
+              "translation": "Unit cost single - Equipment EN"
+            },
+            {
+              "language": "DE",
+              "translation": "Unit cost single - Equipment DE"
+            }
+          ],
+          "type": "unitCost"
+        },
+        "costGDPR": "",
+        "investmentId": null,
+        "contractId": null,
+        "invoiceDate": null,
+        "dateOfPayment": null,
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": null,
+        "vat": null,
+        "numberOfUnits": 1,
+        "pricePerUnit": 1234.56,
+        "declaredAmount": 1234.56,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 1234.56,
+        "attachment": null,
+        "lumpSumId": null,
+        "unitCostId": 249,
+        "gdpr": ""
+      },
+      {
+        "costCategory": "Multiple",
+        "internalReferenceNumber": null,
+        "invoiceNumber": null,
+        "id": null,
+        "number": 5,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": {
+          "id": 20,
+          "lumpSumProgrammeId": 2,
+          "period": 1,
+          "cost": 2000,
+          "name": [
+            {
+              "language": "DE",
+              "translation": "Implementation Lump sum DE"
+            },
+            {
+              "language": "EN",
+              "translation": "Implementation Lump sum EN"
+            }
+          ],
+          "type": "lumpSum"
+        },
+        "costGDPR": "",
+        "investmentId": null,
+        "contractId": null,
+        "invoiceDate": null,
+        "dateOfPayment": null,
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": null,
+        "vat": null,
+        "numberOfUnits": 1,
+        "pricePerUnit": 2000,
+        "declaredAmount": 2000,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 2000,
+        "lumpSumId": 20
+      },
+      {
+        "costCategory": "InfrastructureCosts",
+        "internalReferenceNumber": null,
+        "invoiceNumber": null,
+        "id": null,
+        "number": 7,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": {
+          "id": 49,
+          "unitCostProgrammeId": 5,
+          "projectDefined": false,
+          "costPerUnit": 2519.77,
+          "total": 20158.16,
+          "numberOfUnits": 8,
+          "costPerUnitForeignCurrency": null,
+          "foreignCurrencyCode": null,
+          "category": "InfrastructureCosts",
+          "name": [
+            {
+              "language": "DE",
+              "translation": "Unit cost single - Infrastructure DE"
+            },
+            {
+              "language": "EN",
+              "translation": "Unit cost single - Infrastructure EN"
+            }
+          ],
+          "type": "unitCost"
+        },
+        "costGDPR": "",
+        "investmentId": null,
+        "contractId": null,
+        "invoiceDate": null,
+        "dateOfPayment": null,
+        "description": [],
+        "comment": [],
+        "totalValueInvoice": null,
+        "numberOfUnits": 3,
+        "pricePerUnit": 2519.77,
+        "declaredAmount": 7559.31,
+        "currencyCode": "EUR",
+        "currencyConversionRate": 1,
+        "declaredAmountInEur": 7559.31,
+        "unitCostId": 49
+      }
+    ],
+
+    "controlDeductedExpenditures": [
+      {
+        "id": 0,
+        "number": 1,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "TravelAndAccommodationCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": true,
+        "declaredAmountInEur": 2991.73,
+        "certifiedAmount": 2115.51,
+        "deductedAmount": 876.22,
+        "typologyOfErrorId": 1,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 2,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "ExternalCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": true,
+        "declaredAmountInEur": 3800.95,
+        "certifiedAmount": 3475.0099999999998,
+        "deductedAmount": 325.94,
+        "typologyOfErrorId": 3,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 3,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "InfrastructureCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": true,
+        "declaredAmountInEur": 0.99,
+        "certifiedAmount": 0.48,
+        "deductedAmount": 0.51,
+        "typologyOfErrorId": 1,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 4,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "EquipmentCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": false,
+        "declaredAmountInEur": 864.19,
+        "certifiedAmount": 864.19,
+        "deductedAmount": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 5,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "EquipmentCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": false,
+        "declaredAmountInEur": 1234.56,
+        "certifiedAmount": 1234.56,
+        "deductedAmount": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 6,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "Multiple",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": false,
+        "declaredAmountInEur": 2000,
+        "certifiedAmount": 2000,
+        "deductedAmount": 0,
+        "typologyOfErrorId": null,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      },
+      {
+        "id": 0,
+        "number": 7,
+        "parkingMetadata": null,
+        "reportOfOriginNumber": null,
+        "originalExpenditureNumber": null,
+        "costOptions": null,
+        "costCategory": "InfrastructureCosts",
+        "costGDPR": false,
+        "investmentId": null,
+        "attachment": null,
+        "partOfSampleLocked": false,
+        "partOfSample": true,
+        "declaredAmountInEur": 7559.31,
+        "certifiedAmount": 5225.630000000001,
+        "deductedAmount": 2333.68,
+        "typologyOfErrorId": 1,
+        "parked": false,
+        "parkedOn": null,
+        "unparkable": true,
+        "verificationComment": null
+      }
+    ]
+  },
+
+  "authorizedPayments": [
+    {
+      "projectCustomIdentifier": "setDuringTest",
+      "fundName": "ERDF",
+      "partnerPayments": [
+        {
+          "id": 0,
+          "partnerId": 0,
+          "partnerType": "LEAD_PARTNER",
+          "partnerAbbreviation": "Lead Partner",
+          "amountApproved": 2523.34,
+          "installments": [
+            {
+              "amountPaid": 2000,
+              "paymentDate": "2024-01-17T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2024-01-17",
+              "paymentConfirmed": true,
+              "paymentConfirmedDate": "2024-01-17"
+            },
+            {
+              "amountPaid": 523.34,
+              "paymentDate": "2024-01-17T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2024-01-17",
+              "paymentConfirmed": false,
+              "paymentConfirmedDate": ""
+            }
+          ]
+        }
+      ],
+      "paymentType": "REGULAR",
+      "projectId": 0,
+      "projectAcronym": "TB-1027",
+      "amountApprovedPerFund": 2523.34
+    }
+  ]
+
+}

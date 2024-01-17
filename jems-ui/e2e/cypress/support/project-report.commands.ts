@@ -10,6 +10,8 @@ declare global {
 
       startProjectReportVerification(applicationId: number, reportId: number);
 
+      updateProjectReportExpenditureVerification(applicationId: number, reportId: number, partnerReportExpenditures)
+
       finalizeProjectReportVerification(applicationId: number, reportId: number);
     }
   }
@@ -43,6 +45,15 @@ Cypress.Commands.add('startProjectReportVerification', (applicationId: number, r
     url: `/api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/startVerification`,
   });
 });
+
+Cypress.Commands.add('updateProjectReportExpenditureVerification', (applicationId: number, reportId: number, expenditureVerification) => {
+    cy.request({
+        method: 'PUT',
+        url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/verification/expenditure`,
+        body: expenditureVerification
+    }).then( response => response.body);
+});
+
 
 Cypress.Commands.add('finalizeProjectReportVerification', (applicationId: number, reportId: number) => {
   cy.request({

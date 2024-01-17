@@ -83,6 +83,8 @@ declare global {
 
       updateReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
 
+      getReportingDeadlines(applicationId: number);
+
       getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
 
       updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
@@ -345,6 +347,13 @@ Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reporti
 Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
   // same as create, but need to provide id reference in reportingDeadlines
   createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
+Cypress.Commands.add('getReportingDeadlines', (applicationId: number) => {
+    cy.request({
+        method: 'GET',
+        url: `api/project/${applicationId}/contracting/reporting`,
+    }).then((response) => response.body);
 });
 
 Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {

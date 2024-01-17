@@ -221,10 +221,8 @@ context('Project report tests', () => {
             .then(reportId => {
               cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
               cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
-                .then(response => {
-                  for (let i = 0; i < response.length; i++) {
-                    partnerParkedExpenditures[i].id = response[i].id;
-                  }
+                .then(savedExpenditures => {
+                    setPartnerReportExpenditureVerificationIds(savedExpenditures, partnerParkedExpenditures)
                 });
               cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
               cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
@@ -410,7 +408,84 @@ context('Project report tests', () => {
       });
     });
   });
+
+    it('TB-1027 PR - Financial overview - Summary shows correct figures across multiple project reports', function () {
+        cy.fixture('project/reporting/TB-1027.json').then(testData => {
+            cy.loginByRequest(user.applicantUser.email);
+            cy.createContractedApplication(application, user.programmeUser.email).then( applicationId => {
+
+                const partnerId = this[application.partners[0].details.abbreviation];
+
+                // First - partner and project report
+                cy.addPartnerReport(partnerId).then( reportId => {
+                    cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+                    cy.updatePartnerReportExpenditures(partnerId, reportId, testData.partnerReport1Data.expenditures).then( savedExpenditures => {
+                        cy.wrap(savedExpenditures).as('partnerReport1SavedExpenditures');
+                        cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+                        cy.submitPartnerReport(partnerId, reportId);
+
+                        cy.loginByRequest(user.controllerUser.email);
+                        cy.startControlWork(partnerId, reportId);
+
+                        setPartnerReportExpenditureVerificationIds(savedExpenditures, testData.partnerReport1Data.controlDeductedExpenditures)
+                        cy.updateControlReportExpenditureVerification(partnerId, reportId, testData.partnerReport1Data.controlDeductedExpenditures);
+                        cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
+                        cy.finalizeControl(partnerId, reportId);
+                    });
+
+                    const deadlines = {finance: new Date()};
+                    createReportingDeadlines(applicationId, testData, deadlines).then(deadlines => {
+                        const financeDeadlineId = deadlines.find(deadline => deadline.type == ProjectReportType.Finance)?.id;
+
+                        cy.loginByRequest(user.applicantUser.email);
+                        cy.createProjectReport(applicationId, {deadlineId: financeDeadlineId}).then(projectReportId => {
+                            cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
+                            projectReportPage.verifyAmountsInTables(testData.projectReport1Data.expectedResults);
+                            cy.submitProjectReport(applicationId, projectReportId);
+
+                            cy.loginByRequest(user.verificationUser.email);
+
+                            cy.startProjectReportVerification(applicationId, projectReportId);
+                            //setPartnerReportExpenditureVerificationIds(testData.partnerReport1Data, testData.partnerReport1Data.controlDeductedExpenditures)
+
+                            cy.get('@partnerReport1SavedExpenditures').then(savedExpenditures => {
+                                setProjectReportExpenditureVerificationIds(savedExpenditures, testData.projectReport1Data.expenditureVerification)
+                                cy.updateProjectReportExpenditureVerification(applicationId, projectReportId, testData.projectReport1Data.expenditureVerification)
+                            });
+                            cy.finalizeProjectReportVerification(applicationId, projectReportId);
+                        });
+                    });
+
+                });
+
+                // pay a part of the newly created Regular payment for Project Report 1
+                cy.loginByRequest(paymentsUser.email);
+                cy.visit('/');
+                cy.contains('Payments').click();
+                cy.findProjectPayments(applicationId).then( projectPayments => {
+                    const regularPayments = projectPayments.filter(payment => payment.paymentType === "REGULAR");
+                    expect(regularPayments.length).to.be.equal(2);
+                    cy.addAuthorizedPayments(applicationId, testData.authorizedPayments);
+                });
+
+                // Second - partner and project report
+                cy.getReportingDeadlines(applicationId).then(deadlines => {
+                    const financeDeadlineId = deadlines.find(deadline => deadline.type == ProjectReportType.Finance)?.id;
+
+                    cy.loginByRequest(user.applicantUser.email);
+                    cy.createProjectReport(applicationId, {deadlineId: financeDeadlineId}).then(projectReportId => {
+                        cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
+                        projectReportPage.verifyAmountsInTables(testData.projectReport2Data.expectedResults);
+                        cy.submitProjectReport(applicationId, projectReportId);
+                    });
+                })
+
+            });
+        });
+    });
+
 });
+
 
 function createProjectReport(forPeriod: number) {
   cy.contains('Add Project Report').click();
@@ -507,4 +582,17 @@ function createJsMaUser(testData) {
 
     cy.createUser(testData.jsmaUser).as("jsmaUserId");
   });
+}
+
+
+function setPartnerReportExpenditureVerificationIds(savedExpenditures, expendituresVerification) {
+    for (let i = 0; i < savedExpenditures.length; i++) {
+        expendituresVerification[i].id = savedExpenditures[i].id;
+    }
+}
+
+function setProjectReportExpenditureVerificationIds(savedExpenditures, expendituresVerification) {
+    for (let i = 0; i < savedExpenditures.length; i++) {
+        expendituresVerification[i].expenditureId = savedExpenditures[i].id;
+    }
 }
