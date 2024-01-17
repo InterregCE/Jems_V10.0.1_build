@@ -204,7 +204,8 @@ export class AuditControlCorrectionDetailPageStore {
   closeCorrection(projectId: number, auditControlId: number, correctionId: number): Observable<ProjectAuditControlCorrectionDTO.StatusEnum> {
     return this.projectAuditControlCorrectionService.closeProjectCorrection(auditControlId, correctionId, projectId).pipe(
       map(status => status as ProjectAuditControlCorrectionDTO.StatusEnum),
-      tap(status => this.auditControlCorrectionStore.refreshCorrections$.next()),
+      tap(() => this.auditControlCorrectionStore.refreshCorrections$.next()),
+      tap(() => this.reportCorrectionsAuditControlDetailPageStore.refresh()),
       tap(status => Log.info('Changed status for correction', this, correctionId, status)),
     );
   }
