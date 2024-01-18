@@ -25,7 +25,7 @@ class ContractingReportingPersistenceProvider(
 
         return projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId)
             .map { deadline ->
-                deadline.toModel(reports = linkedReportsByDeadline[deadline.id] ?: emptyList())
+                deadline.toModel(linkedReports = linkedReportsByDeadline[deadline.id] ?: emptyList())
             }
     }
 
@@ -33,7 +33,8 @@ class ContractingReportingPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getContractingReportingDeadline(projectId: Long, deadlineId: Long): ProjectContractingReportingSchedule {
         val linkedProjectReports = projectReportRepository.findAllByProjectIdAndDeadlineId(projectId, deadlineId)
-        return projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId).toModel(linkedProjectReports)
+        return projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId)
+            .toModel(linkedReports = linkedProjectReports)
     }
 
 
