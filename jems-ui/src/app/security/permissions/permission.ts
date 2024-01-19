@@ -597,18 +597,18 @@ export class Permission {
           editTooltip: 'permission.payments.to.ec.edit.tooltip',
         },
         {
-          name: 'permission.payments.audit',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.PaymentsAuditRetrieve],
-          editPermissions: [PermissionsEnum.PaymentsAuditUpdate]
-        },
-      {
           name: 'permission.payments.accounts',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.PaymentsAccountRetrieve],
           editPermissions: [PermissionsEnum.PaymentsAccountUpdate],
           editTooltip: 'permission.payments.accounts.edit.tooltip',
-      },
+        },
+        {
+          name: 'permission.payments.audit',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsAuditRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsAuditUpdate]
+        },
       ],
     },
     {

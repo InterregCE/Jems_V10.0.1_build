@@ -31,6 +31,11 @@ import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.c
 import {
   PaymentToEcFinalizeTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component';
+import {AccountsPageComponent} from './accounts-page/accounts-page.component';
+import {
+  AccountsSummaryTabComponent
+} from './accounts-page/account-detail/accounts-summary-tab/accounts-summary-tab.component';
+import {AccountDetailComponent} from './accounts-page/account-detail/account-detail.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -44,6 +49,8 @@ export const paymentsRoutes: Routes = [
         PermissionsEnum.AdvancePaymentsUpdate,
         PermissionsEnum.PaymentsToEcRetrieve,
         PermissionsEnum.PaymentsToEcUpdate,
+        PermissionsEnum.PaymentsAccountRetrieve,
+        PermissionsEnum.PaymentsAccountUpdate,
         PermissionsEnum.PaymentsAuditRetrieve,
         PermissionsEnum.PaymentsAuditUpdate
       ],
@@ -61,8 +68,10 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.AdvancePaymentsUpdate,
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
+            PermissionsEnum.PaymentsAccountRetrieve,
+            PermissionsEnum.PaymentsAccountUpdate,
             PermissionsEnum.PaymentsAuditRetrieve,
-            PermissionsEnum.PaymentsAuditUpdate
+            PermissionsEnum.PaymentsAuditUpdate,
           ],
         },
       },
@@ -195,6 +204,37 @@ export const paymentsRoutes: Routes = [
             path: 'finalize',
             component: PaymentToEcFinalizeTabComponent,
           },
+        ]
+      },
+      {
+        path: 'accounts',
+        canActivate: [PermissionGuard],
+        data: {
+          breadcrumb: 'payments.accounts.breadcrumb',
+          permissionsOnly: [
+            PermissionsEnum.PaymentsAccountRetrieve,
+            PermissionsEnum.PaymentsAccountUpdate,
+          ],
+        },
+        children: [
+          {
+            path: '',
+            component: AccountsPageComponent
+          },
+          {
+            path: ':id',
+            component: AccountDetailComponent,
+            children: [
+              {
+                path: '',
+                redirectTo: 'summary',
+              },
+              {
+                path: 'summary',
+                component: AccountsSummaryTabComponent,
+              },
+            ],
+          }
         ]
       },
       {
