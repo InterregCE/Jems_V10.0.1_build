@@ -3784,9 +3784,11 @@
 								"exec": [
 									"pm.test('applicant can download previously-uploaded file', function() {\r",
 									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('downloaded file has proper headers', function() {\r",
 									"    pm.response.to.have.header('Content-Type', 'application/octet-stream');\r",
-									"    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"file.txt\"');\r",
-									"    pm.response.to.have.header('Content-Type', 'application/octet-stream');\r",
+									"    pm.response.to.have.header('Content-Disposition', \"attachment; filename*=UTF-8''file.txt\");\r",
 									"    pm.expect(pm.response.text()).to.contain('text');\r",
 									"});\r",
 									""
