@@ -1,12 +1,6 @@
 import {Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  AuditControlDTO,
-  PageProjectAuditControlCorrectionLineDTO, ProjectAuditControlCorrectionLineDTO,
-  ProjectAuditControlUpdateDTO,
-  UserRoleCreateDTO,
-  UserRoleDTO
-} from '@cat/api';
+import {AuditControlDTO, ProjectAuditControlUpdateDTO, UserRoleDTO} from '@cat/api';
 import {
   ReportCorrectionsAuditControlDetailPageStore
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/report-corrections-audit-control-detail-page.store';
@@ -21,9 +15,6 @@ import {ActivatedRoute} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {APIError} from '@common/models/APIError';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {
-  AuditControlCorrectionStore
-} from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-store.service';
 
 @Component({
   selector: 'jems-audit-control-identity',
@@ -68,8 +59,9 @@ export class AuditControlIdentityComponent {
     private formService: FormService,
     public router: RoutingService,
     private activatedRoute: ActivatedRoute,
-    private correctionsOverviewStore: AuditControlCorrectionStore,
   ) {
+    this.pageStore.refresh();
+
     this.data$ = combineLatest([
       pageStore.projectId$,
       pageStore.auditControl$,
@@ -107,7 +99,6 @@ export class AuditControlIdentityComponent {
     });
     this.formService.init(this.form, of(editable));
 
-    // TODO: delete in next feature, after Corrections are added
     this.form.controls?.totalCorrectionsAmount?.disable();
   }
 

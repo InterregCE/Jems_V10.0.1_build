@@ -8,7 +8,7 @@ import {PluginInfoDTO} from '@cat/api';
 import {catchError, map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PluginKeys} from './plugin-keys';
-import {CallPageSidenavService} from "../services/call-page-sidenav.service";
+import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 
 @UntilDestroy()
 @Component({

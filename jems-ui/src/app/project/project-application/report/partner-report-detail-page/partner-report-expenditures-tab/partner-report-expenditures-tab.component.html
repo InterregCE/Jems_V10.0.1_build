@@ -12,7 +12,8 @@
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
-                    <mat-table jemsNoWidthLimit
+                    <mat-table #expenditureCostsTable
+                               jemsNoWidthLimit
                                id="expenditure-costs-table"
                                class="table-condensed"
                                [jemsTableConfig]="data.withConfigs"
@@ -713,7 +714,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
+                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay; sticky:true"></mat-header-row>
                         <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
                                  [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
 

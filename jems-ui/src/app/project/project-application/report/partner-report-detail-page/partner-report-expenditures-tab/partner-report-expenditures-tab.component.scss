@@ -1,3 +1,24 @@
+
+:host::ng-deep {
+  .language-switcher {
+    z-index: 5001;
+    position: relative;
+  }
+}
+
+#table-container {
+  .mat-header-row {
+    position: sticky;
+    top: 1rem;
+    z-index: 5000;
+  }
+  .mat-table {
+    overflow: auto;
+    max-height: calc(100vh - 18rem);
+
+  }
+}
+
 .end-flex-header-table {
   display: flex;
   justify-content: flex-end;

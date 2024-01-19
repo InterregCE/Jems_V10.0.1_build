@@ -125,7 +125,7 @@ export class ChecklistInstanceListComponent implements OnInit {
     ]).pipe(
         map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
         tap(data => this.checklistInstances = data)
-    )
+    );
   }
 
   delete(checklist: ChecklistInstanceDTO): void {
@@ -362,6 +362,6 @@ export class ChecklistInstanceListComponent implements OnInit {
                     {relativeTo: this.activatedRoute}
             ))
         )
-        .subscribe()
+        .subscribe();
   }
 }

@@ -1,0 +1,65 @@
+<ng-container *ngIf="data$ | async as data">
+  <jems-form  (discard)="resetForm(data.accountDetail)"
+              (save)="savePaymentAccount()"
+              [formGroup]="summaryForm">
+    <div jemsFormLayout>
+
+      <h3>{{'payments.accounts.detail.summary.tab.header' | translate}}</h3>
+      <p>{{'payments.accounts.detail.summary.tab.subheader' | translate}}</p>
+
+
+      <div class="summary-form" jemsMultiColumnRow>
+        <div>
+          <div>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+              <mat-label>{{'payments.accounts.detail.summary.tab.other.details.national.reference.label' | translate}}</mat-label>
+              <input formControlName="nationalReference" name="nationalReference" matInput #nationalReference>
+              <mat-hint [jemsHintFor]="nationalReference" [hide]="summaryForm?.get('nationalReference')?.errors !== null">
+                <jems-text-hint [currentLength]="nationalReference.value.length" [maxLength]="50"></jems-text-hint>
+              </mat-hint>
+              <mat-error>
+                <jems-form-field-errors [errors]="summaryForm?.get('nationalReference')?.errors"></jems-form-field-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+              <mat-label>{{'payments.accounts.detail.summary.tab.other.details.technical.assistance.label' | translate}}</mat-label>
+              <input formControlName="technicalAssistance" name="technicalAssistance" currencyMask matInput type="decimal" [options]="{allowNegative: true}">
+            </mat-form-field>
+          </div>
+
+          <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+              <mat-label>{{'payments.accounts.detail.summary.tab.other.details.submission.to.sfc.date.label' | translate}}</mat-label>
+              <input formControlName="submissionToSFCDate" [matDatepicker]="submissionToSFCDatePicker" matInput>
+              <mat-datepicker-toggle matSuffix [for]="submissionToSFCDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #submissionToSFCDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+              <mat-label>{{'payments.accounts.detail.summary.tab.other.details.sfc.number.label' | translate}}</mat-label>
+              <input formControlName="sfcNumber" name="sfcNumber" matInput #sfcNumber>
+              <mat-hint [jemsHintFor]="sfcNumber" [hide]="summaryForm?.get('sfcNumber')?.errors !== null">
+                <jems-text-hint [currentLength]="sfcNumber.value.length" [maxLength]="50"></jems-text-hint>
+              </mat-hint>
+              <mat-error>
+                <jems-form-field-errors [errors]="summaryForm?.get('sfcNumber')?.errors"></jems-form-field-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="full"
+                                    [control]="summaryForm.controls.comment"
+                                    [errors]="summaryForm?.get('comment')?.errors"
+                                    label="payments.accounts.detail.summary.tab.other.details.comment.label"
+                                    [characterLimit]="5000"
+                                    [minRows]="5"
+                                    [maxRows]="10">
+          </jems-expandable-textarea>
+        </div>
+      </div>
+    </div>
+  </jems-form>
+</ng-container>

@@ -152,7 +152,7 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
   }
 
   get componentsEditable(): boolean {
-    return this.form.get('components')?.enabled ?? false
+    return this.form.get('components')?.enabled ?? false;
   }
 
   private resetForm(checklist: ProgrammeChecklistDetailDTO) {

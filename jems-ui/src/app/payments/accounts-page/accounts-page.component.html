@@ -1,0 +1,25 @@
+<jems-main-page-template [needsCard]="true">
+  <ng-container *ngIf="data$ | async as data">
+    <div *ngIf="data.userCanView" id="paymentAccountsPage">
+      <h2>{{'payments.accounts.header' | translate}}</h2>
+      <p>{{'payments.accounts.text.1' | translate}}</p>
+      <p>{{'payments.accounts.text.2' | translate}}</p>
+
+      <ng-container *ngFor="let fund of data.funds">
+        <h3>{{fund.programmeFund.abbreviation | translateBySystemLanguage | async}}</h3>
+        <jems-table [id]="fund.programmeFund.id"
+                    [configuration]="tableConfiguration"
+                    [rows]="fund.paymentAccounts">
+        </jems-table>
+      </ng-container>
+    </div>
+  </ng-container>
+</jems-main-page-template>
+
+<ng-template #accountingYearCell let-fundData>
+  <span>{{ fundData.accountingYear | asAccountingYear }}</span>
+</ng-template>
+
+<ng-template #statusCell let-fundData>
+    <span>{{('payments.accounts.table.status.' + fundData.status) | translate}}</span>
+</ng-template>
