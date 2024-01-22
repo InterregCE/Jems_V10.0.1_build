@@ -523,9 +523,9 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
-                                     (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
+                                     (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
-                                    <div class="custom-text-area" >
+                                    <div class="custom-text-area">
                                         {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | asMoney}}
                                     </div>
                                 </div>
