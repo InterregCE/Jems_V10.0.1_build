@@ -7,6 +7,8 @@ data class ProjectContractingMonitoring(
     val projectId: Long,
     val startDate: LocalDate? = null,
     var endDate: LocalDate? = null,
+    val closureDate: LocalDate? = null,
+    val partnerPaymentDates: List<ContractingMonitoringPartnerLastPayment>,
 
     val typologyProv94: ContractingMonitoringExtendedOption,
     val typologyProv94Comment: String? = null,

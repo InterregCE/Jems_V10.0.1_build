@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.service.application.return_application
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
+import io.cloudflight.jems.server.project.service.application.set_application_to_closed.SetApplicationToClosed
 import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContracted
 import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContractedInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_eligibility.SetAssessmentEligibilityInteractor
@@ -54,7 +55,8 @@ class ProjectStatusController(
     private val setAssessmentEligibilityInteractor: SetAssessmentEligibilityInteractor,
     private val setAssessmentQualityInteractor: SetAssessmentQualityInteractor,
     private val getModificationDecisionsInteractor: GetModificationDecisionsInteractor,
-    private val setApplicationToContracted: SetApplicationToContractedInteractor
+    private val setApplicationToContracted: SetApplicationToContractedInteractor,
+    private val setApplicationToClosed: SetApplicationToClosed
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
         executePreConditionCheck.execute(id).toDTO()
@@ -111,6 +113,12 @@ class ProjectStatusController(
         rejectModification.reject(id, modification.toModel()).toDTO()
 
     override fun setToContracted(id: Long): ApplicationStatusDTO =
+        setApplicationToContracted.setApplicationToContracted(id).toDTO()
+
+    override fun setToClosed(id: Long): ApplicationStatusDTO =
+        setApplicationToClosed.setApplicationToClosed(id).toDTO()
+
+    override fun revertToContracted(id: Long): ApplicationStatusDTO =
         setApplicationToContracted.setApplicationToContracted(id).toDTO()
 
 }

@@ -26,7 +26,8 @@ class ContractingMonitoringPersistenceProvider(
                         typologyPartnership = ContractingMonitoringOption.No,
                         typologyProv94 = ContractingMonitoringExtendedOption.No,
                         typologyProv95 = ContractingMonitoringExtendedOption.No,
-                        typologyStrategic = ContractingMonitoringOption.No
+                        typologyStrategic = ContractingMonitoringOption.No,
+                        partnerPaymentDates = emptyList()
                     )
                 }
             }

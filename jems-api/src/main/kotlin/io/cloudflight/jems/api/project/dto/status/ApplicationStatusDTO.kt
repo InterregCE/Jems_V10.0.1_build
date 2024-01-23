@@ -23,5 +23,6 @@ enum class ApplicationStatusDTO {
     IN_MODIFICATION,
     MODIFICATION_SUBMITTED,
     NOT_APPROVED,
-    CONTRACTED
+    CONTRACTED,
+    CLOSED
 }

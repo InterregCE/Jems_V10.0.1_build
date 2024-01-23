@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.repository.contracting.monitoring
 
 import io.cloudflight.jems.server.project.entity.contracting.ContractingDimensionCodeEntity
 import io.cloudflight.jems.server.project.entity.contracting.ContractingMonitoringAddDateId
+import io.cloudflight.jems.server.project.entity.contracting.ContractingPartnerPaymentDateEntity
 import io.cloudflight.jems.server.project.entity.contracting.ProjectContractingMonitoringAddDateEntity
 import io.cloudflight.jems.server.project.entity.contracting.ProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringPartnerLastPayment
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 
@@ -18,6 +20,15 @@ fun ProjectContractingMonitoringAddDateEntity.toModel() = ProjectContractingMoni
 
 fun List<ContractingDimensionCodeEntity>.toDimensionCodeModels() = map { it.toModel() }
 
+fun List<ContractingPartnerPaymentDateEntity>.toModels() = map { it.toModel() }
+
+fun ContractingPartnerPaymentDateEntity.toModel() = ContractingMonitoringPartnerLastPayment(
+    id= id,
+    partnerId = partnerId,
+    projectId = projectId,
+    lastPaymentDate = lastPaymentDate
+)
+
 fun ContractingDimensionCodeEntity.toModel() = ContractingDimensionCode(
     id = id,
     projectId = projectId,
@@ -28,6 +39,7 @@ fun ContractingDimensionCodeEntity.toModel() = ContractingDimensionCode(
 fun ProjectContractingMonitoringEntity.toModel() = ProjectContractingMonitoring(
     projectId = projectId,
     startDate = startDate,
+    closureDate = closureDate,
     typologyProv94 = typologyProv94,
     typologyProv94Comment = typologyProv94Comment,
     typologyProv95 = typologyProv95,
@@ -37,7 +49,8 @@ fun ProjectContractingMonitoringEntity.toModel() = ProjectContractingMonitoring(
     typologyPartnership = typologyPartnership,
     typologyPartnershipComment = typologyPartnershipComment,
     addDates = addDates.toModels(),
-    dimensionCodes = dimensionCodes.toDimensionCodeModels()
+    dimensionCodes = dimensionCodes.toDimensionCodeModels(),
+    partnerPaymentDates = partnerPaymentDates.toModels()
 )
 
 fun List<ProjectContractingMonitoringAddDate>.toEntities(projectId: Long) =
@@ -52,6 +65,16 @@ fun ProjectContractingMonitoringAddDate.toEntity(id: Long, sortNumber: Int) = Pr
 fun List<ContractingDimensionCode>.toDimensionCodeEntities(projectId: Long) =
     map{ it.toEntity(projectId)}
 
+fun List<ContractingMonitoringPartnerLastPayment>.toEntities() =
+    map{ it.toEntity() }
+
+fun ContractingMonitoringPartnerLastPayment.toEntity() = ContractingPartnerPaymentDateEntity(
+    id = id,
+    projectId = projectId,
+    partnerId = partnerId,
+    lastPaymentDate = lastPaymentDate
+)
+
 fun ContractingDimensionCode.toEntity(projectId: Long) =
     ContractingDimensionCodeEntity(
         id = id,
@@ -63,6 +86,7 @@ fun ContractingDimensionCode.toEntity(projectId: Long) =
 fun ProjectContractingMonitoring.toEntity() = ProjectContractingMonitoringEntity(
     projectId = projectId,
     startDate = startDate,
+    closureDate = closureDate,
     typologyProv94 = typologyProv94,
     typologyProv94Comment = typologyProv94Comment,
     typologyProv95 = typologyProv95,
@@ -72,5 +96,6 @@ fun ProjectContractingMonitoring.toEntity() = ProjectContractingMonitoringEntity
     typologyPartnership = typologyPartnership,
     typologyPartnershipComment = typologyPartnershipComment,
     addDates = addDates.toEntities(projectId),
-    dimensionCodes = dimensionCodes.toDimensionCodeEntities(projectId)
+    dimensionCodes = dimensionCodes.toDimensionCodeEntities(projectId),
+    partnerPaymentDates = partnerPaymentDates.toEntities()
 )

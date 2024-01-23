@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.Applicati
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
 
-class ContractedApplicationState(
+class ClosedApplicationState(
     override val projectSummary: ProjectSummary,
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,
@@ -16,19 +16,11 @@ class ContractedApplicationState(
     override val projectPersistence: ProjectPersistence
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
-    override fun startModification(): ApplicationStatus {
+    override fun revertToContracted(): ApplicationStatus {
         return projectWorkflowPersistence.updateProjectCurrentStatus(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
-            status = ApplicationStatus.IN_MODIFICATION
-        )
-    }
-
-    override fun setToClosed(): ApplicationStatus {
-        return projectWorkflowPersistence.updateProjectCurrentStatus(
-            projectId = projectSummary.id,
-            userId = securityService.getUserIdOrThrow(),
-            status = ApplicationStatus.CLOSED
+            status = ApplicationStatus.CONTRACTED
         )
     }
 }
