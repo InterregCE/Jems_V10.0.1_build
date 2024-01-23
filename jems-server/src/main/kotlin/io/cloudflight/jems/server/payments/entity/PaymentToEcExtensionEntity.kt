@@ -27,6 +27,15 @@ class PaymentToEcExtensionEntity (
     var paymentApplicationToEc: PaymentApplicationToEcEntity? = null,
 
     @field:NotNull
+    var correctedTotalEligibleWithoutSco: BigDecimal,
+
+    @field:NotNull
+    var correctedFundAmountUnionContribution: BigDecimal,
+
+    @field:NotNull
+    var correctedFundAmountPublicContribution: BigDecimal,
+
+    @field:NotNull
     val partnerContribution: BigDecimal,
 
     @field:NotNull

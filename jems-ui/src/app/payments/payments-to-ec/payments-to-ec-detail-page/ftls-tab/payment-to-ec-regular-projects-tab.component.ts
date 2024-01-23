@@ -117,7 +117,7 @@ export class PaymentToEcRegularProjectsTabComponent implements OnInit {
       }).pipe(
       take(1),
       filter(Boolean),
-      switchMap(() => this.pageStore.deselectPaymentFromEc(ftlsPaymentId)
+      switchMap(() => this.pageStore.deselectPaymentFromEc(ecId, ftlsPaymentId)
         .pipe(
           tap(() => checkbox.checked = false),
           catchError((error) => this.showErrorMessage(error.error))
@@ -135,8 +135,8 @@ export class PaymentToEcRegularProjectsTabComponent implements OnInit {
     return of(null);
   }
 
-  updateLinkedPayment(paymentId: number, updateDto: PaymentToEcLinkingUpdateDTO) {
-    this.pageStore.updateLinkedPayment(paymentId, updateDto).pipe(
+  updateLinkedPayment(ecId: number, paymentId: number, updateDto: PaymentToEcLinkingUpdateDTO) {
+    this.pageStore.updateLinkedPayment(ecId, paymentId, updateDto).pipe(
       take(1),
       tap(_ => this.showSuccessMessageAfterUpdate()),
       catchError(err => this.showErrorMessage(err.error)),

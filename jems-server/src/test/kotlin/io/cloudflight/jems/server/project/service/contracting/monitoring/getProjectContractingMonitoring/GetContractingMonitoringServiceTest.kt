@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment.PaymentApplicationToEcLinkPersistenceProvider
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -117,6 +118,9 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @MockK
     private lateinit var partnerPersistence: PartnerPersistence
+
+    @MockK
+    lateinit var paymentToEcPersistenceProvider: PaymentApplicationToEcLinkPersistenceProvider
 
     @InjectMockKs
     lateinit var getContractingMonitoringService: GetContractingMonitoringService
@@ -344,6 +348,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns listOf(lumpSum)
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns mapOf(orderNr to 23L)
 
         assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -352,7 +357,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     lastPaymentDates = emptyList(),
                     addDates = emptyList(),
                     fastTrackLumpSums = listOf(lumpSum.copy(
-                        installmentsAlreadyCreated = true
+                        installmentsAlreadyCreated = true,
+                        linkedToEcPaymentId = 23L
                     )),
                 dimensionCodes = emptyList(),
                 typologyProv94 = ContractingMonitoringExtendedOption.Partly,
@@ -360,6 +366,5 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                 typologyStrategic = ContractingMonitoringOption.No,
                 typologyPartnership = ContractingMonitoringOption.Yes,
             ))
-
     }
 }

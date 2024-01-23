@@ -63,13 +63,18 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
             code = it.get(5, String::class.java),
             paymentToEcExtension = PaymentToEcExtensionTmp(
                 paymentToEcId = it.get(6, Long::class.java),
-                partnerContribution = it.get(7, BigDecimal::class.java)!!,
-                publicContribution = it.get(8, BigDecimal::class.java)!!,
-                correctedPublicContribution = it.get(9, BigDecimal::class.java)!!,
-                autoPublicContribution = it.get(10, BigDecimal::class.java)!!,
-                correctedAutoPublicContribution = it.get(11, BigDecimal::class.java)!!,
-                privateContribution = it.get(12, BigDecimal::class.java)!!,
-                correctedPrivateContribution = it.get(13, BigDecimal::class.java)!!,
+
+                correctedTotalEligibleWithoutSco = it.get(7, BigDecimal::class.java)!!,
+                correctedFundAmountUnionContribution = it.get(8, BigDecimal::class.java)!!,
+                correctedFundAmountPublicContribution = it.get(9, BigDecimal::class.java)!!,
+
+                partnerContribution = it.get(10, BigDecimal::class.java)!!,
+                publicContribution = it.get(11, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(12, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(13, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(14, BigDecimal::class.java)!!,
+                privateContribution = it.get(15, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(16, BigDecimal::class.java)!!,
             ),
         )
     },

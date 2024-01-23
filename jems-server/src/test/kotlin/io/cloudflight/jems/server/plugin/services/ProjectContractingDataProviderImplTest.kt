@@ -387,7 +387,6 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
                 )
             ))
     }
-
     @Test
     fun getContractingMonitoring() {
         every { getContractingMonitoringService.getContractingMonitoring(1L) } returns projectContractMonitoring

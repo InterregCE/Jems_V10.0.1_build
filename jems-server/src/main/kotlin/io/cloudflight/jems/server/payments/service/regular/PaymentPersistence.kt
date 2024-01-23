@@ -76,7 +76,7 @@ interface PaymentPersistence {
 
     fun getFtlsCumulativeForProject(projectId: Long): PaymentCumulativeData
 
-    fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long>
+    fun getPaymentIdsAvailableForEcPayments(fundId: Long): Set<Long>
 
     fun getPaymentsLinkedToEcPayment(ecPaymentId: Long):  List<PaymentToEcExtension>
 

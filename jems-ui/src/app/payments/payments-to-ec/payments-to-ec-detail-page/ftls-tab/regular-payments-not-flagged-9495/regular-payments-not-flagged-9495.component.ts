@@ -106,7 +106,7 @@ export class RegularPaymentsNotFlagged9495Component implements OnInit {
       }).pipe(
       take(1),
       filter(Boolean),
-      switchMap(() => this.pageStore.deselectPaymentFromEc(regularPaymentId)
+      switchMap(() => this.pageStore.deselectPaymentFromEc(ecId, regularPaymentId)
         .pipe(
           tap(() => checkbox.checked = false),
           catchError((error) => this.showErrorMessage(error.error))
@@ -124,8 +124,8 @@ export class RegularPaymentsNotFlagged9495Component implements OnInit {
     return of(null);
   }
 
-  updateLinkedPayment(regularPaymentId: number, updateDto: PaymentToEcLinkingUpdateDTO) {
-    this.pageStore.updateLinkedPayment(regularPaymentId, updateDto).pipe(
+  updateLinkedPayment(ecId: number, regularPaymentId: number, updateDto: PaymentToEcLinkingUpdateDTO) {
+    this.pageStore.updateLinkedPayment(ecId, regularPaymentId, updateDto).pipe(
       take(1),
       tap(_ => this.showSuccessMessageAfterUpdate()),
       catchError(err => this.showErrorMessage(err.error)),

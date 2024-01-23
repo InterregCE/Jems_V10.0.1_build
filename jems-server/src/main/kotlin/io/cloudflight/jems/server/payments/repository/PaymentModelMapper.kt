@@ -352,6 +352,11 @@ fun AdvancePaymentSettlement.toEntity(advancePayment:AdvancePaymentEntity) = Adv
 fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntity(
     paymentId = payment.id,
     payment = payment,
+
+    correctedTotalEligibleWithoutSco = defaultTotalEligibleWithoutSco,
+    correctedFundAmountUnionContribution = defaultFundAmountUnionContribution,
+    correctedFundAmountPublicContribution = defaultFundAmountPublicContribution ,
+
     autoPublicContribution = defaultOfWhichAutoPublic,
     correctedAutoPublicContribution = defaultOfWhichAutoPublic,
     partnerContribution = defaultPartnerContribution,

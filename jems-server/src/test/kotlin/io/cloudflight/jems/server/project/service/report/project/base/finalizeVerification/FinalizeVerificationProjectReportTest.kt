@@ -593,6 +593,9 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     defaultOfWhichPublic = BigDecimal.valueOf(3750L, 2),
                     defaultOfWhichAutoPublic = BigDecimal.valueOf(4520L, 2),
                     defaultOfWhichPrivate = BigDecimal.valueOf(5230L, 2),
+                    defaultTotalEligibleWithoutSco = BigDecimal.valueOf(500),
+                    defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                    defaultFundAmountPublicContribution = BigDecimal.valueOf(365),
                 ),
             ),
         )
@@ -650,7 +653,11 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 defaultOfWhichAutoPublic = BigDecimal.ZERO,
                 defaultOfWhichPrivate = BigDecimal.ZERO,
                 defaultOfWhichPublic = BigDecimal.ZERO,
-                defaultPartnerContribution = BigDecimal.ZERO
+                defaultPartnerContribution = BigDecimal.ZERO,
+                defaultTotalEligibleWithoutSco = BigDecimal(1600),
+                defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                defaultFundAmountPublicContribution = BigDecimal(1600),
+
             ), 4L to PaymentRegularToCreate(
                 projectId = PROJECT_ID,
                 partnerPayments = listOf(
@@ -668,7 +675,10 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 defaultOfWhichAutoPublic = BigDecimal.ZERO,
                 defaultOfWhichPrivate = BigDecimal.ZERO,
                 defaultOfWhichPublic = BigDecimal.ZERO,
-                defaultPartnerContribution = BigDecimal.ZERO
+                defaultPartnerContribution = BigDecimal.ZERO,
+                defaultTotalEligibleWithoutSco = BigDecimal(360),
+                defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                defaultFundAmountPublicContribution = BigDecimal(360),
             ), 5L to PaymentRegularToCreate(
                 projectId = PROJECT_ID,
                 partnerPayments = listOf(
@@ -686,7 +696,10 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 defaultOfWhichAutoPublic = BigDecimal.ZERO,
                 defaultOfWhichPrivate = BigDecimal.ZERO,
                 defaultOfWhichPublic = BigDecimal.ZERO,
-                defaultPartnerContribution = BigDecimal.ZERO
+                defaultPartnerContribution = BigDecimal.ZERO,
+                defaultTotalEligibleWithoutSco = BigDecimal(180.00),
+                defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                defaultFundAmountPublicContribution = BigDecimal(180.00),
             )
         )
 

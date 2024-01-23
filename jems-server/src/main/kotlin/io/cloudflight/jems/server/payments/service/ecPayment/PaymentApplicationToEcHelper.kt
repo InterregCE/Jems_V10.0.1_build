@@ -53,13 +53,21 @@ fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>.su
 
 fun Map<Long?, PaymentToEcAmountSummaryLineTmp>.computeTotals(type: PaymentToEcOverviewType) =
     mapValues { (_, it) ->
-    PaymentToEcAmountSummaryLine(
-        priorityAxis = it.priorityAxis,
-        totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution),
-        totalUnionContribution = if (type.isCorrection()) it.unionContribution else BigDecimal.ZERO,
-        totalPublicContribution = if (type.isCorrection()) it.correctedFundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic) else
-            it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic),
-    )
+        if (type.isCorrectionOrArt94or95()) {
+            PaymentToEcAmountSummaryLine(
+                priorityAxis = it.priorityAxis,
+                totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution).subtract(it.unionContribution),
+                totalUnionContribution = it.unionContribution,
+                totalPublicContribution = it.correctedFundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic)
+            )
+        } else {
+            PaymentToEcAmountSummaryLine(
+                priorityAxis = it.priorityAxis,
+                totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution),
+                totalUnionContribution = BigDecimal.ZERO,
+                totalPublicContribution = it.fundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic)
+            )
+        }
 }
 
 fun Collection<PaymentToEcAmountSummaryLine>.sumUp() = PaymentToEcAmountSummaryLine (

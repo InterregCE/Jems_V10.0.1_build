@@ -120,6 +120,8 @@ fun AdvancePaymentDetail.toDTO() = AdvancePaymentDetailDTO(
 
 )
 
+fun PaymentTypeDTO.toModel() = PaymentType.valueOf(this.name)
+
 private fun idNamePairDtoOrNull(idName: IdNamePair?): IdNamePairDTO? {
     return if (idName != null) {
         IdNamePairDTO(idName.id, idName.name)

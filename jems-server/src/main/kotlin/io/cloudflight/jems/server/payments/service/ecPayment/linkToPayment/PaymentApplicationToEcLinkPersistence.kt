@@ -46,4 +46,6 @@ interface PaymentApplicationToEcLinkPersistence {
 
     fun getPaymentToEcIdsProjectReportIncluded(projectReportId: Long): Set<Long>
 
+    fun getFtlsIdLinkToEcPaymentIdByProjectId(projectId: Long): Map<Int, Long>
+
 }

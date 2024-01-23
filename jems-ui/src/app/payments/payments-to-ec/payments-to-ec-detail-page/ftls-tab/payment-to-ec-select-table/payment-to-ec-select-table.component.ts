@@ -43,7 +43,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   @Output()
   selectionChanged = new EventEmitter<{ ecId: number; paymentId: number; checked: boolean; checkbox: MatCheckboxChange }>();
   @Output()
-  submitPayment = new EventEmitter<{ paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
+  submitPayment = new EventEmitter<{ ecId: number; paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
 
   constants = AdvancePaymentsDetailPageConstants;
   PaymentTypeEnum = PaymentTypeEnum;
@@ -120,7 +120,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       correctedAutoPublicContribution: this.paymentToEcLinking.at(rowIndex).get('autoPublicContribution')?.value,
       correctedPrivateContribution: this.paymentToEcLinking.at(rowIndex).get('privateContribution')?.value
     } as PaymentToEcLinkingUpdateDTO;
-    this.submitPayment.emit({paymentId, updateDto});
+    this.submitPayment.emit({ecId,paymentId, updateDto});
     this.editedRowIndex = null;
   }
 

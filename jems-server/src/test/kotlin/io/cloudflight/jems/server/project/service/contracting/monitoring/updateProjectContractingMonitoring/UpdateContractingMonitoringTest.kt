@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment.PaymentApplicationToEcLinkPersistenceProvider
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -224,6 +225,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @MockK
     lateinit var paymentPersistence: PaymentPersistence
 
+    @MockK
+    lateinit var paymentToEcPersistenceProvider: PaymentApplicationToEcLinkPersistenceProvider
+
     @InjectMockKs
     lateinit var updateContractingMonitoring: UpdateContractingMonitoring
 
@@ -306,6 +310,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 .copy(lumpSumContributions = lumpSumsNotReady.first().lumpSumContributions))
         )
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns emptyMap()
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
@@ -400,18 +405,22 @@ class UpdateContractingMonitoringTest : UnitTest() {
             )
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
-            mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                PaymentFtlsToCreate(
-                    programmeLumpSumId = 2L,
-                    partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
-                    amountApprovedPerFund = BigDecimal.ONE,
-                    projectCustomIdentifier = "TSTCM",
-                    projectAcronym = "TCM",
-                    defaultPartnerContribution = BigDecimal.valueOf(85.35),
-                    defaultOfWhichPublic = BigDecimal.valueOf(25.13),
-                    defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
-                    defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
-                )
+            mapOf(
+                PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
+                        PaymentFtlsToCreate(
+                            programmeLumpSumId = 2L,
+                            partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
+                            amountApprovedPerFund = BigDecimal.ONE,
+                            projectCustomIdentifier = "TSTCM",
+                            projectAcronym = "TCM",
+                            defaultPartnerContribution = BigDecimal.valueOf(85.35),
+                            defaultOfWhichPublic = BigDecimal.valueOf(25.13),
+                            defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
+                            defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
+                            defaultTotalEligibleWithoutSco = BigDecimal.valueOf(100.41),
+                            defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                            defaultFundAmountPublicContribution = BigDecimal.valueOf(15.06),
+                        )
             )
         )
         assertThat(payContribs.captured).containsExactly(
@@ -489,6 +498,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns emptyMap()
 
         every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
@@ -531,7 +541,41 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
 
-        assertThrows<UpdateContractingMonitoringFTLSException> {
+        assertThrows<UpdateContractingMonitoringFTLSHasInstallmentsException> {
+            updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
+        }
+
+    }
+
+
+    @Test
+    fun `error on remove ready for payment when link exists to ec payment`() {
+
+        val monitoringNew = monitoring.copy(
+            fastTrackLumpSums = listOf(
+                ProjectLumpSum(
+                    orderNr = orderNr,
+                    programmeLumpSumId = lumpSumId,
+                    period = 1,
+                    fastTrack = true,
+                    readyForPayment = false,
+                    lastApprovedVersionBeforeReadyForPayment = version,
+                )
+            )
+        )
+
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
+        every { projectPersistence.getProject(projectId, version) } returns project
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns mapOf(orderNr to 21L)
+
+
+        assertThrows<UpdateContractingMonitoringFTLSLinkedToEcPaymentException> {
             updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
         }
 

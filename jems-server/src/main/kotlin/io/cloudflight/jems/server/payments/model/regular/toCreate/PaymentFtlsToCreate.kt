@@ -10,8 +10,13 @@ data class PaymentFtlsToCreate(
     val projectCustomIdentifier: String,
     val projectAcronym: String,
 
+    override val defaultTotalEligibleWithoutSco: BigDecimal,
+    override val defaultFundAmountUnionContribution: BigDecimal,
+    override val defaultFundAmountPublicContribution: BigDecimal,
+
     override val defaultPartnerContribution: BigDecimal,
     override val defaultOfWhichPublic: BigDecimal,
     override val defaultOfWhichAutoPublic: BigDecimal,
     override val defaultOfWhichPrivate: BigDecimal,
+
 ) : PaymentToCreate

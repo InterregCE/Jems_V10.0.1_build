@@ -13,7 +13,12 @@ class UpdateContractingMonitoringException(cause: Throwable) : ApplicationExcept
     cause = cause
 )
 
-class UpdateContractingMonitoringFTLSException : ApplicationUnprocessableException(
+class UpdateContractingMonitoringFTLSHasInstallmentsException : ApplicationUnprocessableException(
     code = "$UPDATE_CONTRACTING_MONITORING_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_MONITORING_ERROR_KEY_PREFIX.ftls.change.failed")
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_MONITORING_ERROR_KEY_PREFIX.already.has.instalments"),
+)
+
+class UpdateContractingMonitoringFTLSLinkedToEcPaymentException : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_MONITORING_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_MONITORING_ERROR_KEY_PREFIX.payment.linked.to.ecPayment"),
 )

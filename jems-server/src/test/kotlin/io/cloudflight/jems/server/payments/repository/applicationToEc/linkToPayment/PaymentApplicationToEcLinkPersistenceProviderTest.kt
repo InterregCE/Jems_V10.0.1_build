@@ -4,8 +4,6 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
-import com.querydsl.core.types.dsl.EnumPath
-import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
@@ -125,6 +123,10 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 correctedPrivateContribution = BigDecimal.ZERO,
                 paymentApplicationToEc = paymentApplicationToEcEntity,
                 finalScoBasis = null,
+                correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
+                correctedFundAmountUnionContribution = BigDecimal.ZERO,
+                correctedFundAmountPublicContribution = BigDecimal.ZERO,
+
             )
 
         private val paymentToEcExtensionModel = PaymentToEcExtension(
@@ -354,12 +356,19 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         val update = PaymentToEcLinkingUpdate(
             correctedPrivateContribution = BigDecimal.TEN,
             correctedPublicContribution = BigDecimal.valueOf(100.00),
-            correctedAutoPublicContribution = BigDecimal.ZERO
+            correctedAutoPublicContribution = BigDecimal.ZERO,
+            correctedTotalEligibleWithoutSco = BigDecimal.valueOf(146.33),
+            correctedFundAmountUnionContribution = BigDecimal.valueOf(25.00),
+            correctedFundAmountPublicContribution = BigDecimal.valueOf(9.23),
         )
         persistenceProvider.updatePaymentToEcCorrectedAmounts(99L, update)
         assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(100.00))
         assertThat(entity.correctedAutoPublicContribution).isEqualTo(BigDecimal.ZERO)
         assertThat(entity.correctedPrivateContribution).isEqualTo(BigDecimal.TEN)
+
+        assertThat(entity.correctedTotalEligibleWithoutSco).isEqualTo(BigDecimal.valueOf(146.33))
+        assertThat(entity.correctedFundAmountUnionContribution).isEqualTo(BigDecimal.valueOf(25.00))
+        assertThat(entity.correctedFundAmountPublicContribution).isEqualTo(BigDecimal.valueOf(9.23))
     }
 
     @Test
@@ -381,8 +390,21 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 partnerContribution = BigDecimal.valueOf(200),
                 ofWhichPublic = BigDecimal.valueOf(300),
                 ofWhichAutoPublic = BigDecimal.valueOf(400),
-                correctedFundAmount = BigDecimal.valueOf(0),
-                unionContribution = BigDecimal.valueOf(0)
+                unionContribution = BigDecimal.valueOf(600),
+                correctedFundAmount = BigDecimal.valueOf(500)
+            ),
+        )
+
+        val expectedPaymentsToEc9495Tmp = mapOf<Long?, PaymentToEcAmountSummaryLineTmp>(
+            17L to PaymentToEcAmountSummaryLineTmp(
+                priorityId = 17L,
+                priorityAxis = "PO1",
+                fundAmount = BigDecimal.valueOf(100),
+                partnerContribution = BigDecimal.valueOf(200),
+                ofWhichPublic = BigDecimal.valueOf(300),
+                ofWhichAutoPublic = BigDecimal.valueOf(400),
+                unionContribution = BigDecimal.valueOf(600),
+                correctedFundAmount = BigDecimal.valueOf(500)
             ),
         )
 
@@ -400,7 +422,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         )
 
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
         every { query.from(any()) } returns query
         val slotLeftJoin = mutableListOf<EntityPath<Any>>()
         every { query.leftJoin(capture(slotLeftJoin)) } returns query
@@ -417,6 +439,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { tuple.get(3, BigDecimal::class.java) } returns BigDecimal.valueOf(200)
         every { tuple.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(300)
         every { tuple.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(400)
+        every { tuple.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(600)
+        every { tuple.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(500)
 
         val result = mockk<List<Tuple>>()
         every { result.size } returns 1
@@ -458,10 +482,10 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             persistenceProvider.calculateAndGetOverviewForDraftEcPayment(15L)
         ).containsExactlyInAnyOrderEntriesOf(mapOf(
             PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to expectedPaymentsToEcTmp,
-            PaymentToEcOverviewType.FallsUnderArticle94Or95 to emptyMap(),
+            PaymentToEcOverviewType.FallsUnderArticle94Or95 to expectedPaymentsToEc9495Tmp,
             PaymentToEcOverviewType.Correction to expectedPaymentsToEcCorrectionTmp,
         ))
-        assertThat(slotLeftJoin).hasSize(4)
+        assertThat(slotLeftJoin).hasSize(8)
         assertThat(slotLeftJoin[0]).isInstanceOf(QPaymentEntity::class.java)
         assertThat(slotLeftJoinOn[0].toString())
             .isEqualTo("paymentEntity.id = paymentToEcExtensionEntity.payment.id")
@@ -473,8 +497,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             .isEqualTo("programmePriorityEntity.id = programmeSpecificObjectiveEntity.programmePriority.id")
         assertThat(slotWhere.captured.toString())
             .isEqualTo("paymentToEcExtensionEntity.paymentApplicationToEc.id = 15 && " +
-                "(projectContractingMonitoringEntity.typologyProv94 is null || projectContractingMonitoringEntity.typologyProv94 = No) " +
-                "&& (projectContractingMonitoringEntity.typologyProv95 is null || projectContractingMonitoringEntity.typologyProv95 = No)")
+                "!((projectContractingMonitoringEntity.typologyProv94 is null || projectContractingMonitoringEntity.typologyProv94 = No) " +
+                "&& (projectContractingMonitoringEntity.typologyProv95 is null || projectContractingMonitoringEntity.typologyProv95 = No))")
 
         assertThat(slotCorrectionLeftJoin).hasSize(6)
         assertThat(slotCorrectionLeftJoin[0]).isInstanceOf(QAuditControlCorrectionEntity::class.java)

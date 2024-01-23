@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.plugin.services.payments
 
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page
 import io.cloudflight.jems.plugin.contract.models.common.paging.Pageable
+import io.cloudflight.jems.plugin.contract.models.payments.export.EcPaymentLinkedPaymentsFilterData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentApplicationToEcData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentEcStatusData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcAmountSummaryData
@@ -11,6 +12,7 @@ import io.cloudflight.jems.plugin.contract.services.payments.EcPaymentDataProvid
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.constructCorrectionFilter
 import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
@@ -73,6 +75,42 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         return correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable.toJpaPage(), filter)
             .toPluginPage { it.toDataModel() }
     }
+
+    override fun getPaymentsForEcPaymentByFilter(
+        paymentFiler: EcPaymentLinkedPaymentsFilterData,
+        pageable: Pageable
+    ): Page<PaymentToEcPaymentData> {
+        val ecPayment = paymentApplicationToEcPersistence.getPaymentApplicationToEcDetail(paymentFiler.ecPaymentId)
+        val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
+
+        val scoBasis = PaymentSearchRequestScoBasis.valueOf(paymentFiler.scoBasis.name)
+        val paymentType = if(paymentFiler.paymentType == null) null else PaymentType.valueOf(paymentFiler.paymentType!!.name)
+
+
+        val filter = if (ecPayment.status.isFinished())
+            filterEcPaymentLinkedPayments(setOf(ecPayment.id), paymentType = paymentType, finalScoBasis = scoBasis)
+        else
+            filterEcPaymentLinkedPayments(
+                setOf(null, ecPayment.id), fundId = fundId, paymentType = paymentType, contractingScoBasis = scoBasis
+            )
+
+        return paymentPersistence.getAllPaymentToEcPayment(pageable.toJpaPage(), filter)
+            .toPluginPage { it.toDataModel() }
+    }
+
+    private fun filterEcPaymentLinkedPayments(
+        ecPaymentIds: Set<Long?>,
+        fundId: Long? = null,
+        finalScoBasis: PaymentSearchRequestScoBasis? = null,
+        contractingScoBasis: PaymentSearchRequestScoBasis? = null,
+        paymentType: PaymentType?,
+    ) = constructFilter(
+        ecPaymentIds = ecPaymentIds,
+        fundId = fundId,
+        finalScoBasis = finalScoBasis,
+        contractingScoBasis = contractingScoBasis,
+        paymentType = paymentType
+    )
 
     @Transactional(readOnly = true)
     override fun getPaymentsForEcPayment(ecPaymentId: Long, pageable: Pageable): Page<PaymentToEcPaymentData> {
