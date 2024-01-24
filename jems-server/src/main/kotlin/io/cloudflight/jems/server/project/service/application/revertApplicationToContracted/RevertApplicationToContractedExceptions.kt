@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.application.revert_application_to_contracted
+package io.cloudflight.jems.server.project.service.application.revertApplicationToContracted
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

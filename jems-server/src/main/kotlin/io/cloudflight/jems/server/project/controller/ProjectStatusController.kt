@@ -9,11 +9,8 @@ import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibili
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectModificationDecisionDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
-import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.approve_application_with_conditions.ApproveApplicationWithConditionsInteractor
-import io.cloudflight.jems.server.project.service.application.approve_modification.ApproveModification
 import io.cloudflight.jems.server.project.service.application.approve_modification.ApproveModificationInteractor
 import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.ExecutePreConditionCheckInteractor
 import io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to.GetPossibleStatusToRevertToInteractor
@@ -22,10 +19,10 @@ import io.cloudflight.jems.server.project.service.application.refuse_application
 import io.cloudflight.jems.server.project.service.application.reject_modification.RejectModificationInteractor
 import io.cloudflight.jems.server.project.service.application.return_application_to_applicant.ReturnApplicationToApplicantInteractor
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
+import io.cloudflight.jems.server.project.service.application.revertApplicationToContracted.RevertApplicationToContracted
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
-import io.cloudflight.jems.server.project.service.application.set_application_to_closed.SetApplicationToClosed
-import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContracted
+import io.cloudflight.jems.server.project.service.application.setApplicationToClosed.SetApplicationToClosed
 import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContractedInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_eligibility.SetAssessmentEligibilityInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_quality.SetAssessmentQualityInteractor
@@ -56,7 +53,8 @@ class ProjectStatusController(
     private val setAssessmentQualityInteractor: SetAssessmentQualityInteractor,
     private val getModificationDecisionsInteractor: GetModificationDecisionsInteractor,
     private val setApplicationToContracted: SetApplicationToContractedInteractor,
-    private val setApplicationToClosed: SetApplicationToClosed
+    private val setApplicationToClosed: SetApplicationToClosed,
+    private val revertApplicationToContracted: RevertApplicationToContracted,
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
         executePreConditionCheck.execute(id).toDTO()
@@ -119,6 +117,6 @@ class ProjectStatusController(
         setApplicationToClosed.setApplicationToClosed(id).toDTO()
 
     override fun revertToContracted(id: Long): ApplicationStatusDTO =
-        setApplicationToContracted.setApplicationToContracted(id).toDTO()
+        revertApplicationToContracted.revertApplicationToContracted(id).toDTO()
 
 }

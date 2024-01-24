@@ -20,7 +20,7 @@ class ProjectContractingMonitoringEntity(
     val projectId: Long,
 
     val startDate: LocalDate? = null,
-    val closureDate: LocalDate? = null,
+    var closureDate: LocalDate?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typology_prov_94")
@@ -50,8 +50,5 @@ class ProjectContractingMonitoringEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "projectId")
     val dimensionCodes: List<ContractingDimensionCodeEntity> = emptyList(),
-
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "projectId")
-    val partnerPaymentDates: List<ContractingPartnerPaymentDateEntity> = emptyList()
 
 )

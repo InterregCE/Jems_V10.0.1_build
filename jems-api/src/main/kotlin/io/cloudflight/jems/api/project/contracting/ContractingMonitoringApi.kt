@@ -3,6 +3,8 @@ package io.cloudflight.jems.api.project.contracting
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringStartDateDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -30,6 +32,13 @@ interface ContractingMonitoringApi {
         @PathVariable projectId: Long,
         @RequestBody contractingMonitoring: ProjectContractingMonitoringDTO
     ): ProjectContractingMonitoringDTO
+
+    @ApiOperation("Update Project Contracting Monitoring")
+    @PutMapping("$ENDPOINT_API_CONTRACTING_MONITORING/partnerPaymentDate", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateContractingPartnerPaymentDate(
+        @PathVariable projectId: Long,
+        @RequestBody contractingClosure: ContractingClosureUpdateDTO,
+    ): ContractingClosureDTO
 
     @ApiOperation("Get Available Periods for Contracting Monitoring (Last Approved)")
     @GetMapping("$ENDPOINT_API_CONTRACTING_MONITORING/periods")

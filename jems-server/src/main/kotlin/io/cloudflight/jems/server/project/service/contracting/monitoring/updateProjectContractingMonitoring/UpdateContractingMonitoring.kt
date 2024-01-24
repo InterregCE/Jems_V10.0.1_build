@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.fillClosureLastPaymentDates
 import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
 import io.cloudflight.jems.server.project.service.contracting.fillLumpSumsList
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
@@ -19,11 +20,13 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.Contrac
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.projectContractingMonitoringChanged
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -36,6 +39,7 @@ class UpdateContractingMonitoring(
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val getProjectBudget: GetProjectBudget,
+    private val partnerPersistence: PartnerPersistence,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
     private val paymentPersistence: PaymentPersistence,
@@ -55,12 +59,10 @@ class UpdateContractingMonitoring(
             val version = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
             // load old data for audit once the project is already contracted
             val oldMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
-                .fillLumpSumsList(resolveLumpSums = {
-                    projectLumpSumPersistence.getLumpSums(projectId = projectId, version)
-                })
+                .fillLumpSumsList(lumpSums = projectLumpSumPersistence.getLumpSums(projectId = projectId, version))
             val project = projectPersistence.getProject(projectId = projectId, version)
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
-                contractMonitoring.copy(projectId = projectId)
+                contractMonitoring.copy(projectId = projectId,  closureDate = oldMonitoring.closureDate)
             ).fillEndDateWithDuration(resolveDuration = { project.duration })
                 .apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
 
@@ -98,7 +100,10 @@ class UpdateContractingMonitoring(
                     )
                 }
             }
+
+            val allPartners = partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.by(Sort.Order.asc("sortNumber")), version)
             return updated
+                .fillClosureLastPaymentDates(allPartners, contractingMonitoringPersistence.getPartnerPaymentDate(projectId))
         }
     }
 

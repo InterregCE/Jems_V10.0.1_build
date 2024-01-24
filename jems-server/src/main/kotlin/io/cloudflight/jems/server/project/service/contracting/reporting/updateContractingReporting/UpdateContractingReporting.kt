@@ -48,14 +48,13 @@ class UpdateContractingReporting(
         if (project.projectStatus.status.hasNotBeenApprovedYet())
             throw ProjectHasNotBeenApprovedYet()
 
-        val monitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
-        if (monitoring.startDate == null)
-            throw ContractingStartDateIsMissing()
+        val startDate = contractingMonitoringPersistence.getContractingMonitoring(projectId).startDate
+            ?: throw ContractingStartDateIsMissing()
 
         val periods = project.periods.associateBy { it.number }
         val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId)
 
-        validateInputData(deadlines, existingDeadlines.associateBy { it.id }, periods, monitoring.startDate, projectId)
+        validateInputData(deadlines, existingDeadlines.associateBy { it.id }, periods, startDate, projectId)
         deselectCertificatesIfFinancePartExcluded(deadlines, existingDeadlines)
 
         return contractingReportingPersistence.updateContractingReporting(

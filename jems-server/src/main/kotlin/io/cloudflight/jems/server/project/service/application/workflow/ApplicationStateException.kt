@@ -159,7 +159,7 @@ class SetToClosedIsNotAllowedException(status: ApplicationStatus) : ApplicationU
     )
 )
 
-class REvertToContractedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+class RevertToContractedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
     code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-021",
     i18nMessage = I18nMessage(
         "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.revert.to.contracted.is.not.allowed",

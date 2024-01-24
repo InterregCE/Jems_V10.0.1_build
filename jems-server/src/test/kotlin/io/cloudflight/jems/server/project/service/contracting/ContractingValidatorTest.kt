@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.contracting.sectionLock.Projec
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -258,6 +259,7 @@ class ContractingValidatorTest : UnitTest() {
             projectId = projectID,
             startDate = LocalDate.parse("2022-07-01"),
             endDate = null,
+            lastPaymentDates = mockk(),
             addDates = listOf(
                 ProjectContractingMonitoringAddDate(projectID, 1, LocalDate.parse("2022-07-21")),
                 ProjectContractingMonitoringAddDate(projectID, 2, LocalDate.parse("2022-07-22")),

@@ -3,11 +3,14 @@ package io.cloudflight.jems.server.project.controller.contracting.monitoring
 import io.cloudflight.jems.api.project.contracting.ContractingMonitoringApi
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringStartDateDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureUpdateDTO
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringProjectBudget.GetContractingMonitoringProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringInteractor
+import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingPartnerPaymentDate.UpdateContractingPartnerPaymentDateInteractor
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 
@@ -15,6 +18,7 @@ import java.math.BigDecimal
 class ContractingMonitoringController(
     private val getContractingMonitoringInteractor: GetContractingMonitoringInteractor,
     private val updateContractingMonitoringInteractor: UpdateContractingMonitoringInteractor,
+    private val updateContractingPartnerPaymentDate: UpdateContractingPartnerPaymentDateInteractor,
     private val getLastApprovedPeriodsInteractor: GetLastApprovedPeriodsInteractor,
     private val getContractingMonitoringStartDateInteractor: GetContractingMonitoringStartDateInteractor,
     private val getContractingMonitoringProjectBudgetInteractor: GetContractingMonitoringProjectBudgetInteractor,
@@ -31,6 +35,12 @@ class ContractingMonitoringController(
         return updateContractingMonitoringInteractor
             .updateContractingMonitoring(projectId, contractingMonitoring.toModel()).toDTO()
     }
+
+    override fun updateContractingPartnerPaymentDate(
+        projectId: Long,
+        contractingClosure: ContractingClosureUpdateDTO
+    ): ContractingClosureDTO =
+        updateContractingPartnerPaymentDate.updatePartnerPaymentDate(projectId, contractingClosure.toModel()).toDto()
 
     override fun getContractingMonitoringPeriods(projectId: Long) =
         getLastApprovedPeriodsInteractor.getPeriods(projectId).toDTO()

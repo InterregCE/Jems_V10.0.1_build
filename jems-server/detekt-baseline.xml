@@ -161,7 +161,6 @@
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
     <ID>NestedBlockDepth:BrokenReportCurrencyCheck.kt$BrokenReportCurrencyCheck$private fun List&lt;ExpenditureWithBrokenRate&gt;.toNiceFormat(): String</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
-    <ID>NestedBlockDepth:UpdateContractingMonitoring.kt$UpdateContractingMonitoring$@CanSetProjectToContracted @Transactional @ExceptionWrapper(UpdateContractingMonitoringException::class) override fun updateContractingMonitoring( projectId: Long, contractMonitoring: ProjectContractingMonitoring ): ProjectContractingMonitoring</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
@@ -649,6 +648,7 @@
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
+    <ID>TooManyFunctions:ProjectStatusController.kt$ProjectStatusController : ProjectStatusApi</ID>
     <ID>TooManyFunctions:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider : ProjectWorkflowPersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
@@ -677,7 +677,17 @@
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
+    <ID>UnusedPrivateMember:RevertApplicationToContractedTest.kt$RevertApplicationToContractedTest$@InjectMockKs private lateinit var applicationStateFactory: ApplicationStateFactory</ID>
+    <ID>UnusedPrivateMember:RevertApplicationToContractedTest.kt$RevertApplicationToContractedTest$@MockK private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence</ID>
+    <ID>UnusedPrivateMember:RevertApplicationToContractedTest.kt$RevertApplicationToContractedTest$@MockK private lateinit var projectAssessmentPersistence: ProjectAssessmentPersistence</ID>
+    <ID>UnusedPrivateMember:RevertApplicationToContractedTest.kt$RevertApplicationToContractedTest$@MockK private lateinit var projectAuthorization: ProjectAuthorization</ID>
+    <ID>UnusedPrivateMember:RevertApplicationToContractedTest.kt$RevertApplicationToContractedTest$@MockK private lateinit var projectVersionPersistence: ProjectVersionPersistence</ID>
     <ID>UnusedPrivateMember:SelectCertificateTest.kt$SelectCertificateTest$private fun provideStatusesInWhichSelectIsNotAllowed(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:SetApplicationToClosedTest.kt$SetApplicationToClosedTest$@InjectMockKs private lateinit var applicationStateFactory: ApplicationStateFactory</ID>
+    <ID>UnusedPrivateMember:SetApplicationToClosedTest.kt$SetApplicationToClosedTest$@MockK private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence</ID>
+    <ID>UnusedPrivateMember:SetApplicationToClosedTest.kt$SetApplicationToClosedTest$@MockK private lateinit var projectAssessmentPersistence: ProjectAssessmentPersistence</ID>
+    <ID>UnusedPrivateMember:SetApplicationToClosedTest.kt$SetApplicationToClosedTest$@MockK private lateinit var projectAuthorization: ProjectAuthorization</ID>
+    <ID>UnusedPrivateMember:SetApplicationToClosedTest.kt$SetApplicationToClosedTest$@MockK private lateinit var projectVersionPersistence: ProjectVersionPersistence</ID>
     <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>
     <ID>UnusedPrivateMember:UpdateLegalStatusInteractorTest.kt$UpdateLegalStatusInteractorTest$private fun providePreDefinedLegalStatusTypes()</ID>

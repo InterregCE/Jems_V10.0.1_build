@@ -30,7 +30,7 @@ class GetContractingPartnerStateAidGberService(
         val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
         val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
         val partnerData = this.partnerPersistence.getById(partnerId, lastApprovedVersion)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val addDates = getContractingMonitoringService.getProjectContractingMonitoring(projectId).addDates
         val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId, lastApprovedVersion)
         val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
@@ -39,7 +39,7 @@ class GetContractingPartnerStateAidGberService(
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && !hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure)) {
             ContractingPartnerStateAidGberSection(
                 partnerId = partnerData.id,
-                dateOfGrantingAid =  projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+                dateOfGrantingAid =  addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
                 partnerFunds =  fundsSelectedByPartner,
                 amountGrantingAid = gberData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 naceGroupLevel = partnerData.nace,

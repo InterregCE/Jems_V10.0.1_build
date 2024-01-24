@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.application.set_application_to_closed
+package io.cloudflight.jems.server.project.service.application.revertApplicationToContracted
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
@@ -11,18 +11,18 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class SetApplicationToClosed(
+class RevertApplicationToContracted(
     private val projectPersistence: ProjectPersistence,
     private val applicationStateFactory: ApplicationStateFactory,
     private val auditPublisher: ApplicationEventPublisher
-) : SetApplicationToClosedInteractor {
+) : RevertApplicationToContractedInteractor {
 
     @CanSetProjectToContracted
     @Transactional
-    @ExceptionWrapper(SetApplicationToClosedException::class)
-    override fun setApplicationToClosed(projectId: Long): ApplicationStatus =
+    @ExceptionWrapper(RevertApplicationToContractedException::class)
+    override fun revertApplicationToContracted(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            applicationStateFactory.getInstance(projectSummary).setToClosed().also {
+            applicationStateFactory.getInstance(projectSummary).revertToContracted().also {
                 auditPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
             }
         }

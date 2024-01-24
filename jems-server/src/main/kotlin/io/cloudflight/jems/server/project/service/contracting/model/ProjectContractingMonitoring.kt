@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.model
 
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import java.time.LocalDate
 
@@ -7,8 +8,8 @@ data class ProjectContractingMonitoring(
     val projectId: Long,
     val startDate: LocalDate? = null,
     var endDate: LocalDate? = null,
-    val closureDate: LocalDate? = null,
-    val partnerPaymentDates: List<ContractingMonitoringPartnerLastPayment>,
+    val closureDate: LocalDate? = null, // TODO why default value provided?
+    var lastPaymentDates: List<ContractingClosureLastPaymentDate>,
 
     val typologyProv94: ContractingMonitoringExtendedOption,
     val typologyProv94Comment: String? = null,

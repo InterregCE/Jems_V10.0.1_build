@@ -8,15 +8,18 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.model.*
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.mockkObject
 import org.assertj.core.api.Assertions.assertThat
@@ -70,6 +73,11 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
+            closureDate = LocalDate.of(2024, 1, 24),
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -107,8 +115,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
     @MockK
     lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
 
-    @RelaxedMockK
-    lateinit var validator: ContractingValidator
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
 
     @InjectMockKs
     lateinit var getContractingMonitoringService: GetContractingMonitoringService
@@ -118,10 +126,17 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every { ContractingValidator.validateProjectStatusForModification(projectSummary) } returns Unit
+
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
-        every { projectPersistence.getProject(projectId, version) } returns project
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns listOf(
+            ProjectPartnerSummary(144L, "144-abbr", null, true, ProjectPartnerRole.LEAD_PARTNER, 4),
+        )
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { projectPersistence.getProject(projectId, version) } returns project
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns mapOf(
+            144L to LocalDate.of(2024, 1, 25),
+        )
 
         assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -129,6 +144,11 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     projectId = projectId,
                     startDate = null,
                     endDate = null,
+                    closureDate = LocalDate.of(2024, 1, 24),
+                    lastPaymentDates = listOf(
+                        ContractingClosureLastPaymentDate(144L, 4, "144-abbr",
+                            ProjectPartnerRole.LEAD_PARTNER, false, LocalDate.of(2024, 1, 25)),
+                    ),
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -176,6 +196,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
     private fun `test get project monitoring startDate calc`(startDate: LocalDate, duration: Int, expectedEndDate: LocalDate) {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
         every { projectPersistence.getProject(projectId, version) } returns project.copy(duration = duration)
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
@@ -189,6 +211,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     projectId = projectId,
                     startDate = startDate,
                     endDate = expectedEndDate,
+                    closureDate = LocalDate.of(2024, 1, 24),
+                    lastPaymentDates = emptyList(),
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -234,28 +258,18 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             projectId = projectId,
             startDate = LocalDate.of(2022, 1, 31),
             endDate = LocalDate.of(2022, 2, 27),
-            typologyProv94 = ContractingMonitoringExtendedOption.Partly,
-            typologyProv94Comment = "typologyProv94Comment",
-            typologyProv95 = ContractingMonitoringExtendedOption.Yes,
-            typologyProv95Comment = "typologyProv95Comment",
-            typologyStrategic = ContractingMonitoringOption.No,
-            typologyStrategicComment = "typologyStrategicComment",
-            typologyPartnership = ContractingMonitoringOption.Yes,
-            typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(ProjectContractingMonitoringAddDate(
-                projectId = projectId,
-                number = 1,
-                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                comment = "comment"
-            )),
-            fastTrackLumpSums = lumpSums,
-            dimensionCodes = listOf(ContractingDimensionCode(
-                id = 0,
-                projectId = projectId,
-                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
-                dimensionCode = "001",
-                projectBudgetAmountShare = BigDecimal(10000)
-            ))
+            lastPaymentDates = mockk(),
+            typologyProv94 = mockk(),
+            typologyProv94Comment = null,
+            typologyProv95 = mockk(),
+            typologyProv95Comment = null,
+            typologyStrategic = mockk(),
+            typologyStrategicComment = null,
+            typologyPartnership = mockk(),
+            typologyPartnershipComment = null,
+            addDates = mockk(),
+            fastTrackLumpSums = mockk(),
+            dimensionCodes = mockk(),
         )
         every { versionPersistence.getLatestApprovedOrCurrent(51L) } returns "V1"
         every { projectPersistence.getProject(51L, "V1").duration } returns 1
@@ -270,28 +284,18 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             projectId = projectId,
             startDate = LocalDate.of(2022, 8, 19),
             endDate = null,
-            typologyProv94 = ContractingMonitoringExtendedOption.Partly,
-            typologyProv94Comment = "typologyProv94Comment",
-            typologyProv95 = ContractingMonitoringExtendedOption.Yes,
-            typologyProv95Comment = "typologyProv95Comment",
-            typologyStrategic = ContractingMonitoringOption.No,
-            typologyStrategicComment = "typologyStrategicComment",
-            typologyPartnership = ContractingMonitoringOption.Yes,
-            typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(ProjectContractingMonitoringAddDate(
-                projectId = projectId,
-                number = 1,
-                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                comment = "comment"
-            )),
-            fastTrackLumpSums = lumpSums,
-            dimensionCodes = listOf(ContractingDimensionCode(
-                id = 0,
-                projectId = projectId,
-                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
-                dimensionCode = "001",
-                projectBudgetAmountShare = BigDecimal(10000)
-            ))
+            lastPaymentDates = mockk(),
+            typologyProv94 = mockk(),
+            typologyProv94Comment = null,
+            typologyProv95 = mockk(),
+            typologyProv95Comment = null,
+            typologyStrategic = mockk(),
+            typologyStrategicComment = null,
+            typologyPartnership = mockk(),
+            typologyPartnershipComment = null,
+            addDates = mockk(),
+            fastTrackLumpSums = mockk(),
+            dimensionCodes = mockk(),
         )
         every { versionPersistence.getLatestApprovedOrCurrent(52L) } returns "V1"
         every { projectPersistence.getProject(52L, "V1").duration } returns null
@@ -322,6 +326,10 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         )
         val monitoringOld = ProjectContractingMonitoring(
             projectId = projectId,
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             addDates = emptyList(),
             fastTrackLumpSums = listOf(lumpSum),
             dimensionCodes = emptyList(),
@@ -332,12 +340,16 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         )
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoringOld
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns listOf(lumpSum)
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
 
         assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
-            .isEqualTo(ProjectContractingMonitoring(
+            .isEqualTo(
+                ProjectContractingMonitoring(
                     projectId = projectId,
+                    lastPaymentDates = emptyList(),
                     addDates = emptyList(),
                     fastTrackLumpSums = listOf(lumpSum.copy(
                         installmentsAlreadyCreated = true

@@ -31,7 +31,7 @@ class GetContractingPartnerStateAidDeMinimisService(
         val deMinimisData = this.contractingPartnerStateAidDeMinimisPersistence.findById(partnerId)
         val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
         val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val addDates = getContractingMonitoringService.getProjectContractingMonitoring(projectId).addDates
         val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId, lastApprovedVersion)
         val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
@@ -39,7 +39,7 @@ class GetContractingPartnerStateAidDeMinimisService(
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure) ) {
             ContractingPartnerStateAidDeMinimisSection(
                 partnerId = partnerId,
-                dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+                dateOfGrantingAid = addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
                 amountGrantingAid = deMinimisData?.amountGrantingAid ?: (partnerBudgetPerFund?.totalEligibleBudget ?: BigDecimal.ZERO),
                 selfDeclarationSubmissionDate = deMinimisData?.selfDeclarationSubmissionDate,
                 baseForGranting = deMinimisData?.baseForGranting,

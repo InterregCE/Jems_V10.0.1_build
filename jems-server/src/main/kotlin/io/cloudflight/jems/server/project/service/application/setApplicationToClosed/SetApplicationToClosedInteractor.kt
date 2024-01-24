@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.application.set_application_to_closed
+package io.cloudflight.jems.server.project.service.application.setApplicationToClosed
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 
