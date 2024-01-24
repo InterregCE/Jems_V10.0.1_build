@@ -405,12 +405,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
 
     setTimeout(() => {
-      this.changeDetectorRef.detectChanges();
       this.scrollExpendituresTableToBottom();
+      this.changeDetectorRef.detectChanges();
     });
   }
 
-  scrollExpendituresTableToBottom():void {
+  scrollExpendituresTableToBottom(): void {
     this.expenditureCostsTable.nativeElement.scrollTop = this.expenditureCostsTable.nativeElement.offsetHeight;
     this.expenditureCostsTable.nativeElement.scrollLeft = 0;
   }

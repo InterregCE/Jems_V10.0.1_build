@@ -154,11 +154,9 @@ export class ContractPartnerStore {
       this.partnerId$.pipe(switchMap(partnerId => this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId))),
       this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
-      this.projectStore.userIsProjectOwnerOrEditCollaborator$,
-      this.projectStore.collaboratorLevel$
     ]).pipe(
-      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) =>
-        hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))),
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit]) =>
+        hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT)),
       shareReplay(1)
     );
   }

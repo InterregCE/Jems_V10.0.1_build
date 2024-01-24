@@ -225,6 +225,7 @@ export class AuditControlCorrectionOverviewComponent implements OnInit {
         take(1),
         filter(answer => !!answer),
         switchMap(() => this.correctionsOverviewStore.deleteCorrection(correctionId)),
+        tap(() => this.detailStore.refresh()),
       ).subscribe();
   }
 }

@@ -22,6 +22,7 @@ class UpdateContractingPartnerStateAidDeMinimis(
     private val versionPersistence: ProjectVersionPersistence,
     private val validator: ContractingValidator,
 ): UpdateContractingPartnerStateAidDeMinimisInteractor {
+
     @CanUpdateProjectContractingPartnerStateAid
     @Transactional
     @ExceptionWrapper(UpdateContractingPartnerStateAidDeMinimisException::class)

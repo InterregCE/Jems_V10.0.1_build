@@ -2134,17 +2134,13 @@ context('Partner reports tests', () => {
   }
 
   function uploadFileToExpenditure(rowIndex, attachmentIndex) {
+      
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input')
       .eq(rowIndex)
-      .scrollIntoView()
-      .invoke('show')
-      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-      .invoke('hide');
+      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', { force: true });
 
     cy.get('.mat-column-uploadFunction mat-chip-list span')
       .eq(attachmentIndex)
-      .scrollIntoView()
-      .should('be.visible')
       .should('have.text', 'fileToUpload.txt');
   }
 
@@ -2152,9 +2148,10 @@ context('Partner reports tests', () => {
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction')
       .eq(rowIndex)
       .find('mat-chip-list .mat-chip-remove')
-      .click();
+      .click({ force: true });
 
     cy.contains('button', 'Confirm')
+      .should('be.visible')
       .click();
 
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction')
@@ -2166,18 +2163,13 @@ context('Partner reports tests', () => {
   function replaceUploadedFile(rowIndex, attachmentIndex) {
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input')
       .eq(rowIndex)
-      .scrollIntoView()
-      .invoke('show')
-      .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt')
-      .invoke('hide');
+      .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt', { force: true });
 
     cy.contains('button', 'Confirm')
       .click();
 
     cy.get('.mat-column-uploadFunction mat-chip-list span')
       .eq(attachmentIndex)
-      .scrollIntoView()
-      .should('be.visible')
       .should('have.text', 'fileForUpdate.txt');
   }
 

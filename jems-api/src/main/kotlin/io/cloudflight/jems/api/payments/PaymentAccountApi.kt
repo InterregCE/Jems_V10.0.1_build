@@ -7,8 +7,8 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
 @Api("Payment Account")
@@ -23,7 +23,7 @@ interface PaymentAccountApi {
     fun listPaymentAccount(): List<PaymentAccountOverviewDTO>
 
     @ApiOperation("Update payment account")
-    @PatchMapping("$ENDPOINT_API_PAYMENT_ACCOUNT/{paymentAccountId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PAYMENT_ACCOUNT/{paymentAccountId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePaymentAccount(
         @PathVariable paymentAccountId: Long,
         @RequestBody paymentAccount: PaymentAccountUpdateDTO

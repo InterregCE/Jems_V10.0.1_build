@@ -242,10 +242,10 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
 
     @Test
     fun `programme user with view capability`() {
-        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerEdit) } returns true
-        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerEdit) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
         every { securityService.getUserIdOrThrow() } returns PARTNER_COLLABORATOR_USER_ID
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(any(), any()) } returns Optional.empty()
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerEdit, any()) } returns false
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
@@ -259,8 +259,8 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
     fun `programme user with edit capability`() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerEdit) } returns true
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
         every { securityService.getUserIdOrThrow() } returns PARTNER_COLLABORATOR_USER_ID
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(any(), any()) } returns Optional.empty()
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerEdit, any()) } returns true
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
