@@ -209,7 +209,8 @@ export class ContractMonitoringExtensionComponent {
         comment: this.formBuilder.control(lumpSum?.comment || '', Validators.maxLength(200)),
         readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
         fastTrack: this.formBuilder.control(lumpSum?.fastTrack || false),
-        installmentsAlreadyCreated: this.formBuilder.control(lumpSum?.installmentsAlreadyCreated || false)
+        installmentsAlreadyCreated: this.formBuilder.control(lumpSum?.installmentsAlreadyCreated || false),
+        linkedToEcPaymentId: this.formBuilder.control(lumpSum?.linkedToEcPaymentId)
       }));
     });
 
@@ -297,7 +298,8 @@ export class ContractMonitoringExtensionComponent {
         comment: lumpSum.comment,
         readyForPayment: lumpSum.readyForPayment,
         fastTrack: lumpSum.fastTrack,
-        installmentsAlreadyCreated: lumpSum.installmentsAlreadyCreated
+        installmentsAlreadyCreated: lumpSum.installmentsAlreadyCreated,
+        linkedToEcPaymentId: lumpSum.linkedToEcPaymentId
       }))
     } as ProjectContractingMonitoringDTO;
   }
@@ -383,6 +385,16 @@ export class ContractMonitoringExtensionComponent {
 
   tableChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  getFTLSEditTooltipOnHover(lumpSum: AbstractControl): string {
+    if (lumpSum?.value?.installmentsAlreadyCreated) {
+      return this.translateService.instant('project.application.contract.monitoring.ftls.disabled.due.to.installments');
+    } else if (lumpSum?.value?.linkedToEcPaymentId) {
+      return this.translateService.instant('project.application.contract.monitoring.ftls.disabled.due.to.payment.ec',{ecId :  lumpSum?.value?.linkedToEcPaymentId});
+    } else {
+      return '';
+    }
   }
 
   private getProjectDimensionCodes(objectivesWithPolicies: {[p: string]: ProgrammeSpecificObjectiveDTO[]}): {[p: string]: string[]} {

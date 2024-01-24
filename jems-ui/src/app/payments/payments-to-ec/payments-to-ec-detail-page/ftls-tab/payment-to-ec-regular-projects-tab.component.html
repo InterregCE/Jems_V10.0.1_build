@@ -35,6 +35,7 @@
                                          [newIndex]="pageStore.ftlsNewPageIndex$"
                                          [newSize]="pageStore.ftlsNewPageSize$"
                                          [paymentType]="PaymentTypeEnum.FTLS"
+                                         [flaggedArt9495]="false"
                                          (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
                                          (submitPayment)="updateLinkedPayment($event.ecId, $event.paymentId, $event.updateDto)"
         ></jems-payment-to-ec-select-table>

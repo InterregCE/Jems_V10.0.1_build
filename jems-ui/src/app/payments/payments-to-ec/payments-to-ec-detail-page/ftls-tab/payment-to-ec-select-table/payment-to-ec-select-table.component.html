@@ -1,5 +1,5 @@
 <ng-container *ngIf="data.paymentToEcLinking?.totalElements">
-    <mat-table jemsNoWidthLimit matSort
+    <mat-table #paymentToEcTable jemsNoWidthLimit matSort
                [dataSource]="dataSource"
                (matSortChange)="newSort.next($event)">
 
@@ -10,7 +10,7 @@
             <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">
                 <mat-checkbox [checked]="data.paymentToEcLinking.content[i].paymentToEcId !== null"
                               [disabled]="!data.isEditable || editedRowIndex !== null"
-                              (change)="selectionChanged2(data.ecId, data.paymentToEcLinking.content[i].payment.id, data.paymentToEcLinking.content[i].paymentToEcId !== null, $event)">
+                              (change)="paymentSelectionChanged(data.ecId, data.paymentToEcLinking.content[i].payment.id, data.paymentToEcLinking.content[i].paymentToEcId !== null, $event)">
                 </mat-checkbox>
             </mat-cell>
         </ng-container>
@@ -75,31 +75,79 @@
             </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="fundAmount">
-            <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let i = index" class="text-right">
-                <div class="fund-cell">
-                    {{ data.paymentToEcLinking.content[i].payment.amountApprovedPerFund | asMoney}}
-                    <div class="paid">
-                        {{ 'payments.to.ec.detail.ftls.column.paid.amount' | translate: {amount: data.paymentToEcLinking.content[i].payment.amountPaidPerFund | asMoney} }}
-                    </div>
-                </div>
-            </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="partnerContribution">
-            <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let i = index" class="text-right">
-                {{ data.paymentToEcLinking.content[i].partnerContribution | asMoney}}
-            </mat-cell>
-        </ng-container>
-
         <form [formGroup]="form">
             <ng-container formArrayName="paymentToEcLinking">
+
+               <ng-container *ngIf="flaggedArt9495" matColumnDef="totalEligibleWithoutScoArt9495">
+                   <mat-header-cell *matHeaderCellDef class="text-right">
+                       <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.total.eligible.without.sco.art.9495' | translate }}</span>
+                   </mat-header-cell>
+                   <mat-cell *matCellDef="let ftls; let i = index"
+                             class="text-right"
+                             [formGroup]="ftls">
+                                   <span *ngIf="i !== editedRowIndex">
+                                       {{ ftls.get('totalEligibleWithoutScoArt9495').value | asMoney}}
+                                   </span>
+                       <div *ngIf="i === editedRowIndex">
+                           <mat-form-field class="limit-input-width">
+                               <input matInput formControlName="totalEligibleWithoutScoArt9495"
+                                      [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                      currencyMask matInput type="decimal">
+                           </mat-form-field>
+                       </div>
+                   </mat-cell>
+               </ng-container>
+
+               <ng-container *ngIf="flaggedArt9495" matColumnDef="unionContribution">
+                   <mat-header-cell *matHeaderCellDef class="text-right">
+                       <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.union.contribution' | translate }}</span>
+                   </mat-header-cell>
+                   <mat-cell *matCellDef="let ftls; let i = index"
+                             class="text-right"
+                             [formGroup]="ftls">
+                                   <span *ngIf="i !== editedRowIndex">
+                                       {{ ftls.get('unionContribution').value | asMoney}}
+                                   </span>
+                      <div *ngIf="i === editedRowIndex">
+                          <mat-form-field class="limit-input-width">
+                              <input matInput formControlName="unionContribution" (keyup)="changeUnionContribution(i)"
+                                     [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                     currencyMask matInput type="decimal">
+                          </mat-form-field>
+                      </div>
+                  </mat-cell>
+               </ng-container>
+
+                <ng-container matColumnDef="fundAmount">
+                    <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.fund.amount' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let ftls; let i = index" class="text-right" [formGroup]="ftls">
+                        <div class="fund-cell" *ngIf="i !== editedRowIndex || !flaggedArt9495">
+                           {{ ftls.get('fundAmount').value | asMoney}}
+                            <div class="paid">
+                                {{ 'payments.to.ec.detail.ftls.column.paid.amount' | translate: {amount: data.paymentToEcLinking.content[i].payment.amountPaidPerFund | asMoney} }}
+                            </div>
+                        </div>
+                        <div *ngIf="i === editedRowIndex && flaggedArt9495">
+                            <mat-form-field class="limit-input-width">
+                                <input matInput formControlName="fundAmount"
+                                       [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
+                                       currencyMask matInput type="decimal">
+                            </mat-form-field>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+               <ng-container matColumnDef="partnerContribution">
+                   <mat-header-cell *matHeaderCellDef class="text-right">
+                       <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.partner.contribution' | translate }}</span>
+                   </mat-header-cell>
+                   <mat-cell *matCellDef="let i = index" class="text-right">
+                       {{ data.paymentToEcLinking.content[i].partnerContribution | asMoney}}
+                   </mat-cell>
+               </ng-container>
+
                 <ng-container matColumnDef="publicContribution">
                     <mat-header-cell *matHeaderCellDef class="text-right">
                         <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.public.contribution' | translate }}</span>
@@ -109,7 +157,7 @@
                             {{ ftls.get('publicContribution').value | asMoney}}
                         </div>
                         <div *ngIf="i === editedRowIndex">
-                            <mat-form-field [formGroup]="ftls" class="limit-input-width">
+                            <mat-form-field [formGroup]="ftls" class="limit-input-width button-cell">
                                 <input matInput formControlName="publicContribution"
                                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                                        currencyMask matInput type="decimal">
@@ -134,7 +182,7 @@
                                     {{ ftls.get('autoPublicContribution').value | asMoney}}
                                 </span>
                         <div *ngIf="i === editedRowIndex">
-                            <mat-form-field class="limit-input-width">
+                            <mat-form-field class="limit-input-width button-cell">
                                 <input matInput formControlName="autoPublicContribution"
                                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                                        currencyMask matInput type="decimal">
@@ -157,7 +205,7 @@
                                     {{ ftls.get('privateContribution').value | asMoney}}
                                 </span>
                         <div *ngIf="i === editedRowIndex">
-                            <mat-form-field [formGroup]="ftls" class="limit-input-width">
+                            <mat-form-field [formGroup]="ftls" class="limit-input-width button-cell">
                                 <input matInput formControlName="privateContribution"
                                        [options]="{max: constants.MAX_VALUE, allowNegative: true, align: 'right'}"
                                        currencyMask matInput type="decimal">
@@ -172,6 +220,7 @@
                         </div>
                     </mat-cell>
                 </ng-container>
+
             </ng-container>
         </form>
 

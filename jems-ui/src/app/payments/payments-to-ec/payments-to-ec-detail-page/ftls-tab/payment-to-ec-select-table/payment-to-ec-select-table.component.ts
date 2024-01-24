@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
 import {
   PagePaymentToEcLinkingDTO, PaymentDetailDTO,
   PaymentToEcLinkingDTO,
@@ -22,7 +22,7 @@ import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
   styleUrls: ['./payment-to-ec-select-table.component.scss'],
   providers: [FormService]
 })
-export class PaymentToEcSelectTableComponent implements OnChanges {
+export class PaymentToEcSelectTableComponent implements OnInit {
 
   @Input()
   data: {
@@ -39,6 +39,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   newIndex: Subject<number>;
   @Input()
   paymentType: PaymentTypeEnum;
+  @Input()
+  flaggedArt9495: boolean;
 
   @Output()
   selectionChanged = new EventEmitter<{ ecId: number; paymentId: number; checked: boolean; checkbox: MatCheckboxChange }>();
@@ -61,6 +63,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     'claimNo',
     'maApprovalDate',
     'totalEligible',
+    'totalEligibleWithoutScoArt9495',
+    'unionContribution',
     'fundAmount',
     'partnerContribution',
     'publicContribution',
@@ -70,6 +74,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   ];
   dataSource: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
   editedRowIndex: number | null = null;
+  @ViewChild('paymentToEcTable', {read: ElementRef}) private paymentToEcTable: ElementRef;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -78,10 +83,12 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     this.formService.init(this.form);
   }
 
-  ngOnChanges(): void {
+  ngOnInit(): void {
     this.initializeForm(this.data.paymentToEcLinking.content);
-    this.displayedColumns = this.data.isEditable ? this.displayedColumnsAll
-      : this.displayedColumnsAll.filter(col => !['select', 'correction'].includes(col));
+    const flagFilteredColumns = this.flaggedArt9495 ? this.displayedColumnsAll
+      : this.displayedColumnsAll.filter(col => !['totalEligibleWithoutScoArt9495', 'unionContribution'].includes(col));
+    this.displayedColumns = this.data.isEditable ? flagFilteredColumns
+      : flagFilteredColumns.filter(col => !['select', 'correction'].includes(col));
   }
 
   get paymentToEcLinking(): FormArray {
@@ -102,33 +109,39 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       autoPublicContribution: this.formBuilder.control(link.correctedAutoPublicContribution),
       publicContribution: this.formBuilder.control(link.correctedPublicContribution),
       privateContribution: this.formBuilder.control(link.correctedPrivateContribution),
+      totalEligibleWithoutScoArt9495: this.formBuilder.control(link.correctedTotalEligibleWithoutSco),
+      unionContribution: this.formBuilder.control(link.correctedFundAmountUnionContribution),
+      fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.amountApprovedPerFund)
     });
     this.paymentToEcLinking.push(item);
   }
 
-  selectionChanged2(ecId: number, paymentId: number, checked: boolean, event: MatCheckboxChange): void {
+  paymentSelectionChanged(ecId: number, paymentId: number, checked: boolean, event: MatCheckboxChange): void {
     this.selectionChanged.emit({ecId, paymentId, checked, checkbox: event});
-  }
-
-  editAmounts(rowIndex: number) {
-    this.editedRowIndex = rowIndex;
   }
 
   submitAmountChanges(rowIndex: number, ecId: number, paymentId: number) {
     const updateDto = {
       correctedPublicContribution: this.paymentToEcLinking.at(rowIndex).get('publicContribution')?.value,
       correctedAutoPublicContribution: this.paymentToEcLinking.at(rowIndex).get('autoPublicContribution')?.value,
-      correctedPrivateContribution: this.paymentToEcLinking.at(rowIndex).get('privateContribution')?.value
+      correctedPrivateContribution: this.paymentToEcLinking.at(rowIndex).get('privateContribution')?.value,
+      correctedTotalEligibleWithoutSco: this.paymentToEcLinking.at(rowIndex).get('totalEligibleWithoutScoArt9495')?.value,
+      correctedFundAmountUnionContribution: this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value,
+      correctedFundAmountPublicContribution: this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value
     } as PaymentToEcLinkingUpdateDTO;
     this.submitPayment.emit({ecId,paymentId, updateDto});
     this.editedRowIndex = null;
+    this.formService.setDirty(false);
   }
 
   resetAmounts(rowIndex: number, linkingDTO: PaymentToEcLinkingDTO) {
     this.paymentToEcLinking.at(rowIndex).patchValue({
       autoPublicContribution: linkingDTO.autoPublicContribution,
       publicContribution: linkingDTO.publicContribution,
-      privateContribution: linkingDTO.privateContribution
+      privateContribution: linkingDTO.privateContribution,
+      fundAmount: linkingDTO.payment.amountApprovedPerFund,
+      totalEligibleWithoutScoArt9495: linkingDTO.payment.amountApprovedPerFund + linkingDTO.partnerContribution,
+      unionContribution: 0
     });
     this.formService.setDirty(true);
   }
@@ -137,14 +150,34 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     this.paymentToEcLinking.at(rowIndex).patchValue({
       autoPublicContribution: linkingDTO.correctedAutoPublicContribution,
       publicContribution: linkingDTO.correctedPublicContribution,
-      privateContribution: linkingDTO.correctedPrivateContribution
+      privateContribution: linkingDTO.correctedPrivateContribution,
+      totalEligibleWithoutScoArt9495: linkingDTO.correctedTotalEligibleWithoutSco,
+      unionContribution: linkingDTO.correctedFundAmountUnionContribution,
+      fundAmount: this.flaggedArt9495 ? linkingDTO.correctedFundAmountPublicContribution : linkingDTO.payment.amountApprovedPerFund
     });
     this.editedRowIndex = null;
     this.formService.setDirty(false);
   }
 
+  editAmounts(rowIndex: number) {
+    this.editedRowIndex = rowIndex;
+    setTimeout(() => {
+      this.scrollToRight();
+    });
+  }
+
+  scrollToRight(): void {
+    this.paymentToEcTable.nativeElement.scrollLeft = this.paymentToEcTable.nativeElement.scrollWidth;
+  }
+
   getRouterLinkForRegularPayment(paymentToProjectDTO: PaymentToProjectDTO): string {
     return `/app/project/detail/${paymentToProjectDTO.projectId}/projectReports/${paymentToProjectDTO.paymentClaimId}`;
+  }
+
+  changeUnionContribution(rowIndex: number) {
+    const updatedUnionContribution = this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value;
+    const totalCorrection = this.data.paymentToEcLinking.content[rowIndex].payment.amountApprovedPerFund + this.data.paymentToEcLinking.content[rowIndex].partnerContribution;
+    this.paymentToEcLinking.at(rowIndex).patchValue({totalEligibleWithoutScoArt9495: totalCorrection - updatedUnionContribution});
   }
 
 }
