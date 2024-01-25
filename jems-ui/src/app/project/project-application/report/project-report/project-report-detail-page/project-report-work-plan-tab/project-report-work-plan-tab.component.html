@@ -151,7 +151,10 @@
                     </jems-multi-language-container>
 
                     <!-- INVESTMENTS -->
-                    <h4 *ngIf="investments(workPackageIndex).controls.length" class="mb-4" [innerText]="'workpackage.tab.investments' | translate"></h4>
+                    <h4 *ngIf="investments(workPackageIndex).controls.length" class="mb-3" [innerText]="'workpackage.tab.investments' | translate"></h4>
+                    <div *ngIf="investments(workPackageIndex)?.value.length" class="my-3">
+                        <p [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.subtitle' | translate"></p>
+                    </div>
 
                     <mat-accordion multi="true">
                     <ng-container *ngIf="investments(workPackageIndex).controls.length">
