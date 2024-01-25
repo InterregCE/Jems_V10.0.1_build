@@ -6,7 +6,12 @@
     justify-content: flex-end;
   }
 }
-
+.locked {
+  opacity: 1;
+}
+.unlocked {
+  opacity: 0.25;
+}
 .edit-description-buttons {
   float: right;
 }

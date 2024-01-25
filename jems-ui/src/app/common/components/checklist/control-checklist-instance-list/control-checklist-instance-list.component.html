@@ -108,16 +108,13 @@
             </button>
         </ng-container>
 
-        <ng-container>
-            <button
-                    [disabled]="true"
-                    color="accent"
-                    mat-icon-button
-                    aria-label="lock status">
-                <mat-icon *ngIf="!isAfterControlChecklist(checklist.createdAt)" matTooltip="{{'common.checklist.locked.tooltip' | translate}}">lock</mat-icon>
-                <mat-icon *ngIf="isAfterControlChecklist(checklist.createdAt)">lock_open</mat-icon>
-            </button>
-        </ng-container>
-
     </ng-template>
+
+    <ng-template #lockCell let-checklist>
+        <ng-container>
+            <mat-icon class="locked" *ngIf="!isAfterControlChecklist(checklist.createdAt)" matTooltip="{{'common.checklist.locked.tooltip' | translate}}">lock</mat-icon>
+            <mat-icon class="unlocked" *ngIf="isAfterControlChecklist(checklist.createdAt)" matTooltip="{{'common.checklist.unlocked.tooltip' | translate}}">lock_open</mat-icon>
+        </ng-container>
+    </ng-template>
+
 </div>

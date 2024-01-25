@@ -81,6 +81,9 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   @ViewChild('descriptionCell', {static: true})
   descriptionCell: TemplateRef<any>;
 
+  @ViewChild('lockCell', {static: true})
+  lockCell: TemplateRef<any>;
+
   @ViewChild('tableInstances') tableInstances: TableComponent;
 
   constructor(public pageStore: ControlChecklistInstanceListStore,
@@ -149,7 +152,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       tap(data => this.checklistInstances = data)
     );
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
-    this.instancesTableConfiguration = this.checklistUtils.initializeTableConfiguration(this.actionsCell, this.descriptionCell);
+    this.instancesTableConfiguration = this.checklistUtils.initializeTableConfigurationWithLock(this.actionsCell, this.descriptionCell, this.lockCell);
   }
 
   delete(checklist: ChecklistInstanceDTO): void {
