@@ -8,7 +8,7 @@
 
         <h3>{{'project.application.project.verification.work.tab.finalise.title' | translate}}</h3>
         <p>{{'project.application.project.verification.work.tab.finalise.subtitle' | translate}}</p>
-        <mat-form-field jemsMultiColumnRow class="w-50">
+        <mat-form-field jemsMultiColumnRow>
           <mat-label>{{'project.application.project.verification.work.tab.finalise.start.date' | translate}}</mat-label>
           <input formControlName="startDate" matInput
                  [matDatepicker]="startDate">
@@ -19,14 +19,22 @@
         <h3>{{'project.application.project.verification.work.tab.finalise.js.title' | translate}}</h3>
         <p>{{'project.application.project.verification.work.tab.finalise.js.subtitle' | translate}}</p>
 
-        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
+        <jems-expandable-textarea jemsMultiColumnRow class="mb-0"
                                   [control]="overviewForm?.controls?.conclusionJS"
                                   [errors]="overviewForm?.controls?.conclusionJS.errors"
                                   [characterLimit]="5000"
                                   [minRows]="1"
-                                  [maxRows]="5">
+                                  [maxRows]="16">
         </jems-expandable-textarea>
 
+        <div *ngIf="!data.projectDetail.callSettings.jsNotifiable">
+            <jems-alert
+                    [show]="true"
+                    [type]="Alert.INFO"
+                    [closable]="false">
+                <span>{{'project.application.project.verification.work.tab.finalise.js.notify.disabled.info' | translate}}</span>
+            </jems-alert>
+        </div>
         <div class="send-notification-button" *ngIf="data.projectDetail.callSettings.jsNotifiable && !data.reportFinalised">
           <jems-pending-button
                            [confirm]="{ title: 'project.application.project.verification.work.tab.finalise.js.notify.confirmation.title', message: 'project.application.project.verification.work.tab.finalise.js.notify.confirmation.message' }"
@@ -45,7 +53,7 @@
             </jems-context-info>
           </div>
 
-        <jems-alert
+        <jems-alert *ngIf="data.verificationNotification || data.projectDetail.callSettings.jsNotifiable"
               [show]="true"
               [type]="Alert.INFO"
               [closable]="false">
@@ -59,23 +67,23 @@
         <h3>{{'project.application.project.verification.work.tab.finalise.ma.title' | translate}}</h3>
         <p>{{'project.application.project.verification.work.tab.finalise.ma.subtitle' | translate}}</p>
 
-        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
+        <jems-expandable-textarea jemsMultiColumnRow
                                   [control]="overviewForm?.controls?.conclusionMA"
                                   [errors]="overviewForm?.controls?.conclusionMA.errors"
                                   [characterLimit]="5000"
                                   [minRows]="1"
-                                  [maxRows]="5">
+                                  [maxRows]="16">
         </jems-expandable-textarea>
 
         <h3>{{'project.application.project.verification.work.tab.finalise.follow.title' | translate}}</h3>
         <p>{{'project.application.project.verification.work.tab.finalise.follow.subtitle' | translate}}</p>
 
-        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
+        <jems-expandable-textarea jemsMultiColumnRow
                                   [control]="overviewForm?.controls?.verificationFollowUp"
                                   [errors]="overviewForm?.controls?.verificationFollowUp.errors"
                                   [characterLimit]="5000"
                                   [minRows]="1"
-                                  [maxRows]="5">
+                                  [maxRows]="16">
         </jems-expandable-textarea>
 
         <h3>{{'project.application.project.verification.work.tab.finalise.certificate.title' | translate}}</h3>
