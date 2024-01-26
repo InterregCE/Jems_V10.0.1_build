@@ -1,6 +1,6 @@
 <input hidden #selectFile (change)="uploadFile($event)" onclick="this.value=null;"
        type="file" [accept]="acceptedFilesTypes">
-<jems-pending-button *ngIf="isReportEditable" (clicked)="selectFile.click()"
+<jems-pending-button *ngIf="isReportEditable && !fileMetadata?.name" (clicked)="selectFile.click()"
                      [pending]="isUploadInProgress"
                      [isIconButton]="true"
                      [buttonOptions]="{class: 'mb-2', fontSet:'material-icons-outlined'}"

@@ -65,6 +65,8 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
     resultsAndPrinciples: ProjectReportResultPrincipleDTO;
   }>;
 
+  toggleStatesOfResults: boolean[] = [];
+
   constructor(
     private projectStore: ProjectStore,
     private projectReportPageStore: ProjectReportPageStore,
@@ -194,6 +196,14 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
       achievedInReportingPeriod,
       this.initialCumulativeValues[resultIndex] ?? 0]
     ));
+  }
+
+  toggleResultsRowAtIndex(index: number): void {
+    this.toggleStatesOfResults[index] = !this.toggleStatesOfResults[index];
+  }
+
+  getResultsRowToggleStateAtIndex(index: number): boolean {
+    return this.toggleStatesOfResults[index];
   }
 
 }

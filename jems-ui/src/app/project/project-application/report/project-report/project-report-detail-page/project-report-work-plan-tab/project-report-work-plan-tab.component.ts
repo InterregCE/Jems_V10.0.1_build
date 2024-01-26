@@ -69,6 +69,8 @@ export class ProjectReportWorkPlanTabComponent {
   isUploadDone: boolean;
   ProjectUtil = ProjectUtil;
 
+  toggleStatesOfWorkPackages: boolean[] = [];
+
   constructor(
     private readonly projectStore: ProjectStore,
     private readonly projectReportDetailPageStore: ProjectReportDetailPageStore,
@@ -389,5 +391,13 @@ export class ProjectReportWorkPlanTabComponent {
 
   canExpandWorkPackage(completed: AbstractControl | null, status: AbstractControl | null): boolean {
     return completed?.value && (status?.value === WorkPlanStatusLabelEnum.Yellow || status?.value === WorkPlanStatusLabelEnum.Green);
+  }
+
+  toggleWorkPackageRowAtIndex(index: number): void {
+    this.toggleStatesOfWorkPackages[index] = !this.toggleStatesOfWorkPackages[index];
+  }
+
+  getWorkPackageRowToggleStateAtIndex(index: number): boolean {
+    return this.toggleStatesOfWorkPackages[index];
   }
 }
