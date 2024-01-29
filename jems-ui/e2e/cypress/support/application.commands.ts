@@ -83,6 +83,8 @@ declare global {
 
       updateReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
 
+      getReportingDeadlines(applicationId: number);
+
       getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
 
       updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
@@ -227,7 +229,6 @@ Cypress.Commands.add('startModification', (applicationId: number, userEmail?: st
   }
 });
 
-// TODO:
 Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
@@ -345,6 +346,13 @@ Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reporti
 Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
   // same as create, but need to provide id reference in reportingDeadlines
   createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
+Cypress.Commands.add('getReportingDeadlines', (applicationId: number) => {
+    cy.request({
+        method: 'GET',
+        url: `api/project/${applicationId}/contracting/reporting`,
+    }).then((response) => response.body);
 });
 
 Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {
@@ -738,7 +746,12 @@ function createReportingDeadlines(applicationId, reportingDeadlines) {
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/reporting`,
     body: reportingDeadlines
-  }).then((response) => response.body);
+  }).then(response => {
+    response.body.forEach((deadlines, index) => {
+       reportingDeadlines[index].id = deadlines.id;
+    });
+    return response.body;
+  });
 }
 
 function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {

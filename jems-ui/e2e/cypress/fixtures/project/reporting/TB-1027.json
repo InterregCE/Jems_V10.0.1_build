@@ -1,0 +1,208 @@
+{
+  "projectReport1ExpectedResults": {
+    "co-financing": {
+      "ERDF": {
+        "totalEligibleBudget": "36.875,05",
+        "previouslyReported": "1.199,99",
+        "currentReport": "1.921,66",
+        "totalReportedSoFar": "3.121,65",
+        "totalReportedSoFarPercentage": "8,47",
+        "remainingBudget": "33.753,40",
+        "previouslyVerified": "1.199,99",
+        "previouslyPaid": "0,00"
+      },
+      "Neighbourhood CBC": {
+        "totalEligibleBudget": "3.562,37",
+        "previouslyReported": "0,00",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "0,00",
+        "totalReportedSoFarPercentage": "0,00",
+        "remainingBudget": "3.562,37",
+        "previouslyVerified": "0,00",
+        "previouslyPaid": "0,00"
+      },
+      "Other fund EN": {
+        "totalEligibleBudget": "11.147,22",
+        "previouslyReported": "293,19",
+        "currentReport": "469,52",
+        "totalReportedSoFar": "762,71",
+        "totalReportedSoFarPercentage": "6,84",
+        "remainingBudget": "10.384,51",
+        "previouslyVerified": "293,19",
+        "previouslyPaid": "0,00"
+      },
+      "Partner contribution": {
+        "totalEligibleBudget": "24.123,28",
+        "previouslyReported": "506,81",
+        "currentReport": "811,60",
+        "totalReportedSoFar": "1.318,41",
+        "totalReportedSoFarPercentage": "5,47",
+        "remainingBudget": "22.804,87",
+        "previouslyVerified": "506,81",
+        "previouslyPaid": "N/A"
+      },
+      "Public contribution": {
+        "totalEligibleBudget": "6.933,96",
+        "previouslyReported": "185,45",
+        "currentReport": "296,99",
+        "totalReportedSoFar": "482,44",
+        "totalReportedSoFarPercentage": "6,96",
+        "remainingBudget": "6.451,52",
+        "previouslyVerified": "185,45",
+        "previouslyPaid": "N/A"
+      },
+      "Automatic public contribution": {
+        "totalEligibleBudget": "13.261,65",
+        "previouslyReported": "215,22",
+        "currentReport": "344,65",
+        "totalReportedSoFar": "559,87",
+        "totalReportedSoFarPercentage": "4,22",
+        "remainingBudget": "12.701,78",
+        "previouslyVerified": "215,22",
+        "previouslyPaid": "N/A"
+      },
+      "Private contribution": {
+        "totalEligibleBudget": "3.927,67",
+        "previouslyReported": "106,12",
+        "currentReport": "169,94",
+        "totalReportedSoFar": "276,06",
+        "totalReportedSoFarPercentage": "7,03",
+        "remainingBudget": "3.651,61",
+        "previouslyVerified": "106,12",
+        "previouslyPaid": "N/A"
+      },
+      "Total": {
+        "totalEligibleBudget": "75.707,92",
+        "previouslyReported": "1.999,99",
+        "currentReport": "3.202,78",
+        "totalReportedSoFar": "5.202,77",
+        "totalReportedSoFarPercentage": "6,87",
+        "remainingBudget": "70.505,15",
+        "previouslyVerified": "1.999,99",
+        "previouslyPaid": "0,00"
+      }
+    }
+  },
+  "projectReport2ExpectedResults": {
+    "co-financing": {
+      "ERDF": {
+        "totalEligibleBudget": "36.875,05",
+        "previouslyReported": "3.121,65",
+        "currentReport": "1.735,40",
+        "totalReportedSoFar": "4.857,05",
+        "totalReportedSoFarPercentage": "13,17",
+        "remainingBudget": "32.018,00",
+        "previouslyVerified": "3.094,92",
+        "previouslyPaid": "571,99"
+      },
+      "Neighbourhood CBC": {
+        "totalEligibleBudget": "3.562,37",
+        "previouslyReported": "0,00",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "0,00",
+        "totalReportedSoFarPercentage": "0,00",
+        "remainingBudget": "3.562,37",
+        "previouslyVerified": "0,00",
+        "previouslyPaid": "0,00"
+      },
+      "Other fund EN": {
+        "totalEligibleBudget": "11.147,22",
+        "previouslyReported": "762,71",
+        "currentReport": "424,01",
+        "totalReportedSoFar": "1.186,72",
+        "totalReportedSoFarPercentage": "10,65",
+        "remainingBudget": "9.960,50",
+        "previouslyVerified": "756,18",
+        "previouslyPaid": "0,00"
+      },
+      "Partner contribution": {
+        "totalEligibleBudget": "24.123,28",
+        "previouslyReported": "1.318,41",
+        "currentReport": "732,93",
+        "totalReportedSoFar": "2.051,34",
+        "totalReportedSoFarPercentage": "8,50",
+        "remainingBudget": "22.071,94",
+        "previouslyVerified": "1.307,12",
+        "previouslyPaid": "N/A"
+      },
+      "Public contribution": {
+        "totalEligibleBudget": "6.933,96",
+        "previouslyReported": "482,44",
+        "currentReport": "268,20",
+        "totalReportedSoFar": "750,64",
+        "totalReportedSoFarPercentage": "10,83",
+        "remainingBudget": "6.183,32",
+        "previouslyVerified": "478,30",
+        "previouslyPaid": "N/A"
+      },
+      "Automatic public contribution": {
+        "totalEligibleBudget": "13.261,65",
+        "previouslyReported": "559,87",
+        "currentReport": "311,24",
+        "totalReportedSoFar": "871,11",
+        "totalReportedSoFarPercentage": "6,57",
+        "remainingBudget": "12.390,54",
+        "previouslyVerified": "555,07",
+        "previouslyPaid": "N/A"
+      },
+      "Private contribution": {
+        "totalEligibleBudget": "3.927,67",
+        "previouslyReported": "276,06",
+        "currentReport": "153,46",
+        "totalReportedSoFar": "429,52",
+        "totalReportedSoFarPercentage": "10,94",
+        "remainingBudget": "3.498,15",
+        "previouslyVerified": "273,69",
+        "previouslyPaid": "N/A"
+      },
+      "Total": {
+        "totalEligibleBudget": "75.707,92",
+        "previouslyReported": "5.202,77",
+        "currentReport": "2.892,34",
+        "totalReportedSoFar": "8.095,11",
+        "totalReportedSoFarPercentage": "10,69",
+        "remainingBudget": "67.612,81",
+        "previouslyVerified": "5.158,22",
+        "previouslyPaid": "571,99"
+      }
+    }
+  },
+  "authorizedPayments": [
+    {
+      "projectCustomIdentifier": "setDuringTest",
+      "fundName": "ERDF",
+      "partnerPayments": [
+        {
+          "id": 0,
+          "partnerId": 0,
+          "partnerType": "LEAD_PARTNER",
+          "partnerAbbreviation": "Lead Partner",
+          "installments": [
+            {
+              "amountPaid": 571.99,
+              "paymentDate": "2024-01-17T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2024-01-17",
+              "paymentConfirmed": true,
+              "paymentConfirmedDate": "2024-01-17"
+            },
+            {
+              "amountPaid": 523.34,
+              "paymentDate": "2024-01-17T00:00:00.000Z",
+              "comment": "API comment",
+              "savePaymentInfo": true,
+              "savePaymentDate": "2024-01-17",
+              "paymentConfirmed": false,
+              "paymentConfirmedDate": ""
+            }
+          ]
+        }
+      ],
+      "paymentType": "REGULAR",
+      "projectId": null,
+      "projectAcronym": "TB-1027",
+      "amountApprovedPerFund": 1894.93
+    }
+  ]
+}

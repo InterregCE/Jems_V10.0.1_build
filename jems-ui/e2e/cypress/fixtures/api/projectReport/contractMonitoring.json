@@ -1,5 +1,6 @@
 {
   "startDate": "2023-01-01T00:00:00.000Z",
+  "lastPaymentDates": [],
   "addDates": [
     {
       "comment": "Entry into force date comment",

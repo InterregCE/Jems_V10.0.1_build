@@ -3,9 +3,9 @@ declare global {
   namespace Cypress {
     interface Chainable {
       startControlWork(partnerId: number, reportId: number);
-      
+
       updateControlReportIdentification(partnerId: number, reportId: number, controlReportIdentification);
-      
+
       setExpenditureItemsAsParked(partnerId: number, reportId: number, partnerReportExpenditures);
 
       finalizeControl(partnerId: number, reportId: number);
@@ -13,6 +13,8 @@ declare global {
       startControlChecklist(partnerId: number, reportId: number, checklist);
 
       finishControlChecklist(partnerId, reportId, checklistId);
+
+      updateControlReportExpenditureVerification(partnerId: number, reportId: number, partnerReportExpenditures);
     }
   }
 }
@@ -53,6 +55,15 @@ Cypress.Commands.add('startControlChecklist', (partnerId, reportId, checklist) =
 
 Cypress.Commands.add('finishControlChecklist', (partnerId, reportId, checklistId) => {
     finishControlChecklist(partnerId, reportId, checklistId)
+});
+
+
+Cypress.Commands.add('updateControlReportExpenditureVerification', (partnerId: number, reportId: number, partnerReportExpenditures) => {
+    cy.request({
+        method: 'PUT',
+        url: `api/project/report/partner/control/expenditure/byPartnerId/${partnerId}/byReportId/${reportId}`,
+        body: partnerReportExpenditures
+    }).then(response => response.body);
 });
 
 function startControlChecklist(partnerId, reportId, checklist) {

@@ -152,7 +152,7 @@
       "declaredAmountInEur": 1234.8
     },
     {
-      "cypressReferenceUnit": "shouldHaveLumpSum",
+      "cypressReference": "shouldHaveLumpSum",
       "costCategoryInFile": "Multiple",
       "costCategory": "Multiple",
       "internalReferenceNumber": null,
@@ -196,7 +196,7 @@
       "gdpr": ""
     },
     {
-      "cypressReferenceUnit": "shouldHaveUnitCost",
+      "cypressReference": "shouldHaveUnitCost",
       "costCategoryInFile": "Multiple",
       "costCategory": "Multiple",
       "internalReferenceNumber": null,
