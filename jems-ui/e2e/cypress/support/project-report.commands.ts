@@ -1,8 +1,12 @@
+import {loginByRequest} from "./login.commands";
+
 declare global {
 
   namespace Cypress {
     interface Chainable {
       createProjectReport(applicationId: number, projectReportIdentification);
+      
+      createVerifiedProjectReport(applicationId: number, projectReportDetails: any, verificationUserEmail: string): any;
 
       runProjectReportPreSubmissionCheck(applicationId: number, reportId: number);
 
@@ -23,6 +27,25 @@ Cypress.Commands.add('createProjectReport', (applicationId: number, projectRepor
     url: `api/project/report/byProjectId/${applicationId}`,
     body: projectReportIdentification,
   }).then(response => response.body.id);
+});
+
+Cypress.Commands.add('createVerifiedProjectReport', (applicationId: number, projectReportDetails, verificationUserEmail) => {
+  cy.createProjectReport(applicationId, projectReportDetails.financeDeadline).then(projectReportId => {
+    cy.submitProjectReport(applicationId, projectReportId);
+    loginByRequest(verificationUserEmail);
+    cy.startProjectReportVerification(applicationId, projectReportId);
+    getProjectReportExpenditures(applicationId, projectReportId).then(expenditureList => {
+      expenditureList.forEach((expenditure, i) => {
+        projectReportDetails.verificationWork[i].expenditureId = expenditure.expenditure.id;
+      });
+    })
+    cy.updateProjectReportExpenditureVerification(applicationId, projectReportId, projectReportDetails.verificationWork)
+    cy.finalizeProjectReportVerification(applicationId, projectReportId);
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+    cy.wrap(projectReportId);
+  });
 });
 
 Cypress.Commands.add('runProjectReportPreSubmissionCheck', (applicationId: number, reportId: number) => {
@@ -61,6 +84,15 @@ Cypress.Commands.add('finalizeProjectReportVerification', (applicationId: number
     url: `/api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/finalizeVerification`,
   });
 });
+
+function getProjectReportExpenditures(applicationId: number, projectReportId: number): any {
+  return cy.request({
+    method: 'GET',
+    url: `/api/project/report/byProjectId/${applicationId}/byReportId/${projectReportId}/verification/expenditure`
+  }).then(response => {
+    return response.body
+  });
+}
 
 
 export {};

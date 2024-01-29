@@ -229,7 +229,6 @@ Cypress.Commands.add('startModification', (applicationId: number, userEmail?: st
   }
 });
 
-// TODO:
 Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
@@ -747,7 +746,12 @@ function createReportingDeadlines(applicationId, reportingDeadlines) {
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/reporting`,
     body: reportingDeadlines
-  }).then((response) => response.body);
+  }).then(response => {
+    response.body.forEach((deadlines, index) => {
+       reportingDeadlines[index].id = deadlines.id;
+    });
+    return response.body;
+  });
 }
 
 function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {
