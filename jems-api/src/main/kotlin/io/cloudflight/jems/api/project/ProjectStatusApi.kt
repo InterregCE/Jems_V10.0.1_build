@@ -125,4 +125,12 @@ interface ProjectStatusApi {
     @PutMapping("$ENDPOINT_API_PROJECT_STATUS/set-to-contracted")
     fun setToContracted(@PathVariable id: Long): ApplicationStatusDTO
 
+    @ApiOperation("set application to closed")
+    @PutMapping("$ENDPOINT_API_PROJECT_STATUS/set-to-closed")
+    fun setToClosed(@PathVariable id: Long): ApplicationStatusDTO
+
+    @ApiOperation("revert application to contracted")
+    @PutMapping("$ENDPOINT_API_PROJECT_STATUS/revert-to-contracted")
+    fun revertToContracted(@PathVariable id: Long): ApplicationStatusDTO
+
 }

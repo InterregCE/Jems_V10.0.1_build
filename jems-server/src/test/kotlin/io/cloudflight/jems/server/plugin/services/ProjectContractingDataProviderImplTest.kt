@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.plugin.services
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundData
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.contracts.ProjectContractInfoData
+import io.cloudflight.jems.plugin.contract.models.project.contracting.lastPaymentDate.ContractingClosureLastPaymentDateData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.management.ManagementTypeData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.management.ProjectContractingManagementData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.monitoring.ContractingMonitoringAddDateData
@@ -39,6 +40,7 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.contracting.model.ManagementType
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.*
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
@@ -106,6 +108,11 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
             projectId = 1L,
             startDate = LocalDate.of(2022, 8, 1),
             endDate = LocalDate.of(2023, 8, 1),
+            closureDate = LocalDate.of(2024, 1, 24),
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -389,6 +396,11 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
                 projectId = 1L,
                 startDate = LocalDate.of(2022, 8, 1),
                 endDate = LocalDate.of(2023, 8, 1),
+                closureDate = LocalDate.of(2024, 1, 24),
+                lastPaymentDates = listOf(
+                    ContractingClosureLastPaymentDateData(774L, 14, "774-abbr",
+                        ProjectPartnerRoleData.PARTNER, false, LocalDate.of(2025, 3, 18))
+                ),
                 typologyProv94 = ContractingMonitoringExtendedOptionData.Partly,
                 typologyProv94Comment = "typologyProv94Comment",
                 typologyProv95 = ContractingMonitoringExtendedOptionData.Yes,

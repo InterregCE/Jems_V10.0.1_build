@@ -808,7 +808,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"]
     )
     fun createReportFor(status: ApplicationStatus) {
         val projectId = 54L + status.ordinal
@@ -912,7 +912,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor spf but no partner {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"]
     )
     fun `createReportFor spf but no partner`(status: ApplicationStatus) {
         val projectId = 454L + status.ordinal
@@ -952,7 +952,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
     )
     fun `createReportFor - forbidden because other reopened`(status: ApplicationStatus) {
         val projectId = 354L + status.ordinal
@@ -979,7 +979,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor - not contracted {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
         mode = EnumSource.Mode.EXCLUDE,
     )
     fun `createReportFor - not contracted`(status: ApplicationStatus) {

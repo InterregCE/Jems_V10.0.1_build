@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto.contracting
 
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureLastPaymentDateDTO
 import io.cloudflight.jems.api.project.dto.lumpsum.ProjectLumpSumDTO
 import java.time.LocalDate
 
@@ -7,6 +8,8 @@ data class ProjectContractingMonitoringDTO(
     val projectId: Long,
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
+    val closureDate: LocalDate? = null,
+    val lastPaymentDates: List<ContractingClosureLastPaymentDateDTO>,
 
     val entryIntoForceDate: LocalDate? = null,
     val entryIntoForceComment: String? = null,

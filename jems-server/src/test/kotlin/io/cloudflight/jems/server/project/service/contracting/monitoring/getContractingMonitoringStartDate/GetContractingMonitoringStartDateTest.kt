@@ -1,9 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringStartDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.mockk.every
@@ -17,17 +14,6 @@ internal class GetContractingMonitoringStartDateTest : UnitTest() {
 
     companion object {
         private val startDate = LocalDate.of(2022, 5, 19)
-
-        private val monitoring = ProjectContractingMonitoring(
-            projectId = 1L,
-            addDates = listOf(),
-            dimensionCodes = listOf(),
-            startDate = startDate,
-            typologyProv94 = ContractingMonitoringExtendedOption.No,
-            typologyProv95 = ContractingMonitoringExtendedOption.No,
-            typologyStrategic = ContractingMonitoringOption.No,
-            typologyPartnership = ContractingMonitoringOption.No,
-        )
     }
 
     @MockK
@@ -38,7 +24,7 @@ internal class GetContractingMonitoringStartDateTest : UnitTest() {
 
     @Test
     fun `get start date`() {
-        every { contractingMonitoringPersistence.getContractingMonitoring(1L) } returns monitoring
+        every { contractingMonitoringPersistence.getContractingMonitoring(1L).startDate } returns startDate
         Assertions.assertThat(interactor.getStartDate(1L))
             .isEqualTo(ProjectContractingMonitoringStartDate(startDate))
     }

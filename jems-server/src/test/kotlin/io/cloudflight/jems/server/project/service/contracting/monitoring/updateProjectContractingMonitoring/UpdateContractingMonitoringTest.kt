@@ -24,17 +24,20 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.clearMocks
 import io.mockk.every
@@ -51,7 +54,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.internal.util.collections.Sets
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class UpdateContractingMonitoringTest : UnitTest() {
@@ -122,6 +127,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
             projectId = projectId,
             startDate = null,
             endDate = null,
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -203,6 +212,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @MockK
     lateinit var getProjectBudget: GetProjectBudget
 
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
+
     @RelaxedMockK
     lateinit var validator: ContractingValidator
 
@@ -217,7 +229,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(auditPublisher, validator, getProjectBudget, partnerCoFinancingPersistence)
+        clearMocks(auditPublisher, validator, getProjectBudget, partnerCoFinancingPersistence,
+            partnerPersistence, contractingMonitoringPersistence)
     }
 
     @Test
@@ -231,6 +244,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
         every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
+
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)).isEqualTo(monitoring)
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -251,6 +267,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
 
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
+
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringOther))
             .isEqualTo(monitoringOther)
         val slotAudit = slot<AuditCandidateEvent>()
@@ -270,6 +289,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
         } returns monitoring.copy(
             startDate = oldDate,
+            lastPaymentDates = emptyList(),
             typologyProv94 = ContractingMonitoringExtendedOption.No,
             typologyProv95 = ContractingMonitoringExtendedOption.Partly,
             typologyStrategic = ContractingMonitoringOption.Yes,
@@ -304,6 +324,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
         val payContribs = slot<Collection<ContributionMeta>>()
         every { paymentPersistence.storePartnerContributionsWhenReadyForPayment(capture(payContribs)) } answers { }
 
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns listOf(
+            ProjectPartnerSummary(45L, "45-abbr", null, true, ProjectPartnerRole.PARTNER, 4),
+        )
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns mapOf(45L to LocalDate.of(2024, 1, 29))
         val result = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
         assertThat(result)
             .isEqualTo(
@@ -311,6 +335,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     projectId = projectId,
                     startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
                     endDate = ZonedDateTime.parse("2023-05-31T10:00:00+02:00").toLocalDate(),
+                    lastPaymentDates = listOf(
+                        ContractingClosureLastPaymentDate(45L, 4, "45-abbr",
+                            ProjectPartnerRole.PARTNER, false, LocalDate.of(2024, 1, 29)),
+                    ),
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -469,6 +497,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
         val slotDeleted = slot<Set<Int>>()
         every { paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, capture(slotDeleted)) } answers { }
+
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
 
         val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
 

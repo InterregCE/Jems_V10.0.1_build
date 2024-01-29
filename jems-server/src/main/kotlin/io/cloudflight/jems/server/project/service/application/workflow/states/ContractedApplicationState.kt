@@ -23,4 +23,12 @@ class ContractedApplicationState(
             status = ApplicationStatus.IN_MODIFICATION
         )
     }
+
+    override fun setToClosed(): ApplicationStatus {
+        return projectWorkflowPersistence.updateProjectCurrentStatus(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = ApplicationStatus.CLOSED
+        )
+    }
 }

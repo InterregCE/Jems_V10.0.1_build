@@ -20,6 +20,7 @@ class ProjectContractingMonitoringEntity(
     val projectId: Long,
 
     val startDate: LocalDate? = null,
+    var closureDate: LocalDate?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typology_prov_94")
@@ -48,6 +49,6 @@ class ProjectContractingMonitoringEntity(
     val addDates: List<ProjectContractingMonitoringAddDateEntity> = emptyList(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "projectId")
-    val dimensionCodes: List<ContractingDimensionCodeEntity> = emptyList()
+    val dimensionCodes: List<ContractingDimensionCodeEntity> = emptyList(),
 
 )
