@@ -194,9 +194,9 @@ context('Control report tests', () => {
           cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
           cy.get('table mat-row').then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Draft');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            expect(row.get(0).childNodes[2]).to.contain('Draft');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser1.email);
           });
 
           // RTM Group 2
@@ -214,15 +214,15 @@ context('Control report tests', () => {
           // assert Checklist is Finished
           cy.get('table mat-row').then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Finished');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser2.email);
+            expect(row.get(0).childNodes[2]).to.contain('Finished');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser2.email);
           });
           cy.get('table mat-row').eq(1).then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Draft');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            expect(row.get(0).childNodes[2]).to.contain('Draft');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser1.email);
           });
 
           // RTM Group 3
