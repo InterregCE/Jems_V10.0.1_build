@@ -7,7 +7,8 @@
                   [class.approved]="hasApprovedStatusColor()"
                   [class.declined]="hasDeclinedStatusColor()"
                   [class.with-conditions]="hasApprovedWithConditionsStatusColor()"
-                  [class.contracted]="hasContractedStatusColor()">
+                  [class.contracted]="hasContractedStatusColor()"
+                  [class.closed]="hasClosedStatusColor()">
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>

@@ -30,6 +30,10 @@
   .contracted {
     background-color: var(--status-contracted);
   }
+
+  .closed {
+    background-color: var(--status-closed);
+  }
 }
 
 #project-info {

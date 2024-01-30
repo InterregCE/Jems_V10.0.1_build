@@ -31,4 +31,21 @@ export class ContractMonitoringStore {
       );
   }
 
+  setToClosed(projectId: number): Observable<string> {
+    return this.projectStatusService.setToClosed(projectId)
+      .pipe(
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(status => Log.info('Changed status for project', projectId, status)),
+        shareReplay(1)
+      );
+  }
+
+  revertToContracted(projectId: number): Observable<string> {
+    return this.projectStatusService.revertToContracted(projectId)
+      .pipe(
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(status => Log.info('Changed status for project', projectId, status)),
+        shareReplay(1)
+      );
+  }
 }

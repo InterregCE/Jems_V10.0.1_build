@@ -7,6 +7,7 @@ import {
   ContractMonitoringExtensionStore
 } from '@project/project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {
+  ContractingClosureLastPaymentDateDTO, ContractingClosureUpdateDTO,
   ContractingDimensionCodeDTO,
   InputTranslation,
   ProgrammeChecklistDetailDTO,
@@ -55,6 +56,8 @@ export class ContractMonitoringExtensionComponent {
   decisionForm: FormGroup = this.formBuilder.group({
     startDate: [''],
     endDate: [''],
+    closureDate: [''],
+    lastPaymentDates: this.formBuilder.array([]),
     entryIntoForceDate: [''],
     entryIntoForceComment: ['', Validators.maxLength(200)],
     additionalEntryIntoForceItems: this.formBuilder.array([], Validators.maxLength(25)),
@@ -183,6 +186,7 @@ export class ContractMonitoringExtensionComponent {
     this.dimensionCodesFormItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
     this.decisionForm.controls.endDate.setValue(projectContractingMonitoring.endDate);
+    this.decisionForm.controls.closureDate.setValue(projectContractingMonitoring.closureDate);
     this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.entryIntoForceDate);
     this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.entryIntoForceComment);
     this.decisionForm.controls.typologyProv94.setValue(projectContractingMonitoring.typologyProv94);
@@ -209,6 +213,18 @@ export class ContractMonitoringExtensionComponent {
       }));
     });
 
+    this.lastPaymentDatesForm.clear();
+    projectContractingMonitoring.lastPaymentDates.forEach(date => {
+      this.lastPaymentDatesForm.push(this.formBuilder.group({
+        partnerId: this.formBuilder.control(date.partnerId),
+        partnerNumber: this.formBuilder.control(date.partnerNumber),
+        partnerAbbreviation: this.formBuilder.control(date.partnerAbbreviation),
+        partnerRole: this.formBuilder.control(date.partnerRole),
+        partnerDisabled: this.formBuilder.control(date.partnerDisabled),
+        lastPaymentDate: this.formBuilder.control(date.lastPaymentDate),
+      }));
+    });
+
     if (projectContractingMonitoring.addDates?.length) {
       this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.addDates[0].comment);
       this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.addDates[0].entryIntoForceDate);
@@ -222,6 +238,7 @@ export class ContractMonitoringExtensionComponent {
     }
     if (!isEditable) {
       this.additionalEntryIntoForceItems.disable();
+      this.lastPaymentDatesForm.disable();
     }
     this.tableData = [...this.additionalEntryIntoForceItems.controls];
 
@@ -236,7 +253,7 @@ export class ContractMonitoringExtensionComponent {
   }
 
   onSubmit(): void {
-    this.contractMonitoringExtensionStore.save(this.getUpdatedProjectContractingMonitoring())
+    this.contractMonitoringExtensionStore.save(this.getContractingClosureUpdate(), this.getUpdatedProjectContractingMonitoring())
       .pipe(
         tap(data => this.decisionForm.controls.endDate.setValue(data.endDate)),
         tap(data => this.contractMonitoringExtensionStore.savedProjectContractingMonitoring$.next(data)),
@@ -245,13 +262,21 @@ export class ContractMonitoringExtensionComponent {
       ).subscribe();
   }
 
+  private getContractingClosureUpdate(): ContractingClosureUpdateDTO {
+    return {
+      closureDate: this.decisionForm.controls.closureDate.value,
+      lastPaymentDates: this.lastPaymentDatesForm.value.map((paymentDate: any) =>( {
+        partnerId: paymentDate.partnerId,
+        lastPaymentDate: paymentDate.lastPaymentDate,
+      }))
+    } as ContractingClosureUpdateDTO;
+  }
+
   private getUpdatedProjectContractingMonitoring(): ProjectContractingMonitoringDTO {
     return {
       projectId: this.projectId,
       startDate: this.decisionForm.controls.startDate.value,
       endDate: this.decisionForm.controls.endDate.value,
-      closureDate: '',
-      lastPaymentDates: [],
       entryIntoForceDate: '',
       entryIntoForceComment: '',
       addDates: this.toAddDatesDTO(),
@@ -307,6 +332,10 @@ export class ContractMonitoringExtensionComponent {
           projectBudgetAmountShare: element.projectBudgetAmountShare
         })
     );
+  }
+
+  get lastPaymentDatesForm(): FormArray {
+    return this.decisionForm.get('lastPaymentDates') as FormArray;
   }
 
   get lumpSumsForm(): FormArray {

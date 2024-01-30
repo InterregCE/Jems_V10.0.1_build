@@ -26,10 +26,14 @@ export class ContractMonitoringComponent {
     currentVersionOfProject: ProjectDetailDTO;
     currentVersionOfProjectTitle: string;
     canSetToContracted: boolean;
+    canSetToClosed: boolean;
     canSeeMonitoringExtension: boolean;
+    canRevertToContracted: boolean;
   }>;
 
-  showSuccessMessage$ = new Subject<null | string>();
+  showSetToContractedSuccessMessage$ = new Subject<null | string>();
+  showSetToClosedSuccessMessage$ = new Subject<null | string>();
+  showRevertToContractedSuccessMessage$ = new Subject<null | string>();
   error$ = new BehaviorSubject<APIError | null>(null);
   actionPending = false;
 
@@ -40,12 +44,14 @@ export class ContractMonitoringComponent {
       this.projectStore.currentVersionOfProject$,
       this.projectStore.currentVersionOfProjectTitle$,
       this.contractMonitoringStore.canSetToContracted$,
-      this.contractMonitoringStore.canSeeMonitoringExtension$
+      this.contractMonitoringStore.canSeeMonitoringExtension$,
     ]).pipe(
       map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted, canSeeMonitoringExtension]) => ({
         currentVersionOfProject,
         currentVersionOfProjectTitle,
         canSetToContracted: currentVersionOfProject.projectStatus.status === this.STATUS.APPROVED && canSetToContracted,
+        canSetToClosed: currentVersionOfProject.projectStatus.status === this.STATUS.CONTRACTED && canSetToContracted,
+        canRevertToContracted: currentVersionOfProject.projectStatus.status === this.STATUS.CLOSED && canSetToContracted,
         canSeeMonitoringExtension
       }))
     );
@@ -67,8 +73,58 @@ export class ContractMonitoringComponent {
         this.actionPending = true;
         return this.contractMonitoringStore.setToContracted(projectId).pipe(
           tap(() => {
-            this.showSuccessMessage$.next(projectTitle);
-            setTimeout(() => this.showSuccessMessage$.next(null), 4000);
+            this.showSetToContractedSuccessMessage$.next(projectTitle);
+            setTimeout(() => this.showSetToContractedSuccessMessage$.next(null), 4000);
+          }),
+          catchError((error) => this.showErrorMessage(error.error)),
+          finalize(() => this.actionPending = false)
+        );
+      }),
+    ).subscribe();
+  }
+
+  setToClosed(projectId: number, projectTitle: string): void {
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.set.to.closed.warning.header',
+        message: {
+          i18nKey: 'project.application.set.to.closed.warning',
+        }
+      }).pipe(
+      take(1),
+      filter(confirmed => confirmed),
+      switchMap(() => {
+        this.actionPending = true;
+        return this.contractMonitoringStore.setToClosed(projectId).pipe(
+          tap(() => {
+            this.showSetToClosedSuccessMessage$.next(projectTitle);
+            setTimeout(() => this.showSetToClosedSuccessMessage$.next(null), 4000);
+          }),
+          catchError((error) => this.showErrorMessage(error.error)),
+          finalize(() => this.actionPending = false)
+        );
+      }),
+    ).subscribe();
+  }
+
+  revertToContracted(projectId: number, projectTitle: string): void {
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.revert.decision.warning.header',
+        message: {
+          i18nKey: 'project.application.revert.decision.warning',
+        }
+      }).pipe(
+      take(1),
+      filter(confirmed => confirmed),
+      switchMap(() => {
+        this.actionPending = true;
+        return this.contractMonitoringStore.revertToContracted(projectId).pipe(
+          tap(() => {
+            this.showRevertToContractedSuccessMessage$.next(projectTitle);
+            setTimeout(() => this.showRevertToContractedSuccessMessage$.next(null), 4000);
           }),
           catchError((error) => this.showErrorMessage(error.error)),
           finalize(() => this.actionPending = false)

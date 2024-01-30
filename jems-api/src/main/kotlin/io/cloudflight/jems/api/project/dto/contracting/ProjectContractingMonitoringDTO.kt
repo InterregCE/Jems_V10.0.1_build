@@ -9,7 +9,7 @@ data class ProjectContractingMonitoringDTO(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
     val closureDate: LocalDate? = null,
-    val lastPaymentDates: List<ContractingClosureLastPaymentDateDTO>,
+    val lastPaymentDates: List<ContractingClosureLastPaymentDateDTO> = emptyList(),
 
     val entryIntoForceDate: LocalDate? = null,
     val entryIntoForceComment: String? = null,
