@@ -26,6 +26,10 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
+import {APPLICATION_FORM} from "../../../../common/application-form-model";
+import {
+  ProjectReportWorkPlanTabConstants
+} from "../../project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.constants";
 
 @Component({
   selector: 'jems-partner-report-work-plan-progress-tab',
@@ -273,4 +277,5 @@ export class PartnerReportWorkPlanProgressTabComponent {
   getWorkPackageRowToggleStateAtIndex(index: number): boolean {
       return this.toggleStatesOfWorkPackages[index];
   }
+
 }
