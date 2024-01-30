@@ -8,14 +8,12 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
-import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -33,9 +31,12 @@ class GetProjectPartner(
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
     override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary> {
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
-        val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version)
+        val totalPerPartner = getProjectBudget.getBudget(partnersPage.content, projectId, version)
+            .associateBy({ it.partner.id!! }, { it.totalCosts })
 
-        return PageImpl(partnerBudgets.toSummary(), page, partnersPage.totalElements)
+        return partnersPage.map {
+            ProjectBudgetPartnerSummary(it, totalBudget = totalPerPartner[it.id])
+        }
     }
 
     @CanRetrieveProjectPartner
@@ -70,18 +71,4 @@ class GetProjectPartner(
     ): List<ProjectPartnerPaymentSummary> =
         persistence.findAllByProjectIdWithContributionsForDropdown(projectId, version)
 
-    fun List<PartnerBudget>.toSummary() = map {
-        ProjectBudgetPartnerSummary(
-            partnerSummary = ProjectPartnerSummary(
-                id = it.partner.id,
-                abbreviation = it.partner.abbreviation,
-                active = it.partner.active,
-                role = it.partner.role,
-                sortNumber = it.partner.sortNumber,
-                country = it.partner.country,
-                region = it.partner.region
-            ),
-            totalBudget = it.totalCosts
-        )
-    }
 }

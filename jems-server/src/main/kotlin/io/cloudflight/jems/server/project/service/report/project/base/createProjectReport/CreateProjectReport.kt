@@ -88,7 +88,7 @@ class CreateProjectReport(
         validateNoReOpenedReports(projectId, type)
 
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
-        val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version).toSet()
+        val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version)
         val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
         val submittedReports = reportPersistence.getSubmittedProjectReports(projectId)
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
@@ -132,7 +132,7 @@ class CreateProjectReport(
 
     private fun getPreviouslyReportedByPartner(
         submittedReportIds: Set<Long>,
-        partners: Collection<ProjectPartnerDetail>
+        partners: Iterable<ProjectPartnerDetail>,
     ): List<ProjectReportPartnerCreateModel> {
         val previouslyReported = projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
         return partners.map {
