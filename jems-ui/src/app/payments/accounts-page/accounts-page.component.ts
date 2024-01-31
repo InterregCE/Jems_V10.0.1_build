@@ -43,7 +43,7 @@ export class AccountsPageComponent implements OnInit, AfterViewInit {
       this.accountsPageStore.userCanView$,
     ])
       .pipe(
-        map(([funds, userCanView]) => ({funds: funds, userCanView, tableConfiguration: this.tableConfiguration})),
+        map(([funds, userCanView]) => ({funds, userCanView, tableConfiguration: this.tableConfiguration})),
       );
   }
 

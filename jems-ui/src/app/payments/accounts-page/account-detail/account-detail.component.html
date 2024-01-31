@@ -9,19 +9,29 @@
     <h3 class="mb-4 put-icon-to-header-line">{{'payments.accounts.back.to.accounts' | translate}}</h3>
   </div>
 
-  <h3 class="payment-header">{{data?.accountDetail.fund.abbreviation | translateBySystemLanguage | async}}_{{ data.accountDetail.accountingYear | asAccountingYear }}</h3>
+  <h3 class="payment-header">{{data?.accountDetail.fund.abbreviation | translateBySystemLanguage | async}} {{ data.accountDetail.accountingYear | asAccountingYear }}</h3>
 
-  <div id="status" class="status-and-action-header">
-    <span class="status-label">{{'common.status' | translate}}:</span>
-    <span class="ml-1">
-      <mat-chip-list class="mr-1 ml-1" aria-label="status">
-          <mat-chip [class.draft]="data.accountDetail.status === accountStatusEnum.DRAFT"
-                    [class.submitted]="data.accountDetail.status === accountStatusEnum.SUBMITTED">
-              {{data.accountDetail.status}}
-          </mat-chip>
-      </mat-chip-list>
-    </span>
-  </div>
+    <div id="status" class="status-and-action-header">
+        <span class="status-label">{{ 'common.status' | translate }}:</span>
+        <span class="ml-1">
+          <mat-chip-list class="mr-1 ml-1" aria-label="status">
+              <mat-chip [class.draft]="data.accountDetail.status === accountStatusEnum.DRAFT"
+                        [class.submitted]="data.accountDetail.status === accountStatusEnum.FINISHED">
+                  {{ ('payments.accounts.table.status.' + data.accountDetail.status) | translate }}
+              </mat-chip>
+          </mat-chip-list>
+        </span>
+
+        <span class="ml-1" *ngIf="data.canReOpen">
+                 <jems-pending-button
+                         [confirm]="{title: 'payments.accounts.detail.re.open.dialog.title', message: 'payments.accounts.detail.re.open.dialog.message', warnMessage: 'payments.accounts.detail.re.open.dialog.warning'}"
+                         [disabled]="!data.userCanEdit"
+                         [pending]="statusChangePending$ | async"
+                         (clicked)="setPaymentAccountBackToDraft(data.accountDetail.id)">
+                    {{ 'payments.accounts.detail.re.open.button' | translate }}
+                </jems-pending-button>
+        </span>
+    </div>
 
   <nav mat-tab-nav-bar *ngIf="data.userCanView">
     <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')" (focusin)="pageStore.tabChanged$.next(true)">
@@ -29,7 +39,19 @@
           {{'payments.accounts.summary.tab' | translate}}
       </span>
     </a>
+
+    <a [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')" (focusin)="pageStore.tabChanged$.next(true)">
+      <span jemsText maxWidth="230">
+          {{'payments.accounts.finalize.tab.title' | translate}}
+      </span>
+    </a>
   </nav>
   <router-outlet></router-outlet>
+
+    <jems-alert *ngIf="reOpenError$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 </jems-main-page-template>
 

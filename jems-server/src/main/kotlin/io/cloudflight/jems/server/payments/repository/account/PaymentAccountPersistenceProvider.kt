@@ -51,6 +51,16 @@ class PaymentAccountPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun finalizePaymentAccount(paymentAccountId: Long): PaymentAccountStatus =
+        this.repository.getById(paymentAccountId).apply {
+            status = PaymentAccountStatus.FINISHED
+        }.status
+
+    @Transactional
+    override fun reOpenPaymentAccount(paymentAccountId: Long): PaymentAccountStatus =
+        this.repository.getById(paymentAccountId).reOpen().status
+
     private fun generateAccountsForProgrammeFund(
         programmeFundEntity: ProgrammeFundEntity,
         accountingYears: List<AccountingYearEntity>
@@ -80,6 +90,11 @@ class PaymentAccountPersistenceProvider(
         submissionToSfcDate = newData.submissionToSfcDate
         sfcNumber = newData.sfcNumber
         comment = newData.comment
+    }
+
+    private fun PaymentAccountEntity.reOpen(): PaymentAccountEntity {
+        status = PaymentAccountStatus.DRAFT
+        return this
     }
 
 

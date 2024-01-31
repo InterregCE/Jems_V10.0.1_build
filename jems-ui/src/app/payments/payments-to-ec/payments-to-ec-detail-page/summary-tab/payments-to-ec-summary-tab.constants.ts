@@ -1,4 +1,5 @@
 export class PaymentsToEcSummaryTabConstants {
+  public static MAX_VALUE = 999_999_999.99;
 
   public static FORM_CONTROL_NAMES = {
     id: 'id',

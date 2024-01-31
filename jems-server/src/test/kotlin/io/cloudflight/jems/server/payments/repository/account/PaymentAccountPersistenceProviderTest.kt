@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
 import io.cloudflight.jems.server.payments.entity.PaymentAccountEntity
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.FUND_ID
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.accountingYear
@@ -92,4 +93,17 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
         verify(exactly = 1){ repository.saveAll(paymentAccountSlot.captured) }
     }
 
+    @Test
+    fun finalizePaymentAccount() {
+        every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+
+        assertThat(persistenceProvider.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatus.FINISHED)
+    }
+
+    @Test
+    fun reOpenPaymentAccount() {
+        every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
+
+        assertThat(persistenceProvider.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatus.DRAFT)
+    }
 }

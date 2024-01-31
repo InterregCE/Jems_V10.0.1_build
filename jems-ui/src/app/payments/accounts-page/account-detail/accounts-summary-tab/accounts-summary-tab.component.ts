@@ -1,9 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {
-  PaymentAccountDTO,
-  PaymentAccountUpdateDTO,
-} from '@cat/api';
+import {PaymentAccountDTO, PaymentAccountUpdateDTO,} from '@cat/api';
 import {AccountsPageStore} from '../../accounts-page.store';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
@@ -19,6 +16,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   providers: [FormService]
 })
 export class AccountsSummaryTabComponent {
+  MAX_VALUE = 999_999_999.99;
 
   data$: Observable<{
     accountDetail: PaymentAccountDTO;
@@ -40,14 +38,15 @@ export class AccountsSummaryTabComponent {
     public pageStore: AccountsPageStore,
     private formService: FormService,
     private formBuilder: FormBuilder,
-    ) {
+  ) {
     this.userCanEdit$ = this.pageStore.userCanEdit$;
     this.data$ = combineLatest([
       this.pageStore.accountDetail$,
       this.pageStore.userCanEdit$,
       this.pageStore.userCanView$,
+      this.pageStore.updatedAccountStatus$,
     ]).pipe(
-      map(([accountDetail, userCanEdit, userCanView]) => ({
+      map(([accountDetail, userCanEdit, userCanView, updatedAccountStatus]: any) => ({
           accountDetail,
           userCanView,
           userCanEdit,

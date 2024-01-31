@@ -52,13 +52,12 @@ class UpdateFunds(
         throwIfAnyOfToDeleteFundsInUse(toDeleteFunds, fundsAlreadyInUse)
         throwIfAnyOfDeselectedFundsInUse(toDeselectFundIds, fundsAlreadyInUse)
 
-        val paymentAccountFundIdsToBeCreated = funds.filterNot{ it in currentFunds }
-            .mapTo(HashSet()) { it.id }
-        val paymentAccountFundIdsToBeDeleted = funds.filter { !it.selected }.filter{ it.id in fundsAlreadyInUse }
+        val currentSelectedFundIds = currentFunds.filter { it.selected }.map { it.id }
+        val paymentAccountFundIdsToBeCreated = funds.filter { it.selected }.filterNot{ it.id in currentSelectedFundIds }
             .mapTo(HashSet()) { it.id }
 
         paymentAccountPersistence.persistPaymentAccountsByFunds(paymentAccountFundIdsToBeCreated)
-        paymentAccountPersistence.deletePaymentAccountsByFunds(paymentAccountFundIdsToBeDeleted)
+        paymentAccountPersistence.deletePaymentAccountsByFunds(toDeselectFundIds.toSet())
 
         return persistence.updateFunds(toDeleteIds = toDeleteFunds.map { it.id }.toSet(), funds.toSet()).also {
             auditPublisher.publishEvent(programmeFundsChanged(this, it))

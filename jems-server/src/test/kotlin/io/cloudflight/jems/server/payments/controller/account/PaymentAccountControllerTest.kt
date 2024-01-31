@@ -14,14 +14,16 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewD
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountUpdate
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
-import io.cloudflight.jems.server.payments.service.account.listPaymentAccount.ListPaymentAccountInteractor
+import io.cloudflight.jems.server.payments.service.account.finalizePaymentAccount.FinalizePaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.getPaymentAccount.GetPaymentAccountInteractor
+import io.cloudflight.jems.server.payments.service.account.listPaymentAccount.ListPaymentAccountInteractor
+import io.cloudflight.jems.server.payments.service.account.reOpenPaymentAccount.ReOpenPaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.updatePaymentAccount.UpdatePaymentAccountInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -125,6 +127,12 @@ class PaymentAccountControllerTest : UnitTest() {
     @MockK
     lateinit var updatePaymentAccountInteractor: UpdatePaymentAccountInteractor
 
+    @MockK
+    lateinit var finalizePaymentAccountInteractor: FinalizePaymentAccountInteractor
+
+    @MockK
+    lateinit var reOpenPaymentAccountInteractor: ReOpenPaymentAccountInteractor
+
     @InjectMockKs
     lateinit var controller: PaymentAccountController
 
@@ -132,14 +140,14 @@ class PaymentAccountControllerTest : UnitTest() {
     fun listAccounts() {
         every { getAllPaymentAccountsInteractor.listPaymentAccount() } returns accountsOverviewList
 
-        Assertions.assertThat(controller.listPaymentAccount()).isEqualTo(expectedAccountsOverviewList)
+        assertThat(controller.listPaymentAccount()).isEqualTo(expectedAccountsOverviewList)
     }
 
     @Test
     fun getPaymentAccount() {
         every { getPaymentAccountInteractor.getPaymentAccount(PAYMENT_ACCOUNT_ID) } returns paymentAccount
 
-        Assertions.assertThat(controller.getPaymentAccount(PAYMENT_ACCOUNT_ID))
+        assertThat(controller.getPaymentAccount(PAYMENT_ACCOUNT_ID))
             .isEqualTo(expectedPaymentAccount)
     }
 
@@ -147,9 +155,22 @@ class PaymentAccountControllerTest : UnitTest() {
     fun updatePaymentAccount() {
         every { updatePaymentAccountInteractor.updatePaymentAccount(PAYMENT_ACCOUNT_ID, paymentAccountUpdate) } returns paymentAccount
 
-        Assertions.assertThat(controller.updatePaymentAccount(PAYMENT_ACCOUNT_ID, paymentAccountUpdateDTO))
+        assertThat(controller.updatePaymentAccount(PAYMENT_ACCOUNT_ID, paymentAccountUpdateDTO))
             .isEqualTo(expectedPaymentAccount)
     }
 
+    @Test
+    fun finalizePaymentAccount() {
+        every { finalizePaymentAccountInteractor.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.FINISHED
+
+        assertThat(controller.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatusDTO.FINISHED)
+    }
+
+    @Test
+    fun reOpenPaymentAccount() {
+        every { reOpenPaymentAccountInteractor.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.DRAFT
+
+        assertThat(controller.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatusDTO.DRAFT)
+    }
 
 }

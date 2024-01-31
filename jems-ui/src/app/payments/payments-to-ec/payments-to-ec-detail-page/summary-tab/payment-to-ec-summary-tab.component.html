@@ -27,7 +27,7 @@
             <p>{{'payments.to.ec.detail.summary.tab.other.details.subheader' | translate}}</p>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.national.reference.label' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.nationalReference" name="nationalReference" matInput #nationalReference>
                     <mat-hint [jemsHintFor]="nationalReference" [hide]="summaryForm?.get(constants.FORM_CONTROL_NAMES.nationalReference)?.errors !== null">
@@ -42,19 +42,21 @@
             <div>
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.technical.assistance.label' | translate}}</mat-label>
-                    <input [formControlName]="constants.FORM_CONTROL_NAMES.technicalAssistanceEur" name="technicalAssistanceEur" currencyMask matInput type="decimal" [options]="{allowNegative: true}">
+                    <input [formControlName]="constants.FORM_CONTROL_NAMES.technicalAssistanceEur" name="technicalAssistanceEur" currencyMask matInput type="decimal" [options]="{allowNegative: true, max: constants.MAX_VALUE}">
                 </mat-form-field>
             </div>
 
-            <div jemsMultiColumnRow>
+            <div>
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.submission.to.sfc.date.label' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.submissionToSFCDate" [matDatepicker]="submissionToSFCDatePicker" matInput>
                     <mat-datepicker-toggle matSuffix [for]="submissionToSFCDatePicker"></mat-datepicker-toggle>
                     <mat-datepicker #submissionToSFCDatePicker></mat-datepicker>
                 </mat-form-field>
+            </div>
 
-                <mat-form-field jemsFormFieldWidth="xx-large">
+            <div>
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'payments.to.ec.detail.summary.tab.other.details.sfc.number.label' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.sfcNumber" name="sfcNumber" matInput #sfcNumber>
                     <mat-hint [jemsHintFor]="sfcNumber" [hide]="summaryForm?.get(constants.FORM_CONTROL_NAMES.sfcNumber)?.errors !== null">
@@ -114,7 +116,12 @@
                 <span>{{ savedAccountingYear | asAccountingYear }}</span>
             </mat-option>
         </mat-select>
+
     </mat-form-field>
+    <jems-context-info
+            infoText="{{'payments.to.ec.summary.accounting.year.info.bubble'| translate}}"
+            infoPosition="right">
+    </jems-context-info>
 
 </ng-template>
 

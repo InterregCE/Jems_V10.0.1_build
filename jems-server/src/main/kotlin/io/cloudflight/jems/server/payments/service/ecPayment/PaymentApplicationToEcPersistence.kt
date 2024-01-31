@@ -36,6 +36,8 @@ interface PaymentApplicationToEcPersistence {
 
     fun existsDraftByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Boolean
 
+    fun getDraftAccountingYearIds(programmeFundId: Long, accountingYearId: Long): List<Long>
+
     fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYearAvailability>
 
 }
