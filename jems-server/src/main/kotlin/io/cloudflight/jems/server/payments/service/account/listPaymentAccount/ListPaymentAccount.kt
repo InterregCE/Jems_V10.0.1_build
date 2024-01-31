@@ -14,7 +14,7 @@ class ListPaymentAccount(
 ) : ListPaymentAccountInteractor {
 
     @CanRetrievePaymentsAccount
-    @Transactional
+    @Transactional(readOnly = true)
     @ExceptionWrapper(ListPaymentAccountException::class)
     override fun listPaymentAccount(): List<PaymentAccountOverview> {
         val paymentAccountsByFund = paymentAccountPersistence.getAllAccounts().groupBy { it.fund }

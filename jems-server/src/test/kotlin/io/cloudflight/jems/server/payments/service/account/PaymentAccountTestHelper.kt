@@ -17,8 +17,8 @@ const val FUND_ID = 11L
 const val ACCOUNTING_YEAR_ID = 12L
 const val PAYMENT_ACCOUNT_ID = 13L
 val programmeFund = ProgrammeFund(id = FUND_ID, selected = true)
-val startDate = LocalDate.now().minusDays(2)
-val endDate = LocalDate.now().plusDays(2)
+val startDate = LocalDate.of(2024, 1, 29)
+val endDate = LocalDate.of(2024, 2, 2)
 val submissionToSfcDate = LocalDate.now().plusDays(3)
 val submissionToSfcDateUpdated = LocalDate.now().plusDays(4)
 val accountingYear =
