@@ -2684,6 +2684,7 @@
       "linkedDraftProjectReportNumbers": []
     }, {
       "id": null,
+      "cypressDeadlineReference": "bothDeadline",
       "date": "2024-12-31T00:00:00.000Z",
       "type": "Both",
       "periodNumber": 3,

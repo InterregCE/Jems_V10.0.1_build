@@ -3,550 +3,2264 @@
     {
       "partnerReports": [
         {
-          "Lead Partner": [
-            {
-              "partnerReport": {
-                "identification": {
-                  "startDate": "2022-12-01",
-                  "endDate": "2024-12-31",
-                  "period": 1,
-                  "summary": [
-                    {
-                      "translation": "API generated summary of partner's report DE",
-                      "language": "DE"
-                    }, {
-                      "translation": "API generated summary of partner's report EN",
-                      "language": "EN"
-                    }
-                  ],
-                  "problemsAndDeviations": [
-                    {
-                      "translation": "API generated problems and deviations of partner's report DE",
-                      "language": "DE"
-                    }, {
-                      "translation": "API generated problems and deviations of partner's report EN",
-                      "language": "EN"
-                    }
-                  ],
-                  "targetGroups": [
-                    [
+          "partnerAcronym": "Lead Partner",
+          "partnerReport": {
+            "identification": {
+              "startDate": "2022-12-01",
+              "endDate": "2024-12-31",
+              "period": 1,
+              "summary": [
+                {
+                  "translation": "API generated summary of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated summary of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "problemsAndDeviations": [
+                {
+                  "translation": "API generated problems and deviations of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated problems and deviations of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "targetGroups": [
+                [
+                  {
+                    "translation": "API generated target groups of partner's report DE",
+                    "language": "DE"
+                  }, {
+                  "translation": "API generated target groups of partner's report EN",
+                  "language": "EN"
+                }
+                ]
+              ],
+              "spendingDeviations": [
+                {
+                  "translation": "API generated spending profile of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated spending profile of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "nextReportForecast": 20000
+            },
+            "workPlans": [
+              {
+                "id": null,
+                "number": 1,
+                "description": [
+                  {
+                    "translation": "Work package contribution DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Work package contribution EN",
+                    "language": "EN"
+                  }
+                ],
+                "activities": [
+                  {
+                    "id": null,
+                    "number": 1,
+                    "title": [
                       {
-                        "translation": "API generated target groups of partner's report DE",
+                        "language": "EN",
+                        "translation": "API generated activity 1 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated activity 1 title DE"
+                      }
+                    ],
+                    "progress": [
+                      {
+                        "translation": "Activity 1 contribution DE",
                         "language": "DE"
                       }, {
-                      "translation": "API generated target groups of partner's report EN",
-                      "language": "EN"
-                    }
-                    ]
-                  ],
-                  "spendingDeviations": [
-                    {
-                      "translation": "API generated spending profile of partner's report DE",
-                      "language": "DE"
-                    }, {
-                      "translation": "API generated spending profile of partner's report EN",
-                      "language": "EN"
-                    }
-                  ],
-                  "nextReportForecast": 20000
+                        "translation": "Activity 1 contribution EN",
+                        "language": "EN"
+                      }
+                    ],
+                    "deliverables": [
+                      {
+                        "id": null,
+                        "number": 1,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": true,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }, {
+                        "id": null,
+                        "number": 2,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": false,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }
+                    ],
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }, {
+                    "id": null,
+                    "number": 2,
+                    "title": [
+                      {
+                        "language": "DE",
+                        "translation": "API generated activity 2 title DE"
+                      }, {
+                        "language": "EN",
+                        "translation": "API generated activity 2 title EN"
+                      }
+                    ],
+                    "progress": [
+                      {
+                        "translation": "Activity 2 contribution DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Activity 2 contribution EN",
+                        "language": "EN"
+                      }
+                    ],
+                    "deliverables": [
+                      {
+                        "id": null,
+                        "number": 1,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": false,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }, {
+                        "id": null,
+                        "number": 2,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": true,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }
+                    ],
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": null,
+                    "number": 1,
+                    "title": [
+                      {
+                        "language": "EN",
+                        "translation": "API generated output 1 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated output 1 title DE"
+                      }
+                    ],
+                    "contribution": true,
+                    "evidence": null,
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }, {
+                    "id": null,
+                    "number": 2,
+                    "title": [
+                      {
+                        "language": "EN",
+                        "translation": "API generated output 2 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated output 2 title DE"
+                      }
+                    ],
+                    "contribution": true,
+                    "evidence": null,
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }
+                ],
+                "deactivated": false
+              }
+            ],
+            "procurements": [
+              {
+                "details": {
+                  "contractName": "Procurement1",
+                  "referenceNumber": "Reference number 1",
+                  "contractDate": "2024-07-30T00:00:00.000Z",
+                  "contractType": "Contract Type 1",
+                  "contractAmount": 999.99,
+                  "currencyCode": "EUR",
+                  "supplierName": "Supplier Name 1",
+                  "vatNumber": "12345",
+                  "comment": "Some procurement comment"
                 },
-                "expenditures": [
+                "beneficialOwners": [
                   {
-                    "costCategory": "TravelAndAccommodationCosts",
-                    "internalReferenceNumber": "1",
-                    "invoiceNumber": "i.1",
-                    "invoiceDate": "2022-12-01",
-                    "dateOfPayment": "2022-12-02",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 1 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 1 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 1 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 1 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "totalValueInvoice": 123,
-                    "vat": 3,
-                    "numberOfUnits": 0,
-                    "pricePerUnit": 0,
-                    "declaredAmount": 200.16,
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
                     "currencyCode": "EUR",
-                    "currencyConversionRate": 1,
-                    "declaredAmountInEur": 200.16
-                  },
-                  {
-                    "costCategory": "ExternalCosts",
-                    "internalReferenceNumber": "2",
-                    "invoiceNumber": "i.2",
-                    "investmentId": 10,
-                    "contractId": "",
-                    "invoiceDate": "2022-12-02",
-                    "dateOfPayment": "2022-12-09",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 2 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 2 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 2 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 2 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "totalValueInvoice": 555.55,
-                    "vat": 55.55,
-                    "numberOfUnits": 0,
-                    "pricePerUnit": 0,
-                    "declaredAmount": 187.33,
-                    "currencyCode": "EUR",
-                    "currencyConversionRate": 1,
-                    "declaredAmountInEur": 187.33
-                  },
-                  {
-                    "costCategory": "EquipmentCosts",
-                    "internalReferenceNumber": "3",
-                    "invoiceNumber": "i.3",
-                    "investmentId": 10,
-                    "contractId": "",
-                    "invoiceDate": "2022-12-03",
-                    "dateOfPayment": "2022-12-16",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 3 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 3 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 3 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 3 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "totalValueInvoice": 870.99,
-                    "vat": 10.99,
-                    "numberOfUnits": 0,
-                    "pricePerUnit": 0,
-                    "declaredAmount": 555.55,
-                    "currencyCode": "EUR",
-                    "currencyConversionRate": 1,
-                    "declaredAmountInEur": 555.55
-                  },
-                  {
-                    "costCategory": "InfrastructureCosts",
-                    "internalReferenceNumber": "4",
-                    "invoiceNumber": "i.4",
-                    "investmentId": 10,
-                    "contractId": "",
-                    "invoiceDate": "2022-12-31",
-                    "dateOfPayment": "2022-12-23",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 4 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 4 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 4 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 4 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "totalValueInvoice": 50,
-                    "vat": 1,
-                    "numberOfUnits": 0,
-                    "pricePerUnit": 0,
-                    "declaredAmount": 1234.8,
-                    "currencyCode": "EUR",
-                    "currencyConversionRate": 1,
-                    "declaredAmountInEur": 1234.8
-                  },
-                  {
-                    "cypressReference": "shouldHaveLumpSum",
-                    "costCategory": "Multiple",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 5 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 5 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 5 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 5 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "numberOfUnits": 1,
-                    "currencyCode": "EUR"
-                  },
-                  {
-                    "cypressReference": "shouldHaveUnitCost",
-                    "unitCostId": 2,
-                    "costCategory": "TravelAndAccommodationCosts",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 6 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 6 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 6 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 6 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "numberOfUnits": 1,
-                    "currencyCode": "EUR"
-                  },
-                  {
-                    "cypressReference": "shouldHaveUnitCost",
-                    "unitCostId": 6,
-                    "costCategory": "Multiple",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 7 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 7 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 7 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 7 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "numberOfUnits": 2,
-                    "currencyCode": "EUR"
-                  },
-                  {
-                    "cypressReferenceUnit": "projectProposedEquipment",
-                    "cypressReference": "shouldHaveUnitCost",
-                    "unitCostId": null,
-                    "costCategory": "EquipmentCosts",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 8 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 8 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 8 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 8 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "numberOfUnits": 0.5,
-                    "pricePerUnit": 50.5,
-                    "declaredAmount": 25.25,
-                    "currencyCode": "EUR"
-                  },
-                  {
-                    "cypressReferenceUnit": "projectProposedMulti",
-                    "cypressReference": "shouldHaveUnitCost",
-                    "unitCostId": null,
-                    "costCategory": "Multiple",
-                    "description": [
-                      {
-                        "translation": "API generated expenditure 9 description DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 9 description EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "comment": [
-                      {
-                        "translation": "API generated expenditure 9 comment DE",
-                        "language": "DE"
-                      }, {
-                        "translation": "API generated expenditure 9 comment EN",
-                        "language": "EN"
-                      }
-                    ],
-                    "numberOfUnits": 13,
-                    "currencyCode": "EUR"
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
                   }
                 ]
               },
-              "controlWork": {
-                "identification": {
-                  "controllerFormats": [
-                    "Originals",
-                    "Copy",
-                    "Electronic"
-                  ],
-                  "type": "PartnerReport",
-                  "designatedController": {
-                    "controlInstitutionId": 1,
-                    "controllingUserId": 4,
-                    "controllingUserName": "Controller User - controller.user@jems.eu",
-                    "jobTitle": "API generated job title",
-                    "divisionUnit": "API generated division/unit/department",
-                    "address": "API generated address",
-                    "country": "Chad (TD)",
-                    "countryCode": "TD",
-                    "telephone": "+0123456789",
-                    "controllerReviewerId": 4,
-                    "controllerReviewerName": "Controller User - controller.user@jems.eu",
-                    "controlInstitution": "controller institution"
-                  },
-                  "reportVerification": {
-                    "generalMethodologies": [
-                      "AdministrativeVerification",
-                      "OnTheSpotVerification"
-                    ],
-                    "administrativeVerification": true,
-                    "onTheSpotVerification": true,
-                    "riskBasedVerificationApplied": true,
-                    "riskBasedVerificationDescription": "API generated risk-based verification",
-                    "verificationInstances": [
-                      {
-                        "verificationFrom": "2023-10-18T00:00:00.000Z",
-                        "verificationTo": "2023-10-19T00:00:00.000Z",
-                        "premisesOfProjectPartner": true,
-                        "projectEvent": true,
-                        "placeOfProjectOutput": true,
-                        "virtual": true,
-                        "verificationFocus": "API generated on-the-spot verification",
-                        "verificationLocations": [
-                          "PremisesOfProjectPartner",
-                          "ProjectEvent",
-                          "PlaceOfPhysicalProjectOutput",
-                          "Virtual"
-                        ]
-                      }
-                    ]
-                  }
+              {
+                "details": {
+                  "contractName": "Procurement2",
+                  "referenceNumber": "Reference number 2",
+                  "contractDate": "2024-01-31T00:00:00.000Z",
+                  "contractType": "Contract Type 2",
+                  "contractAmount": 1234.77,
+                  "currencyCode": "AMD",
+                  "supplierName": "Supplier Name 2",
+                  "vatNumber": "67890",
+                  "comment": "Some procurement comment"
                 },
-                "expenditureVerification": [
+                "beneficialOwners": [
                   {
-                    "id": null,
-                    "costCategory": "TravelAndAccommodationCosts",
-                    "partOfSample": true,
-                    "deductedAmount": 99.99,
-                    "typologyOfErrorId": 4,
-                    "parked": false,
-                    "verificationComment": "Deducted item 1"
-                  },
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
                   {
-                    "id": null,
-                    "costCategory": "ExternalCosts",
-                    "partOfSample": false,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": false,
-                    "verificationComment": "Unchanged item"
-                  },
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
+                    "currencyCode": "EUR",
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
+                  }
+                ]
+              },
+              {
+                "details": {
+                  "contractName": "Procurement3",
+                  "referenceNumber": "Reference number 3",
+                  "contractDate": "2023-02-21T00:00:00.000Z",
+                  "contractType": "Contract Type 3",
+                  "contractAmount": 5500.34,
+                  "currencyCode": "CHF",
+                  "supplierName": "Supplier Name 3",
+                  "vatNumber": "223344",
+                  "comment": "Some procurement comment"
+                },
+                "beneficialOwners": [
                   {
-                    "id": null,
-                    "costCategory": "EquipmentCosts",
-                    "partOfSample": true,
-                    "deductedAmount": 55,
-                    "typologyOfErrorId": 4,
-                    "parked": false,
-                    "verificationComment": "Deducted item 2"
-                  },
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
                   {
-                    "id": null,
-                    "costCategory": "InfrastructureCosts",
-                    "partOfSample": true,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": true,
-                    "parkedOn": "2024-01-29T10:07:58.825+01:00",
-                    "verificationComment": "Parked item 1"
-                  },
-                  {
-                    "id": null,
-                    "costCategory": "Multiple",
-                    "partOfSample": true,
-                    "deductedAmount": 99.88,
-                    "typologyOfErrorId": 1,
-                    "parked": false,
-                    "verificationComment": "Deducted item 3"
-                  },
-                  {
-                    "id": null,
-                    "costCategory": "TravelAndAccommodationCosts",
-                    "partOfSample": false,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": true,
-                    "parkedOn": "2024-01-29T10:07:58.825+01:00",
-                    "verificationComment": "Parked item 2"
-                  },
-                  {
-                    "id": null,
-                    "costCategory": "Multiple",
-                    "partOfSample": false,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": false,
-                    "verificationComment": "Unsampled item"
-                  },
-                  {
-                    "id": null,
-                    "costCategory": "EquipmentCosts",
-                    "partOfSample": true,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": false,
-                    "verificationComment": "Auto-sampled item"
-                  },
-                  {
-                    "id": null,
-                    "costCategory": "Multiple",
-                    "partOfSample": true,
-                    "deductedAmount": 0,
-                    "typologyOfErrorId": null,
-                    "parked": true,
-                    "parkedOn": "2024-01-29T10:07:58.825+01:00",
-                    "verificationComment": "Parked item 3"
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
+                    "currencyCode": "EUR",
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
                   }
                 ]
               }
+            ],
+            "expenditures": [
+              {
+                "costCategory": "TravelAndAccommodationCosts",
+                "internalReferenceNumber": "1",
+                "invoiceNumber": "i.1",
+                "contractId": null,
+                "cypressReferenceProcurement": "Procurement1",
+                "invoiceDate": "2022-12-01",
+                "dateOfPayment": "2022-12-02",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 1 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 1 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 1 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 1 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 123,
+                "vat": 3,
+                "numberOfUnits": 0,
+                "pricePerUnit": 0,
+                "declaredAmount": 200.16,
+                "currencyCode": "EUR",
+                "currencyConversionRate": 1,
+                "declaredAmountInEur": 200.16
+              },
+              {
+                "costCategory": "ExternalCosts",
+                "internalReferenceNumber": "2",
+                "invoiceNumber": "i.2",
+                "investmentId": null,
+                "cypressReferenceInvestment": "investment1",
+                "contractId": null,
+                "cypressReferenceProcurement": "Procurement2",
+                "invoiceDate": "2022-12-02",
+                "dateOfPayment": "2022-12-09",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 2 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 2 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 2 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 2 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 555.55,
+                "vat": 55.55,
+                "numberOfUnits": 0,
+                "pricePerUnit": 0,
+                "declaredAmount": 187.33,
+                "currencyCode": "EUR",
+                "currencyConversionRate": 1,
+                "declaredAmountInEur": 187.33
+              },
+              {
+                "costCategory": "EquipmentCosts",
+                "internalReferenceNumber": "3",
+                "invoiceNumber": "i.3",
+                "investmentId": null,
+                "cypressReferenceInvestment": "investment2",
+                "contractId": null,
+                "cypressReferenceProcurement": "Procurement2",
+                "invoiceDate": "2022-12-03",
+                "dateOfPayment": "2022-12-16",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 3 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 3 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 3 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 3 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 870.99,
+                "vat": 10.99,
+                "numberOfUnits": 0,
+                "pricePerUnit": 0,
+                "declaredAmount": 555.55,
+                "currencyCode": "EUR",
+                "currencyConversionRate": 1,
+                "declaredAmountInEur": 555.55
+              },
+              {
+                "costCategory": "InfrastructureCosts",
+                "internalReferenceNumber": "4",
+                "invoiceNumber": "i.4",
+                "investmentId": null,
+                "cypressReferenceInvestment": "investment2",
+                "contractId": null,
+                "cypressReferenceProcurement": "Procurement3",
+                "invoiceDate": "2022-12-31",
+                "dateOfPayment": "2022-12-23",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 4 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 4 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 4 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 4 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 50,
+                "vat": 1,
+                "numberOfUnits": 0,
+                "pricePerUnit": 0,
+                "declaredAmount": 1234.8,
+                "currencyCode": "EUR",
+                "currencyConversionRate": 1,
+                "declaredAmountInEur": 1234.8
+              },
+              {
+                "cypressReference": "shouldHaveLumpSum",
+                "costCategory": "Multiple",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 5 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 5 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 5 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 5 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 1,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": 2,
+                "costCategory": "TravelAndAccommodationCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 6 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 6 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 6 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 6 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 1,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": 6,
+                "costCategory": "Multiple",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 7 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 7 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 7 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 7 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 2,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReferenceUnit": "projectProposedEquipment",
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": null,
+                "costCategory": "EquipmentCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 8 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 8 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 8 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 8 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 0.5,
+                "pricePerUnit": 50.5,
+                "declaredAmount": 25.25,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReferenceUnit": "projectProposedMulti",
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": null,
+                "costCategory": "Multiple",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 9 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 9 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 9 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 9 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 13,
+                "currencyCode": "EUR"
+              }
+            ],
+            "contributions": {
+              "toBeUpdated": [
+                {
+                  "id": null,
+                  "sourceOfContribution": "Lead Partner",
+                  "legalStatus": "Public",
+                  "createdInThisReport": false,
+                  "amount": 5698.97,
+                  "previouslyReported": 0,
+                  "currentlyReported": 999.99,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }, {
+                  "id": null,
+                  "sourceOfContribution": "Lead contribution 1",
+                  "legalStatus": "Private",
+                  "createdInThisReport": false,
+                  "amount": 3261.01,
+                  "previouslyReported": 0,
+                  "currentlyReported": 450,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }, {
+                  "id": null,
+                  "sourceOfContribution": "Lead contribution 2",
+                  "legalStatus": "AutomaticPublic",
+                  "createdInThisReport": false,
+                  "amount": 6613.59,
+                  "previouslyReported": 0,
+                  "currentlyReported": 280.77,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }
+              ],
+              "toBeDeletedIds": [],
+              "toBeCreated": [
+                {
+                  "id": 0,
+                  "sourceOfContribution": "Public Source",
+                  "legalStatus": "Public",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 1234.45,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }, {
+                  "id": 0,
+                  "sourceOfContribution": "Private Source",
+                  "legalStatus": "Private",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 224.76,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }, {
+                  "id": 0,
+                  "sourceOfContribution": "Automatic Public Source",
+                  "legalStatus": "AutomaticPublic",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 9976.23,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }
+              ]
+            }
+          },
+          "controlWork": {
+            "identification": {
+              "controllerFormats": [
+                "Originals",
+                "Copy",
+                "Electronic"
+              ],
+              "type": "PartnerReport",
+              "designatedController": {
+                "controlInstitutionId": 1,
+                "controllingUserId": 4,
+                "controllingUserName": "Controller User - controller.user@jems.eu",
+                "jobTitle": "API generated job title",
+                "divisionUnit": "API generated division/unit/department",
+                "address": "API generated address",
+                "country": "Chad (TD)",
+                "countryCode": "TD",
+                "telephone": "+0123456789",
+                "controllerReviewerId": 4,
+                "controllerReviewerName": "Controller User - controller.user@jems.eu",
+                "controlInstitution": "controller institution"
+              },
+              "reportVerification": {
+                "generalMethodologies": [
+                  "AdministrativeVerification",
+                  "OnTheSpotVerification"
+                ],
+                "administrativeVerification": true,
+                "onTheSpotVerification": true,
+                "riskBasedVerificationApplied": true,
+                "riskBasedVerificationDescription": "API generated risk-based verification",
+                "verificationInstances": [
+                  {
+                    "verificationFrom": "2023-10-18T00:00:00.000Z",
+                    "verificationTo": "2023-10-19T00:00:00.000Z",
+                    "premisesOfProjectPartner": true,
+                    "projectEvent": true,
+                    "placeOfProjectOutput": true,
+                    "virtual": true,
+                    "verificationFocus": "API generated on-the-spot verification",
+                    "verificationLocations": [
+                      "PremisesOfProjectPartner",
+                      "ProjectEvent",
+                      "PlaceOfPhysicalProjectOutput",
+                      "Virtual"
+                    ]
+                  }
+                ]
+              }
+            },
+            "expenditureVerification": [
+              {
+                "id": null,
+                "costCategory": "TravelAndAccommodationCosts",
+                "partOfSample": true,
+                "deductedAmount": 99.99,
+                "typologyOfErrorId": 4,
+                "parked": false,
+                "verificationComment": "Deducted item 1"
+              },
+              {
+                "id": null,
+                "costCategory": "ExternalCosts",
+                "partOfSample": false,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": false,
+                "verificationComment": "Unchanged item"
+              },
+              {
+                "id": null,
+                "costCategory": "EquipmentCosts",
+                "partOfSample": true,
+                "deductedAmount": 55,
+                "typologyOfErrorId": 4,
+                "parked": false,
+                "verificationComment": "Deducted item 2"
+              },
+              {
+                "id": null,
+                "costCategory": "InfrastructureCosts",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 1"
+              },
+              {
+                "id": null,
+                "costCategory": "Multiple",
+                "partOfSample": true,
+                "deductedAmount": 99.88,
+                "typologyOfErrorId": 1,
+                "parked": false,
+                "verificationComment": "Deducted item 3"
+              },
+              {
+                "id": null,
+                "costCategory": "TravelAndAccommodationCosts",
+                "partOfSample": false,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 2"
+              },
+              {
+                "id": null,
+                "costCategory": "Multiple",
+                "partOfSample": false,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": false,
+                "verificationComment": "Unsampled item"
+              },
+              {
+                "id": null,
+                "costCategory": "EquipmentCosts",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": false,
+                "verificationComment": "Auto-sampled item"
+              },
+              {
+                "id": null,
+                "costCategory": "Multiple",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 3"
+              }
+            ],
+            "overview": {
+              "startDate": "2023-01-31",
+              "requestsForClarifications": "Some dates for clarifications",
+              "receiptOfSatisfactoryAnswers": "Some dates for receipts",
+              "endDate": null,
+              "findingDescription": "Some findings and observations",
+              "followUpMeasuresFromLastReport": "Follow-up measures for last certified report",
+              "conclusion": "Conclusions and recommendations",
+              "followUpMeasuresForNextReport": "Follow-up measures for next partner report",
+              "previousFollowUpMeasuresFromLastReport": null,
+              "changedLastCertifiedReportEndDate": null,
+              "lastCertifiedReportNumber": null
+            }
+          }
+        },
+        {
+          "partnerAcronym": "Project Partner",
+          "partnerReport": {
+            "identification": {
+              "startDate": "2023-12-01",
+              "endDate": "2024-01-31",
+              "period": 2,
+              "summary": [
+                {
+                  "translation": "API generated summary of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated summary of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "problemsAndDeviations": [
+                {
+                  "translation": "API generated problems and deviations of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated problems and deviations of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "targetGroups": [
+                [
+                  {
+                    "translation": "API generated target groups of partner's report DE",
+                    "language": "DE"
+                  }, {
+                  "translation": "API generated target groups of partner's report EN",
+                  "language": "EN"
+                }
+                ]
+              ],
+              "spendingDeviations": [
+                {
+                  "translation": "API generated spending profile of partner's report DE",
+                  "language": "DE"
+                }, {
+                  "translation": "API generated spending profile of partner's report EN",
+                  "language": "EN"
+                }
+              ],
+              "nextReportForecast": 15999.99
+            },
+            "workPlans": [
+              {
+                "id": null,
+                "number": 1,
+                "description": [
+                  {
+                    "translation": "Work package contribution DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Work package contribution EN",
+                    "language": "EN"
+                  }
+                ],
+                "activities": [
+                  {
+                    "id": null,
+                    "number": 1,
+                    "title": [
+                      {
+                        "language": "EN",
+                        "translation": "API generated activity 1 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated activity 1 title DE"
+                      }
+                    ],
+                    "progress": [
+                      {
+                        "translation": "Activity 1 contribution DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Activity 1 contribution EN",
+                        "language": "EN"
+                      }
+                    ],
+                    "deliverables": [
+                      {
+                        "id": null,
+                        "number": 1,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": false,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }, {
+                        "id": null,
+                        "number": 2,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": true,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }
+                    ],
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }, {
+                    "id": null,
+                    "number": 2,
+                    "title": [
+                      {
+                        "language": "DE",
+                        "translation": "API generated activity 2 title DE"
+                      }, {
+                        "language": "EN",
+                        "translation": "API generated activity 2 title EN"
+                      }
+                    ],
+                    "progress": [
+                      {
+                        "translation": "Activity 2 contribution DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Activity 2 contribution EN",
+                        "language": "EN"
+                      }
+                    ],
+                    "deliverables": [
+                      {
+                        "id": null,
+                        "number": 1,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": true,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }, {
+                        "id": null,
+                        "number": 2,
+                        "title": [
+                          {
+                            "language": "EN",
+                            "translation": "API generated activity deliverable title EN"
+                          }, {
+                            "language": "DE",
+                            "translation": "API generated activity deliverable title DE"
+                          }
+                        ],
+                        "contribution": false,
+                        "fileMetadata": "",
+                        "deactivated": false
+                      }
+                    ],
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": null,
+                    "number": 1,
+                    "title": [
+                      {
+                        "language": "EN",
+                        "translation": "API generated output 1 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated output 1 title DE"
+                      }
+                    ],
+                    "contribution": true,
+                    "evidence": null,
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }, {
+                    "id": null,
+                    "number": 2,
+                    "title": [
+                      {
+                        "language": "EN",
+                        "translation": "API generated output 2 title EN"
+                      }, {
+                        "language": "DE",
+                        "translation": "API generated output 2 title DE"
+                      }
+                    ],
+                    "contribution": true,
+                    "evidence": null,
+                    "fileMetadata": "",
+                    "deactivated": false
+                  }
+                ],
+                "deactivated": false
+              }
+            ],
+            "procurements": [
+              {
+                "details": {
+                  "contractName": "Procurement1",
+                  "referenceNumber": "Reference number 1",
+                  "contractDate": "2024-07-30T00:00:00.000Z",
+                  "contractType": "Contract Type 1",
+                  "contractAmount": 999.99,
+                  "currencyCode": "EUR",
+                  "supplierName": "Supplier Name 1",
+                  "vatNumber": "12345",
+                  "comment": "Some procurement comment"
+                },
+                "beneficialOwners": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
+                    "currencyCode": "EUR",
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
+                  }
+                ]
+              },
+              {
+                "details": {
+                  "contractName": "Procurement2",
+                  "referenceNumber": "Reference number 2",
+                  "contractDate": "2024-01-31T00:00:00.000Z",
+                  "contractType": "Contract Type 2",
+                  "contractAmount": 1234.77,
+                  "currencyCode": "AMD",
+                  "supplierName": "Supplier Name 2",
+                  "vatNumber": "67890",
+                  "comment": "Some procurement comment"
+                },
+                "beneficialOwners": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
+                    "currencyCode": "EUR",
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
+                  }
+                ]
+              },
+              {
+                "details": {
+                  "contractName": "Procurement3",
+                  "referenceNumber": "Reference number 3",
+                  "contractDate": "2023-02-21T00:00:00.000Z",
+                  "contractType": "Contract Type 3",
+                  "contractAmount": 5500.34,
+                  "currencyCode": "CHF",
+                  "supplierName": "Supplier Name 3",
+                  "vatNumber": "223344",
+                  "comment": "Some procurement comment"
+                },
+                "beneficialOwners": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 1",
+                    "lastName": "Owner 1",
+                    "birth": "2006-06-19T00:00:00.000Z",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 2",
+                    "lastName": "Owner 2",
+                    "birth": "1999-06-09T00:00:00.000Z",
+                    "vatNumber": "67890"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "firstName": "Beneficial 3",
+                    "lastName": "Owner 3",
+                    "birth": "1986-10-21T00:00:00.000Z",
+                    "vatNumber": "445566"
+                  }
+                ],
+                "subcontractors": [
+                  {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 1",
+                    "referenceNumber": "12345",
+                    "contractDate": "2024-06-11T00:00:00.000Z",
+                    "contractAmount": 1234.56,
+                    "currencyCode": "EUR",
+                    "supplierName": "Supplier Name 1",
+                    "vatNumber": "12345"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 2",
+                    "referenceNumber": "67890",
+                    "contractDate": "2025-06-11T00:00:00.000Z",
+                    "contractAmount": 999.99,
+                    "currencyCode": "AMD",
+                    "supplierName": "Supplier Name 2",
+                    "vatNumber": "54321"
+                  }, {
+                    "id": 0,
+                    "createdInThisReport": true,
+                    "contractName": "Contract name 3",
+                    "referenceNumber": "778899",
+                    "contractDate": "2023-11-22T00:00:00.000Z",
+                    "contractAmount": 666.33,
+                    "currencyCode": "CHF",
+                    "supplierName": "Supplier Name 3",
+                    "vatNumber": "223344"
+                  }
+                ]
+              }
+            ],
+            "expenditures": [
+              {
+                "costCategory": "StaffCosts",
+                "internalReferenceNumber": "1",
+                "invoiceDate": "2024-02-13T00:00:00.000Z",
+                "dateOfPayment": "2024-02-20T00:00:00.000Z",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 1 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 1 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 1 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 1 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 500,
+                "declaredAmount": 777.77,
+                "currencyCode": "EUR"
+              },
+              {
+                "costCategory": "StaffCosts",
+                "internalReferenceNumber": "2",
+                "invoiceDate": "2024-02-13T00:00:00.000Z",
+                "dateOfPayment": "2024-02-20T00:00:00.000Z",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 2 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 2 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 2 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 2 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 999,
+                "declaredAmount": 999.66,
+                "currencyCode": "EUR"
+              },
+              {
+                "costCategory": "StaffCosts",
+                "internalReferenceNumber": "3",
+                "invoiceDate": "2024-02-13T00:00:00.000Z",
+                "dateOfPayment": "2024-02-20T00:00:00.000Z",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 3 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 3 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 3 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 3 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 1500,
+                "declaredAmount": 1500,
+                "currencyCode": "EUR"
+              },
+              {
+                "costCategory": "StaffCosts",
+                "internalReferenceNumber": "4",
+                "invoiceDate": "2024-02-13T00:00:00.000Z",
+                "dateOfPayment": "2024-02-20T00:00:00.000Z",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 4 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 4 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 4 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 4 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "totalValueInvoice": 12345,
+                "declaredAmount": 12345.66,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReference": "shouldHaveLumpSum",
+                "lumpSumId": null,
+                "costCategory": "Multiple",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 5 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 5 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 5 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 5 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 1,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": 1,
+                "costCategory": "StaffCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 6 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 6 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 6 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 6 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 13,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": 1,
+                "costCategory": "StaffCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 7 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 7 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 7 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 7 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 25,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReferenceUnit": "projectProposedStaff",
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": null,
+                "costCategory": "StaffCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 8 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 8 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 8 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 8 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 0.5,
+                "currencyCode": "EUR"
+              },
+              {
+                "cypressReferenceUnit": "projectProposedStaff",
+                "cypressReference": "shouldHaveUnitCost",
+                "unitCostId": null,
+                "costCategory": "StaffCosts",
+                "description": [
+                  {
+                    "translation": "API generated expenditure 9 description DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 9 description EN",
+                    "language": "EN"
+                  }
+                ],
+                "comment": [
+                  {
+                    "translation": "API generated expenditure 9 comment DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "API generated expenditure 9 comment EN",
+                    "language": "EN"
+                  }
+                ],
+                "numberOfUnits": 3,
+                "currencyCode": "EUR"
+              }
+            ],
+            "contributions": {
+              "toBeUpdated": [
+                {
+                  "id": null,
+                  "sourceOfContribution": "Project Partner",
+                  "legalStatus": "Public",
+                  "createdInThisReport": false,
+                  "amount": 666.66,
+                  "previouslyReported": 0,
+                  "currentlyReported": 1250.77,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }, {
+                  "id": null,
+                  "sourceOfContribution": "Partner contribution 1",
+                  "legalStatus": "Private",
+                  "createdInThisReport": false,
+                  "amount": 1234.99,
+                  "previouslyReported": 0,
+                  "currentlyReported": 950,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }, {
+                  "id": null,
+                  "sourceOfContribution": "Partner contribution 2",
+                  "legalStatus": "AutomaticPublic",
+                  "createdInThisReport": false,
+                  "amount": 6648.06,
+                  "previouslyReported": 0,
+                  "currentlyReported": 4280.37,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": false,
+                  "attachment": null
+                }
+              ],
+              "toBeDeletedIds": [],
+              "toBeCreated": [
+                {
+                  "id": 0,
+                  "sourceOfContribution": "Public Source",
+                  "legalStatus": "Public",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 1234.56,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }, {
+                  "id": 0,
+                  "sourceOfContribution": "Private Source",
+                  "legalStatus": "Private",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 1224.76,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }, {
+                  "id": 0,
+                  "sourceOfContribution": "Automatic Public Source",
+                  "legalStatus": "AutomaticPublic",
+                  "createdInThisReport": true,
+                  "amount": 0,
+                  "previouslyReported": 0,
+                  "currentlyReported": 9936.23,
+                  "totalReportedSoFar": 0,
+                  "removedInAf": null,
+                  "attachment": null
+                }
+              ]
+            }
+          },
+          "controlWork": {
+            "identification": {
+              "controllerFormats": [
+                "Originals",
+                "Electronic"
+              ],
+              "type": "FinalReport",
+              "designatedController": {
+                "controlInstitutionId": 1,
+                "controllingUserId": 4,
+                "controllingUserName": "Controller User - controller.user@jems.eu",
+                "jobTitle": "API generated job title",
+                "divisionUnit": "API generated division/unit/department",
+                "address": "API generated address",
+                "country": "Chad (TD)",
+                "countryCode": "TD",
+                "telephone": "+0123456789",
+                "controllerReviewerId": 4,
+                "controllerReviewerName": "Controller User - controller.user@jems.eu",
+                "controlInstitution": "controller institution"
+              },
+              "reportVerification": {
+                "generalMethodologies": [
+                  "AdministrativeVerification",
+                  "OnTheSpotVerification"
+                ],
+                "administrativeVerification": true,
+                "onTheSpotVerification": true,
+                "riskBasedVerificationApplied": true,
+                "riskBasedVerificationDescription": "API generated risk-based verification",
+                "verificationInstances": [
+                  {
+                    "verificationFrom": "2023-10-18T00:00:00.000Z",
+                    "verificationTo": "2023-10-19T00:00:00.000Z",
+                    "premisesOfProjectPartner": true,
+                    "projectEvent": true,
+                    "placeOfProjectOutput": true,
+                    "virtual": true,
+                    "verificationFocus": "API generated on-the-spot verification",
+                    "verificationLocations": [
+                      "PremisesOfProjectPartner",
+                      "ProjectEvent",
+                      "PlaceOfPhysicalProjectOutput",
+                      "Virtual"
+                    ]
+                  }
+                ]
+              }
+            },
+            "expenditureVerification": [
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 199.99,
+                "typologyOfErrorId": 1,
+                "parked": false,
+                "verificationComment": "Deducted item 1"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 1"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 555.33,
+                "typologyOfErrorId": 1,
+                "parked": false,
+                "verificationComment": "Deducted item 2"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 6000.33,
+                "typologyOfErrorId": 1,
+                "parked": false,
+                "verificationComment": "Deducted item 3"
+              },
+              {
+                "id": null,
+                "costCategory": "Multiple",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-02-01T10:07:58.825+01:00",
+                "verificationComment": "Parked item 2"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": false,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 3"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": false,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": false,
+                "verificationComment": "Unchanged item 1"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": false,
+                "verificationComment": "Unchanged item 2"
+              },
+              {
+                "id": null,
+                "costCategory": "StaffCosts",
+                "partOfSample": true,
+                "deductedAmount": 0,
+                "typologyOfErrorId": null,
+                "parked": true,
+                "parkedOn": "2024-01-29T10:07:58.825+01:00",
+                "verificationComment": "Parked item 4"
+              }
+            ],
+            "overview": {
+              "startDate": "2023-01-31",
+              "requestsForClarifications": "Some dates for clarifications",
+              "receiptOfSatisfactoryAnswers": "Some dates for receipts",
+              "endDate": null,
+              "findingDescription": "Some findings and observations",
+              "followUpMeasuresFromLastReport": "Follow-up measures for last certified report",
+              "conclusion": "Conclusions and recommendations",
+              "followUpMeasuresForNextReport": "Follow-up measures for next partner report",
+              "previousFollowUpMeasuresFromLastReport": null,
+              "changedLastCertifiedReportEndDate": null,
+              "lastCertifiedReportNumber": null
+            }
+          }
+        }
+      ],
+      "projectReport": {
+        "details": {
+          "startDate": "2024-01-01T00:00:00.000Z",
+          "endDate": "2024-12-31T00:00:00.000Z",
+          "deadlineId": null,
+          "cypressDeadlineReference": "bothDeadline"
+        },
+        "identification": {
+          "targetGroups": [
+            [
+              {
+                "translation": "Target groups DE",
+                "language": "DE"
+              }, {
+              "translation": "Target groups EN",
+              "language": "EN"
+            }
+            ]
+          ],
+          "highlights": [
+            {
+              "translation": "Main achievements DE",
+              "language": "DE"
+            }, {
+              "translation": "Main achievements EN",
+              "language": "EN"
+            }
+          ],
+          "partnerProblems": [
+            {
+              "translation": "Partner problems and deviations DE",
+              "language": "DE"
+            }, {
+              "translation": "Partner problems and deviations EN",
+              "language": "EN"
+            }
+          ],
+          "deviations": [
+            {
+              "translation": "Spending profile DE",
+              "language": "DE"
+            }, {
+              "translation": "Spending profile EN",
+              "language": "EN"
             }
           ]
         },
-        {
-          "Project Partner": [
+        "workPlans": [
+          {
+            "id": null,
+            "completed": true,
+            "specificStatus": "Partly",
+            "specificExplanation": [
+              {
+                "translation": "Project specific objective explanations DE",
+                "language": "DE"
+              }, {
+                "translation": "Project specific objective explanations EN",
+                "language": "EN"
+              }
+            ],
+            "communicationStatus": "Partly",
+            "communicationExplanation": [
+              {
+                "translation": "Communication objective explanations DE\n",
+                "language": "DE"
+              }, {
+                "translation": "Communication objective explanations EN\n",
+                "language": "EN"
+              }
+            ],
+            "description": [
+              {
+                "translation": "Progress DE",
+                "language": "DE"
+              }, {
+                "translation": "Progress EN",
+                "language": "EN"
+              }
+            ],
+            "activities": [
+              {
+                "id": null,
+                "status": "Not",
+                "progress": [
+                  {
+                    "translation": "Activity 1 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Activity 1 progress EN",
+                    "language": "EN"
+                  }
+                ],
+                "deliverables": [
+                  {
+                    "id": null,
+                    "currentReport": 5,
+                    "progress": [
+                      {
+                        "translation": "Deliverable 1 progress DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Deliverable 1 progress EN",
+                        "language": "EN"
+                      }
+                    ]
+                  }, {
+                    "id": null,
+                    "currentReport": 10,
+                    "progress": [
+                      {
+                        "translation": "Deliverable 2 progress DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Deliverable 2 progress EN",
+                        "language": "EN"
+                      }
+                    ]
+                  }
+                ]
+              }, {
+                "id": null,
+                "status": "Fully",
+                "progress": [
+                  {
+                    "translation": "Activity 2 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Activity 2 progress EN",
+                    "language": "EN"
+                  }
+                ],
+                "deliverables": [
+                  {
+                    "id": null,
+                    "currentReport": 3.99,
+                    "progress": [
+                      {
+                        "translation": "Activity 2-1 progress DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Activity 2-1 progress EN",
+                        "language": "EN"
+                      }
+                    ]
+                  }, {
+                    "id": null,
+                    "currentReport": 99.99,
+                    "progress": [
+                      {
+                        "translation": "Activity 2-2 progress DE",
+                        "language": "DE"
+                      }, {
+                        "translation": "Activity 2-2 progress EN",
+                        "language": "EN"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "outputs": [
+              {
+                "id": null,
+                "currentReport": 2.5,
+                "progress": [
+                  {
+                    "translation": "Output 1 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Output 1 progress EN",
+                    "language": "EN"
+                  }
+                ]
+              }, {
+                "id": null,
+                "currentReport": 6,
+                "progress": [
+                  {
+                    "translation": "Output 2 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Output 2 progress EN",
+                    "language": "EN"
+                  }
+                ]
+              }
+            ],
+            "investments": [
+              {
+                "id": null,
+                "progress": [
+                  {
+                    "translation": "Investments 1 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Investments 1 progress EN",
+                    "language": "EN"
+                  }
+                ]
+              }, {
+                "id": null,
+                "progress": [
+                  {
+                    "translation": "Investments 2 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Investments 2 progress EN",
+                    "language": "EN"
+                  }
+                ]
+              }, {
+                "id": null,
+                "progress": [
+                  {
+                    "translation": "Investments 3 progress DE",
+                    "language": "DE"
+                  }, {
+                    "translation": "Investments 3 progress EN",
+                    "language": "EN"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "results": {
+          "projectResults": [
+            {
+              "resultNumber": 1,
+              "achievedInReportingPeriod": 11,
+              "description": [
+                {
+                  "translation": "Results progress DE",
+                  "language": "DE"
+                }, {
+                  "translation": "Results progress EN",
+                  "language": "EN"
+                }
+              ]
+            }
+          ],
+          "sustainableDevelopmentDescription": [
+            {
+              "translation": "Sustainable development DE",
+              "language": "DE"
+            }, {
+              "translation": "Sustainable development EN",
+              "language": "EN"
+            }
+          ],
+          "equalOpportunitiesDescription": [
+            {
+              "translation": "Equal opportunities and non-discrimination DE",
+              "language": "DE"
+            }, {
+              "translation": "Equal opportunities and non-discrimination EN",
+              "language": "EN"
+            }
+          ],
+          "sexualEqualityDescription": [
+            {
+              "translation": "Equality between men and women DE",
+              "language": "DE"
+            }, {
+              "translation": "Equality between men and women EN",
+              "language": "EN"
+            }
           ]
         }
-      ],
-      "verificationWork": [
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": true,
-          "deductedByJs": 10.99,
-          "deductedByMa": 0.01,
-          "typologyOfErrorId": 4,
-          "parked": false,
-          "verificationComment": "Double deducted item"
+      },
+      "verificationWork": {
+        "risk": {
+          "riskBasedVerification": true,
+          "riskBasedVerificationDescription": "Risk-based verification comment"
         },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": true,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Only sampled item"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": false,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Unchanged item 1"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": false,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Already parked item 1"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": false,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Unchanged item 2"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": false,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Already parked item 2"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": true,
-          "deductedByJs": 0.33,
-          "deductedByMa": 0,
-          "typologyOfErrorId": 1,
-          "parked": false,
-          "verificationComment": "Deducted by JS only item"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": true,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": true,
-          "verificationComment": "Parked item 1"
-        },
-        {
-          "expenditureId": null,
-          "partOfVerificationSample": false,
-          "deductedByJs": 0,
-          "deductedByMa": 0,
-          "typologyOfErrorId": null,
-          "parked": false,
-          "verificationComment": "Already parked item 3"
+        "expenditures": [
+          {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Unchanged item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Sampled item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 55,
+            "deductedByMa": 0,
+            "typologyOfErrorId": 4,
+            "parked": false,
+            "verificationComment": "Deducted JS item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 123.99,
+            "typologyOfErrorId": 1,
+            "parked": false,
+            "verificationComment": "Deducted MS item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item and sampled 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": true,
+            "verificationComment": "Parked item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0.25,
+            "deductedByMa": 5.01,
+            "typologyOfErrorId": 1,
+            "parked": false,
+            "verificationComment": "Double deducted item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": true,
+            "verificationComment": "Parked item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item 3"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Only sampled item 1"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 500,
+            "deductedByMa": 289,
+            "typologyOfErrorId": 1,
+            "parked": false,
+            "verificationComment": "Double deducted item 3"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item 3"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item and sampled 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 66.99,
+            "deductedByMa": 0,
+            "typologyOfErrorId": 4,
+            "parked": false,
+            "verificationComment": "Deducted JS item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": true,
+            "deductedByJs": 0,
+            "deductedByMa": 17.49,
+            "typologyOfErrorId": 1,
+            "parked": false,
+            "verificationComment": "Deducted MS item 2"
+          }, {
+            "expenditureId": null,
+            "partOfVerificationSample": false,
+            "deductedByJs": 0,
+            "deductedByMa": 0,
+            "typologyOfErrorId": null,
+            "parked": false,
+            "verificationComment": "Already parked item 4"
+          }
+        ],
+        "clarifications": [
+          {
+            "requestDate": "2024-01-01T00:00:00.000Z",
+            "answerDate": "2024-02-08T00:00:00.000Z",
+            "comment": "Clarification comment 1"
+          }, {
+            "requestDate": "2024-04-17T00:00:00.000Z",
+            "answerDate": "2024-08-23T00:00:00.000Z",
+            "comment": "Clarification comment 2"
+          }
+        ],
+        "verification": {
+          "startDate": "2024-01-01T00:00:00.000Z",
+          "conclusionJS": "JS verification findings",
+          "conclusionMA": "MA verification findings",
+          "verificationFollowUp": "Follow-up measures for future project reports comment"
         }
-      ]
+      }
     }
   ]
 }

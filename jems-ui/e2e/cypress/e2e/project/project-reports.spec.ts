@@ -141,9 +141,7 @@ context('Project report tests', () => {
                     cy.url().then(url => {
                         const reportId = Number(url.replace('/identification', '').split('/').pop());
 
-                        cy.getProjectReportWorkPlanProgress(applicationId, reportId).then((workPlanProgress) => {
-                            updateProjectReportWorkPlanProgress(testData.workPlansUpdate, workPlanProgress[0], applicationId, reportId);
-                        });
+                        cy.updateProjectReportWorkPlans(applicationId, reportId, testData.workPlansUpdate);
 
                         cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
                         cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
@@ -194,14 +192,9 @@ context('Project report tests', () => {
                         cy.contains('mat-form-field', 'Progress in this period').click().type('Updated output');
 
                         cy.contains('Save changes').click();
-                        cy.wait(2000);
                         cy.contains('Completed in prior report. No changes.').should('not.exist');
-
-                        cy.contains('Work package 1').click();
-                        cy.contains('mat-expansion-panel', 'A 1.1').click();
-                        cy.contains('New changes after completion.').should('be.visible');
-
-                        cy.contains('span', 'Attachment:').next().click();
+                        cy.contains('New changes after completion.').scrollIntoView().should('be.visible');
+                        
                         cy.get('input[type=file]').eq(0).selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
                         cy.contains('fileToUpload.txt').should('be.visible');
                     });
@@ -422,30 +415,34 @@ context('Project report tests', () => {
 
                 const partnerId = this[application.partners[0].details.abbreviation];
                 // First - partner and project report
-                const partnerReportDetails = {
-                    partnerReport: reporting.projectReports[0].partnerReports[0]['Lead Partner'][0].partnerReport,
-                    controlWork: reporting.projectReports[0].partnerReports[0]['Lead Partner'][0].controlWork
-                }
-                cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
-
-                const projectReportDetails = {
-                    verificationWork: reporting.projectReports[0].verificationWork,
-                    financeDeadline: {deadlineId: application.reportingDeadlines[1].id}
-                }
-                cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email).then(projectReportId => {
+                // cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email).then(projectReportId => {
+                cy.completeReporting(applicationId, reporting).then(projectReportId => {
                     cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
                     projectReportPage.verifyAmountsInTables(testData.projectReport1ExpectedResults);
                 });
 
                 // create and certify second partner report
-                cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
+                const partnerReportDetails = {
+                    partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
+                    controlWork: reporting.projectReports[0].partnerReports[0].controlWork
+                }
+                const partnerReport2Details = JSON.parse(JSON.stringify(partnerReportDetails));
+                partnerReport2Details.partnerReport.procurements[0].details.contractName = 'Procurement 2-1';
+                partnerReport2Details.partnerReport.procurements[1].details.contractName = 'Procurement 2-2';
+                partnerReport2Details.partnerReport.procurements[2].details.contractName = 'Procurement 2-3';
+                partnerReport2Details.partnerReport.contributions.toBeUpdated = [ 
+                    ...partnerReportDetails.partnerReport.contributions.toBeUpdated,
+                    ...partnerReportDetails.partnerReport.contributions.toBeCreated
+                ];
+                partnerReport2Details.partnerReport.contributions.toBeCreated = [];
+                cy.createCertifiedPartnerReport(partnerId, partnerReport2Details, user.controllerUser.email);
 
 
                 // pay a part of the newly created Regular payment for Project Report 1
                 cy.loginByRequest(paymentsUser.email);
                 cy.findProjectPayments(applicationId).then(projectPayments => {
                     const regularPayments = projectPayments.filter(payment => payment.paymentType === "REGULAR");
-                    expect(regularPayments.length).to.be.equal(2);
+                    expect(regularPayments.length).to.be.equal(3);
                     cy.addAuthorizedPayments(applicationId, testData.authorizedPayments);
                 });
 
@@ -454,6 +451,7 @@ context('Project report tests', () => {
                 cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[1].id}).then(projectReportId => {
                     cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
                     projectReportPage.verifyAmountsInTables(testData.projectReport2ExpectedResults);
+                    cy.contains('Current report after verification').should('not.exist');
                 });
             });
         });
@@ -495,26 +493,6 @@ function assertProjectReportData(partnerDetails: any, afVersion: string) {
     cy.contains('span', 'Name of the organisation in original language').next().should('contain', partnerDetails.nameInOriginalLanguage);
     cy.contains('span', 'Name of the organisation in english').next().should('contain', partnerDetails.nameInEnglish);
     cy.contains('span', 'AF Version linked').next().should('contain', afVersion);
-}
-
-function updateProjectReportWorkPlanProgress(workPlansUpdate: any, existingData: any, applicationId: number, reportId: number) {
-    workPlansUpdate[0].id = reportId;
-    workPlansUpdate[0].activities[0].id = existingData.activities[0].id;
-    workPlansUpdate[0].activities[0].deliverables[0].id = existingData.activities[0].deliverables[0].id;
-    workPlansUpdate[0].activities[0].deliverables[1].id = existingData.activities[0].deliverables[1].id;
-
-    workPlansUpdate[0].activities[1].id = existingData.activities[1].id;
-    workPlansUpdate[0].activities[1].deliverables[0].id = existingData.activities[1].deliverables[0].id;
-    workPlansUpdate[0].activities[1].deliverables[1].id = existingData.activities[1].deliverables[1].id;
-
-    workPlansUpdate[0].investments[0].id = existingData.investments[0].id;
-    workPlansUpdate[0].investments[1].id = existingData.investments[1].id;
-    workPlansUpdate[0].investments[2].id = existingData.investments[2].id;
-
-    workPlansUpdate[0].outputs[0].id = existingData.outputs[0].id;
-    workPlansUpdate[0].outputs[1].id = existingData.outputs[1].id;
-
-    cy.updateProjectReportWorkPlanProgress(applicationId, reportId, workPlansUpdate);
 }
 
 function formatAmount(amount) {

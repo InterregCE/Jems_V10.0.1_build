@@ -85,10 +85,6 @@ declare global {
 
       getReportingDeadlines(applicationId: number);
 
-      getProjectReportWorkPlanProgress(applicationId: number, reportId: number);
-
-      updateProjectReportWorkPlanProgress(applicationId: number, reportId: number, workPlans: any[]);
-
       findInputContaining(selectorForInput, textToFind: string);
 
       assignUserToProject(applicationId: number, userId: number);
@@ -340,12 +336,24 @@ Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contrac
 });
 
 Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
-  createReportingDeadlines(applicationId, reportingDeadlines);
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/reporting`,
+    body: reportingDeadlines
+  }).then(response => {
+    response.body.forEach((deadline, index) => {
+      reportingDeadlines[index].id = deadline.id;
+      if (reportingDeadlines[index].cypressDeadlineReference) {
+        cy.wrap(deadline.id).as(reportingDeadlines[index].cypressDeadlineReference);
+      }
+      cy.wrap(response.body);
+    });
+  });
 });
 
 Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
   // same as create, but need to provide id reference in reportingDeadlines
-  createReportingDeadlines(applicationId, reportingDeadlines);
+  cy.createReportingDeadlines(applicationId, reportingDeadlines);
 });
 
 Cypress.Commands.add('getReportingDeadlines', (applicationId: number) => {
@@ -357,14 +365,6 @@ Cypress.Commands.add('getReportingDeadlines', (applicationId: number) => {
 
 Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {
   findInputContaining(selectorForInput, textToFind);
-});
-
-Cypress.Commands.add('updateProjectReportWorkPlanProgress', (applicationId: number, reportId: number, workPlans: any[]) => {
-  updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans);
-});
-
-Cypress.Commands.add('getProjectReportWorkPlanProgress', (applicationId: number, reportId: number) => {
-  getProjectReportWorkPlanProgress(applicationId, reportId);
 });
 
 function createApplication(applicationDetails) {
@@ -435,7 +435,7 @@ function updateContractingSections(applicationId, application, contractingUserEm
     });
 
     updateContractMonitoring(applicationId, application.contractMonitoring);
-    createReportingDeadlines(applicationId, application.reportingDeadlines);
+    cy.createReportingDeadlines(applicationId, application.reportingDeadlines);
     setProjectToContracted(applicationId);
     cy.get('@currentUser').then((currentUser: any) => {
       loginByRequest(currentUser.name);
@@ -739,34 +739,6 @@ function updateProjectPartnerCollaborators(applicationId, partnerId, partnerColl
     url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
     body: partnerCollaborators
   });
-}
-
-function createReportingDeadlines(applicationId, reportingDeadlines) {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/contracting/reporting`,
-    body: reportingDeadlines
-  }).then(response => {
-    response.body.forEach((deadlines, index) => {
-       reportingDeadlines[index].id = deadlines.id;
-    });
-    return response.body;
-  });
-}
-
-function updateProjectReportWorkPlanProgress(applicationId, reportId, workPlans) {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
-    body: workPlans
-  });
-}
-
-function getProjectReportWorkPlanProgress(applicationId, reportId) {
-  cy.request({
-    method: 'GET',
-    url: `api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/workPlan`,
-  }).then((response) => response.body);
 }
 
 export function createAssociatedOrganisations(applicationId, associatedOrganisations) {

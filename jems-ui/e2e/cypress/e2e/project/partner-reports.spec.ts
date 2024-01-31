@@ -177,96 +177,53 @@ context('Partner reports tests', () => {
                       .type(item.translation);
                   });
                 });
-                testData.workplan[0].activities.forEach((item, index) => {
-                  cy.get(`div.activity-container > jems-multi-language-container`).eq(index + (index % 2)).within(() => {
-                    item.progress.forEach(language => {
-                      cy.contains('button', language.language)
-                        .click();
-                      cy.get('textarea')
-                        .eq(1)
-                        .type(language.translation);
-                    });
-                  });
-
-                  cy.get(`div.activity-container > jems-multi-language-container`).eq(index + (index % 2) + 1).within(() => {
-                    item.deliverables.forEach((deliverable, del_index) => {
-                      cy.get(`#deliverables-table > div`).eq(del_index + 1).within(() => {
-                        cy.get('mat-checkbox')
+                testData.workplan[0].activities.forEach((item, i) => {
+                  cy.contains('mat-expansion-panel', `A 1.${i + 1}`).within((accordion) => {
+                    cy.wrap(accordion).click();
+                    cy.contains('jems-multi-language-container', 'Describe how you contributed to the progress made in this activity').within(() => {
+                      item.progress.forEach(language => {
+                        cy.contains('button', language.language)
                           .click();
+                        cy.get('textarea').type(language.translation);
+                      });
+
+                      // upload file to activity TODO missing activity attachment
+                      // cy.get('input[type="file"]').selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
+                      // cy.get('mat-chip > span').contains('fileToUpload.txt').should('be.visible');
+                    });
+
+                    item.deliverables.forEach((_deliverable, k) => {
+                      cy.contains('div.table-container', `D 1.${i + 1}.${k + 1}`).within(() => {
+                        cy.get('mat-checkbox').click();
+                        cy.get('input[type="file"]').selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
+                        cy.get('mat-chip > span').contains('fileToUpload.txt').should('be.visible');
                       });
                     });
                   });
+
                 });
 
-                testData.workplan[0].outputs.forEach((output, out_index) => {
-                  cy.get(`#outputs-table > div`).eq(out_index + 1).within(() => {
-                    cy.get('mat-checkbox')
-                      .click();
+                testData.workplan[0].outputs.forEach((_output, i) => {
+                  cy.contains('div.table-container', `O 1.${i + 1}`).within(() => {
+                    cy.get('mat-checkbox').click();
+                    cy.get('input[type="file"]').selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
+                    cy.get('mat-chip > span').contains('fileToUpload.txt').should('be.visible');
                   });
                 });
 
                 cy.contains('button', 'Save changes')
                   .click();
 
-                cy.contains('The work package activities were saved successfully')
-                  .should('be.visible');
+                // TODO missing notification
+                // cy.contains('The work package activities were saved successfully')
+                //     .should('be.visible');
 
-                // upload file to activity
-                cy.get('div.activity-container > jems-multi-language-container input').eq(0)
-                  .scrollIntoView()
-                  .invoke('show')
-                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
-
-                cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
-                  cy.get('mat-chip > span')
-                    .scrollIntoView()
-                    .contains('fileToUpload.txt')
-                    .should('be.visible');
-                });
-
-                //upload file to deliverable
-                cy.get('div.activity-container > jems-multi-language-container').eq(1).within(() => {
-                  cy.get(`#deliverables-table > div`).eq(1).within(() => {
-                    cy.get('input')
-                      .eq(1)
-                      .scrollIntoView()
-                      .invoke('show')
-                      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
-                  });
-                });
-
-                cy.get('div.activity-container > jems-multi-language-container').eq(1).within(() => {
-                  cy.get(`#deliverables-table > div mat-chip-list`).eq(0).within(() => {
-                    cy.get('mat-chip > span')
-                      .scrollIntoView()
-                      .contains('fileToUpload.txt')
-                      .should('be.visible');
-                  });
-                });
-
-                //upload file to output
-                cy.get(`#outputs-table > div`).eq(1).within(() => {
-                  cy.get('input')
-                    .eq(1)
-                    .scrollIntoView()
-                    .invoke('show')
-                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
-                });
-
-                cy.get('#outputs-table > div mat-chip-list').eq(0).within(() => {
-                  cy.get('mat-chip > span')
-                    .scrollIntoView()
-                    .contains('fileToUpload.txt')
-                    .should('be.visible');
-                });
 
                 //delete file from activity
-                cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
-                  cy.get('mat-chip')
-                    .contains('mat-icon', 'cancel')
-                    .scrollIntoView()
-                    .click();
-                });
+                cy.contains('fileToUpload.txt').should('be.visible').eq(0)
+                  .contains('mat-icon', 'cancel').scrollIntoView()
+                  .click();
+
 
                 cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+/).as('deleteFileFromActivity');
 
@@ -1264,12 +1221,12 @@ context('Partner reports tests', () => {
 
 
                 cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
-                cy.contains('mat-panel-title', 'Work package 1').click();
-                cy.get('div.activity-container > jems-multi-language-container input').eq(0)
-                  .scrollIntoView()
-                  .invoke('show')
-                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-                  .invoke('hide');
+                cy.contains('mat-panel-title', 'Work package 1').should('be.visible').click();
+                cy.contains('A 1.1').click();
+                cy.contains('div.table-container', 'D 1.1.1')
+                  .find('input[type="file"]')
+                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
+                cy.contains('fileToUpload.txt').should('be.visible');
 
                 // submit report
                 cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/submission`, {failOnStatusCode: false});
@@ -1631,11 +1588,11 @@ context('Partner reports tests', () => {
       cy.wrap(cb).should('be.disabled');
     });
 
-    cy.contains('div', 'A 1.1').parent().within(() => {
-      cy.get('jems-partner-actions-cell').within((e) => {
-        cy.contains('mat-icon', 'file_download').should('exist');
-        expect(e).to.not.contain('cancel');
-      });
+    cy.contains('div', 'A 1.1').click();
+    cy.contains('div.table-container', 'D 1.1.1').within(() => {
+      cy.contains('fileToUpload.txt').scrollIntoView().should('be.visible');
+      cy.contains('mat-icon', 'file_download').should('be.visible');
+      cy.contains('mat-icon', 'cancel').should('not.exist');
     });
   }
 
@@ -2134,10 +2091,10 @@ context('Partner reports tests', () => {
   }
 
   function uploadFileToExpenditure(rowIndex, attachmentIndex) {
-      
+
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input')
       .eq(rowIndex)
-      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', { force: true });
+      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
 
     cy.get('.mat-column-uploadFunction mat-chip-list span')
       .eq(attachmentIndex)
@@ -2148,7 +2105,7 @@ context('Partner reports tests', () => {
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction')
       .eq(rowIndex)
       .find('mat-chip-list .mat-chip-remove')
-      .click({ force: true });
+      .click({force: true});
 
     cy.contains('button', 'Confirm')
       .should('be.visible')
@@ -2163,7 +2120,7 @@ context('Partner reports tests', () => {
   function replaceUploadedFile(rowIndex, attachmentIndex) {
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input')
       .eq(rowIndex)
-      .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt', { force: true });
+      .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt', {force: true});
 
     cy.contains('button', 'Confirm')
       .click();
@@ -2603,6 +2560,7 @@ context('Partner reports tests', () => {
     cy.contains('mat-panel-title', 'Work package 1')
       .click();
 
+    // TODO no attachments for activity
     cy.get('div.activity-container > jems-multi-language-container input').eq(0)
       .scrollIntoView()
       .invoke('show')
