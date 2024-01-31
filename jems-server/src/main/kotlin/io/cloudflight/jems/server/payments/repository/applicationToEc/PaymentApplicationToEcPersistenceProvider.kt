@@ -132,6 +132,10 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.existsByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft)
 
     @Transactional(readOnly = true)
+    override fun getDraftAccountingYearIds(programmeFundId: Long, accountingYearId: Long): List<Long> =
+        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft).map { it.id }
+
+    @Transactional(readOnly = true)
     override fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYearAvailability> =
         ecPaymentRepository.getAvailableAccountingYearForFund(programmeFundId).map {
             AccountingYearAvailability(

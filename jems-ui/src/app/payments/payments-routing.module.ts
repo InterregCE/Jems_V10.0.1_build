@@ -36,6 +36,9 @@ import {
   AccountsSummaryTabComponent
 } from './accounts-page/account-detail/accounts-summary-tab/accounts-summary-tab.component';
 import {AccountDetailComponent} from './accounts-page/account-detail/account-detail.component';
+import {
+  AccountsFinalizeTabComponent
+} from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -232,6 +235,10 @@ export const paymentsRoutes: Routes = [
               {
                 path: 'summary',
                 component: AccountsSummaryTabComponent,
+              },
+              {
+                path: 'finalize',
+                component: AccountsFinalizeTabComponent,
               },
             ],
           }

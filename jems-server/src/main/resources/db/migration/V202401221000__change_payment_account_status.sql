@@ -1,0 +1,2 @@
+ALTER TABLE payment_account
+CHANGE COLUMN status status ENUM('DRAFT', 'FINISHED') NOT NULL DEFAULT 'DRAFT';

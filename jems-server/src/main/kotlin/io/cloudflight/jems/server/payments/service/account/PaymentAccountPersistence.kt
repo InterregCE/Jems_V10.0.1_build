@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.payments.service.account
 
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountUpdate
 
 interface PaymentAccountPersistence {
@@ -14,5 +15,9 @@ interface PaymentAccountPersistence {
     fun persistPaymentAccountsByFunds(programmeFundIds: Set<Long>)
 
     fun deletePaymentAccountsByFunds(idsToDelete: Set<Long>)
+
+    fun finalizePaymentAccount(paymentAccountId: Long): PaymentAccountStatus
+
+    fun reOpenPaymentAccount(paymentAccountId: Long): PaymentAccountStatus
 
 }
