@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 import {MatDialog} from '@angular/material/dialog';
 import {AbstractControl, FormArray, FormGroup} from '@angular/forms';
@@ -66,6 +66,8 @@ export class PaymentToEcCorrectionSelectTableComponent {
   @Output()
   sortChanged$: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
+  @ViewChild('paymentToEcTable', {read: ElementRef}) private paymentToEcTable: ElementRef;
+
   constants = AdvancePaymentsDetailPageConstants;
 
   editedRowIndex: number | null = null;
@@ -85,6 +87,13 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   editAmounts(rowIndex: number) {
     this.editedRowIndex = rowIndex;
+    setTimeout(() => {
+      this.scrollToRight();
+    });
+  }
+
+  scrollToRight(): void {
+    this.paymentToEcTable.nativeElement.scrollLeft = this.paymentToEcTable.nativeElement.scrollWidth;
   }
 
   resetAmounts(rowIndex: number, row: PaymentToEcInclusionRow) {

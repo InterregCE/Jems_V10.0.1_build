@@ -1,5 +1,5 @@
 <ng-container *ngIf="data?.content?.length">
-  <mat-table jemsNoWidthLimit matSort (matSortChange)="sortChanged$.emit($event)" [dataSource]="dataSource">
+  <mat-table #paymentToEcTable jemsNoWidthLimit matSort (matSortChange)="sortChanged$.emit($event)" [dataSource]="dataSource">
 
     <ng-container matColumnDef="select" sticky>
       <mat-header-cell *matHeaderCellDef class="text-center border-cell-right">

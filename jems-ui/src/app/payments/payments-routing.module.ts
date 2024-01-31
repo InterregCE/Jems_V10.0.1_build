@@ -39,6 +39,9 @@ import {AccountDetailComponent} from './accounts-page/account-detail/account-det
 import {
   AccountsFinalizeTabComponent
 } from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
+import {
+  ProjectsFlaggedArt9495TabComponent
+} from "./payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component";
 
 export const paymentsRoutes: Routes = [
   {
@@ -198,6 +201,10 @@ export const paymentsRoutes: Routes = [
           {
             path: 'regular',
             component: PaymentToEcRegularProjectsTabComponent,
+          },
+          {
+            path: 'flaggedArt9495',
+            component: ProjectsFlaggedArt9495TabComponent,
           },
           {
             path: 'corrections',

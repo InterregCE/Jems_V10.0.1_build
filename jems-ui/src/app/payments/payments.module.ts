@@ -64,6 +64,9 @@ import {
 import {
   AccountsFinalizeTabComponent
 } from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
+import {
+  ProjectsFlaggedArt9495TabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +93,8 @@ import {
     AccountsPageComponent,
     AccountDetailComponent,
     AccountsSummaryTabComponent,
-    AccountsFinalizeTabComponent
+    AccountsFinalizeTabComponent,
+    ProjectsFlaggedArt9495TabComponent
   ],
   imports: [
     SharedModule,
