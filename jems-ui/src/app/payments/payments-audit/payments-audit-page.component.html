@@ -69,7 +69,7 @@
                             <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                             <mat-option *ngFor="let fund of data.availableFunds" [value]="fund"
                                         role="option">
-                                <mat-label>{{fund.type}}</mat-label>
+                                <mat-label>{{fund.type}} - {{fund.abbreviation | translateBySystemLanguage | async}}</mat-label>
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
