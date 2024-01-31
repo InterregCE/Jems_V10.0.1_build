@@ -3,6 +3,8 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {
+  ContractingClosureDTO,
+  ContractingClosureUpdateDTO,
   ProjectContractingMonitoringDTO,
   ProjectContractingMonitoringService,
   UserRoleCreateDTO
@@ -39,13 +41,22 @@ export class ContractMonitoringExtensionStore {
     this.contractMonitoringEditable$ = this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
   }
 
-  save(item: ProjectContractingMonitoringDTO): Observable<ProjectContractingMonitoringDTO> {
+  saveContractingMonitoring(item: ProjectContractingMonitoringDTO): Observable<ProjectContractingMonitoringDTO> {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.updateContractingMonitoring(projectId, item)),
         // trigger new project fetch, because for ProjectContractedOnDate
         tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(saved => Log.info('Saved contract monitoring', saved)),
+      );
+  }
+
+  save(closureUpdateDTO: ContractingClosureUpdateDTO, contractingMonitoringDTO: ProjectContractingMonitoringDTO): Observable<ProjectContractingMonitoringDTO> {
+    return this.projectStore.projectId$
+      .pipe(
+        switchMap(projectId => this.projectContractingMonitoringService.updateContractingPartnerPaymentDate(projectId, closureUpdateDTO)),
+        tap(saved => Log.info('Saved contracting closure', saved)),
+        switchMap(_ => this.saveContractingMonitoring(contractingMonitoringDTO)),
       );
   }
 
