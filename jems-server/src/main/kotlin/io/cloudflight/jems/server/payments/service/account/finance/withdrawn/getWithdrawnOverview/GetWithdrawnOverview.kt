@@ -24,7 +24,7 @@ class GetWithdrawnOverview(
     override fun getWithdrawnOverview(paymentAccountId: Long): List<AmountWithdrawnPerPriority> {
         val account = persistence.getByPaymentAccountId(paymentAccountId)
 
-        val corrections = financePersistence.getCorrectionsOnlyDeductionsAndNonClericalMistakeAndOnlyFinished(
+        val corrections = financePersistence.getCorrectionsOnlyDeductionsAndNonClericalMistake(
             fundId = account.fund.id,
             accountingYearId = account.accountingYear.id,
         )

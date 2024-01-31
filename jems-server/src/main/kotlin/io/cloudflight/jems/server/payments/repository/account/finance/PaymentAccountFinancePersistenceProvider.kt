@@ -36,7 +36,7 @@ class PaymentAccountFinancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getCorrectionsOnlyDeductionsAndNonClericalMistakeAndOnlyFinished(
+    override fun getCorrectionsOnlyDeductionsAndNonClericalMistake(
         fundId: Long,
         accountingYearId: Long
     ): Iterable<CorrectionAmountWithdrawn> {

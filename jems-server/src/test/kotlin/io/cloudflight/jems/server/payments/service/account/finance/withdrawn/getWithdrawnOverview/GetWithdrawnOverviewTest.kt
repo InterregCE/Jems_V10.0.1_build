@@ -137,7 +137,7 @@ class GetWithdrawnOverviewTest: UnitTest() {
         }
 
         every {
-            financePersistence.getCorrectionsOnlyDeductionsAndNonClericalMistakeAndOnlyFinished(74L, 63L)
+            financePersistence.getCorrectionsOnlyDeductionsAndNonClericalMistake(74L, 63L)
         } returns listOf(
             correctionAA,
             correctionEC,
