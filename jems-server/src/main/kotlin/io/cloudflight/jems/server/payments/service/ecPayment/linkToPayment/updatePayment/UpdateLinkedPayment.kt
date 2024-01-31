@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.upda
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import org.springframework.stereotype.Service

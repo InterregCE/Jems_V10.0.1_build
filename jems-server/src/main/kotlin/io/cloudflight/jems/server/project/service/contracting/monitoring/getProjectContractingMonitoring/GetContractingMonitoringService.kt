@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring
 
+import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment.PaymentApplicationToEcLinkPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
@@ -21,6 +22,7 @@ class GetContractingMonitoringService(
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
+    private val paymentToEcPersistenceProvider: PaymentApplicationToEcLinkPersistenceProvider,
     private val partnerPersistence: PartnerPersistence,
 ) {
 
@@ -38,13 +40,18 @@ class GetContractingMonitoringService(
             .fillEndDateWithDuration { projectPersistence.getProject(projectId, version).duration }
             .fillLumpSumsList(projectLumpSumPersistence.getLumpSums(projectId = projectId, version))
             .fillClosureLastPaymentDates(allPartners, contractingMonitoringPersistence.getPartnerPaymentDate(projectId))
-            .also { it.fastTrackLumpSums?.forEach { projectLumpSum ->
-                projectLumpSum.installmentsAlreadyCreated = contractingMonitoringPersistence.existsSavedInstallment(
-                    projectId = projectId,
-                    lumpSumId = projectLumpSum.programmeLumpSumId,
-                    orderNr = projectLumpSum.orderNr
-                )
-            } }
+            .also {
+                val ftlsIdToEcPaymentId =
+                    paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId)
+                it.fastTrackLumpSums?.forEach { projectLumpSum ->
+                    projectLumpSum.installmentsAlreadyCreated = contractingMonitoringPersistence.existsSavedInstallment(
+                        projectId = projectId,
+                        lumpSumId = projectLumpSum.programmeLumpSumId,
+                        orderNr = projectLumpSum.orderNr
+                    )
+                    projectLumpSum.linkedToEcPaymentId = ftlsIdToEcPaymentId[projectLumpSum.orderNr]
+                }
+            }
     }
 
     @Transactional(readOnly = true)

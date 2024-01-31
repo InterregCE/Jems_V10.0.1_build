@@ -124,6 +124,12 @@ class PaymentPersistenceProvider(
                     PaymentType.FTLS -> it.toFTLSPaymentModel()
                 },
                 paymentToEcId = it.paymentToEcExtension.paymentToEcId,
+                priorityAxis = it.code ?: "N/A",
+
+                correctedTotalEligibleWithoutSco = it.paymentToEcExtension.correctedTotalEligibleWithoutSco,
+                correctedFundAmountUnionContribution = it.paymentToEcExtension.correctedFundAmountUnionContribution,
+                correctedFundAmountPublicContribution = it.paymentToEcExtension.correctedFundAmountPublicContribution,
+
                 partnerContribution = it.paymentToEcExtension.partnerContribution,
                 publicContribution = it.paymentToEcExtension.publicContribution,
                 correctedPublicContribution = it.paymentToEcExtension.correctedPublicContribution,
@@ -131,7 +137,7 @@ class PaymentPersistenceProvider(
                 correctedAutoPublicContribution = it.paymentToEcExtension.correctedAutoPublicContribution,
                 privateContribution = it.paymentToEcExtension.privateContribution,
                 correctedPrivateContribution = it.paymentToEcExtension.correctedPrivateContribution,
-                priorityAxis = it.code ?: "N/A",
+
             )
         }
     }
@@ -157,8 +163,10 @@ class PaymentPersistenceProvider(
                 specPaymentPartnerInstallment.paymentDate.max(),
                 specPartnerReportCertificateCoFin.sumCurrentVerified,
                 specProgrammePriorityEntity.code,
-
                 specPaymentToEcExtensionEntity.paymentApplicationToEc.id,
+                specPaymentToEcExtensionEntity.correctedTotalEligibleWithoutSco,
+                specPaymentToEcExtensionEntity.correctedFundAmountUnionContribution,
+                specPaymentToEcExtensionEntity.correctedFundAmountPublicContribution,
                 specPaymentToEcExtensionEntity.partnerContribution,
                 specPaymentToEcExtensionEntity.publicContribution,
                 specPaymentToEcExtensionEntity.correctedPublicContribution,
@@ -246,18 +254,18 @@ class PaymentPersistenceProvider(
             )
         }).associateBy { PaymentGroupingId(it.projectLumpSum!!.id.orderNr, it.fund.id) }
 
-        paymentEntities.forEach { (paymentId, entity) ->
+        paymentEntities.forEach { (paymentId, paymentEntity) ->
             val toCreate = paymentsToBeSaved[paymentId]!!
             paymentPartnerRepository.saveAll(
                 toCreate.partnerPayments.map {
                     it.toEntity(
-                        paymentEntity = entity,
+                        paymentEntity = paymentEntity,
                         partnerEntity = projectPartnerRepository.getById(it.partnerId),
                         partnerReportEntity = null
                     )
                 }
             )
-            paymentToEcExtensionRepository.save(toCreate.toEntity(entity))
+            paymentToEcExtensionRepository.save(toCreate.toEntity(paymentEntity))
         }
     }
 
@@ -415,7 +423,7 @@ class PaymentPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long> {
+    override fun getPaymentIdsAvailableForEcPayments(fundId: Long): Set<Long> {
         val specPayment = QPaymentEntity.paymentEntity
         val specPaymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
@@ -424,12 +432,6 @@ class PaymentPersistenceProvider(
             specPaymentToEcExtension.paymentApplicationToEc.isNull(),
         )
 
-        val allAnswersNo = specProjectContracting.notFlagged()
-        val scoBasisFilter = when (basis) {
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 -> allAnswersNo
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 -> allAnswersNo.not()
-        }
-        whereExpressions.add(scoBasisFilter)
 
         return jpaQueryFactory
             .select(specPayment.id)

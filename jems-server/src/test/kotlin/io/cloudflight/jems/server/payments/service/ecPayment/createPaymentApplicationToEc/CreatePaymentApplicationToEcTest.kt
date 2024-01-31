@@ -93,7 +93,7 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
             ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationsToEcToCreate)
         } returns paymentApplicationsToEcDetail
 
-        every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) } returns
+        every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L) } returns
                 setOf(19L, 20L, 21L)
         every { ecPaymentCorrectionLinkPersistence.getCorrectionIdsAvailableForEcPayments(fundId = fund.id) } returns
             setOf(22L, 23L)

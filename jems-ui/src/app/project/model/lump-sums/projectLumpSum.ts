@@ -11,6 +11,7 @@ export class ProjectLumpSum {
   paymentEnabledDate: Date;
   lastApprovedVersionBeforeReadyForPayment: string;
   installmentsAlreadyCreated: boolean;
+  linkedToEcPaymentId: number;
 
   constructor(
     orderNr: number,

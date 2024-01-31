@@ -52,8 +52,7 @@ class CreatePaymentApplicationToEc(
     }
 
     fun preSelectAllAvailablePayments(ecPaymentId: Long, fundId: Long) {
-        val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fundId, basis = basis)
+        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fundId)
         ecPaymentLinkPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPaymentId)
     }
 

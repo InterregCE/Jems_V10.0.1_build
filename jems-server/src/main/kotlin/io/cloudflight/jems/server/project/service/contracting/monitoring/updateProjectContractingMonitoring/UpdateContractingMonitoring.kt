@@ -3,8 +3,10 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment.PaymentApplicationToEcLinkPersistenceProvider
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
@@ -23,12 +25,14 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.projectContractingMonitoringChanged
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.DetailedSplit
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Service
@@ -43,6 +47,7 @@ class UpdateContractingMonitoring(
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
     private val paymentPersistence: PaymentPersistence,
+    private val paymentToEcPersistenceProvider: PaymentApplicationToEcLinkPersistenceProvider,
 ) : UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted
@@ -121,16 +126,13 @@ class UpdateContractingMonitoring(
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: MutableSet<Int>
     ) {
+       val lumpSumsPaymentLinksToEcApplication = paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId)
         lumpSums.forEach {
             val lumpSum = savedFastTrackLumpSums.first { o -> o.orderNr == it.orderNr }
             it.lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
             it.paymentEnabledDate = lumpSum.paymentEnabledDate
             if (lumpSum.readyForPayment != it.readyForPayment) {
-                if (contractingMonitoringPersistence
-                        .existsSavedInstallment(projectId, lumpSum.programmeLumpSumId, lumpSum.orderNr)
-                ) {
-                    throw UpdateContractingMonitoringFTLSException()
-                }
+                validateReadyFlagChangeIsAllowed(projectId, lumpSum, lumpSumsPaymentLinksToEcApplication)
                 if (it.readyForPayment) {
                     orderNrsToBeAdded.add(it.orderNr)
                     it.lastApprovedVersionBeforeReadyForPayment = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
@@ -143,7 +145,19 @@ class UpdateContractingMonitoring(
             }
         }
     }
+    private fun validateReadyFlagChangeIsAllowed(
+        projectId: Long,
+        lumpSum: ProjectLumpSum,
+        lumpSumsPaymentLinksToEcApplication: Map<Int, Long>
+    ) {
+        if (contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSum.programmeLumpSumId, lumpSum.orderNr)) {
+            throw UpdateContractingMonitoringFTLSHasInstallmentsException()
+        }
 
+        if (lumpSumsPaymentLinksToEcApplication[lumpSum.orderNr] != null) {
+            throw UpdateContractingMonitoringFTLSLinkedToEcPaymentException()
+        }
+    }
     private fun updatePaymentRelatedData(
         projectOfCorrectVersion: ProjectFull,
         lumpSumOrderNrsToBeAdded: MutableSet<Int>,
@@ -175,26 +189,25 @@ class UpdateContractingMonitoring(
             )
 
             val ftlsByFund = ftlsPaymentContributionMetadata.sumByFund()
-            val paymentsToUpdate = paymentPersistence // TODO decode what is this query doing ???
+            val paymentsToUpdate = paymentPersistence
                 .getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, lumpSumOrderNrsToBeAdded)
                 .groupBy { PaymentGroupingId(it.orderNr, it.programmeFundId) }
                 .mapValues { (id, partnerPayments) ->
+                    val totalEligible = ftlsByFund.getFundValue(id).value
+                        .add(ftlsByFund.getFundValue(id).partnerContribution)
                     PaymentFtlsToCreate(
                         partnerPayments.first().programmeLumpSumId,
-                        partnerPayments.map { o ->
-                            PaymentPartnerToCreate(
-                                o.partnerId,
-                                null,
-                                o.amountApprovedPerPartner
-                            )
-                        },
+                        partnerPayments.toPartnerPaymentsToCreate(),
                         partnerPayments.sumOf { it.amountApprovedPerPartner },
                         projectCustomIdentifier = projectOfCorrectVersion.customIdentifier,
                         projectAcronym = projectOfCorrectVersion.acronym,
-                        defaultPartnerContribution = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.partnerContribution,
-                        defaultOfWhichPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPublic,
-                        defaultOfWhichAutoPublic = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichAutoPublic,
-                        defaultOfWhichPrivate = ftlsByFund[id.orderNr]!![id.programmeFundId]!!.ofWhichPrivate,
+                        defaultTotalEligibleWithoutSco = totalEligible,
+                        defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                        defaultFundAmountPublicContribution = ftlsByFund.getFundValue(id).value,
+                        defaultPartnerContribution = ftlsByFund.getFundValue(id).partnerContribution,
+                        defaultOfWhichPublic = ftlsByFund.getFundValue(id).ofWhichPublic,
+                        defaultOfWhichAutoPublic = ftlsByFund.getFundValue(id).ofWhichAutoPublic,
+                        defaultOfWhichPrivate = ftlsByFund.getFundValue(id).ofWhichPrivate,
                     )
                 }
             paymentPersistence.saveFTLSPayments(projectId, paymentsToUpdate)
@@ -212,4 +225,13 @@ class UpdateContractingMonitoring(
         }
     }
 
+    private fun List<PaymentPerPartner>.toPartnerPaymentsToCreate() =
+        this.map { ppp ->
+            PaymentPartnerToCreate(ppp.partnerId, null, ppp.amountApprovedPerPartner)
+        }
+
+    private fun Map<Int, Map<Long?, DetailedSplit>>.getFundValue(id: PaymentGroupingId) =
+        this[id.orderNr]!![id.programmeFundId]!!
 }
+
+

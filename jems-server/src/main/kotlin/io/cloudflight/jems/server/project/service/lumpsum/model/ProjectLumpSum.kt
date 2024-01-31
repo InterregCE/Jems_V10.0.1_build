@@ -15,5 +15,6 @@ data class ProjectLumpSum (
     val comment: String? = null,
     var paymentEnabledDate: ZonedDateTime? = null,
     var lastApprovedVersionBeforeReadyForPayment: String? = null,
-    var installmentsAlreadyCreated: Boolean? = null
+    var installmentsAlreadyCreated: Boolean? = null,
+    var linkedToEcPaymentId: Long? = null
 )

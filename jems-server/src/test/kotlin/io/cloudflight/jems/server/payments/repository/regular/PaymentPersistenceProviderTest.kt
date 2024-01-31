@@ -399,6 +399,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
                         defaultOfWhichPublic = BigDecimal.valueOf(33),
                         defaultOfWhichAutoPublic = BigDecimal.valueOf(34),
                         defaultOfWhichPrivate = BigDecimal.valueOf(35),
+                        defaultTotalEligibleWithoutSco = BigDecimal.ZERO,
+                        defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                        defaultFundAmountPublicContribution = BigDecimal.ZERO,
                     ),
         )
 
@@ -530,7 +533,10 @@ class PaymentPersistenceProviderTest : UnitTest() {
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(150),
                 defaultOfWhichPrivate = BigDecimal.valueOf(40),
-                amountApprovedPerFund = BigDecimal(90)
+                amountApprovedPerFund = BigDecimal(90),
+                defaultTotalEligibleWithoutSco = BigDecimal.valueOf(210),
+                defaultFundAmountUnionContribution = BigDecimal.valueOf(99.15),
+                defaultFundAmountPublicContribution = BigDecimal.valueOf(75.00),
             ),
             4L to PaymentRegularToCreate(
                 projectId = projectId,
@@ -549,7 +555,10 @@ class PaymentPersistenceProviderTest : UnitTest() {
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(300),
                 defaultOfWhichPrivate = BigDecimal.valueOf(80),
-                amountApprovedPerFund = BigDecimal(180)
+                amountApprovedPerFund = BigDecimal(180),
+                defaultTotalEligibleWithoutSco = BigDecimal.ZERO,
+                defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                defaultFundAmountPublicContribution = BigDecimal.ZERO,
             )
         )
     }
@@ -569,7 +578,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every {
             jpaQueryFactory.select(
                 any(), any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any()
             )
         } returns query
         val slotFrom = slot<EntityPath<Any>>()
@@ -606,6 +616,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
         every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
         every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
+        every { tupleFtls.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(28)
+        every { tupleFtls.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(29)
+        every { tupleFtls.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(30)
 
         val tupleRegular = mockk<Tuple>()
         every { tupleRegular.get(0, PaymentEntity::class.java) } returns paymentRegularEntity()
@@ -623,6 +636,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
         every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
         every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
+        every { tupleRegular.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(38)
+        every { tupleRegular.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(39)
+        every { tupleRegular.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(49)
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 2
@@ -885,6 +901,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
             assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(40))
             assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(40))
+            assertThat(correctedTotalEligibleWithoutSco).isEqualTo( BigDecimal.valueOf(210))
+            assertThat(correctedFundAmountUnionContribution).isEqualTo(BigDecimal.valueOf(99.15))
+            assertThat(correctedFundAmountPublicContribution).isEqualTo(BigDecimal.valueOf(75.00))
         }
         with(slotExtensions[1]) {
             assertThat(paymentId).isEqualTo(0L)
@@ -896,6 +915,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
             assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(80))
             assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(80))
+            assertThat(correctedTotalEligibleWithoutSco).isEqualTo(BigDecimal.ZERO)
+            assertThat(correctedFundAmountUnionContribution).isEqualTo(BigDecimal.ZERO)
+            assertThat(correctedFundAmountPublicContribution).isEqualTo(BigDecimal.ZERO)
         }
 
     }

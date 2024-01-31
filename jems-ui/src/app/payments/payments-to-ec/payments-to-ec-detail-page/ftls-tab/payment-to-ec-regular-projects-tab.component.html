@@ -36,7 +36,7 @@
                                          [newSize]="pageStore.ftlsNewPageSize$"
                                          [paymentType]="PaymentTypeEnum.FTLS"
                                          (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
-                                         (submitPayment)="updateLinkedPayment($event.paymentId, $event.updateDto)"
+                                         (submitPayment)="updateLinkedPayment($event.ecId, $event.paymentId, $event.updateDto)"
         ></jems-payment-to-ec-select-table>
 
         <jems-alert [show]="data.paymentToEcLinking.content?.length === 0" [type]="Alert.INFO">

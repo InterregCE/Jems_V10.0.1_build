@@ -129,9 +129,12 @@ class FinalizeVerificationProjectReport(
     ) =
         certificateSplits.groupBy { it.fundId }
             .mapValues { (_, certificateFundSplits) ->
+
+                val amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund()
+                val partnerContribution = certificateFundSplits.sumOf { it.defaultPartnerContribution }
                 PaymentRegularToCreate(
                     projectId = projectReport.projectId,
-                    amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund(),
+                    amountApprovedPerFund = amountApprovedPerFund,
                     partnerPayments = certificateFundSplits.map {
                         PaymentPartnerToCreate(
                             partnerId = it.partnerId,
@@ -139,7 +142,11 @@ class FinalizeVerificationProjectReport(
                             amountApprovedPerPartner = it.value
                         )
                     },
-                    defaultPartnerContribution = certificateFundSplits.sumOf { it.defaultPartnerContribution },
+                    defaultTotalEligibleWithoutSco = amountApprovedPerFund.add(partnerContribution),
+                    defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                    defaultFundAmountPublicContribution = amountApprovedPerFund,
+
+                    defaultPartnerContribution = partnerContribution,
                     defaultOfWhichPublic = certificateFundSplits.sumOf { it.defaultOfWhichPublic },
                     defaultOfWhichAutoPublic = certificateFundSplits.sumOf { it.defaultOfWhichAutoPublic },
                     defaultOfWhichPrivate = certificateFundSplits.sumOf { it.defaultOfWhichPrivate },
