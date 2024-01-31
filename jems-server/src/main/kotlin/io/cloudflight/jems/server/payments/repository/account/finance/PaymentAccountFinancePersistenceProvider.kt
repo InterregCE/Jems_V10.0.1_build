@@ -73,7 +73,6 @@ class PaymentAccountFinancePersistenceProvider(
             .leftJoin(paymentExtension)
                 .on(paymentExtension.payment.eq(payment))
             .where(correctionExtension.paymentApplicationToEc.accountingYear.id.eq(accountingYearId)
-                .and(correctionExtension.paymentApplicationToEc.status.eq(PaymentEcStatus.Finished)) // only finished ec payments
                 .and(accountCorrection.programmeFund.id.eq(fundId))
                 .and(accountCorrectionFinance.deduction.isTrue()) // only negatives
                 .and(accountCorrectionFinance.clericalTechnicalMistake.isFalse()) // non clerical mistake

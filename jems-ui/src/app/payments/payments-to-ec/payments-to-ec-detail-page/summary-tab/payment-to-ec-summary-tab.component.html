@@ -118,10 +118,6 @@
         </mat-select>
 
     </mat-form-field>
-    <jems-context-info
-            infoText="{{'payments.to.ec.summary.accounting.year.info.bubble'| translate}}"
-            infoPosition="right">
-    </jems-context-info>
 
 </ng-template>
 
@@ -141,13 +137,17 @@
     </mat-form-field>
 
     <mat-form-field jemsFormFieldWidth="xx-large">
-        <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
-        <mat-select [formControl]="accountingYearId" required>
-            <mat-option *ngFor="let accountingYear of availableAccountingYearsForFund"
-                        [value]="accountingYear.id" role="option" [disabled]="!accountingYear.available">
-                        <span>{{ accountingYear | asAccountingYear }}</span>
-            </mat-option>
-        </mat-select>
+            <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
+            <mat-select [formControl]="accountingYearId" required>
+                <mat-option *ngFor="let accountingYear of availableAccountingYearsForFund"
+                            [value]="accountingYear.id" role="option" [disabled]="!accountingYear.available">
+                            <span>{{ accountingYear | asAccountingYear }}</span>
+                </mat-option>
+            </mat-select>
     </mat-form-field>
+    <jems-context-info class="mb-2"
+            infoText="{{'payments.to.ec.summary.accounting.year.info.bubble'| translate}}"
+            infoPosition="right">
+    </jems-context-info>
 
 </ng-template>

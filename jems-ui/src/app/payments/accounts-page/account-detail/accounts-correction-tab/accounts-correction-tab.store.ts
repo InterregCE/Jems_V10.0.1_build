@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
-  PagePaymentAccountCorrectionLinkingDTO, PaymentAccountAmountSummaryDTO,
+  PagePaymentAccountCorrectionLinkingDTO,
+  PaymentAccountAmountSummaryDTO,
   PaymentAccountCorrectionLinkingAPIService,
-  PaymentAccountCorrectionLinkingUpdateDTO,
-  PaymentAccountOverviewDTO
+  PaymentAccountCorrectionLinkingUpdateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';

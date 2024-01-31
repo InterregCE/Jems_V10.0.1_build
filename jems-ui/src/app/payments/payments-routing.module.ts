@@ -38,6 +38,9 @@ import {
 import {AccountDetailComponent} from './accounts-page/account-detail/account-detail.component';
 import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 import {
+  AccountsWithdrawnTabComponent
+} from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
+import {
   AccountsFinalizeTabComponent
 } from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
 import {
@@ -247,6 +250,10 @@ export const paymentsRoutes: Routes = [
               {
                 path: 'corrections',
                 component: AccountsCorrectionTabComponent,
+              },
+              {
+                path: 'withdrawn',
+                component: AccountsWithdrawnTabComponent,
               },
               {
                 path: 'finalize',
