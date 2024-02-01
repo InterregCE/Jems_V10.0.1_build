@@ -165,6 +165,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                 paymentToEcExtensionEntity.correctedPrivateContribution.sum(),
                 paymentToEcExtensionEntity.correctedFundAmountUnionContribution.sum(),
                 paymentToEcExtensionEntity.correctedFundAmountPublicContribution.sum(),
+                paymentToEcExtensionEntity.correctedTotalEligibleWithoutSco.sum()
             )
             .from(paymentToEcExtensionEntity)
             .leftJoin(paymentEntity)
@@ -187,7 +188,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     ofWhichPublic = it.get(4, BigDecimal::class.java)!!,
                     ofWhichAutoPublic = it.get(5, BigDecimal::class.java)!!,
                     unionContribution = it.get(7, BigDecimal::class.java)!!,
-                    correctedFundAmount = it.get(8, BigDecimal::class.java)!!
+                    correctedFundAmount = it.get(8, BigDecimal::class.java)!!,
+                    correctedTotalEligibleWithoutArt94Or95 = it.get(9, BigDecimal::class.java)!!,
                 )
             }.associateBy { it.priorityId }
     }
@@ -216,6 +218,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     .then(BigDecimal.ZERO).otherwise(paymentToEcCorrectionExtensionEntity.correctedUnionContribution).sum(),
                 CaseBuilder().`when`(specProjectContractingMonitoringEntity.notFlagged())
                     .then(paymentToEcCorrectionExtensionEntity.fundAmount).otherwise(paymentToEcCorrectionExtensionEntity.correctedFundAmount).sum(),
+                paymentToEcCorrectionExtensionEntity.correctedTotalEligibleWithoutArt94or95.sum()
             )
             .from(paymentToEcCorrectionExtensionEntity)
             .leftJoin(correctionEntity)
@@ -244,7 +247,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     ofWhichPublic = it.get(3, BigDecimal::class.java)!!,
                     ofWhichAutoPublic = it.get(4, BigDecimal::class.java)!!,
                     unionContribution = it.get(9, BigDecimal::class.java)!!,
-                    correctedFundAmount = it.get(10, BigDecimal::class.java)!!
+                    correctedFundAmount = it.get(10, BigDecimal::class.java)!!,
+                    correctedTotalEligibleWithoutArt94Or95 = it.get(11, BigDecimal::class.java)!!,
                 )
             }.associateBy { it.priorityId }
     }

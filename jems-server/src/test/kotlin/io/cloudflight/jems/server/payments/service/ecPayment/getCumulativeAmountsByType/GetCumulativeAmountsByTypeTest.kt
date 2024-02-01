@@ -121,7 +121,8 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
                     ofWhichPublic = BigDecimal(301),
                     ofWhichAutoPublic = BigDecimal(401),
                     correctedFundAmount = BigDecimal(405),
-                    unionContribution = BigDecimal(0)
+                    unionContribution = BigDecimal(0),
+                    correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(302)
                 ),
                 106L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 106L,
@@ -131,7 +132,8 @@ class GetCumulativeAmountsByTypeTest : UnitTest() {
                     ofWhichPublic = BigDecimal(302),
                     ofWhichAutoPublic = BigDecimal(402),
                     correctedFundAmount = BigDecimal(405),
-                    unionContribution = BigDecimal(0)
+                    unionContribution = BigDecimal(0),
+                    correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(304)
                 ),
             ),
         )
