@@ -31,6 +31,18 @@ export class ProjectsFlaggedArt9495TabComponent implements OnInit {
     data: PaymentToEcAmountSummaryDTO;
   }>;
 
+  ftlsData: {
+    ecId: number;
+    paymentToEcLinking: PagePaymentToEcLinkingDTO;
+    isEditable: boolean;
+  };
+
+  regularData: {
+    ecId: number;
+    paymentToEcLinking: PagePaymentToEcLinkingDTO;
+    isEditable: boolean;
+  };
+
   data$: Observable<{
     ecId: number;
     ftlsPaymentToEcLinking: PagePaymentToEcLinkingDTO;
@@ -49,7 +61,6 @@ export class ProjectsFlaggedArt9495TabComponent implements OnInit {
     public pageStore: ProjectsFlaggedArt9495TabStoreService,
     private detailPageStore: PaymentsToEcDetailPageStore,
     private confirmDialog: MatDialog,
-    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
       this.pageStore.ftlsPage$,
@@ -64,6 +75,10 @@ export class ProjectsFlaggedArt9495TabComponent implements OnInit {
         ecId,
         isEditable: userCanEdit && ecStatus === PaymentApplicationToEcDetailDTO.StatusEnum.Draft,
       })),
+      tap(data => {
+        this.ftlsData = {ecId: data.ecId, paymentToEcLinking: data.ftlsPaymentToEcLinking, isEditable: data.isEditable};
+        this.regularData = {ecId: data.ecId, paymentToEcLinking: data.regularPaymentToEcLinking, isEditable: data.isEditable};
+      })
     );
 
     this.cumulativeForCurrentTab$ =
@@ -72,22 +87,6 @@ export class ProjectsFlaggedArt9495TabComponent implements OnInit {
           data: cumulativeForCurrentTab
         })),
       );
-  }
-
-  prepareDataForFtls(data: { ecId: number; ftlsPaymentToEcLinking: PagePaymentToEcLinkingDTO; regularPaymentToEcLinking: PagePaymentToEcLinkingDTO; isEditable: boolean }) {
-    return {
-      ecId: data.ecId,
-      paymentToEcLinking: data.ftlsPaymentToEcLinking,
-      isEditable: data.isEditable
-    };
-  }
-
-  prepareDataForRegular(data: { ecId: number; ftlsPaymentToEcLinking: PagePaymentToEcLinkingDTO; regularPaymentToEcLinking: PagePaymentToEcLinkingDTO; isEditable: boolean }) {
-    return {
-      ecId: data.ecId,
-      paymentToEcLinking: data.regularPaymentToEcLinking,
-      isEditable: data.isEditable
-    };
   }
 
   ngOnInit(): void {

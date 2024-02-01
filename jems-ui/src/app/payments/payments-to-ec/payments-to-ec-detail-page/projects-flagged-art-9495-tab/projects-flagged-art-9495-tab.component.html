@@ -30,7 +30,7 @@
                 <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
             </jems-alert>
 
-            <jems-payment-to-ec-select-table [data]="prepareDataForFtls(data)"
+            <jems-payment-to-ec-select-table [data]="ftlsData"
                                              [newSort]="pageStore.ftlsNewSort$"
                                              [newIndex]="pageStore.ftlsNewPageIndex$"
                                              [newSize]="pageStore.ftlsNewPageSize$"
@@ -65,7 +65,7 @@
                 <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
             </jems-alert>
 
-            <jems-payment-to-ec-select-table [data]="prepareDataForRegular(data)"
+            <jems-payment-to-ec-select-table [data]="regularData"
                                              [newSort]="pageStore.ftlsNewSort$"
                                              [newIndex]="pageStore.ftlsNewPageIndex$"
                                              [newSize]="pageStore.ftlsNewPageSize$"
