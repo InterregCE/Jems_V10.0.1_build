@@ -22,7 +22,7 @@
                                    infoPosition="right">
                 </jems-context-info>
             </ng-container>
-            <ng-container *ngIf="data.currentVersionOfProject.projectStatus.status === STATUS.CONTRACTED">
+            <ng-container *ngIf="ProjectUtil.isContractedOrAnyStatusAfterContracted(data.currentVersionOfProject.projectStatus.status) && data.currentVersionOfProject.projectStatus.status !== STATUS.CLOSED">
                 <jems-pending-button class="mt-2"
                                      [disabled] = "!data.canSetToClosed"
                                      [pending]="actionPending"
