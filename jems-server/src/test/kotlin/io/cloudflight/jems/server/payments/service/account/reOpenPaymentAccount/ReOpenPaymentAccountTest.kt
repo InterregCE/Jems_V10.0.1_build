@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.account.paymentAccount
+import io.cloudflight.jems.server.payments.service.account.accountingYear
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -48,7 +49,7 @@ class ReOpenPaymentAccountTest: UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED,
-                description = "Account 13 Fund (11, OTHER) for accounting Year 4: 2024-01-29 - 2024-02-02 changed  status from FINISHED to DRAFT"
+                description = "Account 13 Fund (11, OTHER) for accounting Year 4: ${accountingYear.startDate} - ${accountingYear.endDate} changed  status from FINISHED to DRAFT"
             )
         )
     }

@@ -96,7 +96,8 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     ofWhichPublic = BigDecimal(301),
                     ofWhichAutoPublic = BigDecimal(401),
                     correctedFundAmount = BigDecimal(405),
-                    unionContribution = BigDecimal(0)
+                    unionContribution = BigDecimal(0),
+                    correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(302)
                 ),
                 26L to PaymentToEcAmountSummaryLineTmp(
                     priorityId = 26L,
@@ -106,7 +107,8 @@ class FinalizePaymentApplicationToEcTest : UnitTest() {
                     ofWhichPublic = BigDecimal(302),
                     ofWhichAutoPublic = BigDecimal(402),
                     correctedFundAmount = BigDecimal(405),
-                    unionContribution = BigDecimal(0)
+                    unionContribution = BigDecimal(0),
+                    correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(304)
                 )
             )
         )

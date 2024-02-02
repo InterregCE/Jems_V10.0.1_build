@@ -391,7 +391,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 ofWhichPublic = BigDecimal.valueOf(300),
                 ofWhichAutoPublic = BigDecimal.valueOf(400),
                 unionContribution = BigDecimal.valueOf(600),
-                correctedFundAmount = BigDecimal.valueOf(500)
+                correctedFundAmount = BigDecimal.valueOf(500),
+                correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(300)
             ),
         )
 
@@ -404,7 +405,8 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 ofWhichPublic = BigDecimal.valueOf(300),
                 ofWhichAutoPublic = BigDecimal.valueOf(400),
                 unionContribution = BigDecimal.valueOf(600),
-                correctedFundAmount = BigDecimal.valueOf(500)
+                correctedFundAmount = BigDecimal.valueOf(500),
+                correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(300)
             ),
         )
 
@@ -417,12 +419,13 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 ofWhichPublic = BigDecimal.valueOf(200),
                 ofWhichAutoPublic = BigDecimal.valueOf(300),
                 correctedFundAmount = BigDecimal.valueOf(900),
-                unionContribution = BigDecimal.valueOf(800)
+                unionContribution = BigDecimal.valueOf(800),
+                correctedTotalEligibleWithoutArt94Or95 = BigDecimal.valueOf(1901)
             ),
         )
 
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
         every { query.from(any()) } returns query
         val slotLeftJoin = mutableListOf<EntityPath<Any>>()
         every { query.leftJoin(capture(slotLeftJoin)) } returns query
@@ -441,6 +444,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { tuple.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(400)
         every { tuple.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(600)
         every { tuple.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(500)
+        every { tuple.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(300)
 
         val result = mockk<List<Tuple>>()
         every { result.size } returns 1
@@ -450,7 +454,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 //        Get corrections
 
         val correctionQuery = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns correctionQuery
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns correctionQuery
         every { correctionQuery.from(any()) } returns correctionQuery
         val slotCorrectionLeftJoin = mutableListOf<EntityPath<Any>>()
         every { correctionQuery.leftJoin(capture(slotCorrectionLeftJoin)) } returns correctionQuery
@@ -472,6 +476,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         every { correctionTuple.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(700)
         every { correctionTuple.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(800)
         every { correctionTuple.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(900)
+        every { correctionTuple.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(1901)
 
 
         val correctionResult = mockk<List<Tuple>>()

@@ -11,4 +11,5 @@ data class PaymentToEcAmountSummaryLineTmp(
     val ofWhichAutoPublic: BigDecimal,
     val unionContribution: BigDecimal,
     val correctedFundAmount: BigDecimal,
+    val correctedTotalEligibleWithoutArt94Or95: BigDecimal,
 )

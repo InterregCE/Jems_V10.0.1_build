@@ -56,7 +56,7 @@ fun Map<Long?, PaymentToEcAmountSummaryLineTmp>.computeTotals(type: PaymentToEcO
         if (type.isCorrectionOrArt94or95()) {
             PaymentToEcAmountSummaryLine(
                 priorityAxis = it.priorityAxis,
-                totalEligibleExpenditure = it.fundAmount.plus(it.partnerContribution).subtract(it.unionContribution),
+                totalEligibleExpenditure = it.correctedTotalEligibleWithoutArt94Or95,
                 totalUnionContribution = it.unionContribution,
                 totalPublicContribution = it.correctedFundAmount.plus(it.ofWhichPublic).plus(it.ofWhichAutoPublic)
             )
