@@ -4,12 +4,18 @@ declare global {
     namespace Cypress {
         interface Chainable {
             addPartnerReport(partnerId: number);
-            
+
             createCertifiedPartnerReport(partnerId: number, partnerReportDetails: any, controllerUserEmail): any;
 
             updatePartnerReportIdentification(partnerId: number, reportId: number, partnerReportIdentification);
 
+            updatePartnerReportWorkPlans(partnerId: number, reportId: number, partnerReportWorkPlans: any): any;
+
+            updatePartnerReportProcurements(partnerId: number, reportId: number, partnerReportProcurements: any): any;
+
             updatePartnerReportExpenditures(partnerId: number, reportId: number, partnerReportExpenditures);
+
+            updatePartnerReportContributions(partnerId: number, reportId: number, partnerReportContributions: any): any;
 
             runPreSubmissionPartnerReportCheck(partnerId: number, reportId: number);
 
@@ -41,22 +47,21 @@ Cypress.Commands.add('addPartnerReport', (partnerId: number) => {
 Cypress.Commands.add('createCertifiedPartnerReport', (partnerId: number, partnerReportDetails, controllerUserEmail) => {
     addPartnerReport(partnerId).then(partnerReportId => {
         cy.updatePartnerReportIdentification(partnerId, partnerReportId, partnerReportDetails.partnerReport.identification);
-        cy.updatePartnerReportExpenditures(partnerId, partnerReportId, partnerReportDetails.partnerReport.expenditures).then(expenditureList => {
-            expenditureList.forEach((expenditure, i) => {
-                partnerReportDetails.controlWork.expenditureVerification[i].id = expenditure.id;
-            });
+        cy.updatePartnerReportWorkPlans(partnerId, partnerReportId, partnerReportDetails.partnerReport.workPlans);
+        cy.updatePartnerReportProcurements(partnerId, partnerReportId, partnerReportDetails.partnerReport.procurements);
+        cy.updatePartnerReportExpenditures(partnerId, partnerReportId, partnerReportDetails.partnerReport.expenditures);
+        cy.updatePartnerReportContributions(partnerId, partnerReportId, partnerReportDetails.partnerReport.contributions);
+        cy.runPreSubmissionPartnerReportCheck(partnerId, partnerReportId);
+        cy.submitPartnerReport(partnerId, partnerReportId);
 
-            cy.runPreSubmissionPartnerReportCheck(partnerId, partnerReportId);
-            cy.submitPartnerReport(partnerId, partnerReportId);
-
-            loginByRequest(controllerUserEmail);
-            cy.startControlWork(partnerId, partnerReportId);
-            cy.updateControlReportIdentification(partnerId, partnerReportId, partnerReportDetails.controlWork.identification);
-            cy.updateControlReportExpenditureVerification(partnerId, partnerReportId, partnerReportDetails.controlWork.expenditureVerification);
-            cy.finalizeControl(partnerId, partnerReportId);
-            cy.get('@currentUser').then((currentUser: any) => {
-                loginByRequest(currentUser.name);
-            });
+        loginByRequest(controllerUserEmail);
+        cy.startControlWork(partnerId, partnerReportId);
+        cy.updateControlReportIdentification(partnerId, partnerReportId, partnerReportDetails.controlWork.identification);
+        cy.updateControlReportExpenditureVerification(partnerId, partnerReportId, partnerReportDetails.controlWork.expenditureVerification);
+        cy.updateControlReportOverview(partnerId, partnerReportId, partnerReportDetails.controlWork.overview);
+        cy.finalizeControl(partnerId, partnerReportId);
+        cy.get('@currentUser').then((currentUser: any) => {
+            loginByRequest(currentUser.name);
         });
         cy.wrap(partnerReportId);
     });
@@ -66,8 +71,70 @@ Cypress.Commands.add('updatePartnerReportIdentification', (partnerId: number, re
     updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
 });
 
+Cypress.Commands.add('updatePartnerReportWorkPlans', (partnerId: number, partnerReportId: number, partnerReportWorkPlans) => {
+    // match work package, activities, deliverables and output ids
+    getApplicationWorkPlans(partnerId, partnerReportId).then(workPlans => {
+        workPlans.forEach((workPlan, i) => {
+            partnerReportWorkPlans[i].id = workPlan.id;
+            workPlan.activities.forEach((activity, k) => {
+                partnerReportWorkPlans[i].activities[k].id = activity.id;
+                activity.deliverables.forEach((deliverable, j) => {
+                    partnerReportWorkPlans[i].activities[k].deliverables[j].id = deliverable.id;
+                });
+            });
+            workPlan.outputs.forEach((output, k) => {
+                partnerReportWorkPlans[i].outputs[k].id = output.id;
+            });
+        });
+
+        cy.request({
+            method: 'PUT',
+            url: `api/project/report/partner/workPlan/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
+            body: partnerReportWorkPlans
+        });
+    });
+});
+
+Cypress.Commands.add('updatePartnerReportProcurements', (partnerId: number, partnerReportId: number, partnerReportProcurements) => {
+    partnerReportProcurements.forEach(procurement => {
+        cy.request({
+            method: 'POST',
+            url: `api/project/report/partner/procurement/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
+            body: procurement.details
+        }).then((response: any) => {
+            const procurementId = response.body.id;
+            cy.wrap(procurementId).as(procurement.details.contractName);
+            cy.request({
+                method: 'PUT',
+                url: `api/project/report/partner/procurement/beneficialOwner/byPartnerId/${partnerId}/byReportId/${partnerReportId}/byProcurementId/${procurementId}`,
+                body: procurement.beneficialOwners
+            });
+            cy.request({
+                method: 'PUT',
+                url: `api/project/report/partner/procurement/subcontractor/byPartnerId/${partnerId}/byReportId/${partnerReportId}/byProcurementId/${procurementId}`,
+                body: procurement.subcontractors
+            });
+        });
+    });
+});
+
 Cypress.Commands.add('updatePartnerReportExpenditures', (partnerId: number, reportId: number, partnerReportExpenditures) => {
     updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+});
+
+Cypress.Commands.add('updatePartnerReportContributions', (partnerId: number, partnerReportId: number, partnerReportContributions) => {
+    // match contribution ids
+    getPartnerContributions(partnerId, partnerReportId).then(contributions => {
+        contributions.forEach((contribution, i) => {
+            partnerReportContributions.toBeUpdated[i].id = contribution.id
+        });
+
+        cy.request({
+            method: 'PUT',
+            url: `api/project/report/partner/contribution/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
+            body: partnerReportContributions
+        });
+    });
 });
 
 Cypress.Commands.add('runPreSubmissionPartnerReportCheck', (partnerId: number, reportId: number) => {
@@ -176,25 +243,27 @@ function updatePartnerReportIdentification(partnerId: number, reportId: number, 
     });
 }
 
-function updatePartnerReportExpenditures(partnerId: number, reportId: number, partnerReportExpenditures: any) {
-    assignUnitCostIds(partnerId, reportId, partnerReportExpenditures);
-    assignLumpSumIds(partnerId, reportId, partnerReportExpenditures);
+function updatePartnerReportExpenditures(partnerId: number, partnerReportId: number, partnerReportExpenditures: any) {
+    assignUnitCostIds(partnerId, partnerReportId, partnerReportExpenditures);
+    assignLumpSumIds(partnerId, partnerReportId, partnerReportExpenditures);
+    matchInvestmentIds(partnerId, partnerReportId, partnerReportExpenditures);
+    matchProcurementIds(partnerReportExpenditures);
 
     cy.request({
         method: 'PUT',
-        url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${reportId}`,
+        url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
         body: partnerReportExpenditures
     }).then(response => response.body);
 }
 
-function assignUnitCostIds(partnerId, reportId, partnerReportExpenditures) {
+function assignUnitCostIds(partnerId, partnerReportId, partnerReportExpenditures) {
     matchProjectProposedUnitCostReferences(partnerReportExpenditures);
-    cy.getUnitCostsByPartnerAndReportIds(partnerId, reportId).then(projectUnitCosts => {
-        partnerReportExpenditures.forEach((expenditure, index) => {
+    cy.getUnitCostsByPartnerAndReportIds(partnerId, partnerReportId).then(projectUnitCosts => {
+        partnerReportExpenditures.forEach(expenditure => {
             if (expenditure.cypressReference === 'shouldHaveUnitCost') {
                 projectUnitCosts.forEach(unitCost => {
                     if (unitCost.unitCostProgrammeId === expenditure.unitCostId) {
-                        partnerReportExpenditures[index].unitCostId = unitCost.id;
+                        expenditure.unitCostId = unitCost.id;
                     }
                 });
             }
@@ -223,6 +292,40 @@ function assignLumpSumIds(partnerId, reportId, partnerReportExpenditures) {
             }
         });
     });
+}
+
+function matchInvestmentIds(partnerId, partnerReportId, expenditures) {
+    cy.request(`api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${partnerReportId}/investments`).then(function(response) {
+        const investments = response.body;
+        expenditures.forEach(expenditure => {
+            if (expenditure.cypressReferenceInvestment) {
+                const matchedInvestment = investments.find(investment => investment.investmentId === this[expenditure.cypressReferenceInvestment]);
+                expenditure.investmentId = matchedInvestment.id;
+            }
+        });
+    });
+}
+
+function matchProcurementIds(procurements) {
+    cy.then(function() {
+        procurements.forEach((procurement, i) => {
+            if (procurement.cypressReferenceProcurement) {
+                procurements[i].contractId = this[procurement.cypressReferenceProcurement];
+            }
+        });
+    });
+}
+
+function getApplicationWorkPlans(partnerId, partnerReportId) {
+    return cy.request(`api/project/report/partner/workPlan/byPartnerId/${partnerId}/byReportId/${partnerReportId}`).then(response => {
+        return response.body;
+    })
+}
+
+function getPartnerContributions(partnerId, partnerReportId) {
+    return cy.request(`api/project/report/partner/contribution/byPartnerId/${partnerId}/byReportId/${partnerReportId}`).then(response => {
+        return response.body.contributions;
+    })
 }
 
 export {}
