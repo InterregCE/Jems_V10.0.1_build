@@ -13,7 +13,7 @@ class GetPaymentAccount(
 ) : GetPaymentAccountInteractor {
 
     @CanRetrievePaymentsAccount
-    @Transactional
+    @Transactional(readOnly = true)
     @ExceptionWrapper(GetPaymentAccountException::class)
     override fun getPaymentAccount(paymentAccountId: Long): PaymentAccount =
         paymentAccountPersistence.getByPaymentAccountId(paymentAccountId)

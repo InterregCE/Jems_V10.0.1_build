@@ -11,7 +11,6 @@ import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersist
 import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
 import io.cloudflight.jems.server.payments.service.account.corrections.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.account.paymentAccount
-import io.cloudflight.jems.server.payments.service.account.accountingYear
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -65,7 +64,7 @@ class FinalizePaymentAccountTest: UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED,
-                description = "Account 13 Fund (11, OTHER) for accounting Year 4: ${accountingYear.startDate} - ${accountingYear.endDate} changed  status from DRAFT to FINISHED"
+                description = "Account 13 Fund (11, OTHER) for accounting Year 4: 2024-01-29 - 2024-02-02 changed  status from DRAFT to FINISHED"
             )
         )
     }

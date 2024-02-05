@@ -53,20 +53,6 @@ fun PaymentApplicationToEcDetail.toEntity() = PaymentApplicationToEcEntity(
     technicalAssistanceEur = paymentApplicationToEcSummary.technicalAssistanceEur
 )
 
-fun PaymentToEcAmountSummaryLine.toEntity(
-    paymentToEc: PaymentApplicationToEcEntity,
-    programmePriority: ProgrammePriorityEntity,
-    type: PaymentToEcOverviewType
-) =
-    PaymentToEcPriorityAxisOverviewEntity(
-        paymentApplicationToEc = paymentToEc,
-        priorityAxis = programmePriority,
-        type = type,
-        totalEligibleExpenditure = totalEligibleExpenditure,
-        totalUnionContribution = totalUnionContribution,
-        totalPublicContribution = totalPublicContribution
-    )
-
 @Mapper
 interface PaymentApplicationToEcModelMapper {
     @Named("toFundModel")
