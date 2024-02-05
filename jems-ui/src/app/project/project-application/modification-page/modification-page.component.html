@@ -20,6 +20,10 @@
         </jems-alert>
 
         <div *ngIf="!isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)">
+            <jems-alert [show]="data.isProjectClosed"
+                        [type]="Alert.INFO">
+                <p>{{'project.application.form.section.modification.closed' | translate}}</p>
+            </jems-alert>
             <p>{{'project.application.form.section.modification.open.empty' | translate}}</p>
             <jems-pending-button *ngIf="data.canOpenModification"
                     class="mr-2 mt-2"

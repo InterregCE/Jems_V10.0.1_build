@@ -37,6 +37,7 @@ export class ModificationPageComponent {
     currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
     modificationDecisions: ProjectModificationDecisionDTO[];
     canOpenModification: boolean;
+    isProjectClosed: boolean;
     canHandBackModification: boolean;
     versions: ProjectVersionDTO[] | ProjectVersionDTO | undefined;
   }>;
@@ -64,6 +65,7 @@ export class ModificationPageComponent {
         currentVersionOfProjectStatus,
         modificationDecisions,
         canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
+        isProjectClosed: currentVersionOfProjectStatus === ProjectStatusDTO.StatusEnum.CLOSED,
         canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
         versions: this.isModificationOpenedOrSubmitted(currentVersionOfProjectStatus) ? versions.slice(1, versions.length - 1) : versions
       }))
