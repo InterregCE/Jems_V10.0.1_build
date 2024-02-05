@@ -1,15 +1,15 @@
 <jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data">
-  <div jemsMultiColumnRow class="back-button">
-    <a color="primary" class="mr-1" mat-icon-button
-       routerLink="../"
-       matTooltip="{{ 'payments.accounts.back.to.accounts' | translate }}"
-       aria-label="back">
-      <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
-    </a>
-    <h3 class="mb-4 put-icon-to-header-line">{{'payments.accounts.back.to.accounts' | translate}}</h3>
-  </div>
+    <div jemsMultiColumnRow class="back-button">
+        <a color="primary" class="mr-1" mat-icon-button
+           routerLink="../"
+           matTooltip="{{ 'payments.accounts.back.to.accounts' | translate }}"
+           aria-label="back">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </a>
+        <h3 class="mb-4 put-icon-to-header-line">{{'payments.accounts.back.to.accounts' | translate}}</h3>
+    </div>
 
-  <h3 class="payment-header">{{data?.accountDetail.fund.abbreviation | translateBySystemLanguage | async}} {{ data.accountDetail.accountingYear | asAccountingYear }}</h3>
+    <h3 class="payment-header">{{data?.accountDetail.fund.abbreviation | translateBySystemLanguage | async}} {{ data.accountDetail.accountingYear | asAccountingYear }}</h3>
 
     <div id="status" class="status-and-action-header">
         <span class="status-label">{{ 'common.status' | translate }}:</span>
@@ -33,20 +33,26 @@
         </span>
     </div>
 
-  <nav mat-tab-nav-bar *ngIf="data.userCanView">
-    <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')" (focusin)="pageStore.tabChanged$.next(true)">
+    <nav mat-tab-nav-bar *ngIf="data.userCanView">
+        <a [active]="activeTab('summary')" mat-tab-link (click)="routeTo('summary')" (focusin)="pageStore.tabChanged$.next(true)">
       <span jemsText maxWidth="230">
           {{'payments.accounts.summary.tab' | translate}}
       </span>
-    </a>
+        </a>
 
-    <a [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')" (focusin)="pageStore.tabChanged$.next(true)">
+        <a [active]="activeTab('corrections')" mat-tab-link (click)="routeTo('corrections')" (focusin)="pageStore.tabChanged$.next(true)">
+      <span jemsText maxWidth="230">
+          {{'payments.accounts.corrections.tab' | translate}}
+      </span>
+        </a>
+
+        <a [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')" (focusin)="pageStore.tabChanged$.next(true)">
       <span jemsText maxWidth="230">
           {{'payments.accounts.finalize.tab.title' | translate}}
       </span>
-    </a>
-  </nav>
-  <router-outlet></router-outlet>
+        </a>
+    </nav>
+    <router-outlet></router-outlet>
 
     <jems-alert *ngIf="reOpenError$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"

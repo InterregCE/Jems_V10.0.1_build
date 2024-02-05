@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorrection
 
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionTmp
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toSimpleModel
 import java.math.BigDecimal
 
 
-fun PaymentToEcCorrectionExtensionEntity.toModel() = EcPaymentCorrectionExtension(
+fun PaymentToEcCorrectionExtensionEntity.toModel() = PaymentToEcCorrectionExtension(
     correctionId = correction.id,
     ecPaymentId = paymentApplicationToEc?.id,
     ecPaymentStatus = paymentApplicationToEc?.status,

@@ -4,6 +4,8 @@ import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.payments.repository.regular.joinWithOr
@@ -35,6 +37,37 @@ fun PaymentToEcCorrectionSearchRequest.transformToWhereClause(
                 listOf(
                     qPaymentToEcCorrectionExtension.paymentApplicationToEc.isNull,
                     qPaymentToEcCorrectionExtension.paymentApplicationToEc.id.`in`(ids),
+                ).joinWithOr()
+            )
+    }
+
+    if (fundIds.isNotEmpty())
+        expressions.add(qCorrection.programmeFund.id.`in`(this.fundIds))
+
+    return expressions.joinWithAnd()
+}
+
+fun PaymentAccountCorrectionSearchRequest.transformToWhereClause(
+    qCorrection: QAuditControlCorrectionEntity,
+    qCorrectionProgrammeMeasure: QAuditControlCorrectionMeasureEntity,
+    qPaymentAccountCorrectionExtension: QPaymentAccountCorrectionExtensionEntity
+): BooleanExpression? {
+    val expressions = mutableListOf<BooleanExpression>()
+
+    expressions.add(qCorrection.status.eq(correctionStatus))
+    expressions.add(qCorrectionProgrammeMeasure.scenario.`in`(scenarios))
+
+    if (paymentAccountIds.isNotEmpty()) {
+        val ids = paymentAccountIds.filterNotNull()
+        if (ids.isEmpty())
+            expressions.add(qPaymentAccountCorrectionExtension.paymentAccount.isNull)
+        else if (paymentAccountIds.size == ids.size)
+            expressions.add(qPaymentAccountCorrectionExtension.paymentAccount.id.`in`(ids))
+        else
+            expressions.add(
+                listOf(
+                    qPaymentAccountCorrectionExtension.paymentAccount.isNull,
+                    qPaymentAccountCorrectionExtension.paymentAccount.id.`in`(ids),
                 ).joinWithOr()
             )
     }

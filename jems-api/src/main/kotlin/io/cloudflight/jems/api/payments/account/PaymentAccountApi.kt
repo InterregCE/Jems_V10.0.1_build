@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments
+package io.cloudflight.jems.api.payments.account
 
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountOverviewDTO

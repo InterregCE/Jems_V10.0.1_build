@@ -8,7 +8,7 @@ import {
 } from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {RoutingService} from '@common/services/routing.service';
@@ -34,8 +34,10 @@ export class AccountsPageStore {
               private permissionService: PermissionService,
               private router: RoutingService,
   ) {
-    this.accountId$ = this.router.routeParameterChanges('/app/payments/accounts/', 'id')
-      .pipe(map(Number));
+    this.accountId$ = this.router.routeParameterChanges('/app/payments/accounts/', 'id').pipe(
+        map(Number),
+        shareReplay(1)
+      );
     this.accountsByFund$ = this.accountsByFund();
     this.userCanView$ = this.userCanView();
     this.userCanEdit$ = this.userCanEdit();
@@ -54,7 +56,8 @@ export class AccountsPageStore {
       .pipe(
         switchMap(id => this.paymentAccountService.getPaymentAccount(Number(id))),
         tap(data => this.updatedAccountStatus$.next(data.status)),
-        tap(account => Log.info('Fetched the account detail:', this, account))
+        tap(account => Log.info('Fetched the account detail:', this, account)),
+        shareReplay(1),
       );
 
     return merge(initialAccountDetail$, this.savedAccountDetail$);

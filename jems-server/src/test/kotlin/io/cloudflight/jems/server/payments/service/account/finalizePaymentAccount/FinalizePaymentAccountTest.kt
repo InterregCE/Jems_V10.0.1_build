@@ -4,15 +4,20 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
+import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
+import io.cloudflight.jems.server.payments.service.account.corrections.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.account.paymentAccount
 import io.cloudflight.jems.server.payments.service.account.accountingYear
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -33,6 +38,9 @@ class FinalizePaymentAccountTest: UnitTest() {
     lateinit var ecPaymentPersistence: PaymentApplicationToEcPersistence
 
     @MockK
+    lateinit var correctionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -43,6 +51,9 @@ class FinalizePaymentAccountTest: UnitTest() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountDraft
         every{ ecPaymentPersistence.getDraftAccountingYearIds(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns emptyList()
         every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.FINISHED
+        val currentOverview = emptyMap<Long?, PaymentAccountAmountSummaryLineTmp>()
+        every { correctionLinkingPersistence.calculateOverviewForDraftPaymentAccount(PAYMENT_ACCOUNT_ID) } returns currentOverview
+        every { correctionLinkingPersistence.saveTotalsWhenFinishingPaymentAccount(PAYMENT_ACCOUNT_ID, currentOverview.sumUpProperColumns()) } just runs
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
@@ -50,6 +61,7 @@ class FinalizePaymentAccountTest: UnitTest() {
         assertThat(service.finalizePaymentAccount(PAYMENT_ACCOUNT_ID))
             .isEqualTo(PaymentAccountStatus.FINISHED)
 
+        val accountingYear = paymentAccount.accountingYear
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED,

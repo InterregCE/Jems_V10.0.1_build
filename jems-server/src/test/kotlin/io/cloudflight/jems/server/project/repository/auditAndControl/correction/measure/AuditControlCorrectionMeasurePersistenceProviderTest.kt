@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.repository.account.correction.PaymentAccountCorrectionExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorrection.EcPaymentCorrectionExtensionRepository
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
@@ -95,7 +96,9 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var programmeMeasureRepository: CorrectionProgrammeMeasureRepository
     @MockK
-    lateinit var correctionExtensionRepository: EcPaymentCorrectionExtensionRepository
+    lateinit var ecPaymentCorrectionExtensionRepository: EcPaymentCorrectionExtensionRepository
+    @MockK
+    lateinit var paymentAccountCorrectionExtensionRepository: PaymentAccountCorrectionExtensionRepository
 
     @InjectMockKs
     lateinit var persistenceProvider: AuditControlCorrectionMeasurePersistenceProvider
@@ -107,11 +110,9 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
 
     @Test
     fun getProgrammeMeasure() {
-//        val correctionExtensionEntity = mockk<PaymentToEcCorrectionExtensionEntity>()
-//        every {correctionExtensionEntity.correction.}
-
         every { programmeMeasureRepository.getByCorrectionId(CORRECTION_ID) } returns programmeMeasureEntity
-        every { correctionExtensionRepository.getByCorrectionId(CORRECTION_ID) } returns correctionExtensionEntity
+        every { ecPaymentCorrectionExtensionRepository.getAccountingYearByCorrectionId(CORRECTION_ID) } returns accountingYearEntity
+        every { paymentAccountCorrectionExtensionRepository.getAccountingYearByCorrectionId(CORRECTION_ID) } returns null
 
         assertThat(persistenceProvider.getProgrammeMeasure(CORRECTION_ID)).isEqualTo(programmeMeasureModel)
     }
@@ -124,6 +125,8 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
         )
 
         every { programmeMeasureRepository.getByCorrectionId(CORRECTION_ID) } returns programmeMeasureEntity
+        every { ecPaymentCorrectionExtensionRepository.getAccountingYearByCorrectionId(CORRECTION_ID) } returns null
+        every { paymentAccountCorrectionExtensionRepository.getAccountingYearByCorrectionId(CORRECTION_ID) } returns accountingYearEntity
 
         assertThat(persistenceProvider.updateProgrammeMeasure(CORRECTION_ID, programmeMeasureUpdate)).isEqualTo(
             programmeMeasureModel.copy(scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_3, comment = "newComment")

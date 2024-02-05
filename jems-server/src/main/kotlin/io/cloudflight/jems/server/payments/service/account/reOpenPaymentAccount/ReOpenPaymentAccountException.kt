@@ -13,7 +13,7 @@ class ReOpenPaymentAccountException(cause: Throwable) : ApplicationException (
     cause = cause
 )
 
-class PaymentAccountNotSubmittedException: ApplicationUnprocessableException(
+class PaymentAccountNotSubmittedException : ApplicationUnprocessableException(
     code = "$RE_OPEN_PAYMENT_ACCOUNT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$RE_OPEN_PAYMENT_ACCOUNT_ERROR_KEY_PREFIX.not.in.submitted.status"),
 )

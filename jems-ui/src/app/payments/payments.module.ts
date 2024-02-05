@@ -67,6 +67,13 @@ import {
 import {
   ProjectsFlaggedArt9495TabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component';
+import {
+  AccountsCorrectionSelectTableComponent
+} from './accounts-page/account-detail/accounts-correction-select-table/accounts-correction-select-table.component';
+import {
+  AccountsCorrectionCumulativeTableComponent
+} from './accounts-page/account-detail/accounts-correction-cumulative-table/accounts-correction-cumulative-table.component';
+import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 
 @NgModule({
   declarations: [
@@ -93,6 +100,9 @@ import {
     AccountsPageComponent,
     AccountDetailComponent,
     AccountsSummaryTabComponent,
+    AccountsCorrectionTabComponent,
+    AccountsCorrectionSelectTableComponent,
+    AccountsCorrectionCumulativeTableComponent,
     AccountsFinalizeTabComponent,
     ProjectsFlaggedArt9495TabComponent
   ],

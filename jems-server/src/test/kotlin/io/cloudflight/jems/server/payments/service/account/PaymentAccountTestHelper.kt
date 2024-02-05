@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.service.account
 
 import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
-import io.cloudflight.jems.server.payments.entity.PaymentAccountEntity
+import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverview
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewDetail

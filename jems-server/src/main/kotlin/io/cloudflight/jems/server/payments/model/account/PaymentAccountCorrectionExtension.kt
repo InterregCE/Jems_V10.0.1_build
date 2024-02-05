@@ -1,13 +1,12 @@
-package io.cloudflight.jems.server.payments.model.ec
+package io.cloudflight.jems.server.payments.model.account
 
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import java.math.BigDecimal
 
-data class EcPaymentCorrectionExtension(
+data class PaymentAccountCorrectionExtension(
     val correctionId: Long,
-    val ecPaymentId: Long?,
-    val ecPaymentStatus: PaymentEcStatus?,
+    val paymentAccountId: Long?,
+    val paymentAccountStatus: PaymentAccountStatus?,
     val auditControlStatus :AuditControlStatus,
     val comment: String?,
 
@@ -22,10 +21,4 @@ data class EcPaymentCorrectionExtension(
 
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
-
-    val totalEligibleWithoutArt94or95: BigDecimal,
-    val correctedTotalEligibleWithoutArt94or95: BigDecimal,
-
-    val unionContribution: BigDecimal,
-    val correctedUnionContribution: BigDecimal,
 )

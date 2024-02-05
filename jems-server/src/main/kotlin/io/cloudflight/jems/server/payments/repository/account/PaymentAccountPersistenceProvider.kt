@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.repository.account
 
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
-import io.cloudflight.jems.server.payments.entity.PaymentAccountEntity
+import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountUpdate
@@ -59,7 +59,9 @@ class PaymentAccountPersistenceProvider(
 
     @Transactional
     override fun reOpenPaymentAccount(paymentAccountId: Long): PaymentAccountStatus =
-        this.repository.getById(paymentAccountId).reOpen().status
+        this.repository.getById(paymentAccountId).apply {
+            status = PaymentAccountStatus.DRAFT
+        }.status
 
     private fun generateAccountsForProgrammeFund(
         programmeFundEntity: ProgrammeFundEntity,
@@ -91,11 +93,5 @@ class PaymentAccountPersistenceProvider(
         sfcNumber = newData.sfcNumber
         comment = newData.comment
     }
-
-    private fun PaymentAccountEntity.reOpen(): PaymentAccountEntity {
-        status = PaymentAccountStatus.DRAFT
-        return this
-    }
-
 
 }

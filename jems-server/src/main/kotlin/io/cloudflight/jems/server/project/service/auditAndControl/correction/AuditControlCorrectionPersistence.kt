@@ -1,12 +1,13 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction
 
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.tmpModel.AuditControlCorrectionLineTmp
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
@@ -45,6 +46,8 @@ interface AuditControlCorrectionPersistence {
     fun getCorrectionsForModificationDecisions(projectId: Long): Map<Long, List<AuditControlCorrection>>
 
     fun getCorrectionsLinkedToPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionLinking>
+
+    fun getCorrectionsLinkedToPaymentAccount(pageable: Pageable, filter: PaymentAccountCorrectionSearchRequest): Page<PaymentAccountCorrectionLinking>
 
     fun existsByProcurementId(procurementId: Long): Boolean
 }

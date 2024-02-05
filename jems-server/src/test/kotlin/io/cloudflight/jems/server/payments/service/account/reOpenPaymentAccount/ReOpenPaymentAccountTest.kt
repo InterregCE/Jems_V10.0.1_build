@@ -46,6 +46,7 @@ class ReOpenPaymentAccountTest: UnitTest() {
         assertThat(service.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID))
             .isEqualTo(PaymentAccountStatus.DRAFT)
 
+        val accountingYear = paymentAccountFinished.accountingYear
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED,
