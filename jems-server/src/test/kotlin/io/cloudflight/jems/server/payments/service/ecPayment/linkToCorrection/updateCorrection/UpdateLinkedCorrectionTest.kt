@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.updateCorrection
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
@@ -31,7 +31,7 @@ class UpdateLinkedCorrectionTest : UnitTest() {
             correctedUnionContribution = BigDecimal.valueOf(95),
         )
 
-        private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
+        private val paymentToEcExtensionModel = PaymentToEcCorrectionExtension(
             correctionId = CORRECTION_ID,
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,
@@ -57,7 +57,7 @@ class UpdateLinkedCorrectionTest : UnitTest() {
     lateinit var ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence
 
     @InjectMockKs
-    lateinit var service: UpdateLinkedCorrection
+    lateinit var service: UpdateLinkedCorrectionToEcPayment
 
     @Test
     fun updateLinkedCorrection() {

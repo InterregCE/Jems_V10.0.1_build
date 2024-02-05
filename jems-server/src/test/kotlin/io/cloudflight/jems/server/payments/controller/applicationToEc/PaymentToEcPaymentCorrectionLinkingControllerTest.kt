@@ -8,13 +8,13 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditContr
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureScenarioDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.deselectCorrection.DeselectCorrectionFromEcInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrectionsInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForEcPaymentInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.selectCorrection.SelectCorrectionToEcPaymentInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.updateCorrection.UpdateLinkedCorrectionInteractor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.updateCorrection.UpdateLinkedCorrectionToEcPaymentInteractor
 import io.cloudflight.jems.server.payments.service.toModel
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -126,7 +126,7 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
         )
 
 
-        private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
+        private val paymentToEcExtensionModel = PaymentToEcCorrectionExtension(
             correctionId = CORRECTION_ID,
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,
@@ -148,7 +148,7 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
     }
 
     @MockK
-    lateinit var getAvailableCorrections: GetAvailableClosedCorrectionsInteractor
+    lateinit var getAvailableCorrections: GetAvailableClosedCorrectionsForEcPaymentInteractor
 
     @MockK
     lateinit var selectCorrectionToEcPayment: SelectCorrectionToEcPaymentInteractor
@@ -157,7 +157,7 @@ class PaymentToEcPaymentCorrectionLinkingControllerTest: UnitTest() {
     lateinit var deselectCorrectionToEcPayment: DeselectCorrectionFromEcInteractor
 
     @MockK
-    lateinit var updateLinkedCorrection: UpdateLinkedCorrectionInteractor
+    lateinit var updateLinkedCorrection: UpdateLinkedCorrectionToEcPaymentInteractor
 
     @InjectMockKs
     lateinit var controller: CorrectionToEcPaymentLinkingController

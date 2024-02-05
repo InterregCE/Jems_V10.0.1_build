@@ -19,7 +19,6 @@ class UpdatePaymentAccount(
     @Transactional
     @ExceptionWrapper(UpdatePaymentAccountException::class)
     override fun updatePaymentAccount(paymentAccountId: Long, paymentAccount: PaymentAccountUpdate): PaymentAccount {
-
         validateLengthOfFields(paymentAccount)
         return paymentAccountPersistence.updatePaymentAccount(paymentAccountId, paymentAccount)
     }

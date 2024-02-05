@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.payments.applicationToEc
 
-import io.cloudflight.jems.api.payments.dto.EcPaymentCorrectionExtensionDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionExtensionDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionLinkingUpdateDTO
 import io.swagger.annotations.Api
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
 @Api("Correction linking API")
-interface CorrectionToEcPaymentLinking {
+interface CorrectionToEcPaymentLinkingApi {
 
     companion object {
         private const val ENDPOINT_API_PAYMENT_TO_EC_CORRECTION_LINKING = "${PaymentApplicationToEcApi.ENDPOINT_API_EC_PAYMENTS}/correctionLinking"
@@ -44,5 +44,5 @@ interface CorrectionToEcPaymentLinking {
     fun updateLinkedCorrection(
         @PathVariable correctionId: Long,
         @RequestBody  correctionLinkingUpdate: PaymentToEcCorrectionLinkingUpdateDTO,
-    ): EcPaymentCorrectionExtensionDTO
+    ): PaymentToEcCorrectionExtensionDTO
 }

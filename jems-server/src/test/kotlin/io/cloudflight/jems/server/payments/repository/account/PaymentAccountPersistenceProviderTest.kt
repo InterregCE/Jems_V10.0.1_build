@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.payments.repository.account
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
-import io.cloudflight.jems.server.payments.entity.PaymentAccountEntity
+import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.FUND_ID
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID

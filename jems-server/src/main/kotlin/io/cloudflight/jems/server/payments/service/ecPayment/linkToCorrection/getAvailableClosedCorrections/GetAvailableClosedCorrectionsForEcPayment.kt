@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
-class GetAvailableClosedCorrections(
+class GetAvailableClosedCorrectionsForEcPayment(
     private val ecPaymentPersistence: PaymentApplicationToEcPersistence,
     private val correctionPersistence: AuditControlCorrectionPersistence
-) : GetAvailableClosedCorrectionsInteractor {
+) : GetAvailableClosedCorrectionsForEcPaymentInteractor {
 
     @CanRetrievePaymentApplicationsToEc
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetAvailableClosedCorrectionsException::class)
+    @ExceptionWrapper(GetAvailableClosedCorrectionsForEcPaymentException::class)
     override fun getClosedCorrectionList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcCorrectionLinking> {
         val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecApplicationId)
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id

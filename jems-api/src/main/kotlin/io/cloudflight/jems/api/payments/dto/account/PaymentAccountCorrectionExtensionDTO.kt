@@ -1,11 +1,11 @@
-package io.cloudflight.jems.api.payments.dto
+package io.cloudflight.jems.api.payments.dto.account
 
 import java.math.BigDecimal
 
-data class EcPaymentCorrectionExtensionDTO(
+data class PaymentAccountCorrectionExtensionDTO(
     val correctionId: Long,
-    val ecPaymentId: Long?,
-    val ecPaymentStatus: PaymentEcStatusDTO?,
+    val paymentAccountId: Long?,
+    val paymentAccountStatus: PaymentAccountStatusDTO?,
     val comment: String?,
 
     val fundAmount: BigDecimal,
@@ -19,10 +19,4 @@ data class EcPaymentCorrectionExtensionDTO(
 
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
-
-    val totalEligibleWithoutArt94or95: BigDecimal,
-    val correctedTotalEligibleWithoutArt94or95: BigDecimal,
-
-    val unionContribution: BigDecimal,
-    val correctedUnionContribution: BigDecimal,
 )

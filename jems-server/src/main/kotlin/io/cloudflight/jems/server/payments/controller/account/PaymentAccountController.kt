@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.payments.controller.account
 
-import io.cloudflight.jems.api.payments.PaymentAccountApi
+import io.cloudflight.jems.api.payments.account.PaymentAccountApi
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountOverviewDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountStatusDTO
@@ -21,8 +21,7 @@ class PaymentAccountController(
     private val updatePaymentAccountInteractor: UpdatePaymentAccountInteractor,
     private val finalizePaymentAccountInteractor: FinalizePaymentAccountInteractor,
     private val reOpenPaymentAccountInteractor: ReOpenPaymentAccountInteractor,
-
-    ) : PaymentAccountApi {
+) : PaymentAccountApi {
 
     override fun listPaymentAccount(): List<PaymentAccountOverviewDTO> =
         listPaymentAccount.listPaymentAccount().toDto()

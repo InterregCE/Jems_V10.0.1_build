@@ -5,6 +5,12 @@ import com.querydsl.core.Tuple
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountEntity
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionTmp
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionTmp
@@ -83,9 +89,9 @@ class AuditControlCorrectionPersistenceProvider(
             )
             .from(correction)
             .leftJoin(correctionFinance)
-                .on(correctionFinance.correction.eq(correction))
+            .on(correctionFinance.correction.eq(correction))
             .leftJoin(correctionMeasure)
-                .on(correctionMeasure.correction.eq(correction))
+            .on(correctionMeasure.correction.eq(correction))
             .where(correction.auditControl.id.eq(auditControlId))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -244,6 +250,38 @@ class AuditControlCorrectionPersistenceProvider(
             )
     }
 
+    @Transactional(readOnly = true)
+    override fun getCorrectionsLinkedToPaymentToEc(
+        pageable: Pageable,
+        filter: PaymentToEcCorrectionSearchRequest
+    ): Page<PaymentToEcCorrectionLinking> =
+        fetchCorrectionsForPaymentToEc(
+            pageable,
+            filter
+        ).map {
+            it.toModel(
+                partnerContribution = it.publicContribution.add(it.autoPublicContribution).add(it.privateContribution)
+            )
+        }
+
+    @Transactional(readOnly = true)
+    override fun getCorrectionsLinkedToPaymentAccount(
+        pageable: Pageable,
+        filter: PaymentAccountCorrectionSearchRequest
+    ): Page<PaymentAccountCorrectionLinking> =
+        fetchCorrectionsForPaymentAccount(
+            pageable,
+            filter
+        ).map {
+            it.toModel(
+                partnerContribution = it.publicContribution.add(it.autoPublicContribution).add(it.privateContribution)
+            )
+        }
+
+    @Transactional(readOnly = true)
+    override fun existsByProcurementId(procurementId: Long): Boolean =
+        auditControlCorrectionRepository.existsByProcurementId(procurementId)
+
     private fun getSelectableCorrections(projectId: Long, impacts: Set<CorrectionImpactAction>): List<AuditControlCorrectionEntity> {
         val correctionSpec = QAuditControlCorrectionEntity.auditControlCorrectionEntity
 
@@ -262,7 +300,7 @@ class AuditControlCorrectionPersistenceProvider(
     }
 
 
-    private fun fetchCorrections(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionTmp> {
+    private fun fetchCorrectionsForPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionTmp> {
         val specCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
         val specProjectAuditControl = QAuditControlEntity.auditControlEntity
         val specProjectEntity = QProjectEntity.projectEntity
@@ -278,7 +316,6 @@ class AuditControlCorrectionPersistenceProvider(
         val results = jpaQueryFactory
             .select(
                 specCorrection,
-                specProjectAuditControl,
                 specProjectEntity.id,
                 specProjectEntity.acronym,
                 specProjectEntity.customIdentifier,
@@ -308,21 +345,21 @@ class AuditControlCorrectionPersistenceProvider(
             )
             .from(specCorrection)
             .leftJoin(specProjectAuditControl)
-                .on(specProjectAuditControl.id.eq(specCorrection.auditControl.id))
+            .on(specProjectAuditControl.id.eq(specCorrection.auditControl.id))
             .leftJoin(specProjectEntity)
-                .on(specProjectEntity.id.eq(specProjectAuditControl.project.id))
+            .on(specProjectEntity.id.eq(specProjectAuditControl.project.id))
             .leftJoin(specProgrammeSpecificObjectiveEntity)
-                .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
             .leftJoin(specProgrammePriorityEntity)
-                .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
             .leftJoin(specPaymentToEcCorrectionExtensionEntity)
-                .on(specPaymentToEcCorrectionExtensionEntity.correction.id.eq(specCorrection.id))
+            .on(specPaymentToEcCorrectionExtensionEntity.correction.id.eq(specCorrection.id))
             .join(specCorrectionProgrammeMeasure)
-                .on(specCorrectionProgrammeMeasure.correctionId.eq(specCorrection.id))
+            .on(specCorrectionProgrammeMeasure.correctionId.eq(specCorrection.id))
             .leftJoin(specProjectContractingMonitoringEntity)
-                .on(specProjectContractingMonitoringEntity.projectId.eq(specProjectEntity.id))
+            .on(specProjectContractingMonitoringEntity.projectId.eq(specProjectEntity.id))
             .leftJoin(specPaymentApplicationToEcEntity)
-                .on(specPaymentApplicationToEcEntity.id.eq(specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id))
+            .on(specPaymentApplicationToEcEntity.id.eq(specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc.id))
             .where(
                 filter.transformToWhereClause(specCorrection, specCorrectionProgrammeMeasure, specPaymentToEcCorrectionExtensionEntity)
             )
@@ -334,42 +371,91 @@ class AuditControlCorrectionPersistenceProvider(
         return results.toPaymentToEcCorrectionPageResult(pageable)
     }
 
-    @Transactional(readOnly = true)
-    override fun getCorrectionsLinkedToPaymentToEc(
-        pageable: Pageable,
-        filter: PaymentToEcCorrectionSearchRequest
-    ): Page<PaymentToEcCorrectionLinking> =
-        fetchCorrections(
-            pageable,
-            filter
-        ).map {
-            it.toModel(
-                partnerContribution = it.publicContribution.add(it.autoPublicContribution).add(it.privateContribution)
+    private fun fetchCorrectionsForPaymentAccount(pageable: Pageable, filter: PaymentAccountCorrectionSearchRequest): Page<PaymentAccountCorrectionTmp> {
+        val specCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
+        val specProjectAuditControl = QAuditControlEntity.auditControlEntity
+        val specProjectEntity = QProjectEntity.projectEntity
+        val specPaymentAccountCorrectionExtensionEntity = QPaymentAccountCorrectionExtensionEntity.paymentAccountCorrectionExtensionEntity
+        val specCorrectionProgrammeMeasure =
+            QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
+        val specProgrammePriorityEntity = QProgrammePriorityEntity.programmePriorityEntity
+        val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        val specProjectContractingMonitoringEntity = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        val specPaymentAccountEntity = QPaymentAccountEntity.paymentAccountEntity
+
+        val results = jpaQueryFactory
+            .select(
+                specCorrection,
+                specProjectEntity.id,
+                specProjectEntity.acronym,
+                specProjectEntity.customIdentifier,
+                specProgrammePriorityEntity.code,
+                specProjectAuditControl.controllingBody,
+                specProjectContractingMonitoringEntity.typologyProv94,
+                specProjectContractingMonitoringEntity.typologyProv95,
+
+                specPaymentAccountEntity.id,
+                specPaymentAccountEntity.status,
+                specPaymentAccountCorrectionExtensionEntity.fundAmount,
+                specPaymentAccountCorrectionExtensionEntity.correctedFundAmount,
+                specPaymentAccountCorrectionExtensionEntity.publicContribution,
+                specPaymentAccountCorrectionExtensionEntity.correctedPublicContribution,
+                specPaymentAccountCorrectionExtensionEntity.autoPublicContribution,
+                specPaymentAccountCorrectionExtensionEntity.correctedAutoPublicContribution,
+                specPaymentAccountCorrectionExtensionEntity.privateContribution,
+                specPaymentAccountCorrectionExtensionEntity.correctedPrivateContribution,
+                specPaymentAccountCorrectionExtensionEntity.comment,
+                specCorrectionProgrammeMeasure.scenario,
+
+                specPaymentAccountCorrectionExtensionEntity.finalScoBasis,
             )
-        }
+            .from(specCorrection)
+            .leftJoin(specProjectAuditControl)
+            .on(specProjectAuditControl.id.eq(specCorrection.auditControl.id))
+            .leftJoin(specProjectEntity)
+            .on(specProjectEntity.id.eq(specProjectAuditControl.project.id))
+            .leftJoin(specProgrammeSpecificObjectiveEntity)
+            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
+            .leftJoin(specProgrammePriorityEntity)
+            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
+            .leftJoin(specPaymentAccountCorrectionExtensionEntity)
+            .on(specPaymentAccountCorrectionExtensionEntity.correction.id.eq(specCorrection.id))
+            .join(specCorrectionProgrammeMeasure)
+            .on(specCorrectionProgrammeMeasure.correctionId.eq(specCorrection.id))
+            .leftJoin(specProjectContractingMonitoringEntity)
+            .on(specProjectContractingMonitoringEntity.projectId.eq(specProjectEntity.id))
+            .leftJoin(specPaymentAccountEntity)
+            .on(specPaymentAccountEntity.id.eq(specPaymentAccountCorrectionExtensionEntity.paymentAccount.id))
+            .where(
+                filter.transformToWhereClause(specCorrection, specCorrectionProgrammeMeasure, specPaymentAccountCorrectionExtensionEntity)
+            )
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
+            .fetchResults()
 
-    @Transactional(readOnly = true)
-    override fun existsByProcurementId(procurementId: Long): Boolean =
-        auditControlCorrectionRepository.existsByProcurementId(procurementId)
+        return results.toPaymentAccountCorrectionPageResult(pageable)
+    }
 
-    private fun QueryResults<Tuple>.toPaymentToEcCorrectionPageResult(pageable: Pageable) = PageImpl(
+    private fun QueryResults<Tuple>.toPaymentAccountCorrectionPageResult(pageable: Pageable) = PageImpl(
         results.map { it: Tuple ->
-            PaymentToEcCorrectionTmp(
+            PaymentAccountCorrectionTmp(
                 correctionEntity = it.get(0, AuditControlCorrectionEntity::class.java)!!,
-                projectId = it.get(2, Long::class.java)!!,
-                projectAcronym = it.get(3, String::class.java)!!,
-                projectCustomIdentifier = it.get(4, String::class.java)!!,
-                priorityAxis = it.get(5, String::class.java),
-                controllingBody = it.get(6, ControllingBody::class.java)!!,
+                projectId = it.get(1, Long::class.java)!!,
+                projectAcronym = it.get(2, String::class.java)!!,
+                projectCustomIdentifier = it.get(3, String::class.java)!!,
+                priorityAxis = it.get(4, String::class.java),
+                controllingBody = it.get(5, ControllingBody::class.java)!!,
                 isProjectFlagged94Or95 = checkProjectFallsUnderArticle94Or95(
+                    it.get(6, ContractingMonitoringExtendedOption::class.java),
                     it.get(7, ContractingMonitoringExtendedOption::class.java),
-                    it.get(8, ContractingMonitoringExtendedOption::class.java),
-                    it.get(10, PaymentEcStatus::class.java),
+                    it.get(9, PaymentAccountStatus::class.java),
                     it.get(20, PaymentSearchRequestScoBasis::class.java),
                 ),
-                paymentToEcId = it.get(9, Long::class.java),
+                paymentAccountId = it.get(8, Long::class.java),
 
-                fundAmount = it.get(11, BigDecimal::class.java)!!,
+                fundAmount = it.get(10, BigDecimal::class.java)!!,
+                correctedFundAmount = it.get(11, BigDecimal::class.java)!!,
                 publicContribution = it.get(12, BigDecimal::class.java)!!,
                 correctedPublicContribution = it.get(13, BigDecimal::class.java)!!,
                 autoPublicContribution = it.get(14, BigDecimal::class.java)!!,
@@ -378,12 +464,44 @@ class AuditControlCorrectionPersistenceProvider(
                 correctedPrivateContribution = it.get(17, BigDecimal::class.java)!!,
                 comment = it.get(18, String::class.java),
                 scenario = it.get(19, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
+            )
+        },
+        pageable,
+        total,
+    )
 
-                correctedFundAmount = it.get(21, BigDecimal::class.java)!!,
-                totalEligibleWithoutArt94or95 = it.get(22, BigDecimal::class.java)!!,
-                correctedTotalEligibleWithoutArt94or95 = it.get(23, BigDecimal::class.java)!!,
-                unionContribution = it.get(24, BigDecimal::class.java)!!,
-                correctedUnionContribution = it.get(25, BigDecimal::class.java)!!,
+    private fun QueryResults<Tuple>.toPaymentToEcCorrectionPageResult(pageable: Pageable) = PageImpl(
+        results.map { it: Tuple ->
+            PaymentToEcCorrectionTmp(
+                correctionEntity = it.get(0, AuditControlCorrectionEntity::class.java)!!,
+                projectId = it.get(1, Long::class.java)!!,
+                projectAcronym = it.get(2, String::class.java)!!,
+                projectCustomIdentifier = it.get(3, String::class.java)!!,
+                priorityAxis = it.get(4, String::class.java),
+                controllingBody = it.get(5, ControllingBody::class.java)!!,
+                isProjectFlagged94Or95 = checkProjectFallsUnderArticle94Or95(
+                    it.get(6, ContractingMonitoringExtendedOption::class.java),
+                    it.get(7, ContractingMonitoringExtendedOption::class.java),
+                    it.get(9, PaymentEcStatus::class.java),
+                    it.get(19, PaymentSearchRequestScoBasis::class.java),
+                ),
+                paymentToEcId = it.get(8, Long::class.java),
+
+                fundAmount = it.get(10, BigDecimal::class.java)!!,
+                publicContribution = it.get(11, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(12, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(13, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(14, BigDecimal::class.java)!!,
+                privateContribution = it.get(15, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(16, BigDecimal::class.java)!!,
+                comment = it.get(17, String::class.java),
+                scenario = it.get(18, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
+
+                correctedFundAmount = it.get(20, BigDecimal::class.java)!!,
+                totalEligibleWithoutArt94or95 = it.get(21, BigDecimal::class.java)!!,
+                correctedTotalEligibleWithoutArt94or95 = it.get(22, BigDecimal::class.java)!!,
+                unionContribution = it.get(23, BigDecimal::class.java)!!,
+                correctedUnionContribution = it.get(24, BigDecimal::class.java)!!,
             )
         },
         pageable,
@@ -396,7 +514,20 @@ class AuditControlCorrectionPersistenceProvider(
         paymentToEcStatus: PaymentEcStatus?,
         finalScoFlag: PaymentSearchRequestScoBasis?
     ): Boolean {
-        if (paymentToEcStatus == PaymentEcStatus.Finished)
+        if (paymentToEcStatus?.isFinished() == true)
+            return finalScoFlag == PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+
+        return (flaggedArticle94 ?: ContractingMonitoringExtendedOption.No).isYes()
+                || (flaggedArticle95 ?: ContractingMonitoringExtendedOption.No).isYes()
+    }
+
+    private fun checkProjectFallsUnderArticle94Or95(
+        flaggedArticle94: ContractingMonitoringExtendedOption?,
+        flaggedArticle95: ContractingMonitoringExtendedOption?,
+        paymentAccountStatus: PaymentAccountStatus?,
+        finalScoFlag: PaymentSearchRequestScoBasis?
+    ): Boolean {
+        if (paymentAccountStatus?.isFinished() == true)
             return finalScoFlag == PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
 
         return (flaggedArticle94 ?: ContractingMonitoringExtendedOption.No).isYes()

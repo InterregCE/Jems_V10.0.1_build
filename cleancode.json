@@ -107,6 +107,18 @@
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {
+      "hash": "a69129d6",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "ab244900",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
+      "hash": "ac7bdccd",
+      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+    },
+    {
       "hash": "4f9636cd",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     }

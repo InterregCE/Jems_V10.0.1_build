@@ -5,8 +5,6 @@ import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Expression
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
-import com.querydsl.core.types.dsl.EnumPath
-import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
@@ -15,7 +13,7 @@ import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
@@ -173,7 +171,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
                 correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(5.00)
             )
 
-        private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
+        private val paymentToEcExtensionModel = PaymentToEcCorrectionExtension(
             correctionId = CORRECTION_ID,
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,

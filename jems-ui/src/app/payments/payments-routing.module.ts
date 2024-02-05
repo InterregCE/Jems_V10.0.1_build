@@ -36,12 +36,13 @@ import {
   AccountsSummaryTabComponent
 } from './accounts-page/account-detail/accounts-summary-tab/accounts-summary-tab.component';
 import {AccountDetailComponent} from './accounts-page/account-detail/account-detail.component';
+import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 import {
   AccountsFinalizeTabComponent
 } from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
 import {
   ProjectsFlaggedArt9495TabComponent
-} from "./payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component";
+} from './payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -242,6 +243,10 @@ export const paymentsRoutes: Routes = [
               {
                 path: 'summary',
                 component: AccountsSummaryTabComponent,
+              },
+              {
+                path: 'corrections',
+                component: AccountsCorrectionTabComponent,
               },
               {
                 path: 'finalize',

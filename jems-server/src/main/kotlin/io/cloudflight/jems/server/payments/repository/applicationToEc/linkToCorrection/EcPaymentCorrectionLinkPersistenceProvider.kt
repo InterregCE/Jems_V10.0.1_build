@@ -6,12 +6,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
-import io.cloudflight.jems.server.payments.repository.regular.notFlagged
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
@@ -31,7 +30,7 @@ class EcPaymentCorrectionLinkPersistenceProvider(
 ) : EcPaymentCorrectionLinkPersistence {
 
     @Transactional(readOnly = true)
-    override fun getCorrectionExtension(correctionId: Long): EcPaymentCorrectionExtension =
+    override fun getCorrectionExtension(correctionId: Long): PaymentToEcCorrectionExtension =
         ecPaymentCorrectionExtensionRepository.getById(correctionId).toModel()
 
     @Transactional
@@ -94,7 +93,7 @@ class EcPaymentCorrectionLinkPersistenceProvider(
     override fun updateCorrectionLinkedToEcPaymentCorrectedAmounts(
         correctionId: Long,
         ecPaymentCorrectionLinkingUpdate: PaymentToEcCorrectionLinkingUpdate
-    ): EcPaymentCorrectionExtension =
+    ): PaymentToEcCorrectionExtension =
         ecPaymentCorrectionExtensionRepository.getById(correctionId).apply {
             this.correctedAutoPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedPublicContribution
@@ -163,7 +162,8 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             .leftJoin(paymentToEcCorrectionExtension)
             .on(specCorrection.id.eq(paymentToEcCorrectionExtension.correctionId))
             .where(whereExpressions.joinWithAnd())
-            .fetch().toSet()
+            .fetch()
+            .toSet()
     }
 
 }

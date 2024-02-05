@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionTmp
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
@@ -11,6 +13,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import org.springframework.data.domain.Page
+import java.math.BigDecimal
 
 fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     id = id,
@@ -87,4 +90,28 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     declaredAmountAfterSubmission = declaredAmountAfterSubmission,
     comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
+)
+
+fun PaymentAccountCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentAccountCorrectionLinking(
+    correction = correctionEntity.toSimpleModel(),
+
+    projectId = projectId,
+    projectAcronym = projectAcronym,
+    projectCustomIdentifier = projectCustomIdentifier,
+    priorityAxis = priorityAxis ?: "N/A",
+    controllingBody = controllingBody,
+    scenario = scenario,
+    projectFlagged94Or95 = isProjectFlagged94Or95,
+    paymentAccountId = paymentAccountId,
+
+    fundAmount = fundAmount,
+    correctedFundAmount = correctedFundAmount,
+    partnerContribution = partnerContribution,
+    publicContribution = publicContribution,
+    correctedPublicContribution = correctedPublicContribution,
+    autoPublicContribution = autoPublicContribution,
+    correctedAutoPublicContribution = correctedAutoPublicContribution,
+    privateContribution = privateContribution,
+    correctedPrivateContribution = correctedPrivateContribution,
+    comment = comment,
 )

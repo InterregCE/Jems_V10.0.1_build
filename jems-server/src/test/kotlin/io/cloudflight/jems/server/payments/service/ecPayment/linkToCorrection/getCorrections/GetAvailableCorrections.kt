@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrections
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForEcPayment
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -115,7 +115,7 @@ class GetAvailableCorrections : UnitTest() {
     lateinit var correctionPersistence: AuditControlCorrectionPersistence
 
     @InjectMockKs
-    lateinit var service: GetAvailableClosedCorrections
+    lateinit var service: GetAvailableClosedCorrectionsForEcPayment
 
     @Test
     fun `getCorrectionList - payment draft`() {
