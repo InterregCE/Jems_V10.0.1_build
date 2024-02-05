@@ -73,6 +73,20 @@
                                             </jems-multi-language-form-field>
                                         </jems-multi-language-container>
 
+                                        <div jemsFormFieldWidth="full" class="attachment-row mb-4">
+                                            <div class="attachment-text"
+                                                 [innerText]="'project.application.project.report.tab.work.plan.activity.attachment' | translate"></div>
+                                            <jems-partner-actions-cell [formControlName]="constants.ACTIVITY_FILE.name"
+                                                                       [isReportEditable]="data.isReportEditable"
+                                                                       [isUploadDone]="isUploadDone"
+                                                                       (download)="onDownloadFile($event)"
+                                                                       (upload)="onUploadActivity($event, activityItem(activity, constants.ACTIVITY_ID.name),
+                                                                        activityIndex, workPackageIndex, workPackageItem(workPackage, constants.WORK_PACKAGE_ID.name))"
+                                                                       (delete)="onDeleteActivity($event, activityIndex, workPackageIndex)">
+                                            </jems-partner-actions-cell>
+                                        </div>
+
+
                                         <!-- DELIVERABLES -->
                                         <ng-container>
                                             <div class="mb-2" *ngIf="activityItem(activity, constants.DELIVERABLES.name)?.length">
