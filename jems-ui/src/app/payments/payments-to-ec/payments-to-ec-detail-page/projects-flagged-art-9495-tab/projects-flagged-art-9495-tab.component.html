@@ -1,13 +1,15 @@
 <div>
-    <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
-    <div>
-        <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.1' | translate }}</div>
-        <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.2' | translate }}</div>
-        <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.3' | translate }}</div>
+    <div jemsFormLayout>
+        <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
+        <div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.1' | translate }}</div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.2' | translate }}</div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.3' | translate }}</div>
+        </div>
+        <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
+            <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
+        </ng-container>
     </div>
-    <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
-        <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
-    </ng-container>
 
     <ng-container *ngIf="data$ | async as data">
         <ng-container>
