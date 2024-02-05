@@ -1,4 +1,12 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   PagePaymentToEcLinkingDTO, PaymentDetailDTO,
   PaymentToEcLinkingDTO,
@@ -22,7 +30,7 @@ import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
   styleUrls: ['./payment-to-ec-select-table.component.scss'],
   providers: [FormService]
 })
-export class PaymentToEcSelectTableComponent implements OnInit {
+export class PaymentToEcSelectTableComponent implements OnChanges {
 
   @Input()
   data: {
@@ -83,12 +91,12 @@ export class PaymentToEcSelectTableComponent implements OnInit {
     this.formService.init(this.form);
   }
 
-  ngOnInit(): void {
-    this.initializeForm(this.data.paymentToEcLinking.content);
+  ngOnChanges(): void {
     const flagFilteredColumns = this.flaggedArt9495 ? this.displayedColumnsAll
       : this.displayedColumnsAll.filter(col => !['totalEligibleWithoutScoArt9495', 'unionContribution'].includes(col));
     this.displayedColumns = this.data.isEditable ? flagFilteredColumns
       : flagFilteredColumns.filter(col => !['select', 'correction'].includes(col));
+    this.initializeForm(this.data.paymentToEcLinking.content);
   }
 
   get paymentToEcLinking(): FormArray {
