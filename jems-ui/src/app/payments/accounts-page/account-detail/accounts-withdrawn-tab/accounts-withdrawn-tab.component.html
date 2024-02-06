@@ -31,7 +31,7 @@
                               class="respect-line-break">{{ 'payments.accounts.withdrawn.table.column.withdrawals' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let line" class="text-right">
-                        {{ line.total }}
+                        {{ line.total | asMoney}}
                     </mat-cell>
                 </ng-container>
 
@@ -41,7 +41,7 @@
                               maxLines="2">{{ 'payments.accounts.withdrawn.table.column.public.contribution' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let line" class="text-right">
-                        {{ line.public }}
+                        {{ line.public | asMoney}}
                     </mat-cell>
                 </ng-container>
 

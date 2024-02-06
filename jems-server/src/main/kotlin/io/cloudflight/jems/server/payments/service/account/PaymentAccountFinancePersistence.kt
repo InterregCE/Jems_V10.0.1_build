@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.Corre
 
 interface PaymentAccountFinancePersistence {
 
-    fun getCorrectionsOnlyDeductionsAndNonClericalMistakeAndOnlyFinished(
+    fun getCorrectionsOnlyDeductionsAndNonClericalMistake(
         fundId: Long,
         accountingYearId: Long,
     ): Iterable<CorrectionAmountWithdrawn>
