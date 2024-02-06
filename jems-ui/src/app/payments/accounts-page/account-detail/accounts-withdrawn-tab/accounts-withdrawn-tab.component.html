@@ -1,0 +1,54 @@
+<ng-container *ngIf="data$ | async as data">
+    <mat-card jemsFormLayout>
+
+        <h3>{{ 'payments.accounts.withdrawn.tab.header' | translate: {accountingYear: data.accountDetail.accountingYear | asAccountingYear} }}</h3>
+        <p>{{ 'payments.accounts.withdrawn.tab.description.1' | translate }}</p>
+        <p>{{ 'payments.accounts.withdrawn.tab.description.2' | translate }}</p>
+        <p>{{ 'payments.accounts.withdrawn.tab.description.3' | translate }}</p>
+
+        <div>
+            <mat-table jemsNoWidthLimit [dataSource]="dataSource" class="mt-3">
+                <ng-container matColumnDef="priority" sticky>
+                    <mat-header-cell *matHeaderCellDef class="border-cell-right">
+                        <span jemsText
+                              maxLines="2">{{ 'payments.accounts.withdrawn.table.column.priority' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let line;" class="border-cell-right">
+                        <span *ngIf="line.subComponentIndex === 0" class="priority-axis">
+                                                        {{ line.priorityAxis }}
+                        </span>
+                        <span *ngIf="line.subComponentIndex"
+                              [class.sub-row-indent]="line.subComponentIndex === 1"
+                              [class.sub-row-indent-lvl-2]="line.subComponentIndex === 2 || line.subComponentIndex === 3">
+                            {{ line.translation | translate: {accountingYear: line.year | asAccountingYear} }}
+                        </span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="withdrawals">
+                    <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText maxLines="2"
+                              class="respect-line-break">{{ 'payments.accounts.withdrawn.table.column.withdrawals' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let line" class="text-right">
+                        {{ line.total }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="correspondingPublicContribution">
+                    <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText
+                              maxLines="2">{{ 'payments.accounts.withdrawn.table.column.public.contribution' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let line" class="text-right">
+                        {{ line.public }}
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+            </mat-table>
+        </div>
+    </mat-card>
+</ng-container>

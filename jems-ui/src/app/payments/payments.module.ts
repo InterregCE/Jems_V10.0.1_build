@@ -74,6 +74,9 @@ import {
   AccountsCorrectionCumulativeTableComponent
 } from './accounts-page/account-detail/accounts-correction-cumulative-table/accounts-correction-cumulative-table.component';
 import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
+import {
+  AccountsWithdrawnTabComponent
+} from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +106,8 @@ import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/acc
     AccountsCorrectionTabComponent,
     AccountsCorrectionSelectTableComponent,
     AccountsCorrectionCumulativeTableComponent,
+    AccountsFinalizeTabComponent,
+    AccountsWithdrawnTabComponent,
     AccountsFinalizeTabComponent,
     ProjectsFlaggedArt9495TabComponent
   ],
