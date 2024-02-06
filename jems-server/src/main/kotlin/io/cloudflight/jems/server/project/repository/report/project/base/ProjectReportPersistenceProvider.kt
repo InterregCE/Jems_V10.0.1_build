@@ -43,7 +43,7 @@ class ProjectReportPersistenceProvider(
 
     companion object {
         private fun filterProjects(projectIds: Set<Long>, specReport: QProjectReportEntity) =
-            if (projectIds.isEmpty()) null else specReport.projectId.`in`(projectIds)
+            specReport.projectId.`in`(projectIds)
         private fun filterStatuses(statuses: Collection<ProjectReportStatus>, specReport: QProjectReportEntity) =
             if (statuses.isEmpty()) null else specReport.status.`in`(statuses)
     }
