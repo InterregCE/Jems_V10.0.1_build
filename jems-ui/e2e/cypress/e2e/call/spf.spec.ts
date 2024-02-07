@@ -1,5 +1,8 @@
 import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
+import call from "@fixtures/api/call/1.step.call.json";
+import spfCall from '../../fixtures/api/call/spf.1.step.call.json';
+import application from "@fixtures/api/application/application.json";
 
 context('SPF Call Management tests', () => {
 
@@ -19,7 +22,7 @@ context('SPF Call Management tests', () => {
     cy.contains('mat-form-field', 'Start date').find('button').click();
     cy.contains('div.mat-calendar-body-cell-content', '5').click();
     cy.contains('mat-icon', 'done').click();
-    cy.contains('mat-form-field', 'End date (MM').find('button').click();
+    cy.contains('mat-form-field', 'End date (').find('button').click();
     cy.contains('div.mat-calendar-body-cell-content', '7').click();
     cy.contains('mat-icon', 'done').click();
     cy.contains('div', 'Period length (in months)').find('input').type(String(Math.round((Math.random()+1)*8)));
@@ -51,5 +54,55 @@ context('SPF Call Management tests', () => {
       cy.contains('tr', option).find('input[type="checkbox"]').invoke('attr', 'aria-checked').should('eq', 'true');
       cy.contains('tr', option).find('input[type="checkbox"]').should('not.have.attr', 'disabled');
     }
+  });
+
+  it('TB-394 Budget summary tables for SPF', function() {
+    cy.fixture('api/application/spf.application.json').then(spfApplication => {
+      cy.createCall(spfCall).then(spfCallId => {
+        application.details.projectCallId = spfCallId;
+        cy.publishCall(spfCallId);
+
+        spfApplication.details.projectCallId = spfCallId;
+        cy.loginByRequest(user.applicantUser.email);
+
+        cy.createApplication(spfApplication).then(spfApplicationId => {
+          cy.createPartners(spfApplicationId, spfApplication.partners);
+        });
+        cy.createApprovedApplication(spfApplication, user.programmeUser.email).then(applicationId => {
+          cy.visit(`/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
+          cy.get('table').find('mat-header-cell').eq(5).contains('Partner total eligible budget').should('be.visible');
+          cy.get('table').find('mat-cell').eq(5).contains('1.835.098,28').should('be.visible');
+
+          cy.get('table').find('mat-row').click();
+          cy.contains('Budget').click();
+
+          cy.get('jems-budget-table').contains('Partner').parent().find('span').eq(11).scrollIntoView().contains('Total management costs').should('be.visible');
+          cy.get('jems-budget-table').contains('Partner').parent().find('span').eq(12).scrollIntoView().contains('Small project funds').should('be.visible');
+          cy.get('jems-budget-table').contains('PP1 SPF').parent().find('span').eq(11).scrollIntoView().contains('34.528,29').should('be.visible');
+          cy.get('jems-budget-table').contains('PP1 SPF').parent().find('span').eq(12).scrollIntoView().contains('1.800.569,99').should('be.visible');
+          cy.get('jems-budget-table').get('.footer').contains('Total').parent().find('span').eq(13).scrollIntoView().contains('1.835.098,28').should('be.visible');
+
+
+          cy.visit(`/app/project/detail/${applicationId}/applicationFormBudget`, {failOnStatusCode: false});
+
+          cy.get('jems-budget-table').contains('Partner').parent().find('span').eq(12).scrollIntoView().contains('Total management costs').should('be.visible');
+          cy.get('jems-budget-table').contains('Partner').parent().find('span').eq(13).scrollIntoView().contains('Small project funds').should('be.visible');
+          cy.get('jems-budget-table').contains('span', 'PP1 SPF').parent().find('span').eq(12).scrollIntoView().contains('34.528,29').should('be.visible');
+          cy.get('jems-budget-table').contains('span', 'PP1 SPF').parent().find('span').eq(13).scrollIntoView().contains('1.800.569,99').should('be.visible');
+          cy.get('jems-budget-table').get('.footer').contains('Total').parent().find('span').eq(14).scrollIntoView().contains('1.835.098,28').should('be.visible');
+
+          cy.visit(`/app/project/detail/${applicationId}/applicationFormBudgetPerPeriod`, {failOnStatusCode: false});
+
+          cy.get('jems-budget-page-partner-per-period > .jems-table-config > > :nth-child(3)').eq(1).scrollIntoView().contains('div', 'SPF').should('be.visible');
+          cy.get('jems-budget-page-partner-per-period > .jems-table-config > > :nth-child(15)').eq(1).scrollIntoView().contains('1.800.569,99').should('be.visible');
+
+          cy.get('jems-budget-page-partner-per-period > .jems-table-config > > :nth-child(3)').eq(2).scrollIntoView().contains('div', 'Management').should('be.visible');
+          cy.get('jems-budget-page-partner-per-period > .jems-table-config > > :nth-child(15)').eq(2).scrollIntoView().contains('34.528,29').should('be.visible');
+
+          cy.get('jems-budget-page-funds-per-period').contains('Management');
+          cy.get('jems-budget-page-funds-per-period').contains('SPF');
+        });
+      });
+    });
   });
 });
