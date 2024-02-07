@@ -1,11 +1,8 @@
 package io.cloudflight.jems.server.payments.entity.account
 
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import java.math.BigDecimal
 import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -13,7 +10,7 @@ import javax.persistence.MapsId
 import javax.validation.constraints.NotNull
 
 @Entity(name = "payment_account_correction_extension")
-class PaymentAccountCorrectionExtensionEntity (
+class PaymentAccountCorrectionExtensionEntity(
 
     @Id
     val correctionId: Long,
@@ -47,8 +44,6 @@ class PaymentAccountCorrectionExtensionEntity (
     @field:NotNull
     var correctedPrivateContribution: BigDecimal,
 
-    var comment: String?,
-
-    @Enumerated(EnumType.STRING)
-    var finalScoBasis: PaymentSearchRequestScoBasis?,
+    @field:NotNull
+    var comment: String,
 )

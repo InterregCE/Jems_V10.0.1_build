@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.updatePayment.PaymentApplicationToEcNotInDraftException
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.updatePayment.UpdateLinkedCorrectionToEcPaymentException
@@ -23,8 +22,8 @@ class UpdateLinkedCorrectionToEcPayment(
         correctionId: Long,
         updateLinkedCorrection: PaymentToEcCorrectionLinkingUpdate
     ): PaymentToEcCorrectionExtension {
-        val ecPaymentStatus = ecPaymentCorrectionLinkPersistence.getCorrectionExtension(correctionId).ecPaymentStatus
-        if (ecPaymentStatus.isFinished())
+        val correction = ecPaymentCorrectionLinkPersistence.getCorrectionExtension(correctionId)
+        if (correction.isLinkedToFinishedEcPaymentOrNotLinked())
             throw PaymentApplicationToEcNotInDraftException()
 
         return ecPaymentCorrectionLinkPersistence.updateCorrectionLinkedToEcPaymentCorrectedAmounts(
@@ -33,6 +32,7 @@ class UpdateLinkedCorrectionToEcPayment(
         )
     }
 
-    private fun PaymentEcStatus?.isFinished() = this?.isFinished() ?: false
+    private fun PaymentToEcCorrectionExtension.isLinkedToFinishedEcPaymentOrNotLinked() =
+        ecPaymentStatus == null || ecPaymentStatus.isFinished()
 
 }

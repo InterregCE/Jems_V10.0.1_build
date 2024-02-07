@@ -96,7 +96,7 @@ internal class GetPaymentsAvailableArtNot94Not95Test : UnitTest() {
                 claimSubmissionDateTo = null,
                 approvalDateFrom = null,
                 approvalDateTo = null,
-                fundIds = setOf(78L),
+                fundIds = emptySet(),
                 lastPaymentDateFrom = null,
                 lastPaymentDateTo = null,
                 ecPaymentIds = setOf(29L),

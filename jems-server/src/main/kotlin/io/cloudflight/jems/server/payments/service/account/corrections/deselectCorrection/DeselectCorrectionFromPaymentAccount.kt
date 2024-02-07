@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.service.account.corrections.deselect
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentsAccount
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,11 +16,15 @@ class DeselectCorrectionFromPaymentAccount(
     @Transactional
     @ExceptionWrapper(DeselectCorrectionFromPaymentAccountException::class)
     override fun deselectCorrection(correctionId: Long) {
-        val paymentAccountStatus = correctionLinkingPersistence.getCorrectionExtension(correctionId).paymentAccountStatus
+        val correction = correctionLinkingPersistence.getCorrectionExtension(correctionId)
 
-        if (paymentAccountStatus?.isFinished() == true)
+        if (correction.isLinkedToFinishedAccountOrNotLinked())
             throw PaymentAccountNotInDraftException()
 
-        correctionLinkingPersistence.deselectCorrectionFromPaymentAccountAndResetFields(setOf(correctionId))
+        correctionLinkingPersistence.deselectCorrectionFromPaymentAccountAndResetFields(correctionId)
     }
+
+    private fun PaymentAccountCorrectionExtension.isLinkedToFinishedAccountOrNotLinked() =
+        paymentAccountStatus == null || paymentAccountStatus.isFinished()
+
 }

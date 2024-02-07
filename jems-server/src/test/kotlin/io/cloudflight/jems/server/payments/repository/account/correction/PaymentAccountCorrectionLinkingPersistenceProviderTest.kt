@@ -15,7 +15,6 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectio
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewType.Correction
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.repository.account.PaymentAccountRepository
 import io.cloudflight.jems.server.payments.service.account.corrections.sumUpProperColumns
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -39,6 +38,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.util.*
 
 class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
 
@@ -60,14 +60,13 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             paymentAccount = paymentAccount,
             comment = "comm",
             fundAmount = BigDecimal.valueOf(100),
-            correctedFundAmount = BigDecimal.valueOf(100),
+            correctedFundAmount = BigDecimal.valueOf(101),
             publicContribution = BigDecimal.valueOf(50),
-            correctedPublicContribution = BigDecimal.valueOf(50),
+            correctedPublicContribution = BigDecimal.valueOf(51),
             autoPublicContribution = BigDecimal.valueOf(20),
-            correctedAutoPublicContribution = BigDecimal.valueOf(20),
-            privateContribution = BigDecimal.valueOf(20),
-            correctedPrivateContribution = BigDecimal.valueOf(20),
-            finalScoBasis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+            correctedAutoPublicContribution = BigDecimal.valueOf(21),
+            privateContribution = BigDecimal.valueOf(30),
+            correctedPrivateContribution = BigDecimal.valueOf(31),
         )
 
         val correctionExtension = PaymentAccountCorrectionExtension(
@@ -77,13 +76,13 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             auditControlStatus = AuditControlStatus.Closed,
             comment = "comm",
             fundAmount = BigDecimal.valueOf(100),
-            correctedFundAmount = BigDecimal.valueOf(100),
+            correctedFundAmount = BigDecimal.valueOf(101),
             publicContribution = BigDecimal.valueOf(50),
-            correctedPublicContribution = BigDecimal.valueOf(50),
+            correctedPublicContribution = BigDecimal.valueOf(51),
             autoPublicContribution = BigDecimal.valueOf(20),
-            correctedAutoPublicContribution = BigDecimal.valueOf(20),
-            privateContribution = BigDecimal.valueOf(20),
-            correctedPrivateContribution = BigDecimal.valueOf(20),
+            correctedAutoPublicContribution = BigDecimal.valueOf(21),
+            privateContribution = BigDecimal.valueOf(30),
+            correctedPrivateContribution = BigDecimal.valueOf(31),
         )
 
         private val financialDescription = ProjectCorrectionFinancialDescription(
@@ -116,8 +115,7 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.ONE,
             privateContribution = BigDecimal.ZERO,
             correctedPrivateContribution = BigDecimal.ZERO,
-            comment = null,
-            finalScoBasis = null,
+            comment = "",
         )
 
         private val paymentAccountSummaryLine = PaymentAccountAmountSummaryLineTmp(
@@ -207,11 +205,21 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
     @Test
     fun deselectCorrectionToPaymentAccount() {
         val correction = correctionExtensionEntity(paymentAccount)
-        every { paymentAccountRepository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccount
-        every { correctionExtensionRepository.findAllById(setOf(CORRECTION_ID)) } returns listOf(correction)
+        every { correctionExtensionRepository.findById(CORRECTION_ID) } returns Optional.of(correction)
 
-        persistence.deselectCorrectionFromPaymentAccountAndResetFields(setOf(CORRECTION_ID))
+        assertThat(correction.paymentAccount).isEqualTo(paymentAccount)
+        assertThat(correction.correctedFundAmount).isEqualTo(BigDecimal.valueOf(101L))
+        assertThat(correction.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(51L))
+        assertThat(correction.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(21L))
+        assertThat(correction.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(31L))
+
+        persistence.deselectCorrectionFromPaymentAccountAndResetFields(CORRECTION_ID)
+
         assertThat(correction.paymentAccount).isEqualTo(null)
+        assertThat(correction.correctedFundAmount).isEqualTo(BigDecimal.valueOf(100L))
+        assertThat(correction.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(50L))
+        assertThat(correction.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(20L))
+        assertThat(correction.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(30L))
     }
 
     @Test

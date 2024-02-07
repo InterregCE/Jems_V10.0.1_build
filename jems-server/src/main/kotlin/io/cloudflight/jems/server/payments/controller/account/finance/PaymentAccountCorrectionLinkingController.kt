@@ -1,6 +1,6 @@
-package io.cloudflight.jems.server.payments.controller.account
+package io.cloudflight.jems.server.payments.controller.account.finance
 
-import io.cloudflight.jems.api.payments.account.PaymentAccountCorrectionLinkingApi
+import io.cloudflight.jems.api.payments.account.finance.PaymentAccountCorrectionLinkingApi
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionExtensionDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO

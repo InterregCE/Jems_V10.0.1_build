@@ -12,7 +12,7 @@ interface PaymentAccountCorrectionLinkingPersistence {
 
     fun selectCorrectionToPaymentAccount(correctionIds: Set<Long>, paymentAccountId: Long)
 
-    fun deselectCorrectionFromPaymentAccountAndResetFields(correctionIds: Set<Long>)
+    fun deselectCorrectionFromPaymentAccountAndResetFields(correctionId: Long)
 
     fun updateCorrectionLinkedToPaymentAccountCorrectedAmounts(
         correctionId: Long,

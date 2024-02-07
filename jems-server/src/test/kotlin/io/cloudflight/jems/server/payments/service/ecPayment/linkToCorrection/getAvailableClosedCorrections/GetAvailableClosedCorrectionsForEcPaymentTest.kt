@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getCorrections
+package io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForEcPayment
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -17,16 +16,16 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
-class GetAvailableCorrections : UnitTest() {
+class GetAvailableClosedCorrectionsForEcPaymentTest : UnitTest() {
 
     companion object {
-        private const val CORRECTION_ID = 541L
         private const val EC_PAYMENT_ID = 20L
         private const val PROJECT_ID = 1L
         private const val FUND_ID = 11L
@@ -34,7 +33,7 @@ class GetAvailableCorrections : UnitTest() {
         val paymentDraft = mockk<PaymentApplicationToEcDetail>()
 
         private val correction = AuditControlCorrection(
-            id = CORRECTION_ID,
+            id = 541L,
             orderNr = 12,
             status = AuditControlStatus.Ongoing,
             type = AuditControlCorrectionType.LinkedToInvoice,
@@ -42,18 +41,7 @@ class GetAvailableCorrections : UnitTest() {
             auditControlNr = 15,
         )
 
-        private fun searchRequest(ecPaymentIds: Set<Long?>, fundIds: Set<Long>) = PaymentToEcCorrectionSearchRequest(
-            correctionStatus = AuditControlStatus.Closed,
-            ecPaymentIds = ecPaymentIds,
-            scenarios = listOf(
-                ProjectCorrectionProgrammeMeasureScenario.NA,
-                ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
-                ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
-            ),
-            fundIds = fundIds
-        )
-
-        val correctionLinked = PaymentToEcCorrectionLinking(
+        val correctionFlagged = PaymentToEcCorrectionLinking(
             correction = correction,
             projectId = PROJECT_ID,
             projectAcronym = "Acronym",
@@ -73,14 +61,14 @@ class GetAvailableCorrections : UnitTest() {
             correctedPublicContribution = BigDecimal(106),
             correctedAutoPublicContribution = BigDecimal(107),
             comment = "Comment",
-            correctedFundAmount = BigDecimal(107),
-            unionContribution = BigDecimal(0),
-            correctedTotalEligibleWithoutArt94or95 = BigDecimal(108),
-            correctedUnionContribution = BigDecimal(55),
-            totalEligibleWithoutArt94or95 = BigDecimal(800),
+            correctedFundAmount = BigDecimal(108),
+            unionContribution = BigDecimal(109),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(110),
+            correctedUnionContribution = BigDecimal(111),
+            totalEligibleWithoutArt94or95 = BigDecimal(112),
         )
 
-        val correctionNotLinked = PaymentToEcCorrectionLinking(
+        val correctionNotFlagged = PaymentToEcCorrectionLinking(
             correction = correction,
             projectId = PROJECT_ID,
             projectAcronym = "Acronym",
@@ -88,34 +76,34 @@ class GetAvailableCorrections : UnitTest() {
             priorityAxis = "PO1",
             controllingBody = ControllingBody.Controller,
             scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
-            projectFlagged94Or95 = true,
+            projectFlagged94Or95 = false,
             paymentToEcId = null,
 
-            fundAmount = BigDecimal(100),
-            partnerContribution = BigDecimal(101),
-            publicContribution = BigDecimal(102),
-            privateContribution = BigDecimal(103),
-            autoPublicContribution = BigDecimal(104),
-            correctedPrivateContribution = BigDecimal(105),
-            correctedPublicContribution = BigDecimal(106),
-            correctedAutoPublicContribution = BigDecimal(107),
+            fundAmount = BigDecimal(200),
+            partnerContribution = BigDecimal(201),
+            publicContribution = BigDecimal(202),
+            privateContribution = BigDecimal(203),
+            autoPublicContribution = BigDecimal(204),
+            correctedPrivateContribution = BigDecimal(205),
+            correctedPublicContribution = BigDecimal(206),
+            correctedAutoPublicContribution = BigDecimal(207),
             comment = "Comment",
-            correctedFundAmount = BigDecimal(107),
-            unionContribution = BigDecimal(0),
-            correctedTotalEligibleWithoutArt94or95 = BigDecimal(108),
-            correctedUnionContribution = BigDecimal(55),
-            totalEligibleWithoutArt94or95 = BigDecimal(800),
+            correctedFundAmount = BigDecimal(208),
+            unionContribution = BigDecimal(209),
+            correctedTotalEligibleWithoutArt94or95 = BigDecimal(210),
+            correctedUnionContribution = BigDecimal(211),
+            totalEligibleWithoutArt94or95 = BigDecimal(212),
         )
     }
 
     @MockK
-    lateinit var ecPaymentPersistence: PaymentApplicationToEcPersistence
+    private lateinit var ecPaymentPersistence: PaymentApplicationToEcPersistence
 
     @MockK
-    lateinit var correctionPersistence: AuditControlCorrectionPersistence
+    private lateinit var correctionPersistence: AuditControlCorrectionPersistence
 
     @InjectMockKs
-    lateinit var service: GetAvailableClosedCorrectionsForEcPayment
+    private lateinit var service: GetAvailableClosedCorrectionsForEcPayment
 
     @Test
     fun `getCorrectionList - payment draft`() {
@@ -123,22 +111,28 @@ class GetAvailableCorrections : UnitTest() {
         every { paymentDraft.status } returns PaymentEcStatus.Draft
         every { paymentDraft.paymentApplicationToEcSummary.programmeFund.id } returns FUND_ID
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(EC_PAYMENT_ID) } returns paymentDraft
+
+        val page = mockk<Pageable>()
+        val slotSearchRequest = slot<PaymentToEcCorrectionSearchRequest>()
         every {
-            correctionPersistence.getCorrectionsLinkedToPaymentToEc(
-                Pageable.unpaged(),
-                searchRequest(setOf(null, EC_PAYMENT_ID), setOf(FUND_ID))
+            correctionPersistence.getCorrectionsLinkedToEcPayment(page, capture(slotSearchRequest))
+        } returns PageImpl(listOf(correctionNotFlagged, correctionFlagged))
+
+        assertThat(service.getClosedCorrectionList(page, ecPaymentId = EC_PAYMENT_ID))
+            .containsExactly(correctionNotFlagged, correctionFlagged)
+
+        assertThat(slotSearchRequest.captured).isEqualTo(
+            PaymentToEcCorrectionSearchRequest(
+                correctionStatus = AuditControlStatus.Closed,
+                ecPaymentIds = setOf(null, EC_PAYMENT_ID),
+                fundIds = setOf(FUND_ID),
+                scenarios = setOf(
+                    ProjectCorrectionProgrammeMeasureScenario.NA,
+                    ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
+                    ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
+                ),
             )
-        } returns PageImpl(listOf(correctionNotLinked, correctionLinked))
-
-        assertThat(
-            service.getClosedCorrectionList(
-                pageable = Pageable.unpaged(),
-                ecApplicationId = EC_PAYMENT_ID
-            ).content
-        ).isEqualTo(
-            listOf(correctionNotLinked, correctionLinked)
         )
-
     }
 
     @Test
@@ -147,21 +141,28 @@ class GetAvailableCorrections : UnitTest() {
         every { paymentDraft.status } returns PaymentEcStatus.Finished
         every { paymentDraft.paymentApplicationToEcSummary.programmeFund.id } returns FUND_ID
         every { ecPaymentPersistence.getPaymentApplicationToEcDetail(EC_PAYMENT_ID) } returns paymentDraft
+
+        val page = mockk<Pageable>()
+        val slotSearchRequest = slot<PaymentToEcCorrectionSearchRequest>()
         every {
-            correctionPersistence.getCorrectionsLinkedToPaymentToEc(
-                Pageable.unpaged(),
-                searchRequest(setOf(EC_PAYMENT_ID), emptySet())
+            correctionPersistence.getCorrectionsLinkedToEcPayment(page, capture(slotSearchRequest))
+        } returns PageImpl(listOf(correctionNotFlagged, correctionFlagged))
+
+        assertThat(service.getClosedCorrectionList(page, ecPaymentId = EC_PAYMENT_ID))
+            .containsExactly(correctionNotFlagged, correctionFlagged)
+
+        assertThat(slotSearchRequest.captured).isEqualTo(
+            PaymentToEcCorrectionSearchRequest(
+                correctionStatus = AuditControlStatus.Closed,
+                ecPaymentIds = setOf(EC_PAYMENT_ID),
+                fundIds = emptySet(),
+                scenarios = setOf(
+                    ProjectCorrectionProgrammeMeasureScenario.NA,
+                    ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
+                    ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
+                ),
             )
-        } returns PageImpl(listOf(correctionNotLinked))
-
-        assertThat(
-            service.getClosedCorrectionList(
-                pageable = Pageable.unpaged(),
-                ecApplicationId = EC_PAYMENT_ID
-            ).content
-        ).isEqualTo(
-            listOf(correctionNotLinked)
         )
-
     }
+
 }

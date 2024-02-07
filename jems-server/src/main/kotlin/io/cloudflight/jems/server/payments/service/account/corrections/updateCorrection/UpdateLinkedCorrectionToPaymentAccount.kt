@@ -17,12 +17,16 @@ class UpdateLinkedCorrectionToPaymentAccount(
     @Transactional
     @ExceptionWrapper(UpdateLinkedCorrectionToPaymentAccountException::class)
     override fun updateCorrection(correctionId: Long, correctionLinkingUpdate: PaymentAccountCorrectionLinkingUpdate): PaymentAccountCorrectionExtension {
-        val paymentAccountStatus = correctionLinkingPersistence.getCorrectionExtension(correctionId).paymentAccountStatus
-        if (paymentAccountStatus?.isFinished() == true)
+        val correction = correctionLinkingPersistence.getCorrectionExtension(correctionId)
+        if (correction.isLinkedToFinishedAccountOrNotLinked())
             throw PaymentAccountNotInDraftException()
 
         return correctionLinkingPersistence.updateCorrectionLinkedToPaymentAccountCorrectedAmounts(
             correctionId = correctionId, correctionLinkingUpdate = correctionLinkingUpdate,
         )
     }
+
+    private fun PaymentAccountCorrectionExtension.isLinkedToFinishedAccountOrNotLinked() =
+        paymentAccountStatus == null || paymentAccountStatus.isFinished()
+
 }

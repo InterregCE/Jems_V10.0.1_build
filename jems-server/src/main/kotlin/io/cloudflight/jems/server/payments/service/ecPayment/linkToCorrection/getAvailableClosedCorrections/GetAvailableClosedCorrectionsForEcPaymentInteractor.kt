@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable
 
 interface GetAvailableClosedCorrectionsForEcPaymentInteractor {
 
-    fun getClosedCorrectionList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcCorrectionLinking>
+    fun getClosedCorrectionList(pageable: Pageable, ecPaymentId: Long): Page<PaymentToEcCorrectionLinking>
 
 }

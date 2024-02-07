@@ -19,30 +19,34 @@ class GetAvailableClosedCorrectionsForPaymentAccount(
     private val correctionPersistence: AuditControlCorrectionPersistence
 ) : GetAvailableClosedCorrectionsForPaymentAccountInteractor {
 
+    companion object {
+        private fun filterForAccountAvailableCorrections(
+            accountIds: Set<Long?>,
+            fundId: Long? = null,
+        ) = PaymentAccountCorrectionSearchRequest(
+            correctionStatus = AuditControlStatus.Closed,
+            paymentAccountIds = accountIds,
+            fundIds = if (fundId != null) setOf(fundId) else emptySet(),
+            scenarios = ProjectCorrectionProgrammeMeasureScenario.linkableToPaymentAccount,
+        )
+    }
+
     @CanRetrievePaymentsAccount
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetAvailableClosedCorrectionsForPaymentAccountException::class)
     override fun getClosedCorrections(pageable: Pageable, paymentAccountId: Long): Page<PaymentAccountCorrectionLinking> {
         val paymentAccount = paymentAccountPersistence.getByPaymentAccountId(paymentAccountId)
+        val fundId = paymentAccount.fund.id
 
         val filter = if (paymentAccount.status.isFinished())
-            constructCorrectionFilter(setOf(paymentAccount.id))
+            filterForAccountAvailableCorrections(accountIds = paymentAccountId.asSet())
         else
-            constructCorrectionFilter(paymentAccountIds = setOf(null, paymentAccount.id), fundId = paymentAccount.fund.id)
+            filterForAccountAvailableCorrections(accountIds = paymentAccountId.orNull(), fundId = fundId)
 
         return correctionPersistence.getCorrectionsLinkedToPaymentAccount(pageable, filter)
     }
 
-    private fun constructCorrectionFilter(
-        paymentAccountIds: Set<Long?>,
-        fundId: Long? = null
-    ) = PaymentAccountCorrectionSearchRequest(
-        correctionStatus = AuditControlStatus.Closed,
-        paymentAccountIds = paymentAccountIds,
-        fundIds = if (fundId != null) setOf(fundId) else emptySet(),
-        scenarios = listOf(
-            ProjectCorrectionProgrammeMeasureScenario.SCENARIO_3,
-            ProjectCorrectionProgrammeMeasureScenario.SCENARIO_4
-        )
-    )
+    private fun Long.orNull() = setOf(this, null)
+    private fun Long.asSet() = setOf(this)
+
 }

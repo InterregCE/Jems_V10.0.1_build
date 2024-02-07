@@ -2,51 +2,8 @@ package io.cloudflight.jems.server.payments.service.ecPayment
 
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import java.math.BigDecimal
-
-fun constructFilter(
-    ecPaymentIds: Set<Long?>,
-    fundId: Long? = null,
-    contractingScoBasis: PaymentSearchRequestScoBasis?,
-    finalScoBasis: PaymentSearchRequestScoBasis?,
-    paymentType: PaymentType? = null,
-) = PaymentSearchRequest(
-    paymentId = null,
-    paymentType = paymentType,
-    projectIdentifiers = emptySet(),
-    projectAcronym = null,
-    claimSubmissionDateFrom = null,
-    claimSubmissionDateTo = null,
-    approvalDateFrom = null,
-    approvalDateTo = null,
-    fundIds = if (fundId != null) setOf(fundId) else emptySet(),
-    lastPaymentDateFrom = null,
-    lastPaymentDateTo = null,
-    ecPaymentIds = ecPaymentIds,
-    contractingScoBasis = contractingScoBasis,
-    finalScoBasis = finalScoBasis,
-)
-
-fun constructCorrectionFilter(
-    ecPaymentIds: Set<Long?>,
-    fundId: Long? = null
-) = PaymentToEcCorrectionSearchRequest(
-    correctionStatus = AuditControlStatus.Closed,
-    ecPaymentIds = ecPaymentIds,
-    fundIds = if (fundId != null) setOf(fundId) else emptySet(),
-    scenarios = listOf(
-        ProjectCorrectionProgrammeMeasureScenario.NA,
-        ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
-        ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
-    )
-)
 
 fun Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>>.sumUpProperColumns() =
     mapValues { (type, totals) -> totals.computeTotals(type) }

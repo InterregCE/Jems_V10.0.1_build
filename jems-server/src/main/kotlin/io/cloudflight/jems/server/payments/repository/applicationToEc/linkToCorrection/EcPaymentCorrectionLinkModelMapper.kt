@@ -28,7 +28,7 @@ fun PaymentToEcCorrectionExtensionEntity.toModel() = PaymentToEcCorrectionExtens
     correctedUnionContribution = correctedUnionContribution,
 )
 
-fun PaymentToEcCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentToEcCorrectionLinking(
+fun PaymentToEcCorrectionTmp.toModel() = PaymentToEcCorrectionLinking(
     correction = correctionEntity.toSimpleModel(),
 
     projectId = projectId,
@@ -42,7 +42,7 @@ fun PaymentToEcCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentT
 
     fundAmount = fundAmount,
     correctedFundAmount = correctedFundAmount,
-    partnerContribution = partnerContribution,
+    partnerContribution = publicContribution.add(autoPublicContribution).add(privateContribution),
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,
     autoPublicContribution = autoPublicContribution,

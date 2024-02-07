@@ -6,6 +6,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 data class PaymentToEcCorrectionSearchRequest(
     val ecPaymentIds: Set<Long?>,
     val correctionStatus: AuditControlStatus,
-    val scenarios: List<ProjectCorrectionProgrammeMeasureScenario>,
-    val fundIds: Set<Long>
+    val scenarios: Set<ProjectCorrectionProgrammeMeasureScenario>,
+    val fundIds: Set<Long>,
 )

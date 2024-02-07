@@ -2,13 +2,11 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getP
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcPayment
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.constructFilter
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -30,33 +28,17 @@ class GetPaymentsAvailableForArt94Art95(
         paymentType: PaymentType
     ): Page<PaymentToEcPayment> {
         val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecPaymentId)
-        val filter = constructPaymentFilter(ecPayment, paymentType)
-        return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)
-    }
-
-
-    private fun constructPaymentFilter(ecPayment: PaymentApplicationToEcDetail, paymentType: PaymentType): PaymentSearchRequest {
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
-        return if (ecPayment.status.isFinished()) {
-            constructFilter(
-                ecPaymentIds = ecPayment.id.asSet(),
-                fundId = fundId,
-                contractingScoBasis = null,
-                finalScoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
-                paymentType = paymentType,
-            )
-        } else {
-            constructFilter(
-                ecPaymentIds = ecPayment.id.orNull(),
-                fundId = fundId,
-                contractingScoBasis = PaymentSearchRequestScoBasis.FallsUnderArticle94Or95,
-                finalScoBasis = null,
-                paymentType = paymentType,
-            )
-        }
+        val filter = if (ecPayment.status.isFinished())
+            constructFilter(paymentType, ecPaymentId.asSet(), finalScoBasis = FallsUnderArticle94Or95)
+        else
+            constructFilter(paymentType, ecPaymentId.orNull(), fundId = fundId, contractingScoBasis = FallsUnderArticle94Or95)
+
+        return paymentPersistence.getAllPaymentToEcPayment(pageable, filter)
     }
 
     private fun Long.orNull() = setOf(this, null)
     private fun Long.asSet() = setOf(this)
+
 }

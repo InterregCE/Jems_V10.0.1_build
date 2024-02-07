@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.controller.account
+package io.cloudflight.jems.server.payments.controller.account.finance
 
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryLineDTO
@@ -70,7 +70,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
                 priorityAxis = "PO1",
                 controllingBody = ControllingBody.Controller,
                 scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
-                projectFlagged94Or95 = true,
                 paymentAccountId = PAYMENT_ACCOUNT_ID,
 
                 fundAmount = BigDecimal(100),
@@ -87,8 +86,7 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
         )
 
 
-        private val expectedCorrectionList = listOf(
-            PaymentAccountCorrectionLinkingDTO(
+        private val expectedAccountCorrection = PaymentAccountCorrectionLinkingDTO(
                 correction = expectedCorrection,
                 projectId = PROJECT_ID,
                 projectAcronym = "Acronym",
@@ -96,7 +94,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
                 priorityAxis = "PO1",
                 controllingBody = ControllingBodyDTO.Controller,
                 scenario = ProjectCorrectionProgrammeMeasureScenarioDTO.SCENARIO_2,
-                projectFlagged94Or95 = true,
                 paymentAccountId = PAYMENT_ACCOUNT_ID,
 
                 fundAmount = BigDecimal(100),
@@ -109,7 +106,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
                 correctedAutoPublicContribution = BigDecimal(107),
                 comment = "Comment",
                 correctedFundAmount = BigDecimal(100),
-            )
         )
 
         private val correctionUpdate = PaymentAccountCorrectionLinkingUpdateDTO(
@@ -181,13 +177,11 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
 
     @Test
     fun getAvailableCorrections() {
-        every { getAvailableCorrections.getClosedCorrections(Pageable.unpaged(), PAYMENT_ACCOUNT_ID) } returns PageImpl(
-            correctionList
-        )
+        every { getAvailableCorrections.getClosedCorrections(Pageable.unpaged(), PAYMENT_ACCOUNT_ID) } returns
+                PageImpl(correctionList)
 
-        assertThat(controller.getAvailableCorrections(Pageable.unpaged(), PAYMENT_ACCOUNT_ID).content).isEqualTo(
-            expectedCorrectionList
-        )
+        assertThat(controller.getAvailableCorrections(Pageable.unpaged(), PAYMENT_ACCOUNT_ID))
+            .containsExactly(expectedAccountCorrection)
     }
 
     @Test

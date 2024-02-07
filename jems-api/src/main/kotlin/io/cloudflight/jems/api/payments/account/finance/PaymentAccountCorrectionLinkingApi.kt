@@ -1,5 +1,6 @@
-package io.cloudflight.jems.api.payments.account
+package io.cloudflight.jems.api.payments.account.finance
 
+import io.cloudflight.jems.api.payments.account.PaymentAccountApi
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionExtensionDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody
 interface PaymentAccountCorrectionLinkingApi {
 
     companion object {
-        private const val ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING = "${PaymentAccountApi.ENDPOINT_API_PAYMENT_ACCOUNT}/correctionLinking"
+        private const val ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING =
+            "${PaymentAccountApi.ENDPOINT_API_PAYMENT_ACCOUNT}/finance/correctionLinking"
     }
 
     @ApiOperation("Returns all closed corrections that can be included")
@@ -29,25 +31,25 @@ interface PaymentAccountCorrectionLinkingApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("${ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING}/{paymentAccountId}/corrections")
+    @GetMapping("$ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING/{paymentAccountId}/corrections")
     fun getAvailableCorrections(pageable: Pageable, @PathVariable paymentAccountId: Long): Page<PaymentAccountCorrectionLinkingDTO>
 
     @ApiOperation("Select correction to ec")
-    @PutMapping("${ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING}/{correctionId}/selectFor/{paymentAccountId}")
+    @PutMapping("$ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING/{correctionId}/selectFor/{paymentAccountId}")
     fun selectCorrectionToPaymentAccount(@PathVariable paymentAccountId: Long, @PathVariable correctionId: Long)
 
     @ApiOperation("Deselect correction from ec")
-    @PutMapping("${ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING}/{correctionId}/deselect")
+    @PutMapping("$ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING/{correctionId}/deselect")
     fun deselectCorrectionFromPaymentAccount(@PathVariable correctionId: Long)
 
     @ApiOperation("Update amounts for linked correction")
-    @PutMapping("${ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING}/{correctionId}/correctContributions", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING/{correctionId}/correctContributions", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateLinkedCorrection(
         @PathVariable correctionId: Long,
         @RequestBody correctionLinkingUpdate: PaymentAccountCorrectionLinkingUpdateDTO,
     ): PaymentAccountCorrectionExtensionDTO
 
     @ApiOperation("Get current overview amounts per priority axis")
-    @GetMapping("${ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING}/{paymentAccountId}/currentOverview")
+    @GetMapping("$ENDPOINT_API_PAYMENT_ACCOUNT_CORRECTION_LINKING/{paymentAccountId}/currentOverview")
     fun getCurrentOverview(@PathVariable paymentAccountId: Long): PaymentAccountAmountSummaryDTO
 }

@@ -2,10 +2,13 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.g
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentApplicationsToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.constructCorrectionFilter
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -18,29 +21,48 @@ class GetAvailableClosedCorrectionsForEcPayment(
     private val correctionPersistence: AuditControlCorrectionPersistence
 ) : GetAvailableClosedCorrectionsForEcPaymentInteractor {
 
+    companion object {
+        fun filterForEcPaymentAvailableCorrections(
+            ecPaymentIds: Set<Long?>,
+            fundId: Long? = null,
+        ) = PaymentToEcCorrectionSearchRequest(
+            correctionStatus = AuditControlStatus.Closed,
+            ecPaymentIds = ecPaymentIds,
+            fundIds = if (fundId != null) setOf(fundId) else emptySet(),
+            scenarios = ProjectCorrectionProgrammeMeasureScenario.linkableToEcPayment,
+        )
+    }
+
     @CanRetrievePaymentApplicationsToEc
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetAvailableClosedCorrectionsForEcPaymentException::class)
-    override fun getClosedCorrectionList(pageable: Pageable, ecApplicationId: Long): Page<PaymentToEcCorrectionLinking> {
-        val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecApplicationId)
+    override fun getClosedCorrectionList(pageable: Pageable, ecPaymentId: Long): Page<PaymentToEcCorrectionLinking> {
+        val ecPayment = ecPaymentPersistence.getPaymentApplicationToEcDetail(ecPaymentId)
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
         val filter = if (ecPayment.status.isFinished())
-            constructCorrectionFilter(ecPaymentIds = setOf(ecPayment.id))
+            filterForEcPaymentAvailableCorrections(ecPaymentIds = ecPaymentId.asSet())
         else
-            constructCorrectionFilter(ecPaymentIds = setOf(null, ecPayment.id), fundId = fundId)
+            filterForEcPaymentAvailableCorrections(ecPaymentIds = ecPaymentId.orNull(), fundId = fundId)
 
-        val corrections = correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable, filter)
+        val corrections = correctionPersistence.getCorrectionsLinkedToEcPayment(pageable, filter)
 
-        if (!ecPayment.status.isFinished())
-            corrections.filter { !it.projectFlagged94Or95 }.forEach { it.clear94Or95FlaggedInputs() }
+        if (ecPayment.isOpen())
+            corrections.clearInputsFromCorrectionsNot94Nor95Flagged()
 
         return corrections
     }
 
-    private fun PaymentToEcCorrectionLinking.clear94Or95FlaggedInputs() {
-        this.correctedFundAmount = this.fundAmount
-        this.correctedTotalEligibleWithoutArt94or95 = this.totalEligibleWithoutArt94or95
-        this.correctedUnionContribution = BigDecimal.ZERO
-    }
+    private fun Page<PaymentToEcCorrectionLinking>.clearInputsFromCorrectionsNot94Nor95Flagged() =
+        filterNot { it.projectFlagged94Or95 }.onEach {
+            it.correctedFundAmount = it.fundAmount
+            it.correctedTotalEligibleWithoutArt94or95 = it.totalEligibleWithoutArt94or95
+            it.correctedUnionContribution = BigDecimal.ZERO
+        }
+
+    private fun PaymentApplicationToEcDetail.isOpen() = !status.isFinished()
+
+    private fun Long.orNull() = setOf(this, null)
+    private fun Long.asSet() = setOf(this)
+
 }

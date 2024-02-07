@@ -50,6 +50,17 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
     }
 
     @Transactional
+    override fun deselectCorrectionFromPaymentAccountAndResetFields(correctionId: Long) {
+        correctionExtensionRepository.findById(correctionId).get().also {
+            it.paymentAccount = null
+            it.correctedFundAmount = it.fundAmount
+            it.correctedPublicContribution = it.publicContribution
+            it.correctedAutoPublicContribution = it.autoPublicContribution
+            it.correctedPrivateContribution = it.privateContribution
+        }
+    }
+
+    @Transactional
     override fun createCorrectionExtension(
         financialDescription: ProjectCorrectionFinancialDescription,
     ) {
@@ -57,16 +68,6 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
         correctionExtensionRepository.save(
             financialDescription.toEntity(correctionEntity)
         )
-    }
-
-    @Transactional
-    override fun deselectCorrectionFromPaymentAccountAndResetFields(correctionIds: Set<Long>) {
-        correctionExtensionRepository.findAllById(correctionIds).forEach {
-            it.paymentAccount = null
-            it.correctedPublicContribution = it.publicContribution
-            it.correctedAutoPublicContribution = it.autoPublicContribution
-            it.correctedPrivateContribution = it.privateContribution
-        }
     }
 
     @Transactional

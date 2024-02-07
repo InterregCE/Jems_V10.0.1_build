@@ -42,8 +42,7 @@ fun ProjectCorrectionFinancialDescription.toEntity(
     correctedAutoPublicContribution = autoPublicContribution,
     privateContribution = privateContribution,
     correctedPrivateContribution = privateContribution,
-    comment = null,
-    finalScoBasis = null,
+    comment = "",
 )
 
 fun List<PaymentAccountPriorityAxisOverviewEntity>.toModel() =

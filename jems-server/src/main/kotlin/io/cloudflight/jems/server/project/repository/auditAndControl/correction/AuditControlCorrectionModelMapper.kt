@@ -92,7 +92,7 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
 )
 
-fun PaymentAccountCorrectionTmp.toModel(partnerContribution: BigDecimal) = PaymentAccountCorrectionLinking(
+fun PaymentAccountCorrectionTmp.toModel() = PaymentAccountCorrectionLinking(
     correction = correctionEntity.toSimpleModel(),
 
     projectId = projectId,
@@ -101,12 +101,11 @@ fun PaymentAccountCorrectionTmp.toModel(partnerContribution: BigDecimal) = Payme
     priorityAxis = priorityAxis ?: "N/A",
     controllingBody = controllingBody,
     scenario = scenario,
-    projectFlagged94Or95 = isProjectFlagged94Or95,
     paymentAccountId = paymentAccountId,
 
     fundAmount = fundAmount,
     correctedFundAmount = correctedFundAmount,
-    partnerContribution = partnerContribution,
+    partnerContribution = publicContribution.add(autoPublicContribution).add(privateContribution),
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,
     autoPublicContribution = autoPublicContribution,
