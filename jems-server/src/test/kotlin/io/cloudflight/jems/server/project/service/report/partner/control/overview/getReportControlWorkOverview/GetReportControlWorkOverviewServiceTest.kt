@@ -128,7 +128,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
             attachment = mockk(),
             partOfSample = partOfSample,
             certifiedAmount = certified,
-            deductedAmount = mockk(),
+            deductedAmount = BigDecimal.valueOf(100),
             typologyOfErrorId = null,
             verificationComment = "comment dummy",
             parked = isParked,
@@ -287,6 +287,96 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 deductedByControl = BigDecimal.valueOf(104450L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(0, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(0, 2),
+            )
+        )
+    }
+
+    @Test
+    fun `get - no deduction at all and parked exists`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.InControl
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
+        val firstExpenditureVerification = expenditure(
+            id = 99L,
+            partOfSample = true,
+            declaredAmount = BigDecimal.valueOf(99.99),
+            certified = BigDecimal.ZERO,
+            isParked = true
+        ).copy(
+            deductedAmount = BigDecimal.ZERO,
+            declaredAmountAfterSubmission = BigDecimal.valueOf(99.99),
+            costCategory = ReportBudgetCategory.ExternalCosts
+        )
+
+        val secondExpenditureVerification = expenditure(
+            id = 100L,
+            partOfSample = false,
+            declaredAmount = BigDecimal.valueOf(99.99),
+            certified = BigDecimal.valueOf(99.99),
+            isParked = false
+        ).copy(
+            deductedAmount = BigDecimal.ZERO,
+            declaredAmountAfterSubmission = BigDecimal.valueOf(99.99),
+            costCategory = ReportBudgetCategory.EquipmentCosts
+        )
+
+        val thirdExpenditureVerification = expenditure(
+            id = 101L,
+            partOfSample = false,
+            declaredAmount = BigDecimal.valueOf(99.99),
+            certified = BigDecimal.valueOf(99.99),
+            isParked = false
+        ).copy(
+            deductedAmount = BigDecimal.ZERO,
+            declaredAmountAfterSubmission = BigDecimal.valueOf(99.99),
+            costCategory = ReportBudgetCategory.InfrastructureCosts
+        )
+
+        val options = ProjectPartnerBudgetOptions(
+            partnerId = PARTNER_ID,
+            officeAndAdministrationOnStaffCostsFlatRate = 15,
+            officeAndAdministrationOnDirectCostsFlatRate = null,
+            travelAndAccommodationOnStaffCostsFlatRate = 15,
+            staffCostsFlatRate = 20,
+            otherCostsOnStaffCostsFlatRate = null,
+        )
+
+        val currentlyReported = BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(59.99),
+            office = BigDecimal.valueOf(8.99),
+            travel = BigDecimal.valueOf(8.99),
+            external = BigDecimal.valueOf(99.99),
+            equipment = BigDecimal.valueOf(99.99),
+            infrastructure = BigDecimal.valueOf(0.00),
+            other = BigDecimal.valueOf(0.00),
+            lumpSum = BigDecimal.valueOf(0.00),
+            unitCost = BigDecimal.valueOf(0.00),
+            spfCost = BigDecimal.valueOf(0.00),
+            sum = BigDecimal.valueOf(377.94),
+        )
+
+        every {
+            reportExpenditureCostCategoryPersistence.getCostCategories(
+                PARTNER_ID,
+                reportId = 22L
+            )
+        } returns costOptions.copy(options = options, currentlyReported = currentlyReported)
+
+        every {
+            reportControlExpenditurePersistence
+                .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        } returns listOf(firstExpenditureVerification, secondExpenditureVerification, thirdExpenditureVerification)
+
+        assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
+            ControlWorkOverview(
+                declaredByPartner = BigDecimal.valueOf(377.94),
+                declaredByPartnerFlatRateSum = BigDecimal.valueOf(77.97),
+                inControlSample = BigDecimal.valueOf(99.99),
+                inControlSamplePercentage = BigDecimal.valueOf(33.33),
+                parked = BigDecimal.valueOf(125.99),
+                deductedByControl = BigDecimal.valueOf(0, 2),
+                eligibleAfterControl = BigDecimal.valueOf(251.95),
+                eligibleAfterControlPercentage = BigDecimal.valueOf(66.66),
             )
         )
     }
