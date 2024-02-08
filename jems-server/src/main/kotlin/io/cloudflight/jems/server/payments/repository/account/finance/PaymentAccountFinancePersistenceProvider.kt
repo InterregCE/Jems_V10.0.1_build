@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.payments.repository.account.finance
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
@@ -8,15 +9,21 @@ import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.ReconciledPriority
+import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.ReconciledScenario
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.CorrectionAmountWithdrawn
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.service.account.finance.PaymentAccountFinancePersistence
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionFinanceEntity
+import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -30,14 +37,23 @@ class PaymentAccountFinancePersistenceProvider(
     companion object {
         private val accountCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
         private val accountCorrectionFinance = QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
-        private val correctionExtension = QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
+        private val correctionExtensionToEc = QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
+        private val correctionExtensionToAcc =
+            QPaymentAccountCorrectionExtensionEntity.paymentAccountCorrectionExtensionEntity
         private val payment = QPaymentEntity.paymentEntity
         private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
         private val paymentExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         private val project = QProjectEntity.projectEntity
 
+        private val priorityPolicy = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        private val correctionProgrammeMeasure =
+            QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
+        private val correctionFinance =
+            QAuditControlCorrectionFinanceEntity.auditControlCorrectionFinanceEntity
+
         /** Summary */
-        private val paymentToEcPriorityAxisOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
+        private val paymentToEcPriorityAxisOverview =
+            QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
         private val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
     }
 
@@ -60,30 +76,32 @@ class PaymentAccountFinancePersistenceProvider(
                     .add(accountCorrectionFinance.privateContribution),
                 paymentExtension.paymentApplicationToEc.id, // whenFound
                 paymentExtension.paymentApplicationToEc.accountingYear, // whenFound
-                correctionExtension.paymentApplicationToEc.id, // whenIncluded
-                correctionExtension.paymentApplicationToEc.accountingYear // whenIncluded
+                correctionExtensionToEc.paymentApplicationToEc.id, // whenIncluded
+                correctionExtensionToEc.paymentApplicationToEc.accountingYear // whenIncluded
             ).from(accountCorrection)
-            .innerJoin(correctionExtension)
-                .on(correctionExtension.correction.eq(accountCorrection))
+            .innerJoin(correctionExtensionToEc)
+            .on(correctionExtensionToEc.correction.eq(accountCorrection))
             .leftJoin(project)
-                .on(project.eq(accountCorrection.auditControl.project))
+            .on(project.eq(accountCorrection.auditControl.project))
             .leftJoin(accountCorrectionFinance)
-                .on(accountCorrectionFinance.correction.eq(accountCorrection))
+            .on(accountCorrectionFinance.correction.eq(accountCorrection))
             .leftJoin(projectLumpSum)
-                .on(projectLumpSum.eq(accountCorrection.lumpSum))
+            .on(projectLumpSum.eq(accountCorrection.lumpSum))
             .leftJoin(payment)
-                .on(payment.fund.eq(accountCorrection.programmeFund)
+            .on(
+                payment.fund.eq(accountCorrection.programmeFund)
                     .and(payment.projectReport.eq(accountCorrection.partnerReport.projectReport)
                         .or(payment.projectLumpSum.eq(projectLumpSum))
                 )
             )
             .leftJoin(paymentExtension)
             .on(paymentExtension.payment.eq(payment))
-            .where(correctionExtension.paymentApplicationToEc.accountingYear.id.eq(accountingYearId)
-                .and(accountCorrection.programmeFund.id.eq(fundId))
-                .and(accountCorrectionFinance.deduction.isTrue()) // only negatives
-                .and(accountCorrectionFinance.clericalTechnicalMistake.isFalse()) // non clerical mistake
-                .and(paymentExtension.paymentApplicationToEc.isNotNull())
+            .where(
+                correctionExtensionToEc.paymentApplicationToEc.accountingYear.id.eq(accountingYearId)
+                    .and(accountCorrection.programmeFund.id.eq(fundId))
+                    .and(accountCorrectionFinance.deduction.isTrue()) // only negatives
+                    .and(accountCorrectionFinance.clericalTechnicalMistake.isFalse()) // non clerical mistake
+                    .and(paymentExtension.paymentApplicationToEc.isNotNull())
             ) // to group by year we need to have yearWhenFound
             .fetch()
             .map { it: Tuple ->
@@ -117,7 +135,7 @@ class PaymentAccountFinancePersistenceProvider(
             )
             .from(paymentToEcPriorityAxisOverview)
             .leftJoin(programmePriority)
-                .on(programmePriority.id.eq(paymentToEcPriorityAxisOverview.priorityAxis.id))
+            .on(programmePriority.id.eq(paymentToEcPriorityAxisOverview.priorityAxis.id))
             .where(paymentToEcPriorityAxisOverview.paymentApplicationToEc.id.`in`(ecPaymentIds))
             .groupBy(programmePriority.id)
             .fetch()
@@ -130,4 +148,69 @@ class PaymentAccountFinancePersistenceProvider(
                 )
             }
     }
+
+    @Transactional(readOnly = true)
+    override fun getReconciliationOverview(
+        paymentAccountId: Long,
+        scenario: ReconciledScenario
+    ): List<ReconciledPriority> =
+        jpaQueryFactory
+            .select(
+                programmePriority.id,
+                programmePriority.code,
+                correctionExtensionToAcc.total().sum(),
+                CaseBuilder().`when`(accountCorrection.auditControl.controllingBody.eq(ControllingBody.AA))
+                    .then(correctionExtensionToAcc.total())
+                    .otherwise(BigDecimal.ZERO).sum(),
+                CaseBuilder().`when`(accountCorrection.auditControl.controllingBody.`in`(ControllingBody.ecOrEcaOrOlafInvestigations))
+                    .then(correctionExtensionToAcc.total())
+                    .otherwise(BigDecimal.ZERO).sum(),
+            )
+            .from(correctionExtensionToAcc)
+            .leftJoin(accountCorrection)
+            .on(accountCorrection.id.eq(correctionExtensionToAcc.correctionId))
+            .leftJoin(correctionProgrammeMeasure)
+            .on(correctionProgrammeMeasure.correction.eq(accountCorrection))
+            .join(correctionFinance)
+            .on(correctionFinance.correction.eq(accountCorrection))
+            .leftJoin(project)
+            .on(project.eq(accountCorrection.auditControl.project))
+            .leftJoin(priorityPolicy)
+            .on(priorityPolicy.programmeObjectivePolicy.eq(project.priorityPolicy.programmeObjectivePolicy))
+            .leftJoin(programmePriority)
+            .on(programmePriority.id.eq(priorityPolicy.programmePriority.id))
+            .where(
+                correctionExtensionToAcc.paymentAccount.id.eq(paymentAccountId).and(
+                    when (scenario) {
+                        ReconciledScenario.Scenario4 ->
+                            correctionProgrammeMeasure.scenario.eq(ProjectCorrectionProgrammeMeasureScenario.SCENARIO_4)
+                                .and(correctionFinance.clericalTechnicalMistake.isFalse)
+
+                        ReconciledScenario.Scenario3 ->
+                            correctionProgrammeMeasure.scenario.eq(ProjectCorrectionProgrammeMeasureScenario.SCENARIO_3)
+                                .and(correctionFinance.clericalTechnicalMistake.isFalse)
+
+                        ReconciledScenario.ClericalMistakes ->
+                            correctionFinance.clericalTechnicalMistake.isTrue()
+                    }
+                )
+            )
+            .groupBy(programmePriority.id)
+            .fetch()
+            .map { it: Tuple ->
+                ReconciledPriority(
+                    priorityId = it.get(0, Long::class.java)!!,
+                    priorityCode = it.get(1, String::class.java)!!,
+                    total = it.get(2, BigDecimal::class.java)!!,
+                    ofWhichAa = it.get(3, BigDecimal::class.java)!!,
+                    ofWhichEc = it.get(4, BigDecimal::class.java)!!,
+                )
+            }
+
+    private fun QPaymentAccountCorrectionExtensionEntity.total() =
+        fundAmount
+            .add(publicContribution)
+            .add(autoPublicContribution)
+            .add(privateContribution)
+
 }

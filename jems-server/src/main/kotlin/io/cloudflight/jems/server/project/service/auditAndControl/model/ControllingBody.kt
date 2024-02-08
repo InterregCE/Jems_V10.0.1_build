@@ -14,8 +14,12 @@ enum class ControllingBody {
     ECA,
     OLAF;
 
+    companion object  {
+        val ecOrEcaOrOlafInvestigations = setOf(EC, ECA, OLAF)
+    }
+
     fun isAaAudit() = this == AA
 
-    fun isEcOrEcaOrOlafInvestigation() = this in setOf(EC, ECA, OLAF)
+    fun isEcOrEcaOrOlafInvestigation() = this in ecOrEcaOrOlafInvestigations
 
 }

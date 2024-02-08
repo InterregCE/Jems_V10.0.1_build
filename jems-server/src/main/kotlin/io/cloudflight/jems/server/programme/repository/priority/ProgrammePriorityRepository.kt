@@ -14,4 +14,6 @@ interface ProgrammePriorityRepository : PagingAndSortingRepository<ProgrammePrio
 
     fun getAllByCodeIn(codes: List<String>): List<ProgrammePriorityEntity>
 
+    fun getById(id: Long): ProgrammePriorityEntity
+
 }
