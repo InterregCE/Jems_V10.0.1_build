@@ -1,9 +1,16 @@
 package io.cloudflight.jems.server.project.service.lumpsum.model
 
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import java.time.ZonedDateTime
 
 const val PREPARATION_PERIOD_NUMBER = 0
 const val CLOSURE_PERIOD_NUMBER = 255
+
+val closurePeriod = ProjectPeriod(
+    number = CLOSURE_PERIOD_NUMBER,
+    start = -1,
+    end = -1
+)
 
 data class ProjectLumpSum (
     var orderNr: Int,

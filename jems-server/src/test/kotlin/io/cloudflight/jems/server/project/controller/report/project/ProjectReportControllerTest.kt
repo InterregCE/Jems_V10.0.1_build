@@ -74,7 +74,8 @@ internal class ProjectReportControllerTest : UnitTest() {
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         verificationEndDate = TODAY,
-        verificationLastReOpenDate = null
+        verificationLastReOpenDate = null,
+        finalReport = true,
     )
 
     private val expectedReport = ProjectReportDTO(
@@ -85,6 +86,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         startDate = WEEK_AGO,
         endDate = TOMORROW,
         deadlineId = 560L,
+        finalReport = true,
         type = ContractingDeadlineTypeDTO.Both,
         periodDetail = ProjectPeriodDTO(2, 4, 6, null, null),
         reportingDate = null,
@@ -99,7 +101,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         verificationEndDate = TODAY,
         verificationLastReOpenDate = null,
         paymentIdsInstallmentExists = setOf(),
-        paymentToEcIdsReportIncluded = setOf()
+        paymentToEcIdsReportIncluded = setOf(),
     )
 
     private val reportSummary = ProjectReportSummary(
@@ -222,6 +224,7 @@ internal class ProjectReportControllerTest : UnitTest() {
             type = ContractingDeadlineTypeDTO.Content,
             periodNumber = null,
             reportingDate = WEEK_AGO,
+            finalReport = true
         )
         assertThat(controller.createProjectReport(19L, toCreate)).isEqualTo(expectedReport)
         assertThat(createSlot.captured).isEqualTo(
@@ -232,6 +235,7 @@ internal class ProjectReportControllerTest : UnitTest() {
                 type = ContractingDeadlineType.Content,
                 periodNumber = null,
                 reportingDate = WEEK_AGO,
+                finalReport = true,
             )
         )
     }
@@ -248,6 +252,7 @@ internal class ProjectReportControllerTest : UnitTest() {
             type = ContractingDeadlineTypeDTO.Both,
             periodNumber = 12,
             reportingDate = TOMORROW,
+            finalReport = true
         )
         assertThat(controller.updateProjectReport(20L, reportId = 9L, toUpdate)).isEqualTo(expectedReport)
         assertThat(updateSlot.captured).isEqualTo(
@@ -258,6 +263,7 @@ internal class ProjectReportControllerTest : UnitTest() {
                 type = ContractingDeadlineType.Both,
                 periodNumber = 12,
                 reportingDate = TOMORROW,
+                finalReport = true,
             )
         )
     }

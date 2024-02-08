@@ -8,4 +8,5 @@ data class ProjectReportDeadline(
     val type: ContractingDeadlineType?,
     val periodNumber: Int?,
     val reportingDate: LocalDate?,
+    val finalReport: Boolean?,
 )

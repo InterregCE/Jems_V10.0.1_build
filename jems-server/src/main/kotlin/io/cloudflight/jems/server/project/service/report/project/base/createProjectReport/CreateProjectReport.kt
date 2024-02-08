@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -76,8 +78,9 @@ class CreateProjectReport(
         val project = projectPersistence.getProject(projectId = projectId, version = version)
         validateProjectIsContracted(project)
 
-        val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
-        data.validateInput(validPeriodNumbers = periods.keys,
+        val periods = (projectPersistence.getProjectPeriods(projectId, version).plus(closurePeriod)).associateBy { it.number }
+        data.validateInput(
+            validPeriodNumbers = periods.keys,
             datesInvalidExceptionResolver = { StartDateIsAfterEndDate() },
             linkToDeadlineWithManualDataExceptionResolver = { LinkToDeadlineProvidedWithManualDataOverride() },
             noLinkAndDataMissingExceptionResolver = { LinkToDeadlineNotProvidedAndDataMissing() },
@@ -199,6 +202,7 @@ class CreateProjectReport(
         lastVerificationReOpening = null,
         riskBasedVerification = false,
         riskBasedVerificationDescription = null,
+        finalReport = finalReport
     )
 
     private fun List<ProjectResult>.toCreateModel(

@@ -74,6 +74,7 @@ class DeleteProjectReportVerificationFileTest : UnitTest() {
             startDate = YESTERDAY,
             endDate = TOMORROW,
             deadlineId = 14L,
+            finalReport = false,
             type = ContractingDeadlineType.Both,
             periodNumber = 7,
             reportingDate = MONTH_AGO,

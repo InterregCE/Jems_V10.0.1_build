@@ -97,6 +97,10 @@ export class ContractReportingStore {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoringPeriods(projectId)),
+        map(periods => [
+          ...periods,
+          { number: 255, start: 0, end: 0, startDate: '', endDate: '' },
+        ]),
       );
   }
 

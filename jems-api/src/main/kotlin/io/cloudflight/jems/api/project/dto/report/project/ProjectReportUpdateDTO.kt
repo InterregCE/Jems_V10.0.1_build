@@ -11,4 +11,5 @@ data class ProjectReportUpdateDTO(
     val type: ContractingDeadlineTypeDTO?,
     val periodNumber: Int?,
     val reportingDate: LocalDate?,
+    val finalReport: Boolean?,
 )

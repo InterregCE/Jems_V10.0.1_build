@@ -60,6 +60,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadline = mockk(),
+            finalReport = false,
             reportingDate = mockk(),
             periodNumber = 4,
             projectIdentifier = "projectIdentifier",

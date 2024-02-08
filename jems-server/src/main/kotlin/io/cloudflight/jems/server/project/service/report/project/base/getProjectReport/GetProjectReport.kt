@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.Payme
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -37,6 +38,7 @@ class GetProjectReport(
 
     private fun ProjectReportModel.getProjectPeriods() =
         projectPersistence.getProjectPeriods(projectId, linkedFormVersion)
+            .plus(closurePeriod)
 
     private fun ProjectReportModel.getPaymentIdsInstallmentExists() =
         if (this.status.isFinalized()) paymentPersistence.getPaymentIdsInstallmentsExistsByProjectReportId(this.id) else setOf()

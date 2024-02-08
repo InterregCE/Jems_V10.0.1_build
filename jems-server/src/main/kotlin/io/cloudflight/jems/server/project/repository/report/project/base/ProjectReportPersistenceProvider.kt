@@ -119,6 +119,7 @@ class ProjectReportPersistenceProvider(
         report.type = deadline.type
         report.periodNumber = deadline.periodNumber
         report.reportingDate = deadline.reportingDate
+        report.finalReport = deadline.finalReport
 
         return report.toModel()
     }

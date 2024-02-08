@@ -72,8 +72,12 @@ mat-button-toggle {
   flex-direction: column;
 }
 
-mat-cell.mat-column-deadlineDelete, .report-type-cell {
+mat-cell.mat-column-deadlineDelete, .report-type-cell, .final-report-cell {
   padding-top: 1.15rem;
+}
+
+.mat-column-deadlineFinalReport {
+  max-width: 3rem;
 }
 
 .number-cell, .linked-report-cell {

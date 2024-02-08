@@ -18,6 +18,7 @@ data class ProjectReport(
     val type: ContractingDeadlineType?,
     val periodDetail: ProjectPeriod?,
     val reportingDate: LocalDate?,
+    val finalReport: Boolean?,
 
     val projectId: Long,
     val projectIdentifier: String,

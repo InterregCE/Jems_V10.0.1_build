@@ -229,7 +229,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             verificationEndDate = verificationDate,
             lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
-            riskBasedVerificationDescription = "Description"
+            riskBasedVerificationDescription = "Description",
+            finalReport = false
         )
 
         private val expectedReportData = ProjectReportData(
@@ -240,6 +241,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             startDate = startDate,
             endDate = endDate,
             deadlineId = 1,
+            finalReport = false,
             type = ContractingDeadlineTypeData.Content,
             periodDetail = periodReport,
             reportingDate = reportingDate,

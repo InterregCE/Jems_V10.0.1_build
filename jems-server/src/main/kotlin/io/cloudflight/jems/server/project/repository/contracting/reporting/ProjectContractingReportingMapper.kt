@@ -15,6 +15,7 @@ fun ProjectContractingReportingEntity.toModel(linkedReports: List<ProjectReportE
     number = number,
     linkedSubmittedProjectReportNumbers = linkedReports.getProjectReportsThat { it.status.hasBeenSubmitted() },
     linkedDraftProjectReportNumbers = linkedReports.getProjectReportsThat { it.status.isOpenInitially() },
+    finalReport = finalReport
 )
 
 private inline fun Collection<ProjectReportEntity>.getProjectReportsThat(

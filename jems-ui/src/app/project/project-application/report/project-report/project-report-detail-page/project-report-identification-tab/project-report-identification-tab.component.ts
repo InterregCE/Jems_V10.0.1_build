@@ -4,7 +4,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectCallSettingsDTO,
   ProjectContractingReportingScheduleDTO,
-  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO, UserRoleCreateDTO
+  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
@@ -56,6 +56,7 @@ export class ProjectReportIdentificationTabComponent {
     deadlineId: [null, Validators.required],
     type:[null, Validators.required],
     reportingDate: ['', Validators.required],
+    finalReport: [false],
   });
 
   dateNameArgs = {
@@ -94,12 +95,15 @@ export class ProjectReportIdentificationTabComponent {
       pageStore.canUserAccessCall$
     ]).pipe(
       tap(([projectReport, availablePeriods, reportingDeadlines]) => {
-          this.availablePeriods = availablePeriods;
-          this.availableDeadlines = reportingDeadlines.filter(d => availablePeriods.map(p => p.number).includes(d.periodNumber));
+          this.availablePeriods = [
+            ...availablePeriods,
+            { number: 255, start: 0, end: 0, startDate: '', endDate: '' }
+          ];
+          this.availableDeadlines = reportingDeadlines.filter(d => this.availablePeriods.map(p => p.number).includes(d.periodNumber));
       }),
       map(([projectReport, availablePeriods, reportingDeadlines, relatedCall, canUserAccessCall]) => ({
         projectReport,
-        periods: availablePeriods,
+        periods: this.availablePeriods,
         reportingDeadlines,
         relatedCall,
         canUserAccessCall
@@ -134,6 +138,7 @@ export class ProjectReportIdentificationTabComponent {
       this.form.get('type')?.disable();
       this.form.get('periodNumber')?.disable();
       this.form.get('reportingDate')?.disable();
+      this.form.get('finalReport')?.disable();
     }
     this.disableFieldsIfReopened(identification?.status);
     this.displayReportTypeWarningMessage = false;
@@ -146,6 +151,7 @@ export class ProjectReportIdentificationTabComponent {
       type: this.form.get('deadlineId')?.value < 1 ? this.form.get('type')?.value : null,
       periodNumber: this.form.get('deadlineId')?.value < 1 ? this.form.get('periodNumber')?.value : null,
       reportingDate: this.form.get('deadlineId')?.value < 1 ? this.form.get('reportingDate')?.value : null,
+      finalReport: this.form.get('deadlineId')?.value < 1 ? this.form.get('finalReport')?.value : null,
     } as ProjectReportUpdateDTO;
     if (!this.reportId) {
       this.projectReportPageStore.createProjectReport(data)
@@ -193,6 +199,7 @@ export class ProjectReportIdentificationTabComponent {
     this.form.patchValue({type: selectedDeadline?.type});
     this.form.patchValue({periodNumber: selectedDeadline?.periodNumber});
     this.form.patchValue({reportingDate: selectedDeadline?.date});
+    this.form.patchValue({finalReport: selectedDeadline?.finalReport});
   }
 
   private redirectToProjectReportsOverview(): void {
@@ -214,8 +221,9 @@ export class ProjectReportIdentificationTabComponent {
       ProjectReportDTO.StatusEnum.VerificationReOpenedLimited
     ];
     if (status && reopenedStatuses.includes(status)) {
-        this.form.get('deadlineId')?.disable();
-        this.form.get('type')?.disable();
+      this.form.get('deadlineId')?.disable();
+      this.form.get('type')?.disable();
+      this.form.get('finalReport')?.disable();
     }
   }
 
