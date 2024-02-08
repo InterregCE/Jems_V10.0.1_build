@@ -110,7 +110,9 @@ export class AccountsWithdrawnTabComponent {
               ofAaRow,
               ofEcRow
             ] as AccountWithdrawalLine[]);
-          } else {return ([priorityAxisHeader]);}
+          } else {
+            return ([]);
+          }
 
         }).flat();
 
