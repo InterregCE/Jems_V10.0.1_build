@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.repository.account.correction.PaymentAccountCorrectionExtensionRepository
+import io.cloudflight.jems.server.payments.repository.account.finance.correction.PaymentAccountCorrectionExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorrection.EcPaymentCorrectionExtensionRepository
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity

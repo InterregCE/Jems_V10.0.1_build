@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
-import io.cloudflight.jems.server.payments.repository.account.correction.PaymentAccountCorrectionExtensionRepository
+import io.cloudflight.jems.server.payments.repository.account.finance.correction.PaymentAccountCorrectionExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorrection.EcPaymentCorrectionExtensionRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureUpdate

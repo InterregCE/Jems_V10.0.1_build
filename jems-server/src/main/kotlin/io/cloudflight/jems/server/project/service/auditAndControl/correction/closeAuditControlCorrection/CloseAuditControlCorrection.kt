@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
+import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.authorization.CanCloseAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence

@@ -15,11 +15,11 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSum
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
-import io.cloudflight.jems.server.payments.service.account.corrections.deselectCorrection.DeselectCorrectionFromPaymentAccount
-import io.cloudflight.jems.server.payments.service.account.corrections.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForPaymentAccount
-import io.cloudflight.jems.server.payments.service.account.corrections.getCumulativeOverview.GetPaymentAccountCurrentOverview
-import io.cloudflight.jems.server.payments.service.account.corrections.selectCorrection.SelectCorrectionToPaymentAccount
-import io.cloudflight.jems.server.payments.service.account.corrections.updateCorrection.UpdateLinkedCorrectionToPaymentAccount
+import io.cloudflight.jems.server.payments.service.account.finance.correction.deselectCorrection.DeselectCorrectionFromPaymentAccount
+import io.cloudflight.jems.server.payments.service.account.finance.correction.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForPaymentAccount
+import io.cloudflight.jems.server.payments.service.account.finance.correction.getOverview.GetPaymentAccountCurrentOverview
+import io.cloudflight.jems.server.payments.service.account.finance.correction.selectCorrection.SelectCorrectionToPaymentAccount
+import io.cloudflight.jems.server.payments.service.account.finance.correction.updateCorrection.UpdateLinkedCorrectionToPaymentAccount
 import io.cloudflight.jems.server.payments.service.toModel
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus

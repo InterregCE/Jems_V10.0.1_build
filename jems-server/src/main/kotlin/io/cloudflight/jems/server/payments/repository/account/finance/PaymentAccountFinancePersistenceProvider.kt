@@ -8,8 +8,7 @@ import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.CorrectionAmountWithdrawn
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.service.account.PaymentAccountFinancePersistence
+import io.cloudflight.jems.server.payments.service.account.finance.PaymentAccountFinancePersistence
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity

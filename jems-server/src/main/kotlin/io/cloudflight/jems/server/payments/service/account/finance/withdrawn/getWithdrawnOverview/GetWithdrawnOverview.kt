@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.Amoun
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.AmountWithdrawnPerYear
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.CorrectionAmountWithdrawn
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
-import io.cloudflight.jems.server.payments.service.account.PaymentAccountFinancePersistence
+import io.cloudflight.jems.server.payments.service.account.finance.PaymentAccountFinancePersistence
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
