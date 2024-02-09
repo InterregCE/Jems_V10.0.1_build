@@ -13,11 +13,10 @@ data class PaymentAccountCorrectionLinking(
     val priorityAxis: String,
     val controllingBody: ControllingBody,
     val scenario: ProjectCorrectionProgrammeMeasureScenario,
-    val projectFlagged94Or95: Boolean,
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,
-    var correctedFundAmount: BigDecimal,
+    val correctedFundAmount: BigDecimal,
     val partnerContribution: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,

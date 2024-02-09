@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSum
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
-import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
-import io.cloudflight.jems.server.payments.service.account.corrections.sumUpProperColumns
+import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
+import io.cloudflight.jems.server.payments.service.account.finance.correction.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.account.paymentAccount
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.mockk.every

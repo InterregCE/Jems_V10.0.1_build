@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentsAccoun
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
-import io.cloudflight.jems.server.payments.service.account.corrections.PaymentAccountCorrectionLinkingPersistence
-import io.cloudflight.jems.server.payments.service.account.corrections.sumUpProperColumns
+import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
+import io.cloudflight.jems.server.payments.service.account.finance.correction.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.paymentAccountsFinished
 import org.springframework.context.ApplicationEventPublisher

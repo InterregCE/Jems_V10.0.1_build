@@ -45,7 +45,7 @@ interface AuditControlCorrectionPersistence {
 
     fun getCorrectionsForModificationDecisions(projectId: Long): Map<Long, List<AuditControlCorrection>>
 
-    fun getCorrectionsLinkedToPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionLinking>
+    fun getCorrectionsLinkedToEcPayment(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionLinking>
 
     fun getCorrectionsLinkedToPaymentAccount(pageable: Pageable, filter: PaymentAccountCorrectionSearchRequest): Page<PaymentAccountCorrectionLinking>
 

@@ -14,7 +14,6 @@ data class PaymentAccountCorrectionLinkingDTO(
     val priorityAxis: String,
     val controllingBody: ControllingBodyDTO,
     val scenario: ProjectCorrectionProgrammeMeasureScenarioDTO,
-    val projectFlagged94Or95: Boolean,
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,

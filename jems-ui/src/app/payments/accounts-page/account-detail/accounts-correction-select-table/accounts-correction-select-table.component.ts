@@ -53,7 +53,6 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
     'projectId',
     'projectAcronym',
     'priorityAxis',
-    'projectFlagged94Or95',
     'correctionNo',
     'scenario',
     'controllingBody',
@@ -164,7 +163,7 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
       correctedAutoPublicContribution: this.correctionLinking.at(rowIndex).get('autoPublicContribution')?.value,
       correctedPrivateContribution: this.correctionLinking.at(rowIndex).get('privateContribution')?.value,
       correctedFundAmount: this.correctionLinking.at(rowIndex).get('fundAmount')?.value,
-      comment: this.correctionLinking.at(rowIndex).get('comment')?.value,
+      comment: this.correctionLinking.at(rowIndex).get('comment')?.value || '',
     } as PaymentAccountCorrectionLinkingUpdateDTO;
     this.submitPayment$.emit({correctionId, updateDto});
     this.editedRowIndex = null;

@@ -14,9 +14,9 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestSco
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
-import io.cloudflight.jems.server.payments.service.ecPayment.constructCorrectionFilter
-import io.cloudflight.jems.server.payments.service.ecPayment.constructFilter
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForEcPayment.Companion.filterForEcPaymentAvailableCorrections
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.constructFilter
 import io.cloudflight.jems.server.payments.service.ecPayment.mergeBothScoBases
 import io.cloudflight.jems.server.payments.service.ecPayment.plus
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
@@ -68,11 +68,11 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
 
         val filter = if (ecPayment.status.isFinished())
-            constructCorrectionFilter(ecPaymentIds = setOf(ecPaymentId))
+            filterForEcPaymentAvailableCorrections(ecPaymentIds = setOf(ecPaymentId))
         else
-            constructCorrectionFilter(ecPaymentIds = setOf(null, ecPaymentId), fundId = fundId)
+            filterForEcPaymentAvailableCorrections(ecPaymentIds = setOf(null, ecPaymentId), fundId = fundId)
 
-        return correctionPersistence.getCorrectionsLinkedToPaymentToEc(pageable.toJpaPage(), filter)
+        return correctionPersistence.getCorrectionsLinkedToEcPayment(pageable.toJpaPage(), filter)
             .toPluginPage { it.toDataModel() }
     }
 
@@ -112,6 +112,7 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         paymentType = paymentType
     )
 
+    @Deprecated("use getPaymentsForEcPaymentByFilter")
     @Transactional(readOnly = true)
     override fun getPaymentsForEcPayment(ecPaymentId: Long, pageable: Pageable): Page<PaymentToEcPaymentData> {
         val ecPayment = paymentApplicationToEcPersistence.getPaymentApplicationToEcDetail(ecPaymentId)
@@ -136,5 +137,6 @@ class PaymentApplicationToEcAuditDataProviderImpl(
         fundId = fundId,
         finalScoBasis = finalScoBasis,
         contractingScoBasis = contractingScoBasis,
+        paymentType = null, // both ftls + regular
     )
 }

@@ -13,7 +13,6 @@ data class PaymentAccountCorrectionTmp(
     val priorityAxis: String?,
     val controllingBody: ControllingBody,
 
-    val isProjectFlagged94Or95: Boolean,
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,

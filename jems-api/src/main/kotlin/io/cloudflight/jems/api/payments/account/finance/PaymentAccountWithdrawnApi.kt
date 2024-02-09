@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.payments.account.finance
 
+import io.cloudflight.jems.api.payments.account.PaymentAccountApi
 import io.cloudflight.jems.api.payments.dto.account.finance.withdrawn.AmountWithdrawnPerPriorityDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable
 interface PaymentAccountWithdrawnApi {
 
     companion object {
-        const val ENDPOINT_API_PAYMENT_ACCOUNT_WITHDRAWN = "/api/payments/accounts/{paymentAccountId}/finance/withdrawn"
+        const val ENDPOINT_API_PAYMENT_ACCOUNT_WITHDRAWN =
+            "${PaymentAccountApi.ENDPOINT_API_PAYMENT_ACCOUNT}/finance/withdrawn/{paymentAccountId}"
     }
 
     @ApiOperation("Get payment account withdrawn overview")

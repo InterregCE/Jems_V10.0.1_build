@@ -26,6 +26,11 @@
                     [type]="Alert.SUCCESS">
             <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
         </jems-alert>
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content *ngIf="error.i18nMessage?.i18nKey" [error]="error"></jems-api-error-content>
+        </jems-alert>
 
         <jems-accounts-correction-select-table [data]="data"
                                                [newSort]="pageStore.correctionNewSort$"

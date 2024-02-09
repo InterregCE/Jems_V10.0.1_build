@@ -43,16 +43,6 @@
             </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="projectFlagged94Or95">
-            <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{ 'payments.accounts.corrections.column.article.94.or.95' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let i = index">
-                <span *ngIf="correction(i).projectFlagged94Or95">{{ 'common.yes' | translate }}</span>
-                <span *ngIf="!correction(i).projectFlagged94Or95">{{ 'common.no' | translate }}</span>
-            </mat-cell>
-        </ng-container>
-
         <ng-container matColumnDef="correctionNo">
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.correction.no' | translate }}</span>
@@ -104,10 +94,10 @@
                         <span jemsText maxLines="2">{{ 'payments.accounts.corrections.column.fund.amount' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index" class="text-right">
-                        <div *ngIf="i !== editedRowIndex || !correction(i).projectFlagged94Or95">
+                        <div *ngIf="i !== editedRowIndex">
                             {{ row.get('fundAmount').value | asMoney}}
                         </div>
-                        <div *ngIf="i === editedRowIndex && correction(i).projectFlagged94Or95">
+                        <div *ngIf="i === editedRowIndex">
                             <mat-form-field [formGroup]="row" class="limit-input-width">
                                 <input matInput formControlName="fundAmount"
                                        [options]="{max: MAX_VALUE, allowNegative: true, align: 'right'}"
@@ -231,8 +221,8 @@
             <mat-cell *matCellDef="let ftls;let i = index"
                       class="text-center border-cell-left">
                 <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
-                        [disabled]="!data.isEditable || editedRowIndex !== null"
-                        color="primary" mat-icon-button matTooltip="{{ 'payments.accounts.corrections.column.correct.amounts.tooltip' | translate }}"
+                        [disabled]="!data.isEditable || editedRowIndex !== null || !correction(i).paymentAccountId"
+                        color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"
                         aria-label="edit">
                     <mat-icon>edit</mat-icon>
                 </button>
