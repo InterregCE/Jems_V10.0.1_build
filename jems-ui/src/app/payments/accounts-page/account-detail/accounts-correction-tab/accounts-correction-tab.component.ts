@@ -4,7 +4,6 @@ import {
   PagePaymentAccountCorrectionLinkingDTO,
   PaymentAccountAmountSummaryDTO, PaymentAccountCorrectionExtensionDTO,
   PaymentAccountCorrectionLinkingUpdateDTO,
-  PaymentToEcAmountSummaryDTO
 } from '@cat/api';
 import {AccountsCorrectionTabStore} from './accounts-correction-tab.store';
 import {catchError, map, take, tap} from 'rxjs/operators';
@@ -44,13 +43,13 @@ export class AccountsCorrectionTabComponent implements OnInit {
     this.data$ = combineLatest([
       pageStore.correctionPage$,
       detailPageStore.accountDetail$,
+      detailPageStore.updatedAccountStatus$,
       detailPageStore.userCanEdit$,
     ]).pipe(
-      map(([correctionLinking, accountDetail, userCanEdit]) => ({
+      map(([correctionLinking, accountDetail, status,  userCanEdit]) => ({
         paymentAccountId: accountDetail.id,
         correctionLinking,
-        // TODO: replace after mihnea is done
-        isEditable: userCanEdit && accountDetail.status === PaymentAccountStatusEnum.DRAFT
+        isEditable: userCanEdit && status === PaymentAccountStatusEnum.DRAFT,
       }))
     );
 
