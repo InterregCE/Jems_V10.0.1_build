@@ -8,6 +8,8 @@ interface PaymentAccountPersistence {
 
     fun getAllAccounts(): List<PaymentAccount>
 
+    fun findByFundAndYear(fundId: Long, accountingYearId: Long): PaymentAccount
+
     fun getByPaymentAccountId(paymentAccountId: Long): PaymentAccount
 
     fun updatePaymentAccount(paymentAccountId: Long, paymentAccount: PaymentAccountUpdate): PaymentAccount

@@ -1,17 +1,20 @@
 package io.cloudflight.jems.server.payments.service.ecPayment.getPaymentApplicationToEcDetail
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -32,31 +35,48 @@ class GetPaymentApplicationToEcDetailTest: UnitTest() {
             comment = "Comment"
         )
 
-        private val paymentApplicationsToEcDetail = PaymentApplicationToEcDetail(
+        private fun paymentApplicationsToEcDetail(status: PaymentEcStatus) = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
-            status = PaymentEcStatus.Draft,
+            status = status,
             paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
     }
 
-    @MockK
-    lateinit var paymentApplicationsToEcPersistence: PaymentApplicationToEcPersistence
+    @MockK private lateinit var ecPaymentPersistence: PaymentApplicationToEcPersistence
+    @MockK private lateinit var paymentAccountPersistence: PaymentAccountPersistence
 
-    @InjectMockKs
-    lateinit var service: GetPaymentApplicationToEcDetail
+    @InjectMockKs private lateinit var service: GetPaymentApplicationToEcDetail
 
-    @Test
-    fun getPaymentApplicationToEcDetail() {
-        val expected =  PaymentApplicationToEcDetail(
-            id = paymentApplicationsToEcId,
-            status = PaymentEcStatus.Draft,
-            paymentApplicationToEcSummary = paymentApplicationsToEcSummary
+    @ParameterizedTest(name = "finalizePaymentApplicationToEc {0} when otherDraftExists {1} and yearOpen {2}")
+    @CsvSource(value = [
+        "Draft,false,DRAFT,false",
+        "Draft,false,FINISHED,false",
+        "Draft,true,DRAFT,false",
+        "Draft,true,FINISHED,false",
+        "Finished,false,DRAFT,true",
+        "Finished,false,FINISHED,false",
+        "Finished,true,DRAFT,false",
+        "Finished,true,FINISHED,false",
+    ])
+    fun getPaymentApplicationToEcDetail(
+        ecPaymentStatus: PaymentEcStatus,
+        otherDraftExists: Boolean,
+        yearStatus: PaymentAccountStatus,
+        expectedFlag: Boolean,
+    ) {
+        every { ecPaymentPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId) } returns
+                paymentApplicationsToEcDetail(ecPaymentStatus)
+
+        every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id) } returns otherDraftExists
+        every { paymentAccountPersistence.findByFundAndYear(fund.id, accountingYear.id).status } returns yearStatus
+
+        assertThat(service.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)).isEqualTo(
+            PaymentApplicationToEcDetail(
+                id = paymentApplicationsToEcId,
+                status = ecPaymentStatus,
+                isAvailableToReOpen = expectedFlag,
+                paymentApplicationToEcSummary = paymentApplicationsToEcSummary
+            )
         )
-        every {
-            paymentApplicationsToEcPersistence.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)
-        } returns paymentApplicationsToEcDetail
-        every { paymentApplicationsToEcPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id) } returns false
-
-        assertThat(service.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)).isEqualTo(expected)
     }
 }

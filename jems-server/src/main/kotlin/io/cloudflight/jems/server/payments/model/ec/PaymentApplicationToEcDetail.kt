@@ -6,6 +6,5 @@ data class PaymentApplicationToEcDetail (
     val id: Long,
     val status: PaymentEcStatus,
     var isAvailableToReOpen: Boolean = false,
-    val paymentApplicationToEcSummary: PaymentApplicationToEcSummary
+    val paymentApplicationToEcSummary: PaymentApplicationToEcSummary,
 )
-

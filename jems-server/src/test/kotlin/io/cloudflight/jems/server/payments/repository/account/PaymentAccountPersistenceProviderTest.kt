@@ -69,7 +69,13 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
     fun getAllAccounts() {
         every { repository.findAll() } returns listOf(paymentAccountEntity())
 
-        assertThat(persistenceProvider.getAllAccounts()).isEqualTo(listOf(paymentAccount))
+        assertThat(persistenceProvider.getAllAccounts()).containsExactly(paymentAccount)
+    }
+
+    @Test
+    fun findByFundAndYear() {
+        every { repository.findByProgrammeFundIdAndAccountingYearId(24L, 54L) } returns paymentAccountEntity()
+        assertThat(persistenceProvider.findByFundAndYear(24L, 54L)).isEqualTo(paymentAccount)
     }
 
     @Test
