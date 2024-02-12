@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.payments.service.account.finance.correction
 
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinkingUpdate
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinkingUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
 
 interface PaymentAccountCorrectionLinkingPersistence {

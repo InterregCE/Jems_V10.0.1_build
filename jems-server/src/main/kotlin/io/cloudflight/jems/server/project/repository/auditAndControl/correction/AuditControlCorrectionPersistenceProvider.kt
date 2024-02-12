@@ -8,9 +8,9 @@ import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionTmp

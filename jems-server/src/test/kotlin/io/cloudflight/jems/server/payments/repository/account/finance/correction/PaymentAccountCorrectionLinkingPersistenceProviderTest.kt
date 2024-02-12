@@ -10,9 +10,9 @@ import io.cloudflight.jems.server.payments.entity.account.PaymentAccountCorrecti
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinkingUpdate
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewType.Correction
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.repository.account.PaymentAccountRepository

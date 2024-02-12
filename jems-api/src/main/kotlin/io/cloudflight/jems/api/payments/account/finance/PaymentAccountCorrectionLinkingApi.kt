@@ -1,10 +1,10 @@
 package io.cloudflight.jems.api.payments.account.finance
 
 import io.cloudflight.jems.api.payments.account.PaymentAccountApi
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionExtensionDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionExtensionDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams

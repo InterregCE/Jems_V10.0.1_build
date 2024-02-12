@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.controller.account.finance
 
 import io.cloudflight.jems.api.payments.account.finance.PaymentAccountCorrectionLinkingApi
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionExtensionDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionExtensionDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingUpdateDTO
 import io.cloudflight.jems.server.payments.service.account.finance.correction.deselectCorrection.DeselectCorrectionFromPaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.finance.correction.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForPaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.finance.correction.getOverview.GetPaymentAccountCurrentOverviewInteractor

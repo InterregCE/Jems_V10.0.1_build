@@ -1,13 +1,12 @@
-package io.cloudflight.jems.server.payments.model.account
+package io.cloudflight.jems.api.payments.dto.account.finance.correction
 
-import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
+import io.cloudflight.jems.api.payments.dto.account.PaymentAccountStatusDTO
 import java.math.BigDecimal
 
-data class PaymentAccountCorrectionExtension(
+data class PaymentAccountCorrectionExtensionDTO(
     val correctionId: Long,
     val paymentAccountId: Long?,
-    val paymentAccountStatus: PaymentAccountStatus?,
-    val auditControlStatus :AuditControlStatus,
+    val paymentAccountStatus: PaymentAccountStatusDTO?,
     val comment: String?,
 
     val fundAmount: BigDecimal,

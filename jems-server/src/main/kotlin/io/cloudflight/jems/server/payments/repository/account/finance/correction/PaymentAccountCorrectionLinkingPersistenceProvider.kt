@@ -5,10 +5,10 @@ import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinkingUpdate
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewType
 import io.cloudflight.jems.server.payments.repository.account.PaymentAccountRepository
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
@@ -145,7 +145,7 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
             .fetch()
             .map { it: Tuple ->
                 PaymentAccountAmountSummaryLineTmp(
-                    priorityId = it.get(0, Long::class.java),
+                    priorityId = it.get(0, Long::class.java)!!,
                     priorityAxis = it.get(1, String::class.java),
                     fundAmount = it.get(2, BigDecimal::class.java)!!,
                     partnerContribution = it.get(6, BigDecimal::class.java)!! +

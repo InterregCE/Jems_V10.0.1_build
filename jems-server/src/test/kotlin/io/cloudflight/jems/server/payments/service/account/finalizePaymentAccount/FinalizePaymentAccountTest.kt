@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence

@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.g
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence

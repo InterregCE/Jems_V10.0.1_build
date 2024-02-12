@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionTmp
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
 import org.springframework.data.domain.Page
-import java.math.BigDecimal
 
 fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     id = id,

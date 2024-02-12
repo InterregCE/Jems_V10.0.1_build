@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments.dto.account
+package io.cloudflight.jems.api.payments.dto.account.finance.correction
 
 import java.math.BigDecimal
 
