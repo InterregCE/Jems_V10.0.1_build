@@ -55,6 +55,13 @@
               </span>
         </a>
 
+      <a [active]="activeTab('reconciliation')" mat-tab-link (click)="routeTo('reconciliation')"
+         (focusin)="pageStore.tabChanged$.next(true)">
+              <span jemsText maxWidth="230">
+                  {{ 'payments.accounts.reconciliation.tab' | translate }}
+              </span>
+      </a>
+
         <a [active]="activeTab('finalize')" mat-tab-link (click)="routeTo('finalize')"
            (focusin)="pageStore.tabChanged$.next(true)">
               <span jemsText maxWidth="230">

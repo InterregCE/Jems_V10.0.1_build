@@ -77,6 +77,7 @@ import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/acc
 import {
   AccountsWithdrawnTabComponent
 } from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
+import { AccountsReconciliationTabComponent } from './accounts-page/account-detail/accounts-reconciliation-tab/accounts-reconciliation-tab.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import {
     AccountsFinalizeTabComponent,
     AccountsWithdrawnTabComponent,
     AccountsFinalizeTabComponent,
-    ProjectsFlaggedArt9495TabComponent
+    ProjectsFlaggedArt9495TabComponent,
+    AccountsReconciliationTabComponent
   ],
   imports: [
     SharedModule,
