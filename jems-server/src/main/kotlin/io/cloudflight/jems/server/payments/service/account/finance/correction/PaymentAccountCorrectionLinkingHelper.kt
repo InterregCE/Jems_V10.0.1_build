@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.service.account.finance.correction
 
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLineTmp
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
 
 fun Map<Long?, PaymentAccountAmountSummaryLineTmp>.sumUpProperColumns() =
     mapValues { (_, it) ->

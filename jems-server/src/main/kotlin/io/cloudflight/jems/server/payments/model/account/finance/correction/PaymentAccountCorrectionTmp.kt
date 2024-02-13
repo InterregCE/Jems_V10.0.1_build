@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.model.account
+package io.cloudflight.jems.server.payments.model.account.finance.correction
 
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
@@ -16,7 +16,6 @@ data class PaymentAccountCorrectionTmp(
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,
-    val correctedFundAmount: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
     val autoPublicContribution: BigDecimal,

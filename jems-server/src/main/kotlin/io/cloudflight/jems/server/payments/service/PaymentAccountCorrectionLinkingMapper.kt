@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.payments.service
 
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionExtensionDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingUpdateDTO
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummary
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinkingUpdate
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionExtensionDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingUpdateDTO
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummary
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinkingUpdate
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.d
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentsAccount
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

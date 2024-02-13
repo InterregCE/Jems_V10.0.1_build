@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.repository.account.finance.correctio
 
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
 import org.mapstruct.Mapper
@@ -18,7 +18,6 @@ fun PaymentAccountCorrectionExtensionEntity.toModel() = PaymentAccountCorrection
     paymentAccountStatus = paymentAccount?.status,
     comment = comment,
     fundAmount = fundAmount,
-    correctedFundAmount = correctedFundAmount,
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,
     autoPublicContribution= autoPublicContribution,
@@ -35,7 +34,6 @@ fun ProjectCorrectionFinancialDescription.toEntity(
     correction = correctionEntity,
     paymentAccount = null,
     fundAmount = fundAmount,
-    correctedFundAmount = fundAmount,
     publicContribution = publicContribution,
     correctedPublicContribution = publicContribution,
     autoPublicContribution = autoPublicContribution,

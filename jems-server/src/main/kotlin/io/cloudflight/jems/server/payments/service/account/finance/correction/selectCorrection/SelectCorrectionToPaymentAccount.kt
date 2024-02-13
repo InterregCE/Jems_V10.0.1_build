@@ -21,11 +21,10 @@ class SelectCorrectionToPaymentAccount(
         if (paymentAccount.status.isFinished())
             throw PaymentAccountNotInDraftException()
 
-        val availableCorrections = correctionLinkingPersistence.getCorrectionIdsAvailableForPaymentAccounts(
-            paymentAccount.fund.id
-        )
+        val availableCorrectionIds = correctionLinkingPersistence
+            .getCorrectionIdsAvailableForPaymentAccounts(fundId = paymentAccount.fund.id)
 
-        if (!availableCorrections.contains(correctionId))
+        if (correctionId !in availableCorrectionIds)
             throw CorrectionNotAvailableForSelectionException()
 
         correctionLinkingPersistence.selectCorrectionToPaymentAccount(

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments.dto.account
+package io.cloudflight.jems.api.payments.dto.account.finance.correction
 
 import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
@@ -17,7 +17,6 @@ data class PaymentAccountCorrectionLinkingDTO(
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,
-    val correctedFundAmount: BigDecimal,
     val partnerContribution: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,

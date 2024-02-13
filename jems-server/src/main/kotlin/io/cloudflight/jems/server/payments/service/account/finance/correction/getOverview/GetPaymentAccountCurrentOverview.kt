@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.g
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentsAccount
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummary
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummary
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
 import io.cloudflight.jems.server.payments.service.account.finance.correction.sumUp

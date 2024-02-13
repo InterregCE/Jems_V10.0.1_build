@@ -1,19 +1,19 @@
 package io.cloudflight.jems.server.payments.controller.account.finance
 
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountAmountSummaryLineDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingDTO
-import io.cloudflight.jems.api.payments.dto.account.PaymentAccountCorrectionLinkingUpdateDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryLineDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.correction.PaymentAccountCorrectionLinkingUpdateDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.AuditStatusDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.ControllingBodyDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.AuditControlCorrectionTypeDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureScenarioDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummary
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountAmountSummaryLine
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummary
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.finance.correction.deselectCorrection.DeselectCorrectionFromPaymentAccount
 import io.cloudflight.jems.server.payments.service.account.finance.correction.getAvailableClosedCorrections.GetAvailableClosedCorrectionsForPaymentAccount
@@ -81,7 +81,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
                 correctedPublicContribution = BigDecimal(106),
                 correctedAutoPublicContribution = BigDecimal(107),
                 comment = "Comment",
-                correctedFundAmount = BigDecimal(100),
             )
         )
 
@@ -105,7 +104,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
                 correctedPublicContribution = BigDecimal(106),
                 correctedAutoPublicContribution = BigDecimal(107),
                 comment = "Comment",
-                correctedFundAmount = BigDecimal(100),
         )
 
         private val correctionUpdate = PaymentAccountCorrectionLinkingUpdateDTO(
@@ -113,7 +111,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
             correctedPublicContribution = BigDecimal(206),
             correctedAutoPublicContribution = BigDecimal(207),
             comment = "Updated comment",
-            correctedFundAmount = BigDecimal(55),
         )
 
 
@@ -130,7 +127,6 @@ class PaymentAccountCorrectionLinkingControllerTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
-            correctedFundAmount = BigDecimal.valueOf(75.00),
         )
 
         private fun summaryLine() = PaymentAccountAmountSummaryLine(

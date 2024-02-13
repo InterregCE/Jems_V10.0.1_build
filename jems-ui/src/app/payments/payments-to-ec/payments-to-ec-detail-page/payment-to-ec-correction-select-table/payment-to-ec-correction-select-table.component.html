@@ -259,7 +259,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let ftls;let i = index" class="text-center border-cell-left">
                 <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
-                        [disabled]="!data.isEditable || editedRowIndex !== null"
+                        [disabled]="!data.isEditable || editedRowIndex !== null || !data.content[i].paymentToEcId"
                         color="primary" mat-icon-button matTooltip="{{ 'payments.to.ec.detail.ftls.column.correct.amounts.tooltip' | translate }}"
                         aria-label="edit">
                     <mat-icon>edit</mat-icon>

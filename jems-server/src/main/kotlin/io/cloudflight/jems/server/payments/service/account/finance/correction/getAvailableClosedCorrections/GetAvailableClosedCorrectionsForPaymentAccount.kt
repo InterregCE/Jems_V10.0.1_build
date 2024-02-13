@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.g
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentsAccount
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario

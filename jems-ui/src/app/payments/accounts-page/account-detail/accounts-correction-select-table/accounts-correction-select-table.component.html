@@ -50,7 +50,6 @@
             <mat-cell *matCellDef="let i = index">
                 {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
                 :{auditControlNumber: correction(i).correction.auditControlNumber, correctionNumber: correction(i).correction.orderNr} }}
-<!--                AC{{correction(i).correction.auditControlNumber + 1}}-->
             </mat-cell>
         </ng-container>
 
@@ -83,7 +82,7 @@
                 <span jemsText maxLines="2">{{ 'payments.accounts.corrections.column.total.eligible' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let i = index" class="text-right">
-                {{ (correction(i).correctedFundAmount + correction(i).partnerContribution) | asMoney}}
+                {{ (correction(i).fundAmount + correction(i).partnerContribution) | asMoney}}
             </mat-cell>
         </ng-container>
 
@@ -94,16 +93,7 @@
                         <span jemsText maxLines="2">{{ 'payments.accounts.corrections.column.fund.amount' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index" class="text-right">
-                        <div *ngIf="i !== editedRowIndex">
-                            {{ row.get('fundAmount').value | asMoney}}
-                        </div>
-                        <div *ngIf="i === editedRowIndex">
-                            <mat-form-field [formGroup]="row" class="limit-input-width">
-                                <input matInput formControlName="fundAmount"
-                                       [options]="{max: MAX_VALUE, allowNegative: true, align: 'right'}"
-                                       currencyMask matInput type="decimal">
-                            </mat-form-field>
-                        </div>
+                        {{ row.get('fundAmount').value | asMoney}}
                     </mat-cell>
                 </ng-container>
 

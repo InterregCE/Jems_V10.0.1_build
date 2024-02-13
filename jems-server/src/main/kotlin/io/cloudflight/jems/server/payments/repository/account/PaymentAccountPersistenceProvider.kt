@@ -28,6 +28,10 @@ class PaymentAccountPersistenceProvider(
     override fun getAllAccounts(): List<PaymentAccount> =
         repository.findAll().sortedBy { it.accountingYear.year }.toModel()
 
+    @Transactional(readOnly = true)
+    override fun findByFundAndYear(fundId: Long, accountingYearId: Long): PaymentAccount =
+        repository.findByProgrammeFundIdAndAccountingYearId(fundId = fundId, yearId = accountingYearId).toModel()
+
     @Transactional
     override fun updatePaymentAccount(paymentAccountId: Long, paymentAccount: PaymentAccountUpdate): PaymentAccount {
         val existingAccount = repository.getById(paymentAccountId)

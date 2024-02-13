@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.s
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionExtension
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
@@ -38,7 +38,6 @@ class SelectCorrectionToPaymentAccountTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
-            correctedFundAmount = BigDecimal.valueOf(75.00),
         )
 
     }

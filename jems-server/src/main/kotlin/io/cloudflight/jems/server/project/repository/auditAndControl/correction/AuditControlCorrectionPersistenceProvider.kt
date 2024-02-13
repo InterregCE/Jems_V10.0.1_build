@@ -8,9 +8,9 @@ import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountCorrectionExtensionEntity
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionSearchRequest
-import io.cloudflight.jems.server.payments.model.account.PaymentAccountCorrectionTmp
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionSearchRequest
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionTmp
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionTmp
@@ -393,7 +393,6 @@ class AuditControlCorrectionPersistenceProvider(
 
                 specPaymentAccountCorrectionExtensionEntity.paymentAccount.id,
                 specPaymentAccountCorrectionExtensionEntity.fundAmount,
-                specPaymentAccountCorrectionExtensionEntity.correctedFundAmount,
                 specPaymentAccountCorrectionExtensionEntity.publicContribution,
                 specPaymentAccountCorrectionExtensionEntity.correctedPublicContribution,
                 specPaymentAccountCorrectionExtensionEntity.autoPublicContribution,
@@ -443,15 +442,14 @@ class AuditControlCorrectionPersistenceProvider(
                 paymentAccountId = it.get(6, Long::class.java),
 
                 fundAmount = it.get(7, BigDecimal::class.java)!!,
-                correctedFundAmount = it.get(8, BigDecimal::class.java)!!,
-                publicContribution = it.get(9, BigDecimal::class.java)!!,
-                correctedPublicContribution = it.get(10, BigDecimal::class.java)!!,
-                autoPublicContribution = it.get(11, BigDecimal::class.java)!!,
-                correctedAutoPublicContribution = it.get(12, BigDecimal::class.java)!!,
-                privateContribution = it.get(13, BigDecimal::class.java)!!,
-                correctedPrivateContribution = it.get(14, BigDecimal::class.java)!!,
-                comment = it.get(15, String::class.java),
-                scenario = it.get(16, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
+                publicContribution = it.get(8, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(9, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(10, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(11, BigDecimal::class.java)!!,
+                privateContribution = it.get(12, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(13, BigDecimal::class.java)!!,
+                comment = it.get(14, String::class.java),
+                scenario = it.get(15, ProjectCorrectionProgrammeMeasureScenario::class.java)!!,
             )
         },
         pageable,

@@ -37,8 +37,8 @@
                                                [newIndex]="pageStore.correctionNewPageIndex$"
                                                [newSize]="pageStore.correctionNewPageSize$"
                                                (selectionChanged$)="selectionChanged($event)"
-                                               (submitPayment$)="updateLinkedCorrection($event.correctionId, $event.updateDto)"
-        ></jems-accounts-correction-select-table>
+                                               (submitPayment$)="updateLinkedCorrection($event.correctionId, $event.updateDto)">
+        </jems-accounts-correction-select-table>
 
         <jems-alert [show]="data?.correctionLinking.content?.length === 0" [type]="Alert.INFO">
             <p>{{ 'payments.to.ec.detail.ftls.table.empty' | translate }}</p>
