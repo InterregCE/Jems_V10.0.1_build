@@ -182,7 +182,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 every { spfCost } returns BigDecimal.valueOf(50L)
                 every { sum } returns BigDecimal.valueOf(550L)
             },
-            currentlyReported = mockk(),
+            currentlyReported = mockk<BudgetCostsCalculationResultFull> {
+                every { sum } returns BigDecimal.valueOf(399.83)
+            },
             totalEligibleAfterControl = mockk(),
             previouslyReported = mockk(),
             previouslyValidated = mockk(),
