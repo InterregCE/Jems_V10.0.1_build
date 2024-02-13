@@ -60,7 +60,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             paymentAccount = paymentAccount,
             comment = "comm",
             fundAmount = BigDecimal.valueOf(100),
-            correctedFundAmount = BigDecimal.valueOf(101),
             publicContribution = BigDecimal.valueOf(50),
             correctedPublicContribution = BigDecimal.valueOf(51),
             autoPublicContribution = BigDecimal.valueOf(20),
@@ -76,7 +75,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             auditControlStatus = AuditControlStatus.Closed,
             comment = "comm",
             fundAmount = BigDecimal.valueOf(100),
-            correctedFundAmount = BigDecimal.valueOf(101),
             publicContribution = BigDecimal.valueOf(50),
             correctedPublicContribution = BigDecimal.valueOf(51),
             autoPublicContribution = BigDecimal.valueOf(20),
@@ -108,7 +106,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             correction = correctionEntity,
             paymentAccount = null,
             fundAmount = BigDecimal.TEN,
-            correctedFundAmount = BigDecimal.TEN,
             publicContribution = BigDecimal.ZERO,
             correctedPublicContribution = BigDecimal.ZERO,
             autoPublicContribution = BigDecimal.ONE,
@@ -208,7 +205,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
         every { correctionExtensionRepository.findById(CORRECTION_ID) } returns Optional.of(correction)
 
         assertThat(correction.paymentAccount).isEqualTo(paymentAccount)
-        assertThat(correction.correctedFundAmount).isEqualTo(BigDecimal.valueOf(101L))
         assertThat(correction.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(51L))
         assertThat(correction.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(21L))
         assertThat(correction.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(31L))
@@ -216,7 +212,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
         persistence.deselectCorrectionFromPaymentAccountAndResetFields(CORRECTION_ID)
 
         assertThat(correction.paymentAccount).isEqualTo(null)
-        assertThat(correction.correctedFundAmount).isEqualTo(BigDecimal.valueOf(100L))
         assertThat(correction.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(50L))
         assertThat(correction.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(20L))
         assertThat(correction.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(30L))
@@ -228,7 +223,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
         every { correctionExtensionRepository.getById(CORRECTION_ID) } returns correction
 
         val update = PaymentAccountCorrectionLinkingUpdate(
-            correctedFundAmount = BigDecimal.valueOf(10),
             correctedPublicContribution = BigDecimal.valueOf(8),
             correctedAutoPublicContribution = BigDecimal.valueOf(7),
             correctedPrivateContribution = BigDecimal.valueOf(6),
@@ -236,7 +230,6 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
         )
         persistence.updateCorrectionLinkedToPaymentAccountCorrectedAmounts(CORRECTION_ID, update)
 
-        assertThat(correction.correctedFundAmount).isEqualTo(BigDecimal.valueOf(10L))
         assertThat(correction.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(8))
         assertThat(correction.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(7))
         assertThat(correction.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(6))

@@ -16,7 +16,6 @@ data class PaymentAccountCorrectionLinking(
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,
-    val correctedFundAmount: BigDecimal,
     val partnerContribution: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,

@@ -25,7 +25,6 @@ class UpdateLinkedCorrectionToPaymentAccountTest : UnitTest() {
             correctedPublicContribution = BigDecimal(206),
             correctedAutoPublicContribution = BigDecimal(207),
             comment = "Updated comment",
-            correctedFundAmount = BigDecimal.valueOf(80),
         )
 
         private val paymentAccountCorrectionExtension = PaymentAccountCorrectionExtension(
@@ -41,7 +40,6 @@ class UpdateLinkedCorrectionToPaymentAccountTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
-            correctedFundAmount = BigDecimal.valueOf(75.00),
         )
 
     }

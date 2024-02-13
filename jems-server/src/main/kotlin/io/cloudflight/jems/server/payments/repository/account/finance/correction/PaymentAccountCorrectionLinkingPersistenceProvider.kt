@@ -53,7 +53,6 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
     override fun deselectCorrectionFromPaymentAccountAndResetFields(correctionId: Long) {
         correctionExtensionRepository.findById(correctionId).get().also {
             it.paymentAccount = null
-            it.correctedFundAmount = it.fundAmount
             it.correctedPublicContribution = it.publicContribution
             it.correctedAutoPublicContribution = it.autoPublicContribution
             it.correctedPrivateContribution = it.privateContribution
@@ -79,7 +78,6 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
             this.correctedAutoPublicContribution = correctionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = correctionLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = correctionLinkingUpdate.correctedPrivateContribution
-            this.correctedFundAmount = correctionLinkingUpdate.correctedFundAmount
             this.comment = correctionLinkingUpdate.comment
         }.toModel()
 

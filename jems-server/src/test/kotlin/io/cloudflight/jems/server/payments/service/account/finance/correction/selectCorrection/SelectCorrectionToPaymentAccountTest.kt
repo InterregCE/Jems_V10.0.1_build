@@ -38,7 +38,6 @@ class SelectCorrectionToPaymentAccountTest : UnitTest() {
             correctedAutoPublicContribution = BigDecimal.valueOf(16.00),
             privateContribution = BigDecimal.valueOf(45.00),
             correctedPrivateContribution = BigDecimal.valueOf(46.20),
-            correctedFundAmount = BigDecimal.valueOf(75.00),
         )
 
     }

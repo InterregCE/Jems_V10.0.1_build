@@ -102,7 +102,7 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
 
   addLink(link: PaymentAccountCorrectionLinkingDTO) {
     const item = this.formBuilder.group({
-      fundAmount: this.formBuilder.control(link.correctedFundAmount),
+      fundAmount: this.formBuilder.control(link.fundAmount),
       autoPublicContribution: this.formBuilder.control(link.correctedAutoPublicContribution),
       publicContribution: this.formBuilder.control(link.correctedPublicContribution),
       privateContribution: this.formBuilder.control(link.correctedPrivateContribution),
@@ -162,7 +162,6 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
       correctedPublicContribution: this.correctionLinking.at(rowIndex).get('publicContribution')?.value,
       correctedAutoPublicContribution: this.correctionLinking.at(rowIndex).get('autoPublicContribution')?.value,
       correctedPrivateContribution: this.correctionLinking.at(rowIndex).get('privateContribution')?.value,
-      correctedFundAmount: this.correctionLinking.at(rowIndex).get('fundAmount')?.value,
       comment: this.correctionLinking.at(rowIndex).get('comment')?.value || '',
     } as PaymentAccountCorrectionLinkingUpdateDTO;
     this.submitPayment$.emit({correctionId, updateDto});
@@ -182,7 +181,7 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
 
   discardChanges(rowIndex: number, linkingDTO: PaymentAccountCorrectionLinkingDTO) {
     this.correctionLinking.at(rowIndex).patchValue({
-      fundAmount: linkingDTO.correctedFundAmount,
+      fundAmount: linkingDTO.fundAmount,
       autoPublicContribution: linkingDTO.correctedAutoPublicContribution,
       publicContribution: linkingDTO.correctedPublicContribution,
       privateContribution: linkingDTO.correctedPrivateContribution,

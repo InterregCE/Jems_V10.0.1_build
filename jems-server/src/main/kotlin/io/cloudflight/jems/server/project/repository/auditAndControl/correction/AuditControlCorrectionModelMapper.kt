@@ -103,7 +103,6 @@ fun PaymentAccountCorrectionTmp.toModel() = PaymentAccountCorrectionLinking(
     paymentAccountId = paymentAccountId,
 
     fundAmount = fundAmount,
-    correctedFundAmount = correctedFundAmount,
     partnerContribution = publicContribution.add(autoPublicContribution).add(privateContribution),
     publicContribution = publicContribution,
     correctedPublicContribution = correctedPublicContribution,

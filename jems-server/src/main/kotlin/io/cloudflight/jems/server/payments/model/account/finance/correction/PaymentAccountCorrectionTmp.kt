@@ -16,7 +16,6 @@ data class PaymentAccountCorrectionTmp(
     val paymentAccountId: Long?,
 
     val fundAmount: BigDecimal,
-    val correctedFundAmount: BigDecimal,
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
     val autoPublicContribution: BigDecimal,

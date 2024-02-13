@@ -26,8 +26,6 @@ class PaymentAccountCorrectionExtensionEntity(
 
     @field:NotNull
     val fundAmount: BigDecimal,
-    @field:NotNull
-    var correctedFundAmount: BigDecimal,
 
     @field:NotNull
     val publicContribution: BigDecimal,

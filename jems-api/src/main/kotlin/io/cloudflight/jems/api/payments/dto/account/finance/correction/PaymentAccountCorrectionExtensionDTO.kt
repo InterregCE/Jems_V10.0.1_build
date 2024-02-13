@@ -10,7 +10,6 @@ data class PaymentAccountCorrectionExtensionDTO(
     val comment: String?,
 
     val fundAmount: BigDecimal,
-    val correctedFundAmount: BigDecimal,
 
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
