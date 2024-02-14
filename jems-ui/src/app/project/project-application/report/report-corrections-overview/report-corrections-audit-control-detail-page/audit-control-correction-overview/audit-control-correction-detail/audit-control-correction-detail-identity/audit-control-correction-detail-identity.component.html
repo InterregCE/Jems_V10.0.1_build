@@ -163,7 +163,7 @@
             <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.FTLS">
                 <mat-label>{{'project.application.reporting.corrections.identification.ftls' | translate}}</mat-label>
                 <mat-select formControlName="lumpSumOrderNr"
-                            [disabled]="!data.canEdit || partnerReports?.length === 0"
+                            [disabled]="!data.canEdit || ftls?.length === 0"
                             (selectionChange)="selectFtls($event.value)"
                             class="placeholder-required"
                             [placeholder]="'common.not.applicable.option' | translate"
