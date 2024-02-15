@@ -63,10 +63,26 @@ export class AccountsFinalizeTabComponent {
 
   finalizePaymentAccount(accountDetail: PaymentAccountDTO) {
     this.statusChangePending$.next(true);
-    this.pageStore.finalizePaymentAccount(accountDetail.id).pipe(
+
+    Forms.confirm(
+      this.confirmDialog,
+      {
+        title: 'payments.accounts.finalize.tab.finalize.dialog.title',
+        message: {
+          i18nKey: 'payments.accounts.finalize.tab.finalize.dialog.message',
+          i18nArguments: {
+            programmeFund: accountDetail.fund.type,
+            accountingYear: this.accountingYearPipe.transform(accountDetail.accountingYear)
+          }
+        },
+      }).pipe(
       take(1),
-      catchError((error) => this.showErrorMessage(error.error)),
-      finalize(() => this.statusChangePending$.next(false)),
+      tap(() => this.statusChangePending$.next(false)),
+      filter(Boolean),
+      switchMap(() => this.pageStore.finalizePaymentAccount(accountDetail.id)
+        .pipe(
+          catchError((error) => this.showErrorMessage(error.error)),
+        ))
     ).subscribe();
   }
 

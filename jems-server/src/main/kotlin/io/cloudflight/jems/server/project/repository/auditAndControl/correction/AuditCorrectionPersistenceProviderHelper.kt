@@ -9,11 +9,14 @@ import io.cloudflight.jems.server.payments.model.account.finance.correction.Paym
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.payments.repository.regular.joinWithOr
-import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
-import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.accountCorrection
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.audit
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.correctionExtensionToAccount
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.correctionExtensionToEc
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.correctionProgrammeMeasure
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.project
 import org.springframework.data.domain.Sort
 
 fun PaymentToEcCorrectionSearchRequest.transformToWhereClause(
@@ -82,24 +85,19 @@ fun PaymentAccountCorrectionSearchRequest.transformToWhereClause(
 fun Sort.toQueryDslOrderByForCorrection(): OrderSpecifier<*> {
     val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
 
-    val specCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
-    val specPaymentToEcCorrectionExtensionEntity = QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
-    val specProject = QProjectEntity.projectEntity
-
-    val specProjectAuditControl = QAuditControlEntity.auditControlEntity
-    val specCorrectionProgrammeMeasure =
-        QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
-    val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
-
     val sortingColumn = when (orderBy.property) {
-        "projectCustomIdentifier" -> specProject.customIdentifier
-        "projectAcronym" -> specProject.acronym
-        "id" -> specCorrection.id
-        "priorityAxis" -> specProgrammeSpecificObjectiveEntity.code
-        "scenario" -> specCorrectionProgrammeMeasure.scenario
-        "controllingBody" -> specProjectAuditControl.controllingBody
-        "ecId" -> specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc?.id
-        else -> specCorrection.id
+        "projectCustomIdentifier" -> project.customIdentifier
+        "projectAcronym" -> project.acronym
+        "scenario" -> correctionProgrammeMeasure.scenario
+        "controllingBody" -> audit.controllingBody
+
+        // if linked to EcPayment
+        "ecPaymentId" -> correctionExtensionToEc.paymentApplicationToEc.id
+        // if linked to Account
+        "paymentAccountId" -> correctionExtensionToAccount.paymentAccount.id
+
+        "id" -> accountCorrection.id
+        else -> accountCorrection.id
     }
 
     return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, sortingColumn)

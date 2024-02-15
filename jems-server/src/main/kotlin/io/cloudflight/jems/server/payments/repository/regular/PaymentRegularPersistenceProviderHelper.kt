@@ -45,7 +45,7 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
             .then(specPayment.projectLumpSum.paymentEnabledDate)
             .otherwise(specPayment.projectReport.verificationEndDate)
 
-        "ecId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
+        "ecPaymentId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
         else -> specPayment.id
     }
 
