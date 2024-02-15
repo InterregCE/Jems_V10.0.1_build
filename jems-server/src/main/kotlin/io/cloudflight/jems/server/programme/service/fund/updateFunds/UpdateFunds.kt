@@ -32,7 +32,6 @@ class UpdateFunds(
     @Transactional
     @ExceptionWrapper(UpdateFundsFailed::class)
     override fun update(funds: List<ProgrammeFund>): List<ProgrammeFund> {
-
         validateInput(funds)
 
         if (funds.any { it.id == 0L && it.type != ProgrammeFundType.OTHER })
@@ -48,19 +47,18 @@ class UpdateFunds(
         }.map { it.id }
         throwIfChangesAreNotAllowed(toDeleteFunds, toDeselectFundIds)
 
+        val currentSelectedFundIds = currentFunds.filter { it.selected }.map { it.id }
         val fundsAlreadyInUse = persistence.getFundsAlreadyInUse()
         throwIfAnyOfToDeleteFundsInUse(toDeleteFunds, fundsAlreadyInUse)
         throwIfAnyOfDeselectedFundsInUse(toDeselectFundIds, fundsAlreadyInUse)
 
-        val currentSelectedFundIds = currentFunds.filter { it.selected }.map { it.id }
-        val paymentAccountFundIdsToBeCreated = funds.filter { it.selected }.filterNot{ it.id in currentSelectedFundIds }
-            .mapTo(HashSet()) { it.id }
-
-        paymentAccountPersistence.persistPaymentAccountsByFunds(paymentAccountFundIdsToBeCreated)
         paymentAccountPersistence.deletePaymentAccountsByFunds(toDeselectFundIds.toSet())
 
-        return persistence.updateFunds(toDeleteIds = toDeleteFunds.map { it.id }.toSet(), funds.toSet()).also {
-            auditPublisher.publishEvent(programmeFundsChanged(this, it))
+        return persistence.updateFunds(toDeleteIds = toDeleteFunds.map { it.id }.toSet(), funds.toSet()).also { updatedFunds ->
+            val paymentAccountFundIdsToBeCreated = updatedFunds.filter { f -> f.selected }.filterNot{ f-> f.id in currentSelectedFundIds }
+                .mapTo(HashSet()) { it.id }
+            paymentAccountPersistence.persistPaymentAccountsByFunds(paymentAccountFundIdsToBeCreated)
+            auditPublisher.publishEvent(programmeFundsChanged(this, updatedFunds))
         }
     }
 
