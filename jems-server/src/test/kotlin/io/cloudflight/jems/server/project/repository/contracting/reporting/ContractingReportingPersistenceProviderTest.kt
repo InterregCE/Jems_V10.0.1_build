@@ -31,6 +31,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             deadline = LocalDate.of(2022, 8, 9),
             comment = "dummy comment",
             number = 1,
+            finalReport = false,
         )
 
         private fun entityNew(id: Long) = ProjectContractingReportingEntity(
@@ -40,7 +41,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = id.toInt() + 100,
             deadline = LocalDate.of(2023, 2, 25),
             comment = "dummy comment new",
-            number = 1
+            number = 1,
+            finalReport = false,
         )
 
         private val model10 = ProjectContractingReportingSchedule(
@@ -51,7 +53,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             comment = "dummy comment",
             number = 1,
             linkedSubmittedProjectReportNumbers = setOf(),
-            linkedDraftProjectReportNumbers = setOf()
+            linkedDraftProjectReportNumbers = setOf(),
+            finalReport = false,
         )
 
         private fun modelNew(id: Long) = ProjectContractingReportingSchedule(
@@ -62,7 +65,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             comment = "dummy comment new",
             number = 1,
             linkedSubmittedProjectReportNumbers = setOf(),
-            linkedDraftProjectReportNumbers = setOf()
+            linkedDraftProjectReportNumbers = setOf(),
+            finalReport = false,
         )
     }
 

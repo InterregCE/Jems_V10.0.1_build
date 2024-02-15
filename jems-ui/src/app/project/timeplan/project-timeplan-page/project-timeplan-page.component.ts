@@ -148,12 +148,13 @@ export class ProjectTimeplanPageComponent implements OnInit {
 
       for (const [key, value] of Object.entries(deadlinesGroupedByPeriod)) {
         // To discard pins whose periods are greater than available timeplan periods
-        if (Number(key) >= this.periodCount) {
+        if (Number(key) >= this.periodCount && Number(key) != 255) {
           continue;
         }
         const randomId = uuid();
         const group = value as ProjectContractingReportingScheduleDTO[];
-        this.timeline.addCustomTime(moment(START_DATE).add(key, 'M').endOf('month').toDate(), randomId);
+        const markerMonth = Number(key) === 255 ? this.periodCount : key;
+        this.timeline.addCustomTime(moment(START_DATE).add(markerMonth, 'M').endOf('month').toDate(), randomId);
         const customTimes = timelineCustomTimes.filter((component: { options: { id: string}}) => randomId === component.options.id);
         const financialReports = group.filter(d => d.type === TypeEnum.Finance);
         const contentReports = group.filter(d => d.type === TypeEnum.Content);

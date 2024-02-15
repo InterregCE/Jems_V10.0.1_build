@@ -93,6 +93,7 @@ class ContractingReportingPersistenceProvider(
         periodNumber = newData.periodNumber
         deadline = newData.date
         comment = newData.comment
+        finalReport = newData.finalReport
     }
 
     private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity) =
@@ -103,6 +104,7 @@ class ContractingReportingPersistenceProvider(
             deadline = date,
             comment = comment,
             number = number,
+            finalReport = finalReport
         )
 
 }

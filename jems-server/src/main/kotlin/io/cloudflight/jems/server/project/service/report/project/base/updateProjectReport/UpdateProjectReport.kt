@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -34,6 +35,7 @@ class UpdateProjectReport(
             type = type,
             periodNumber = periodNumber,
             reportingDate = reportingDate,
+            finalReport = finalReport
         )
 
         fun ProjectReportUpdate.validateInput(
@@ -94,6 +96,7 @@ class UpdateProjectReport(
                     type = null,
                     periodNumber = null,
                     reportingDate = null,
+                    finalReport = null
                 )
 
     }
@@ -104,7 +107,7 @@ class UpdateProjectReport(
     override fun updateReport(projectId: Long, reportId: Long, data: ProjectReportUpdate): ProjectReport {
         val report = reportPersistence.getReportById(projectId, reportId)
         val version = report.linkedFormVersion
-        val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
+        val periods = projectPersistence.getProjectPeriods(projectId, version).plus(closurePeriod).associateBy { it.number }
 
         data.validateInput(validPeriodNumbers = periods.keys,
             datesInvalidExceptionResolver = { StartDateIsAfterEndDate() },

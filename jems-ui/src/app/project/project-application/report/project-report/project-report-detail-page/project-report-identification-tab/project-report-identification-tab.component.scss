@@ -43,7 +43,14 @@
   }
 }
 
+.final-report-toggle {
+  margin-bottom: 2rem;
+}
+
 ::ng-deep {
+  .jems-layout.jems-form-layout > * {
+    margin-bottom: 0rem !important;
+  }
   .reporting-date-readonly {
     .mat-form-field-flex {
       background-color: white !important;

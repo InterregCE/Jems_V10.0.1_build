@@ -14,6 +14,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.common.toLimits
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -51,7 +53,7 @@ class UpdateContractingReporting(
         val startDate = contractingMonitoringPersistence.getContractingMonitoring(projectId).startDate
             ?: throw ContractingStartDateIsMissing()
 
-        val periods = project.periods.associateBy { it.number }
+        val periods = project.periods.plus(closurePeriod).associateBy { it.number }
         val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId)
 
         validateInputData(deadlines, existingDeadlines.associateBy { it.id }, periods, startDate, projectId)
@@ -140,7 +142,7 @@ class UpdateContractingReporting(
     ) {
         if (deadlines.any { it.date == null })
             throw EmptyDeadlineDate()
-        val periodLimits = periods.mapValues { it.value.toLimits(startDate) }
+        val periodLimits = periods.toLimits(startDate)
         val invalidDates = deadlines.filter { it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) }
         if (invalidDates.isNotEmpty())
             throw DeadlinesDoNotFitPeriod(invalidDates.map { Triple(it, periodLimits.startLimit(it.periodNumber!!), periodLimits.endLimit(it.periodNumber)) })

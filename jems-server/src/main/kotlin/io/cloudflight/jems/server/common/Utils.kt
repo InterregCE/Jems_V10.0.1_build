@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.common
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBase
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -46,3 +48,16 @@ fun ProjectPeriodBase.toLimits(startDate: LocalDate) = Pair(
     startDate.plusMonths(start.toLong() - 1),
     startDate.plusMonths(end.toLong()).minusDays(1)
 )
+
+fun Map<Int, ProjectPeriod>.toLimits(startDate: LocalDate): Map<Int, Pair<LocalDate, LocalDate>> {
+    val lastNonClosurePeriod = this.minus(CLOSURE_PERIOD_NUMBER).maxByOrNull { it.key }!!.value
+
+    val periodsWithClosure = if (CLOSURE_PERIOD_NUMBER !in keys) this else this.minus(CLOSURE_PERIOD_NUMBER)
+        .plus(CLOSURE_PERIOD_NUMBER to ProjectPeriod(
+            number = CLOSURE_PERIOD_NUMBER,
+            start = lastNonClosurePeriod.end.plus(1),
+            end = lastNonClosurePeriod.end.plus(1),
+        ))
+    return periodsWithClosure.mapValues { it.value.toLimits(startDate) }
+}
+

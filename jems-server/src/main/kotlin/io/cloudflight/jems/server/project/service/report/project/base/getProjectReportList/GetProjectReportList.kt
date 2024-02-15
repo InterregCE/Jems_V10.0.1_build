@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.getProjec
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -39,7 +40,7 @@ class GetProjectReportList(
     }
 
     private fun ProjectReportModel.periodResolver(): (Int) -> ProjectPeriod? = { periodNumber ->
-        projectPersistence.getProjectPeriods(projectId, linkedFormVersion)
+        projectPersistence.getProjectPeriods(projectId, linkedFormVersion).plus(closurePeriod)
             .firstOrNull { it.number == periodNumber }
     }
 

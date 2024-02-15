@@ -113,6 +113,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = 54L,
+            finalReport = false,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = projectId,
@@ -131,7 +132,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             totalEligibleAfterVerification = null,
             lastVerificationReOpening = HOUR_AGO,
             riskBasedVerification = false,
-            riskBasedVerificationDescription = "Description"
+            riskBasedVerificationDescription = "Description",
         )
 
         private fun workPackages() = listOf(
@@ -396,6 +397,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             every { deadline.type } returns ContractingDeadlineType.Finance
             every { deadline.periodNumber } returns 17
             every { deadline.deadline } returns MONTH_AGO
+            every { deadline.finalReport } returns false
             return deadline
         }
     }

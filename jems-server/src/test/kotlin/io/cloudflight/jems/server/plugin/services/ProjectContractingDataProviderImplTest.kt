@@ -250,7 +250,8 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
             comment = "sample comment",
             number = 1,
             linkedSubmittedProjectReportNumbers = setOf(),
-            linkedDraftProjectReportNumbers = setOf()
+            linkedDraftProjectReportNumbers = setOf(),
+            finalReport = false
         )
 
         private val stateAidDeMinimisSection = ContractingPartnerStateAidDeMinimisSection(
@@ -553,7 +554,8 @@ internal class ProjectContractingDataProviderImplTest: UnitTest() {
                     comment = "sample comment",
                     number = 1,
                     linkedSubmittedProjectReportNumbers = setOf(),
-                    linkedDraftProjectReportNumbers = setOf()
+                    linkedDraftProjectReportNumbers = setOf(),
+                    finalReport = false
                 )
             )
         )

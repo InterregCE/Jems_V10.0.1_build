@@ -11,4 +11,5 @@ data class ProjectContractingReportingScheduleDTO(
     val number: Int,
     val linkedSubmittedProjectReportNumbers: Set<Int>,
     val linkedDraftProjectReportNumbers: Set<Int>,
+    val finalReport: Boolean,
 )

@@ -143,7 +143,8 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             totalEligibleAfterVerification = null,
             lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
-            riskBasedVerificationDescription = "Description"
+            riskBasedVerificationDescription = "Description",
+            finalReport = false,
         )
 
         private val project: ProjectSummary = mockk<ProjectSummary>().also {

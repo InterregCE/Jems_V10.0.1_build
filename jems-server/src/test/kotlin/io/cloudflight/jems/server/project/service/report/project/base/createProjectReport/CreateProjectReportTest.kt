@@ -152,6 +152,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
 
             projectId = projectId,
             projectIdentifier = "proj-custom-iden",
@@ -184,6 +185,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodDetail = ProjectPeriod(4, 17, 22),
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
 
             projectId = projectId,
             projectIdentifier = "proj-custom-iden",
@@ -461,6 +463,7 @@ internal class CreateProjectReportTest : UnitTest() {
                 endDate = TOMORROW,
                 deadlineId = null,
                 type = ContractingDeadlineType.Both,
+                finalReport = false,
                 periodNumber = 4,
                 reportingDate = YESTERDAY.minusDays(1),
                 projectId = projectId,
@@ -878,6 +881,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         val returned = interactor.createReportFor(projectId, data)
         assertThat(returned).isEqualTo(
@@ -945,6 +949,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         assertThrows<NoPartnerForSpfProject> { interactor.createReportFor(projectId, data) }
     }
@@ -970,6 +975,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         val ex = assertThrows<LastReOpenedReportException> { interactor.createReportFor(projectId, data) }
         assertThat(ex.i18nMessage.i18nArguments).containsEntry("blockingReportNumbers", "PR.1966, PR.1985")

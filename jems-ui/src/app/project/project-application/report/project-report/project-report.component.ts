@@ -71,7 +71,7 @@ export class ProjectReportComponent {
           this.displayedColumns = this.displayedColumns.filter(column => column !== 'verification');
         }
         this.dataSource.data = projectReports.content;
-        this.availablePeriodNumbers = projectPeriods.map(p => p.number);
+        this.availablePeriodNumbers = [...projectPeriods.map(p => p.number), 255];
       }),
       map(([projectReports, isEditable, viewVerification]) => ({
         projectReports,

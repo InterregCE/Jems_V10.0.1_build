@@ -39,6 +39,7 @@ internal class GetMyProjectReportsTest: UnitTest() {
             reportingDate = DAYS_AGO_2,
             createdAt = YESTERDAY,
             deadlineId = null,
+            finalReport = false,
             leadPartnerNameInEnglish = "",
             leadPartnerNameInOriginalLanguage = "",
             spfPartnerId = null,
