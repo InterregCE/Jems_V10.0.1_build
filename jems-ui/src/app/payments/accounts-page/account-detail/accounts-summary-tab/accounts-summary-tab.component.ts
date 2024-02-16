@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {PaymentAccountDTO, PaymentAccountUpdateDTO,} from '@cat/api';
+import {PaymentAccountAmountSummaryDTO, PaymentAccountDTO, PaymentAccountUpdateDTO,} from '@cat/api';
 import {AccountsPageStore} from '../../accounts-page.store';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
@@ -22,6 +22,7 @@ export class AccountsSummaryTabComponent {
     accountDetail: PaymentAccountDTO;
     userCanView: boolean;
     userCanEdit: boolean;
+    accountAmountSummary: PaymentAccountAmountSummaryDTO;
   }>;
 
   summaryForm = this.formBuilder.group({
@@ -45,11 +46,13 @@ export class AccountsSummaryTabComponent {
       this.pageStore.userCanEdit$,
       this.pageStore.userCanView$,
       this.pageStore.updatedAccountStatus$,
+      this.pageStore.accountAmountSummary$,
     ]).pipe(
-      map(([accountDetail, userCanEdit, userCanView, updatedAccountStatus]: any) => ({
+      map(([accountDetail, userCanEdit, userCanView, updatedAccountStatus, accountAmountSummary]: any) => ({
           accountDetail,
           userCanView,
           userCanEdit,
+          accountAmountSummary,
         })
       ),
       tap(data => this.resetForm(data.accountDetail)),

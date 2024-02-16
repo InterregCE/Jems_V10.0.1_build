@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtensi
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -51,7 +51,7 @@ import java.time.ZonedDateTime
 class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @MockK
-    private lateinit var ecPaymentRepository: PaymentApplicationsToEcRepository
+    private lateinit var ecPaymentRepository: EcPaymentRepository
 
     @MockK
     private lateinit var ecPaymentCorrectionExtensionRepository: EcPaymentCorrectionExtensionRepository

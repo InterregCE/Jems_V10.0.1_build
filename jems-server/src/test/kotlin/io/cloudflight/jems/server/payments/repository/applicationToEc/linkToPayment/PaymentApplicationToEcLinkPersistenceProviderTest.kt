@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLin
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisCumulativeOverviewRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
@@ -54,7 +54,7 @@ import java.time.LocalDate
 class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 
     @MockK
-    private lateinit var ecPaymentRepository: PaymentApplicationsToEcRepository
+    private lateinit var ecPaymentRepository: EcPaymentRepository
 
     @MockK
     private lateinit var ecPaymentExtensionRepository: PaymentToEcExtensionRepository

@@ -1,7 +1,6 @@
-<ng-container *ngIf="data$ | async as data">
-    <mat-card jemsFormLayout>
+<div *ngIf="data$ | async as data" jemsFormLayout>
 
-        <h3>{{ 'payments.accounts.withdrawn.tab.header' | translate: {accountingYear: data.accountDetail.accountingYear | asAccountingYear} }}</h3>
+        <h3 class="mt-4">{{ 'payments.accounts.withdrawn.tab.header' | translate: {accountingYear: data.accountDetail.accountingYear | asAccountingYear} }}</h3>
         <p>{{ 'payments.accounts.withdrawn.tab.description.1' | translate }}</p>
         <p>{{ 'payments.accounts.withdrawn.tab.description.2' | translate }}</p>
         <p>{{ 'payments.accounts.withdrawn.tab.description.3' | translate }}</p>
@@ -51,5 +50,4 @@
 
             </mat-table>
         </div>
-    </mat-card>
-</ng-container>
+</div>

@@ -158,7 +158,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var ecPaymentRepository: PaymentApplicationsToEcRepository
+    private lateinit var ecPaymentRepository: EcPaymentRepository
 
     @MockK
     private lateinit var programmeFundRepository: ProgrammeFundRepository

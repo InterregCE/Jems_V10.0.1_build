@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.payments.dto.account.PaymentAccountOverviewDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountOverviewDetailDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountStatusDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountUpdateDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryLineDTO
 import io.cloudflight.jems.api.payments.dto.applicationToEc.AccountingYearDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.server.UnitTest
@@ -13,8 +15,11 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverview
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewDetail
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountUpdate
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummary
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.service.account.finalizePaymentAccount.FinalizePaymentAccountInteractor
+import io.cloudflight.jems.server.payments.service.account.finance.getAmountSummary.GetPaymentAccountAmountSummaryInteractor
 import io.cloudflight.jems.server.payments.service.account.getPaymentAccount.GetPaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.listPaymentAccount.ListPaymentAccountInteractor
 import io.cloudflight.jems.server.payments.service.account.reOpenPaymentAccount.ReOpenPaymentAccountInteractor
@@ -23,6 +28,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -116,6 +122,29 @@ class PaymentAccountControllerTest : UnitTest() {
             sfcNumber = "sfc number",
             comment = "comment"
         )
+
+
+        private fun summaryLine() = PaymentAccountAmountSummaryLine(
+            priorityAxis = "P01",
+            totalEligibleExpenditure = BigDecimal.valueOf(20),
+            totalPublicContribution = BigDecimal.valueOf(10)
+        )
+
+        private val paymentAccountCurrentOverviewSummary = PaymentAccountAmountSummary(
+            amountsGroupedByPriority = listOf(summaryLine()),
+            totals = summaryLine()
+        )
+
+        private fun summaryLineDTO() = PaymentAccountAmountSummaryLineDTO(
+            priorityAxis = "P01",
+            totalEligibleExpenditure = BigDecimal.valueOf(20),
+            totalPublicContribution = BigDecimal.valueOf(10)
+        )
+
+        private val paymentAccountCurrentOverviewSummaryDTO = PaymentAccountAmountSummaryDTO(
+            amountsGroupedByPriority = listOf(summaryLineDTO()),
+            totals = summaryLineDTO()
+        )
     }
 
     @MockK
@@ -132,6 +161,9 @@ class PaymentAccountControllerTest : UnitTest() {
 
     @MockK
     lateinit var reOpenPaymentAccountInteractor: ReOpenPaymentAccountInteractor
+
+    @MockK
+    lateinit var getPaymentAccountSummary: GetPaymentAccountAmountSummaryInteractor
 
     @InjectMockKs
     lateinit var controller: PaymentAccountController
@@ -171,6 +203,14 @@ class PaymentAccountControllerTest : UnitTest() {
         every { reOpenPaymentAccountInteractor.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.DRAFT
 
         assertThat(controller.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatusDTO.DRAFT)
+    }
+
+    @Test
+    fun getPaymentAccountAmountSummary() {
+        every { getPaymentAccountSummary.getSummaryOverview(PAYMENT_ACCOUNT_ID) } returns paymentAccountCurrentOverviewSummary
+        val summaryLineDTO = controller.getPaymentAccountAmountSummary(PAYMENT_ACCOUNT_ID)
+        verify(exactly = 1) { getPaymentAccountSummary.getSummaryOverview(PAYMENT_ACCOUNT_ID)}
+        assertThat(summaryLineDTO).isEqualTo(paymentAccountCurrentOverviewSummaryDTO)
     }
 
 }

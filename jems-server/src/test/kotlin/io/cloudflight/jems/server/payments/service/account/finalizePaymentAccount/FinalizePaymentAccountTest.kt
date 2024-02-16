@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
+import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.service.account.PAYMENT_ACCOUNT_ID
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
@@ -48,7 +48,7 @@ class FinalizePaymentAccountTest: UnitTest() {
     @Test
     fun finalizeAccount() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountDraft
-        every{ ecPaymentPersistence.getDraftAccountingYearIds(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns emptyList()
+        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns emptySet()
         every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.FINISHED
         val currentOverview = emptyMap<Long?, PaymentAccountAmountSummaryLineTmp>()
         every { correctionLinkingPersistence.calculateOverviewForDraftPaymentAccount(PAYMENT_ACCOUNT_ID) } returns currentOverview
@@ -72,7 +72,8 @@ class FinalizePaymentAccountTest: UnitTest() {
     @Test
     fun `finalizeAccount - not in Draft exception`() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountFinished
-        every{ ecPaymentPersistence.getDraftAccountingYearIds(paymentAccountFinished.fund.id, paymentAccountFinished.accountingYear.id) } returns emptyList()
+        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountFinished.fund.id, paymentAccountFinished.accountingYear.id) } returns
+                emptySet()
         every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.DRAFT
 
         assertThrows<PaymentAccountNotInDraftException> { service.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) }
@@ -81,7 +82,7 @@ class FinalizePaymentAccountTest: UnitTest() {
     @Test
     fun `finalizeAccount - ec payments still in draft exception`() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountDraft
-        every{ ecPaymentPersistence.getDraftAccountingYearIds(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns listOf(1L)
+        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns setOf(1L)
         every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.FINISHED
 
         assertThrows<EcPaymentsForAccountingYearStillInDraftException> { service.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) }

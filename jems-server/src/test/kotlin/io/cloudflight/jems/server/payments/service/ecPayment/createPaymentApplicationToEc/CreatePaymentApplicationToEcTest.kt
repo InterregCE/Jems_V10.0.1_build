@@ -105,7 +105,7 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
         every { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) } answers { }
         every {ecPaymentCorrectionLinkPersistence.selectCorrectionToEcPayment(setOf(22L, 23L), 108L) } answers { }
 
-        every { ecPaymentPersistence.getIdsFinishedForYearAndFund(accountingYear.id, fundId = fund.id) } returns
+        every { ecPaymentPersistence.getFinishedIdsByFundAndAccountingYear(programmeFundId = fund.id, accountingYearId = accountingYear.id) } returns
                 setOf(514L, 515L)
         val cumulativeValues = mockk<Map<Long?, EcPaymentSummaryLine>>()
         every { ecPaymentLinkPersistence.getCumulativeAmounts(setOf(514L, 515L)) } returns cumulativeValues

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  PaymentAccountAmountSummaryDTO,
   PaymentAccountDTO,
   PaymentAccountOverviewDTO,
   PaymentAccountService,
@@ -8,7 +9,7 @@ import {
 } from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {RoutingService} from '@common/services/routing.service';
@@ -23,6 +24,7 @@ export class AccountsPageStore {
 
   accountId$: Observable<number>;
   accountDetail$: Observable<PaymentAccountDTO>;
+  accountAmountSummary$: Observable<PaymentAccountAmountSummaryDTO>;
   userCanView$: Observable<boolean>;
   userCanEdit$: Observable<boolean>;
   accountsByFund$: Observable<PaymentAccountOverviewDTO[]>;
@@ -35,13 +37,15 @@ export class AccountsPageStore {
               private router: RoutingService,
   ) {
     this.accountId$ = this.router.routeParameterChanges('/app/payments/accounts/', 'id').pipe(
-        map(Number),
-        shareReplay(1)
-      );
+      filter(Boolean),
+      map(Number),
+      shareReplay(1)
+    );
     this.accountsByFund$ = this.accountsByFund();
     this.userCanView$ = this.userCanView();
     this.userCanEdit$ = this.userCanEdit();
     this.accountDetail$ = this.accountDetail();
+    this.accountAmountSummary$ = this.accountAmountSummary();
   }
 
   private accountsByFund(): Observable<PaymentAccountOverviewDTO[]> {
@@ -106,6 +110,14 @@ export class AccountsPageStore {
         map(status => status as PaymentAccountDTO.StatusEnum),
         tap(status => this.updatedAccountStatus$.next(status)),
         tap(status => Log.info('Changed status for payment account', accountId, status))
+      );
+  }
+
+  private accountAmountSummary(): Observable<PaymentAccountAmountSummaryDTO> {
+    return this.accountId$
+      .pipe(
+        switchMap(accountId => this.paymentAccountService.getPaymentAccountAmountSummary(accountId)),
+        tap(accountAmountSummary => Log.info('Fetched payment account amount summary', accountAmountSummary))
       );
   }
 }

@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadat
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
@@ -23,7 +23,7 @@ import java.math.BigDecimal
 
 @Repository
 class EcPaymentCorrectionLinkPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val ecPaymentCorrectionExtensionRepository: EcPaymentCorrectionExtensionRepository,
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val jpaQueryFactory: JPAQueryFactory

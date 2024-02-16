@@ -4,13 +4,14 @@ import io.cloudflight.jems.api.payments.dto.account.PaymentAccountDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountOverviewDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountStatusDTO
 import io.cloudflight.jems.api.payments.dto.account.PaymentAccountUpdateDTO
+import io.cloudflight.jems.api.payments.dto.account.finance.PaymentAccountAmountSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
 @Api("Payment Account")
@@ -49,4 +50,7 @@ interface PaymentAccountApi {
         @PathVariable paymentAccountId: Long
     ): PaymentAccountStatusDTO
 
+    @ApiOperation("Get payment account amount summary")
+    @GetMapping("$ENDPOINT_API_PAYMENT_ACCOUNT/{paymentAccountId}/summary")
+    fun getPaymentAccountAmountSummary(@PathVariable paymentAccountId: Long): PaymentAccountAmountSummaryDTO
 }
