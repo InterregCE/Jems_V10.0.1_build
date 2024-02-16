@@ -14,6 +14,7 @@ import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.services.report.ProjectReportDataProvider
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -55,7 +56,7 @@ class ProjectReportDataProviderImpl(
     @Transactional(readOnly = true)
     override fun get(projectId: Long, reportId: Long): ProjectReportData =
         projectReportPersistence.getReportById(projectId, reportId = reportId).let { report ->
-            val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion)
+            val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion).plus(closurePeriod)
             report.toServiceModel({ periodNumber -> periods.first { it.number == periodNumber } })
         }.toDataModel()
 
