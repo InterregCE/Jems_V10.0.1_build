@@ -49,7 +49,8 @@ export class AdvancePaymentsDetailPageStoreStore {
         this.refresh$.pipe(startWith(1)),
       ]).pipe(
         switchMap(([paymentId, _]) => paymentId ? this.advancePaymentsService.getAdvancePaymentDetail(Number(paymentId)) : of({}) as Observable<AdvancePaymentDetailDTO>),
-        tap(data => Log.info('Fetched advance payment detail', this, data))
+        tap(data => Log.info('Fetched advance payment detail', this, data)),
+        shareReplay(1),
       );
 
     return merge(initialPaymentDetail$, this.savedAdvancePaymentDetail$);
