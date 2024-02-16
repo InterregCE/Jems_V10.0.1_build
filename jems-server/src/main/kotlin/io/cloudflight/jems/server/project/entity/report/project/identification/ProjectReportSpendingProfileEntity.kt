@@ -31,4 +31,7 @@ data class ProjectReportSpendingProfileEntity(
 
     @field:NotNull
     var currentlyReported: BigDecimal,
+
+    @field:NotNull
+    var partnerTotalEligibleBudget: BigDecimal
 )

@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportIdentificationTargetGroupDTO
+import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportSpendingProfileDTO
+import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportSpendingProfileTotalDto
 import io.cloudflight.jems.api.project.dto.report.project.identification.UpdateProjectReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputIndicatorOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputLineOverviewDTO
@@ -14,6 +16,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
@@ -49,7 +53,22 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = ProjectReportSpendingProfile(
+                lines = emptyList(),
+                total = SpendingProfileTotal(
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                )
+            )
         )
 
         private val identificationDTO = ProjectReportIdentificationDTO(
@@ -66,7 +85,22 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = ProjectReportSpendingProfileDTO(
+                lines = emptyList(),
+                total = ProjectReportSpendingProfileTotalDto(
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                )
+            )
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(
@@ -100,7 +134,7 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
         )
 
         private fun resultIndicatorMap()
-            : Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>> {
+                : Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>> {
             val resultIndicator = ProjectReportResultIndicatorOverview(
                 id = 1L,
                 identifier = "2",
@@ -209,13 +243,30 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
 
     @Test
     fun updateProjectReportIdentification() {
-        every { updateProjectReportIdentification.updateIdentification(PROJECT_ID, REPORT_ID, identificationUpdate) } returns identification
-        assertThat(controller.updateProjectReportIdentification(PROJECT_ID, REPORT_ID, identificationUpdateDTO)).isEqualTo(identificationDTO)
+        every {
+            updateProjectReportIdentification.updateIdentification(
+                PROJECT_ID,
+                REPORT_ID,
+                identificationUpdate
+            )
+        } returns identification
+        assertThat(
+            controller.updateProjectReportIdentification(
+                PROJECT_ID,
+                REPORT_ID,
+                identificationUpdateDTO
+            )
+        ).isEqualTo(identificationDTO)
     }
 
     @Test
     fun getResultIndicatorOverview() {
-        every { getProjectReportResultIndicatorOverview.getResultIndicatorOverview(PROJECT_ID, REPORT_ID) } returns resultIndicatorMap()
+        every {
+            getProjectReportResultIndicatorOverview.getResultIndicatorOverview(
+                PROJECT_ID,
+                REPORT_ID
+            )
+        } returns resultIndicatorMap()
         assertThat(controller.getResultIndicatorOverview(PROJECT_ID, REPORT_ID)).isEqualTo(resultIndicatorDTO)
     }
 }

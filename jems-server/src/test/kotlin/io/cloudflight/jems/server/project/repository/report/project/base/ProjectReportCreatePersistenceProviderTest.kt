@@ -360,6 +360,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyVerified = BigDecimal.ONE,
                 )
             ),
+
             spfContributionClaims = listOf(
                 ProjectReportSpfContributionClaimCreate(
                     fundId = 1L,
@@ -370,7 +371,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReported = BigDecimal.ZERO,
                     currentlyReported = BigDecimal.valueOf(999.92)
                 )
-            )
+            ),
+            budgetPerPartner = emptyList(),
         )
 
         fun projectResult(): List<ProjectReportResultCreate> = listOf(
@@ -602,6 +604,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 partnerRole = ProjectPartnerRole.PARTNER,
                 country = "country-8",
                 previouslyReported = BigDecimal.valueOf(421L, 2),
+                partnerTotalEligibleBudget = BigDecimal.ZERO
             )
         )
 

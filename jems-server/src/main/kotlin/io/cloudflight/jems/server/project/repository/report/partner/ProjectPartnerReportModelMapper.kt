@@ -76,11 +76,10 @@ fun CertificateSummary.toModel() =
         partnerId = partnerId,
         partnerRole = partnerRole,
         partnerNumber = partnerNumber,
-
         controlEnd = controlEnd.atZone(ZoneId.systemDefault()),
         totalEligibleAfterControl = totalEligibleAfterControl,
         projectReportId = projectReportId,
-        projectReportNumber = projectReportNumber,
+        projectReportNumber = projectReportNumber
     )
 
 fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =

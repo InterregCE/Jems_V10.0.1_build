@@ -7,7 +7,10 @@ import io.cloudflight.jems.server.project.entity.report.project.identification.P
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
+import java.math.BigDecimal
 
 fun List<ProjectReportIdentificationTargetGroupEntity>.toModel() = map {
     ProjectReportIdentificationTargetGroup(
@@ -21,7 +24,8 @@ fun List<ProjectReportSpendingProfileEntity>.toReportedValuesModel() = map {
     ProjectReportSpendingProfileReportedValues(
         partnerId = it.id.partnerId,
         previouslyReported = it.previouslyReported,
-        currentlyReported = it.currentlyReported
+        currentlyReported = it.currentlyReported,
+        partnerTotalEligibleBudget = it.partnerTotalEligibleBudget
     )
 }
 
@@ -49,6 +53,21 @@ fun toProjectReportIdentification(
                 it.partnerProblems
             )
         },
-        spendingProfiles = listOf()
+        spendingProfilePerPartner = ProjectReportSpendingProfile(
+            emptyList(),
+            SpendingProfileTotal(
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO
+            )
+        )
     )
 }
