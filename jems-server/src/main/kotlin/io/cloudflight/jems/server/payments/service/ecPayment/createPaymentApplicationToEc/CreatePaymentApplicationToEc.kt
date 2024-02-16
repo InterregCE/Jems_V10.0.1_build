@@ -69,7 +69,7 @@ class CreatePaymentApplicationToEc(
     }
 
     private fun storeCumulativeValues(ecPaymentId: Long, fundId: Long, yearId: Long) {
-        val finishedEcPaymentIds = ecPaymentPersistence.getIdsFinishedForYearAndFund(yearId, fundId = fundId)
+        val finishedEcPaymentIds = ecPaymentPersistence.getFinishedIdsByFundAndAccountingYear(programmeFundId = fundId, accountingYearId = yearId)
         val cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeAmounts(finishedEcPaymentIds)
         ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
     }

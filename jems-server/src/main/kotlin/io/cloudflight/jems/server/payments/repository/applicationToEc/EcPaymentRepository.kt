@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PaymentApplicationsToEcRepository : JpaRepository<PaymentApplicationToEcEntity, Long> {
+interface EcPaymentRepository : JpaRepository<PaymentApplicationToEcEntity, Long> {
 
     fun existsByProgrammeFundIdAndAccountingYearIdAndStatus(
         programmeFundId: Long,
@@ -38,11 +38,5 @@ interface PaymentApplicationsToEcRepository : JpaRepository<PaymentApplicationTo
     """
     )
     fun getAvailableAccountingYearForFund(programmeFundId: Long): List<Pair<AccountingYearEntity, Int>>
-
-    fun findAllByStatusAndAccountingYearIdAndProgrammeFundId(
-        status: PaymentEcStatus,
-        accountingYearId: Long,
-        programmeFundId: Long,
-    ): List<PaymentApplicationToEcEntity>
 
 }

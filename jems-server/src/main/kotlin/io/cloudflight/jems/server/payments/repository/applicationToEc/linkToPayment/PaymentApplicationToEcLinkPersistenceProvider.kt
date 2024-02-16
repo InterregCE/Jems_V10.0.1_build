@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLin
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisCumulativeOverviewRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
@@ -33,14 +33,13 @@ import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Repository
 class PaymentApplicationToEcLinkPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val ecPaymentExtensionRepository: PaymentToEcExtensionRepository,
     private val ecPaymentPriorityAxisOverviewRepository: PaymentToEcPriorityAxisOverviewRepository,
     private val ecPaymentPriorityAxisCumulativeOverviewRepository: PaymentToEcPriorityAxisCumulativeOverviewRepository,

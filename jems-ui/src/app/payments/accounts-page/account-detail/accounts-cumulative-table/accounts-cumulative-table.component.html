@@ -13,7 +13,7 @@
         <mat-header-cell class="justify-end" *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'payments.accounts.corrections.overview.amounts.total.eligible.expenditure' | translate }}</span>
             <jems-context-info
-                    infoText="{{'payments.accounts.corrections.overview.amounts.total.eligible.expenditure.info.bubble'| translate}}"
+                    infoText="{{ totalEligibleInfo | translate}}"
                     infoPosition="right">
             </jems-context-info>
         </mat-header-cell>
@@ -27,7 +27,7 @@
         <mat-header-cell class="justify-end" *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'payments.accounts.corrections.overview.amounts.total.public.contribution' | translate }}</span>
             <jems-context-info
-                    infoText="{{'payments.accounts.corrections.overview.amounts.total.public.contribution.info.bubble'| translate}}"
+                    infoText="{{ totalPublicInfo | translate}}"
                     infoPosition="right">
             </jems-context-info>
         </mat-header-cell>

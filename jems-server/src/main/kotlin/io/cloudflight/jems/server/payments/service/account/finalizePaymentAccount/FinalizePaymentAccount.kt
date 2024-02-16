@@ -45,7 +45,7 @@ class FinalizePaymentAccount(
     }
     private fun validateNoEcPaymentForAccountingYearIsDraft(paymentAccount: PaymentAccount) {
         val draftPaymentsForAccountingYear =
-            ecPaymentPersistence.getDraftAccountingYearIds(paymentAccount.fund.id, paymentAccount.accountingYear.id)
+            ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccount.fund.id, paymentAccount.accountingYear.id)
 
         if (draftPaymentsForAccountingYear.isNotEmpty()) {
             throw EcPaymentsForAccountingYearStillInDraftException(

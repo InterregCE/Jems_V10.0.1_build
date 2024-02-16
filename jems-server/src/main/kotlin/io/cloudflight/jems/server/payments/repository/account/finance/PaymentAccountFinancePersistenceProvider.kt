@@ -7,8 +7,11 @@ import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.CorrectionAmountWithdrawn
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.service.account.finance.PaymentAccountFinancePersistence
+import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
@@ -32,6 +35,10 @@ class PaymentAccountFinancePersistenceProvider(
         private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
         private val paymentExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         private val project = QProjectEntity.projectEntity
+
+        /** Summary */
+        private val paymentToEcPriorityAxisOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
+        private val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
     }
 
     @Transactional(readOnly = true)
@@ -65,17 +72,19 @@ class PaymentAccountFinancePersistenceProvider(
             .leftJoin(projectLumpSum)
                 .on(projectLumpSum.eq(accountCorrection.lumpSum))
             .leftJoin(payment)
-                .on(payment.fund.eq(accountCorrection.programmeFund).and(
-                    payment.projectReport.eq(accountCorrection.partnerReport.projectReport)
+                .on(payment.fund.eq(accountCorrection.programmeFund)
+                    .and(payment.projectReport.eq(accountCorrection.partnerReport.projectReport)
                         .or(payment.projectLumpSum.eq(projectLumpSum))
-                ))
+                )
+            )
             .leftJoin(paymentExtension)
-                .on(paymentExtension.payment.eq(payment))
+            .on(paymentExtension.payment.eq(payment))
             .where(correctionExtension.paymentApplicationToEc.accountingYear.id.eq(accountingYearId)
                 .and(accountCorrection.programmeFund.id.eq(fundId))
                 .and(accountCorrectionFinance.deduction.isTrue()) // only negatives
                 .and(accountCorrectionFinance.clericalTechnicalMistake.isFalse()) // non clerical mistake
-                .and(paymentExtension.paymentApplicationToEc.isNotNull())) // to group by year we need to have yearWhenFound
+                .and(paymentExtension.paymentApplicationToEc.isNotNull())
+            ) // to group by year we need to have yearWhenFound
             .fetch()
             .map { it: Tuple ->
                 CorrectionAmountWithdrawn(
@@ -92,4 +101,33 @@ class PaymentAccountFinancePersistenceProvider(
             }
     }
 
+    @Transactional(readOnly = true)
+    override fun getTotalsForFinishedEcPayments(ecPaymentIds: Set<Long>): Map<Long?, PaymentToEcAmountSummaryLine> {
+        val totalEligibleExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalUnionExpr = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
+        val totalPublicExpr = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
+
+        return jpaQueryFactory
+            .select(
+                programmePriority.id,
+                programmePriority.code,
+                totalEligibleExpr,
+                totalUnionExpr,
+                totalPublicExpr,
+            )
+            .from(paymentToEcPriorityAxisOverview)
+            .leftJoin(programmePriority)
+                .on(programmePriority.id.eq(paymentToEcPriorityAxisOverview.priorityAxis.id))
+            .where(paymentToEcPriorityAxisOverview.paymentApplicationToEc.id.`in`(ecPaymentIds))
+            .groupBy(programmePriority.id)
+            .fetch()
+            .associate { it: Tuple ->
+                it.get(programmePriority.id) to PaymentToEcAmountSummaryLine(
+                    priorityAxis = it.get(programmePriority.code),
+                    totalEligibleExpenditure = it.get(totalEligibleExpr)!!,
+                    totalUnionContribution = it.get(totalUnionExpr)!!,
+                    totalPublicContribution = it.get(totalPublicExpr)!!,
+                )
+            }
+    }
 }

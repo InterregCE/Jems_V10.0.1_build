@@ -71,8 +71,8 @@ import {
   AccountsCorrectionSelectTableComponent
 } from './accounts-page/account-detail/accounts-correction-select-table/accounts-correction-select-table.component';
 import {
-  AccountsCorrectionCumulativeTableComponent
-} from './accounts-page/account-detail/accounts-correction-cumulative-table/accounts-correction-cumulative-table.component';
+  AccountsCumulativeTableComponent
+} from './accounts-page/account-detail/accounts-cumulative-table/accounts-cumulative-table.component';
 import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 import {
   AccountsWithdrawnTabComponent
@@ -105,7 +105,7 @@ import {
     AccountsSummaryTabComponent,
     AccountsCorrectionTabComponent,
     AccountsCorrectionSelectTableComponent,
-    AccountsCorrectionCumulativeTableComponent,
+    AccountsCumulativeTableComponent,
     AccountsFinalizeTabComponent,
     AccountsWithdrawnTabComponent,
     AccountsFinalizeTabComponent,

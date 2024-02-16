@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class PaymentApplicationToEcPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val accountingYearRepository: AccountingYearRepository,
     private val fileRepository: JemsSystemFileService,
@@ -97,8 +97,8 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.findAll(pageable).toDetailModel()
 
     @Transactional(readOnly = true)
-    override fun getIdsFinishedForYearAndFund(accountingYearId: Long, fundId: Long): Set<Long> =
-        ecPaymentRepository.findAllByStatusAndAccountingYearIdAndProgrammeFundId(
+    override fun getFinishedIdsByFundAndAccountingYear(accountingYearId: Long, fundId: Long): Set<Long> =
+        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(
             status = PaymentEcStatus.Finished,
             accountingYearId = accountingYearId,
             programmeFundId = fundId,
@@ -132,8 +132,8 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.existsByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft)
 
     @Transactional(readOnly = true)
-    override fun getDraftAccountingYearIds(programmeFundId: Long, accountingYearId: Long): List<Long> =
-        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft).map { it.id }
+    override fun getDraftIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long> =
+        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft).map { it.id }.toSet()
 
     @Transactional(readOnly = true)
     override fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYearAvailability> =
