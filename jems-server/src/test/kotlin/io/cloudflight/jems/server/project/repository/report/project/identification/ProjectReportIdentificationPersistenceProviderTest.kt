@@ -18,7 +18,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -47,7 +49,22 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             highlights = setOf(),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = ProjectReportSpendingProfile(
+                lines = emptyList(),
+                total = SpendingProfileTotal(
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                )
+            )
         )
 
         private val projectReportEntity = ProjectReportEntity(
@@ -150,6 +167,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
                 country = "CNTR",
                 previouslyReported = BigDecimal.TEN,
                 currentlyReported = BigDecimal.ONE,
+                partnerTotalEligibleBudget = BigDecimal(1000)
             )
         )
         assertThat(persistence.getSpendingProfileReportedValues(5L)).containsExactly(
@@ -157,6 +175,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
                 partnerId = 45L,
                 previouslyReported = BigDecimal.TEN,
                 currentlyReported = BigDecimal.ONE,
+                partnerTotalEligibleBudget = BigDecimal(1000)
             )
         )
     }
@@ -203,6 +222,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             country = "nice country",
             previouslyReported = BigDecimal(4),
             currentlyReported = BigDecimal(8),
+            partnerTotalEligibleBudget = BigDecimal(1000)
         )
         every { spendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(15L) } returns listOf(existing514)
         val slotSaved = slot<ProjectReportSpendingProfileEntity>()

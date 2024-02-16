@@ -10,4 +10,5 @@ data class ProjectReportPartnerCreateModel(
     val partnerRole: ProjectPartnerRole,
     val country: String?,
     val previouslyReported: BigDecimal,
+    val partnerTotalEligibleBudget: BigDecimal
 )

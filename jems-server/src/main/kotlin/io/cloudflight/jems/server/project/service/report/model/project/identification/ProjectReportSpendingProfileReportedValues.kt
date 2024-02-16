@@ -6,4 +6,5 @@ data class ProjectReportSpendingProfileReportedValues(
     val partnerId: Long,
     val previouslyReported: BigDecimal,
     var currentlyReported: BigDecimal,
+    val partnerTotalEligibleBudget: BigDecimal
 )

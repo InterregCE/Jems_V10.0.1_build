@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.ProjectRep
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentCalculatorService
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdown.GetReportCertificateInvestmentCalculatorService
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownCalculator
@@ -66,7 +66,7 @@ class ProjectReportDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getIdentification(projectId: Long, reportId: Long): ProjectReportIdentificationData =
         this.getIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
-            spendingProfiles = getIdentificationService.getProjectReportSpendingProfiles(projectId, reportId)
+            spendingProfilePerPartner = getIdentificationService.getProjectReportSpendingProfiles(projectId, reportId)
         }.toDataModel()
 
     @Transactional(readOnly = true)

@@ -265,6 +265,7 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             country = "my country",
             previouslyReported = BigDecimal.TEN,
             currentlyReported = BigDecimal.ONE,
+            partnerTotalEligibleBudget = BigDecimal.ZERO
         )
 
         private fun perPartnerSum() = PerPartnerCertificateCostCategory(

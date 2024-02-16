@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.repository.report.partner
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
-import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
+import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

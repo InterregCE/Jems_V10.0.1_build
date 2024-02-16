@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification.Companion.emptySpendingProfile
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -68,7 +69,7 @@ class ProjectReportIdentificationPersistenceProvider(
             highlights = translatedValues.map { InputTranslation(it.language(), it.highlights) }.toSet(),
             deviations = translatedValues.map { InputTranslation(it.language(), it.deviations) }.toSet(),
             partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = emptySpendingProfile(),
         )
     }
 
@@ -88,8 +89,9 @@ class ProjectReportIdentificationPersistenceProvider(
                         profile(
                             reportId,
                             partnerId = partnerId,
-                            currentValue = partnerCurrentValue
-                        )
+                            currentValue = partnerCurrentValue,
+                            totalEligibleBudget = BigDecimal.ZERO
+                         )
                     ).also { log.error("We are persisting current partner value for partner ${it.id.partnerId} " +
                         "(project reportId=$reportId) that was not available during creation") }
                 }
@@ -174,7 +176,7 @@ class ProjectReportIdentificationPersistenceProvider(
             Optional.empty()
     }
 
-    private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal) = ProjectReportSpendingProfileEntity(
+    private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal, totalEligibleBudget: BigDecimal) = ProjectReportSpendingProfileEntity(
         ProjectReportSpendingProfileId(
             projectReport = projectReportRepository.getById(reportId),
             partnerId = partnerId,
@@ -185,6 +187,7 @@ class ProjectReportIdentificationPersistenceProvider(
         country = null,
         previouslyReported = BigDecimal.ZERO,
         currentlyReported = currentValue,
+        partnerTotalEligibleBudget = totalEligibleBudget
     )
 
 }
