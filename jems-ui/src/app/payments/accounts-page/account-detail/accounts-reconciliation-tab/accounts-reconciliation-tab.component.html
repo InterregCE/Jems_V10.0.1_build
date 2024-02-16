@@ -1,0 +1,125 @@
+<ng-container *ngIf="data$ | async as data">
+  <mat-card jemsFormLayout>
+
+    <h3>{{ 'payments.accounts.reconciliation.tab.header' | translate }}</h3>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.1' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.2' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.3' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.4' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.5' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.6' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.7' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.8' | translate }}</p>
+    <p>{{ 'payments.accounts.reconciliation.tab.description.9' | translate }}</p>
+      <jems-alert [show]="success$ | async"
+                  [type]="Alert.SUCCESS">
+        <p>{{'payments.accounts.reconciliation.update.save' | translate}}</p>
+      </jems-alert>
+      <mat-table #reconciliationTable jemsNoWidthLimit [dataSource]="dataSource" class="mt-3">
+        <ng-container matColumnDef="priority" sticky>
+          <mat-header-cell *matHeaderCellDef class="border-cell-right">
+                        <span jemsText
+                              maxLines="2">{{ 'payments.accounts.reconciliation.table.column.priority' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index;" class="border-cell-right">
+                        <span *ngIf="reconciliation(i).subComponentIndex === 0" class="priority-axis">
+                                                        {{ reconciliation(i).priorityAxis }}
+                        </span>
+            <span *ngIf="reconciliation(i).subComponentIndex"
+                  [class.sub-row-indent]="reconciliation(i).subComponentIndex === 1 || reconciliation(i).subComponentIndex === 2">
+                            {{ reconciliation(i).translation | translate }}
+                        </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="g1">
+          <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText maxLines="2"
+                              class="respect-line-break">{{ 'payments.accounts.reconciliation.table.column.g1' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index" class="text-right">
+            {{ reconciliation(i).g1 | asMoney}}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="g2">
+          <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText
+                              maxLines="2">{{ 'payments.accounts.reconciliation.table.column.g2' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index" class="text-right">
+            {{ reconciliation(i).g2 | asMoney}}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="g3">
+          <mat-header-cell *matHeaderCellDef class="text-right">
+                        <span jemsText
+                              maxLines="2">{{ 'payments.accounts.reconciliation.table.column.g3' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let i = index" class="text-right">
+            {{ reconciliation(i).g3 | asMoney}}
+          </mat-cell>
+        </ng-container>
+
+        <form [formGroup]="form">
+          <ng-container formArrayName="comments">
+            <ng-container matColumnDef="g4">
+              <mat-header-cell *matHeaderCellDef>
+                          <span jemsText
+                                maxLines="2">{{ 'payments.accounts.reconciliation.table.column.g4' | translate }}</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row; let i = index;">
+                          <span *ngIf="i !== editedRowIndex" class="comment-display"
+                                [matTooltip]="row.get('comment').value">
+                            {{ row.get('comment')?.value }}
+                          </span>
+                <div *ngIf="i === editedRowIndex">
+                  <jems-expandable-textarea class="vertical-align comment-display button-cell"
+                                            [control]="row.get('comment')"
+                                            [errors]="row.get('comment')?.errors"
+                                            [characterLimit]="500"
+                                            [minRows]="1"
+                                            [maxRows]="1">
+                  </jems-expandable-textarea>
+                  <div class="mb-2 mt-2">
+                    <button (click)="discardChanges(i, reconciliation(i))" class="mr-4" mat-stroked-button>
+                      {{'payments.accounts.reconciliation.update.discard' | translate}}
+                    </button>
+
+                    <button mat-flat-button type="submit"
+                            class="ml-2"
+                            color="primary"
+                            [disabled]="!form.valid"
+                            (click)="submitAmountChanges(i, reconciliation(i))">
+                      <mat-icon class="save-icon">save</mat-icon>
+                      {{'payments.accounts.reconciliation.update.save.button' | translate}}
+                    </button>
+                  </div>
+                </div>
+              </mat-cell>
+            </ng-container>
+          </ng-container>
+        </form>
+
+        <ng-container matColumnDef="reconciliation" stickyEnd>
+          <mat-header-cell *matHeaderCellDef class="text-center border-cell-left">
+            <span jemsText maxLines="2">{{ 'payments.accounts.reconciliation.column.edit' | translate }}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row;let i = index"
+                    class="text-center border-cell-left">
+            <button *ngIf="i !== editedRowIndex" (click)="editAmounts(i)"
+                    [disabled]="!data.isEditable || editedRowIndex !== null || !reconciliation(i).editable"
+                    color="primary" mat-icon-button
+                    aria-label="edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+      </mat-table>
+  </mat-card>
+</ng-container>

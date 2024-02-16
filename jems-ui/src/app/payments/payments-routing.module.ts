@@ -46,6 +46,9 @@ import {
 import {
   ProjectsFlaggedArt9495TabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component';
+import {
+  AccountsReconciliationTabComponent
+} from "./accounts-page/account-detail/accounts-reconciliation-tab/accounts-reconciliation-tab.component";
 
 export const paymentsRoutes: Routes = [
   {
@@ -254,6 +257,10 @@ export const paymentsRoutes: Routes = [
               {
                 path: 'withdrawn',
                 component: AccountsWithdrawnTabComponent,
+              },
+              {
+                path: 'reconciliation',
+                component: AccountsReconciliationTabComponent,
               },
               {
                 path: 'finalize',
