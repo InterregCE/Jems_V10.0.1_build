@@ -1,6 +1,6 @@
 export class ProjectApplicationFormPartnerEditConstants {
 
-  public static EUROSTAT_WEBSITE = 'https://showvoc.op.europa.eu/#/datasets/ESTAT_Statistical_Classification_of_Economic_Activities_in_the_European_Community_Rev._2.1._%28NACE_2.1%29/data';
+  public static EUROSTAT_WEBSITE = 'https://showvoc.op.europa.eu/#/datasets/ESTAT_Statistical_Classification_of_Economic_Activities_in_the_European_Community_Rev._2/data';
 
   public static partnerTypeEnums = [
     'LocalPublicAuthority',
