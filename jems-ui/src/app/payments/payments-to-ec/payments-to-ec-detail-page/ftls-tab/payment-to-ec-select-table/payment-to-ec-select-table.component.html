@@ -4,7 +4,7 @@
                (matSortChange)="newSort.next($event)">
 
         <ng-container matColumnDef="select" sticky>
-            <mat-header-cell *matHeaderCellDef class="text-center border-cell-right" mat-sort-header="ecId">
+            <mat-header-cell *matHeaderCellDef class="text-center border-cell-right" mat-sort-header="ecPaymentId">
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.select' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let i = index" class="text-center border-cell-right">

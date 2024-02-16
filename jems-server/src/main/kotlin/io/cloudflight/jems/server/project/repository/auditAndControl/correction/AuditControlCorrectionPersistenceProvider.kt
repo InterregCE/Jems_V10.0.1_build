@@ -66,6 +66,23 @@ class AuditControlCorrectionPersistenceProvider(
     private val jpaQueryFactory: JPAQueryFactory
 ) : AuditControlCorrectionPersistence {
 
+    companion object {
+        val accountCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
+        val audit = QAuditControlEntity.auditControlEntity
+        val project = QProjectEntity.projectEntity
+        val correctionProgrammeMeasure = QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
+        private val projectContractingMonitoring = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        private val ecPayment = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+        private val partnerReport = QProjectPartnerReportEntity.projectPartnerReportEntity
+
+        // only for FTLS
+        private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
+        private val ftlsPayment = QPaymentEntity.paymentEntity
+
+        val correctionExtensionToEc = QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
+        val correctionExtensionToAccount = QPaymentAccountCorrectionExtensionEntity.paymentAccountCorrectionExtensionEntity
+    }
+
     @Transactional(readOnly = true)
     override fun getProjectIdForCorrection(correctionId: Long): Long =
         auditControlCorrectionRepository.getById(correctionId).auditControl.project.id
@@ -287,57 +304,44 @@ class AuditControlCorrectionPersistenceProvider(
     }
 
 
-    private fun fetchCorrectionsForPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest): Page<PaymentToEcCorrectionTmp> {
-        val accountCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
-        val audit = QAuditControlEntity.auditControlEntity
-        val project = QProjectEntity.projectEntity
-        val specPaymentToEcCorrectionExtensionEntity =
-            QPaymentToEcCorrectionExtensionEntity.paymentToEcCorrectionExtensionEntity
-        val specCorrectionProgrammeMeasure =
-            QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
-        val specProjectContractingMonitoringEntity = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
-        val specPaymentApplicationToEcEntity = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
-        val specProjectPartnerReportEntity = QProjectPartnerReportEntity.projectPartnerReportEntity
-        val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity // if FTLS
-        val ftlsPayment = QPaymentEntity.paymentEntity
-
-        val results = jpaQueryFactory
+    private fun fetchCorrectionsForPaymentToEc(pageable: Pageable, filter: PaymentToEcCorrectionSearchRequest) =
+        jpaQueryFactory
             .select(
                 accountCorrection,
                 audit.project.id,
                 CaseBuilder().`when`(accountCorrection.partnerReport.isNotNull())
-                    .then(specProjectPartnerReportEntity.identification.projectAcronym)
+                    .then(partnerReport.identification.projectAcronym)
                     .otherwise(ftlsPayment.projectAcronym),                                 // if linked to report
                 CaseBuilder().`when`(accountCorrection.partnerReport.isNotNull())           // if linked to FTLS
-                    .then(specProjectPartnerReportEntity.identification.projectIdentifier)  // if linked to report
+                    .then(partnerReport.identification.projectIdentifier)  // if linked to report
                     .otherwise(ftlsPayment.projectCustomIdentifier),                        // if linked to FTLS
                 project, // for priority axis
                 audit.controllingBody,
-                specProjectContractingMonitoringEntity.typologyProv94,
-                specProjectContractingMonitoringEntity.typologyProv95,
+                projectContractingMonitoring.typologyProv94,
+                projectContractingMonitoring.typologyProv95,
 
-                specPaymentApplicationToEcEntity.id,
-                specPaymentApplicationToEcEntity.status,
-                specPaymentToEcCorrectionExtensionEntity.fundAmount,
-                specPaymentToEcCorrectionExtensionEntity.publicContribution,
-                specPaymentToEcCorrectionExtensionEntity.correctedPublicContribution,
-                specPaymentToEcCorrectionExtensionEntity.autoPublicContribution,
-                specPaymentToEcCorrectionExtensionEntity.correctedAutoPublicContribution,
-                specPaymentToEcCorrectionExtensionEntity.privateContribution,
-                specPaymentToEcCorrectionExtensionEntity.correctedPrivateContribution,
-                specPaymentToEcCorrectionExtensionEntity.comment,
-                specCorrectionProgrammeMeasure.scenario,
+                ecPayment.id,
+                ecPayment.status,
+                correctionExtensionToEc.fundAmount,
+                correctionExtensionToEc.publicContribution,
+                correctionExtensionToEc.correctedPublicContribution,
+                correctionExtensionToEc.autoPublicContribution,
+                correctionExtensionToEc.correctedAutoPublicContribution,
+                correctionExtensionToEc.privateContribution,
+                correctionExtensionToEc.correctedPrivateContribution,
+                correctionExtensionToEc.comment,
+                correctionProgrammeMeasure.scenario,
 
-                specPaymentToEcCorrectionExtensionEntity.finalScoBasis,
-                specPaymentToEcCorrectionExtensionEntity.correctedFundAmount,
-                specPaymentToEcCorrectionExtensionEntity.totalEligibleWithoutArt94or95,
-                specPaymentToEcCorrectionExtensionEntity.correctedTotalEligibleWithoutArt94or95,
-                specPaymentToEcCorrectionExtensionEntity.unionContribution,
-                specPaymentToEcCorrectionExtensionEntity.correctedUnionContribution,
+                correctionExtensionToEc.finalScoBasis,
+                correctionExtensionToEc.correctedFundAmount,
+                correctionExtensionToEc.totalEligibleWithoutArt94or95,
+                correctionExtensionToEc.correctedTotalEligibleWithoutArt94or95,
+                correctionExtensionToEc.unionContribution,
+                correctionExtensionToEc.correctedUnionContribution,
             )
             .from(accountCorrection)
-                .leftJoin(specProjectPartnerReportEntity)
-                    .on(specProjectPartnerReportEntity.eq(accountCorrection.partnerReport))
+                .leftJoin(partnerReport)
+                    .on(partnerReport.eq(accountCorrection.partnerReport))
                 .leftJoin(audit)
                     .on(audit.eq(accountCorrection.auditControl))
                 .leftJoin(projectLumpSum)
@@ -346,65 +350,52 @@ class AuditControlCorrectionPersistenceProvider(
                     .on(ftlsPayment.fund.eq(accountCorrection.programmeFund).and(ftlsPayment.projectLumpSum.eq(projectLumpSum)))
                 .leftJoin(project)
                     .on(project.eq(audit.project))
-                .leftJoin(specPaymentToEcCorrectionExtensionEntity)
-                    .on(specPaymentToEcCorrectionExtensionEntity.correction.eq(accountCorrection))
-                .leftJoin(specCorrectionProgrammeMeasure)
-                    .on(specCorrectionProgrammeMeasure.correction.eq(accountCorrection))
-                .leftJoin(specProjectContractingMonitoringEntity)
-                    .on(specProjectContractingMonitoringEntity.projectId.eq(project.id))
-                .leftJoin(specPaymentApplicationToEcEntity)
-                    .on(specPaymentApplicationToEcEntity.eq(specPaymentToEcCorrectionExtensionEntity.paymentApplicationToEc))
+                .leftJoin(correctionExtensionToEc)
+                    .on(correctionExtensionToEc.correction.eq(accountCorrection))
+                .leftJoin(correctionProgrammeMeasure)
+                    .on(correctionProgrammeMeasure.correction.eq(accountCorrection))
+                .leftJoin(projectContractingMonitoring)
+                    .on(projectContractingMonitoring.projectId.eq(project.id))
+                .leftJoin(ecPayment)
+                    .on(ecPayment.eq(correctionExtensionToEc.paymentApplicationToEc))
             .where(
-                filter.transformToWhereClause(accountCorrection, specCorrectionProgrammeMeasure, specPaymentToEcCorrectionExtensionEntity)
+                filter.transformToWhereClause(accountCorrection, correctionProgrammeMeasure, correctionExtensionToEc)
             )
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
             .fetchResults()
+            .toPaymentToEcCorrectionPageResult(pageable)
 
-        return results.toPaymentToEcCorrectionPageResult(pageable)
-    }
-
-    private fun fetchCorrectionsForPaymentAccount(pageable: Pageable, filter: PaymentAccountCorrectionSearchRequest): Page<PaymentAccountCorrectionTmp> {
-        val accountCorrection = QAuditControlCorrectionEntity.auditControlCorrectionEntity
-        val audit = QAuditControlEntity.auditControlEntity
-        val project = QProjectEntity.projectEntity
-        val specPaymentAccountCorrectionExtensionEntity = QPaymentAccountCorrectionExtensionEntity.paymentAccountCorrectionExtensionEntity
-        val specCorrectionProgrammeMeasure =
-            QAuditControlCorrectionMeasureEntity.auditControlCorrectionMeasureEntity
-        val specProjectContractingMonitoringEntity = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
-        val specProjectPartnerReportEntity = QProjectPartnerReportEntity.projectPartnerReportEntity
-        val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity // if FTLS
-        val ftlsPayment = QPaymentEntity.paymentEntity
-
-        val results = jpaQueryFactory
+    private fun fetchCorrectionsForPaymentAccount(pageable: Pageable, filter: PaymentAccountCorrectionSearchRequest) =
+        jpaQueryFactory
             .select(
                 accountCorrection,
                 audit.project.id,
                 CaseBuilder().`when`(accountCorrection.partnerReport.isNotNull())
-                    .then(specProjectPartnerReportEntity.identification.projectAcronym)
-                    .otherwise(ftlsPayment.projectAcronym),                                 // if linked to report
-                CaseBuilder().`when`(accountCorrection.partnerReport.isNotNull())           // if linked to FTLS
-                    .then(specProjectPartnerReportEntity.identification.projectIdentifier)  // if linked to report
-                    .otherwise(ftlsPayment.projectCustomIdentifier),                        // if linked to FTLS
+                    .then(partnerReport.identification.projectAcronym)
+                    .otherwise(ftlsPayment.projectAcronym),                         // if linked to report
+                CaseBuilder().`when`(accountCorrection.partnerReport.isNotNull())   // if linked to FTLS
+                    .then(partnerReport.identification.projectIdentifier)           // if linked to report
+                    .otherwise(ftlsPayment.projectCustomIdentifier),                // if linked to FTLS
 
                 project, // for priority axis
                 audit.controllingBody,
 
-                specPaymentAccountCorrectionExtensionEntity.paymentAccount.id,
-                specPaymentAccountCorrectionExtensionEntity.fundAmount,
-                specPaymentAccountCorrectionExtensionEntity.publicContribution,
-                specPaymentAccountCorrectionExtensionEntity.correctedPublicContribution,
-                specPaymentAccountCorrectionExtensionEntity.autoPublicContribution,
-                specPaymentAccountCorrectionExtensionEntity.correctedAutoPublicContribution,
-                specPaymentAccountCorrectionExtensionEntity.privateContribution,
-                specPaymentAccountCorrectionExtensionEntity.correctedPrivateContribution,
-                specPaymentAccountCorrectionExtensionEntity.comment,
-                specCorrectionProgrammeMeasure.scenario,
+                correctionExtensionToAccount.paymentAccount.id,
+                correctionExtensionToAccount.fundAmount,
+                correctionExtensionToAccount.publicContribution,
+                correctionExtensionToAccount.correctedPublicContribution,
+                correctionExtensionToAccount.autoPublicContribution,
+                correctionExtensionToAccount.correctedAutoPublicContribution,
+                correctionExtensionToAccount.privateContribution,
+                correctionExtensionToAccount.correctedPrivateContribution,
+                correctionExtensionToAccount.comment,
+                correctionProgrammeMeasure.scenario,
             )
             .from(accountCorrection)
-                .leftJoin(specProjectPartnerReportEntity)
-                    .on(specProjectPartnerReportEntity.eq(accountCorrection.partnerReport))
+                .leftJoin(partnerReport)
+                    .on(partnerReport.eq(accountCorrection.partnerReport))
                 .leftJoin(audit)
                     .on(audit.eq(accountCorrection.auditControl))
                 .leftJoin(projectLumpSum)
@@ -413,22 +404,19 @@ class AuditControlCorrectionPersistenceProvider(
                     .on(ftlsPayment.fund.eq(accountCorrection.programmeFund).and(ftlsPayment.projectLumpSum.eq(projectLumpSum)))
                 .leftJoin(project)
                     .on(project.eq(audit.project))
-                .leftJoin(specPaymentAccountCorrectionExtensionEntity)
-                    .on(specPaymentAccountCorrectionExtensionEntity.correction.eq(accountCorrection))
-                .leftJoin(specCorrectionProgrammeMeasure)
-                    .on(specCorrectionProgrammeMeasure.correction.eq(accountCorrection))
-                .leftJoin(specProjectContractingMonitoringEntity)
-                    .on(specProjectContractingMonitoringEntity.projectId.eq(project.id))
+                .leftJoin(correctionExtensionToAccount)
+                    .on(correctionExtensionToAccount.correction.eq(accountCorrection))
+                .leftJoin(correctionProgrammeMeasure)
+                    .on(correctionProgrammeMeasure.correction.eq(accountCorrection))
             .where(
-                filter.transformToWhereClause(accountCorrection, specCorrectionProgrammeMeasure, specPaymentAccountCorrectionExtensionEntity)
+                filter.transformToWhereClause(accountCorrection, correctionProgrammeMeasure, correctionExtensionToAccount)
             )
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderByForCorrection())
             .fetchResults()
+            .toPaymentAccountCorrectionPageResult(pageable)
 
-        return results.toPaymentAccountCorrectionPageResult(pageable)
-    }
 
     private fun QueryResults<Tuple>.toPaymentAccountCorrectionPageResult(pageable: Pageable) = PageImpl(
         results.map { it: Tuple ->
