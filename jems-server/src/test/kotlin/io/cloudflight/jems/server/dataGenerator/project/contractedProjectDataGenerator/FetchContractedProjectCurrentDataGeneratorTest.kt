@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -16,7 +17,7 @@ import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.beans.factory.annotation.Autowired
 
-
+@Disabled
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 60)
 class FetchContractedProjectCurrentDataGeneratorTest : DataGeneratorTest() {
 

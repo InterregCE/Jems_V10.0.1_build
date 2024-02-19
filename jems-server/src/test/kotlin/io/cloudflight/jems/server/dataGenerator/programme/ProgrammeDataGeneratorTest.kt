@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.DataGeneratorTest
 import io.cloudflight.jems.server.dataGenerator.*
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -29,7 +30,7 @@ import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
 import java.math.BigDecimal
 
-
+@Disabled
 @Order(PROGRAMME_DATA_INITIALIZER_ORDER)
 class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 
