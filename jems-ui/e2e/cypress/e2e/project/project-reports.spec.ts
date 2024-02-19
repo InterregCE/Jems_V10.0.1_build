@@ -194,7 +194,7 @@ context('Project report tests', () => {
                         cy.contains('Save changes').click();
                         cy.contains('Completed in prior report. No changes.').should('not.exist');
                         cy.contains('New changes after completion.').scrollIntoView().should('be.visible');
-                        
+
                         cy.get('input[type=file]').eq(0).selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
                         cy.contains('fileToUpload.txt').should('be.visible');
                     });
@@ -430,7 +430,7 @@ context('Project report tests', () => {
                 partnerReport2Details.partnerReport.procurements[0].details.contractName = 'Procurement 2-1';
                 partnerReport2Details.partnerReport.procurements[1].details.contractName = 'Procurement 2-2';
                 partnerReport2Details.partnerReport.procurements[2].details.contractName = 'Procurement 2-3';
-                partnerReport2Details.partnerReport.contributions.toBeUpdated = [ 
+                partnerReport2Details.partnerReport.contributions.toBeUpdated = [
                     ...partnerReportDetails.partnerReport.contributions.toBeUpdated,
                     ...partnerReportDetails.partnerReport.contributions.toBeCreated
                 ];
@@ -452,6 +452,47 @@ context('Project report tests', () => {
                     cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
                     projectReportPage.verifyAmountsInTables(testData.projectReport2ExpectedResults);
                     cy.contains('Current report after verification').should('not.exist');
+                });
+            });
+        });
+    });
+
+    it.only('TB-1126 PR - Financial overview - Breakdown per investment shows correct figures across multiple project reports', function () {
+        cy.fixture('project/reporting/TB-1126.json').then(testData => {
+            cy.loginByRequest(user.applicantUser.email);
+            cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+
+                const leadPartnerId = this[application.partners[0].details.abbreviation];
+                const partnerReportExpenditure = testData.partnerReportExpenditure;
+                const expenditureVerification = testData.expenditureVerification;
+                partnerReportExpenditure.declaredAmount = 100.00;
+                partnerReportExpenditure.declaredAmountInEur = 100.00;
+                expenditureVerification.deductedAmount = 50.00;
+                createCertifiedPartnerReport(leadPartnerId, partnerReportExpenditure, expenditureVerification);
+
+                const partnerId = this[application.partners[1].details.abbreviation];
+                partnerReportExpenditure.declaredAmount = 80.00;
+                partnerReportExpenditure.declaredAmountInEur = 80.00;
+                expenditureVerification.deductedAmount = 60.00;
+                createCertifiedPartnerReport(partnerId, partnerReportExpenditure, expenditureVerification);
+
+                const verificationExpenditure = testData.verificationExpenditure;
+                createVerifiedProjectReport(applicationId, verificationExpenditure);
+
+                cy.addPartnerReport(leadPartnerId).then(reportId => {
+                    cy.updatePartnerReportExpenditures(leadPartnerId, reportId, testData.draftPartnerReportExpenditures);
+                });
+
+                cy.loginByRequest(user.applicantUser.email);
+                cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+                cy.wait(2000);
+                createProjectReport(2); // Finance type
+                cy.wait(2000);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    cy.contains('Project expenditure - breakdown per investment').scrollIntoView().should('be.visible');
+                    projectReportPage.verifyAmountsInTables(testData.expectedResults);
                 });
             });
         });
@@ -536,9 +577,34 @@ function createJsMaUser(testData) {
     });
 }
 
-
 function setPartnerReportExpenditureVerificationIds(savedExpenditures, expendituresVerification) {
     for (let i = 0; i < savedExpenditures.length; i++) {
         expendituresVerification[i].id = savedExpenditures[i].id;
     }
+}
+
+function createCertifiedPartnerReport(partnerId: number, partnerReportExpenditure: any, expenditureVerification: any) {
+    const rawPartnerReportDetails = {
+        partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
+        controlWork: reporting.projectReports[0].partnerReports[0].controlWork
+    };
+    const partnerReportDetails = JSON.parse(JSON.stringify(rawPartnerReportDetails));
+    partnerReportDetails.partnerReport.expenditures.splice(4, 5);
+    partnerReportDetails.partnerReport.expenditures.push(partnerReportExpenditure);
+
+    partnerReportDetails.controlWork.expenditureVerification.splice(4, 5);
+    partnerReportDetails.controlWork.expenditureVerification.push(expenditureVerification);
+
+    cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
+}
+
+function createVerifiedProjectReport(applicationId: number, verificationExpenditure: any) {
+    const rawProjectReportDetails = {
+        projectReport: reporting.projectReports[0].projectReport,
+        verificationWork: reporting.projectReports[0].verificationWork
+    };
+
+    const projectReportDetails = JSON.parse(JSON.stringify(rawProjectReportDetails));
+    projectReportDetails.verificationWork.expenditures = Array(10).fill(verificationExpenditure);
+    cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email);
 }

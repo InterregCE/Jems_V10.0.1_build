@@ -1,0 +1,125 @@
+{
+  "partnerReportExpenditure": {
+    "costCategory": "ExternalCosts",
+    "internalReferenceNumber": "5",
+    "invoiceNumber": "invoice",
+    "investmentId": null,
+    "cypressReferenceInvestment": "investment3",
+    "contractId": null,
+    "cypressReferenceProcurement": "Procurement2",
+    "invoiceDate": "2022-12-02",
+    "dateOfPayment": "2022-12-09",
+    "description": [],
+    "comment": [],
+    "totalValueInvoice": 555.55,
+    "vat": 55.55,
+    "numberOfUnits": 0,
+    "pricePerUnit": 0,
+    "declaredAmount": "declaredAmount",
+    "currencyCode": "EUR",
+    "currencyConversionRate": 1,
+    "declaredAmountInEur": "declaredAmount"
+  },
+  "expenditureVerification": {
+    "id": null,
+    "costCategory": "ExternalCosts",
+    "partOfSample": true,
+    "deductedAmount": "deductedAmount",
+    "typologyOfErrorId": 1,
+    "parked": false,
+    "verificationComment": "Deducted item 5"
+  },
+  "verificationExpenditure": {
+    "expenditureId": null,
+    "partOfVerificationSample": false,
+    "deductedByJs": 0,
+    "deductedByMa": 0,
+    "typologyOfErrorId": null,
+    "parked": false,
+    "verificationComment": "No change"
+  },
+  "draftPartnerReportExpenditures" : [
+    {
+      "costCategory": "ExternalCosts",
+      "internalReferenceNumber": 1,
+      "invoiceNumber": "invoice",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment3",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement2",
+      "invoiceDate": "2022-12-02",
+      "dateOfPayment": "2022-12-09",
+      "description": [],
+      "comment": [],
+      "totalValueInvoice": 555.55,
+      "vat": 55.55,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 199.00,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 199.00
+    },
+    {
+      "costCategory": "ExternalCosts",
+      "internalReferenceNumber": 2,
+      "invoiceNumber": "invoice",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment1",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement2",
+      "invoiceDate": "2022-12-02",
+      "dateOfPayment": "2022-12-09",
+      "description": [],
+      "comment": [],
+      "totalValueInvoice": 10.55,
+      "vat": 20.55,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 88.00,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 88.00
+    }
+  ],
+  "expectedResults": {
+    "investment": {
+      "I1.1" : {
+        "totalEligibleBudget": "7.736,36",
+        "previouslyReported" : "374,66",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "374,66",
+        "totalReportedSoFarPercentage": "4,84",
+        "remainingBudget": "7.361,70",
+        "previouslyVerified": "374,66"
+      },
+      "I1.2" : {
+        "totalEligibleBudget": "3.519,40",
+        "previouslyReported" : "1.001,10",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "1.001,10",
+        "totalReportedSoFarPercentage": "28,45",
+        "remainingBudget": "2.518,30",
+        "previouslyVerified": "1.001,10"
+      },
+      "I1.3" : {
+        "totalEligibleBudget": "20.410,65",
+        "previouslyReported" : "40,00",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "40,00",
+        "totalReportedSoFarPercentage": "0,20",
+        "remainingBudget": "20.370,65",
+        "previouslyVerified": "40,00"
+      },
+      "Total" : {
+        "totalEligibleBudget": "31.666,41",
+        "previouslyReported" : "1.415,76",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "1.415,76",
+        "totalReportedSoFarPercentage": "4,47",
+        "remainingBudget": "30.250,65",
+        "previouslyVerified": "1.415,76"
+      }
+    }
+  }
+}
