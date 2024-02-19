@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.dataGenerator.project.versionedString
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
@@ -18,7 +17,6 @@ import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.beans.factory.annotation.Autowired
 
-@Disabled
 internal class ProjectPersistenceProviderJPATest : JPATest() {
 
     @Autowired
