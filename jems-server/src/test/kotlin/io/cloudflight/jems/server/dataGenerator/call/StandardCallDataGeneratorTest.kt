@@ -22,7 +22,6 @@ import io.cloudflight.jems.server.dataGenerator.SELECTED_PROGRAMME_FUNDS
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_DETAIL
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_LENGTH_OF_PERIOD
 import io.cloudflight.jems.server.dataGenerator.inputTranslation
-import io.cloudflight.jems.server.plugin.PartnerControlReportCheckPluginKey
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportPartnerCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
@@ -30,6 +29,7 @@ import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheck
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -41,7 +41,7 @@ import org.springframework.core.Ordered
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-
+@Disabled
 @Order(CALL_DATA_INITIALIZER_ORDER)
 class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 

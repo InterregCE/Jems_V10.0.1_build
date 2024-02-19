@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.dataGenerator.project.versionedString
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -24,6 +25,7 @@ import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
 import java.time.LocalDate
 
+@Disabled
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 50)
 class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 

@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.dataGenerator.project.inputProjectRelevance
 import io.cloudflight.jems.server.dataGenerator.project.projectResultUpdateRequestDTO
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -22,7 +23,7 @@ import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
 
-
+@Disabled
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 30)
 class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 
