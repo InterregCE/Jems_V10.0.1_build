@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverview
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewContribution
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewDetail
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -11,15 +12,15 @@ import java.math.BigDecimal
 
 fun List<PaymentAccountEntity>.toModel() = this.map { it.toModel() }
 
-fun PaymentAccount.toOverviewDetailModel() = PaymentAccountOverviewDetail(
+fun PaymentAccount.toOverviewDetailModel(overviewTotals: Map<Long, PaymentAccountOverviewContribution>) = PaymentAccountOverviewDetail(
     id = id,
     accountingYear = accountingYear,
     status = status,
-    totalEligibleExpenditure = BigDecimal.ZERO,
+    totalEligibleExpenditure = overviewTotals[id]?.totalEligibleExpenditure ?: BigDecimal.ZERO,
     nationalReference = nationalReference,
     technicalAssistance = technicalAssistance,
-    totalPublicContribution = BigDecimal.ZERO,
-    totalClaimInclTA = BigDecimal.ZERO,
+    totalPublicContribution = overviewTotals[id]?.totalPublicContribution ?: BigDecimal.ZERO,
+    totalClaimInclTA = overviewTotals[id]?.totalEligibleExpenditure?.plus(technicalAssistance) ?: BigDecimal.ZERO,
     submissionToSfcDate = submissionToSfcDate,
     sfcNumber = sfcNumber,
 )
@@ -36,10 +37,11 @@ fun PaymentAccountEntity.toModel() = PaymentAccount(
     comment = comment
 )
 
-fun Map<ProgrammeFund, List<PaymentAccount>>.toOverviewModel() = map {
-    PaymentAccountOverview(
-        programmeFund = it.key,
-        paymentAccounts = it.value.map{ account -> account.toOverviewDetailModel() }
-    )
-}
+fun Map<ProgrammeFund, List<PaymentAccount>>.toOverviewModel(overviewContribution: Map<Long, PaymentAccountOverviewContribution>) =
+    map {
+        PaymentAccountOverview(
+            programmeFund = it.key,
+            paymentAccounts = it.value.map { account -> account.toOverviewDetailModel(overviewContribution) }
+        )
+    }
 

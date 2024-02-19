@@ -5,12 +5,14 @@ import io.cloudflight.jems.server.payments.authorization.CanRetrievePaymentsAcco
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverview
 import io.cloudflight.jems.server.payments.repository.account.toOverviewModel
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
+import io.cloudflight.jems.server.payments.service.account.finance.PaymentAccountFinancePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ListPaymentAccount(
-    private val paymentAccountPersistence: PaymentAccountPersistence
+    private val paymentAccountPersistence: PaymentAccountPersistence,
+    private val paymentAccountFinancePersistence: PaymentAccountFinancePersistence,
 ) : ListPaymentAccountInteractor {
 
     @CanRetrievePaymentsAccount
@@ -18,8 +20,9 @@ class ListPaymentAccount(
     @ExceptionWrapper(ListPaymentAccountException::class)
     override fun listPaymentAccount(): List<PaymentAccountOverview> {
         val paymentAccountsByFund = paymentAccountPersistence.getAllAccounts().groupBy { it.fund }
+        val overviewContribution = paymentAccountFinancePersistence.getOverviewTotalsForFinishedPaymentAccounts()
 
-        return paymentAccountsByFund.toOverviewModel()
+        return paymentAccountsByFund.toOverviewModel(overviewContribution)
     }
 
 }

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.service.account.finance
 
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewContribution
 import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.ReconciledPriority
 import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.ReconciledScenario
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.CorrectionAmountWithdrawn
@@ -16,5 +17,7 @@ interface PaymentAccountFinancePersistence {
 
     /** Summary */
     fun getTotalsForFinishedEcPayments(ecPaymentIds: Set<Long>): Map<Long?, PaymentToEcAmountSummaryLine>
+
+    fun getOverviewTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
 
 }

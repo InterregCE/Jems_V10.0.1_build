@@ -5,7 +5,12 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewContribution
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
@@ -57,6 +62,12 @@ class PaymentAccountFinancePersistenceProviderTest : UnitTest() {
                 totalUnionContribution = BigDecimal.ZERO,
                 totalPublicContribution = BigDecimal(302),
             )
+        )
+
+        private val overviewContribution = mapOf(
+            1L to PaymentAccountOverviewContribution(BigDecimal(100), BigDecimal(50)),
+            2L to PaymentAccountOverviewContribution(BigDecimal(200), BigDecimal(100)),
+            3L to PaymentAccountOverviewContribution(BigDecimal(300), BigDecimal(150)),
         )
     }
 
@@ -113,5 +124,39 @@ class PaymentAccountFinancePersistenceProviderTest : UnitTest() {
                 ),
             )
         )
+    }
+
+    @Test
+    fun getOverviewTotalsForFinishedPaymentAccounts() {
+        val query = mockk<JPAQuery<Tuple>>()
+        val paymentToEc = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+        val paymentToEcPriorityAxisOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
+        val paymentAccount = QPaymentAccountEntity.paymentAccountEntity
+        val paymentAccountPriorityAxisOverview = QPaymentAccountPriorityAxisOverviewEntity.paymentAccountPriorityAxisOverviewEntity
+
+        val totalEligibleAccountExpr = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalPublicAccountExpr = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
+        val totalEligibleEcExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalUnionEcExpr = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
+        val totalPublicEcExpr = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
+        val totalEligibleExpr = totalEligibleAccountExpr.add(totalEligibleEcExpr).add(totalUnionEcExpr)
+        val totalPublicExpr = totalPublicAccountExpr.add(totalPublicEcExpr)
+
+        every { jpaQueryFactory.select(any(), any(), any()) } returns query
+        every { query.from(paymentAccount) } returns query
+        every { query.leftJoin(paymentAccountPriorityAxisOverview).on(any()) } returns query
+        every { query.leftJoin(paymentToEc).on(any()) } returns query
+        every { query.leftJoin(paymentToEcPriorityAxisOverview).on(any()) } returns query
+        every { query.where(paymentAccount.status.eq(PaymentAccountStatus.FINISHED)) } returns query
+        every { query.groupBy(paymentAccount.id) } returns query
+        every { query.fetch() } returns overviewContribution.map {
+            mockk<Tuple> {
+                every { get(paymentAccount.id) } returns it.key
+                every { get(totalEligibleExpr) } returns it.value.totalEligibleExpenditure
+                every { get(totalPublicExpr) } returns it.value.totalPublicContribution
+            }
+        }
+
+        assertThat(persistence.getOverviewTotalsForFinishedPaymentAccounts()).isEqualTo(overviewContribution)
     }
 }
