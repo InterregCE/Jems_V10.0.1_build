@@ -20,6 +20,6 @@ data class SpendingProfileLine(
     var currentReport: BigDecimal,
     val previouslyReported: BigDecimal,
     var totalReportedSoFar: BigDecimal,
-    var totalReportedSoFarPercentage: BigDecimal,
-    var remainingBudget: BigDecimal,
+    var totalReportedSoFarPercentage: BigDecimal?,
+    var remainingBudget: BigDecimal?,
 )

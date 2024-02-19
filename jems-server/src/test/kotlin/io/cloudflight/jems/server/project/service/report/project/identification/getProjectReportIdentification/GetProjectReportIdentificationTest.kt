@@ -219,4 +219,78 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
         val reportIdentification = interactor.getIdentification(PROJECT_ID, REPORT_ID)
         assertThat(reportIdentification.spendingProfilePerPartner).isEqualTo(expectedResult)
     }
+
+    @Test
+    fun `partner - missing totalEligible will show correct values for non dependent fields`() {
+        every { projectReportIdentification.getReportIdentification(PROJECT_ID, REPORT_ID) } returns identification
+
+        val report = mockk<ProjectReportModel>()
+        every { report.status } returns ProjectReportStatus.Draft
+        every { report.linkedFormVersion } returns "1.0"
+        every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
+
+        val leadPartner = mockk<ProjectPartnerDetail>()
+        every { leadPartner.id } returns 10L
+        every { leadPartner.sortNumber } returns 1
+        every { leadPartner.role } returns ProjectPartnerRole.LEAD_PARTNER
+        every { leadPartner.nameInEnglish } returns "ABC"
+        every { leadPartner.addresses } returns listOf(
+            ProjectPartnerAddress(
+                type = ProjectPartnerAddressType.Organization,
+                country = "France FR"
+            ))
+
+
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner)
+        every { projectReportIdentification.getSpendingProfileReportedValues(REPORT_ID) } returns
+                listOf(
+                    ProjectReportSpendingProfileReportedValues(
+                        10L,
+                        BigDecimal(200),
+                        BigDecimal.ZERO,
+                        BigDecimal(0)
+                    )
+                )
+        every { projectReportCertificatePersistence.getIdentificationSummariesOfProjectReport(REPORT_ID) } returns
+                listOf(leadPartnerReportIdentificationSummary)
+
+
+        val expectedResult = ProjectReportSpendingProfile(
+            lines = listOf(
+                SpendingProfileLine(
+                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                    partnerNumber = 1,
+                    partnerCountry = "France FR",
+                    partnerAbbreviation = "ABC",
+                    currentReport = BigDecimal(400),
+                    previouslyReported = BigDecimal(200),
+                    totalEligibleBudget = BigDecimal.ZERO,
+                    remainingBudget = null,
+                    totalReportedSoFar = BigDecimal(600),
+                    totalReportedSoFarPercentage = null,
+                    periodBudget = BigDecimal.ZERO,
+                    periodBudgetCumulative = BigDecimal.ZERO,
+                    differenceFromPlan = BigDecimal.ZERO,
+                    differenceFromPlanPercentage = BigDecimal.ZERO,
+                    nextReportForecast = BigDecimal(250),
+                )
+            ),
+            total = SpendingProfileTotal(
+                periodBudget = BigDecimal.ZERO,
+                periodBudgetCumulative = BigDecimal.ZERO,
+                differenceFromPlan = BigDecimal.ZERO,
+                differenceFromPlanPercentage = null,
+                nextReportForecast = BigDecimal(250),
+                totalEligibleBudget = BigDecimal(0),
+                currentReport = BigDecimal(400),
+                previouslyReported = BigDecimal(200),
+                totalReportedSoFar = BigDecimal(600),
+                totalReportedSoFarPercentage = null,
+                remainingBudget = BigDecimal.ZERO
+            )
+        )
+
+        val reportIdentification = interactor.getIdentification(PROJECT_ID, REPORT_ID)
+        assertThat(reportIdentification.spendingProfilePerPartner).isEqualTo(expectedResult)
+    }
 }
