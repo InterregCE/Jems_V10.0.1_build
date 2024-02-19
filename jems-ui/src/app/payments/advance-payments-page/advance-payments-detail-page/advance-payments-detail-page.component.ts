@@ -41,7 +41,7 @@ import {NumberService} from '@common/services/number.service';
   ],
   providers: [FormService]
 })
-export class AdvancePaymentsDetailPageComponent implements OnInit {
+export class AdvancePaymentsDetailPageComponent {
   Alert = Alert;
 
   settlementsExpanded = true;
@@ -117,9 +117,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         tap(selection => this.setSourceForAdvance(selection)),
         untilDestroyed(this)
       ).subscribe();
-  }
 
-  ngOnInit(): void {
     this.data$ = combineLatest([
       this.advancePaymentsDetailPageStore.advancePaymentDetail$,
       this.securityService.currentUserDetails,
@@ -261,6 +259,10 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   setSelectedProject(identifier: string) {
+    if (!!identifier) {
+      this.advancePaymentsDetailPageStore.searchProjectsByName$.next(identifier);
+    }
+
     this.contractedProjects$.pipe(
       take(1),
       map(projects => projects.find(item => item.customIdentifier === identifier)),
