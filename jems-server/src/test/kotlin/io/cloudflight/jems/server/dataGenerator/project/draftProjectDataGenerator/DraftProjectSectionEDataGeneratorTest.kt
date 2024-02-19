@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.dataGenerator.PROGRAMME_LUMP_SUMS
 import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.quickperf.sql.annotation.ExpectDelete
@@ -22,7 +21,7 @@ import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
 import java.math.BigDecimal
 
-@Disabled
+
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 40)
 class DraftProjectSectionEDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 
