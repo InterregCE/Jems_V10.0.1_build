@@ -7,10 +7,8 @@ import io.cloudflight.jems.server.project.entity.report.project.identification.P
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
-import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
-import java.math.BigDecimal
+import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification.Companion.emptySpendingProfile
 
 fun List<ProjectReportIdentificationTargetGroupEntity>.toModel() = map {
     ProjectReportIdentificationTargetGroup(
@@ -53,21 +51,6 @@ fun toProjectReportIdentification(
                 it.partnerProblems
             )
         },
-        spendingProfilePerPartner = ProjectReportSpendingProfile(
-            emptyList(),
-            SpendingProfileTotal(
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO
-            )
-        )
+        spendingProfilePerPartner = emptySpendingProfile()
     )
 }

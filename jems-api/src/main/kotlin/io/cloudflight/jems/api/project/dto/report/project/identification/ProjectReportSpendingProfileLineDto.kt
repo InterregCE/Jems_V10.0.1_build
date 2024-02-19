@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.dto.report.project.identification
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
-import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import java.math.BigDecimal
 
 class ProjectReportSpendingProfileLineDto(
@@ -18,6 +17,6 @@ class ProjectReportSpendingProfileLineDto(
     val nextReportForecast: BigDecimal,
     val totalEligibleBudget: BigDecimal,
     val totalReportedSoFar: BigDecimal,
-    val totalReportedSoFarPercentage: BigDecimal,
-    val remainingBudget: BigDecimal,
+    val totalReportedSoFarPercentage: BigDecimal?,
+    val remainingBudget: BigDecimal?,
 )

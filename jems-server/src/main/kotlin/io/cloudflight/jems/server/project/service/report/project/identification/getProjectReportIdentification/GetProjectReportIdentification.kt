@@ -19,7 +19,6 @@ import io.cloudflight.jems.server.project.service.report.project.identification.
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Service
 class GetProjectReportIdentification(
@@ -90,10 +89,9 @@ class GetProjectReportIdentification(
                 currentReport = currentReport,
                 previouslyReported = previouslyReported,
                 totalEligibleBudget = totalEligibleBudget,
-                totalReportedSoFar =  totalReportedSoFar,
-                totalReportedSoFarPercentage = totalReportedSoFar.multiply(BigDecimal.valueOf(100))
-                    .divide(totalEligibleBudget, 2, RoundingMode.HALF_UP),
-                remainingBudget =  totalEligibleBudget.minus(totalReportedSoFar),
+                totalReportedSoFar = totalReportedSoFar,
+                totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget),
+                remainingBudget = if(totalEligibleBudget > BigDecimal.ZERO) totalEligibleBudget?.minus(totalReportedSoFar) else null,
 
                 periodBudget = lastCertified?.periodDetail?.periodBudget ?: BigDecimal.ZERO,
                 periodBudgetCumulative = lastCertified?.periodDetail?.periodBudgetCumulative ?: BigDecimal.ZERO,
@@ -106,7 +104,7 @@ class GetProjectReportIdentification(
 
 
 
-      val totalSpendingProfile =  profiles.fold(emptySpendingProfile().total) { total, spendingProfile  ->
+      val totalSpendingProfile = profiles.fold(emptySpendingProfile().total) { total, spendingProfile  ->
           total.periodBudget += spendingProfile.periodBudget
           total.periodBudgetCumulative += spendingProfile.periodBudgetCumulative
           total.differenceFromPlan += spendingProfile.differenceFromPlan
@@ -115,7 +113,7 @@ class GetProjectReportIdentification(
           total.currentReport += spendingProfile.currentReport
           total.previouslyReported += spendingProfile.previouslyReported
           total.totalReportedSoFar += spendingProfile.totalReportedSoFar
-          total.remainingBudget += spendingProfile.remainingBudget
+          total.remainingBudget += spendingProfile.remainingBudget ?: BigDecimal.ZERO
           return@fold total
       }.calculatePercentages()
 
