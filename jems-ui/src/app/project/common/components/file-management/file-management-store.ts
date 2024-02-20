@@ -77,7 +77,7 @@ export class FileManagementStore {
               private projectVersionStore: ProjectVersionStore
   ) {
     this.currentVersion$ = this.projectVersionStore.currentVersion$;
-    this.currentProjectStatus$ = this.projectStore.projectStatus$;
+    this.currentProjectStatus$ = this.projectStore.currentVersionOfProjectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);

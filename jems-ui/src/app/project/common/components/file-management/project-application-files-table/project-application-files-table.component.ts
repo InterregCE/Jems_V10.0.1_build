@@ -117,8 +117,9 @@ export class ProjectApplicationFilesTableComponent {
       case FileCategoryTypeEnum.MODIFICATION:
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
-        return canChangeAssessmentFile && fileIsNotLocked;
+        return canChangeAssessmentFile;
       case FileCategoryTypeEnum.APPLICATION:
+        return canChangeApplicationFile && isInModifiableStatus;
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
         return (canChangeApplicationFile || isOwner) && fileIsNotLocked && isInModifiableStatus;
@@ -146,6 +147,7 @@ export class ProjectApplicationFilesTableComponent {
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile && fileIsNotLocked;
       case FileCategoryTypeEnum.APPLICATION:
+        return canChangeApplicationFile && fileIsNotLocked && isInModifiableStatus;
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
         return (canChangeApplicationFile || isOwner) && fileIsNotLocked && isInModifiableStatus;
