@@ -457,7 +457,7 @@ context('Project report tests', () => {
         });
     });
 
-    it.only('TB-1126 PR - Financial overview - Breakdown per investment shows correct figures across multiple project reports', function () {
+    it('TB-1126 PR - Financial overview - Breakdown per investment shows correct figures across multiple project reports', function () {
         cy.fixture('project/reporting/TB-1126.json').then(testData => {
             cy.loginByRequest(user.applicantUser.email);
             cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
