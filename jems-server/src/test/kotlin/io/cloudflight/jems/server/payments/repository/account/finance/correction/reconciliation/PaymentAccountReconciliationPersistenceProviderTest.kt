@@ -14,13 +14,15 @@ import io.cloudflight.jems.server.payments.repository.account.reconciliation.Pay
 import io.cloudflight.jems.server.payments.service.account.paymentAccountEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProviderTest.Companion.programmePriority
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.Optional
 
 class PaymentAccountReconciliationPersistenceProviderTest : UnitTest() {
 
@@ -35,6 +37,11 @@ class PaymentAccountReconciliationPersistenceProviderTest : UnitTest() {
 
     @InjectMockKs
     lateinit var persistence: PaymentAccountReconciliationPersistenceProvider
+
+    @BeforeEach
+    fun setup() {
+        clearMocks(accountReconciliationRepository, paymentAccountRepository, programmePriorityRepository)
+    }
 
     @Test
     fun getByPaymentAccountId() {
