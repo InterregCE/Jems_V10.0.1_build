@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportIdentificationTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportSpendingProfileDTO
-import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportSpendingProfileTotalDto
+import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportSpendingProfileLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.UpdateProjectReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputIndicatorOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputLineOverviewDTO
@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
-import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
@@ -55,7 +55,8 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
             deviations = setOf(),
             spendingProfilePerPartner = ProjectReportSpendingProfile(
                 lines = emptyList(),
-                total = SpendingProfileTotal(
+                total = SpendingProfileLine(
+                    null, null, null, null,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
@@ -66,8 +67,8 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
-                    BigDecimal.ZERO
-                )
+                    BigDecimal.ZERO,
+                ),
             )
         )
 
@@ -87,7 +88,8 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
             deviations = setOf(),
             spendingProfilePerPartner = ProjectReportSpendingProfileDTO(
                 lines = emptyList(),
-                total = ProjectReportSpendingProfileTotalDto(
+                total = ProjectReportSpendingProfileLineDTO(
+                    null, null, null, null,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,

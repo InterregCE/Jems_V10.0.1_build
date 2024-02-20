@@ -18,9 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
-import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -49,22 +47,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             highlights = setOf(),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfilePerPartner = ProjectReportSpendingProfile(
-                lines = emptyList(),
-                total = SpendingProfileTotal(
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO
-                )
-            )
+            spendingProfilePerPartner = null,
         )
 
         private val projectReportEntity = ProjectReportEntity(

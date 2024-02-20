@@ -3,11 +3,12 @@ package io.cloudflight.jems.api.project.dto.report.project.identification
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 
-class ProjectReportSpendingProfileLineDto(
-    val partnerRole: ProjectPartnerRoleDTO,
-    val partnerNumber: Int,
-    val partnerAbbreviation: String,
-    val partnerCountry: String,
+data class ProjectReportSpendingProfileLineDTO(
+    val partnerRole: ProjectPartnerRoleDTO?,
+    val partnerNumber: Int?,
+    val partnerAbbreviation: String?,
+    val partnerCountry: String?,
+
     val periodBudget: BigDecimal,
     val periodBudgetCumulative: BigDecimal,
     var currentReport: BigDecimal,
