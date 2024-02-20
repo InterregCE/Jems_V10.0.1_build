@@ -1,5 +1,9 @@
 package io.cloudflight.jems.server.payments.repository.account
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
@@ -9,6 +13,7 @@ import io.cloudflight.jems.server.payments.model.account.PaymentAccountUpdate
 import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.project.repository.file.ProjectFileRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -17,7 +22,9 @@ import java.math.BigDecimal
 class PaymentAccountPersistenceProvider(
     private val repository: PaymentAccountRepository,
     private val accountingYearRepository: AccountingYearRepository,
-    private val programmeFundRepository: ProgrammeFundRepository
+    private val programmeFundRepository: ProgrammeFundRepository,
+    private val fileRepository: JemsSystemFileService,
+    private val reportFileRepository: JemsFileMetadataRepository
 ) : PaymentAccountPersistence {
 
     @Transactional(readOnly = true)
@@ -66,6 +73,14 @@ class PaymentAccountPersistenceProvider(
         this.repository.getById(paymentAccountId).apply {
             status = PaymentAccountStatus.DRAFT
         }.status
+
+    @Transactional
+    override fun deletePaymentAccountAttachment(fileId: Long) {
+        fileRepository.delete(
+            reportFileRepository.findByTypeAndId(JemsFileType.PaymentAccountAttachment, fileId)
+                ?: throw ResourceNotFoundException("file")
+        )
+    }
 
     private fun generateAccountsForProgrammeFund(
         programmeFundEntity: ProgrammeFundEntity,

@@ -1,6 +1,10 @@
 package io.cloudflight.jems.server.payments.repository.account
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.accountingYears.repository.toEntity
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
@@ -19,6 +23,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -35,6 +40,12 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
 
     @MockK
     lateinit var programmeFundRepository: ProgrammeFundRepository
+
+    @MockK
+    lateinit var  fileRepository: JemsSystemFileService
+
+    @MockK
+    lateinit var reportFileRepository: JemsFileMetadataRepository
 
     @InjectMockKs
     lateinit var persistenceProvider: PaymentAccountPersistenceProvider
@@ -111,5 +122,14 @@ class PaymentAccountPersistenceProviderTest: UnitTest() {
         every { repository.getById(PAYMENT_ACCOUNT_ID) } returns paymentAccountEntity()
 
         assertThat(persistenceProvider.reOpenPaymentAccount(PAYMENT_ACCOUNT_ID)).isEqualTo(PaymentAccountStatus.DRAFT)
+    }
+
+    @Test
+    fun deletePaymentAccountAttachment() {
+        val file = mockk<JemsFileMetadataEntity>()
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAccountAttachment, 16L) } returns file
+        persistenceProvider.deletePaymentAccountAttachment(16L)
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 }

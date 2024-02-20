@@ -28,7 +28,10 @@ class JemsSystemFileService(
 
             // Payment to EC
             JemsFileType.PaymentToEcAttachment,
-            JemsFileType.PaymentAuditAttachment
+            JemsFileType.PaymentAuditAttachment,
+
+            // Payment Account
+            JemsFileType.PaymentAccountAttachment,
         )
 
         fun JemsFileCreate.getDefaultMinioFullPath() = "$path$name"
