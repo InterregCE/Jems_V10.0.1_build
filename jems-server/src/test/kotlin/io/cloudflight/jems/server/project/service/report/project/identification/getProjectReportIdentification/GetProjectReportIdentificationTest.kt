@@ -21,7 +21,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
-import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -279,13 +278,13 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                 periodBudget = BigDecimal.ZERO,
                 periodBudgetCumulative = BigDecimal.ZERO,
                 differenceFromPlan = BigDecimal.ZERO,
-                differenceFromPlanPercentage = null,
+                differenceFromPlanPercentage = BigDecimal.ZERO,
                 nextReportForecast = BigDecimal(250),
                 totalEligibleBudget = BigDecimal(0),
                 currentReport = BigDecimal(400),
                 previouslyReported = BigDecimal(200),
                 totalReportedSoFar = BigDecimal(600),
-                totalReportedSoFarPercentage = null,
+                totalReportedSoFarPercentage = BigDecimal.ZERO,
                 remainingBudget = BigDecimal.ZERO
             )
         )
