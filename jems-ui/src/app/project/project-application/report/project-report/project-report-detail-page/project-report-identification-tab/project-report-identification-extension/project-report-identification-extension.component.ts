@@ -6,8 +6,7 @@ import {
     ProjectReportDTO,
     ProjectReportIdentificationDTO,
     ProjectReportIdentificationTargetGroupDTO,
-    ProjectReportSpendingProfileLineDto,
-    ProjectReportSpendingProfileTotalDto
+    ProjectReportSpendingProfileLineDTO,
 } from '@cat/api';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {
@@ -69,12 +68,11 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-     this.data$ =  combineLatest([
-         this.identificationExtensionStore.projectReportIdentification$,
-         this.visibilityStatusService.isVisible$(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS),
-         this.pageStore.reportEditable$,
-      ]).pipe(
+    this.data$ =  combineLatest([
+      this.identificationExtensionStore.projectReportIdentification$,
+      this.visibilityStatusService.isVisible$(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS),
+      this.pageStore.reportEditable$,
+    ]).pipe(
          tap(([projectReportIdentification, partnerBudgetPeriodsVisible, reportEditable]) => this.resetForm(projectReportIdentification)),
          map(([projectReportIdentification, partnerBudgetPeriodsVisible, reportEditable]) => ({
              projectReportIdentification,
@@ -119,7 +117,7 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
     }
 
     if (reportIdentification.spendingProfilePerPartner.lines) {
-      reportIdentification.spendingProfilePerPartner.lines.forEach((spendingProfile: ProjectReportSpendingProfileLineDto) => {
+      reportIdentification.spendingProfilePerPartner.lines.forEach((spendingProfile: ProjectReportSpendingProfileLineDTO) => {
         this.spendingProfiles.push(this.formBuilder.group({
             partnerRole: this.formBuilder.control(spendingProfile.partnerRole),
             partnerNumber: this.formBuilder.control(spendingProfile.partnerNumber),

@@ -130,7 +130,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 currentReportReIncluded = ZERO,
                 totalEligibleAfterControl = ZERO,
                 totalReportedSoFar = ZERO,
-                totalReportedSoFarPercentage = ZERO,
+                totalReportedSoFarPercentage = valueOf(100L),
                 remainingBudget = ZERO,
                 previouslyValidated = valueOf(460)
             ),

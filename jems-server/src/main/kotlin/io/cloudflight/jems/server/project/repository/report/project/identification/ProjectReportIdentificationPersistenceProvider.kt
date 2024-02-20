@@ -16,7 +16,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
-import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification.Companion.emptySpendingProfile
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -39,9 +38,9 @@ class ProjectReportIdentificationPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getReportIdentification(projectId: Long, reportId: Long): ProjectReportIdentification {
         val projectReport = projectReportRepository.getByIdAndProjectId(reportId, projectId)
-        return toProjectReportIdentification(
-            projectReport,
-            targetGroupRepository.findAllByProjectReportEntityOrderBySortNumber(projectReport)
+        return projectReport.toProjectReportIdentification(
+            targetGroupEntities = targetGroupRepository.findAllByProjectReportEntityOrderBySortNumber(projectReport),
+            spendingProfilePerPartner = null,
         )
     }
 
@@ -69,7 +68,7 @@ class ProjectReportIdentificationPersistenceProvider(
             highlights = translatedValues.map { InputTranslation(it.language(), it.highlights) }.toSet(),
             deviations = translatedValues.map { InputTranslation(it.language(), it.deviations) }.toSet(),
             partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet(),
-            spendingProfilePerPartner = emptySpendingProfile(),
+            spendingProfilePerPartner = null,
         )
     }
 

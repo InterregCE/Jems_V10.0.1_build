@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
@@ -17,7 +18,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
-import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -51,7 +51,8 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfilePerPartner = ProjectReportSpendingProfile(emptyList(),  SpendingProfileTotal(
+            spendingProfilePerPartner = ProjectReportSpendingProfile(emptyList(),  SpendingProfileLine(
+                null, null, null, null,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
@@ -82,9 +83,15 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
             partnerNumber = 2,
             partnerRole = ProjectPartnerRole.PARTNER,
             partnerId = 11L,
-            sumTotalEligibleAfterControl = BigDecimal(100),
-            nextReportForecast = BigDecimal(250),
-            periodDetail = null
+            sumTotalEligibleAfterControl = BigDecimal.ZERO,
+            nextReportForecast = BigDecimal(260),
+            periodDetail = ProjectPartnerReportPeriod(
+                number = 4,
+                periodBudget = BigDecimal.valueOf(290L),
+                periodBudgetCumulative = BigDecimal.valueOf(830L),
+                start = 10,
+                end = 12,
+            ),
         )
 
 
@@ -112,31 +119,32 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                     partnerNumber = 2,
                     partnerCountry = "Romania RO",
                     partnerAbbreviation = "DEF",
-                    currentReport = BigDecimal(100),
-                    previouslyReported = BigDecimal(700),
+                    periodBudget = BigDecimal.valueOf(290L),
+                    periodBudgetCumulative = BigDecimal.valueOf(830L),
+                    differenceFromPlan = BigDecimal.valueOf(130L),
+                    differenceFromPlanPercentage = BigDecimal.valueOf(84_34L, 2),
+                    nextReportForecast = BigDecimal.valueOf(260L),
                     totalEligibleBudget = BigDecimal(2350),
-                    remainingBudget = BigDecimal(1550),
-                    totalReportedSoFar = BigDecimal(800),
-                    totalReportedSoFarPercentage = BigDecimal.valueOf(34.04),
-                    periodBudget = BigDecimal.ZERO,
-                    periodBudgetCumulative = BigDecimal.ZERO,
-                    differenceFromPlan = BigDecimal.ZERO,
-                    differenceFromPlanPercentage = BigDecimal.ZERO,
-                    nextReportForecast = BigDecimal(250),
+                    currentReport = BigDecimal.ZERO,
+                    previouslyReported = BigDecimal.valueOf(700L),
+                    totalReportedSoFar = BigDecimal.valueOf(700L),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(29_79L, 2),
+                    remainingBudget = BigDecimal.valueOf(1650L),
                 )
             ),
-            total = SpendingProfileTotal(
-                periodBudget = BigDecimal.ZERO,
-                periodBudgetCumulative = BigDecimal.ZERO,
-                differenceFromPlan = BigDecimal.ZERO,
-                differenceFromPlanPercentage = BigDecimal.ZERO,
-                nextReportForecast = BigDecimal(500),
-                totalEligibleBudget = BigDecimal(3350),
-                currentReport = BigDecimal(500),
-                previouslyReported = BigDecimal(900),
-                totalReportedSoFar = BigDecimal(1400),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(41.79),
-                remainingBudget = BigDecimal(1950)
+            total = SpendingProfileLine(
+                null, null, null, null,
+                periodBudget = BigDecimal.valueOf(290L),
+                periodBudgetCumulative = BigDecimal.valueOf(830L),
+                differenceFromPlan = BigDecimal.valueOf(-470L),
+                differenceFromPlanPercentage = BigDecimal.valueOf(156_63L, 2),
+                nextReportForecast = BigDecimal.valueOf(510L),
+                totalEligibleBudget = BigDecimal.valueOf(3350L),
+                currentReport = BigDecimal.valueOf(400L),
+                previouslyReported = BigDecimal.valueOf(900L),
+                totalReportedSoFar = BigDecimal.valueOf(1300L),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(38_81L, 2),
+                remainingBudget = BigDecimal.valueOf(2050L)
             )
         )
     }
@@ -154,17 +162,15 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
     private lateinit var  partnerPersistence: PartnerPersistence
 
     @InjectMockKs
-    lateinit var interactor: GetProjectReportIdentification
+    private lateinit var interactor: GetProjectReportIdentification
 
     @BeforeEach
     fun reset() {
-        clearMocks(projectReportIdentification, projectReportCertificatePersistence, projectReportPersistence)
+        clearMocks(projectReportIdentification, projectReportCertificatePersistence, projectReportPersistence, partnerPersistence)
     }
 
     @Test
     fun getIdentification() {
-
-
         every { projectReportIdentification.getReportIdentification(PROJECT_ID, REPORT_ID) } returns identification
 
         val report = mockk<ProjectReportModel>()
@@ -239,19 +245,23 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                 country = "France FR"
             ))
 
+        val partner2 = mockk<ProjectPartnerDetail>()
+        every { partner2.id } returns 11L
+        every { partner2.sortNumber } returns 2
+        every { partner2.role } returns ProjectPartnerRole.PARTNER
+        every { partner2.nameInEnglish } returns "PP2 name in EN"
+        every { partner2.addresses } returns emptyList()
 
-        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner, partner2)
         every { projectReportIdentification.getSpendingProfileReportedValues(REPORT_ID) } returns
                 listOf(
-                    ProjectReportSpendingProfileReportedValues(
-                        10L,
-                        BigDecimal(200),
-                        BigDecimal.ZERO,
-                        BigDecimal(0)
-                    )
+                    ProjectReportSpendingProfileReportedValues(partnerId = 10L, previouslyReported = BigDecimal.valueOf(200),
+                        currentlyReported = BigDecimal.ZERO, partnerTotalEligibleBudget =  BigDecimal.ZERO),
+                    ProjectReportSpendingProfileReportedValues(partnerId = 11L, previouslyReported = BigDecimal.ZERO,
+                        currentlyReported = BigDecimal.ZERO, partnerTotalEligibleBudget =  BigDecimal.ZERO),
                 )
         every { projectReportCertificatePersistence.getIdentificationSummariesOfProjectReport(REPORT_ID) } returns
-                listOf(leadPartnerReportIdentificationSummary)
+                listOf(leadPartnerReportIdentificationSummary, secondPartnerReportIdentificationSummary)
 
 
         val expectedResult = ProjectReportSpendingProfile(
@@ -261,31 +271,49 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                     partnerNumber = 1,
                     partnerCountry = "France FR",
                     partnerAbbreviation = "ABC",
-                    currentReport = BigDecimal(400),
-                    previouslyReported = BigDecimal(200),
-                    totalEligibleBudget = BigDecimal.ZERO,
-                    remainingBudget = null,
-                    totalReportedSoFar = BigDecimal(600),
-                    totalReportedSoFarPercentage = null,
                     periodBudget = BigDecimal.ZERO,
                     periodBudgetCumulative = BigDecimal.ZERO,
                     differenceFromPlan = BigDecimal.ZERO,
                     differenceFromPlanPercentage = BigDecimal.ZERO,
                     nextReportForecast = BigDecimal(250),
-                )
+                    totalEligibleBudget = BigDecimal.ZERO,
+                    currentReport = BigDecimal(400),
+                    previouslyReported = BigDecimal(200),
+                    totalReportedSoFar = BigDecimal(600),
+                    totalReportedSoFarPercentage = null,
+                    remainingBudget = BigDecimal.valueOf(-600L),
+                ),
+                SpendingProfileLine(
+                    partnerRole = ProjectPartnerRole.PARTNER,
+                    partnerNumber = 2,
+                    partnerCountry = "N/A",
+                    partnerAbbreviation = "PP2 name in EN",
+                    periodBudget = BigDecimal.valueOf(290L),
+                    periodBudgetCumulative = BigDecimal.valueOf(830L),
+                    differenceFromPlan = BigDecimal.valueOf(830L),
+                    differenceFromPlanPercentage = BigDecimal.valueOf(0L, 2),
+                    nextReportForecast = BigDecimal(260L),
+                    totalEligibleBudget = BigDecimal.ZERO,
+                    currentReport = BigDecimal.ZERO,
+                    previouslyReported = BigDecimal.ZERO,
+                    totalReportedSoFar = BigDecimal.ZERO,
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(100L),
+                    remainingBudget = BigDecimal.ZERO,
+                ),
             ),
-            total = SpendingProfileTotal(
-                periodBudget = BigDecimal.ZERO,
-                periodBudgetCumulative = BigDecimal.ZERO,
-                differenceFromPlan = BigDecimal.ZERO,
-                differenceFromPlanPercentage = BigDecimal.ZERO,
-                nextReportForecast = BigDecimal(250),
-                totalEligibleBudget = BigDecimal(0),
-                currentReport = BigDecimal(400),
-                previouslyReported = BigDecimal(200),
-                totalReportedSoFar = BigDecimal(600),
-                totalReportedSoFarPercentage = BigDecimal.ZERO,
-                remainingBudget = BigDecimal.ZERO
+            total = SpendingProfileLine(
+                null, null, null, null,
+                periodBudget = BigDecimal.valueOf(290L),
+                periodBudgetCumulative = BigDecimal.valueOf(830L),
+                differenceFromPlan = BigDecimal.valueOf(230L),
+                differenceFromPlanPercentage = BigDecimal.valueOf(72_29L, 2),
+                nextReportForecast = BigDecimal.valueOf(510L),
+                totalEligibleBudget = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(400L),
+                previouslyReported = BigDecimal.valueOf(200L),
+                totalReportedSoFar = BigDecimal.valueOf(600L),
+                totalReportedSoFarPercentage = null,
+                remainingBudget = BigDecimal.valueOf(-600L),
             )
         )
 

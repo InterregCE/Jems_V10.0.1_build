@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.entity.report.project.identification.P
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification.Companion.emptySpendingProfile
 
@@ -27,30 +28,30 @@ fun List<ProjectReportSpendingProfileEntity>.toReportedValuesModel() = map {
     )
 }
 
-fun toProjectReportIdentification(
-    projectReportEntity: ProjectReportEntity,
-    targetGroupEntities: List<ProjectReportIdentificationTargetGroupEntity>
+fun ProjectReportEntity.toProjectReportIdentification(
+    targetGroupEntities: List<ProjectReportIdentificationTargetGroupEntity>,
+    spendingProfilePerPartner: ProjectReportSpendingProfile?,
 ): ProjectReportIdentification {
     return ProjectReportIdentification(
         targetGroups = targetGroupEntities.toModel(),
-        highlights = projectReportEntity.translatedValues.mapTo(HashSet()) {
+        highlights = translatedValues.mapTo(HashSet()) {
             InputTranslation(
                 it.language(),
                 it.highlights
             )
         },
-        deviations = projectReportEntity.translatedValues.mapTo(HashSet()) {
+        deviations = translatedValues.mapTo(HashSet()) {
             InputTranslation(
                 it.language(),
                 it.deviations
             )
         },
-        partnerProblems = projectReportEntity.translatedValues.mapTo(HashSet()) {
+        partnerProblems = translatedValues.mapTo(HashSet()) {
             InputTranslation(
                 it.language(),
                 it.partnerProblems
             )
         },
-        spendingProfilePerPartner = emptySpendingProfile()
+        spendingProfilePerPartner = spendingProfilePerPartner,
     )
 }

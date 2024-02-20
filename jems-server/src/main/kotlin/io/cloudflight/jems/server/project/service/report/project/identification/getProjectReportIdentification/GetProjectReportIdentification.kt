@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
-import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.calculateDifferenceFromPlan
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.calculateDifferenceFromPlanPercentage
 import io.cloudflight.jems.server.project.service.report.percentageOf
@@ -30,21 +29,19 @@ class GetProjectReportIdentification(
 
 
     companion object {
-        fun emptySpendingProfile() = ProjectReportSpendingProfile(
-            lines = emptyList(),
-            total = SpendingProfileTotal(
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO
-            )
+        fun emptySpendingProfile() = SpendingProfileLine(
+            null, null, null, null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
         )
     }
 
@@ -79,7 +76,6 @@ class GetProjectReportIdentification(
             val previouslyReported = reportedValues[partnerId]?.previouslyReported ?: BigDecimal.ZERO
 
             val totalEligibleBudget = reportedValues[partnerId]?.partnerTotalEligibleBudget ?: BigDecimal.ZERO
-            val totalReportedSoFar = previouslyReported.plus(currentReport)
 
             SpendingProfileLine(
                 partnerRole = partnerDetails.role,
@@ -89,37 +85,25 @@ class GetProjectReportIdentification(
                 currentReport = currentReport,
                 previouslyReported = previouslyReported,
                 totalEligibleBudget = totalEligibleBudget,
-                totalReportedSoFar = totalReportedSoFar,
-                totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget),
-                remainingBudget = if(totalEligibleBudget > BigDecimal.ZERO) totalEligibleBudget?.minus(totalReportedSoFar) else null,
+
+                totalReportedSoFar = BigDecimal.ZERO, // temporary
+                totalReportedSoFarPercentage = BigDecimal.ZERO, // temporary
+                remainingBudget = BigDecimal.ZERO, // temporary
 
                 periodBudget = lastCertified?.periodDetail?.periodBudget ?: BigDecimal.ZERO,
                 periodBudgetCumulative = lastCertified?.periodDetail?.periodBudgetCumulative ?: BigDecimal.ZERO,
                 nextReportForecast = lastCertified?.nextReportForecast ?: BigDecimal.ZERO,
-                differenceFromPlan = calculateDifferenceFromPlan(lastCertified?.periodDetail, totalReportedSoFar),
-                differenceFromPlanPercentage = calculateDifferenceFromPlanPercentage(lastCertified?.periodDetail, totalReportedSoFar)
+
+                differenceFromPlan = BigDecimal.ZERO, // temporary
+                differenceFromPlanPercentage = BigDecimal.ZERO, // temporary
             )
         }.sortedWith(compareByDescending<SpendingProfileLine> { it.partnerRole }.thenBy { it.partnerNumber })
 
-
-
-
-      val totalSpendingProfile = profiles.fold(emptySpendingProfile().total) { total, spendingProfile  ->
-          total.periodBudget += spendingProfile.periodBudget
-          total.periodBudgetCumulative += spendingProfile.periodBudgetCumulative
-          total.differenceFromPlan += spendingProfile.differenceFromPlan
-          total.nextReportForecast += spendingProfile.nextReportForecast
-          total.totalEligibleBudget += spendingProfile.totalEligibleBudget
-          total.currentReport += spendingProfile.currentReport
-          total.previouslyReported += spendingProfile.previouslyReported
-          total.totalReportedSoFar += spendingProfile.totalReportedSoFar
-          total.remainingBudget += spendingProfile.remainingBudget ?: BigDecimal.ZERO
-          return@fold total
-      }.calculatePercentages()
+        val totalSpendingProfile = profiles.sumUp()
 
         return ProjectReportSpendingProfile(
-            lines = profiles,
-            total = totalSpendingProfile
+            lines = profiles.fillInOverviewFields(),
+            total = totalSpendingProfile.fillInOverviewFields(),
         )
     }
 
@@ -135,10 +119,25 @@ class GetProjectReportIdentification(
             certificates?.sumOf { it.sumTotalEligibleAfterControl } ?: BigDecimal.ZERO
     }
 
-    fun SpendingProfileTotal.calculatePercentages(): SpendingProfileTotal {
-        totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget) ?: BigDecimal.ZERO
-        differenceFromPlanPercentage = totalReportedSoFar.percentageOf(periodBudgetCumulative) ?: BigDecimal.ZERO
-        return this
+    private fun SpendingProfileLine.fillInOverviewFields() = also {
+        it.totalReportedSoFar = previouslyReported.plus(currentReport)
+        it.totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget)
+        it.remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
+
+        it.differenceFromPlan = calculateDifferenceFromPlan(periodBudgetCumulative, totalReportedSoFar)
+        it.differenceFromPlanPercentage = calculateDifferenceFromPlanPercentage(periodBudgetCumulative, totalReportedSoFar)
+    }
+
+    private fun List<SpendingProfileLine>.fillInOverviewFields() = onEach { it.fillInOverviewFields() }
+
+    private fun List<SpendingProfileLine>.sumUp() = fold(emptySpendingProfile()) { total, spendingProfile ->
+        total.periodBudget += spendingProfile.periodBudget
+        total.periodBudgetCumulative += spendingProfile.periodBudgetCumulative
+        total.nextReportForecast += spendingProfile.nextReportForecast
+        total.totalEligibleBudget += spendingProfile.totalEligibleBudget
+        total.currentReport += spendingProfile.currentReport
+        total.previouslyReported += spendingProfile.previouslyReported
+        return@fold total
     }
 
 }

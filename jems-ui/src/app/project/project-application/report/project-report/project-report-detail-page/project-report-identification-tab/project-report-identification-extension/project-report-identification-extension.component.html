@@ -142,9 +142,9 @@
                             {{ 'project.report.partner.spending.totalReportedSoFarPercentage' | translate }}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('totalReportedSoFarPercentage').value | asMoney }}%
+                            {{ control.get('totalReportedSoFarPercentage').value | asPercentage }}
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.totalReportedSoFarPercentage | asMoney }}%</mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.totalReportedSoFarPercentage | asPercentage }}</mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="remainingBudget">
@@ -206,10 +206,10 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
                                       class="text-right">
-                                {{ control.get('differenceFromPlanPercentage').value | asMoney }}%
+                                {{ control.get('differenceFromPlanPercentage').value | asPercentage }}
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef
-                                             class="text-right">{{ spendingProfile.total.differenceFromPlanPercentage | asMoney }}%
+                                             class="text-right">{{ spendingProfile.total.differenceFromPlanPercentage | asPercentage }}
                             </mat-footer-cell>
                         </ng-container>
 
