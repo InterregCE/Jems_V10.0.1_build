@@ -134,7 +134,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.payment.to.ec',
           customCellTemplate: this.paymentToEcCell,
-          sortProperty: 'ecId',
+          sortProperty: 'ecPaymentId',
           columnWidth: ColumnWidth.SmallColumn,
         },
         {
@@ -156,6 +156,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.total.eligible.amount',
           elementProperty: 'totalEligibleAmount',
+          sortProperty: 'totalEligible',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.Decimal,
           infoMessage: 'payments.payment.to.project.table.column.total.eligible.amount.info'
@@ -169,7 +170,8 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.approved.per.fund',
-          elementProperty: 'amountApprovedPerFund',
+          elementProperty: 'fundAmount',
+          sortProperty: 'fundAmount',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.Decimal,
           infoMessage: 'payments.payment.to.project.table.column.amount.approved.per.fund.info'

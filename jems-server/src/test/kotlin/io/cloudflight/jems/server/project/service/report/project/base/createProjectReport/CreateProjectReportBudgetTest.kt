@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -168,7 +167,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         orderNr = 16,
         fundName = "OTHER",
         fundId = fundId,
-        amountApprovedPerFund = BigDecimal(100),
+        fundAmount = BigDecimal(100),
         amountPaidPerFund = BigDecimal.valueOf(6789L, 2),
         amountAuthorizedPerFund = BigDecimal.valueOf(6789L, 2),
         paymentApprovalDate = currentTime,

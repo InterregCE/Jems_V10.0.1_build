@@ -73,7 +73,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
                 paymentToEcId = PAYMENT_TO_EC_ID,
                 fundName = "OTHER",
-                amountApprovedPerFund = BigDecimal.TEN,
+                fundAmount = BigDecimal.TEN,
                 amountPaidPerFund = BigDecimal.ZERO,
                 amountAuthorizedPerFund = BigDecimal.ZERO,
                 paymentApprovalDate = PaymentsControllerTest.currentTime,

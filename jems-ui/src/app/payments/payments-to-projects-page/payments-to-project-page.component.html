@@ -101,14 +101,14 @@
 </jems-main-page-template>
 
 <ng-template #remainingToBePaidCell let-payment>
-    {{(payment.amountApprovedPerFund - payment.amountPaidPerFund) | asMoney}}
+    {{(payment.fundAmount - payment.amountPaidPerFund) | asMoney}}
 </ng-template>
 
 <ng-template #idCell let-payment>
     <span matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
-          [matTooltipDisabled]="(payment.amountApprovedPerFund - payment.amountPaidPerFund) === 0">
+          [matTooltipDisabled]="(payment.fundAmount - payment.amountPaidPerFund) === 0">
         {{payment.id}}
-        <mat-icon *ngIf="(payment.amountApprovedPerFund - payment.amountPaidPerFund) > 0" class="open-payment-indicator">circle</mat-icon>
+        <mat-icon *ngIf="(payment.fundAmount - payment.amountPaidPerFund) > 0" class="open-payment-indicator">circle</mat-icon>
     </span>
 </ng-template>
 

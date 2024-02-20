@@ -16,6 +16,9 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestSco
 import io.cloudflight.jems.server.payments.model.regular.PaymentToEcExtensionTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.payment
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.paymentToEcExtension
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.totalEligible
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
@@ -31,22 +34,22 @@ import java.time.ZoneId
 fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
     val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
 
-    val specPayment = QPaymentEntity.paymentEntity
-    val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
     val dfg = when (orderBy.property) {
-        "type" -> specPayment.type
-        "projectCustomIdentifier" -> specPayment.projectCustomIdentifier
-        "projectAcronym" -> specPayment.projectAcronym
-        "project.contractedDecision.updated" -> specPayment.project.contractedDecision.updated
-        "fund.type" -> specPayment.fund.type
-        "id" -> specPayment.id
-        "projectReport.number" -> specPayment.projectReport?.number
-        "projectReport.verificationEndDate" -> CaseBuilder().`when`(specPayment.type.eq(PaymentType.FTLS))
-            .then(specPayment.projectLumpSum.paymentEnabledDate)
-            .otherwise(specPayment.projectReport.verificationEndDate)
+        "type" -> payment.type
+        "projectCustomIdentifier" -> payment.projectCustomIdentifier
+        "projectAcronym" -> payment.projectAcronym
+        "project.contractedDecision.updated" -> payment.project.contractedDecision.updated
+        "fund.type" -> payment.fund.type
+        "id" -> payment.id
+        "projectReport.number" -> payment.projectReport?.number
+        "projectReport.verificationEndDate" -> CaseBuilder().`when`(payment.type.eq(PaymentType.FTLS))
+            .then(payment.projectLumpSum.paymentEnabledDate)
+            .otherwise(payment.projectReport.verificationEndDate)
+        "fundAmount" -> payment.amountApprovedPerFund
+        "totalEligible" -> totalEligible()
 
-        "ecPaymentId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
-        else -> specPayment.id
+        "ecPaymentId" -> paymentToEcExtension.paymentApplicationToEc?.id
+        else -> payment.id
     }
 
     return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
@@ -56,10 +59,10 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
     results.map { it: Tuple ->
         PaymentToProjectTmp(
             payment = it.get(0, PaymentEntity::class.java)!!,
-            amountPaid = it.get(1, BigDecimal::class.java),
-            amountAuthorized = it.get(2, BigDecimal::class.java),
+            amountPaid = it.get(1, BigDecimal::class.java)!!,
+            amountAuthorized = it.get(2, BigDecimal::class.java)!!,
             lastPaymentDate = it.get(3, LocalDate::class.java),
-            totalEligibleForRegular = it.get(4, BigDecimal::class.java),
+            totalEligible = it.get(4, BigDecimal::class.java)!!,
             code = it.get(5, String::class.java),
             paymentToEcExtension = PaymentToEcExtensionTmp(
                 paymentToEcId = it.get(6, Long::class.java),

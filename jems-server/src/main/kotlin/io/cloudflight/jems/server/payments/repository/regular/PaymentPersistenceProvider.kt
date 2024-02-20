@@ -30,7 +30,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
@@ -58,7 +57,6 @@ import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
@@ -100,6 +98,22 @@ class PaymentPersistenceProvider(
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentPersistence {
+
+    companion object {
+        val payment = QPaymentEntity.paymentEntity
+        private val paymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
+        private val paymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+        private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
+        private val projectReport = QProjectReportEntity.projectReportEntity
+        private val projectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        private val project = QProjectEntity.projectEntity
+        private val programmeSpecificObjective = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        private val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
+        val paymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+
+        fun totalEligible() =
+            payment.amountApprovedPerFund.add(paymentToEcExtension.partnerContribution)
+    }
 
     @Transactional(readOnly = true)
     override fun existsById(id: Long) =
@@ -143,62 +157,49 @@ class PaymentPersistenceProvider(
     }
 
     private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
-        val specPayment = QPaymentEntity.paymentEntity
-        val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
-        val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
-        val specPartnerReportCertificateCoFin = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
-        val specProjectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
-        val specProjectReport = QProjectReportEntity.projectReportEntity
-        val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
-        val specProjectEntity = QProjectEntity.projectEntity
-        val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
-        val specProgrammePriorityEntity = QProgrammePriorityEntity.programmePriorityEntity
-        val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
 
         val results = jpaQueryFactory
             .select(
-                specPayment,
-                specPaymentPartnerInstallment.amountPaid(),
-                specPaymentPartnerInstallment.amountAuthorized(),
-                specPaymentPartnerInstallment.paymentDate.max(),
-                specPartnerReportCertificateCoFin.sumCurrentVerified,
-                specProgrammePriorityEntity.code,
-                specPaymentToEcExtensionEntity.paymentApplicationToEc.id,
-                specPaymentToEcExtensionEntity.correctedTotalEligibleWithoutSco,
-                specPaymentToEcExtensionEntity.correctedFundAmountUnionContribution,
-                specPaymentToEcExtensionEntity.correctedFundAmountPublicContribution,
-                specPaymentToEcExtensionEntity.partnerContribution,
-                specPaymentToEcExtensionEntity.publicContribution,
-                specPaymentToEcExtensionEntity.correctedPublicContribution,
-                specPaymentToEcExtensionEntity.autoPublicContribution,
-                specPaymentToEcExtensionEntity.correctedAutoPublicContribution,
-                specPaymentToEcExtensionEntity.privateContribution,
-                specPaymentToEcExtensionEntity.correctedPrivateContribution,
+                payment,
+                paymentPartnerInstallment.amountPaid(),
+                paymentPartnerInstallment.amountAuthorized(),
+                paymentPartnerInstallment.paymentDate.max(),
+                totalEligible(),
+                programmePriority.code,
+                paymentToEcExtension.paymentApplicationToEc.id,
+                paymentToEcExtension.correctedTotalEligibleWithoutSco,
+                paymentToEcExtension.correctedFundAmountUnionContribution,
+                paymentToEcExtension.correctedFundAmountPublicContribution,
+                paymentToEcExtension.partnerContribution,
+                paymentToEcExtension.publicContribution,
+                paymentToEcExtension.correctedPublicContribution,
+                paymentToEcExtension.autoPublicContribution,
+                paymentToEcExtension.correctedAutoPublicContribution,
+                paymentToEcExtension.privateContribution,
+                paymentToEcExtension.correctedPrivateContribution,
             )
-            .from(specPayment)
-            .leftJoin(specPaymentPartner)
-            .on(specPaymentPartner.payment.id.eq(specPayment.id))
-            .leftJoin(specPaymentPartnerInstallment)
-            .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
-            .leftJoin(specPartnerReportCertificateCoFin)
-            .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
-            .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
-            .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
-            .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
-            .on(specProjectReport.id.eq(specPayment.projectReport.id))
-            .leftJoin(specProjectContracting)
-            .on(specProjectContracting.projectId.eq(specPayment.project.id))
-            .leftJoin(specProjectEntity)
-            .on(specProjectEntity.id.eq(specPayment.project.id))
-            .leftJoin(specProgrammeSpecificObjectiveEntity)
-            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
-            .leftJoin(specProgrammePriorityEntity)
-            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
-            .leftJoin(specPaymentToEcExtensionEntity)
-            .on(specPaymentToEcExtensionEntity.payment.id.eq(specPayment.id))
-            .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
-            .groupBy(specPayment)
-            .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
+            .from(payment)
+                .leftJoin(paymentPartner)
+                    .on(paymentPartner.payment.eq(payment))
+                .leftJoin(paymentPartnerInstallment)
+                    .on(paymentPartnerInstallment.paymentPartner.eq(paymentPartner))
+                .leftJoin(projectLumpSum) // we need this manual join for MA-Approval filter to work
+                    .on(projectLumpSum.eq(payment.projectLumpSum))
+                .leftJoin(projectReport) // we need this manual join for MA-Approval filter to work
+                    .on(projectReport.eq(payment.projectReport))
+                .leftJoin(projectContracting)
+                    .on(projectContracting.projectId.eq(payment.project.id))
+                .leftJoin(project)
+                    .on(project.eq(payment.project))
+                .leftJoin(programmeSpecificObjective)
+                    .on(programmeSpecificObjective.programmeObjectivePolicy.eq(project.priorityPolicy.programmeObjectivePolicy))
+                .leftJoin(programmePriority)
+                    .on(programmePriority.eq(programmeSpecificObjective.programmePriority))
+                .leftJoin(paymentToEcExtension)
+                    .on(paymentToEcExtension.payment.eq(payment))
+            .where(filters.transformToWhereClause(payment, projectLumpSum, projectReport, projectContracting, paymentToEcExtension))
+            .groupBy(payment)
+            .having(filters.transformToHavingClause(paymentPartnerInstallment))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())

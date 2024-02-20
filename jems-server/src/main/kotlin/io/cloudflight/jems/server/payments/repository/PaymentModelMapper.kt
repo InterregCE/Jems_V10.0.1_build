@@ -72,7 +72,7 @@ fun PaymentEntity.toDetailModel(
     totalEligibleAmount = lumpSum?.programmeLumpSum?.cost ?: BigDecimal.ZERO,
     fundId = fund.id,
     fundName = fund.type.name,
-    amountApprovedPerFund = amountApprovedPerFund!!,
+    fundAmount = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
     amountAuthorizedPerFund = paymentConfirmedInfo.amountAuthorizedPerFund,
     dateOfLastPayment = paymentConfirmedInfo.dateOfLastPayment,
@@ -80,48 +80,54 @@ fun PaymentEntity.toDetailModel(
 )
 
 fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
+    // common
     id = payment.id,
-    paymentType = payment.type,
+    paymentType = PaymentType.REGULAR,
     projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
+    fundId = payment.fund.id,
+    fundName = payment.fund.type.name,
+    fundAmount = payment.amountApprovedPerFund!!,
+    totalEligibleAmount = totalEligible,
+    amountPaidPerFund = amountPaid,
+    amountAuthorizedPerFund = amountAuthorized,
+    dateOfLastPayment = lastPaymentDate,
+
+    // different
     paymentClaimId = payment.projectReport!!.id,
     paymentClaimNo = payment.projectReport!!.number,
     paymentClaimSubmissionDate = payment.projectReport?.firstSubmission,
-    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = null,
     orderNr = null,
     paymentApprovalDate = payment.projectReport?.verificationEndDate,
-    totalEligibleAmount = totalEligibleForRegular!!,
-    fundId = payment.fund.id,
-    fundName = payment.fund.type.name,
-    amountApprovedPerFund = payment.amountApprovedPerFund!!,
-    amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
-    amountAuthorizedPerFund = amountAuthorized ?: BigDecimal.ZERO,
-    dateOfLastPayment = lastPaymentDate,
     lastApprovedVersionBeforeReadyForPayment = null,
 )
 
 fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
+    // common
     id = payment.id,
-    paymentType = payment.type,
+    paymentType = PaymentType.FTLS,
     projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
+    fundId = payment.fund.id,
+    fundName = payment.fund.type.name,
+    fundAmount = payment.amountApprovedPerFund!!,
+    totalEligibleAmount = totalEligible,
+    amountPaidPerFund = amountPaid,
+    amountAuthorizedPerFund = amountAuthorized,
+    dateOfLastPayment = lastPaymentDate,
+
+    // different
     paymentClaimId = null,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
-    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = payment.projectLumpSum?.programmeLumpSum?.id,
     orderNr = payment.projectLumpSum?.id?.orderNr,
     paymentApprovalDate = payment.projectLumpSum?.paymentEnabledDate,
-    totalEligibleAmount = payment.projectLumpSum?.programmeLumpSum?.cost!!,
-    fundId = payment.fund.id,
-    fundName = payment.fund.type.name,
-    amountApprovedPerFund = payment.amountApprovedPerFund!!,
-    amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
-    amountAuthorizedPerFund = amountAuthorized ?: BigDecimal.ZERO,
-    dateOfLastPayment = lastPaymentDate,
     lastApprovedVersionBeforeReadyForPayment = payment.projectLumpSum?.lastApprovedVersionBeforeReadyForPayment,
 )
 
