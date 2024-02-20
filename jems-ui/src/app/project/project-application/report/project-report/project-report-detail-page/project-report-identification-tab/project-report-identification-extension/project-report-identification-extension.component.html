@@ -60,6 +60,13 @@
                 <div jemsFormLayout>
                     <h3>{{'project.application.project.report.partner.spending.profile.title' | translate }}</h3>
                     <p>{{'project.application.project.report.partner.spending.profile.explanation' | translate}}</p>
+
+                    <jems-alert *ngIf="!data.isSpendingProfileTotalEligibleSetAtReportCreation"
+                            [closable]="false" [show]="true" [type]="Alert.INFO">
+                        <p class="mat-required-marker empty">
+                            {{'project.application.project.report.partner.spending.profile.missing.totalEligible.explanation' | translate}}
+                        </p>
+                    </jems-alert>
                 </div>
 
                 <mat-table formArrayName="spendingProfiles"
@@ -102,9 +109,15 @@
                             {{ 'project.report.partner.spending.totalEligibleBudget' | translate }}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('totalEligibleBudget').value| asMoney }}
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('totalEligibleBudget').value| asMoney }}
+                            </span>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.totalEligibleBudget | asMoney }}</mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                 {{ spendingProfile.total.totalEligibleBudget | asMoney }}
+                            </span>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="previouslyReported">
@@ -142,9 +155,15 @@
                             {{ 'project.report.partner.spending.totalReportedSoFarPercentage' | translate }}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('totalReportedSoFarPercentage').value | asPercentage }}
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('totalReportedSoFarPercentage').value | asPercentage }}
+                            </span>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.totalReportedSoFarPercentage | asPercentage }}</mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ spendingProfile.total.totalReportedSoFarPercentage | asPercentage }}
+                            </span>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="remainingBudget">
@@ -152,9 +171,15 @@
                             {{ 'project.report.partner.spending.remainingBudget' | translate }}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('remainingBudget').value | asMoney }}
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('remainingBudget').value | asMoney }}
+                            </span>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.remainingBudget | asMoney }}</mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ spendingProfile.total.remainingBudget | asMoney }}
+                            </span>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container *ngIf="data.partnerBudgetPeriodsVisible">

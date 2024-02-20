@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportPeriodData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.BudgetCostsCalculationResultFullData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCostCategoryBreakdownData
@@ -14,6 +16,9 @@ import io.cloudflight.jems.plugin.contract.models.report.project.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationExtendedData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationTargetGroupData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportSpendingProfileData
 import io.cloudflight.jems.plugin.contract.models.report.project.partnerCertificates.PartnerReportCertificateData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultPrincipleData
@@ -21,9 +26,11 @@ import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.Projec
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageOutputData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageStatusData
+import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
@@ -34,6 +41,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
@@ -46,7 +55,44 @@ import org.mapstruct.factory.Mappers
 private val mapper = Mappers.getMapper(ProjectReportDataProviderMapper::class.java)
 
 fun ProjectReport.toDataModel(): ProjectReportData = mapper.map(this)
-fun ProjectReportIdentification.toDataModel() = mapper.map(this)
+
+fun ProjectReportIdentification.toDataModel() = ProjectReportIdentificationData(
+    targetGroups = targetGroups.map { it.toDataModel() },
+    highlights = highlights.toDataModel(),
+    partnerProblems = partnerProblems.toDataModel(),
+    deviations = deviations.toDataModel(),
+    spendingProfiles = this.spendingProfilePerPartner?.lines?.map { it.toProjectReportSpendingProfileData() }  ?: emptyList()
+)
+
+
+fun SpendingProfileLine.toProjectReportSpendingProfileData() = ProjectReportSpendingProfileData(
+    partnerRole = ProjectPartnerRoleData.valueOf(this.partnerRole?.name!!),
+    partnerNumber = this.partnerNumber!!,
+    periodDetail = this.periodDetail?.toDataModel(),
+    currentReport = this.currentReport,
+    previouslyReported = this.previouslyReported,
+    differenceFromPlan = this.differenceFromPlan,
+    differenceFromPlanPercentage = this.differenceFromPlanPercentage,
+    nextReportForecast = this.nextReportForecast
+)
+
+
+fun ProjectPartnerReportPeriod.toDataModel() =  ProjectPartnerReportPeriodData(
+    number = this.number,
+    periodBudget = this.periodBudget,
+    periodBudgetCumulative = this.periodBudgetCumulative,
+    start = this.start,
+    end = this.end
+)
+fun ProjectReportIdentificationTargetGroup.toDataModel() = ProjectReportIdentificationTargetGroupData(
+    type = ProjectTargetGroupData.valueOf(this.type.name),
+    sortNumber = this.sortNumber,
+    description = this.description.toDataModel()
+)
+
+
+fun ProjectReportIdentification.toIdentificationDataModel() = mapper.map(this)
+
 fun List<ProjectReportWorkPackage>.toWorkPlanDataModel() = map { mapper.mapWorkPackage(it) }
 fun ProjectReportResultPrinciple.toDataModel() = mapper.map(this)
 fun List<PartnerReportCertificate>.toCertificateDataModel() = map { mapper.mapCertificate(it) }
@@ -58,10 +104,11 @@ fun CertificateInvestmentBreakdown.toDataModel() = mapper.map(this)
 fun CertificateLumpSumBreakdown.toDataModel() = mapper.map(this)
 fun CertificateUnitCostBreakdown.toDataModel() = mapper.map(this)
 
+
+
 @Mapper
 interface ProjectReportDataProviderMapper {
     fun map(model: ProjectReport): ProjectReportData
-    fun map(model: ProjectReportIdentification): ProjectReportIdentificationData
     fun mapWorkPackage(model: ProjectReportWorkPackage): ProjectReportWorkPackageData
     fun map(model: ProjectReportWorkPlanStatus): ProjectReportWorkPackageStatusData
     fun map(model: ProjectReportWorkPackageActivity): ProjectReportWorkPackageActivityData
@@ -80,5 +127,5 @@ interface ProjectReportDataProviderMapper {
     fun map(model: CertificateLumpSumBreakdown): CertificateLumpSumBreakdownData
     fun map(model: CertificateUnitCostBreakdown): CertificateUnitCostBreakdownData
     fun map(model: InputTranslation): InputTranslationData
-
+    fun map(model: ProjectReportIdentification): ProjectReportIdentificationExtendedData
 }

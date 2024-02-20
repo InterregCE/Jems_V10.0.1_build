@@ -9,8 +9,8 @@ data class ProjectReportSpendingProfileLineDTO(
     val partnerAbbreviation: String?,
     val partnerCountry: String?,
 
-    val periodBudget: BigDecimal,
-    val periodBudgetCumulative: BigDecimal,
+    val periodBudget: BigDecimal?,
+    val periodBudgetCumulative: BigDecimal?,
     var currentReport: BigDecimal,
     val previouslyReported: BigDecimal,
     var differenceFromPlan: BigDecimal,
