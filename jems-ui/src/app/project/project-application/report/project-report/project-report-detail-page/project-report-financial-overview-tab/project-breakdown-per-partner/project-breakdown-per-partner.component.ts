@@ -43,6 +43,7 @@ export class ProjectBreakdownPerPartnerComponent implements OnChanges {
       ... this.allowedCostCategories.get(CategoryEnum.Multiple) ? ['otherCosts'] : [],
       ... this.allowedCostCategories.get('LumpSum') ? ['lumpSum'] : [],
       ... this.allowedCostCategories.get('UnitCost') ? ['unitCosts'] : [],
+      ... this.allowedCostCategories.get(CategoryEnum.SpfCosts) ? ['spfCosts'] : [],
       'totalBudget'
     ];
   }
