@@ -80,7 +80,7 @@ export class FileManagementStore {
     this.currentProjectStatus$ = this.projectStore.currentVersionOfProjectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
-    this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
+    this.canChangeApplicationFile$ = this.canUpdateApplicationFile();
     this.canChangeModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
@@ -316,6 +316,16 @@ export class FileManagementStore {
     ])
       .pipe(
         map(([canReadApplicationFile, userIsProjectOwner]) => canReadApplicationFile || userIsProjectOwner)
+      );
+  }
+
+  private canUpdateApplicationFile(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate),
+      this.projectStore.userIsEditOrManageCollaborator$
+    ])
+      .pipe(
+        map(([canUpdateApplicationFile, userIsCollaboratorWithEditOrManage]) => canUpdateApplicationFile || userIsCollaboratorWithEditOrManage)
       );
   }
 
