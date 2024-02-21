@@ -429,7 +429,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = weekBefore,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "V4.7"
+            lastApprovedVersionBeforeReadyForPayment = "V4.7",
+            remainingToBePaid = BigDecimal.valueOf(100L),
         )
         val programmeLumpSum = programmeLumpSum(id = 50)
 
@@ -487,7 +488,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
             amountAuthorizedPerFund = BigDecimal.valueOf(22),
             amountPaidPerFund = BigDecimal.valueOf(21),
             dateOfLastPayment = currentDate.plusDays(1),
-            lastApprovedVersionBeforeReadyForPayment = "V4.7"
+            lastApprovedVersionBeforeReadyForPayment = "V4.7",
+            remainingToBePaid = BigDecimal.valueOf(24L),
         )
 
         private val expectedRegularPayment = expectedFtlsPayment.copy(
@@ -511,6 +513,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             amountPaidPerFund = BigDecimal.valueOf(11),
             dateOfLastPayment = currentDate,
             lastApprovedVersionBeforeReadyForPayment = null,
+            remainingToBePaid = BigDecimal.valueOf(14L),
         )
 
 
@@ -584,7 +587,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             jpaQueryFactory.select(
                 any(), any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(),
             )
         } returns query
         val slotFrom = slot<EntityPath<Any>>()
@@ -611,19 +614,20 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleFtls.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(22) // amount authorized
         every { tupleFtls.get(3, LocalDate::class.java) } returns currentDate.plusDays(1)
         every { tupleFtls.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
-        every { tupleFtls.get(5, String::class.java) } returns "PO4"
+        every { tupleFtls.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
+        every { tupleFtls.get(6, String::class.java) } returns "PO4"
 
-        every { tupleFtls.get(6, Long::class.java) } returns 14L
-        every { tupleFtls.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(21)
-        every { tupleFtls.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(22)
-        every { tupleFtls.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
-        every { tupleFtls.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
-        every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
-        every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
-        every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
-        every { tupleFtls.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(28)
-        every { tupleFtls.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(29)
-        every { tupleFtls.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(30)
+        every { tupleFtls.get(7, Long::class.java) } returns 14L
+        every { tupleFtls.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(21)
+        every { tupleFtls.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(22)
+        every { tupleFtls.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
+        every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
+        every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
+        every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
+        every { tupleFtls.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
+        every { tupleFtls.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(28)
+        every { tupleFtls.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(29)
+        every { tupleFtls.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(30)
 
         val tupleRegular = mockk<Tuple>()
         every { tupleRegular.get(0, PaymentEntity::class.java) } returns paymentRegularEntity()
@@ -631,19 +635,20 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleRegular.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(12) // amount authorized
         every { tupleRegular.get(3, LocalDate::class.java) } returns currentDate
         every { tupleRegular.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(13)
-        every { tupleRegular.get(5, String::class.java) } returns "SO15"
+        every { tupleRegular.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(14)
+        every { tupleRegular.get(6, String::class.java) } returns "SO15"
 
-        every { tupleRegular.get(6, Long::class.java) } returns null
-        every { tupleRegular.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(31)
-        every { tupleRegular.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(32)
-        every { tupleRegular.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(33)
-        every { tupleRegular.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(34)
-        every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
-        every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
-        every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
-        every { tupleRegular.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(38)
-        every { tupleRegular.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(39)
-        every { tupleRegular.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(49)
+        every { tupleRegular.get(7, Long::class.java) } returns null
+        every { tupleRegular.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(31)
+        every { tupleRegular.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(32)
+        every { tupleRegular.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(33)
+        every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(34)
+        every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
+        every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
+        every { tupleRegular.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
+        every { tupleRegular.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(38)
+        every { tupleRegular.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(39)
+        every { tupleRegular.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(49)
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 2

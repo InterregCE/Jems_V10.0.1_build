@@ -25,4 +25,5 @@ data class PaymentToProject(
     val amountAuthorizedPerFund: BigDecimal,
     val dateOfLastPayment: LocalDate? = null,
     val lastApprovedVersionBeforeReadyForPayment: String?,
+    val remainingToBePaid: BigDecimal,
 )

@@ -173,7 +173,8 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         paymentApprovalDate = currentTime,
         paymentClaimSubmissionDate = null,
         totalEligibleAmount = BigDecimal(10),
-        lastApprovedVersionBeforeReadyForPayment = "v1.0"
+        lastApprovedVersionBeforeReadyForPayment = "v1.0",
+        remainingToBePaid = BigDecimal.valueOf(954L),
     )
 
     private val previouslyReportedCostCategory = CertificateCostCategoryPrevious(

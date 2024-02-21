@@ -74,6 +74,7 @@ fun PaymentEntity.toDetailModel(
     fundName = fund.type.name,
     fundAmount = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
+    remainingToBePaid = amountApprovedPerFund!!.minus(paymentConfirmedInfo.amountPaidPerFund),
     amountAuthorizedPerFund = paymentConfirmedInfo.amountAuthorizedPerFund,
     dateOfLastPayment = paymentConfirmedInfo.dateOfLastPayment,
     lastApprovedVersionBeforeReadyForPayment = lumpSum?.lastApprovedVersionBeforeReadyForPayment,
@@ -92,8 +93,9 @@ fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
     fundAmount = payment.amountApprovedPerFund!!,
     totalEligibleAmount = totalEligible,
     amountPaidPerFund = amountPaid,
+    remainingToBePaid = remainingToBePaid,
     amountAuthorizedPerFund = amountAuthorized,
-    dateOfLastPayment = lastPaymentDate,
+    dateOfLastPayment = dateOfLastPayment,
 
     // different
     paymentClaimId = payment.projectReport!!.id,
@@ -118,8 +120,9 @@ fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
     fundAmount = payment.amountApprovedPerFund!!,
     totalEligibleAmount = totalEligible,
     amountPaidPerFund = amountPaid,
+    remainingToBePaid = remainingToBePaid,
     amountAuthorizedPerFund = amountAuthorized,
-    dateOfLastPayment = lastPaymentDate,
+    dateOfLastPayment = dateOfLastPayment,
 
     // different
     paymentClaimId = null,

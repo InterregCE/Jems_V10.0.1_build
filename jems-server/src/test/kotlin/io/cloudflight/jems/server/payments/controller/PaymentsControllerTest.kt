@@ -94,7 +94,8 @@ class PaymentsControllerTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "v1.0"
+            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            remainingToBePaid = BigDecimal.valueOf(514L),
         )
 
         val regularPaymentToProject = PaymentToProject(
@@ -114,7 +115,8 @@ class PaymentsControllerTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "v1.0"
+            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            remainingToBePaid = BigDecimal.valueOf(515L),
         )
 
         private val installmentFirstDTO = PaymentPartnerInstallmentDTO(
@@ -323,7 +325,8 @@ class PaymentsControllerTest : UnitTest() {
                 amountPaidPerFund = ftlsPaymentToProject.amountPaidPerFund,
                 amountAuthorizedPerFund = ftlsPaymentToProject.amountAuthorizedPerFund,
                 dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
+                remainingToBePaid = BigDecimal.valueOf(514L),
             ),
             PaymentToProjectDTO(
                 id = regularPaymentId,
@@ -342,7 +345,8 @@ class PaymentsControllerTest : UnitTest() {
                 amountPaidPerFund = regularPaymentToProject.amountPaidPerFund,
                 amountAuthorizedPerFund = regularPaymentToProject.amountAuthorizedPerFund,
                 dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
+                remainingToBePaid = BigDecimal.valueOf(515L),
             ),
         )
         assertThat(slotFilter.captured).isEqualTo(dummyFilter)

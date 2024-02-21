@@ -19,9 +19,6 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
 
   PaymentTypeEnum = PaymentSearchRequestDTO.PaymentTypeEnum;
 
-  @ViewChild('remainingToBePaidCell', {static: true})
-  remainingToBePaidCell: TemplateRef<any>;
-
   @ViewChild('idCell', {static: true})
   idCell: TemplateRef<any>;
 
@@ -179,28 +176,31 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.authorised',
           elementProperty: 'amountAuthorizedPerFund',
+          sortProperty: 'authorized',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.Decimal,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.paid.per.fund',
           elementProperty: 'amountPaidPerFund',
+          sortProperty: 'paid',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.Decimal
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.last.payment.date',
+          elementProperty: 'dateOfLastPayment',
+          sortProperty: 'dateOfLastPayment',
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
-          elementProperty: 'dateOfLastPayment',
-          sortProperty: 'lastPaymentDate',
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.remaining.to.be.paid',
-          columnType: ColumnType.Decimal,
+          elementProperty: 'remainingToBePaid',
+          sortProperty: 'remainingToBePaid',
           columnWidth: ColumnWidth.ChipColumn,
-          customCellTemplate: this.remainingToBePaidCell,
-        }
+          columnType: ColumnType.Decimal,
+        },
       ]
     });
 

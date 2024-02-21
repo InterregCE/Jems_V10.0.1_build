@@ -8,8 +8,9 @@ data class PaymentToProjectTmp (
     val payment: PaymentEntity,
     val amountPaid: BigDecimal,
     val amountAuthorized: BigDecimal,
-    val lastPaymentDate: LocalDate?,
+    val dateOfLastPayment: LocalDate?,
     val totalEligible: BigDecimal,
+    val remainingToBePaid: BigDecimal,
     val code: String?,
     val paymentToEcExtension: PaymentToEcExtensionTmp,
 )

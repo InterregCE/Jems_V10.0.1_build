@@ -80,6 +80,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 paymentClaimSubmissionDate = null,
                 totalEligibleAmount = BigDecimal.TEN,
                 lastApprovedVersionBeforeReadyForPayment = "v1.0",
+                remainingToBePaid = if (type == PaymentTypeDTO.FTLS) BigDecimal.valueOf(514L) else BigDecimal.valueOf(515L),
             ),
             paymentToEcId = PAYMENT_TO_EC_ID,
             partnerContribution = BigDecimal.valueOf(4),

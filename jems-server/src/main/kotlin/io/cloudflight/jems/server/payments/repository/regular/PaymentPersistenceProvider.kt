@@ -102,7 +102,7 @@ class PaymentPersistenceProvider(
     companion object {
         val payment = QPaymentEntity.paymentEntity
         private val paymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
-        private val paymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+        val paymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
         private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
         private val projectReport = QProjectReportEntity.projectReportEntity
         private val projectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
@@ -113,6 +113,20 @@ class PaymentPersistenceProvider(
 
         fun totalEligible() =
             payment.amountApprovedPerFund.add(paymentToEcExtension.partnerContribution)
+        fun remainingToBePaid() =
+            payment.amountApprovedPerFund.subtract(amountPaid())
+
+        fun amountPaid() =
+            CaseBuilder().`when`(paymentPartnerInstallment.isPaymentConfirmed.isTrue)
+                .then(paymentPartnerInstallment.amountPaid)
+                .otherwise(BigDecimal.ZERO)
+                .sum()
+
+        fun amountAuthorized() =
+            CaseBuilder().`when`(paymentPartnerInstallment.isSavePaymentInfo.isTrue)
+                .then(paymentPartnerInstallment.amountPaid)
+                .otherwise(BigDecimal.ZERO)
+                .sum()
     }
 
     @Transactional(readOnly = true)
@@ -161,10 +175,11 @@ class PaymentPersistenceProvider(
         val results = jpaQueryFactory
             .select(
                 payment,
-                paymentPartnerInstallment.amountPaid(),
-                paymentPartnerInstallment.amountAuthorized(),
+                amountPaid(),
+                amountAuthorized(),
                 paymentPartnerInstallment.paymentDate.max(),
                 totalEligible(),
+                remainingToBePaid(),
                 programmePriority.code,
                 paymentToEcExtension.paymentApplicationToEc.id,
                 paymentToEcExtension.correctedTotalEligibleWithoutSco,
@@ -524,12 +539,6 @@ class PaymentPersistenceProvider(
         if (userId != null) {
             userRepository.getById(userId)
         } else null
-
-    private fun QPaymentPartnerInstallmentEntity.amountPaid() =
-        CaseBuilder().`when`(this.isPaymentConfirmed.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
-
-    private fun QPaymentPartnerInstallmentEntity.amountAuthorized() =
-        CaseBuilder().`when`(this.isSavePaymentInfo.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
 
 }
 

@@ -21,5 +21,6 @@ data class PaymentToProjectDTO(
     val amountPaidPerFund: BigDecimal,
     val amountAuthorizedPerFund: BigDecimal,
     val dateOfLastPayment: LocalDate? = null,
-    val lastApprovedVersionBeforeReadyForPayment: String?
+    val lastApprovedVersionBeforeReadyForPayment: String?,
+    val remainingToBePaid: BigDecimal,
 )
