@@ -3,7 +3,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {combineLatest, Observable} from 'rxjs';
-import {PaymentAccountOverviewDTO} from '@cat/api';
+import {PaymentAccountOverviewDetailDTO, PaymentAccountOverviewDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
 import {AccountsPageStore} from './accounts-page.store';
@@ -16,11 +16,22 @@ import {AccountsPageStore} from './accounts-page.store';
 })
 export class AccountsPageComponent implements OnInit, AfterViewInit {
 
+  PaymentAccountStatus = PaymentAccountOverviewDetailDTO.StatusEnum;
+
   @ViewChild('statusCell', {static: true})
   statusCell: TemplateRef<any>;
 
   @ViewChild('accountingYearCell', {static: true})
   accountingYearCell: TemplateRef<any>;
+
+  @ViewChild('totalEligibleCell', {static: true})
+  totalEligibleCell: TemplateRef<any>;
+
+  @ViewChild('totalPublicCell', {static: true})
+  totalPublicCell: TemplateRef<any>;
+
+  @ViewChild('totalClaimCell', {static: true})
+  totalClaimCell: TemplateRef<any>;
 
   data$: Observable<{
     userCanView: boolean;
@@ -30,7 +41,6 @@ export class AccountsPageComponent implements OnInit, AfterViewInit {
   userCanEdit$: Observable<boolean>;
 
   tableConfiguration: TableConfiguration;
-
   constructor(
     public accountsPageStore: AccountsPageStore,
     private paymentsPageSidenav: PaymentsPageSidenavService
@@ -64,9 +74,9 @@ export class AccountsPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.accounts.table.total.eligible.expenditure',
-          elementProperty: 'totalEligibleExpenditure',
           columnType: ColumnType.Decimal,
           columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.totalEligibleCell,
         },
         {
           displayedColumn: 'payments.accounts.table.technical.assistance',
@@ -76,15 +86,15 @@ export class AccountsPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.accounts.table.total.public.contribution',
-          elementProperty: 'totalPublicContribution',
           columnType: ColumnType.Decimal,
           columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.totalPublicCell
         },
         {
           displayedColumn: 'payments.accounts.table.total.claim',
-          elementProperty: 'totalClaim',
           columnType: ColumnType.Decimal,
           columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.totalClaimCell,
         },
         {
           displayedColumn: 'payments.accounts.table.national.reference',

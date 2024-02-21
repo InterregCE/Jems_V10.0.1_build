@@ -125,6 +125,10 @@
     {
       "hash": "0327496b",
       "reason": "PaymentAccountFinancePersistenceProvider.getReconciliationOverview - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "9bd87aed",
+      "reason": "PaymentAccountFinancePersistenceProvider.getOverviewTotalsForFinishedPaymentAccounts - queryDSL cannot be marked as Transactional"
     }
   ]
 }
