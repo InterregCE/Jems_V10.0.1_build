@@ -1,13 +1,11 @@
 package io.cloudflight.jems.server.payments.repository.account.reconciliation
 
-import io.cloudflight.jems.server.payments.entity.account.PaymentAccountEntity
 import io.cloudflight.jems.server.payments.entity.account.PaymentAccountReconciliationEntity
 import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.PaymentAccountReconciliation
 import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.PaymentAccountReconciliationType
 import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.ReconciledAmountUpdate
 import io.cloudflight.jems.server.payments.repository.account.PaymentAccountRepository
 import io.cloudflight.jems.server.payments.service.account.reconciliation.PaymentAccountReconciliationPersistence
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -32,7 +30,7 @@ class PaymentAccountReconciliationPersistenceProvider(
     ): PaymentAccountReconciliation {
         val paymentReconciliation = accountReconciliationRepository
             .getByPaymentAccountIdAndPriorityAxisId(paymentAccountId, reconciliationUpdate.priorityAxisId)
-            .orElse(getNewEntity(priorityId = reconciliationUpdate.priorityAxisId, paymentAccountId))
+            .orElseGet { getNewEntity(priorityId = reconciliationUpdate.priorityAxisId, paymentAccountId) }
 
         paymentReconciliation.updateWith(reconciliationUpdate)
 
