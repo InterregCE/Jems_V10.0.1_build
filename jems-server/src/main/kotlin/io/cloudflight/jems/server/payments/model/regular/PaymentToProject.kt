@@ -20,9 +20,10 @@ data class PaymentToProject(
     val totalEligibleAmount: BigDecimal,
     val fundId: Long,
     val fundName: String,
-    val amountApprovedPerFund: BigDecimal,
+    val fundAmount: BigDecimal,
     val amountPaidPerFund: BigDecimal,
     val amountAuthorizedPerFund: BigDecimal,
     val dateOfLastPayment: LocalDate? = null,
     val lastApprovedVersionBeforeReadyForPayment: String?,
+    val remainingToBePaid: BigDecimal,
 )

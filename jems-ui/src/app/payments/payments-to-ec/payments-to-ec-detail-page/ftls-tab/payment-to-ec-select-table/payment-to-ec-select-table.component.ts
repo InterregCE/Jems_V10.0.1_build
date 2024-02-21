@@ -119,7 +119,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: this.formBuilder.control(link.correctedPrivateContribution),
       totalEligibleWithoutScoArt9495: this.formBuilder.control(link.correctedTotalEligibleWithoutSco),
       unionContribution: this.formBuilder.control(link.correctedFundAmountUnionContribution),
-      fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.amountApprovedPerFund)
+      fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.fundAmount)
     });
     this.paymentToEcLinking.push(item);
   }
@@ -147,8 +147,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       autoPublicContribution: linkingDTO.autoPublicContribution,
       publicContribution: linkingDTO.publicContribution,
       privateContribution: linkingDTO.privateContribution,
-      fundAmount: linkingDTO.payment.amountApprovedPerFund,
-      totalEligibleWithoutScoArt9495: linkingDTO.payment.amountApprovedPerFund + linkingDTO.partnerContribution,
+      fundAmount: linkingDTO.payment.fundAmount,
+      totalEligibleWithoutScoArt9495: linkingDTO.payment.fundAmount + linkingDTO.partnerContribution,
       unionContribution: 0
     });
     this.formService.setDirty(true);
@@ -161,7 +161,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: linkingDTO.correctedPrivateContribution,
       totalEligibleWithoutScoArt9495: linkingDTO.correctedTotalEligibleWithoutSco,
       unionContribution: linkingDTO.correctedFundAmountUnionContribution,
-      fundAmount: this.flaggedArt9495 ? linkingDTO.correctedFundAmountPublicContribution : linkingDTO.payment.amountApprovedPerFund
+      fundAmount: this.flaggedArt9495 ? linkingDTO.correctedFundAmountPublicContribution : linkingDTO.payment.fundAmount
     });
     this.editedRowIndex = null;
     this.formService.setDirty(false);
@@ -184,7 +184,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
 
   changeUnionContribution(rowIndex: number) {
     const updatedUnionContribution = this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value;
-    const totalCorrection = this.data.paymentToEcLinking.content[rowIndex].payment.amountApprovedPerFund + this.data.paymentToEcLinking.content[rowIndex].partnerContribution;
+    const totalCorrection = this.data.paymentToEcLinking.content[rowIndex].payment.fundAmount + this.data.paymentToEcLinking.content[rowIndex].partnerContribution;
     this.paymentToEcLinking.at(rowIndex).patchValue({totalEligibleWithoutScoArt9495: totalCorrection - updatedUnionContribution});
   }
 

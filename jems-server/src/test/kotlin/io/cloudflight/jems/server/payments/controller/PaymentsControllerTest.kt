@@ -88,13 +88,14 @@ class PaymentsControllerTest : UnitTest() {
             paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
-            amountApprovedPerFund = BigDecimal.TEN,
+            fundAmount = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,
             amountAuthorizedPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "v1.0"
+            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            remainingToBePaid = BigDecimal.valueOf(514L),
         )
 
         val regularPaymentToProject = PaymentToProject(
@@ -108,13 +109,14 @@ class PaymentsControllerTest : UnitTest() {
             paymentToEcId = 6L,
             fundId = 5L,
             fundName = fund.type.name,
-            amountApprovedPerFund = BigDecimal.TEN,
+            fundAmount = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,
             amountAuthorizedPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "v1.0"
+            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            remainingToBePaid = BigDecimal.valueOf(515L),
         )
 
         private val installmentFirstDTO = PaymentPartnerInstallmentDTO(
@@ -319,11 +321,12 @@ class PaymentsControllerTest : UnitTest() {
                 paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = ftlsPaymentToProject.totalEligibleAmount,
                 fundName = ftlsPaymentToProject.fundName,
-                amountApprovedPerFund = ftlsPaymentToProject.amountApprovedPerFund,
+                fundAmount = ftlsPaymentToProject.fundAmount,
                 amountPaidPerFund = ftlsPaymentToProject.amountPaidPerFund,
                 amountAuthorizedPerFund = ftlsPaymentToProject.amountAuthorizedPerFund,
                 dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
+                remainingToBePaid = BigDecimal.valueOf(514L),
             ),
             PaymentToProjectDTO(
                 id = regularPaymentId,
@@ -338,11 +341,12 @@ class PaymentsControllerTest : UnitTest() {
                 paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,
                 totalEligibleAmount = regularPaymentToProject.totalEligibleAmount,
                 fundName = regularPaymentToProject.fundName,
-                amountApprovedPerFund = regularPaymentToProject.amountApprovedPerFund,
+                fundAmount = regularPaymentToProject.fundAmount,
                 amountPaidPerFund = regularPaymentToProject.amountPaidPerFund,
                 amountAuthorizedPerFund = regularPaymentToProject.amountAuthorizedPerFund,
                 dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment
+                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
+                remainingToBePaid = BigDecimal.valueOf(515L),
             ),
         )
         assertThat(slotFilter.captured).isEqualTo(dummyFilter)

@@ -17,9 +17,10 @@ data class PaymentToProjectDTO(
     val paymentApprovalDate: ZonedDateTime?,
     val totalEligibleAmount: BigDecimal,
     val fundName: String,
-    val amountApprovedPerFund: BigDecimal,
+    val fundAmount: BigDecimal,
     val amountPaidPerFund: BigDecimal,
     val amountAuthorizedPerFund: BigDecimal,
     val dateOfLastPayment: LocalDate? = null,
-    val lastApprovedVersionBeforeReadyForPayment: String?
+    val lastApprovedVersionBeforeReadyForPayment: String?,
+    val remainingToBePaid: BigDecimal,
 )
