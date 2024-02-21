@@ -20,7 +20,7 @@ class ListPaymentAccount(
     @ExceptionWrapper(ListPaymentAccountException::class)
     override fun listPaymentAccount(): List<PaymentAccountOverview> {
         val paymentAccountsByFund = paymentAccountPersistence.getAllAccounts().groupBy { it.fund }
-        val overviewContribution = paymentAccountFinancePersistence.getOverviewTotalsForFinishedPaymentAccounts()
+        val overviewContribution = paymentAccountFinancePersistence.getOverviewContributionForPaymentAccounts()
 
         return paymentAccountsByFund.toOverviewModel(overviewContribution)
     }

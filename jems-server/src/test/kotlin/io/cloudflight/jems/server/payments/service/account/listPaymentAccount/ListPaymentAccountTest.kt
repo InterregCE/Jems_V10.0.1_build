@@ -25,7 +25,7 @@ class ListPaymentAccountTest : UnitTest() {
     @Test
     fun listAccounts() {
         every { paymentAccountPersistence.getAllAccounts() } returns listOf(paymentAccount)
-        every { paymentAccountFinancePersistence.getOverviewTotalsForFinishedPaymentAccounts() } returns emptyMap()
+        every { paymentAccountFinancePersistence.getOverviewContributionForPaymentAccounts() } returns emptyMap()
 
         assertThat(service.listPaymentAccount()).isEqualTo(expectedAccountsOverviewList)
     }

@@ -18,6 +18,6 @@ interface PaymentAccountFinancePersistence {
     /** Summary */
     fun getTotalsForFinishedEcPayments(ecPaymentIds: Set<Long>): Map<Long?, PaymentToEcAmountSummaryLine>
 
-    fun getOverviewTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
+    fun getOverviewContributionForPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
 
 }

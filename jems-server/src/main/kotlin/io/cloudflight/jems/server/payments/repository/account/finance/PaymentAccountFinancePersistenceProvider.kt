@@ -157,26 +157,50 @@ class PaymentAccountFinancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getOverviewTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
-        val totalEligibleAccountExpr = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
-        val totalPublicAccountExpr = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
+    override fun getOverviewContributionForPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
+        val accountOverviewContribution = getOverviewContributionForFinishedPaymentAccount()
+        val ecOverviewContribution = getOverviewContributionForFinishedEcPayments()
 
-        val totalEligibleEcExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
-        val totalUnionEcExpr = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
-        val totalPublicEcExpr = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
+        return accountOverviewContribution.mergeWith(ecOverviewContribution)
+    }
 
-        val totalEligibleExpr = totalEligibleAccountExpr.add(totalEligibleEcExpr).add(totalUnionEcExpr)
-        val totalPublicExpr = totalPublicAccountExpr.add(totalPublicEcExpr)
+    private fun getOverviewContributionForFinishedPaymentAccount(): Map<Long, PaymentAccountOverviewContribution> {
+        val totalEligibleAccountExpr = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum().coalesce(BigDecimal.ZERO)
+        val totalPublicAccountExpr = paymentAccountPriorityAxisOverview.totalPublicContribution.sum().coalesce(BigDecimal.ZERO)
+
+        return jpaQueryFactory
+            .select(
+                paymentAccount.id,
+                totalEligibleAccountExpr,
+                totalPublicAccountExpr,
+            )
+            .from(paymentAccount)
+            .leftJoin(paymentAccountPriorityAxisOverview)
+                .on(paymentAccountPriorityAxisOverview.paymentAccount.id.eq(paymentAccount.id))
+            .where(paymentAccount.status.eq(PaymentAccountStatus.FINISHED))
+            .groupBy(paymentAccount.id)
+            .fetch()
+            .associate {
+                it.get(paymentAccount.id)!! to PaymentAccountOverviewContribution(
+                    totalEligibleExpenditure = it.get(totalEligibleAccountExpr)!!,
+                    totalPublicContribution = it.get(totalPublicAccountExpr)!!
+                )
+            }
+    }
+
+    fun getOverviewContributionForFinishedEcPayments(): Map<Long, PaymentAccountOverviewContribution> {
+        val totalEligibleExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum().coalesce(BigDecimal.ZERO)
+        val totalUnionExpr = paymentToEcPriorityAxisOverview.totalUnionContribution.sum().coalesce(BigDecimal.ZERO)
+        val totalPublicExpr = paymentToEcPriorityAxisOverview.totalPublicContribution.sum().coalesce(BigDecimal.ZERO)
 
         return jpaQueryFactory
             .select(
                 paymentAccount.id,
                 totalEligibleExpr,
-                totalPublicExpr,
+                totalUnionExpr,
+                totalPublicExpr
             )
             .from(paymentAccount)
-            .leftJoin(paymentAccountPriorityAxisOverview)
-                .on(paymentAccountPriorityAxisOverview.paymentAccount.id.eq(paymentAccount.id))
             .leftJoin(paymentToEc)
                 .on(paymentToEc.accountingYear.eq(paymentAccount.accountingYear)
                     .and(paymentToEc.programmeFund.eq(paymentAccount.programmeFund)))
@@ -187,7 +211,7 @@ class PaymentAccountFinancePersistenceProvider(
             .fetch()
             .associate {
                 it.get(paymentAccount.id)!! to PaymentAccountOverviewContribution(
-                    totalEligibleExpenditure = it.get(totalEligibleExpr)!!,
+                    totalEligibleExpenditure = it.get(totalEligibleExpr)!!.plus(it.get(totalUnionExpr)!!),
                     totalPublicContribution = it.get(totalPublicExpr)!!
                 )
             }
@@ -259,3 +283,5 @@ class PaymentAccountFinancePersistenceProvider(
             .add(privateContribution)
 
 }
+
+

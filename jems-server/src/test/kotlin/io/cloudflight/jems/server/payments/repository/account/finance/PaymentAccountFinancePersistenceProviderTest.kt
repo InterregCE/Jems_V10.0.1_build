@@ -157,6 +157,6 @@ class PaymentAccountFinancePersistenceProviderTest : UnitTest() {
             }
         }
 
-        assertThat(persistence.getOverviewTotalsForFinishedPaymentAccounts()).isEqualTo(overviewContribution)
+        assertThat(persistence.getOverviewContributionForPaymentAccounts()).isEqualTo(overviewContribution)
     }
 }
