@@ -13,11 +13,12 @@ interface PaymentAccountFinancePersistence {
         accountingYearId: Long,
     ): Iterable<CorrectionAmountWithdrawn>
 
-    fun getReconciliationOverview(paymentAccountId: Long, scenario: ReconciledScenario): List<ReconciledPriority>
-
     /** Summary */
     fun getTotalsForFinishedEcPayments(ecPaymentIds: Set<Long>): Map<Long?, PaymentToEcAmountSummaryLine>
 
-    fun getOverviewContributionForPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
+    fun getCorrectionTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
+    fun getEcPaymentTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
+
+    fun getReconciliationOverview(paymentAccountId: Long, scenario: ReconciledScenario): List<ReconciledPriority>
 
 }
