@@ -19,7 +19,8 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 export class ProjectBreakdownPerPartnerComponent implements OnChanges {
 
   dataSource: MatTableDataSource<PerPartnerCostCategoryBreakdownLineDTO> = new MatTableDataSource([]);
-  displayedColumns: string[] = [];
+  displayedColumnsOverview: string[] = [];
+  displayedColumnsDeductions: string[] = [];
   CategoryEnum = CategoryEnum;
 
   @Input()
@@ -30,7 +31,7 @@ export class ProjectBreakdownPerPartnerComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = this.breakdown.partners;
-    this.displayedColumns = [
+    this.displayedColumnsOverview = [
       'partner',
       'organizationAbbreviation',
       'country',
@@ -46,6 +47,7 @@ export class ProjectBreakdownPerPartnerComponent implements OnChanges {
       ... this.allowedCostCategories.get(CategoryEnum.SpfCosts) ? ['spfCosts'] : [],
       'totalBudget'
     ];
+    this.displayedColumnsDeductions = this.displayedColumnsOverview.filter(x => x !== 'spfCosts');
   }
 
 }
