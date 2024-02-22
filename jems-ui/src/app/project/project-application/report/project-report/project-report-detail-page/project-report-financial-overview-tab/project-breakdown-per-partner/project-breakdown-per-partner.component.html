@@ -24,7 +24,7 @@
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.country' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let partner" class="border-cell-right">{{ partner.country }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right"></mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="staffCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.StaffCosts)">
@@ -112,40 +112,40 @@
     </ng-container>
 
     <ng-container matColumnDef="unitCosts" *ngIf="this.allowedCostCategories.get('UnitCost')">
-        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+        <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.unit.costs' | translate}}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+        <mat-cell *matCellDef="let partner" class="text-right">
             <span>{{ partner.current.unitCost | asMoney }}</span>
         </mat-cell>
-        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+        <mat-footer-cell *matFooterCellDef class="text-right">
             <span>{{ breakdown.totalCurrent.unitCost | asMoney }}</span>
         </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="spfCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.SpfCosts)">
-        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+        <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{'project.application.reporting.corrections.cost.category.SpfCost' | translate}}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+        <mat-cell *matCellDef="let partner" class="text-right">
             <span>{{ partner.current.spfCost | asMoney }}</span>
         </mat-cell>
-        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+        <mat-footer-cell *matFooterCellDef class="text-right">
             <span>{{ breakdown.totalCurrent.spfCost | asMoney }}</span>
         </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="totalBudget">
-        <mat-header-cell *matHeaderCellDef class="text-right">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-left ml-2">
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.total.budget' | translate}}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.sum | asMoney }}</mat-cell>
-        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.sum | asMoney }}</mat-footer-cell>
+        <mat-cell *matCellDef="let partner" class="text-right border-cell-left ml-2">{{ partner.current.sum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right border-cell-left ml-2" *matFooterCellDef>{{ breakdown.totalCurrent.sum | asMoney }}</mat-footer-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+    <mat-header-row *matHeaderRowDef="displayedColumnsOverview"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumnsOverview"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumnsOverview"></mat-footer-row>
 
 </mat-table>
 
@@ -175,7 +175,7 @@
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.country' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let partner" class="border-cell-right">{{ partner.country }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right"></mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="staffCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.StaffCosts)">
@@ -263,28 +263,28 @@
     </ng-container>
 
     <ng-container matColumnDef="unitCosts" *ngIf="this.allowedCostCategories.get('UnitCost')">
-        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+        <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.unit.costs' | translate}}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+        <mat-cell *matCellDef="let partner" class="text-right">
             <span>{{ partner.deduction.unitCost | asMoney }}</span>
         </mat-cell>
-        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+        <mat-footer-cell *matFooterCellDef class="text-right">
             <span>{{ breakdown.totalDeduction.unitCost | asMoney }}</span>
         </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="totalBudget">
-        <mat-header-cell *matHeaderCellDef class="text-right">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-left ml-2">
             <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.total.deduction' | translate}}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.sum | asMoney }}</mat-cell>
-        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.sum | asMoney }}</mat-footer-cell>
+        <mat-cell *matCellDef="let partner" class="text-right border-cell-left ml-2">{{ partner.deduction.sum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right border-cell-left ml-2" *matFooterCellDef>{{ breakdown.totalDeduction.sum | asMoney }}</mat-footer-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+    <mat-header-row *matHeaderRowDef="displayedColumnsDeductions"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumnsDeductions"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumnsDeductions"></mat-footer-row>
 
 </mat-table>
 
