@@ -611,6 +611,9 @@ import {
   AuditControlCorrectionImpactComponent
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-impact/audit-control-correction-impact.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
+import {
+  ProjectApplicationStatusComponent
+} from '@project/project-application/project-application-status/project-application-status.component';
 
 @NgModule({
   declarations: [
@@ -826,7 +829,8 @@ import { ProjectReportSpfContributionsTabComponent } from './project-application
     CorrectionTypeOrderPipePipe,
     AuditControlCorrectionDetailMeasureComponent,
     AuditControlCorrectionImpactComponent,
-    ProjectReportSpfContributionsTabComponent
+    ProjectReportSpfContributionsTabComponent,
+    ProjectApplicationStatusComponent
   ],
   imports: [
     SharedModule,
