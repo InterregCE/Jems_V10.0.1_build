@@ -6,7 +6,7 @@ import {
     ProjectReportDTO,
     ProjectReportIdentificationDTO,
     ProjectReportIdentificationTargetGroupDTO,
-    ProjectReportSpendingProfileLineDTO,
+    ProjectReportSpendingProfileLineDTO
 } from '@cat/api';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {
@@ -20,6 +20,7 @@ import {
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-report-identification-extension',
@@ -32,6 +33,8 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
   APPLICATION_FORM = APPLICATION_FORM;
   LANGUAGE = InputTranslation.LanguageEnum;
   TYPE_ENUM = ProjectReportDTO.TypeEnum;
+
+  readonly Alert = Alert;
 
   private tableData: AbstractControl[] = [];
 
@@ -56,6 +59,7 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
           tableColumns: string[];
       };
       partnerBudgetPeriodsVisible: boolean;
+      isSpendingProfileTotalEligibleSetAtReportCreation: boolean;
   }>;
 
 
@@ -81,7 +85,8 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
                  tableConfig: this.getSpendingProfileTableConfig(partnerBudgetPeriodsVisible),
                  tableColumns: this.getSpendingProfileTableColumns(partnerBudgetPeriodsVisible),
              },
-             partnerBudgetPeriodsVisible
+             partnerBudgetPeriodsVisible,
+             isSpendingProfileTotalEligibleSetAtReportCreation: projectReportIdentification.spendingProfilePerPartner.total.totalEligibleBudget > 0
          }))
      );
     this.formService.init(this.form,  this.pageStore.reportEditable$);
@@ -176,7 +181,7 @@ export class ProjectReportIdentificationExtensionComponent implements OnInit {
       return [
           {minInRem: 4},
           {minInRem: 12},
-          {minInRem: 3},
+          {minInRem: 4},
           {minInRem: 8},
           {minInRem: 8},
           {minInRem: 8},

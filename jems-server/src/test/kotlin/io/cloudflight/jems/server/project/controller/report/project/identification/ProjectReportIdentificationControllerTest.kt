@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
@@ -55,8 +56,7 @@ internal class ProjectReportIdentificationControllerTest : UnitTest() {
             deviations = setOf(),
             spendingProfilePerPartner = ProjectReportSpendingProfile(
                 lines = emptyList(),
-                total = SpendingProfileLine(
-                    null, null, null, null,
+                total = SpendingProfileTotal(
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,

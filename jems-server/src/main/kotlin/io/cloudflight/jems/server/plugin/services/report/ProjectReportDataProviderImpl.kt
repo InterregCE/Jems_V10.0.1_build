@@ -9,6 +9,7 @@ import io.cloudflight.jems.plugin.contract.models.report.project.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationExtendedData
 import io.cloudflight.jems.plugin.contract.models.report.project.partnerCertificates.PartnerReportCertificateData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultPrincipleData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
@@ -28,7 +29,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown.GetReportCertificateUnitCostCalculatorService
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.sumOf
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
-import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification
+import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.ProjectReportSpendingProfileCalculator
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.data.domain.Pageable
@@ -40,7 +41,7 @@ class ProjectReportDataProviderImpl(
     private val projectReportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val getIdentificationPersistence: ProjectReportIdentificationPersistence,
-    private val getIdentificationService: GetProjectReportIdentification,
+    private val projectReportSpendingProfileCalculator: ProjectReportSpendingProfileCalculator,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val projectReportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
     private val projectReportCertificatePersistence: ProjectReportCertificatePersistence,
@@ -67,8 +68,15 @@ class ProjectReportDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getIdentification(projectId: Long, reportId: Long): ProjectReportIdentificationData =
         this.getIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
-            spendingProfilePerPartner = getIdentificationService.getProjectReportSpendingProfiles(projectId, reportId)
+            spendingProfilePerPartner = projectReportSpendingProfileCalculator.getProjectReportSpendingProfiles(projectId, reportId)
         }.toDataModel()
+
+
+    @Transactional(readOnly = true)
+    override fun getIdentificationData(projectId: Long, reportId: Long): ProjectReportIdentificationExtendedData =
+        this.getIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
+            spendingProfilePerPartner = projectReportSpendingProfileCalculator.getProjectReportSpendingProfiles(projectId, reportId)
+        }.toIdentificationDataModel()
 
     @Transactional(readOnly = true)
     override fun getWorkPlan(projectId: Long, reportId: Long): List<ProjectReportWorkPackageData> =

@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -51,8 +52,7 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfilePerPartner = ProjectReportSpendingProfile(emptyList(),  SpendingProfileLine(
-                null, null, null, null,
+            spendingProfilePerPartner = ProjectReportSpendingProfile(emptyList(),  SpendingProfileTotal(
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
@@ -67,35 +67,8 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
             ))
         )
 
-        private val leadPartnerReportIdentificationSummary = ProjectPartnerReportIdentificationSummary(
-            id = REPORT_ID,
-            reportNumber = 1,
-            partnerNumber = 1,
-            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = 10L,
-            sumTotalEligibleAfterControl = BigDecimal(400),
-            nextReportForecast = BigDecimal(250),
-            periodDetail = null
-        )
-        private val secondPartnerReportIdentificationSummary = ProjectPartnerReportIdentificationSummary(
-            id = REPORT_ID,
-            reportNumber = 1,
-            partnerNumber = 2,
-            partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = 11L,
-            sumTotalEligibleAfterControl = BigDecimal.ZERO,
-            nextReportForecast = BigDecimal(260),
-            periodDetail = ProjectPartnerReportPeriod(
-                number = 4,
-                periodBudget = BigDecimal.valueOf(290L),
-                periodBudgetCumulative = BigDecimal.valueOf(830L),
-                start = 10,
-                end = 12,
-            ),
-        )
 
-
-        val expectedResult = ProjectReportSpendingProfile(
+        private val spendingProfiles =  ProjectReportSpendingProfile(
             lines = listOf(
                 SpendingProfileLine(
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
@@ -108,8 +81,13 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                     remainingBudget = BigDecimal(400),
                     totalReportedSoFar = BigDecimal(600),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6000, 2),
-                    periodBudget = BigDecimal.ZERO,
-                    periodBudgetCumulative = BigDecimal.ZERO,
+                    periodDetail = ProjectPartnerReportPeriod(
+                        end = 1,
+                        start = 1,
+                        periodBudget = BigDecimal.ZERO,
+                        periodBudgetCumulative = BigDecimal.ZERO,
+                        number = 1
+                    ),
                     differenceFromPlan = BigDecimal.ZERO,
                     differenceFromPlanPercentage = BigDecimal.ZERO,
                     nextReportForecast = BigDecimal(250),
@@ -119,8 +97,13 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                     partnerNumber = 2,
                     partnerCountry = "Romania RO",
                     partnerAbbreviation = "DEF",
-                    periodBudget = BigDecimal.valueOf(290L),
-                    periodBudgetCumulative = BigDecimal.valueOf(830L),
+                    periodDetail = ProjectPartnerReportPeriod(
+                        number = 4,
+                        periodBudget = BigDecimal.valueOf(290L),
+                        periodBudgetCumulative = BigDecimal.valueOf(830L),
+                        start = 10,
+                        end = 12,
+                    ),
                     differenceFromPlan = BigDecimal.valueOf(130L),
                     differenceFromPlanPercentage = BigDecimal.valueOf(84_34L, 2),
                     nextReportForecast = BigDecimal.valueOf(260L),
@@ -132,8 +115,7 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                     remainingBudget = BigDecimal.valueOf(1650L),
                 )
             ),
-            total = SpendingProfileLine(
-                null, null, null, null,
+            total = SpendingProfileTotal(
                 periodBudget = BigDecimal.valueOf(290L),
                 periodBudgetCumulative = BigDecimal.valueOf(830L),
                 differenceFromPlan = BigDecimal.valueOf(-470L),
@@ -147,177 +129,46 @@ internal class GetProjectReportIdentificationTest : UnitTest() {
                 remainingBudget = BigDecimal.valueOf(2050L)
             )
         )
+
+
+        private val expectedResult = ProjectReportIdentification(
+            targetGroups = listOf(
+                ProjectReportIdentificationTargetGroup(
+                    type = ProjectTargetGroup.CrossBorderLegalBody,
+                    sortNumber = 1,
+                    description = setOf(InputTranslation(SystemLanguage.EN, "description"))
+                )
+            ),
+            highlights = setOf(
+                InputTranslation(SystemLanguage.EN, "highlights EN"),
+                InputTranslation(SystemLanguage.DE, "highlights DE")
+            ),
+            partnerProblems = setOf(),
+            deviations = setOf(),
+            spendingProfilePerPartner = spendingProfiles
+        )
+
     }
 
     @MockK
     private lateinit var projectReportIdentification: ProjectReportIdentificationPersistence
 
     @MockK
-    private lateinit var projectReportCertificatePersistence: ProjectReportCertificatePersistence
-
-    @MockK
-    private lateinit var projectReportPersistence: ProjectReportPersistence
-
-    @MockK
-    private lateinit var  partnerPersistence: PartnerPersistence
+    private lateinit var calculator: ProjectReportSpendingProfileCalculator
 
     @InjectMockKs
     private lateinit var interactor: GetProjectReportIdentification
 
     @BeforeEach
     fun reset() {
-        clearMocks(projectReportIdentification, projectReportCertificatePersistence, projectReportPersistence, partnerPersistence)
+        clearMocks(projectReportIdentification)
     }
 
     @Test
     fun getIdentification() {
         every { projectReportIdentification.getReportIdentification(PROJECT_ID, REPORT_ID) } returns identification
+        every { calculator.getProjectReportSpendingProfiles(PROJECT_ID, REPORT_ID) } returns spendingProfiles
 
-        val report = mockk<ProjectReportModel>()
-        every { report.status } returns ProjectReportStatus.Draft
-        every { report.linkedFormVersion } returns "1.0"
-        every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
-
-        val leadPartner = mockk<ProjectPartnerDetail>()
-        every { leadPartner.id } returns 10L
-        every { leadPartner.sortNumber } returns 1
-        every { leadPartner.role } returns ProjectPartnerRole.LEAD_PARTNER
-        every { leadPartner.nameInEnglish } returns "ABC"
-        every { leadPartner.addresses } returns listOf(
-            ProjectPartnerAddress(
-                type = ProjectPartnerAddressType.Organization,
-                country = "France FR"
-            ))
-
-        val partner2 = mockk<ProjectPartnerDetail>()
-        every { partner2.id } returns 11L
-        every { partner2.sortNumber } returns 2
-        every { partner2.role } returns ProjectPartnerRole.PARTNER
-        every { partner2.nameInEnglish } returns "DEF"
-        every { partner2.addresses } returns listOf(
-            ProjectPartnerAddress(
-                type = ProjectPartnerAddressType.Organization,
-                country = "Romania RO"
-            ))
-
-        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner, partner2)
-        every { projectReportIdentification.getSpendingProfileReportedValues(REPORT_ID) } returns
-                listOf(
-                    ProjectReportSpendingProfileReportedValues(
-                        10L,
-                        BigDecimal(200),
-                        BigDecimal.ZERO,
-                        BigDecimal(1000)
-                    ),
-                    ProjectReportSpendingProfileReportedValues(
-                        11L,
-                        BigDecimal(700),
-                        BigDecimal.ZERO,
-                        BigDecimal(2350)
-                    )
-                )
-        every { projectReportCertificatePersistence.getIdentificationSummariesOfProjectReport(REPORT_ID) } returns
-            listOf(leadPartnerReportIdentificationSummary, secondPartnerReportIdentificationSummary)
-
-
-
-        val reportIdentification = interactor.getIdentification(PROJECT_ID, REPORT_ID)
-        assertThat(reportIdentification.spendingProfilePerPartner).isEqualTo(expectedResult)
-    }
-
-    @Test
-    fun `partner - missing totalEligible will show correct values for non dependent fields`() {
-        every { projectReportIdentification.getReportIdentification(PROJECT_ID, REPORT_ID) } returns identification
-
-        val report = mockk<ProjectReportModel>()
-        every { report.status } returns ProjectReportStatus.Draft
-        every { report.linkedFormVersion } returns "1.0"
-        every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
-
-        val leadPartner = mockk<ProjectPartnerDetail>()
-        every { leadPartner.id } returns 10L
-        every { leadPartner.sortNumber } returns 1
-        every { leadPartner.role } returns ProjectPartnerRole.LEAD_PARTNER
-        every { leadPartner.nameInEnglish } returns "ABC"
-        every { leadPartner.addresses } returns listOf(
-            ProjectPartnerAddress(
-                type = ProjectPartnerAddressType.Organization,
-                country = "France FR"
-            ))
-
-        val partner2 = mockk<ProjectPartnerDetail>()
-        every { partner2.id } returns 11L
-        every { partner2.sortNumber } returns 2
-        every { partner2.role } returns ProjectPartnerRole.PARTNER
-        every { partner2.nameInEnglish } returns "PP2 name in EN"
-        every { partner2.addresses } returns emptyList()
-
-        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner, partner2)
-        every { projectReportIdentification.getSpendingProfileReportedValues(REPORT_ID) } returns
-                listOf(
-                    ProjectReportSpendingProfileReportedValues(partnerId = 10L, previouslyReported = BigDecimal.valueOf(200),
-                        currentlyReported = BigDecimal.ZERO, partnerTotalEligibleBudget =  BigDecimal.ZERO),
-                    ProjectReportSpendingProfileReportedValues(partnerId = 11L, previouslyReported = BigDecimal.ZERO,
-                        currentlyReported = BigDecimal.ZERO, partnerTotalEligibleBudget =  BigDecimal.ZERO),
-                )
-        every { projectReportCertificatePersistence.getIdentificationSummariesOfProjectReport(REPORT_ID) } returns
-                listOf(leadPartnerReportIdentificationSummary, secondPartnerReportIdentificationSummary)
-
-
-        val expectedResult = ProjectReportSpendingProfile(
-            lines = listOf(
-                SpendingProfileLine(
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
-                    partnerCountry = "France FR",
-                    partnerAbbreviation = "ABC",
-                    periodBudget = BigDecimal.ZERO,
-                    periodBudgetCumulative = BigDecimal.ZERO,
-                    differenceFromPlan = BigDecimal.ZERO,
-                    differenceFromPlanPercentage = BigDecimal.ZERO,
-                    nextReportForecast = BigDecimal(250),
-                    totalEligibleBudget = BigDecimal.ZERO,
-                    currentReport = BigDecimal(400),
-                    previouslyReported = BigDecimal(200),
-                    totalReportedSoFar = BigDecimal(600),
-                    totalReportedSoFarPercentage = null,
-                    remainingBudget = BigDecimal.valueOf(-600L),
-                ),
-                SpendingProfileLine(
-                    partnerRole = ProjectPartnerRole.PARTNER,
-                    partnerNumber = 2,
-                    partnerCountry = "N/A",
-                    partnerAbbreviation = "PP2 name in EN",
-                    periodBudget = BigDecimal.valueOf(290L),
-                    periodBudgetCumulative = BigDecimal.valueOf(830L),
-                    differenceFromPlan = BigDecimal.valueOf(830L),
-                    differenceFromPlanPercentage = BigDecimal.valueOf(0L, 2),
-                    nextReportForecast = BigDecimal(260L),
-                    totalEligibleBudget = BigDecimal.ZERO,
-                    currentReport = BigDecimal.ZERO,
-                    previouslyReported = BigDecimal.ZERO,
-                    totalReportedSoFar = BigDecimal.ZERO,
-                    totalReportedSoFarPercentage = BigDecimal.valueOf(100L),
-                    remainingBudget = BigDecimal.ZERO,
-                ),
-            ),
-            total = SpendingProfileLine(
-                null, null, null, null,
-                periodBudget = BigDecimal.valueOf(290L),
-                periodBudgetCumulative = BigDecimal.valueOf(830L),
-                differenceFromPlan = BigDecimal.valueOf(230L),
-                differenceFromPlanPercentage = BigDecimal.valueOf(72_29L, 2),
-                nextReportForecast = BigDecimal.valueOf(510L),
-                totalEligibleBudget = BigDecimal.ZERO,
-                currentReport = BigDecimal.valueOf(400L),
-                previouslyReported = BigDecimal.valueOf(200L),
-                totalReportedSoFar = BigDecimal.valueOf(600L),
-                totalReportedSoFarPercentage = null,
-                remainingBudget = BigDecimal.valueOf(-600L),
-            )
-        )
-
-        val reportIdentification = interactor.getIdentification(PROJECT_ID, REPORT_ID)
-        assertThat(reportIdentification.spendingProfilePerPartner).isEqualTo(expectedResult)
+        assertThat(interactor.getIdentification(PROJECT_ID, REPORT_ID)).isEqualTo(expectedResult)
     }
 }

@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
-import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification.Companion.emptySpendingProfile
 
 fun List<ProjectReportIdentificationTargetGroupEntity>.toModel() = map {
     ProjectReportIdentificationTargetGroup(
