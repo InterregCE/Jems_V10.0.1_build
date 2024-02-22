@@ -60,7 +60,7 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         else -> payment.id
     }
 
-    return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
+    return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg).nullsLast()
 }
 
 fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
