@@ -1,16 +1,21 @@
 import {Injectable} from '@angular/core';
-import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
+import {distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
 import {ActivatedRoute, NavigationEnd, NavigationExtras, ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../utils/forms';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Log} from '../utils/log';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Injectable({providedIn: 'root'})
 export class RoutingService {
 
   currentRoute = new ReplaySubject<ActivatedRoute>(1);
   confirmLeaveMap = new Map<string, boolean>();
+
+  private confirmLeaveDialog: Subject<boolean> = new Subject<boolean>();
+  private confirmLeaveDialogOpen = false;
 
   constructor(private router: Router,
               private dialog: MatDialog,
@@ -19,6 +24,8 @@ export class RoutingService {
       .pipe(
         filter(val => val instanceof ResolveEnd),
         tap(() => this.confirmLeaveMap.clear()),
+        tap(() => this.confirmLeaveDialog = new Subject<boolean>()),
+        tap(() => this.confirmLeaveDialogOpen = false),
       )
       .subscribe();
 
@@ -36,23 +43,7 @@ export class RoutingService {
 
   navigate(commands: any[], extras?: NavigationExtras): void {
     const navigationExtras = extras || {queryParamsHandling: 'merge'} as NavigationExtras;
-    if (![...this.confirmLeaveMap.values()].some(val => val)) {
-      this.router.navigate(commands, navigationExtras);
-      return;
-    }
-
-    Forms.confirm(
-      this.dialog,
-      {
-        title: 'common.sidebar.dialog.title',
-        warnMessage: 'common.sidebar.dialog.message'
-      }
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      tap(() => this.router.navigate(commands, navigationExtras)),
-      tap(() => Log.debug('Navigating to route', this, commands, navigationExtras))
-    ).subscribe();
+    this.router.navigate(commands, navigationExtras);
   }
 
   routeChanges(url: string): Observable<boolean> {
@@ -90,4 +81,32 @@ export class RoutingService {
     }
     return localRoot;
   }
+
+  public canLeavePage(): boolean {
+    return !this.confirmLeaveMap.size;
+  }
+
+  public showConfirmToLeaveDialog(): Observable<boolean> {
+    if (this.confirmLeaveDialogOpen) {
+      // if a confirmation dialog is already open, don't open a new one
+      return this.confirmLeaveDialog.asObservable();
+    }
+
+    this.confirmLeaveDialogOpen = true;
+    return Forms.confirm(
+      this.dialog,
+      {
+        title: 'common.sidebar.dialog.title',
+        warnMessage: 'common.sidebar.dialog.message'
+      }
+    ).pipe(
+      take(1),
+      tap(result => this.confirmLeaveDialog.next(result)),
+      finalize(() => {
+        this.confirmLeaveDialog = new Subject<boolean>();
+        this.confirmLeaveDialogOpen = false;
+      }),
+    );
+  }
+
 }

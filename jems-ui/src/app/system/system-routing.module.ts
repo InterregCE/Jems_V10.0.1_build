@@ -10,6 +10,7 @@ import {UserRoleDetailPageComponent} from './user-page-role/user-role-detail-pag
 import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-role-name.resolver';
 import {SystemPermissionGuard} from '../security/system.permission.guard';
 import {AppNotFoundComponent} from '../component/app-not-found/app-not-found.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,7 @@ export const routes: Routes = [
     data: {
       breadcrumb: 'system.page.title',
     },
+    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',

@@ -23,6 +23,7 @@ import {CallTranslationsConfigurationComponent} from './translations/call-transl
 import {
   ProjectReportNotificationsSettingsTabComponent
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
 export const routes: Routes = [
   {
@@ -30,6 +31,7 @@ export const routes: Routes = [
     data: {
       breadcrumb: 'call.breadcrumb.list.of.calls'
     },
+    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',
