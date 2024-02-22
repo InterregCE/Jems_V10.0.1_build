@@ -7,6 +7,7 @@ import {
 } from './institutions-page/controller-institution-detail/controller-institution-detail.component';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {InstitutionsAssignmentsPageComponent} from './institution-assignments-page/institutions-assignments-page.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,7 @@ export const routes: Routes = [
         PermissionsEnum.InstitutionsAssignmentRetrieve
       ],
     },
+    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',

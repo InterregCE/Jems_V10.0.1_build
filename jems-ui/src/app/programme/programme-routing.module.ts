@@ -25,6 +25,7 @@ import { ProgrammeConversionRatesComponent } from './programme-conversion-rates/
 import {
   ProgrammeTypologyErrorsComponent
 } from './programme-page/containers/programme-typology-errors/programme-typology-errors.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,7 @@ export const routes: Routes = [
     data: {
       breadcrumb: 'programme.breadcrumb.setup',
     },
+    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',

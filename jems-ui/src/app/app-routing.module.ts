@@ -2,7 +2,7 @@ import {Routes} from '@angular/router';
 import {AppWrapComponent} from './component/app-wrap/app-wrap.component';
 import {NoAuthWrapComponent} from './component/no-auth-wrap/no-auth-wrap.component';
 import {AppNotFoundComponent} from './component/app-not-found/app-not-found.component';
-import {AuthenticationGuard} from './security/authentication-guard.service';
+import {AuthenticationGuard} from './security/authentication.guard';
 import {Permission} from './security/permissions/permission';
 import {PermissionGuard} from './security/permission.guard';
 
