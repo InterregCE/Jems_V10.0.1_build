@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.closure.ProjectReportProjectClosurePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
@@ -53,6 +54,7 @@ class SubmitProjectReport(
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
     private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val projectReportProjectClosurePersistence: ProjectReportProjectClosurePersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
 
@@ -94,6 +96,7 @@ class SubmitProjectReport(
             saveCurrentInvestments(certificateIds, projectId, reportId)
 
             deleteDataBasedOnContractingDeadlineType(report)
+            deleteClosureDataIfReportNotFinal(report)
         }
 
         val reportSubmitted = if (report.status.isOpenInitially())
@@ -199,6 +202,11 @@ class SubmitProjectReport(
                 // intentionally left empty
             }
         }
+
+    private fun deleteClosureDataIfReportNotFinal(report: ProjectReportModel) {
+        if (!report.finalReport!!)
+            projectReportProjectClosurePersistence.deleteProjectReportProjectClosure(report.id)
+    }
 
     private fun ProjectReportModel.hasVerificationStartedBefore() = this.lastVerificationReOpening != null
 

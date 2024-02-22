@@ -65,6 +65,13 @@
                     </span>
             </a>
 
+            <a *ngIf="data.projectReport.finalReport" [active]="activeTab('projectClosure')" mat-tab-link
+               (click)="routeTo('projectClosure')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.tab.project.closure' | translate}}
+                    </span>
+            </a>
+
             <a [active]="activeTab('annexes')" mat-tab-link
                (click)="routeTo('annexes')">
                     <span jemsText maxWidth="230">

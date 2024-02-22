@@ -612,6 +612,9 @@ import {
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-impact/audit-control-correction-impact.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
 import {
+  ProjectReportProjectClosureTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-tab.component';
+import {
   ProjectApplicationStatusComponent
 } from '@project/project-application/project-application-status/project-application-status.component';
 
@@ -830,6 +833,7 @@ import {
     AuditControlCorrectionDetailMeasureComponent,
     AuditControlCorrectionImpactComponent,
     ProjectReportSpfContributionsTabComponent,
+    ProjectReportProjectClosureTabComponent,
     ProjectApplicationStatusComponent
   ],
   imports: [
