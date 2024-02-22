@@ -12,7 +12,7 @@ data class PaymentAccountOverviewDetail(
     val nationalReference: String,
     val technicalAssistance: BigDecimal,
     val totalPublicContribution: BigDecimal,
-    val totalClaimInclTA: BigDecimal,
+    var totalClaimInclTA: BigDecimal,
     val submissionToSfcDate: LocalDate?,
     val sfcNumber: String,
 )

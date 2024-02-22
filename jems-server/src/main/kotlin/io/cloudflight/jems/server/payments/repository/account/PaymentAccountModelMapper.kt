@@ -12,7 +12,7 @@ import java.math.BigDecimal
 
 fun List<PaymentAccountEntity>.toModel() = this.map { it.toModel() }
 
-fun PaymentAccount.toOverviewDetailModel(overviewTotals: Map<Long, PaymentAccountOverviewContribution>) = PaymentAccountOverviewDetail(
+private fun PaymentAccount.toOverviewDetailModel(overviewTotals: Map<Long, PaymentAccountOverviewContribution>) = PaymentAccountOverviewDetail(
     id = id,
     accountingYear = accountingYear,
     status = status,
@@ -20,7 +20,7 @@ fun PaymentAccount.toOverviewDetailModel(overviewTotals: Map<Long, PaymentAccoun
     nationalReference = nationalReference,
     technicalAssistance = technicalAssistance,
     totalPublicContribution = overviewTotals[id]?.totalPublicContribution ?: BigDecimal.ZERO,
-    totalClaimInclTA = overviewTotals[id]?.totalEligibleExpenditure?.plus(technicalAssistance) ?: BigDecimal.ZERO,
+    totalClaimInclTA = BigDecimal.ZERO,
     submissionToSfcDate = submissionToSfcDate,
     sfcNumber = sfcNumber,
 )
@@ -37,11 +37,11 @@ fun PaymentAccountEntity.toModel() = PaymentAccount(
     comment = comment
 )
 
-fun Map<ProgrammeFund, List<PaymentAccount>>.toOverviewModel(overviewContribution: Map<Long, PaymentAccountOverviewContribution>) =
+fun Map<ProgrammeFund, List<PaymentAccount>>.mapToOverviewAndFillInTotals(totalsPerAccount: Map<Long, PaymentAccountOverviewContribution>) =
     map {
         PaymentAccountOverview(
             programmeFund = it.key,
-            paymentAccounts = it.value.map { account -> account.toOverviewDetailModel(overviewContribution) }
+            paymentAccounts = it.value.map { account -> account.toOverviewDetailModel(totalsPerAccount) }
         )
     }
 

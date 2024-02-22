@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
@@ -58,7 +57,6 @@ class PaymentAccountFinancePersistenceProvider(
 
         /** Summary */
         private val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
-        private val paymentToEc = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
         private val paymentToEcPriorityAxisOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
         private val paymentAccount = QPaymentAccountEntity.paymentAccountEntity
         private val paymentAccountPriorityAxisOverview = QPaymentAccountPriorityAxisOverviewEntity.paymentAccountPriorityAxisOverviewEntity
@@ -157,38 +155,52 @@ class PaymentAccountFinancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getOverviewTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
-        val totalEligibleAccountExpr = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
-        val totalPublicAccountExpr = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
+    override fun getCorrectionTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
+        val paymentAccountId = paymentAccountPriorityAxisOverview.paymentAccount.id
+        val totalEligibleSum = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalPublicSum = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
 
-        val totalEligibleEcExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
-        val totalUnionEcExpr = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
-        val totalPublicEcExpr = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
+        return jpaQueryFactory
+            .select(
+                paymentAccountId,
+                totalEligibleSum,
+                totalPublicSum,
+            )
+            .from(paymentAccountPriorityAxisOverview)
+            .where(paymentAccountPriorityAxisOverview.paymentAccount.status.eq(PaymentAccountStatus.FINISHED))
+            .groupBy(paymentAccountPriorityAxisOverview.paymentAccount.id)
+            .fetch()
+            .associate {
+                it.get(paymentAccountId)!! to PaymentAccountOverviewContribution(
+                    totalEligibleExpenditure = it.get(totalEligibleSum)!!,
+                    totalPublicContribution = it.get(totalPublicSum)!!,
+                )
+            }
+    }
 
-        val totalEligibleExpr = totalEligibleAccountExpr.add(totalEligibleEcExpr).add(totalUnionEcExpr)
-        val totalPublicExpr = totalPublicAccountExpr.add(totalPublicEcExpr)
+    @Transactional(readOnly = true)
+    override fun getEcPaymentTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
+        val totalEligibleSum = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalUnionSum = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
+        val totalPublicSum = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
 
         return jpaQueryFactory
             .select(
                 paymentAccount.id,
-                totalEligibleExpr,
-                totalPublicExpr,
+                totalEligibleSum.add(totalUnionSum),
+                totalPublicSum,
             )
-            .from(paymentAccount)
-            .leftJoin(paymentAccountPriorityAxisOverview)
-                .on(paymentAccountPriorityAxisOverview.paymentAccount.id.eq(paymentAccount.id))
-            .leftJoin(paymentToEc)
-                .on(paymentToEc.accountingYear.eq(paymentAccount.accountingYear)
-                    .and(paymentToEc.programmeFund.eq(paymentAccount.programmeFund)))
-            .leftJoin(paymentToEcPriorityAxisOverview)
-                .on(paymentToEcPriorityAxisOverview.paymentApplicationToEc.eq(paymentToEc))
+            .from(paymentToEcPriorityAxisOverview)
+                .leftJoin(paymentAccount)
+                    .on(paymentAccount.accountingYear.eq(paymentToEcPriorityAxisOverview.paymentApplicationToEc.accountingYear)
+                        .and(paymentAccount.programmeFund.eq(paymentToEcPriorityAxisOverview.paymentApplicationToEc.programmeFund)))
             .where(paymentAccount.status.eq(PaymentAccountStatus.FINISHED))
             .groupBy(paymentAccount.id)
             .fetch()
             .associate {
                 it.get(paymentAccount.id)!! to PaymentAccountOverviewContribution(
-                    totalEligibleExpenditure = it.get(totalEligibleExpr)!!,
-                    totalPublicContribution = it.get(totalPublicExpr)!!
+                    totalEligibleExpenditure = it.get(totalEligibleSum.add(totalUnionSum))!!,
+                    totalPublicContribution = it.get(totalPublicSum)!!,
                 )
             }
     }

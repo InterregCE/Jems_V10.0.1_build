@@ -75,25 +75,25 @@ export class AccountsPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.accounts.table.total.eligible.expenditure',
           columnType: ColumnType.Decimal,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           customCellTemplate: this.totalEligibleCell,
         },
         {
           displayedColumn: 'payments.accounts.table.technical.assistance',
           elementProperty: 'technicalAssistance',
           columnType: ColumnType.Decimal,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
         },
         {
           displayedColumn: 'payments.accounts.table.total.public.contribution',
           columnType: ColumnType.Decimal,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           customCellTemplate: this.totalPublicCell
         },
         {
           displayedColumn: 'payments.accounts.table.total.claim',
           columnType: ColumnType.Decimal,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           customCellTemplate: this.totalClaimCell,
         },
         {
