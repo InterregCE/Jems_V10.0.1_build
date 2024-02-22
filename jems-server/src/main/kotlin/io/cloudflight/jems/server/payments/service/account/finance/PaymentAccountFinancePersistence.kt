@@ -17,6 +17,7 @@ interface PaymentAccountFinancePersistence {
     fun getTotalsForFinishedEcPayments(ecPaymentIds: Set<Long>): Map<Long?, PaymentToEcAmountSummaryLine>
 
     fun getCorrectionTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
+
     fun getEcPaymentTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution>
 
     fun getReconciliationOverview(paymentAccountId: Long, scenario: ReconciledScenario): List<ReconciledPriority>

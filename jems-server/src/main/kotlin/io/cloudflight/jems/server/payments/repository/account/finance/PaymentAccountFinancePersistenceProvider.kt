@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
-import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
@@ -157,13 +156,13 @@ class PaymentAccountFinancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCorrectionTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
-        val accountId = paymentAccountPriorityAxisOverview.paymentAccount.id
+        val paymentAccountId = paymentAccountPriorityAxisOverview.paymentAccount.id
         val totalEligibleSum = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
         val totalPublicSum = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
 
         return jpaQueryFactory
             .select(
-                accountId,
+                paymentAccountId,
                 totalEligibleSum,
                 totalPublicSum,
             )
@@ -172,7 +171,7 @@ class PaymentAccountFinancePersistenceProvider(
             .groupBy(paymentAccountPriorityAxisOverview.paymentAccount.id)
             .fetch()
             .associate {
-                it.get(accountId)!! to PaymentAccountOverviewContribution(
+                it.get(paymentAccountId)!! to PaymentAccountOverviewContribution(
                     totalEligibleExpenditure = it.get(totalEligibleSum)!!,
                     totalPublicContribution = it.get(totalPublicSum)!!,
                 )
@@ -181,15 +180,15 @@ class PaymentAccountFinancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getEcPaymentTotalsForFinishedPaymentAccounts(): Map<Long, PaymentAccountOverviewContribution> {
-        val totalEligibleExpr = paymentToEcPriorityAxisOverview.totalEligibleExpenditure
-        val totalUnionExpr = paymentToEcPriorityAxisOverview.totalUnionContribution
-        val totalPublicExpr = paymentToEcPriorityAxisOverview.totalPublicContribution
+        val totalEligibleSum = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalUnionSum = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
+        val totalPublicSum = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
 
         return jpaQueryFactory
             .select(
                 paymentAccount.id,
-                totalEligibleExpr.add(totalUnionExpr).sum(),
-                totalPublicExpr.sum(),
+                totalEligibleSum.add(totalUnionSum),
+                totalPublicSum,
             )
             .from(paymentToEcPriorityAxisOverview)
                 .leftJoin(paymentAccount)
@@ -200,8 +199,8 @@ class PaymentAccountFinancePersistenceProvider(
             .fetch()
             .associate {
                 it.get(paymentAccount.id)!! to PaymentAccountOverviewContribution(
-                    totalEligibleExpenditure = it.get(1, BigDecimal::class.java)!!,
-                    totalPublicContribution = it.get(2, BigDecimal::class.java)!!,
+                    totalEligibleExpenditure = it.get(totalEligibleSum.add(totalUnionSum))!!,
+                    totalPublicContribution = it.get(totalPublicSum)!!,
                 )
             }
     }

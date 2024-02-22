@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountEntity
 import io.cloudflight.jems.server.payments.entity.account.QPaymentAccountPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewContribution
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
@@ -134,8 +135,7 @@ class PaymentAccountFinancePersistenceProviderTest : UnitTest() {
     @Test
     fun getCorrectionTotalsForFinishedPaymentAccounts() {
         val query = mockk<JPAQuery<Tuple>>()
-        val paymentAccountPriorityAxisOverview =
-            QPaymentAccountPriorityAxisOverviewEntity.paymentAccountPriorityAxisOverviewEntity
+        val paymentAccountPriorityAxisOverview = QPaymentAccountPriorityAxisOverviewEntity.paymentAccountPriorityAxisOverviewEntity
 
         val totalEligibleSum = paymentAccountPriorityAxisOverview.totalEligibleExpenditure.sum()
         val totalPublicSum = paymentAccountPriorityAxisOverview.totalPublicContribution.sum()
@@ -158,7 +158,29 @@ class PaymentAccountFinancePersistenceProviderTest : UnitTest() {
 
     @Test
     fun getEcPaymentTotalsForFinishedPaymentAccounts() {
-        TODO("implement")
+        val query = mockk<JPAQuery<Tuple>>()
+        val paymentAccount = QPaymentAccountEntity.paymentAccountEntity
+        val paymentToEcPriorityAxisOverview = QPaymentToEcPriorityAxisOverviewEntity.paymentToEcPriorityAxisOverviewEntity
+
+        val totalEligibleSum = paymentToEcPriorityAxisOverview.totalEligibleExpenditure.sum()
+        val totalUnionSum = paymentToEcPriorityAxisOverview.totalUnionContribution.sum()
+        val totalPublicSum = paymentToEcPriorityAxisOverview.totalPublicContribution.sum()
+
+        every { jpaQueryFactory.select(any(), any(), any()) } returns query
+        every { query.from(paymentToEcPriorityAxisOverview) } returns query
+        every { query.leftJoin(paymentAccount).on(any()) } returns query
+        every { query.where(paymentAccount.status.eq(PaymentAccountStatus.FINISHED)) } returns query
+        every { query.groupBy(paymentAccount.id) } returns query
+        every { query.fetch() } returns overviewContribution.map {
+            mockk<Tuple> {
+                every { get(paymentAccount.id) } returns it.key
+                every { get(totalEligibleSum.add(totalUnionSum)) } returns it.value.totalEligibleExpenditure
+                every { get(totalPublicSum) } returns it.value.totalPublicContribution
+            }
+        }
+
+        assertThat(persistence.getEcPaymentTotalsForFinishedPaymentAccounts())
+            .containsExactlyEntriesOf(overviewContribution)
     }
 
 }
