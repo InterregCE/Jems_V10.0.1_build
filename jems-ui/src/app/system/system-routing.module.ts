@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {UserPageComponent} from './user-page/user-page.component';
 import {UserNameResolver} from './user-page/user-detail-page/user-name.resolver';
 import {PermissionGuard} from '../security/permission.guard';
@@ -11,14 +11,14 @@ import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-
 import {SystemPermissionGuard} from '../security/system.permission.guard';
 import {AppNotFoundComponent} from '../component/app-not-found/app-not-found.component';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import {NgModule} from '@angular/core';
 
-export const routes: Routes = [
+const systemRoutes: Routes = [
   {
     path: '',
     data: {
       breadcrumb: 'system.page.title',
     },
-    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',
@@ -101,3 +101,13 @@ export const routes: Routes = [
     ]
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(systemRoutes)],
+  exports: [RouterModule]
+})
+export class SystemRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(systemRoutes);
+  }
+}

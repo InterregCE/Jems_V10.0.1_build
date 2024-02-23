@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {InstitutionsPageComponent} from './institutions-page/institutions-page.component';
 import {PermissionGuard} from '../security/permission.guard';
 import {UserRoleCreateDTO} from '@cat/api';
@@ -7,9 +7,10 @@ import {
 } from './institutions-page/controller-institution-detail/controller-institution-detail.component';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {InstitutionsAssignmentsPageComponent} from './institution-assignments-page/institutions-assignments-page.component';
+import {NgModule} from '@angular/core';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
-export const routes: Routes = [
+export const controllersRoutes: Routes = [
   {
     path: '',
     data: {
@@ -21,7 +22,6 @@ export const routes: Routes = [
         PermissionsEnum.InstitutionsAssignmentRetrieve
       ],
     },
-    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',
@@ -70,3 +70,13 @@ export const routes: Routes = [
     ]
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(controllersRoutes)],
+  exports: [RouterModule]
+})
+export class ControllersRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(controllersRoutes);
+  }
+}

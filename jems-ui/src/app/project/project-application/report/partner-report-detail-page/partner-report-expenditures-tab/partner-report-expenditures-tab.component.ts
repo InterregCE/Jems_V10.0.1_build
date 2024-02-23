@@ -127,7 +127,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               public formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private router: RoutingService,
+              private routingService: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
               public securityService: SecurityService,
@@ -702,7 +702,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
     this.isUploadDone = false;
     const serviceId = uuid();
-    this.router.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(
         take(1),
@@ -711,7 +711,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       )
       .subscribe(value => {
         this.attachment(expenditureIndex)?.patchValue(value);
-        this.router.confirmLeaveMap.delete(serviceId);
+        this.routingService.confirmLeaveSet.delete(serviceId);
       });
   }
 

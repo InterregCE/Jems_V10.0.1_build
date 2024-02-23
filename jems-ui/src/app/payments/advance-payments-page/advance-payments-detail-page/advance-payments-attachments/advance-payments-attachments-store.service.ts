@@ -70,7 +70,7 @@ export class AdvancePaymentAttachmentsStore {
 
   uploadPaymentFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return this.routingService.routeParameterChanges(AdvancePaymentAttachmentsStore.ADVANCE_PAYMENT_DETAIL_PATH, 'advancePaymentId')
       .pipe(
           map(id => Number(id)),
@@ -80,7 +80,7 @@ export class AdvancePaymentAttachmentsStore {
           ),
           tap(() => this.filesChanged$.next()),
           tap(() => this.error$.next(null)),
-          finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+          finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
           catchError(error => {
             this.error$.next(error.error);
             return of({} as JemsFileMetadataDTO);

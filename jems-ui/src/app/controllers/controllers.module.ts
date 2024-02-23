@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {SharedModule} from '@common/shared-module';
 import {RouterModule} from '@angular/router';
 import {InstitutionsPageComponent} from './institutions-page/institutions-page.component';
-import {routes} from './controllers-routing.module';
 import {ControllersPageSidenavService} from './controllers-page-sidenav.service';
 import {
   ControllerInstitutionDetailComponent
@@ -12,6 +11,7 @@ import {
 } from './institutions-page/controller-institution-detail/controller-institution-nuts/controller-institution-nuts.component';
 import {ProgrammeEditableStateStore} from '../programme/programme-page/services/programme-editable-state-store.service';
 import {InstitutionsAssignmentsPageComponent} from './institution-assignments-page/institutions-assignments-page.component';
+import {ControllersRoutingModule} from './controllers-routing.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,7 @@ import {InstitutionsAssignmentsPageComponent} from './institution-assignments-pa
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes),
+    ControllersRoutingModule,
   ],
   providers: [
     ProgrammeEditableStateStore,

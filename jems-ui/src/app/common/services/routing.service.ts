@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
-import {ActivatedRoute, NavigationEnd, NavigationExtras, ResolveEnd, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, NavigationExtras, NavigationStart, ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../utils/forms';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Log} from '../utils/log';
@@ -12,20 +12,14 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 export class RoutingService {
 
   currentRoute = new ReplaySubject<ActivatedRoute>(1);
-  confirmLeaveMap = new Map<string, boolean>();
-
-  private confirmLeaveDialog: Subject<boolean> = new Subject<boolean>();
-  private confirmLeaveDialogOpen = false;
+  confirmLeaveSet = new Set<string>();
 
   constructor(private router: Router,
-              private dialog: MatDialog,
               private route: ActivatedRoute) {
     this.router.events
       .pipe(
         filter(val => val instanceof ResolveEnd),
-        tap(() => this.confirmLeaveMap.clear()),
-        tap(() => this.confirmLeaveDialog = new Subject<boolean>()),
-        tap(() => this.confirmLeaveDialogOpen = false),
+        tap(() => this.confirmLeaveSet.clear()),
       )
       .subscribe();
 
@@ -80,33 +74,6 @@ export class RoutingService {
       localRoot = localRoot.firstChild;
     }
     return localRoot;
-  }
-
-  public canLeavePage(): boolean {
-    return !this.confirmLeaveMap.size;
-  }
-
-  public showConfirmToLeaveDialog(): Observable<boolean> {
-    if (this.confirmLeaveDialogOpen) {
-      // if a confirmation dialog is already open, don't open a new one
-      return this.confirmLeaveDialog.asObservable();
-    }
-
-    this.confirmLeaveDialogOpen = true;
-    return Forms.confirm(
-      this.dialog,
-      {
-        title: 'common.sidebar.dialog.title',
-        warnMessage: 'common.sidebar.dialog.message'
-      }
-    ).pipe(
-      take(1),
-      tap(result => this.confirmLeaveDialog.next(result)),
-      finalize(() => {
-        this.confirmLeaveDialog = new Subject<boolean>();
-        this.confirmLeaveDialogOpen = false;
-      }),
-    );
   }
 
 }
