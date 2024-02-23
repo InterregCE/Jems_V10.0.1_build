@@ -105,7 +105,7 @@ export class SharedFolderPageStore {
 
   uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return combineLatest([
       this.projectId$,
     ]).pipe(
@@ -113,7 +113,7 @@ export class SharedFolderPageStore {
       switchMap(([projectId]) => this.sharedFolderService.uploadFileToSharedFolderForm(file, projectId)),
       tap(() => this.filesChanged$.next()),
       tap(() => this.error$.next(null)),
-      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
         return of({} as JemsFileMetadataDTO);

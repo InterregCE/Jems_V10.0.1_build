@@ -230,7 +230,7 @@ export class PartnerReportContributionTabComponent {
     if (target && procurementId !== 0) {
       this.isUploadDone = false;
       const serviceId = uuid();
-      this.routingService.confirmLeaveMap.set(serviceId, true);
+      this.routingService.confirmLeaveSet.add(serviceId);
       this.pageStore.uploadFile(target?.files[0], procurementId)
         .pipe(
           take(1),
@@ -239,7 +239,7 @@ export class PartnerReportContributionTabComponent {
     )
         .subscribe(value => {
           this.attachment(index)?.patchValue(value);
-          this.routingService.confirmLeaveMap.delete(serviceId);
+          this.routingService.confirmLeaveSet.delete(serviceId);
         });
     }
   }

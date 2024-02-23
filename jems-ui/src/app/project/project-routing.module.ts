@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {
   ProjectApplicationComponent
 } from './project-application/containers/project-application-page/project-application.component';
@@ -306,12 +306,12 @@ import {
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import {NgModule} from '@angular/core';
 
 export const routes: Routes = [
   {
     path: '',
     data: {breadcrumb: 'project.breadcrumb.list'},
-    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',
@@ -687,7 +687,6 @@ export const routes: Routes = [
           {
             path: 'modification',
             component: ModificationPageComponent,
-            canDeactivate: [ConfirmLeaveGuard],
             data: {breadcrumb: 'project.breadcrumb.applicationForm.modification'},
           },
           {
@@ -997,3 +996,13 @@ export const routes: Routes = [
     ]
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class ProjectRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(routes);
+  }
+}

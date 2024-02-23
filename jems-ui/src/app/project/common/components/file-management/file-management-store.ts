@@ -99,7 +99,7 @@ export class FileManagementStore {
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -107,7 +107,7 @@ export class FileManagementStore {
         switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, (category as any)?.type, projectId, (category as any)?.id)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
-        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+        finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);

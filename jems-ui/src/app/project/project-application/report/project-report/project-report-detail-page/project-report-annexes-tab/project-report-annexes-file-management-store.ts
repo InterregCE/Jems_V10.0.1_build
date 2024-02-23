@@ -233,7 +233,7 @@ export class ProjectReportAnnexesFileManagementStore {
 
     uploadFile(file: File): Observable<JemsFileMetadataDTO> {
         const serviceId = uuid();
-        this.routingService.confirmLeaveMap.set(serviceId, true);
+        this.routingService.confirmLeaveSet.add(serviceId);
         return combineLatest([
             this.projectId$.pipe(map(id => Number(id))),
             this.reportId$.pipe(map(id => Number(id))),
@@ -244,7 +244,7 @@ export class ProjectReportAnnexesFileManagementStore {
             ),
             tap(() => this.filesChanged$.next()),
             tap(() => this.error$.next(null)),
-            finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+            finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
             catchError(error => {
                 this.error$.next(error.error);
                 return of({} as JemsFileMetadataDTO);

@@ -154,7 +154,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
     }
     this.isUploadDone = false;
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
       .pipe(
         take(1),
@@ -163,7 +163,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       )
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
-        this.routingService.confirmLeaveMap.delete(serviceId);
+        this.routingService.confirmLeaveSet.delete(serviceId);
       });
   }
 

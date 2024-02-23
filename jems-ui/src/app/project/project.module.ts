@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {routes} from './project-routing.module';
+import {ProjectRoutingModule, routes} from './project-routing.module';
 import {
   ProjectApplicationComponent
 } from './project-application/containers/project-application-page/project-application.component';
@@ -830,7 +830,7 @@ import { ProjectReportSpfContributionsTabComponent } from './project-application
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes),
+    ProjectRoutingModule,
   ],
   exports: [
     ProjectDetailPageComponent

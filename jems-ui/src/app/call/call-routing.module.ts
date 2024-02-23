@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {CallPageComponent} from './containers/call-page/call-page.component';
 import {RouteData} from '@common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
@@ -23,15 +23,15 @@ import {CallTranslationsConfigurationComponent} from './translations/call-transl
 import {
   ProjectReportNotificationsSettingsTabComponent
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
+import {NgModule} from '@angular/core';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
-export const routes: Routes = [
+const callRoutes: Routes = [
   {
     path: '',
     data: {
       breadcrumb: 'call.breadcrumb.list.of.calls'
     },
-    canDeactivate: [ConfirmLeaveGuard],
     children: [
       {
         path: '',
@@ -143,3 +143,13 @@ export const routes: Routes = [
     ]
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(callRoutes)],
+  exports: [RouterModule]
+})
+export class CallRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(callRoutes);
+  }
+}

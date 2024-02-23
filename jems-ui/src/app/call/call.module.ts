@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import {routes} from './call-routing.module';
 import {CallPageComponent} from './containers/call-page/call-page.component';
 import {SharedModule} from '@common/shared-module';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
@@ -34,6 +33,7 @@ import {CallTranslationsConfigurationComponent} from './translations/call-transl
 import {
   ProjectReportNotificationsSettingsTabComponent
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
+import {CallRoutingModule} from './call-routing.module';
 
 @NgModule({
   declarations: [
@@ -60,12 +60,12 @@ import {
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes)
+    CallRoutingModule,
   ],
   providers: [
     ProgrammeEditableStateStore,
     CallNameResolver,
-    CallPageSidenavService
+    CallPageSidenavService,
   ],
 })
 export class CallModule {
