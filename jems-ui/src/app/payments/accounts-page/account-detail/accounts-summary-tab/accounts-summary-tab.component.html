@@ -70,4 +70,9 @@
         <jems-accounts-cumulative-table [data]="data.accountAmountSummary"
                                         [infoBubble]="'summary'"></jems-accounts-cumulative-table>
     </mat-card>
+
+    <mat-card class="mt-4">
+        <jems-payment-account-attachments *ngIf="data.accountDetail.id"></jems-payment-account-attachments>
+    </mat-card>
+
 </ng-container>

@@ -53,6 +53,9 @@ import {AccountsCumulativeTableComponent} from './accounts-page/account-detail/a
 import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 import {AccountsWithdrawnTabComponent} from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
 import {AccountsReconciliationTabComponent} from './accounts-page/account-detail/accounts-reconciliation-tab/accounts-reconciliation-tab.component';
+import {
+  AccountsAttachmentsComponent
+} from './accounts-page/account-detail/accounts-summary-tab/attachments/accounts-attachments.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +82,7 @@ import {AccountsReconciliationTabComponent} from './accounts-page/account-detail
     AccountsPageComponent,
     AccountDetailComponent,
     AccountsSummaryTabComponent,
+    AccountsAttachmentsComponent,
     AccountsCorrectionTabComponent,
     AccountsCorrectionSelectTableComponent,
     AccountsCumulativeTableComponent,

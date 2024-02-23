@@ -22,4 +22,7 @@ interface PaymentAccountPersistence {
 
     fun reOpenPaymentAccount(paymentAccountId: Long): PaymentAccountStatus
 
+    fun deletePaymentAccountAttachment(fileId: Long)
+
+
 }
