@@ -122,9 +122,10 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
             CorrectionAvailablePartner(1L, 1, "", mockk(), false,
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
-                        availableFunds = listOf(CorrectionAvailableFund(
-                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
-                        )),
+                        availableFunds = listOf(
+                            CorrectionAvailableFund(ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk(), false),
+                            CorrectionAvailableFund(ProgrammeFund(999L, true, ProgrammeFundType.ERDF), mockk(), true),
+                        ),
                     ),
                 ),
                 availableFtls = emptyList(),
@@ -172,7 +173,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableFunds = listOf(CorrectionAvailableFund(
-                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk(), false
                         )),
                     ),
                 ),
@@ -230,7 +231,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableFunds = listOf(CorrectionAvailableFund(
-                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk(), false
                         )),
                     ),
                 ),
@@ -288,7 +289,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableFunds = listOf(CorrectionAvailableFund(
-                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk(), false
                         )),
                     ),
                 ),
@@ -338,7 +339,7 @@ class CorrectionIdentificationValidatorTest: UnitTest() {
                 availableReports = listOf(
                     CorrectionAvailablePartnerReport(id = reportId, 1, null,
                         availableFunds = listOf(CorrectionAvailableFund(
-                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk()
+                            ProgrammeFund(fundId, true, ProgrammeFundType.ERDF), mockk(), false
                         )),
                     )
                 ),

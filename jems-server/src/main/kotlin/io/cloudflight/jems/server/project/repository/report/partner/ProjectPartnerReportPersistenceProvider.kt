@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
@@ -31,6 +30,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import kotlin.streams.asSequence
 
@@ -183,6 +183,7 @@ class ProjectPartnerReportPersistenceProvider(
             reportProject.id,
             reportProject.number,
             programmeFund,
+            reportCoFin.total,
             ecPayment.id,
             ecPayment.status,
             accountingYear,
@@ -219,9 +220,10 @@ class ProjectPartnerReportPersistenceProvider(
             projectReportId = get(3, Long::class.java),
             projectReportNumber = get(4, Int::class.java),
             availableFund = get(5, ProgrammeFundEntity::class.java)!!.toModel(),
-            ecPaymentId = get(6, Long::class.java),
-            ecPaymentStatus = get(7, PaymentEcStatus::class.java),
-            ecPaymentAccountingYear = get(8, AccountingYearEntity::class.java)?.toModel(),
+            fundShareTotal = get(6, BigDecimal::class.java)!!,
+            ecPaymentId = get(7, Long::class.java),
+            ecPaymentStatus = get(8, PaymentEcStatus::class.java),
+            ecPaymentAccountingYear = get(9, AccountingYearEntity::class.java)?.toModel(),
         )
 
 }

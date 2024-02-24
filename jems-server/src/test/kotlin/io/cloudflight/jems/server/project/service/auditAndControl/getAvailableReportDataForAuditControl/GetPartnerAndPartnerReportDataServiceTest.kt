@@ -27,6 +27,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
@@ -54,6 +55,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         projectReportId = 26L,
         projectReportNumber = 12,
         availableFund = fund1,
+        fundShareTotal = BigDecimal.valueOf(999L),
         ecPaymentId = 647L,
         ecPaymentStatus = PaymentEcStatus.Draft,
         ecPaymentAccountingYear = year1,
@@ -65,6 +67,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         projectReportId = 36L,
         projectReportNumber = 32,
         availableFund = fund1,
+        fundShareTotal = BigDecimal.valueOf(998L),
         ecPaymentId = 647L,
         ecPaymentStatus = PaymentEcStatus.Draft,
         ecPaymentAccountingYear = year1,
@@ -76,6 +79,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         projectReportId = 46L,
         projectReportNumber = 22,
         availableFund = fund2,
+        fundShareTotal = BigDecimal.ZERO,
         ecPaymentId = 648L,
         ecPaymentStatus = PaymentEcStatus.Finished,
         ecPaymentAccountingYear = year2,
@@ -87,6 +91,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
         projectReportId = 56L,
         projectReportNumber = 42,
         availableFund = fund2,
+        fundShareTotal = BigDecimal.ZERO,
         ecPaymentId = 648L,
         ecPaymentStatus = PaymentEcStatus.Finished,
         ecPaymentAccountingYear = year2,
@@ -156,7 +161,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         reportNumber = 6,
                         projectReport = CorrectionProjectReport(id = 36L, number = 32),
                         availableFunds = listOf(
-                            CorrectionAvailableFund(fund = fund1, ecPayment = CorrectionEcPayment(647L, PaymentEcStatus.Draft, year1)),
+                            CorrectionAvailableFund(fund = fund1, ecPayment = CorrectionEcPayment(647L, PaymentEcStatus.Draft, year1), false),
                         ),
                     ),
                     CorrectionAvailablePartnerReport(
@@ -164,7 +169,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         reportNumber = 8,
                         projectReport = CorrectionProjectReport(id = 56L, number = 42),
                         availableFunds = listOf(
-                            CorrectionAvailableFund(fund = fund2, ecPayment = CorrectionEcPayment(648L, PaymentEcStatus.Finished, year2)),
+                            CorrectionAvailableFund(fund = fund2, ecPayment = CorrectionEcPayment(648L, PaymentEcStatus.Finished, year2), true),
                         ),
                     ),
                 ),
@@ -176,7 +181,8 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         availableFunds = listOf(
                             CorrectionAvailableFund(
                                 fund = ProgrammeFund(4L, true, ProgrammeFundType.ERDF, emptySet(), emptySet()),
-                                ecPayment = CorrectionEcPayment(9L, PaymentEcStatus.Finished, ftls.ecPaymentAccountingYear!!)
+                                ecPayment = CorrectionEcPayment(9L, PaymentEcStatus.Finished, ftls.ecPaymentAccountingYear!!),
+                                disabled = false,
                             )
                         )
                     )
@@ -194,7 +200,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         reportNumber = 5,
                         projectReport = CorrectionProjectReport(id = 26L, number = 12),
                         availableFunds = listOf(
-                            CorrectionAvailableFund(fund = fund1, ecPayment = CorrectionEcPayment(647L, PaymentEcStatus.Draft, year1)),
+                            CorrectionAvailableFund(fund = fund1, ecPayment = CorrectionEcPayment(647L, PaymentEcStatus.Draft, year1), false),
                         ),
                     ),
                     CorrectionAvailablePartnerReport(
@@ -202,7 +208,7 @@ class GetPartnerAndPartnerReportDataServiceTest: UnitTest() {
                         reportNumber = 7,
                         projectReport = CorrectionProjectReport(id = 46L, number = 22),
                         availableFunds = listOf(
-                            CorrectionAvailableFund(fund = fund2, ecPayment = CorrectionEcPayment(648L, PaymentEcStatus.Finished, year2)),
+                            CorrectionAvailableFund(fund = fund2, ecPayment = CorrectionEcPayment(648L, PaymentEcStatus.Finished, year2), true),
                         ),
                     ),
                 ),

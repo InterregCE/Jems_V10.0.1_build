@@ -144,7 +144,7 @@ class AuditControlControllerTest: UnitTest() {
                 projectReport = projectReport,
 
                 availableFunds = listOf(
-                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment),
+                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment, true),
                 )
             )
         )
@@ -156,7 +156,7 @@ class AuditControlControllerTest: UnitTest() {
                 name = setOf(InputTranslation(SystemLanguage.EL, "EL - name")),
 
                 availableFunds = listOf(
-                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment),
+                    CorrectionAvailableFund(ERDF_FUND, correctionEcPayment, false),
                 )
             )
         )
@@ -179,7 +179,7 @@ class AuditControlControllerTest: UnitTest() {
                 projectReport = expectedProjectReport,
 
                 availableFunds = listOf(
-                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment),
+                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment, true),
                 )
             )
         )
@@ -190,7 +190,7 @@ class AuditControlControllerTest: UnitTest() {
                 name = setOf(InputTranslation(SystemLanguage.EL, "EL - name")),
 
                 availableFunds = listOf(
-                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment),
+                    CorrectionAvailableFundDTO(expectedFund, expectedCorrectionEcPayment, false),
                 )
             )
         )

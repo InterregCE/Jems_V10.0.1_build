@@ -57,6 +57,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
@@ -319,6 +320,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             projectReportId = PROJECT_REPORT_ID,
             projectReportNumber = 2,
             availableFund = programmeFund,
+            fundShareTotal = valueOf(44L),
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,
             ecPaymentAccountingYear = accountingYearEntity.toModel(),
@@ -625,7 +627,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun getAvailableReports() {
 
         val query = mockk<JPAQuery<Tuple>>()
-        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
+        every { jpaQueryFactory.select(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns query
         val slotFrom = slot<EntityPath<Any>>()
         every { query.from(capture(slotFrom)) } returns query
         val slotLeftJoin = mutableListOf<EntityPath<Any>>()
@@ -643,9 +645,10 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         every { tuple.get(3, Long::class.java) } returns PROJECT_REPORT_ID
         every { tuple.get(4, Int::class.java) } returns 2
         every { tuple.get(5, ProgrammeFundEntity::class.java) } returns programmeFundEntity
-        every { tuple.get(6, Long::class.java) } returns EC_PAYMENT_ID
-        every { tuple.get(7, PaymentEcStatus::class.java) } returns PaymentEcStatus.Draft
-        every { tuple.get(8, AccountingYearEntity::class.java) } returns accountingYearEntity
+        every { tuple.get(6, BigDecimal::class.java) } returns valueOf(44L)
+        every { tuple.get(7, Long::class.java) } returns EC_PAYMENT_ID
+        every { tuple.get(8, PaymentEcStatus::class.java) } returns PaymentEcStatus.Draft
+        every { tuple.get(9, AccountingYearEntity::class.java) } returns accountingYearEntity
 
         val result = mockk<List<Tuple>>()
         every { result.size } returns 1
