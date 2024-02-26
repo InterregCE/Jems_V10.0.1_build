@@ -62,7 +62,7 @@ context('Payments tests', () => {
                 testData.projectLumpSums[3].programmeLumpSumId = lumpSumId2;
 
                 application.lumpSums = testData.projectLumpSums;
-                
+
                 testData.contractingFastTrackLumpSums[1].programmeLumpSumId = lumpSumId1;
                 testData.contractingFastTrackLumpSums[2].programmeLumpSumId = lumpSumId1;
                 testData.contractingFastTrackLumpSums[3].programmeLumpSumId = lumpSumId2;
@@ -84,7 +84,7 @@ context('Payments tests', () => {
                     assertClaimNo(row, '0');
                     assertSubmissionDate(row, date.format(new Date(), 'MM/DD/YYYY'));
                     assertMAApprovalDate(row, date.format(new Date(), 'MM/DD/YYYY'));
-                    assertTotalApproved(row, '1.999,00');
+                    assertTotalApproved(row, '392,51');
                     assertFund(row, 'OTHER');
                     assertApprovedPerFund(row, '293,05');
                     assertAuthorised(row, '0,00');
@@ -95,7 +95,7 @@ context('Payments tests', () => {
                   cy.get('table mat-row:nth-child(2)').then(row => {
                     assertPaymentProjectId(row, applicationId);
                     assertProjectAcronym(row, application.identification.acronym);
-                    assertTotalApproved(row, '1.999,00');
+                    assertTotalApproved(row, '1.606,49');
                     assertFund(row, 'ERDF');
                     assertApprovedPerFund(row, '1.199,40');
                     assertRemainingToBePaid(row, '1.199,40');
@@ -175,14 +175,14 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertTotalApproved(row, '1.999,00');
+                    assertTotalApproved(row, '99,90');
                     assertFund(row, 'OTHER');
                     assertApprovedPerFund(row, '49,95');
                     assertRemainingToBePaid(row, '49,95');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertTotalApproved(row, '1.999,00');
+                    assertTotalApproved(row, '196,36');
                     assertFund(row, 'OTHER');
                     assertApprovedPerFund(row, '146,60');
                     assertRemainingToBePaid(row, '146,60');
