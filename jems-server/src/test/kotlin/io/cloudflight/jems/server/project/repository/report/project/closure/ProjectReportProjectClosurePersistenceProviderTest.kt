@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosurePrizeEntity
 import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosurePrizeTranslEntity
-import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosureStoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosureStoryTranslEntity
 import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosure
 import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosurePrize

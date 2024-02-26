@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.entity.report.project.closure
 
-import io.cloudflight.jems.server.common.entity.resetTranslations
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
@@ -29,11 +28,4 @@ class ProjectReportProjectClosurePrizeEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     var translatedValues: MutableSet<ProjectReportProjectClosurePrizeTranslEntity> = mutableSetOf()
-) {
-
-    fun updateTranslations(newTranslations: Set<ProjectReportProjectClosurePrizeTranslEntity>) {
-        this.translatedValues.resetTranslations(newTranslations) { currentTranslation, newTranslation ->
-            currentTranslation.prize = newTranslation.prize
-        }
-    }
-}
+)

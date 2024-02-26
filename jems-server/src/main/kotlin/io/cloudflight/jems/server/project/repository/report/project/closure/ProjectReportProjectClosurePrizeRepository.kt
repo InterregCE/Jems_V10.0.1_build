@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface ProjectReportProjectClosurePrizeRepository: JpaRepository<ProjectReportProjectClosurePrizeEntity, Long> {
 
     @EntityGraph(value = "ProjectReportProjectClosurePrizeEntity.withTranslations")
-    fun findAllByReportId(reportId: Long): List<ProjectReportProjectClosurePrizeEntity>
+    fun findAllByReportIdOrderBySortNumberAsc(reportId: Long): MutableList<ProjectReportProjectClosurePrizeEntity>
 
     fun deleteAllByReportId(reportId: Long)
 }

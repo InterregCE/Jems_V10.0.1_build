@@ -4,5 +4,5 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class ProjectReportProjectClosure(
     val story: Set<InputTranslation>,
-    val prizes: List<ProjectReportProjectClosurePrize>,
+    val prizes: List<Set<InputTranslation>>,
 )

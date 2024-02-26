@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_closure_project_prize_transl")
 class ProjectReportProjectClosurePrizeTranslEntity(
@@ -11,6 +12,7 @@ class ProjectReportProjectClosurePrizeTranslEntity(
     @EmbeddedId
     override val translationId: TranslationId<ProjectReportProjectClosurePrizeEntity>,
 
-    var prize: String?
+    @field:NotNull
+    var prize: String
 
 ): TranslationEntity()

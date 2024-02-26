@@ -19,7 +19,7 @@ class UpdateProjectReportProjectClosure(
     @ExceptionWrapper(UpdateProjectReportProjectClosureException::class)
     override fun update(
         reportId: Long,
-        projectClosure: ProjectReportProjectClosure
+        projectClosure: ProjectReportProjectClosure,
     ): ProjectReportProjectClosure {
         validateInputs(projectClosure)
         return projectReportProjectClosurePersistence.updateProjectReportProjectClosure(reportId, projectClosure)
@@ -31,7 +31,7 @@ class UpdateProjectReportProjectClosure(
 
         generalValidatorService.throwIfAnyIsInvalid(
             generalValidatorService.maxLength(projectClosure.story, 5000, "story"),
-            *projectClosure.prizes.map { generalValidatorService.maxLength(it.prize, 500, "prize") }
+            *projectClosure.prizes.map { generalValidatorService.maxLength(it, 500, "prize") }
                 .toTypedArray(),
         )
     }

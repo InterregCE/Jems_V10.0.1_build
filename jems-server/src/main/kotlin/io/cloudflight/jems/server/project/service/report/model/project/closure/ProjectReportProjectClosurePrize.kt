@@ -5,5 +5,4 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 data class ProjectReportProjectClosurePrize(
     val id: Long?,
     val prize: Set<InputTranslation>,
-    val orderNum: Int,
 )
