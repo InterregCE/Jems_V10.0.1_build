@@ -1,16 +1,7 @@
-<div id="status" class="mb-3">
+<div id="status" class="mb-3 mt-1">
     {{'project.detail.table.status' | translate}}:
     <mat-chip-list class="mr-1 ml-1" aria-label="status">
-        <mat-chip selected="true"
-                  [class.draft]="hasDraftStatusColor()"
-                  [class.submitted]="hasSubmittedStatusColor()"
-                  [class.approved]="hasApprovedStatusColor()"
-                  [class.declined]="hasDeclinedStatusColor()"
-                  [class.with-conditions]="hasApprovedWithConditionsStatusColor()"
-                  [class.contracted]="hasContractedStatusColor()"
-                  [class.closed]="hasClosedStatusColor()">
-            {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
-        </mat-chip>
+        <jems-project-application-status [status]="project?.projectStatus.status" [projectDetail]="project" [longVersion]="false"></jems-project-application-status>
     </mat-chip-list>
     <span>{{'project.detail.overview.since' | translate : {date: project.projectStatus.updated | localeDate} }}</span>
 </div>
@@ -20,8 +11,10 @@
         <span class="p-1">{{project.customIdentifier}} – {{project.acronym}}</span>
     </div>
     <div class="project-row">
-        <span class="header p-1 pr-3">{{'project.detail.overview.applicant.name' | translate}}</span>
-        <span class="p-1">{{getApplicantName()}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.status' | translate}}</span>
+        <span class="p-1">
+            <jems-project-application-status [status]="project?.projectStatus.status" [projectDetail]="project" [longVersion]="true"></jems-project-application-status>
+        </span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.overview.project.name' | translate}}</span>

@@ -1,6 +1,7 @@
 #status {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
+  gap: 0.5rem;
 
   .mat-chip {
     color: var(--font-color-status-chips);
