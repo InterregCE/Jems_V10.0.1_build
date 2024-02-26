@@ -42,9 +42,7 @@ class AuditControlCorrectionController(
         auditControlId: Long,
         type: AuditControlCorrectionTypeDTO,
     ): ProjectAuditControlCorrectionDTO =
-        createCorrection
-            .createCorrection(auditControlId, type = AuditControlCorrectionType.valueOf(type.name))
-            .toDto()
+        createCorrection.createCorrection(auditControlId, type = AuditControlCorrectionType.valueOf(type.name)).toDto()
 
     override fun listProjectAuditCorrections(
         projectId: Long,

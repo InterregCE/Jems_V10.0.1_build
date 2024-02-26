@@ -13,22 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ListAuditControlFile(
-    private val filePersistence: JemsFilePersistence,
-    private val auditControlPersistence: AuditControlPersistence,
+    private val listAuditControlFileService: ListAuditControlFileService
 ) : ListAuditControlFileInteractor {
 
     @CanViewAuditControl
     @Transactional(readOnly = true)
     @ExceptionWrapper(ListAuditControlFileException::class)
-    override fun list(auditControlId: Long, pageable: Pageable): Page<JemsFile> {
-        val projectId = auditControlPersistence.getProjectIdForAuditControl(auditControlId)
+    override fun list(auditControlId: Long, pageable: Pageable): Page<JemsFile> =
+        listAuditControlFileService.list(auditControlId, pageable)
 
-        val filePathPrefix = JemsFileType.AuditControl.generatePath(projectId, auditControlId)
-        return filePersistence.listAttachments(
-            pageable = pageable,
-            indexPrefix = filePathPrefix,
-            filterSubtypes = setOf(JemsFileType.AuditControl),
-            filterUserIds = emptySet(),
-        )
-    }
 }
