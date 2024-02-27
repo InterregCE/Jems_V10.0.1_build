@@ -732,7 +732,7 @@
         </form>
 
         <jems-partner-report-expenditures-parked
-                *ngIf="data.parkedExpenditures.length && data.isReportEditable && !data.isReopenedLimited"
+                *ngIf="data.parkedExpenditures.length && !data.isReopenedLimited"
                 [listDirty$]="formService.dirty$"
                 [expenditures]="data.parkedExpenditures"
                 [columns]="data.columnsToDisplay">
