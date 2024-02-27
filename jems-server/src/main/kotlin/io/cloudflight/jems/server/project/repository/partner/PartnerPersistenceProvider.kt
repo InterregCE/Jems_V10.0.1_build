@@ -1,16 +1,21 @@
 package io.cloudflight.jems.server.project.repository.partner
 
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.PerPartnerSpfFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -44,6 +49,7 @@ class PartnerPersistenceProvider(
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
     private val workPackageActivityRepository: WorkPackageActivityRepository,
     private val programmeStateAidRepository: ProgrammeStateAidRepository,
+    private val partnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository,
     private val projectVersionPersistenceProvider: ProjectVersionPersistenceProvider,
     private val projectVersionRepository: ProjectVersionRepository
 ) : PartnerPersistence {
@@ -106,10 +112,35 @@ class PartnerPersistenceProvider(
     @Transactional(readOnly = true)
     override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary> {
         val lastVersion = projectVersionPersistenceProvider.getLatestApprovedOrCurrent(projectId)
-        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, version ?: lastVersion)
+        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, version ?: lastVersion)!!
 
-        return projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId, timestamp!!)
+        val spfFundsPerPartner = partnerSpfCoFinancingRepository.findSpfFundsPerPartner(projectId, timestamp)
+            .groupBy { it.partnerId }.mapValues { it.value.groupBy { it.fundId } }
+
+        val resultPerPartner = projectPartnerRepository
+            .findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId, timestamp)
             .toProjectPartnerPaymentSummaryList()
+
+        resultPerPartner.addExtraSpfFunds(funds = spfFundsPerPartner)
+        return resultPerPartner
+    }
+
+    private fun List<ProjectPartnerPaymentSummary>.addExtraSpfFunds(funds: Map<Long, Map<Long, List<PerPartnerSpfFinancingRow>>>) = also {
+        forEach {
+            val usedFundIds = it.partnerCoFinancing.mapTo(HashSet()) { it.id }
+            val toAddFundIds = (funds[it.partnerSummary.id]?.keys ?: emptySet()).minus(usedFundIds)
+            it.partnerCoFinancing.addAll(
+                toAddFundIds.map { fundId ->
+                    val fundRows = funds.get(it.partnerSummary.id)?.get(fundId) ?: emptyList()
+                    return@map ProgrammeFund(
+                        id = fundId,
+                        selected = true,
+                        type = ProgrammeFundType.from(fundRows.first().type) ?: ProgrammeFundType.OTHER,
+                        abbreviation = fundRows.extractField { it.abbreviation },
+                    )
+                }
+            )
+        }
     }
 
     // used for authorization
