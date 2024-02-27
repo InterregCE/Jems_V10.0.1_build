@@ -306,6 +306,9 @@ import {
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import {
+  ProjectReportProjectClosureTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-tab.component';
 import {NgModule} from '@angular/core';
 
 export const routes: Routes = [
@@ -538,6 +541,10 @@ export const routes: Routes = [
                       {
                         path: 'spfContributions',
                         component: ProjectReportSpfContributionsTabComponent,
+                      },
+                      {
+                        path: 'projectClosure',
+                        component: ProjectReportProjectClosureTabComponent,
                       },
                       {
                         path: 'annexes',
