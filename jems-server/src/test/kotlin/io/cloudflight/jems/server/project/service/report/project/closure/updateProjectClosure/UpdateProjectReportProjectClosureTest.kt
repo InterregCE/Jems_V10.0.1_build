@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosure
-import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosurePrize
 import io.cloudflight.jems.server.project.service.report.project.closure.ProjectReportProjectClosurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -27,13 +26,7 @@ class UpdateProjectReportProjectClosureTest: UnitTest() {
 
         val projectClosure = ProjectReportProjectClosure(
             story = storyInputTranslation,
-            prizes = listOf(
-                ProjectReportProjectClosurePrize(
-                    id = 99L,
-                    prize = prizeInputTranslation,
-                    orderNum = 1
-                )
-            )
+            prizes = listOf(prizeInputTranslation)
         )
     }
 
@@ -64,7 +57,7 @@ class UpdateProjectReportProjectClosureTest: UnitTest() {
 
     @Test
     fun `update - invalid number of prizes`() {
-        var mockedPrizeList = mockk<List<ProjectReportProjectClosurePrize>>()
+        var mockedPrizeList = mockk<List<Set<InputTranslation>>>()
         every { mockedPrizeList.size } returns 101
         assertThrows<ProjectClosurePrizeLimitNumberExceededException> {
             interactor.update(REPORT_ID, projectClosure.copy(prizes = mockedPrizeList))

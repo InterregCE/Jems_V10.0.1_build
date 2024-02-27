@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.entity.report.project.closure
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
-@Entity(name = "report_project_closure_project_prize")
+@Entity(name = "report_project_closure_prize")
 @NamedEntityGraphs(
     NamedEntityGraph(
         name = "ProjectReportProjectClosurePrizeEntity.withTranslations",
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull
         ],
     )
 )
-class ProjectReportProjectClosurePrizeEntity(
+class ProjectReportClosurePrizeEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +27,5 @@ class ProjectReportProjectClosurePrizeEntity(
     val reportId: Long,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
-    var translatedValues: MutableSet<ProjectReportProjectClosurePrizeTranslEntity> = mutableSetOf()
+    var translatedValues: MutableSet<ProjectReportClosurePrizeTranslEntity> = mutableSetOf()
 )

@@ -9,7 +9,7 @@ import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_closure_story_transl")
-class ProjectReportProjectClosureStoryTranslEntity(
+class ProjectReportClosureStoryTranslEntity(
 
     @EmbeddedId
     override val translationId: TranslationId<ProjectReportEntity>,

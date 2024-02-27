@@ -4,11 +4,12 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosurePrizeEntity
-import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosurePrizeTranslEntity
-import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportProjectClosureStoryTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportClosurePrizeEntity
+import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportClosurePrizeTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.closure.ProjectReportClosureStoryTranslEntity
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosure
-import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosurePrize
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -21,64 +22,40 @@ class ProjectReportProjectClosurePersistenceProviderTest: UnitTest() {
     companion object {
         private const val REPORT_ID = 99L
 
-        private val closureStoryEntity = ProjectReportProjectClosureStoryEntity(
-            reportId = REPORT_ID,
-            translatedValues = mutableSetOf(
-                ProjectReportProjectClosureStoryTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "story")
-            ),
-        )
-
-        private val closurePrizeEntity = ProjectReportProjectClosurePrizeEntity(
+        private val closurePrizeEntity = ProjectReportClosurePrizeEntity(
             id = 1L,
             reportId = REPORT_ID,
             sortNumber = 1,
             translatedValues = mutableSetOf(
-                ProjectReportProjectClosurePrizeTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "prize")
+                ProjectReportClosurePrizeTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "prize")
             ),
         )
 
         private val closure = ProjectReportProjectClosure(
             story = setOf(InputTranslation(SystemLanguage.EN, "story")),
             prizes = listOf(
-                ProjectReportProjectClosurePrize(
-                    id = 1L,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize")),
-                    orderNum = 1
-                )
+                setOf(InputTranslation(SystemLanguage.EN, "prize"))
             )
         )
 
-        private fun updatedClosure(isInput: Boolean) = ProjectReportProjectClosure(
+        private fun updatedClosure() = ProjectReportProjectClosure(
             story = setOf(InputTranslation(SystemLanguage.EN, "updated story")),
             prizes = listOf(
-                ProjectReportProjectClosurePrize(
-                    id = 1L,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "updated prize")),
-                    orderNum = 1
-                ),
-                ProjectReportProjectClosurePrize(
-                    id = if (isInput) null else 2L,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "new prize")),
-                    orderNum = 2
-                )
+                setOf(InputTranslation(SystemLanguage.EN, "updated prize")),
+                setOf(InputTranslation(SystemLanguage.EN, "new prize"))
             )
         )
 
-        private val newPrizeEntity = ProjectReportProjectClosurePrizeEntity(
-            id = 2L,
-            reportId = REPORT_ID,
-            sortNumber = 2,
-            translatedValues = mutableSetOf(
-                ProjectReportProjectClosurePrizeTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "new prize")
-            ),
-        )
     }
 
     @MockK
-    private lateinit var closureStoryRepository: ProjectReportProjectClosureStoryRepository
+    private lateinit var closureStoryRepository: ProjectReportClosureStoryRepository
 
     @MockK
-    private lateinit var closurePrizeRepository: ProjectReportProjectClosurePrizeRepository
+    private lateinit var closurePrizeRepository: ProjectReportClosurePrizeRepository
+
+    @MockK
+    private lateinit var projectReportRepository: ProjectReportRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportProjectClosurePersistenceProvider
@@ -86,41 +63,58 @@ class ProjectReportProjectClosurePersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(closureStoryRepository, closurePrizeRepository)
+        clearMocks(closureStoryRepository, closurePrizeRepository, projectReportRepository)
     }
 
     @Test
     fun getProjectReportProjectClosure() {
-        every { closureStoryRepository.getByReportId(REPORT_ID) } returns closureStoryEntity
-        every { closurePrizeRepository.findAllByReportId(REPORT_ID) } returns listOf(closurePrizeEntity)
+        val report = mockk<ProjectReportEntity>()
+        every { report.id } returns REPORT_ID
+        val translation = mockk<TranslationId<ProjectReportEntity>>()
+        every { translation.language } returns SystemLanguage.EN
+        val storyTranslEntity = ProjectReportClosureStoryTranslEntity(translation, "story")
+        every { projectReportRepository.getById(REPORT_ID) } returns report
+        every { closureStoryRepository.findAllByTranslationIdSourceEntity(report) } returns mutableSetOf(storyTranslEntity)
+        every { closurePrizeRepository.findAllByReportIdOrderBySortNumberAsc(REPORT_ID) } returns mutableListOf(closurePrizeEntity)
 
         assertThat(persistence.getProjectReportProjectClosure(REPORT_ID)).isEqualTo(closure)
     }
 
     @Test
     fun updateProjectReportProjectClosure() {
-        val prizesSlot = slot<List<ProjectReportProjectClosurePrizeEntity>>()
+        val prizesSlot = slot<ProjectReportClosurePrizeEntity>()
 
-        every { closureStoryRepository.getByReportId(REPORT_ID) } returns closureStoryEntity
-        every { closurePrizeRepository.findAllByReportId(REPORT_ID) } returns listOf(closurePrizeEntity) andThen
-            listOf(closurePrizeEntity, newPrizeEntity)
-        every { closurePrizeRepository.saveAll(capture(prizesSlot)) } returnsArgument 0
+        val report = mockk<ProjectReportEntity>()
+        val translation = mockk<TranslationId<ProjectReportEntity>>()
+        every { translation.language } returns SystemLanguage.EN
+        val storyTranslEntity = ProjectReportClosureStoryTranslEntity(translation, "story")
+
+        every { report.id } returns REPORT_ID
+        every { projectReportRepository.getById(REPORT_ID) } returns report
+        every { closurePrizeRepository.save(capture(prizesSlot)) } returnsArgument 0
+        every { closureStoryRepository.findAllByTranslationIdSourceEntity(report) } returns mutableSetOf(storyTranslEntity)
+        every { closurePrizeRepository.findAllByReportIdOrderBySortNumberAsc(REPORT_ID) } returns mutableListOf(closurePrizeEntity)
+        every { closurePrizeRepository.deleteAll(listOf()) } returnsArgument 0
+
 
         verify(exactly = 0) { closureStoryRepository.save(any()) }
         verify(exactly = 0) { closurePrizeRepository.delete(any()) }
 
-        assertThat(persistence.updateProjectReportProjectClosure(REPORT_ID, updatedClosure(true)))
-            .isEqualTo(updatedClosure(false))
-        assertThat(prizesSlot.captured.size).isEqualTo(1)
+        assertThat(persistence.updateProjectReportProjectClosure(REPORT_ID, updatedClosure()))
+            .isEqualTo(updatedClosure())
     }
 
     @Test
     fun deleteProjectReportProjectClosure() {
-        every { closureStoryRepository.deleteById(REPORT_ID) } returnsArgument 0
+        val report = mockk<ProjectReportEntity>()
+        every { report.id } returns REPORT_ID
+        every { projectReportRepository.getById(REPORT_ID) } returns report
+
+        every { closureStoryRepository.deleteAllByTranslationIdSourceEntity(report) } returnsArgument 0
         every { closurePrizeRepository.deleteAllByReportId(REPORT_ID) } returnsArgument 0
 
         persistence.deleteProjectReportProjectClosure(REPORT_ID)
-        verify(exactly = 1) { closureStoryRepository.deleteById(REPORT_ID) }
+        verify(exactly = 1) { closureStoryRepository.deleteAllByTranslationIdSourceEntity(report) }
         verify(exactly = 1) { closurePrizeRepository.deleteAllByReportId(REPORT_ID) }
     }
 }

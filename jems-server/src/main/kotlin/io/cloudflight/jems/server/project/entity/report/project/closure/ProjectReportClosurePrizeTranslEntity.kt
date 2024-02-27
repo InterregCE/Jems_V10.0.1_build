@@ -6,11 +6,11 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
-@Entity(name = "report_project_closure_project_prize_transl")
-class ProjectReportProjectClosurePrizeTranslEntity(
+@Entity(name = "report_project_closure_prize_transl")
+class ProjectReportClosurePrizeTranslEntity(
 
     @EmbeddedId
-    override val translationId: TranslationId<ProjectReportProjectClosurePrizeEntity>,
+    override val translationId: TranslationId<ProjectReportClosurePrizeEntity>,
 
     @field:NotNull
     var prize: String

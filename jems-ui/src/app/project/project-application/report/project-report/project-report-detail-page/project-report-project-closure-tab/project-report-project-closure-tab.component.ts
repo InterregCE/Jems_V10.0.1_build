@@ -4,7 +4,7 @@ import {combineLatest, Observable, of} from 'rxjs';
 import {
   InputTranslation,
   ProjectReportProjectClosureDTO,
-  ProjectReportProjectClosurePrizeDTO, UpdateProjectReportProjectResultDTO,
+  ProjectReportProjectClosurePrizeDTO,
 } from '@cat/api';
 import {
   ProjectStore
@@ -103,7 +103,6 @@ export class ProjectReportProjectClosureTabComponent {
       prizeDTOs.push({
         orderNum: index + 1,
         prize: value.prize,
-        id: value.id
       } as ProjectReportProjectClosurePrizeDTO);
     });
 
@@ -132,7 +131,6 @@ export class ProjectReportProjectClosureTabComponent {
   private addPrizeToForm(prize?: ProjectReportProjectClosurePrizeDTO): void {
     this.prizes.push(this.formBuilder.group({
       prize: this.formBuilder.control(prize?.prize || [], [Validators.maxLength(500)]),
-      id: this.formBuilder.control(prize?.id || null)
     }));
   }
 }

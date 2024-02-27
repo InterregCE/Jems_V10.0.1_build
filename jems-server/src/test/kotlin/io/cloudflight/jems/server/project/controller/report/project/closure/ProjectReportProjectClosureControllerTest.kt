@@ -6,7 +6,6 @@ import io.cloudflight.jems.api.project.dto.report.project.projectClosure.Project
 import io.cloudflight.jems.api.project.dto.report.project.projectClosure.ProjectReportProjectClosurePrizeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosure
-import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosurePrize
 import io.cloudflight.jems.server.project.service.report.project.closure.getProjectClosure.GetProjectReportProjectClosureInteractor
 import io.cloudflight.jems.server.project.service.report.project.closure.updateProjectClosure.UpdateProjectReportProjectClosureInteractor
 import io.mockk.clearMocks
@@ -26,16 +25,8 @@ class ProjectReportProjectClosureControllerTest: UnitTest() {
         val projectClosure = ProjectReportProjectClosure(
             story = setOf(InputTranslation(SystemLanguage.EN, "story EN")),
             prizes = listOf(
-                ProjectReportProjectClosurePrize(
-                    id = 99L,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
-                    orderNum = 1
-                ),
-                ProjectReportProjectClosurePrize(
-                    id = 100L,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN")),
-                    orderNum = 2
-                )
+                setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
+                setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN"))
             )
         )
 
@@ -43,12 +34,10 @@ class ProjectReportProjectClosureControllerTest: UnitTest() {
             story = setOf(InputTranslation(SystemLanguage.EN, "story EN")),
             prizes = listOf(
                 ProjectReportProjectClosurePrizeDTO(
-                    id = 99L,
                     prize = setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
                     orderNum = 1
                 ),
                 ProjectReportProjectClosurePrizeDTO(
-                    id = 100L,
                     prize = setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN")),
                     orderNum = 2
                 )
@@ -58,16 +47,9 @@ class ProjectReportProjectClosureControllerTest: UnitTest() {
         val projectClosureUpdate = ProjectReportProjectClosure(
             story = setOf(InputTranslation(SystemLanguage.EN, "story EN")),
             prizes = listOf(
-                ProjectReportProjectClosurePrize(
-                    id = null,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
-                    orderNum = 1
-                ),
-                ProjectReportProjectClosurePrize(
-                    id = null,
-                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN")),
-                    orderNum = 2
-                )
+                setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
+                setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN")),
+                setOf(InputTranslation(SystemLanguage.EN, "prize 3 EN"))
             )
         )
 
@@ -75,14 +57,16 @@ class ProjectReportProjectClosureControllerTest: UnitTest() {
             story = setOf(InputTranslation(SystemLanguage.EN, "story EN")),
             prizes = listOf(
                 ProjectReportProjectClosurePrizeDTO(
-                    id = null,
                     prize = setOf(InputTranslation(SystemLanguage.EN, "prize EN")),
                     orderNum = 1
                 ),
                 ProjectReportProjectClosurePrizeDTO(
-                    id = null,
                     prize = setOf(InputTranslation(SystemLanguage.EN, "prize 2 EN")),
                     orderNum = 2
+                ),
+                ProjectReportProjectClosurePrizeDTO(
+                    prize = setOf(InputTranslation(SystemLanguage.EN, "prize 3 EN")),
+                    orderNum = 3
                 )
             )
         )
