@@ -1,4 +1,4 @@
-import {CanDeactivate, Route} from '@angular/router';
+import {ActivatedRouteSnapshot, CanDeactivate, Route, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {inject, Injectable} from '@angular/core';
 import {RoutingService} from '@common/services/routing.service';
 import {Observable, of} from 'rxjs';
@@ -6,28 +6,39 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {Forms} from '@common/utils/forms';
 
-
 @Injectable({providedIn: 'root'})
 export class ConfirmLeaveGuard implements CanDeactivate<boolean> {
 
   private routingService = inject(RoutingService);
   private dialog = inject(MatDialog);
+
   dialogOpen = () => !!this.dialog.openDialogs.length;
-  dialogRef: MatDialogRef<ConfirmDialogComponent, any>;
+  dialogRef: MatDialogRef<ConfirmDialogComponent>;
 
-  canDeactivate = () => this.canLeave();
+  public canDeactivate(component: boolean, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> {
+    const currentStateCreate = currentState?.url.includes("/create");
+    const nextStateNoAuth = nextState?.url.includes("/no-auth");
 
-  private canLeave(): Observable<boolean> {
-    return this.canLeavePage()
+    return currentStateCreate || nextStateNoAuth || this.canLeavePage()
       ? of(true)
       : this.confirmToLeaveResult();
   }
 
-  public canLeavePage(): boolean {
+  public applyGuardToLeafRoutes(routes: Route[]): void {
+    routes.forEach(route => {
+      if (route.children) {
+        this.applyGuardToLeafRoutes(route.children);
+      } else {
+        route.canDeactivate = [ConfirmLeaveGuard];
+      }
+    });
+  }
+
+  private canLeavePage(): boolean {
     return !this.routingService.confirmLeaveSet.size;
   }
 
-  public confirmToLeaveResult(): Observable<boolean> {
+  private confirmToLeaveResult(): Observable<boolean> {
     if (!this.dialogOpen())
       this.dialogRef = this.showDialog();
 
@@ -42,16 +53,6 @@ export class ConfirmLeaveGuard implements CanDeactivate<boolean> {
         warnMessage: 'common.sidebar.dialog.message'
       }
     );
-  }
-
-  applyGuardToLeafRoutes(routes: Route[]): void {
-    routes.forEach(route => {
-      if (route.children) {
-        this.applyGuardToLeafRoutes(route.children);
-      } else {
-        route.canDeactivate = [ConfirmLeaveGuard];
-      }
-    });
   }
 
 }
