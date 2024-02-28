@@ -22,6 +22,8 @@ import io.cloudflight.jems.server.payments.service.ecPayment.plus
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUp
 import io.cloudflight.jems.server.payments.service.ecPayment.sumUpProperColumns
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.plugin.services.toJpaPage
+import io.cloudflight.jems.server.plugin.services.toPluginPage
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -76,6 +78,7 @@ class PaymentApplicationToEcAuditDataProviderImpl(
             .toPluginPage { it.toDataModel() }
     }
 
+    @Transactional(readOnly = true)
     override fun getPaymentsForEcPaymentByFilter(
         paymentFiler: EcPaymentLinkedPaymentsFilterData,
         pageable: Pageable

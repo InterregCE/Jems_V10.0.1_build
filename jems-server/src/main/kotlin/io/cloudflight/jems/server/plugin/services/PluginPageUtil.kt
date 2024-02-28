@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.plugin.services.payments
+package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page as PluginPage
 import io.cloudflight.jems.plugin.contract.models.common.paging.Pageable

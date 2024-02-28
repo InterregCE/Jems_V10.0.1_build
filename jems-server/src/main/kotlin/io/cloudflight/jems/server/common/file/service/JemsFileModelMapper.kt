@@ -46,3 +46,4 @@ fun UserEntity.toModel() = UserSimple(
     name = name,
     surname = surname,
 )
+
