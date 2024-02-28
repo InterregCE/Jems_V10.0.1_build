@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page as PluginPage
-import io.cloudflight.jems.plugin.contract.models.common.paging.Pageable
+import io.cloudflight.jems.plugin.contract.models.common.paging.Pageable as PluginPageable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 
-fun Pageable.toJpaPage() = PageRequest.of(page, size)
+fun PluginPageable.toJpaPage() =
+    if (this.isPaged) PageRequest.of(page, size) else Pageable.unpaged()
 
 inline fun <T, U> Page<T>.toPluginPage(transform: (T) -> U): PluginPage<U> = PluginPage(
     totalElements = totalElements,
