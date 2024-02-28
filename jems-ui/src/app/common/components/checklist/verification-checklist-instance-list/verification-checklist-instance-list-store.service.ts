@@ -43,8 +43,8 @@ export class VerificationChecklistInstanceListStore {
     this.instancesSort$.next(sort);
   }
 
-  checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum): Observable<IdNamePairDTO[]> {
-    return this.programmeChecklistService.getProgrammeChecklistsByType(relatedType).pipe(
+  checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, projectId?: number): Observable<IdNamePairDTO[]> {
+    return this.programmeChecklistService.getProgrammeChecklistsByType(relatedType, projectId).pipe(
       map(templates => [...templates].sort((a, b) => b.id - a.id)),
       tap(templates => Log.info('Fetched the programme checklist templates', this, templates))
     );

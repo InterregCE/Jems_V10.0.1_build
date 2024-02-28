@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Programme Checklist")
 interface ProgrammeChecklistApi {
@@ -53,5 +54,5 @@ interface ProgrammeChecklistApi {
 
     @ApiOperation("Retrieve programme checklists by type")
     @GetMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/byType/{checklistType}")
-    fun getProgrammeChecklistsByType(@PathVariable checklistType: ProgrammeChecklistTypeDTO): List<IdNamePairDTO>
+    fun getProgrammeChecklistsByType(@PathVariable checklistType: ProgrammeChecklistTypeDTO, @RequestParam(required = false) projectId: Long?): List<IdNamePairDTO>
 }

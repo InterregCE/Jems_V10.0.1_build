@@ -33,5 +33,4 @@ interface ProgrammeChecklistRepository : JpaRepository<ProgrammeChecklistEntity,
     fun findTop100ByOrderByIdDesc(sort: Sort): List<ProgrammeChecklistRow>
 
     fun findByType(checklistType: ProgrammeChecklistType): Iterable<IdNamePair>
-
 }

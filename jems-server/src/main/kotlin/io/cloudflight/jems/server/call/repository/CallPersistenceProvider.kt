@@ -1,24 +1,12 @@
 package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.call.entity.CallFundRateEntity
-import io.cloudflight.jems.server.call.entity.FundSetupId
+import io.cloudflight.jems.server.call.entity.*
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.applicationFormConfigurationUpdated
-import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
-import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
-import io.cloudflight.jems.server.call.service.model.Call
-import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
-import io.cloudflight.jems.server.call.service.model.CallCostOption
-import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallFundRate
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
-import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.*
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
+import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
@@ -30,6 +18,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -48,6 +37,8 @@ class CallPersistenceProvider(
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
     private val projectPersistence: ProjectPersistence,
     private val partnerRepository: ProjectPartnerRepository,
+    private val callSelectedChecklistRepository: CallSelectedChecklistRepository,
+    private val programmeChecklistRepository: ProgrammeChecklistRepository,
     private val auditPublisher: ApplicationEventPublisher
 ) : CallPersistence {
 
@@ -219,7 +210,6 @@ class CallPersistenceProvider(
         )
     }
 
-
     @Transactional
     override fun updateAllowedRealCosts(callId: Long, allowedRealCosts: AllowedRealCosts): AllowedRealCosts {
         val call = findOrThrow(callId)
@@ -335,6 +325,27 @@ class CallPersistenceProvider(
             projectDefinedUnitCostAllowed = call.projectDefinedUnitCostAllowed,
             projectDefinedLumpSumAllowed = call.projectDefinedLumpSumAllowed,
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCallChecklists(callId: Long, sort: Sort): List<CallChecklist> {
+        val programmeChecklists = programmeChecklistRepository.findAll(sort)
+        val selectedIdsByCall = callSelectedChecklistRepository.findAllByIdCallId(callId).mapTo(HashSet()) { it.id.programmeChecklist.id }
+        return programmeChecklists.map { it.toModel(selected = it.id in selectedIdsByCall) }
+    }
+
+    @Transactional
+    override fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>) {
+        val call = findOrThrow(callId)
+        val programmeChecklists = programmeChecklistRepository.findAllById(checklistIds).associateBy { it.id }
+        val existingSelection = callSelectedChecklistRepository.findAllByIdCallId(callId)
+        val toCreate = checklistIds.filter { id -> !existingSelection.any { it.id.programmeChecklist.id == id } }
+            .mapNotNull { programmeChecklists[it] }
+            .map { CallSelectedChecklistEntity(id = CallSelectedChecklistId(call = call, programmeChecklist = it)) }
+        val toDelete = existingSelection.filter { it.id.programmeChecklist.id !in checklistIds }
+
+        callSelectedChecklistRepository.deleteAll(toDelete)
+        callSelectedChecklistRepository.saveAll(toCreate)
     }
 
     private fun findOrThrow(callId: Long) = callRepo.findById(callId).orElseThrow { CallNotFound() }

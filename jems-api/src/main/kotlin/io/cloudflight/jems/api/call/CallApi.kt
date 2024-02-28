@@ -1,12 +1,6 @@
 package io.cloudflight.jems.api.call
 
-import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
-import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
-import io.cloudflight.jems.api.call.dto.CallDTO
-import io.cloudflight.jems.api.call.dto.CallDetailDTO
-import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
-import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
+import io.cloudflight.jems.api.call.dto.*
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.swagger.annotations.Api
@@ -118,4 +112,14 @@ interface CallApi {
         @RequestBody pluginKeys: PreSubmissionPluginsDTO
     ): CallDetailDTO
 
+    @ApiOperation("Return all available checklists for a call")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
+    )
+    @GetMapping("$ENDPOINT_API_CALL/byId/{callId}/checklists")
+    fun getChecklists(@PathVariable callId: Long, pageable: Pageable): Page<CallChecklistDTO>
+
+    @ApiOperation("Update selected checklists for a call")
+    @PutMapping("$ENDPOINT_API_CALL/byId/{callId}/checklists", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateSelectedChecklists(@PathVariable callId: Long, @RequestBody checklistIds: Set<Long>)
 }

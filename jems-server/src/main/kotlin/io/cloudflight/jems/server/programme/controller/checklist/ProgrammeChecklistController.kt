@@ -43,7 +43,7 @@ class ProgrammeChecklistController(
     override fun deleteChecklist(checklistId: Long) =
         deleteInteractor.deleteProgrammeChecklist(checklistId)
 
-    override fun getProgrammeChecklistsByType(checklistType: ProgrammeChecklistTypeDTO): List<IdNamePairDTO> {
-        return getChecklistInteractor.getProgrammeChecklistsByType(checklistType.toModel()).toDTO()
+    override fun getProgrammeChecklistsByType(checklistType: ProgrammeChecklistTypeDTO, projectId: Long?): List<IdNamePairDTO> {
+        return getChecklistInteractor.getProgrammeChecklistsByType(checklistType.toModel(), projectId).toDTO()
     }
 }

@@ -25,6 +25,7 @@ import {
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
 import {NgModule} from '@angular/core';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import { ChecklistsPageComponent } from './checklists-page/checklists-page.component'
 
 const callRoutes: Routes = [
   {
@@ -85,6 +86,15 @@ const callRoutes: Routes = [
             },
             canActivate: [PermissionGuard],
             component: ApplicationFormConfigurationPageComponent,
+          },
+          {
+            path: 'checklists',
+            data: {
+              breadcrumb: 'call.detail.checklists.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            canActivate: [PermissionGuard],
+            component: ChecklistsPageComponent,
           },
           {
             path: 'preSubmissionCheckSettings',

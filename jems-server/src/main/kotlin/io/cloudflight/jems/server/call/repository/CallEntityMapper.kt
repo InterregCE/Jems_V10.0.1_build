@@ -17,14 +17,7 @@ import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
-import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
-import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
-import io.cloudflight.jems.server.call.service.model.Call
-import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallFundRate
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.*
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
@@ -34,6 +27,7 @@ import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheck
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
@@ -223,7 +217,7 @@ fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
 
 fun List<ProjectNotificationConfigurationEntity>.toNotificationModel() =
-    map {it.toModel()}
+    map { it.toModel() }
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
@@ -239,7 +233,15 @@ fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.
 fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)
 
-private fun getDefaultAllowedRealCosts(callType: CallType) : AllowedRealCostsEntity {
+fun ProgrammeChecklistEntity.toModel(selected: Boolean): CallChecklist = CallChecklist(
+    id = id,
+    name = name,
+    type = type,
+    lastModificationDate = lastModificationDate,
+    selected = selected
+)
+
+private fun getDefaultAllowedRealCosts(callType: CallType): AllowedRealCostsEntity {
     return when (callType) {
         CallType.STANDARD -> AllowedRealCostsEntity()
         CallType.SPF -> AllowedRealCostsEntity(

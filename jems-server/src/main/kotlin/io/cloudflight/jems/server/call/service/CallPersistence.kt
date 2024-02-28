@@ -1,18 +1,10 @@
 package io.cloudflight.jems.server.call.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
-import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
-import io.cloudflight.jems.server.call.service.model.Call
-import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
-import io.cloudflight.jems.server.call.service.model.CallCostOption
-import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 
 interface CallPersistence {
 
@@ -47,10 +39,13 @@ interface CallPersistence {
 
     fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail
 
-    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) : CallDetail
+    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins): CallDetail
 
     fun getCallCostOptionForProject(projectId: Long): CallCostOption
     fun getCallCostOption(callId: Long): CallCostOption
     fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption
+
+    fun getCallChecklists(callId: Long, sort: Sort): List<CallChecklist>
+    fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>)
 }
 

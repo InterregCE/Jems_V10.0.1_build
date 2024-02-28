@@ -14,6 +14,13 @@ export class CallPageSideNavConstants {
     };
   };
 
+  public static CHECKLISTS = (callId: number) =>  {
+    return {
+      headline: {i18nKey: 'call.detail.checklists.title'},
+      route: `/app/call/detail/${callId}/checklists`,
+    };
+  };
+
   public static PRE_SUBMISSION_CHECK_SETTINGS = (callId: number) =>  {
     return {
       headline: {i18nKey: 'call.detail.pre.submission.check.config.title'},
