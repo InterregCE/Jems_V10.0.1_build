@@ -21,6 +21,11 @@ $color-blue: #1E88E5;
 $color-blue-light: #81D4FA;
 
 ::ng-deep {
+
+  .vis-timeline, .vis-background {
+    overflow: visible;
+  }
+
   .vis-text.vis-minor {
     text-align: center;
     font-size: .875rem;

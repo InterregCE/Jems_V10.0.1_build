@@ -5,9 +5,31 @@
                            [isVersionedData]="false">
 
     <h3>{{'project.application.form.tree.title' | translate}}</h3>
-    <div jemsFormLayout jemsNoWidthLimit>
+    <div jemsFormLayout jemsNoWidthLimit class="mb-4">
         <jems-project-application-information [project]="data.currentVersionOfProject" jemsNoWidthLimit>
         </jems-project-application-information>
     </div>
-
+    <div *ngIf="data.projectStartDate" id="timeplan-info" class="mb-2">
+        <h3>{{'project.application.contract.reporting.timeplan' | translate}}</h3>
+        <div jemsFormLayout>
+            <div class="projectDatesRow mt-2" jemsMultiColumnRow>
+                <mat-form-field>
+                    <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectStartDate | localeDate">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectEndDateAsString | localeDate">
+                </mat-form-field>
+                <mat-form-field jemsFormFieldWidth="large">
+                    <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectDurationAsString">
+                </mat-form-field>
+            </div>
+        </div>
+        <jems-project-timeplan-page [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
+    </div>
 </jems-project-page-template>
