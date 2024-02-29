@@ -9,3 +9,21 @@
     margin-left: 0;
   }
 }
+
+::ng-deep {
+  #timeplan-info {
+    jems-breadcrumb {
+      display: none !important;
+    }
+    #main-page-container {
+      overflow: visible;
+    }
+    #main-page-content {
+      padding: 0 !important;
+      overflow: visible !important;
+      .page-content-container {
+        margin: 0 !important;
+      }
+    }
+  }
+}
