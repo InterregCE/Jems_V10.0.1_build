@@ -63,9 +63,7 @@
 
                     <jems-alert *ngIf="!data.isSpendingProfileTotalEligibleSetAtReportCreation"
                             [closable]="false" [show]="true" [type]="Alert.INFO">
-                        <p class="mat-required-marker empty">
-                            {{'project.application.project.report.partner.spending.profile.missing.totalEligible.explanation' | translate}}
-                        </p>
+                        <p>{{'project.application.project.report.partner.spending.profile.missing.totalEligible.explanation' | translate}}</p>
                     </jems-alert>
                 </div>
 
