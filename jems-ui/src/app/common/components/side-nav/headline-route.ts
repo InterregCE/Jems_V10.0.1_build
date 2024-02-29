@@ -13,6 +13,7 @@ export class HeadlineRoute {
   iconBeforeHeadline?: string;
   iconAfterHeadline?: string;
   versionedSection ? = false;
+  extras?: any;
 
   // TODO: refactor this out in a HeadlineTemplate or a generic base Headline
   headlineTemplate?: TemplateRef<any>;

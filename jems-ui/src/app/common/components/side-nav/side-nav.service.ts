@@ -3,7 +3,7 @@ import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
 import {delay, filter, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {ResolveEnd, Router} from '@angular/router';
+import {NavigationExtras, ResolveEnd, Router} from '@angular/router';
 import {RoutingService} from '../../services/routing.service';
 
 @Injectable({providedIn: 'root'})
@@ -52,7 +52,7 @@ export class SideNavService {
   }
 
   navigate(headline: HeadlineRoute): void {
-    if (this.router.url !== headline.route) {
+    if (this.router.url !== headline.route || headline.extras !== null) {
       if (headline.route) {
         this.navigateToRoute(headline);
         return;
@@ -66,7 +66,7 @@ export class SideNavService {
   }
 
   private navigateToRoute(headline: HeadlineRoute): void {
-    this.routingService.navigate([headline.route]);
+    this.routingService.navigate([headline.route], headline.extras);
     this.navigateTo$.next(headline);
   }
 
