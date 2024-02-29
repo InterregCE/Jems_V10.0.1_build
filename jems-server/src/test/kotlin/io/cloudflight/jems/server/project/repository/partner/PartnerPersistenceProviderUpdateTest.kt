@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
@@ -71,6 +72,9 @@ class PartnerPersistenceProviderUpdateTest {
     lateinit var programmeStateAidRepository: ProgrammeStateAidRepository
 
     @MockK
+    private lateinit var partnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository
+
+    @MockK
     lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
 
     @MockK
@@ -94,6 +98,7 @@ class PartnerPersistenceProviderUpdateTest {
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
             programmeStateAidRepository,
+            partnerSpfCoFinancingRepository,
             projectVersionPersistenceProvider,
             projectVersionRepo
         )

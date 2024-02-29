@@ -2,15 +2,18 @@ package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.ES
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.TR
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.PerPartnerSpfFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
@@ -19,6 +22,7 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -99,6 +103,9 @@ class PartnerPersistenceProviderTest {
     lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
 
     @MockK
+    private lateinit var partnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository
+
+    @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @MockK
@@ -119,6 +126,7 @@ class PartnerPersistenceProviderTest {
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
             programmeStateAidRepository,
+            partnerSpfCoFinancingRepository,
             projectVersionPersistenceProvider,
             projectVersionRepo
         )
@@ -549,6 +557,21 @@ class PartnerPersistenceProviderTest {
         every { projectVersionPersistenceProvider.getLatestApprovedOrCurrent(PROJECT_ID)} returns version
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
 
+        val extraSpfFund_ES = mockk<PerPartnerSpfFinancingRow>()
+        every { extraSpfFund_ES.partnerId } returns 1L
+        every { extraSpfFund_ES.fundId } returns 3L
+        every { extraSpfFund_ES.type } returns "IPA III"
+        every { extraSpfFund_ES.language } returns ES
+        every { extraSpfFund_ES.abbreviation } returns "es fund"
+        val extraSpfFund_TR = mockk<PerPartnerSpfFinancingRow>()
+        every { extraSpfFund_TR.partnerId } returns 1L
+        every { extraSpfFund_TR.fundId } returns 3L
+        every { extraSpfFund_TR.type } returns "IPA III"
+        every { extraSpfFund_TR.language } returns TR
+        every { extraSpfFund_TR.abbreviation } returns "tr fund"
+        every { partnerSpfCoFinancingRepository.findSpfFundsPerPartner(1L, timestamp) } returns
+                listOf(extraSpfFund_ES, extraSpfFund_TR)
+
         every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(1L, any()) } returns listOf(
             partnerWithContributionsRow1,
             partnerWithContributionsRow2
@@ -563,15 +586,24 @@ class PartnerPersistenceProviderTest {
                     active = true,
                     sortNumber = 1
                 ),
-                partnerCoFinancing = listOf(
+                partnerCoFinancing = mutableListOf(
                     ProgrammeFund(
                         id = 2L,
                         selected = true,
                         abbreviation = setOf(
                             InputTranslation(language = EN, translation = "ERDF"),
                             InputTranslation(language = SystemLanguage.DE, translation = "ERDF DE")
-                        )
-                    )
+                        ),
+                    ),
+                    ProgrammeFund(
+                        id = 3L,
+                        selected = true,
+                        type = ProgrammeFundType.IPA_III,
+                        abbreviation = setOf(
+                            InputTranslation(language = ES, translation = "es fund"),
+                            InputTranslation(language = TR, translation = "tr fund")
+                        ),
+                    ),
                 ),
                 partnerContributions = listOf(
                     ProjectPartnerContribution(

@@ -589,7 +589,7 @@ fun extractPaymentSummaryFromRows(rows: List<PartnerWithContributionsRow>): Proj
             active = partnerData.partnerActive,
             sortNumber = partnerData.partnerSortNumber
         ),
-        partnerCoFinancing = funds,
+        partnerCoFinancing = funds.toMutableList(),
         partnerContributions = contributions,
         partnerContributionsSpf = spfContributions
     )
