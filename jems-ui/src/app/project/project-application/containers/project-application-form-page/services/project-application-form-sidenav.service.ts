@@ -241,6 +241,7 @@ export class ProjectApplicationFormSidenavService {
                   iconBeforeHeadline: partner.active ? '' : 'person_off',
                   route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
                   baseRoute: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}`,
+                  extras: this.versionSuffix
                 }
               ))
             )
@@ -341,6 +342,7 @@ export class ProjectApplicationFormSidenavService {
                     iconBeforeHeadline: workPackage.deactivated ? 'do_not_disturb' : '',
                     route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
                     baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`,
+                    extras: this.versionSuffix
                   }
                 ))
               )
