@@ -77,6 +77,7 @@
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
     <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
+    <ID>MaxLineLength:CallAuditFactory.kt$"Checklists available in call id=${call.id} name='${call.name}' changed to:\n${newSelection.joinToString(",\n") { "${it.id} ${it.type} ${it.name}" }}"</ID>
     <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
     <ID>MaxLineLength:ChecklistAuditFactory.kt$description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for project report R.${reportId} changed status from '$oldStatus' to '${checklist.status}'"</ID>
     <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
@@ -285,6 +286,9 @@
     <ID>PackageNaming:GetBudgetTotalCostCalculator.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
     <ID>PackageNaming:GetBudgetTotalCostInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
     <ID>PackageNaming:GetCall.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
+    <ID>PackageNaming:GetCallChecklists.kt$package io.cloudflight.jems.server.call.service.get_call_checklists</ID>
+    <ID>PackageNaming:GetCallChecklistsExceptions.kt$package io.cloudflight.jems.server.call.service.get_call_checklists</ID>
+    <ID>PackageNaming:GetCallChecklistsInteractor.kt$package io.cloudflight.jems.server.call.service.get_call_checklists</ID>
     <ID>PackageNaming:GetCallExceptions.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
     <ID>PackageNaming:GetCallInteractor.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
     <ID>PackageNaming:GetCoFinancing.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing</ID>
@@ -513,6 +517,9 @@
     <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
     <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
     <ID>PackageNaming:UpdateCall.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
+    <ID>PackageNaming:UpdateCallChecklists.kt$package io.cloudflight.jems.server.call.service.update_call_checklists</ID>
+    <ID>PackageNaming:UpdateCallChecklistsExceptions.kt$package io.cloudflight.jems.server.call.service.update_call_checklists</ID>
+    <ID>PackageNaming:UpdateCallChecklistsInteractor.kt$package io.cloudflight.jems.server.call.service.update_call_checklists</ID>
     <ID>PackageNaming:UpdateCallExceptions.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
     <ID>PackageNaming:UpdateCallFlatRates.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>
     <ID>PackageNaming:UpdateCallFlatRatesExceptions.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>

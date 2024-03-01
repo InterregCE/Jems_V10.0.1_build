@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CallSelectedChecklistRepository : JpaRepository<CallSelectedChecklistEntity, CallSelectedChecklistId> {
-    fun findAllByIdCallId(callId: Long): MutableList<CallSelectedChecklistEntity>
+    fun findAllByIdCallId(callId: Long): List<CallSelectedChecklistEntity>
 
-    fun findAllByIdCallIdAndIdProgrammeChecklistType(callId: Long, type: ProgrammeChecklistType): MutableList<CallSelectedChecklistEntity>
+    fun findAllByIdCallIdAndIdProgrammeChecklistType(callId: Long, type: ProgrammeChecklistType): List<CallSelectedChecklistEntity>
 }

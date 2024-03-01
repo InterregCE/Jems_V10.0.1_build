@@ -1,24 +1,21 @@
-<jems-main-page-template
-  titleKey="call.detail.checklists.title"
-  [subTitleKey]="'call.detail.checklists.subtitle'">
-  <jems-form *ngIf="data$ | async as data"
-    (discard)="resetForm(data.checklists, data.callIsEditable)"
-    (save)="onSubmit()">
+<jems-main-page-template titleKey="call.detail.checklists.title"
+                         [subTitleKey]="'call.detail.checklists.subtitle'">
+    <jems-form *ngIf="data$ | async as data"
+               (discard)="resetForm(data.checklists, data.callIsEditable)"
+               (save)="onSubmit()">
 
-    <jems-table
-      *ngIf="data.checklists.length"
-      [configuration]="tableConfiguration"
-      [rows]="data.checklists"
-      (sortRows)="pageStore.newSort$.next($event)">
-    </jems-table>
-  </jems-form>
+        <jems-table *ngIf="data.checklists.length"
+                    [configuration]="tableConfiguration"
+                    [rows]="data.checklists"
+                    (sortRows)="pageStore.newSort$.next($event)">
+        </jems-table>
+    </jems-form>
 </jems-main-page-template>
 
 <ng-template #actionsCell let-checklist>
-  <mat-checkbox
-    [disabled]="!callIsEditable"
-    (click)="$event.stopPropagation()"
-    (change)="toggleChecklist(checklist.id)"
-    [checked]="isSelected(checklist.id)">
-  </mat-checkbox>
+    <mat-checkbox [disabled]="!callIsEditable"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggleChecklist(checklist.id)"
+                  [checked]="isSelected(checklist.id)">
+    </mat-checkbox>
 </ng-template>

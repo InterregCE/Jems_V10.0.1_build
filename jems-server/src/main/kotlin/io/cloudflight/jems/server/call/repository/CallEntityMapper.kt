@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
@@ -14,10 +13,18 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
-import io.cloudflight.jems.server.call.entity.StateAidSetupId
-import io.cloudflight.jems.server.call.service.model.*
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallChecklist
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
@@ -40,7 +47,7 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-import java.util.*
+import java.util.TreeSet
 
 fun CallEntity.toModel() = CallSummary(
     id = id,

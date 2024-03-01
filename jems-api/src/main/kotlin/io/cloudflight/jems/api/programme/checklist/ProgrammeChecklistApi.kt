@@ -54,5 +54,8 @@ interface ProgrammeChecklistApi {
 
     @ApiOperation("Retrieve programme checklists by type")
     @GetMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/byType/{checklistType}")
-    fun getProgrammeChecklistsByType(@PathVariable checklistType: ProgrammeChecklistTypeDTO, @RequestParam(required = false) projectId: Long?): List<IdNamePairDTO>
+    fun getProgrammeChecklistsByType(
+        @PathVariable checklistType: ProgrammeChecklistTypeDTO,
+        @RequestParam(required = false) projectId: Long?
+    ): List<IdNamePairDTO>
 }

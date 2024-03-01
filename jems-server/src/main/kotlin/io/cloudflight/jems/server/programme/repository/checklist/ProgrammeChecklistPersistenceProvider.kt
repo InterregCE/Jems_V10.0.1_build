@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class ProgrammeChecklistPersistenceProvider(
     private val repository: ProgrammeChecklistRepository,
-    private val callSelectedChecklistRepository: CallSelectedChecklistRepository
+    private val callSelectedChecklistRepository: CallSelectedChecklistRepository,
 ) : ProgrammeChecklistPersistence {
 
     @Transactional(readOnly = true)
@@ -75,7 +75,8 @@ class ProgrammeChecklistPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getChecklistsByTypeAndCall(checklistType: ProgrammeChecklistType, callId: Long): List<IdNamePair> {
-        return callSelectedChecklistRepository.findAllByIdCallIdAndIdProgrammeChecklistType(callId, checklistType).map { IdNamePair(id = it.id.programmeChecklist.id, name = it.id.programmeChecklist.name!!) }
+        return callSelectedChecklistRepository.findAllByIdCallIdAndIdProgrammeChecklistType(callId, checklistType)
+            .map { IdNamePair(id = it.id.programmeChecklist.id, name = it.id.programmeChecklist.name!!) }
     }
 
     private fun getProgrammeChecklistOrThrow(id: Long): ProgrammeChecklistEntity =
