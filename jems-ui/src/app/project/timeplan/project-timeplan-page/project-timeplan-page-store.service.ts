@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, WorkPackageService} from '@cat/api';
+import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, ProjectService, WorkPackageService} from '@cat/api';
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
@@ -17,11 +17,12 @@ export class ProjectTimeplanPageStore {
   projectResults$: Observable<ProjectResultDTO[]>;
 
   constructor(private projectStore: ProjectStore,
+              private projectService: ProjectService,
               private workPackageService: WorkPackageService,
               private projectResultService: ProjectResultService,
               private projectVersionStore: ProjectVersionStore,
               private router: RoutingService) {
-    this.projectId$ = this.projectStore.projectId$;
+    this.projectId$ = this.projectStore.projectId$.pipe(filter(Boolean), map(Number));
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.workPackages$ = this.workPackages();
     this.periods$ = this.periods();
@@ -31,37 +32,35 @@ export class ProjectTimeplanPageStore {
   private workPackages(): Observable<any> {
     return combineLatest([this.projectId$, this.getVersion()])
       .pipe(
-        filter(([id]) => !!id),
         switchMap(([id, version]) => this.workPackageService.getWorkPackagesForTimePlanByProjectId(id, version)),
         tap(workPackages => Log.info('Fetching work packages for timeplan', this, workPackages))
       );
   }
 
   private periods(): Observable<ProjectPeriodDTO[]> {
-    return this.projectStore.projectForm$
+    return combineLatest([this.projectId$, this.getVersion()])
       .pipe(
-        map(projectForm => projectForm?.periods)
+        switchMap(([id, version]) => this.projectService.getProjectFormById(id, version)),
+        map(projectForm => projectForm?.periods),
+        tap(periods => Log.info('Fetching periods for timeplan', this, periods))
       );
+
   }
 
   private projectResults(): Observable<any> {
     return combineLatest([this.projectId$, this.getVersion()])
       .pipe(
-        filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectResultService.getProjectResults(id, version)),
         tap(projectResults => Log.info('Fetching project results for timeplan', this, projectResults))
       );
   }
 
   private getVersion(): Observable<string | undefined> {
-    const isFromReportingPage = this.router.url.includes('contractReporting');
-    if (isFromReportingPage) {
-      return this.projectVersionStore.lastApprovedOrContractedVersion$
-        .pipe(
-          map(lastApprovedVersion => lastApprovedVersion?.version)
-        );
-    } else {
-      return this.projectVersionStore.selectedVersionParam$;
-    }
+    const isOnAfForm = this.router.url.includes('applicationTimePlan');
+
+    return isOnAfForm
+      ? this.projectVersionStore.selectedVersionParam$
+      : this.projectVersionStore.lastApprovedOrContractedVersion$
+        .pipe(map(lastApprovedVersion => lastApprovedVersion?.version));
   }
 }

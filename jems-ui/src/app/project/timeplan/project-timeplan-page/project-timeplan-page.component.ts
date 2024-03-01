@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
-import {Timeline} from 'vis-timeline';
+import {Timeline, TimelineOptions} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
 import {map, shareReplay, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
@@ -125,12 +125,27 @@ export class ProjectTimeplanPageComponent implements OnInit {
     if (!periods.length || !groups.length) {
       return;
     }
+
+    const endDate = getEndDateFromPeriod(periods.length).toISOString();
+    const options = getOptions(this.translateService, periods.length,  {max: endDate});
+
     if (!this.timeline) {
-      this.initializeVisualization(newItems, groups, periods.length);
+      this.initializeVisualization(newItems, options);
     } else {
+      this.timeline.setOptions(options);
       this.timeline.setItems(newItems);
-      this.timeline.setGroups(groups);
     }
+
+    this.timeline.setWindow(START_DATE, endDate);
+    this.timeline.setGroups(groups);
+  }
+
+  private initializeVisualization(items: DataSet<any>, options: TimelineOptions): void {
+    const doc = this.visualization?.nativeElement;
+    if (!doc) {
+      return;
+    }
+    this.timeline = new Timeline(doc, items, options);
   }
 
   private visualizeReportDeadlines() {
@@ -186,20 +201,6 @@ export class ProjectTimeplanPageComponent implements OnInit {
     }
   }
 
-  private initializeVisualization(items: DataSet<any>, groups: DataSet<any>, lastPeriodNumber: number): boolean {
-    const doc = this.visualization?.nativeElement;
-    if (!doc) {
-      return false;
-    }
-
-    const endDate = getEndDateFromPeriod(lastPeriodNumber).toISOString();
-    const options = getOptions(this.translateService, lastPeriodNumber,  {max: endDate});
-
-    this.timeline = new Timeline(doc, items, options);
-    this.timeline.setWindow(START_DATE, endDate);
-    this.timeline.setGroups(groups);
-    return true;
-  }
 
   /**
    * Call this if different language has been selected.
