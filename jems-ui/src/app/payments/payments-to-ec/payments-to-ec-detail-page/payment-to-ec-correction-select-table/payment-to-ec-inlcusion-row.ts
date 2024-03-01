@@ -3,10 +3,12 @@ import {PaymentToEcCorrectionLinkingDTO} from '@cat/api';
 export interface PaymentToEcInclusionRow {
   correctionId: number;
   paymentToEcId: number;
+  projectId: number;
   projectCustomIdentifier: string;
   projectAcronym: string;
   priorityAxis: string;
   paymentCorrectionNo?: string;
+  paymentCorrectionAuditControlId?: number;
   scenario?: PaymentToEcCorrectionLinkingDTO.ScenarioEnum;
   controllingBody?: string;
   amountApprovedPerFund: number;
