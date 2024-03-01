@@ -42,9 +42,21 @@ mat-button-toggle {
       display: none !important;
     }
   }
-  .mat-form-field-wrapper {
-    padding-bottom: 1.15rem;
-    padding-top: 1.15rem;
+  #timeplanContainer {
+    #main-page-container {
+      overflow: visible;
+    }
+    #main-page-content {
+      padding: 0 !important;
+      overflow: visible !important;
+      .page-content-container {
+        margin: 0 !important;
+      }
+    }
+    .mat-form-field-wrapper {
+      padding-bottom: 1.15rem;
+      padding-top: 1.15rem;
+    }
   }
 
   jems-expandable-textarea .mat-form-field-infix {

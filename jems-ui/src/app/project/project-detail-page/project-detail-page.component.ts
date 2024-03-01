@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import {
   ContractReportingStore
 } from "@project/project-application/contracting/contract-reporting/contract-reporting.store";
+import {ProjectVersionStore} from "@project/common/services/project-version-store.service";
 
 @Component({
   selector: 'jems-project-detail-page',
@@ -27,6 +28,7 @@ export class ProjectDetailPageComponent {
   }>;
 
   constructor(public projectStore: ProjectStore,
+              public projectVersionStore: ProjectVersionStore,
               public contractReportingStore: ContractReportingStore) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
