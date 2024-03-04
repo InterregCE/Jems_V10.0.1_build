@@ -1,5 +1,5 @@
 {
-  "partnerReportExpenditure": {
+  "partnerReportExpenditures": [{
     "costCategory": "ExternalCosts",
     "internalReferenceNumber": "5",
     "invoiceNumber": "invoice",
@@ -19,8 +19,8 @@
     "currencyCode": "EUR",
     "currencyConversionRate": 1,
     "declaredAmountInEur": "declaredAmount"
-  },
-  "expenditureVerification": {
+  }],
+  "expenditureVerifications": [{
     "id": null,
     "costCategory": "ExternalCosts",
     "partOfSample": true,
@@ -28,7 +28,7 @@
     "typologyOfErrorId": 1,
     "parked": false,
     "verificationComment": "Deducted item 5"
-  },
+  }],
   "verificationExpenditure": {
     "expenditureId": null,
     "partOfVerificationSample": false,

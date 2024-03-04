@@ -10,8 +10,10 @@ import partnerReportIdentification from '@fixtures/api/partnerReport/partnerRepo
 import controlReportIdentification from '@fixtures/api/partnerControlReport/controlReportIdentification.json';
 import paymentsUser from '@fixtures/api/users/paymentsUser.json';
 import paymentsRole from '@fixtures/api/roles/paymentsRole.json';
+import partner from '@fixtures/api/application/partner/partner.json';
 import {projectReportPage} from './reports-page.pom';
 import {ProjectReportType} from './ProjectReportType';
+import controllerAssignment from "@fixtures/api/control/assignment.json";
 
 context('Project report tests', () => {
 
@@ -463,18 +465,18 @@ context('Project report tests', () => {
             cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
 
                 const leadPartnerId = this[application.partners[0].details.abbreviation];
-                const partnerReportExpenditure = testData.partnerReportExpenditure;
-                const expenditureVerification = testData.expenditureVerification;
-                partnerReportExpenditure.declaredAmount = 100.00;
-                partnerReportExpenditure.declaredAmountInEur = 100.00;
-                expenditureVerification.deductedAmount = 50.00;
-                createCertifiedPartnerReport(leadPartnerId, partnerReportExpenditure, expenditureVerification);
+                const partnerReportExpenditures = testData.partnerReportExpenditures;
+                const expenditureVerifications = testData.expenditureVerifications;
+                partnerReportExpenditures[0].declaredAmount = 100.00;
+                partnerReportExpenditures[0].declaredAmountInEur = 100.00;
+                expenditureVerifications[0].deductedAmount = 50.00;
+                createCertifiedPartnerReport(leadPartnerId, partnerReportExpenditures, expenditureVerifications);
 
                 const partnerId = this[application.partners[1].details.abbreviation];
-                partnerReportExpenditure.declaredAmount = 80.00;
-                partnerReportExpenditure.declaredAmountInEur = 80.00;
-                expenditureVerification.deductedAmount = 60.00;
-                createCertifiedPartnerReport(partnerId, partnerReportExpenditure, expenditureVerification);
+                partnerReportExpenditures[0].declaredAmount = 80.00;
+                partnerReportExpenditures[0].declaredAmountInEur = 80.00;
+                expenditureVerifications[0].deductedAmount = 60.00;
+                createCertifiedPartnerReport(partnerId, partnerReportExpenditures, expenditureVerifications);
 
                 const verificationExpenditure = testData.verificationExpenditure;
                 createVerifiedProjectReport(applicationId, verificationExpenditure);
@@ -493,6 +495,101 @@ context('Project report tests', () => {
                     cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
                     cy.contains('Project expenditure - breakdown per investment').scrollIntoView().should('be.visible');
                     projectReportPage.verifyAmountsInTables(testData.expectedResults);
+                });
+            });
+        });
+    });
+
+    it('TB-1127 PR - Financial overview - Breakdown per Partner shows correct figures across multiple project reports', function () {
+        cy.fixture('project/reporting/TB-1127.json').then(testData => {
+            cy.loginByRequest(user.applicantUser.email);
+            cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+                const leadPartnerId = this[application.partners[0].details.abbreviation];
+                const partnerReportExpenditures = testData.partnerReportExpenditures;
+                const expenditureVerifications = testData.expenditureVerifications;
+                partnerReportExpenditures[0].declaredAmount = 100.00;
+                partnerReportExpenditures[0].declaredAmountInEur = 100.00;
+                expenditureVerifications[0].deductedAmount = 50.00;
+                createCertifiedPartnerReport(leadPartnerId, partnerReportExpenditures, expenditureVerifications);
+
+                const partnerId = this[application.partners[1].details.abbreviation];
+                partnerReportExpenditures[0].declaredAmount = 80.00;
+                partnerReportExpenditures[0].declaredAmountInEur = 80.00;
+                expenditureVerifications[0].deductedAmount = 60.00;
+                createCertifiedPartnerReport(partnerId, partnerReportExpenditures, expenditureVerifications);
+
+                cy.loginByRequest(user.applicantUser.email);
+                cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+                cy.wait(2000);
+                createProjectReport(2); // Finance type
+                cy.wait(2000);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
+                    projectReportPage.verifyAmountsInTables(testData.expectedResults.firstResults);
+
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/certificate`, {failOnStatusCode: false});
+                    cy.get('mat-table').find('mat-checkbox').eq(0).click();
+                    cy.contains('Confirm').click();
+
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
+                    projectReportPage.verifyAmountsInTables(testData.expectedResults.secondResults);
+                });
+
+                cy.loginByRequest(user.programmeUser.email);
+                cy.startModification(applicationId, user.programmeUser.email);
+                cy.loginByRequest(user.applicantUser.email);
+                const thirdPartner = JSON.parse(JSON.stringify(partner));
+                thirdPartner.details.abbreviation = 'Partner3';
+                cy.createFullPartner(applicationId, thirdPartner).then(thirdPartnerId => {
+                    cy.runPreSubmissionCheck(applicationId);
+                    cy.submitProjectApplication(applicationId);
+
+                    cy.loginByRequest(user.programmeUser.email);
+                    cy.approveModification(applicationId, approvalInfo);
+
+                    cy.loginByRequest(user.applicantUser.email);
+                    cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
+                    cy.get('jems-partner-team-privileges-expansion-panel').eq(2).scrollIntoView().find('input').eq(0).type(user.applicantUser.email);
+                    cy.get('jems-partner-team-privileges-expansion-panel').eq(2).find('mat-button-toggle-group').contains('edit').click();
+                    cy.contains('Save changes').click();
+
+                    cy.loginByRequest(user.admin.email);
+                    controllerAssignment.assignmentsToAdd[0].partnerId = thirdPartnerId;
+                    cy.assignInstitution(controllerAssignment);
+
+                    cy.loginByRequest(user.applicantUser.email);
+                    partnerReportExpenditures[0].declaredAmount = 75.00;
+                    partnerReportExpenditures[0].declaredAmountInEur = 75.00;
+                    expenditureVerifications[0].deductedAmount = 70.00;
+                    createCertifiedPartnerReport(thirdPartnerId, partnerReportExpenditures, expenditureVerifications);
+                });
+
+                cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+                cy.wait(2000);
+                createProjectReport(2); // Finance type
+                cy.wait(2000);
+                cy.url().then(url => {
+                    const secondReportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${secondReportId}/certificate`, {failOnStatusCode: false});
+                    cy.get('mat-table').find('mat-checkbox').eq(0).get('input').should('be.enabled');
+                    cy.get('mat-table').find('mat-checkbox').eq(1).get('input').should('be.enabled');
+                    cy.get('mat-table').find('mat-checkbox').eq(2).get('input').should('be.disabled');
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${secondReportId}/financialOverview`, {failOnStatusCode: false});
+                    cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
+                    projectReportPage.verifyAmountsInTables(testData.expectedResults.thirdResults);
+                });
+
+                cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+                cy.wait(2000);
+                createProjectReport(2); // Finance type
+                cy.wait(2000);
+                cy.url().then(url => {
+                    const thirdReportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${thirdReportId}/certificate`, {failOnStatusCode: false});
+                    cy.contains('Project expenditure - overview per partner/per cost category - Current report').should('not.exist');
                 });
             });
         });
@@ -583,17 +680,17 @@ function setPartnerReportExpenditureVerificationIds(savedExpenditures, expenditu
     }
 }
 
-function createCertifiedPartnerReport(partnerId: number, partnerReportExpenditure: any, expenditureVerification: any) {
+function createCertifiedPartnerReport(partnerId: number, partnerReportExpenditures: [], expenditureVerifications: []) {
     const rawPartnerReportDetails = {
         partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
         controlWork: reporting.projectReports[0].partnerReports[0].controlWork
     };
     const partnerReportDetails = JSON.parse(JSON.stringify(rawPartnerReportDetails));
     partnerReportDetails.partnerReport.expenditures.splice(4, 5);
-    partnerReportDetails.partnerReport.expenditures.push(partnerReportExpenditure);
+    partnerReportDetails.partnerReport.expenditures.push(...partnerReportExpenditures);
 
     partnerReportDetails.controlWork.expenditureVerification.splice(4, 5);
-    partnerReportDetails.controlWork.expenditureVerification.push(expenditureVerification);
+    partnerReportDetails.controlWork.expenditureVerification.push(...expenditureVerifications);
 
     cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
 }
