@@ -202,11 +202,13 @@
                 <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
             </button>
         </form>
-        <h4 id="timeplanHeader">{{'project.application.contract.reporting.timeplan' | translate}}</h4>
+        <h3 id="timeplanHeader">{{'project.application.contract.reporting.timeplan' | translate}}</h3>
         <jems-alert [show]="!data.userCanViewTimeplan"
                     [type]="Alert.WARNING">
             <span>{{'project.application.contract.reporting.application.form.hidden' | translate}}</span>
         </jems-alert>
-        <jems-project-timeplan-page *ngIf="data.userCanViewTimeplan" [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
+        <div id="timeplanContainer">
+            <jems-project-timeplan-page *ngIf="data.userCanViewTimeplan" [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
+        </div>
     </jems-form>
 </jems-project-page-template>
