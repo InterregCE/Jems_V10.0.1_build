@@ -97,11 +97,11 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.findAll(pageable).toDetailModel()
 
     @Transactional(readOnly = true)
-    override fun getFinishedIdsByFundAndAccountingYear(accountingYearId: Long, fundId: Long): Set<Long> =
+    override fun getFinishedIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long> =
         ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(
             status = PaymentEcStatus.Finished,
             accountingYearId = accountingYearId,
-            programmeFundId = fundId,
+            programmeFundId = programmeFundId,
         ).mapTo(HashSet()) { it.id }
 
     @Transactional
