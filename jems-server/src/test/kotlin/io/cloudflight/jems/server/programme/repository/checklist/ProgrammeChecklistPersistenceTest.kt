@@ -1,9 +1,18 @@
 package io.cloudflight.jems.server.programme.repository.checklist
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistId
+import io.cloudflight.jems.server.call.repository.CallSelectedChecklistRepository
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
-import io.cloudflight.jems.server.programme.service.checklist.model.*
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
@@ -19,7 +28,7 @@ import java.io.File
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ProgrammeChecklistPersistenceTest : UnitTest() {
@@ -28,7 +37,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     private val checkList = ProgrammeChecklist(
         id = ID,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = APPLICATION_FORM_ASSESSMENT,
         name = "name",
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -39,7 +48,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     private val checkLisDetail = ProgrammeChecklistDetail(
         id = ID,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = APPLICATION_FORM_ASSESSMENT,
         name = "name",
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -70,7 +79,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     private val checkListEntity = ProgrammeChecklistEntity(
         id = ID,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = APPLICATION_FORM_ASSESSMENT,
         name = "name",
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -101,8 +110,18 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         )
     )
 
+    private val callSelectedChecklistEntity = CallSelectedChecklistEntity(
+        id = CallSelectedChecklistId(
+            call = mockk { every { id } returns 10L },
+            programmeChecklist = checkListEntity
+        )
+    )
+
     @MockK
     lateinit var repository: ProgrammeChecklistRepository
+
+    @MockK
+    lateinit var callSelectedChecklistRepository: CallSelectedChecklistRepository
 
     @InjectMockKs
     private lateinit var persistence: ProgrammeChecklistPersistenceProvider
@@ -111,7 +130,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
     fun getMax100Checklists() {
         val programmeChecklistRow: ProgrammeChecklistRow = mockk()
         every { programmeChecklistRow.id } returns ID
-        every { programmeChecklistRow.type } returns ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
+        every { programmeChecklistRow.type } returns APPLICATION_FORM_ASSESSMENT
         every { programmeChecklistRow.name } returns "name"
         every { programmeChecklistRow.minScore } returns BigDecimal(0)
         every { programmeChecklistRow.maxScore } returns BigDecimal(10)
@@ -141,6 +160,21 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         assertThat(persistence.createChecklist(checkLisDetail))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
+    }
+
+    @Test
+    fun getChecklistsByTypeAndCall() {
+        val callId = 10L
+        val type = APPLICATION_FORM_ASSESSMENT
+        every { callSelectedChecklistRepository.findAllByIdCallIdAndIdProgrammeChecklistType(callId, type) } returns
+                listOf(callSelectedChecklistEntity)
+
+        assertThat(persistence.getChecklistsByTypeAndCall(type, callId))
+            .isEqualTo(
+                callSelectedChecklistEntity.id.programmeChecklist.let { checkList ->
+                    listOf(IdNamePair(checkList.id, checkList.name!!))
+                }
+            )
     }
 
 }

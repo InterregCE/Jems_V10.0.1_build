@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.call.service
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
+import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
@@ -48,8 +49,10 @@ fun applicationFormConfigurationUpdated(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
             .entityRelatedId(call.id)
-            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Application form configuration was changed\n" +
-                    changes.fromOldToNewChanges())
+            .description(
+                "Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Application form configuration was changed\n" +
+                        changes.fromOldToNewChanges()
+            )
             .build()
     )
 }
@@ -65,8 +68,26 @@ fun preSubmissionCheckSettingsUpdated(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
             .entityRelatedId(call.id)
-            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Plugin selection was changed\n" +
-                changesInPlugins.fromOldToNewChanges())
+            .description(
+                "Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Plugin selection was changed\n" +
+                        changesInPlugins.fromOldToNewChanges()
+            )
+            .build()
+    )
+}
+
+fun callSelectedChecklistsChanged(
+    context: Any,
+    newSelection: List<CallChecklist>,
+    call: CallDetail
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CALL_CHECKLISTS_CHANGED)
+            .entityRelatedId(call.id)
+            .description(
+                "Checklists available in call id=${call.id} name='${call.name}' changed to:\n${newSelection.joinToString(",\n") { "${it.id} ${it.type} ${it.name}" }}"
+            )
             .build()
     )
 }

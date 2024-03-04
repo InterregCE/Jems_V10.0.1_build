@@ -151,7 +151,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
       tap(data => this.checklistInstances = data)
     );
-    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
+    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType, this.projectStore.project.id);
     this.instancesTableConfiguration = this.checklistUtils.initializeTableConfigurationWithLock(this.actionsCell, this.descriptionCell, this.lockCell);
   }
 

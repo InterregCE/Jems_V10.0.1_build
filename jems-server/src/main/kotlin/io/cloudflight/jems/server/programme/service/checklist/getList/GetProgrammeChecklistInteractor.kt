@@ -9,5 +9,5 @@ interface GetProgrammeChecklistInteractor {
 
     fun getProgrammeChecklist(sort: Sort): List<ProgrammeChecklist>
 
-    fun getProgrammeChecklistsByType(checklistType: ProgrammeChecklistType): List<IdNamePair>
+    fun getProgrammeChecklistsByType(checklistType: ProgrammeChecklistType, projectId: Long?): List<IdNamePair>
 }

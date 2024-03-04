@@ -22,4 +22,5 @@ interface ProgrammeChecklistPersistence {
 
     fun getChecklistsByType(checklistType: ProgrammeChecklistType): List<IdNamePair>
 
+    fun getChecklistsByTypeAndCall(checklistType: ProgrammeChecklistType, callId: Long): List<IdNamePair>
 }
