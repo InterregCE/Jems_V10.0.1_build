@@ -80,7 +80,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerReportByProjectIdAndId(projectId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion? {
-        val report = partnerReportRepository.getById(reportId)
+        val report = partnerReportRepository.getReferenceById(reportId)
         val projectIdInEntity = partnerRepository.getProjectIdForPartner(report.partnerId)
 
         return if (projectId == projectIdInEntity)
@@ -97,7 +97,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerReportByIdUnsecured(reportId: Long): ProjectPartnerReportSubmissionSummary =
-        partnerReportRepository.getById(reportId).toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
+        partnerReportRepository.getReferenceById(reportId).toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
 
     @Transactional(readOnly = true)
     override fun getProjectPartnerReportSubmissionSummary(
@@ -163,7 +163,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getReportStatusById(reportId: Long): ReportStatus =
-        partnerReportRepository.getById(reportId).status
+        partnerReportRepository.getReferenceById(reportId).status
 
     @Transactional(readOnly = true)
     override fun getAvailableReports(partnerIds: Set<Long>): List<CorrectionAvailableReportTmp> {

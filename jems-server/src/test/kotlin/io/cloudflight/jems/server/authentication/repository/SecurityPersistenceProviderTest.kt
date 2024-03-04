@@ -52,7 +52,7 @@ internal class SecurityPersistenceProviderTest : UnitTest() {
     @Test
     fun `save PasswordResetToken`() {
         val entitySlot = slot<PasswordResetTokenEntity>()
-        every { userRepository.getById(userEntity.id) } returns userEntity
+        every { userRepository.getReferenceById(userEntity.id) } returns userEntity
         every { passwordResetTokenRepository.save(capture(entitySlot)) } returns pwResetTokenEntity
 
         assertDoesNotThrow {

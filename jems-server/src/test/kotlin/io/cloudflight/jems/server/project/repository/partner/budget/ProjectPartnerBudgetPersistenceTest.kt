@@ -212,7 +212,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val partnerBudgetEntity = staffCostEntry.toProjectPartnerBudgetStaffCostEntity(
             partnerId
         ) { projectPeriodEntity }
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetStaffCostRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, listOf(staffCostEntry))
         assertThat(1).isEqualTo(result.size)
@@ -224,7 +224,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val partnerBudgetEntity = generalCostEntry.toProjectPartnerBudgetEquipmentEntity(
             partnerId
         ) { projectPeriodEntity }
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetEquipmentRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
@@ -237,7 +237,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val partnerBudgetEntity = generalCostEntry.toProjectPartnerBudgetExternalEntity(
             partnerId
         ) { projectPeriodEntity }
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetExternalRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(
@@ -254,7 +254,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val partnerBudgetEntity = generalCostEntry.toProjectPartnerBudgetInfrastructureEntity(
             partnerId
         ) { projectPeriodEntity }
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetInfrastructureRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, listOf(generalCostEntry))
@@ -267,7 +267,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val partnerBudgetEntity = travelCostEntry.toProjectPartnerBudgetTravelEntity(
             partnerId
         ) { projectPeriodEntity }
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetTravelRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, listOf(travelCostEntry))
@@ -286,8 +286,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
                 { programmeUnitCostEntity },
                 { projectPeriodEntity }
             )
-        every { programmeUnitCostRepository.getById(programmeUnitCostEntity.id) } returns programmeUnitCostEntity
-        every { projectPeriodRepository.getById(projectPeriodId) } returns projectPeriodEntity
+        every { programmeUnitCostRepository.getReferenceById(programmeUnitCostEntity.id) } returns programmeUnitCostEntity
+        every { projectPeriodRepository.getReferenceById(projectPeriodId) } returns projectPeriodEntity
         every { budgetUnitCostRepository.saveAll(partnerBudgetEntities) } returns partnerBudgetEntities
 
         val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, listOf(unitCostEntry))

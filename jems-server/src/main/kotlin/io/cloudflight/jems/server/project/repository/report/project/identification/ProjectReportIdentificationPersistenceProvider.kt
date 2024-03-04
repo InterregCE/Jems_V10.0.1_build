@@ -177,7 +177,7 @@ class ProjectReportIdentificationPersistenceProvider(
 
     private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal, totalEligibleBudget: BigDecimal) = ProjectReportSpendingProfileEntity(
         ProjectReportSpendingProfileId(
-            projectReport = projectReportRepository.getById(reportId),
+            projectReport = projectReportRepository.getReferenceById(reportId),
             partnerId = partnerId,
         ),
         partnerNumber = 0,

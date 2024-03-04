@@ -25,7 +25,7 @@ class CallNotificationConfigurationsPersistenceProvider(
         callId: Long,
         projectNotificationConfigurations: List<ProjectNotificationConfiguration>
     ): List<ProjectNotificationConfiguration> {
-        val callEntity = callRepository.getById(callId)
+        val callEntity = callRepository.getReferenceById(callId)
 
         return projectNotificationConfigurationRepository
             .saveAll(projectNotificationConfigurations.toNotificationEntity(callEntity))

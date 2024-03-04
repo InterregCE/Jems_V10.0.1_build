@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.DataGeneratorTest
 import io.cloudflight.jems.server.dataGenerator.DRAFT_PROJECT_ID
 import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_DETAIL
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -14,7 +14,7 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 
 
 @Order(PROJECT_DATA_INITIALIZER_ORDER)

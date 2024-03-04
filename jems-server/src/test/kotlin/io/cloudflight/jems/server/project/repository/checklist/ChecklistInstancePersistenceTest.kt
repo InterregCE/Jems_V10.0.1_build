@@ -323,8 +323,8 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     fun create() {
         val checklistSlot = slot<ChecklistInstanceEntity>()
         every { repository.save(capture(checklistSlot)) } returnsArgument 0
-        every { programmeChecklistRepository.getById(PROGRAMME_CHECKLIST_ID) } returns programmeChecklist
-        every { userRepo.getById(CREATOR_ID) } returns user
+        every { programmeChecklistRepository.getReferenceById(PROGRAMME_CHECKLIST_ID) } returns programmeChecklist
+        every { userRepo.getReferenceById(CREATOR_ID) } returns user
         mockkStatic(ZonedDateTime::class)
         every { ZonedDateTime.now() } returns TODAY
         assertThat(persistence.create(createChecklist, CREATOR_ID))

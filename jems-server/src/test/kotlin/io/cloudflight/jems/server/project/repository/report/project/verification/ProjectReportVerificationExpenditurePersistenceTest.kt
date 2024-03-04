@@ -343,7 +343,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
         every { unParkedFrom.id } returns 5L
 
-        every { expenditureRepository.getById(EXPENDITURE_ID_1) } returns unParkedFrom
+        every { expenditureRepository.getReferenceById(EXPENDITURE_ID_1) } returns unParkedFrom
         every { expenditureVerificationRepository.saveAll(any() as List<ProjectReportVerificationExpenditureEntity>) } returnsArgument 0
 
         projectReportVerificationExpenditurePersistenceProvider.initiateEmptyVerificationForProjectReport(

@@ -42,8 +42,8 @@ class PaymentAccountReconciliationPersistenceProvider(
     }
 
     private fun getNewEntity(priorityId: Long, paymentAccountId: Long): PaymentAccountReconciliationEntity {
-        val paymentAccount = paymentAccountRepository.getById(paymentAccountId)
-        val programmePriority = programmePriorityRepository.getById(priorityId)
+        val paymentAccount = paymentAccountRepository.getReferenceById(paymentAccountId)
+        val programmePriority = programmePriorityRepository.getReferenceById(priorityId)
 
         return accountReconciliationRepository.save(
             PaymentAccountReconciliationEntity(0L, paymentAccount, programmePriority, "", "", "")

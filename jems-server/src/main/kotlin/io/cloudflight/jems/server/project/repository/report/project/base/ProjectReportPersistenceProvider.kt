@@ -101,7 +101,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getReportByIdUnSecured(reportId: Long): ProjectReportModel =
-        projectReportRepository.getById(reportId).toModel()
+        projectReportRepository.getReferenceById(reportId).toModel()
 
     @Transactional
     override fun updateReport(
@@ -267,7 +267,7 @@ class ProjectReportPersistenceProvider(
         newStatus: ProjectReportStatus,
         submissionTime: ZonedDateTime
     ): ProjectReportSubmissionSummary =
-        projectReportRepository.getById(reportId)
+        projectReportRepository.getReferenceById(reportId)
             .apply {
                 status = newStatus
                 if (newStatus.isProjectReportReOpened()) {

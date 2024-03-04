@@ -133,7 +133,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             assertThat(deadline).isEqualTo(LocalDate.of(2023, 2, 25))
             assertThat(comment).isEqualTo("dummy comment new")
         }
-        verify(exactly = 0) { projectRepository.getById(any()) }
+        verify(exactly = 0) { projectRepository.getReferenceById(any()) }
     }
 
     @Test
@@ -150,7 +150,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
         val created = mutableListOf<ProjectContractingReportingEntity>()
         every { projectContractingReportingRepository.save(capture(created)) } returnsArgument 0
 
-        every { projectRepository.getById(PROJECT_ID) } returns mockk()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns mockk()
 
         val deadlines = listOf(
             modelNew(0L) /* to be created */,

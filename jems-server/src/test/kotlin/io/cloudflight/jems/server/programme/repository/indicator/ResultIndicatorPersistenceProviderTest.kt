@@ -79,7 +79,8 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
         val resultIndicatorEntitySlot = slot<ResultIndicatorEntity>()
 
-        every { programmeSpecificObjectiveRepository.getById(resultIndicator.programmeObjectivePolicy!!) } returns indicatorProgrammeSpecificObjectiveEntity
+        every { programmeSpecificObjectiveRepository.getReferenceById(resultIndicator.programmeObjectivePolicy!!) } returns
+                indicatorProgrammeSpecificObjectiveEntity
         every {
             resultIndicatorRepository.save(capture(resultIndicatorEntitySlot))
         } returns resultIndicatorEntity

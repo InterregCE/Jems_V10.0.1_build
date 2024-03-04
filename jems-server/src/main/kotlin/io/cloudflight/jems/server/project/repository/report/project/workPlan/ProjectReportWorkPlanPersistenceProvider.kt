@@ -171,7 +171,7 @@ class ProjectReportWorkPlanPersistenceProvider(
 
     @Transactional
     override fun deleteWorkPlan(reportId: Long) {
-        val reportEntity = reportRepository.getById(reportId)
+        val reportEntity = reportRepository.getReferenceById(reportId)
 
         workPlanActivityRepository
             .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)

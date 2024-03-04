@@ -93,7 +93,7 @@ class JemsSystemFileServiceTest : UnitTest() {
         every { userEntity.email } returns "email"
         every { userEntity.name } returns "name-user"
         every { userEntity.surname } returns "surname-user"
-        every { userRepository.getById(USER_ID) } returns userEntity
+        every { userRepository.getReferenceById(USER_ID) } returns userEntity
 
         val slotFileEntity = slot<JemsFileMetadataEntity>()
         every { fileRepository.save(capture(slotFileEntity)) } returnsArgument 0

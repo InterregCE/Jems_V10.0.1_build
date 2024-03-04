@@ -30,8 +30,8 @@ class PaymentApplicationToEcPersistenceProvider(
 
     @Transactional
     override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
-        val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
-        val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
+        val programmeFund = programmeFundRepository.getReferenceById(paymentApplicationsToEcUpdate.programmeFundId)
+        val accountingYear = accountingYearRepository.getReferenceById(paymentApplicationsToEcUpdate.accountingYearId)
 
         return ecPaymentRepository.save(
             PaymentApplicationToEcEntity(
@@ -52,14 +52,14 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentApplicationId: Long,
         paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate
     ): PaymentApplicationToEcDetail {
-        val existingEcPayment = ecPaymentRepository.getById(paymentApplicationId)
+        val existingEcPayment = ecPaymentRepository.getReferenceById(paymentApplicationId)
         existingEcPayment.update(paymentApplicationsToEcUpdate)
         return existingEcPayment.toDetailModel()
     }
 
     @Transactional
     override fun updatePaymentToEcSummaryOtherSection(paymentToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
-        val existingEcPayment = ecPaymentRepository.getById(paymentToEcUpdate.id!!)
+        val existingEcPayment = ecPaymentRepository.getReferenceById(paymentToEcUpdate.id!!)
 
         existingEcPayment.updateOther(paymentToEcUpdate)
 
@@ -86,7 +86,7 @@ class PaymentApplicationToEcPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentApplicationToEcDetail(id: Long): PaymentApplicationToEcDetail =
-        ecPaymentRepository.getById(id).toDetailModel()
+        ecPaymentRepository.getReferenceById(id).toDetailModel()
 
     @Transactional(readOnly = true)
     override fun findAll(pageable: Pageable): Page<PaymentApplicationToEc> =
@@ -109,7 +109,7 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentId: Long,
         status: PaymentEcStatus
     ): PaymentApplicationToEcDetail =
-        ecPaymentRepository.getById(paymentId).apply {
+        ecPaymentRepository.getReferenceById(paymentId).apply {
             this.status = status
         }.toDetailModel()
 

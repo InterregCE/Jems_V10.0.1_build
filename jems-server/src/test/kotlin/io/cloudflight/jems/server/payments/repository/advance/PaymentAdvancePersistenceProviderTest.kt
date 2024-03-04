@@ -435,7 +435,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
     @Test
     fun getPaymentDetail() {
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
+        every { advancePaymentRepository.getReferenceById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
         assertThat(advancePaymentPersistenceProvider.getPaymentDetail(paymentId)).isEqualTo(advancePaymentDetail)
     }
 
@@ -445,9 +445,9 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { projectPersistence.getProject(projectId, "2.0") } returns project
         every { partnerPersistence.getById(partnerId, "2.0").toSummary()} returns partnerDetail.toSummary()
 
-        every { programmeFundRepository.getById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
-        every { userRepository.getById(userEntity.id) } returns userEntity
-        every { userRepository.getById(userEntity2.id) } returns userEntity2
+        every { programmeFundRepository.getReferenceById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
+        every { userRepository.getReferenceById(userEntity.id) } returns userEntity
+        every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2
         every { advancePaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
@@ -477,10 +477,10 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { projectVersion.getLatestApprovedOrCurrent(projectId) } returns "2.0"
         every { projectPersistence.getProject(projectId, "2.0") } returns project
         every { partnerPersistence.getById(partnerId, "2.0").toSummary()} returns partnerDetail.toSummary()
-        every { programmeFundRepository.getById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
-        every { userRepository.getById(userEntity.id) } returns userEntity
-        every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
+        every { programmeFundRepository.getReferenceById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
+        every { userRepository.getReferenceById(userEntity.id) } returns userEntity
+        every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2
+        every { advancePaymentRepository.getReferenceById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
         every { advancePaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(advancePaymentToPersist(2L)))
@@ -495,9 +495,9 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every {
             partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "2.0")
         } returns coFinancingContribution
-        every { userRepository.getById(userEntity.id) } returns userEntity
-        every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
+        every { userRepository.getReferenceById(userEntity.id) } returns userEntity
+        every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2
+        every { advancePaymentRepository.getReferenceById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
         every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0
@@ -519,9 +519,9 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { projectPersistence.getProject(projectId, "2.0") } returns project
         every { partnerPersistence.getById(partnerId, "2.0").toSummary() } returns partnerDetail.toSummary()
         every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "2.0") } returns coFinancingContributionSpf
-        every { userRepository.getById(userEntity.id) } returns userEntity
-        every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
+        every { userRepository.getReferenceById(userEntity.id) } returns userEntity
+        every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2
+        every { advancePaymentRepository.getReferenceById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
         every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0

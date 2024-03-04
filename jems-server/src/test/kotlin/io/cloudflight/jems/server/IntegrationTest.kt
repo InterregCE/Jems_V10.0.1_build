@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server
 
-import io.cloudflight.jems.server.authentication.service.EmsUserDetailsService
+import io.cloudflight.jems.server.authentication.service.JemsUserDetailsService
 import io.cloudflight.jems.server.call.controller.CustomFeignClientConfiguration
-import io.cloudflight.platform.context.ApplicationContextProfiles
+import io.cloudflight.platform.spring.context.ApplicationContextProfiles
 import org.junit.jupiter.api.ClassOrderer
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.TestClassOrder
@@ -31,7 +31,7 @@ class IntegrationTest {
     private lateinit var authManager: AuthenticationManager
 
     @Autowired
-    private lateinit var userDetailsService: EmsUserDetailsService
+    private lateinit var userDetailsService: JemsUserDetailsService
 
     companion object {
         val config = AnnotationConfigApplicationContext(

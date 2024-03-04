@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class AuthenticationSuccessListener(val loginAttemptService: LoginAttemptService) :
-    ApplicationListener<AuthenticationSuccessEvent?> {
+    ApplicationListener<AuthenticationSuccessEvent> {
 
     @Transactional
     override fun onApplicationEvent(event: AuthenticationSuccessEvent) =

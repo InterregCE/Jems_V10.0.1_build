@@ -43,7 +43,7 @@ open class JemsGenericFileService(
             file.toEntity(
                 bucketForMinio = bucket,
                 locationForMinio = locationForMinio,
-                userResolver = { userRepository.getById(it) },
+                userResolver = { userRepository.getReferenceById(it) },
                 uploaded = ZonedDateTime.now(),
             )
         ).also { additionalStep.invoke(it) }.toFullModel()

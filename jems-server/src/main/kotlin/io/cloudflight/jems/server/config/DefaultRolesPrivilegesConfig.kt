@@ -6,12 +6,12 @@ import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.SmartInitializingSingleton
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-@Configuration
+@AutoConfiguration
 class DefaultRolesPrivilegesConfig(
     private val userRolePersistenceProvider: UserRolePersistenceProvider,
     private val optimizationProjectVersionRepository: OptimizationProjectVersionRepository,

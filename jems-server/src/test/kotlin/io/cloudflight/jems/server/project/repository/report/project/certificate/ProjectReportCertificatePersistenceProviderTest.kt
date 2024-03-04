@@ -147,10 +147,10 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
     @Test
     fun selectCertificate() {
         val certificate = partnerReport(null)
-        every { partnerReportRepository.getById(77L) } returns certificate
+        every { partnerReportRepository.getReferenceById(77L) } returns certificate
 
         val projectReport = mockk<ProjectReportEntity>()
-        every { projectReportRepository.getById(100L) } returns projectReport
+        every { projectReportRepository.getReferenceById(100L) } returns projectReport
 
         persistence.selectCertificate(projectReportId = 100L, certificateId = 77L)
 
@@ -161,12 +161,12 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
     fun `selectCertificate - not available`() {
         val projectReport = mockk<ProjectReportEntity>()
         val certificate = partnerReport(projectReport)
-        every { partnerReportRepository.getById(78L) } returns certificate
+        every { partnerReportRepository.getReferenceById(78L) } returns certificate
 
         persistence.selectCertificate(projectReportId = 110L, certificateId = 78L)
 
         assertThat(certificate.projectReport).isEqualTo(projectReport)
-        verify(exactly = 0) { projectReportRepository.getById(any()) }
+        verify(exactly = 0) { projectReportRepository.getReferenceById(any()) }
     }
 
     @Test

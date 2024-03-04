@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.common.controller
 
 import io.cloudflight.jems.api.common.InfoApi
 import io.cloudflight.jems.api.common.dto.VersionDTO
-import io.cloudflight.platform.server.ServerModuleIdentification
+import io.cloudflight.platform.spring.server.ServerModuleIdentification
 import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.web.bind.annotation.RestController
 import java.time.ZoneId

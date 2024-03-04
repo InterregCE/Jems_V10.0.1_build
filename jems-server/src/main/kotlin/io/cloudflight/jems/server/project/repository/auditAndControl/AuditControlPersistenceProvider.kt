@@ -32,18 +32,18 @@ class AuditControlPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectIdForAuditControl(auditControlId: Long): Long =
-        auditControlRepository.getById(auditControlId).project.id
+        auditControlRepository.getReferenceById(auditControlId).project.id
 
     @Transactional
     override fun createControl(projectId: Long, auditControl: AuditControlCreate): AuditControl {
-        val project = projectRepository.getById(projectId)
+        val project = projectRepository.getReferenceById(projectId)
         return auditControlRepository.save(auditControl.toEntity(project))
             .toModel(correctionsRelatedData = emptyCorrectionsRelatedData)
     }
 
     @Transactional
     override fun updateControl(auditControlId: Long, auditControl: AuditControlUpdate): AuditControl {
-        val entity = auditControlRepository.getById(auditControlId)
+        val entity = auditControlRepository.getReferenceById(auditControlId)
 
         entity.controllingBody = auditControl.controllingBody
         entity.controlType = auditControl.controlType
@@ -58,7 +58,7 @@ class AuditControlPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getById(auditControlId: Long): AuditControl =
-        auditControlRepository.getById(auditControlId)
+        auditControlRepository.getReferenceById(auditControlId)
             .toModel(correctionsRelatedData = getCorrectionsRelatedData(auditControlId))
 
     @Transactional(readOnly = true)

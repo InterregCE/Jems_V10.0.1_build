@@ -83,7 +83,7 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(setOf(ProjectCreate), emptySet()) } returns setOf(USER_ROLE_ID)
         every { userPersistence.findAllByEmails(capture(allEmails)) } returns listOf(user)
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
-        every { partnerRepository.getById(PARTNER_ID) } returns projectPartnerEntity()
+        every { partnerRepository.getReferenceById(PARTNER_ID) } returns projectPartnerEntity()
         every { collaboratorPersistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, capture(userData)) } returns expectedResult
 
         val result = assignUser.updateUserAssignmentsOnPartner(
@@ -119,7 +119,7 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(setOf(ProjectCreate), emptySet()) } returns setOf(USER_ROLE_ID)
         every { userPersistence.findAllByEmails(capture(allEmails)) } returns listOf(user)
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
-        every { partnerRepository.getById(PARTNER_ID) } returns projectPartnerEntity()
+        every { partnerRepository.getReferenceById(PARTNER_ID) } returns projectPartnerEntity()
         every { collaboratorPersistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, capture(userData)) } returns expectedResult
 
         val result = assignUser.updateUserAssignmentsOnPartner(

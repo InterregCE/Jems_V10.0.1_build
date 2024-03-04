@@ -63,8 +63,8 @@ class ProjectPartnerReportDesignatedControllerPersistenceProvider(
             partnerId = partnerId,
         )
 
-        entity.controllingUser = designatedController.controllingUserId?.let { userRepo.getById(it) }
-        entity.controllerReviewer = designatedController.controllerReviewerId?.let { userRepo.getById(it) }
+        entity.controllingUser = designatedController.controllingUserId?.let { userRepo.getReferenceById(it) }
+        entity.controllerReviewer = designatedController.controllerReviewerId?.let { userRepo.getReferenceById(it) }
         entity.jobTitle = designatedController.jobTitle
         entity.address = designatedController.address
         entity.country = designatedController.country

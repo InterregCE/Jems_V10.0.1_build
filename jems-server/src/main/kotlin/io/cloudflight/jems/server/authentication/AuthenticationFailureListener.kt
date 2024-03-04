@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit
 
 @Component
 class AuthenticationFailureListener(private val loginAttemptService: LoginAttemptService) :
-    ApplicationListener<AuthenticationFailureBadCredentialsEvent?> {
+    ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     @Transactional
     override fun onApplicationEvent(event: AuthenticationFailureBadCredentialsEvent) {

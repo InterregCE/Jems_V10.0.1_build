@@ -488,9 +488,9 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         val reportSlot = slot<ProjectPartnerReportEntity>()
         val reportCoFinancingSlot = slot<Iterable<ProjectPartnerReportCoFinancingEntity>>()
         val reportExpenditureCoFinancingSlot = slot<ReportProjectPartnerExpenditureCoFinancingEntity>()
-        every { legalStatusRepository.getById(legalStatusEntity.id) } returns legalStatusEntity
+        every { legalStatusRepository.getReferenceById(legalStatusEntity.id) } returns legalStatusEntity
         every { partnerReportRepository.save(capture(reportSlot)) } returnsArgument 0
-        every { programmeFundRepository.getById(programmeFundEntity.id) } returns programmeFundEntity
+        every { programmeFundRepository.getReferenceById(programmeFundEntity.id) } returns programmeFundEntity
         every { partnerReportCoFinancingRepository.saveAll(capture(reportCoFinancingSlot)) } returnsArgument 0
         every { reportProjectPartnerExpenditureCoFinancingRepository.save(capture(reportExpenditureCoFinancingSlot)) } returnsArgument 0
 
@@ -515,7 +515,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
 
         // available lumpSums
         val lumpSumEntity = mockk<ProgrammeLumpSumEntity>()
-        every { programmeLumpSumRepository.getById(85L) } returns lumpSumEntity
+        every { programmeLumpSumRepository.getReferenceById(85L) } returns lumpSumEntity
         val lumpSumSlot = slot<Iterable<PartnerReportLumpSumEntity>>()
         every { reportLumpSumRepository.saveAll(capture(lumpSumSlot)) } returnsArgument 0
 
@@ -530,7 +530,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             translatedValues = mutableSetOf(),
             categories = mutableSetOf()
         )
-        every { programmeUnitCostRepository.getById(5L) } returns unitCostEntity
+        every { programmeUnitCostRepository.getReferenceById(5L) } returns unitCostEntity
         val unitCostSlot = slot<Iterable<PartnerReportUnitCostEntity>>()
         every { reportUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 

@@ -24,8 +24,8 @@ class ProjectAssessmentPersistenceProvider(
     override fun setEligibility(userId: Long, data: ProjectAssessmentEligibility) {
         eligibilityRepository.save(
             data.toEntity(
-                project = projectRepository.getById(data.projectId),
-                user = userRepository.getById(userId),
+                project = projectRepository.getReferenceById(data.projectId),
+                user = userRepository.getReferenceById(userId),
             )
         )
     }
@@ -38,8 +38,8 @@ class ProjectAssessmentPersistenceProvider(
     override fun setQuality(userId: Long, data: ProjectAssessmentQuality) {
         qualityRepository.save(
             data.toEntity(
-                project = projectRepository.getById(data.projectId),
-                user = userRepository.getById(userId),
+                project = projectRepository.getReferenceById(data.projectId),
+                user = userRepository.getReferenceById(userId),
             )
         )
     }

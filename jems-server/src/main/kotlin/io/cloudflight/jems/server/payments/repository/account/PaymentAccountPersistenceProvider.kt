@@ -29,7 +29,7 @@ class PaymentAccountPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getByPaymentAccountId(paymentAccountId: Long): PaymentAccount =
-        repository.getById(paymentAccountId).toModel()
+        repository.getReferenceById(paymentAccountId).toModel()
 
     @Transactional(readOnly = true)
     override fun getAllAccounts(): List<PaymentAccount> =
@@ -41,7 +41,7 @@ class PaymentAccountPersistenceProvider(
 
     @Transactional
     override fun updatePaymentAccount(paymentAccountId: Long, paymentAccount: PaymentAccountUpdate): PaymentAccount {
-        val existingAccount = repository.getById(paymentAccountId)
+        val existingAccount = repository.getReferenceById(paymentAccountId)
 
         existingAccount.updateWith(paymentAccount)
 
@@ -64,13 +64,13 @@ class PaymentAccountPersistenceProvider(
 
     @Transactional
     override fun finalizePaymentAccount(paymentAccountId: Long): PaymentAccountStatus =
-        this.repository.getById(paymentAccountId).apply {
+        this.repository.getReferenceById(paymentAccountId).apply {
             status = PaymentAccountStatus.FINISHED
         }.status
 
     @Transactional
     override fun reOpenPaymentAccount(paymentAccountId: Long): PaymentAccountStatus =
-        this.repository.getById(paymentAccountId).apply {
+        this.repository.getReferenceById(paymentAccountId).apply {
             status = PaymentAccountStatus.DRAFT
         }.status
 

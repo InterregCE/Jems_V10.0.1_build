@@ -62,9 +62,9 @@ export class AuditControlCorrectionDetailIdentityComponent {
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
   funds: {
-    id: number,
-    abbreviation: Array<InputTranslation>,
-    disabled: boolean,
+    id: number;
+    abbreviation: InputTranslation[];
+    disabled: boolean;
   }[] = [];
 
   linkedToCostOptionType: LinkedToCostOptionType = LinkedToCostOptionType.PR;
@@ -337,13 +337,13 @@ export class AuditControlCorrectionDetailIdentityComponent {
   }
 
   get fundShown(): FundShown | undefined {
-    const fundId = this.form.get('programmeFundId')?.value
-    return this.funds.find(x => x.id === fundId)
+    const fundId = this.form.get('programmeFundId')?.value;
+    return this.funds.find(x => x.id === fundId);
   }
 
 }
 
 interface FundShown {
-  abbreviation: Array<InputTranslation>,
-  disabled: boolean,
+  abbreviation: InputTranslation[];
+  disabled: boolean;
 }

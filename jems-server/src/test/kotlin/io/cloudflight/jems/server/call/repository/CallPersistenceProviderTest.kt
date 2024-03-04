@@ -628,7 +628,7 @@ internal class CallPersistenceProviderTest {
 
         val partner = mockk<ProjectPartnerEntity>()
         every { partner.project.call } returns callEntity
-        every { partnerRepository.getById(114L) } returns partner
+        every { partnerRepository.getReferenceById(114L) } returns partner
 
         assertThat(persistence.getCallSimpleByPartnerId(114L)).isEqualTo(
             expectedStandardCallDetail.copy(
@@ -680,9 +680,9 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
+        every { userRepo.getReferenceById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getReferenceById(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
+        every { programmeSpecificObjectiveRepo.getReferenceById(AdvancedTechnologies) } returns
                 specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
@@ -736,10 +736,10 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns
+        every { userRepo.getReferenceById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getReferenceById(Digitisation) } returns
                 specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
+        every { programmeSpecificObjectiveRepo.getReferenceById(AdvancedTechnologies) } returns
                 specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(

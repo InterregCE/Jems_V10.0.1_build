@@ -28,7 +28,7 @@ class ProjectReportFilePersistenceProvider(
 
     @Transactional
     override fun updateReportActivityAttachment(activityId: Long, file: JemsFileCreate): JemsFileMetadata {
-        val activity = workPlanActivityRepository.getById(activityId)
+        val activity = workPlanActivityRepository.getReferenceById(activityId)
         activity.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { activity.attachment = it }
@@ -37,7 +37,7 @@ class ProjectReportFilePersistenceProvider(
 
     @Transactional
     override fun updateReportDeliverableAttachment(deliverableId: Long, file: JemsFileCreate): JemsFileMetadata {
-        val deliverable = workPlanActivityDeliverableRepository.getById(deliverableId)
+        val deliverable = workPlanActivityDeliverableRepository.getReferenceById(deliverableId)
         deliverable.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { deliverable.attachment = it }
@@ -46,7 +46,7 @@ class ProjectReportFilePersistenceProvider(
 
     @Transactional
     override fun updateReportOutputAttachment(outputId: Long, file: JemsFileCreate): JemsFileMetadata {
-        val output = workPlanOutputRepository.getById(outputId)
+        val output = workPlanOutputRepository.getReferenceById(outputId)
         output.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { output.attachment = it }

@@ -39,11 +39,11 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCorrectionExtension(correctionId: Long): PaymentAccountCorrectionExtension =
-        correctionExtensionRepository.getById(correctionId).toModel()
+        correctionExtensionRepository.getReferenceById(correctionId).toModel()
 
     @Transactional
     override fun selectCorrectionToPaymentAccount(correctionIds: Set<Long>, paymentAccountId: Long) {
-        val paymentAccount = paymentAccountRepository.getById(paymentAccountId)
+        val paymentAccount = paymentAccountRepository.getReferenceById(paymentAccountId)
         correctionExtensionRepository.findAllById(correctionIds).forEach {
             it.paymentAccount = paymentAccount
         }
@@ -63,7 +63,7 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
     override fun createCorrectionExtension(
         financialDescription: ProjectCorrectionFinancialDescription,
     ) {
-        val correctionEntity = auditControlCorrectionRepository.getById(financialDescription.correctionId)
+        val correctionEntity = auditControlCorrectionRepository.getReferenceById(financialDescription.correctionId)
         correctionExtensionRepository.save(
             financialDescription.toEntity(correctionEntity)
         )
@@ -74,7 +74,7 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
         correctionId: Long,
         correctionLinkingUpdate: PaymentAccountCorrectionLinkingUpdate
     ): PaymentAccountCorrectionExtension =
-        correctionExtensionRepository.getById(correctionId).apply {
+        correctionExtensionRepository.getReferenceById(correctionId).apply {
             this.correctedAutoPublicContribution = correctionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = correctionLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = correctionLinkingUpdate.correctedPrivateContribution
@@ -160,7 +160,7 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
         val priorityAxisIds = totals.keys.mapNotNull { it }
 
         val priorityById = programmePriorityRepository.findAllById(priorityAxisIds).associateBy { it.id }
-        val paymentAccount = paymentAccountRepository.getById(paymentAccountId)
+        val paymentAccount = paymentAccountRepository.getReferenceById(paymentAccountId)
 
         priorityAxisOverviewRepository.deleteAllByPaymentAccountId(paymentAccountId)
         priorityAxisOverviewRepository.flush()

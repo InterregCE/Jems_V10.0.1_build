@@ -56,11 +56,11 @@ class ChecklistInstancePersistenceProvider(
 
     @Transactional
     override fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail {
-        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId)
+        val programmeChecklist = programmeChecklistRepository.getReferenceById(createChecklist.programmeChecklistId)
         return repository.save(
             ChecklistInstanceEntity(
                 status = ChecklistInstanceStatus.DRAFT,
-                creator = userRepo.getById(creatorId),
+                creator = userRepo.getReferenceById(creatorId),
                 relatedToId = createChecklist.relatedToId,
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,

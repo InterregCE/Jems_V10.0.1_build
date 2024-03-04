@@ -115,7 +115,7 @@ class PartnerPersistenceProviderUpdateTest {
         every { projectPartnerRepository.save(any()) } returns updatedProjectPartnerEntity
         every { projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
 
         assertThat(persistence.update(projectPartnerUpdate, true))
             .isEqualTo(
@@ -134,7 +134,7 @@ class PartnerPersistenceProviderUpdateTest {
             projectPartnerEntity(abbreviation = projectPartnerUpdate.abbreviation!!, role = projectPartnerUpdate.role!!)
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.save(any()) } returns updatedProjectPartnerEntity
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
 
         persistence.update(projectPartnerUpdate, false)
         verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop50ByProjectId(PROJECT_ID)}
@@ -145,7 +145,7 @@ class PartnerPersistenceProviderUpdateTest {
         every { projectPartnerRepository.findById(3) } returns Optional.of(
             projectPartnerEntity(id = 3, role = ProjectPartnerRole.PARTNER)
         )
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity(3, abbreviation = "updated")
         every {
             projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any())
@@ -232,7 +232,7 @@ class PartnerPersistenceProviderUpdateTest {
         )
 
         every { projectPartnerRepository.findById(2) } returns Optional.of(projectPartner)
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
         val slotEntity = slot<ProjectPartnerEntity>()
         every { projectPartnerRepository.save(capture(slotEntity)) } returns updatedProjectPartner
 
@@ -258,7 +258,7 @@ class PartnerPersistenceProviderUpdateTest {
         val updatedProjectPartner = getProjectPartner(partnerSubType = null)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
         val slotEntity = slot<ProjectPartnerEntity>()
         every { projectPartnerRepository.save(capture(slotEntity)) } returns updatedProjectPartner
 
@@ -299,7 +299,7 @@ class PartnerPersistenceProviderUpdateTest {
         )
 
         every { projectPartnerRepository.findById(projectId) } returns Optional.of(projectPartner)
-        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        every { legalStatusRepo.getReferenceById(1) } returns legalStatusEntity
         val slotEntity = slot<ProjectPartnerEntity>()
         every { projectPartnerRepository.save(capture(slotEntity)) } returns projectPartner.copy(newAddresses = setOf(address))
 
@@ -437,8 +437,8 @@ class PartnerPersistenceProviderUpdateTest {
         val projectPartners = listOf(projectPartnerEntity(id = 2), projectPartnerWithOrganizationEntity())
 
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
-        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
-        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getReferenceById(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project
         every { projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.save(any()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate, true))

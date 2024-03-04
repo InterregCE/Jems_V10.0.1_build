@@ -336,7 +336,7 @@ class ProjectReportFinancialOverviewPersistenceProviderTest: UnitTest() {
         val funds = reportCoFinancingEntities()
         every { projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(PROJECT_REPORT_ID) } returns funds
         val projectReport = mockk<ProjectReportEntity>()
-        every { projectReportRepository.getById(PROJECT_REPORT_ID) } returns projectReport
+        every { projectReportRepository.getReferenceById(PROJECT_REPORT_ID) } returns projectReport
 
         every { projectReportCoFinancingOverviewRepository.deleteAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns Unit
         every { projectReportCoFinancingOverviewRepository.flush() } returns Unit

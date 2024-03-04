@@ -166,7 +166,7 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         val toDeleteSlot = slot<Iterable<ProjectContractingPartnerPaymentDateEntity>>()
         every { contractingPartnerPaymentDateRepository.deleteAll(capture(toDeleteSlot)) } answers { }
 
-        every { partnerRepository.getById(187L) } returns mockk()
+        every { partnerRepository.getReferenceById(187L) } returns mockk()
 
         every { contractingPartnerPaymentDateRepository.save(any()) } returnsArgument 0
 

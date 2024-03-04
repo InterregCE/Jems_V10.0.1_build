@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.dataGenerator.PROGRAMME_OUTPUT_INDICATOR
 import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.project.FIRST_VERSION
 import io.cloudflight.jems.server.dataGenerator.project.versionedInputTranslation
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -25,7 +25,7 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.Ordered
 import java.math.BigDecimal
 
@@ -46,7 +46,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(3)
-    @ExpectSelect(11)
+    @ExpectSelect(10)
     @ExpectInsert(5)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -65,7 +65,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(34)
+    @ExpectSelect(32)
     @ExpectInsert(20)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -122,7 +122,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(30)
+    @ExpectSelect(29)
     @ExpectInsert(5)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -158,7 +158,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(21)
+    @ExpectSelect(20)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)

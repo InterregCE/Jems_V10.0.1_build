@@ -50,7 +50,7 @@ class ContractingReportingPersistenceProvider(
         // remove those that were removed
         projectContractingReportingRepository.deleteAll(existingById.minus(toStayIds).values)
 
-        val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getById(projectId)
+        val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getReferenceById(projectId)
 
         // update existing or create new ones
         deadlines.forEach { deadline ->

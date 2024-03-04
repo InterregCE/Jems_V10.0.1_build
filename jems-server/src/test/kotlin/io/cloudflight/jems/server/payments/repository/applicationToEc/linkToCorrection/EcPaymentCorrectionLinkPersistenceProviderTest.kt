@@ -221,7 +221,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentExtension() {
-        every { ecPaymentCorrectionExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(
+        every { ecPaymentCorrectionExtensionRepository.getReferenceById(99L) } returns paymentToEcExtensionEntity(
             paymentApplicationToEcEntity
         )
         assertThat(persistenceProvider.getCorrectionExtension(99L)).isEqualTo(paymentToEcExtensionModel)
@@ -269,7 +269,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
     fun selectCorrectionToEcPayment() {
         val entity = paymentToEcExtensionEntity(null)
         every { ecPaymentCorrectionExtensionRepository.findAllById(setOf(CORRECTION_ID)) } returns listOf(entity)
-        every { ecPaymentRepository.getById(EC_PAYMENT_ID) } returns paymentApplicationToEcEntity
+        every { ecPaymentRepository.getReferenceById(EC_PAYMENT_ID) } returns paymentApplicationToEcEntity
 
         persistenceProvider.selectCorrectionToEcPayment(
             correctionIds = setOf(CORRECTION_ID),
@@ -293,7 +293,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
     @Test
     fun updateCorrectionLinkedToEcPaymentCorrectedAmounts() {
         val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
-        every { ecPaymentCorrectionExtensionRepository.getById(CORRECTION_ID) } returns entity
+        every { ecPaymentCorrectionExtensionRepository.getReferenceById(CORRECTION_ID) } returns entity
 
         persistenceProvider.updateCorrectionLinkedToEcPaymentCorrectedAmounts(CORRECTION_ID, correctionUpdate)
         assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(206))
@@ -311,7 +311,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `createCorrectionExtension - negative sign`() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0
@@ -332,7 +332,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `createCorrectionExtension - positive sign`() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0

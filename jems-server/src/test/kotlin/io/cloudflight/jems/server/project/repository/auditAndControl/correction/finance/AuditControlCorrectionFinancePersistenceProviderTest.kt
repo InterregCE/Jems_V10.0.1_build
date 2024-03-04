@@ -100,7 +100,7 @@ class AuditControlCorrectionFinancePersistenceProviderTest : UnitTest() {
 
     @Test
     fun getCorrectionFinancialDescription() {
-        every { projectCorrectionFinancialDescriptionRepository.getById(CORRECTION_ID) } returns entity()
+        every { projectCorrectionFinancialDescriptionRepository.getReferenceById(CORRECTION_ID) } returns entity()
         assertThat(financialDescriptionPersistenceProvider.getCorrectionFinancialDescription(CORRECTION_ID)).isEqualTo(
             financialDescription
         )
@@ -108,7 +108,7 @@ class AuditControlCorrectionFinancePersistenceProviderTest : UnitTest() {
 
     @Test
     fun updateCorrectionFinancialDescription() {
-        every { projectCorrectionFinancialDescriptionRepository.getById(CORRECTION_ID) } returns entity()
+        every { projectCorrectionFinancialDescriptionRepository.getReferenceById(CORRECTION_ID) } returns entity()
         assertThat(financialDescriptionPersistenceProvider.updateCorrectionFinancialDescription(
             CORRECTION_ID,
             financialDescriptionUpdate

@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
 
 class UpdateProjectReportVerificationClarificationTest: UnitTest() {

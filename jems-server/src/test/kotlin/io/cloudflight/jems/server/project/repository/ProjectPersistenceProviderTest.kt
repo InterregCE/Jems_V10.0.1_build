@@ -348,7 +348,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         every { project.id } returns 977L
         every { project.applicant.id } returns 16L
         every { project.currentStatus.status } returns ApplicationStatus.ELIGIBLE
-        every { projectRepository.getById(977L) } returns project
+        every { projectRepository.getReferenceById(977L) } returns project
 
         assertThat(persistence.getApplicantAndStatusById(977L)).isEqualTo(
             ProjectApplicantAndStatus(
@@ -388,7 +388,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 ),
             ),
         )
-        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,

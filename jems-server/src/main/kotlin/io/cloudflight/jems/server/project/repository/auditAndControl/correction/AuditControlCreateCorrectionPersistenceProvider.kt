@@ -34,7 +34,7 @@ class AuditControlCreateCorrectionPersistenceProvider(
     }
 
     private fun persistCorrection(auditControlId: Long, correction: AuditControlCorrectionCreate): AuditControlCorrectionEntity {
-        val auditControlEntity = auditControlRepository.getById(auditControlId)
+        val auditControlEntity = auditControlRepository.getReferenceById(auditControlId)
         return auditControlCorrectionRepository.save(correction.toEntity(auditControlEntity))
     }
 

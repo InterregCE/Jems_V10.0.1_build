@@ -44,16 +44,16 @@ class PartnerReportParkedExpenditurePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getParkedExpenditureById(expenditureId: Long): ExpenditureParkingMetadata
-         = reportParkedExpenditureRepository.getById(expenditureId).toModel()
+         = reportParkedExpenditureRepository.getReferenceById(expenditureId).toModel()
 
     @Transactional
     override fun parkExpenditures(toPark: Collection<ParkExpenditureData>) {
         val newlyParked = toPark.map {
             PartnerReportParkedExpenditureEntity(
                 parkedFromExpenditureId = it.expenditureId,
-                parkedFrom = reportExpenditureRepository.getById(it.expenditureId),
-                reportOfOrigin = reportRepository.getById(it.originalReportId),
-                parkedInProjectReport = it.parkedInProjectReportId?.let { id -> projectReportRepository.getById(id) },
+                parkedFrom = reportExpenditureRepository.getReferenceById(it.expenditureId),
+                reportOfOrigin = reportRepository.getReferenceById(it.originalReportId),
+                parkedInProjectReport = it.parkedInProjectReportId?.let { id -> projectReportRepository.getReferenceById(id) },
                 originalNumber = it.originalNumber,
                 parkedOn = it.parkedOn
             )

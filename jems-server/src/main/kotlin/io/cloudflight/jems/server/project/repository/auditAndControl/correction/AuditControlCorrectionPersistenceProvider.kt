@@ -85,7 +85,7 @@ class AuditControlCorrectionPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectIdForCorrection(correctionId: Long): Long =
-        auditControlCorrectionRepository.getById(correctionId).auditControl.project.id
+        auditControlCorrectionRepository.getReferenceById(correctionId).auditControl.project.id
 
     @Transactional(readOnly = true)
     override fun getAllCorrectionsByAuditControlId(
@@ -147,7 +147,7 @@ class AuditControlCorrectionPersistenceProvider(
     override fun getPreviousClosedCorrections(
         correctionId: Long
     ): List<AuditControlCorrection> {
-        val currentCorrection = auditControlCorrectionRepository.getById(correctionId)
+        val currentCorrection = auditControlCorrectionRepository.getReferenceById(correctionId)
         val auditControl = currentCorrection.auditControl
 
         return auditControlCorrectionRepository.getAllByAuditControlAndStatusAndOrderNrBefore(
@@ -159,7 +159,7 @@ class AuditControlCorrectionPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getByCorrectionId(correctionId: Long): AuditControlCorrectionDetail =
-        auditControlCorrectionRepository.getById(correctionId).toModel()
+        auditControlCorrectionRepository.getReferenceById(correctionId).toModel()
 
     @Transactional(readOnly = true)
     override fun getLastUsedOrderNr(auditControlId: Long): Int? =
@@ -189,7 +189,7 @@ class AuditControlCorrectionPersistenceProvider(
         val entity = auditControlCorrectionRepository.findById(correctionId).get()
 
         if (entity.partnerReport?.id != data.partnerReportId)
-            entity.partnerReport = data.partnerReportId?.let { partnerReportRepository.getById(it) }
+            entity.partnerReport = data.partnerReportId?.let { partnerReportRepository.getReferenceById(it) }
 
         if (entity.lumpSum?.id?.orderNr != data.lumpSumOrderNr) {
             entity.lumpSum = data.lumpSumOrderNr?.let { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(entity.auditControl.project.id, it) }
@@ -197,10 +197,10 @@ class AuditControlCorrectionPersistenceProvider(
         }
 
         if (entity.programmeFund?.id != data.programmeFundId)
-            entity.programmeFund = programmeFundRepository.getById(data.programmeFundId)
+            entity.programmeFund = programmeFundRepository.getReferenceById(data.programmeFundId)
 
         if (entity.followUpOfCorrection?.id != data.followUpOfCorrectionId)
-            entity.followUpOfCorrection = data.followUpOfCorrectionId?.let { auditControlCorrectionRepository.getById(it) }
+            entity.followUpOfCorrection = data.followUpOfCorrectionId?.let { auditControlCorrectionRepository.getReferenceById(it) }
 
         entity.followUpOfCorrectionType = data.correctionFollowUpType
         entity.repaymentDate = data.repaymentFrom
@@ -209,7 +209,7 @@ class AuditControlCorrectionPersistenceProvider(
         entity.procurementId = data.procurementId
         entity.costCategory = data.costCategory
         entity.expenditure =
-            if (data.expenditureId != null) reportExpenditureRepository.getById(data.expenditureId) else null
+            if (data.expenditureId != null) reportExpenditureRepository.getReferenceById(data.expenditureId) else null
 
         return entity.toModel()
     }

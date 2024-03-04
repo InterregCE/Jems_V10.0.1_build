@@ -69,12 +69,12 @@ class PaymentAdvancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentDetail(paymentId: Long): AdvancePaymentDetail {
-        return advancePaymentRepository.getById(paymentId).toDetailModel()
+        return advancePaymentRepository.getReferenceById(paymentId).toDetailModel()
     }
 
     @Transactional
     override fun updateAdvancePaymentStatus(paymentId: Long, status: AdvancePaymentStatus, currentUserId: Long): AdvancePaymentDetail {
-        return advancePaymentRepository.getById(paymentId).apply {
+        return advancePaymentRepository.getReferenceById(paymentId).apply {
             if (isPaymentAuthorizedInfo != true && status == AdvancePaymentStatus.AUTHORIZED) {
                 isPaymentAuthorizedInfo = true
                 paymentAuthorizedDate = LocalDate.now()
@@ -94,7 +94,7 @@ class PaymentAdvancePersistenceProvider(
 
     @Transactional
     override fun updatePaymentDetail(paymentDetail: AdvancePaymentUpdate): AdvancePaymentDetail {
-        val existing = paymentDetail.id?.let { advancePaymentRepository.getById(it) }
+        val existing = paymentDetail.id?.let { advancePaymentRepository.getReferenceById(it) }
         val version = if (existing?.isPaymentAuthorizedInfo == true) existing.projectVersion else
             projectVersion.getLatestApprovedOrCurrent(paymentDetail.projectId)
         val project = projectPersistence.getProject(paymentDetail.projectId, version)
@@ -175,7 +175,7 @@ class PaymentAdvancePersistenceProvider(
     ) {
         // only one of these ids should be set
         entity.programmeFund = if (fundId != null) {
-            programmeFundRepository.getById(fundId)
+            programmeFundRepository.getReferenceById(fundId)
         } else null
         if (contributionId != null) {
             val contributions =
@@ -195,7 +195,7 @@ class PaymentAdvancePersistenceProvider(
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
-            userRepository.getById(userId)
+            userRepository.getReferenceById(userId)
         } else null
 
     private fun QAdvancePaymentEntity.amountPaid() =

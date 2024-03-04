@@ -38,7 +38,7 @@ class GeneratePaymentAuditExportService(
                     accountingYear?.year,
                     result.content,
                     true
-                ).also { savedFile ->
+                ).also { _ ->
                     paymentAuditExportPersistence.updateExportMetaData(
                         plugin.getKey(), fund?.id, accountingYear?.id, result.fileName, result.contentType,
                         result.startTime, endTime = ZonedDateTime.now()

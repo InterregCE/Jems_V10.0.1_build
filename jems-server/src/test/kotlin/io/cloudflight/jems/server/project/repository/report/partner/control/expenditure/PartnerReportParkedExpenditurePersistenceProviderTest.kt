@@ -87,12 +87,12 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         val projectReport = mockk<ProjectReportEntity>()
         val slotSaved = slot<Iterable<PartnerReportParkedExpenditureEntity>>()
         every { reportParkedExpenditureRepository.saveAll(capture(slotSaved)) } returnsArgument 0
-        every { projectReportRepository.getById(any()) } returns projectReport
+        every { projectReportRepository.getReferenceById(any()) } returns projectReport
 
         val expenditure = mockk<PartnerReportExpenditureCostEntity>()
-        every { reportExpenditureRepository.getById(24L) } returns expenditure
+        every { reportExpenditureRepository.getReferenceById(24L) } returns expenditure
         val report = mockk<ProjectPartnerReportEntity>()
-        every { reportRepository.getById(444L) } returns report
+        every { reportRepository.getReferenceById(444L) } returns report
 
         val toPark = setOf(
             ParkExpenditureData(expenditureId = 24L, originalReportId = 444L, originalNumber = 7, parkedInProjectReportId = 3L, parkedOn = dateTime)

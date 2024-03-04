@@ -1,23 +1,21 @@
 package io.cloudflight.jems.server.authentication.config
 
-import io.cloudflight.jems.server.authentication.service.EmsUserDetailsService
-import io.cloudflight.platform.context.ApplicationContextProfiles
+import io.cloudflight.platform.spring.context.ApplicationContextProfiles
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
 import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.BeanIds
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.header.writers.HstsHeaderWriter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy
@@ -31,14 +29,11 @@ import java.util.Collections
 import javax.servlet.http.HttpServletResponse
 
 
-@Configuration
+@AutoConfiguration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 class SecurityConfig(
-    val emsUserDetailsService: EmsUserDetailsService,
-    val passwordEncoder: PasswordEncoder,
     private val environment: Environment,
-) :
-    WebSecurityConfigurerAdapter() {
+) {
 
     companion object {
         private val WHITELIST = arrayOf(
@@ -52,7 +47,9 @@ class SecurityConfig(
         )
     }
 
-    override fun configure(http: HttpSecurity) {
+    @Bean
+    @Throws(Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         if (!environment.acceptsProfiles(Profiles.of(ApplicationContextProfiles.TEST_CONTAINER))) {
             http.csrf().disable()
                 // discuss enabling this to prevent CSRF attack
@@ -70,10 +67,12 @@ class SecurityConfig(
             .httpBasic()
             // this exception handling automatically dismiss default browser "Sign in" pop-up for Basic auth
             .and()
-            .exceptionHandling().authenticationEntryPoint { _, httpServletResponse, authException -> run {
-                httpServletResponse.setHeader("WWW-Authenticate", "FormBased")
-                httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.message)
-            } }
+            .exceptionHandling().authenticationEntryPoint { _, httpServletResponse, authException ->
+                run {
+                    httpServletResponse.setHeader("WWW-Authenticate", "FormBased")
+                    httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.message)
+                }
+            }
             .and()
             .logout()
             .invalidateHttpSession(true)
@@ -85,23 +84,21 @@ class SecurityConfig(
             .addHeaderWriter(ReferrerPolicyHeaderWriter(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
             .addHeaderWriter(XXssProtectionHeaderWriter())
             .addHeaderWriter(HstsHeaderWriter())
-    }
 
-    override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
-        authenticationManagerBuilder
-            .userDetailsService<UserDetailsService>(emsUserDetailsService)
-            .passwordEncoder(passwordEncoder)
+        return http.build()
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Throws(Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager? {
-        return super.authenticationManagerBean()
+    fun authenticationManager(authentication: AuthenticationConfiguration): AuthenticationManager {
+        return authentication.getAuthenticationManager()
     }
 
-    override fun configure(webSecurity: WebSecurity) {
-        webSecurity.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-    }
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer =
+        WebSecurityCustomizer { web: WebSecurity ->
+            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+        }
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

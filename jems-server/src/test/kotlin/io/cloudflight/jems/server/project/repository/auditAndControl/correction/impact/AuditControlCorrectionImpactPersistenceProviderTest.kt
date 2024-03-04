@@ -55,7 +55,7 @@ class AuditControlCorrectionImpactPersistenceProviderTest : UnitTest() {
     @Test
     fun updateCorrectionImpact() {
         val entity = entity()
-        every { correctionRepository.getById(CORRECTION_ID) } returns entity
+        every { correctionRepository.getReferenceById(CORRECTION_ID) } returns entity
 
         val toUpdate = AuditControlCorrectionImpact(
             action = CorrectionImpactAction.BudgetReduction,

@@ -162,12 +162,12 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         every { userEntity.email } returns "email"
         every { userEntity.name } returns "name-user"
         every { userEntity.surname } returns "surname-user"
-        every { userRepository.getById(USER_ID) } returns userEntity
+        every { userRepository.getReferenceById(USER_ID) } returns userEntity
 
         val slotFileEntity = slot<JemsFileMetadataEntity>()
         every { fileMetadataRepository.save(capture(slotFileEntity)) } returnsArgument 0
 
-        every { projectRepository.getById(PROJECT_ID) } returns project()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
@@ -243,7 +243,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     fun setDescription() {
         val file = metadataFile(85L)
         every { fileMetadataRepository.findById(85L) } returns Optional.of(file)
-        every { projectRepository.getById(PROJECT_ID) } returns project()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
@@ -262,7 +262,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         val file = metadataFile(96L, "file-bucket", "/sample/location")
         every { minioStorage.deleteFile("file-bucket", "/sample/location") } answers { }
         every { fileMetadataRepository.delete(file) } answers { }
-        every { projectRepository.getById(PROJECT_ID) } returns project()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns project()
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 

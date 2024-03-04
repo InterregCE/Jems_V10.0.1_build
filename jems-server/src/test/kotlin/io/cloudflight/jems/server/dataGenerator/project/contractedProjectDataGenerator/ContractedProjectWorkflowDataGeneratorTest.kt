@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.dataGenerator.CONTRACTED_PROJECT_ID
 import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.project.versionedString
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -21,7 +21,8 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
+
 import java.time.LocalDate
 
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 50)
@@ -33,7 +34,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(10)
-    @ExpectSelect(28)
+    @ExpectSelect(27)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -64,7 +65,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(30)
-    @ExpectSelect(27)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -158,7 +159,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(90)
-    @ExpectSelect(27)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -202,7 +203,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(120)
-    @ExpectSelect(27)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -261,7 +262,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(160)
-    @ExpectSelect(27)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -285,7 +286,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(180)
-    @ExpectSelect(27)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)

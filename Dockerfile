@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:17-jre
 RUN mkdir /deployments
 RUN mkdir /deployments/plugins
 RUN chmod -R ugo+rwx /deployments
