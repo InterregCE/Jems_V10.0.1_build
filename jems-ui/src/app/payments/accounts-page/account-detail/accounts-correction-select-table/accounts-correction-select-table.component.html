@@ -48,8 +48,10 @@
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.correction.column.correction.no' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let i = index">
-                {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
-                :{auditControlNumber: correction(i).correction.auditControlNumber, correctionNumber: correction(i).correction.orderNr} }}
+                <a [routerLink]="'/app/project/detail/'+correction(i).projectId+'/corrections/auditControl/'+correction(i).correction.auditControlId+'/correction/'+correction(i).correction.id">
+                    {{ 'project.application.reporting.corrections.audit.control.correction.title.simple' | translate
+                    :{auditControlNumber: correction(i).correction.auditControlNumber, correctionNumber: correction(i).correction.orderNr} }}
+                </a>
             </mat-cell>
         </ng-container>
 
