@@ -28,7 +28,8 @@
                                      [class.link]="subtitle.route"
                                      [class.route-active]="(currentUrl | async) | IsMenuActive : (subtitle.baseRoute || subtitle.route) : !subtitle.baseRoute"
                                      (click)="$event.stopPropagation();sideNavService.navigate(subtitle)">
-                    <mat-expansion-panel-header [routerLink]="subtitle.route"
+                    <mat-expansion-panel-header *ngIf="subtitle.route"
+                                                [routerLink]="subtitle.route"
                                                 class="header-level-2" role="button" tabindex="0"
                                                 [ngClass]="{'has-children' : subtitle.bullets?.length}"
                                                 [class.panel-no-bullets]="!subtitle.bullets?.length"
@@ -40,6 +41,19 @@
                                 {{subtitle.headline.i18nKey | translate}}
                             </a>
                         </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-expansion-panel-header *ngIf="!subtitle.route"
+                                                class="header-level-2" role="button" tabindex="0"
+                                                [ngClass]="{'has-children' : subtitle.bullets?.length}"
+                                                [class.panel-no-bullets]="!subtitle.bullets?.length"
+                                                (keyup.space)="sideNavService.navigate(subtitle)"
+                                                (keyup.enter)="sideNavService.navigate(subtitle)">
+                      <mat-panel-title>
+                        <a class="title">
+                          <mat-icon *ngIf="subtitle.iconBeforeHeadline">{{subtitle.iconBeforeHeadline}}</mat-icon>
+                          {{subtitle.headline.i18nKey | translate}}
+                        </a>
+                      </mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-icon class="icon-after-headline"
                               *ngIf="subtitle.iconAfterHeadline">{{subtitle.iconAfterHeadline}}</mat-icon>
