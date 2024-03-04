@@ -13,7 +13,6 @@ import io.cloudflight.jems.plugin.contract.models.payments.account.ReconciledAmo
 import io.cloudflight.jems.plugin.contract.models.payments.account.ReconciledAmountPerPriorityData
 import io.cloudflight.jems.plugin.contract.models.payments.export.ControllingBodyData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.ProjectCorrectionProgrammeMeasureScenarioData
-import io.cloudflight.jems.plugin.contract.models.payments.export.ProjectCorrectionProgrammeMeasureScenarioData as PaymentCorrectionProgrammeMeasureScenarioData
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverview
 import io.cloudflight.jems.server.payments.model.account.PaymentAccountOverviewDetail
@@ -36,7 +35,7 @@ fun PaymentAccountCorrectionLinking.toDataModel() = PaymentAccountCorrectionLink
     projectCustomIdentifier = projectCustomIdentifier,
     priorityAxis = priorityAxis,
     controllingBody = controllingBody.toDataModel(),
-    scenario = scenario.toPaymentCorrectionScenarioDataModel(),
+    scenario = scenario.toDataModel(),
     paymentAccountId = paymentAccountId,
     fundAmount = fundAmount,
     partnerContribution = partnerContribution,
@@ -54,7 +53,6 @@ fun ControllingBody.toDataModel() =  ControllingBodyData.valueOf(this.name)
 
 
 fun ProjectCorrectionProgrammeMeasureScenario.toDataModel() = ProjectCorrectionProgrammeMeasureScenarioData.valueOf(this.name)
-fun ProjectCorrectionProgrammeMeasureScenario.toPaymentCorrectionScenarioDataModel() = PaymentCorrectionProgrammeMeasureScenarioData.valueOf(this.name)
 
 fun List<PaymentAccountOverview>.toDataModel() = map { it.toDataModel() }
 
