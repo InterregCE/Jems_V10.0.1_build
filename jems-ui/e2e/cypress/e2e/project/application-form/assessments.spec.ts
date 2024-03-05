@@ -156,7 +156,10 @@ context('Assessments & decision tests', () => {
       programmeEditorUser.email = faker.internet.email();
       cy.createUser(programmeEditorUser);
       cy.loginByRequest(programmeEditorUser.email);
-      cy.createChecklist(assessmentChecklist);
+      cy.createChecklist(assessmentChecklist).then(function(checklistId) {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.updateCallChecklists(this.callId, [checklistId]);
+      });
     });
     cy.loginByRequest(user.applicantUser.email);
     cy.createSubmittedApplication(application).then(applicationId => {
@@ -168,7 +171,7 @@ context('Assessments & decision tests', () => {
       cy.get('mat-option:first-of-type').click();
       cy.contains('start new assessment').click();
       cy.contains('Draft').should('be.visible');
-      cy.contains('button', 'Finish checklist').should('exist');
+      cy.contains('button', 'Finish checklist').should('be.visible');
       cy.contains('button', 'Yes?').click();
       cy.contains('button', 'Save changes').click();
       cy.contains('Checklist instance saved successfully').should('be.visible');
