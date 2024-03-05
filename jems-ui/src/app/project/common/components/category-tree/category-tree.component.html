@@ -9,6 +9,8 @@
                 mat-button>
             {{node.data.name?.i18nKey | translate : node.data.name?.i18nArguments}}
         </button>
+        <jems-context-info *ngIf="node.data?.info.type === 'PROCUREMENT'" infoPosition="right" infoText="{{'project.application.partner.report.file.tree.type.report.procurement.info' | translate}}"></jems-context-info>
+
     </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="20">

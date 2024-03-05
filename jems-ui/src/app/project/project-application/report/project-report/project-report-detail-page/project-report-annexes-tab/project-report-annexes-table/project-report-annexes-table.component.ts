@@ -47,11 +47,10 @@ export class ProjectReportAnnexesTableComponent {
             this.projectReportFileStore.fileList$,
             this.projectReportFileStore.selectedCategory$,
             this.projectReportStore.userCanEditReport$,
-            this.projectReportFileStore.isEditable$,
             this.projectReportFileStore.isReportOpen$,
             this.projectReportFileStore.isInLimitedReopened$
         ]).pipe(
-            map(([files, selectedCategory, canEdit, isEditable, isReportOpen, isInLimitedReopened]) => ({
+            map(([files, selectedCategory, canEdit, isReportOpen, isInLimitedReopened]) => ({
                 files,
                 fileList: files.content.map((file: JemsFileDTO) => ({
                     id: file.id,
@@ -61,8 +60,8 @@ export class ProjectReportAnnexesTableComponent {
                     author: file.author,
                     sizeString: file.sizeString,
                     description: file.description,
-                    editable: isEditable && canEdit,
-                    deletable: isEditable && canEdit && (file.type == JemsFileDTO.TypeEnum.ProjectReport) && !isInLimitedReopened,
+                    editable: isReportOpen && canEdit,
+                    deletable: isReportOpen && canEdit && (file.type == JemsFileDTO.TypeEnum.ProjectReport) && !isInLimitedReopened,
                     tooltipIfNotDeletable: isReportOpen && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
                     iconIfNotDeletable: isReportOpen && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'delete_forever' : ''
                 })),
