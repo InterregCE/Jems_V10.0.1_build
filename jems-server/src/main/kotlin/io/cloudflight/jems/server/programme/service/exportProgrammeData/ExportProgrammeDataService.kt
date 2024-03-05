@@ -20,7 +20,6 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
     }
 
     @Async
-    @Transactional
     fun execute(plugin: ProgrammeDataExportPlugin, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, pluginOptions: String) {
         runCatching {
             plugin.export(exportLanguage.toDataModel(), inputLanguage.toDataModel(), pluginOptions).also { result ->

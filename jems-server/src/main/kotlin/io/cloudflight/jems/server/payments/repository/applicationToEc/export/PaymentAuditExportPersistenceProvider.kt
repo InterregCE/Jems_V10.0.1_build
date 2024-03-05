@@ -69,6 +69,7 @@ class PaymentAuditExportPersistenceProvider(
             PaymentAuditExportMetaDataNotFoundException()
         }
 
+    @Transactional
     override fun saveExportFile(
         pluginKey: String,
         fundType: ProgrammeFundType?,
