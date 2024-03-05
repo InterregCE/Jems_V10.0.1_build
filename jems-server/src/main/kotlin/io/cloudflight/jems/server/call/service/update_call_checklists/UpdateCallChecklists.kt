@@ -24,10 +24,10 @@ class UpdateCallChecklists(
         val call = persistence.getCallById(callId)
 
         if (hasChange(checklists, checklistIds)) {
-            persistence.updateCallChecklistSelection(callId, checklistIds)
+            val selectedChecklists = persistence.updateCallChecklistSelection(callId, checklistIds).filter { it.selected }
 
             if (call.isPublished()) {
-                auditPublisher.publishEvent(callSelectedChecklistsChanged(this, checklists.filter { it.selected }, call))
+                auditPublisher.publishEvent(callSelectedChecklistsChanged(this, selectedChecklists, call))
             }
         }
     }

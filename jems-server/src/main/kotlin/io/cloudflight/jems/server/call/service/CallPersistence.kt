@@ -56,6 +56,6 @@ interface CallPersistence {
     fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption
 
     fun getCallChecklists(callId: Long, sort: Sort): List<CallChecklist>
-    fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>)
+    fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>): List<CallChecklist>
 }
 

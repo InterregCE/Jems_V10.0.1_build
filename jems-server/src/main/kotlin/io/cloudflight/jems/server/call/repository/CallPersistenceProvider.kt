@@ -3,8 +3,6 @@ package io.cloudflight.jems.server.call.repository
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallFundRateEntity
-import io.cloudflight.jems.server.call.entity.CallSelectedChecklistEntity
-import io.cloudflight.jems.server.call.entity.CallSelectedChecklistId
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.applicationFormConfigurationUpdated
@@ -351,17 +349,20 @@ class CallPersistenceProvider(
     }
 
     @Transactional
-    override fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>) {
+    override fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>): List<CallChecklist> {
         val call = findOrThrow(callId)
-        val programmeChecklists = programmeChecklistRepository.findAllById(checklistIds).associateBy { it.id }
-        val existingSelection = callSelectedChecklistRepository.findAllByIdCallId(callId)
-        val toCreate = checklistIds.filter { id -> !existingSelection.any { it.id.programmeChecklist.id == id } }
-            .mapNotNull { programmeChecklists[it] }
-            .map { CallSelectedChecklistEntity(id = CallSelectedChecklistId(call = call, programmeChecklist = it)) }
-        val toDelete = existingSelection.filter { it.id.programmeChecklist.id !in checklistIds }
+        val programmeChecklistsById = programmeChecklistRepository.findAllById(checklistIds).associateBy { it.id }
+        val selectedChecklists = callSelectedChecklistRepository.findAllByIdCallId(callId)
+
+        val toCreate = checklistIds.filter { id -> !selectedChecklists.any { it.id.programmeChecklist.id == id } }
+            .mapNotNull { programmeChecklistsById[it] }
+            .toCallSelectedEntity(call = call)
+        val toDelete = selectedChecklists.filter { it.id.programmeChecklist.id !in checklistIds }
 
         callSelectedChecklistRepository.deleteAll(toDelete)
         callSelectedChecklistRepository.saveAll(toCreate)
+
+        return programmeChecklistsById.values.map { it.toModel(selected = it.id in checklistIds) }
     }
 
     private fun findOrThrow(callId: Long) = callRepo.findById(callId).orElseThrow { CallNotFound() }
