@@ -6,7 +6,8 @@
                              [class.link]="data.route"
                              [class.route-active]="(currentUrl | async) | IsMenuActive : (data.baseRoute || data.route) : !data.baseRoute"
                              (click)="$event.stopPropagation();sideNavService.navigate(data)">
-            <mat-expansion-panel-header role="button" tabindex="0"
+            <mat-expansion-panel-header *ngIf="data.route"
+                    role="button" tabindex="0"
                     [class.panel-no-bullets]="!data.bullets?.length"
                     (keyup.space)="sideNavService.navigate(data)"
                     (keyup.enter)="sideNavService.navigate(data)"
@@ -17,6 +18,19 @@
                         {{data.headline.i18nKey | translate}}
                     </a>
                 </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-expansion-panel-header *ngIf="!data.route"
+                                        role="button" tabindex="0"
+                                        [class.panel-no-bullets]="!data.bullets?.length"
+                                        (keyup.space)="sideNavService.navigate(data)"
+                                        (keyup.enter)="sideNavService.navigate(data)"
+                                        [ngClass]="{'has-children' : data.bullets?.length}">
+              <mat-panel-title>
+                <a class="title">
+                  <mat-icon *ngIf="data.iconBeforeHeadline">{{data.iconBeforeHeadline}}</mat-icon>
+                  {{data.headline.i18nKey | translate}}
+                </a>
+              </mat-panel-title>
             </mat-expansion-panel-header>
             <div *ngFor="let subtitle of data.bullets" [class.versioned-section]="subtitle.versionedSection"
                  class="level-2">
