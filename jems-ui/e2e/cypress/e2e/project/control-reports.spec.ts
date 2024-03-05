@@ -166,9 +166,10 @@ context('Control report tests', () => {
           cy.assignInstitution(controllerAssignment);
         });
 
-        // create checklist
-        testData.controlChecklist.name = `control_checklist_${faker.string.alphanumeric(5)}`;
-        cy.createChecklist(testData.controlChecklist);
+        // create checklist and update the call
+        cy.createChecklist(testData.controlChecklist).then(checklistId => {
+          cy.updateCallChecklists(this.callId, [checklistId]);
+        });
 
         // create partner report
         cy.loginByRequest(user.applicantUser.email);
