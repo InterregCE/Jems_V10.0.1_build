@@ -9,6 +9,8 @@ import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationE
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallFundRateEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistId
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
@@ -247,6 +249,15 @@ fun ProgrammeChecklistEntity.toModel(selected: Boolean): CallChecklist = CallChe
     lastModificationDate = lastModificationDate,
     selected = selected
 )
+
+fun List<ProgrammeChecklistEntity>.toCallSelectedEntity(call: CallEntity): List<CallSelectedChecklistEntity> = map {
+    CallSelectedChecklistEntity(
+        id = CallSelectedChecklistId(
+            call = call,
+            programmeChecklist = it
+        )
+    )
+}
 
 private fun getDefaultAllowedRealCosts(callType: CallType): AllowedRealCostsEntity {
     return when (callType) {

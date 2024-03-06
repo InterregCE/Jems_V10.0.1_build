@@ -82,7 +82,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.context.ApplicationEventPublisher
@@ -385,6 +384,8 @@ internal class CallPersistenceProviderTest {
                 )
             )
         )
+
+        private val updatedSelectedChecklists = programmeChecklists.map { it.toModel(selected = true) }
     }
 
     @MockK
@@ -1109,7 +1110,7 @@ internal class CallPersistenceProviderTest {
         every { callSelectedChecklistRepository.deleteAll(capture(deleteSlot)) } just runs
         every { callSelectedChecklistRepository.saveAll(capture(createSlot)) } returnsArgument 0
 
-        assertDoesNotThrow { persistence.updateCallChecklistSelection(callId, checklistIds) }
+        assertThat(persistence.updateCallChecklistSelection(callId, checklistIds)).isEqualTo(updatedSelectedChecklists)
 
         assertTrue(deleteSlot.captured.none())
         assertTrue(createSlot.captured.all { it.id.programmeChecklist.id == 2L })

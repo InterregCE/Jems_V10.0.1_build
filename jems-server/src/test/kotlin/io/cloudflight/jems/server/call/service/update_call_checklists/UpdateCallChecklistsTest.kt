@@ -8,9 +8,12 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.mockk.*
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
@@ -26,6 +29,23 @@ class UpdateCallChecklistsTest : UnitTest() {
             CallChecklist(
                 id = 1,
                 name = "Checklist 1",
+                type = ProgrammeChecklistType.CONTROL,
+                lastModificationDate = null,
+                selected = true
+            )
+        )
+
+        val SELECTED_CHECKLISTS = listOf(
+            CallChecklist(
+                id = 1,
+                name = "Checklist 1",
+                type = ProgrammeChecklistType.CONTROL,
+                lastModificationDate = null,
+                selected = true
+            ),
+            CallChecklist(
+                id = 2,
+                name = "Checklist 2",
                 type = ProgrammeChecklistType.CONTROL,
                 lastModificationDate = null,
                 selected = true
@@ -70,7 +90,7 @@ class UpdateCallChecklistsTest : UnitTest() {
         val call = callWithStatus(1L, CallStatus.DRAFT)
         every { persistence.getCallChecklists(CALL_ID, any()) } returns EXISTING_CHECKLISTS
         every { persistence.getCallById(CALL_ID) } returns call
-        every { persistence.updateCallChecklistSelection(CALL_ID, SELECTED_CHECKLIST_IDS) } just runs
+        every { persistence.updateCallChecklistSelection(CALL_ID, SELECTED_CHECKLIST_IDS) } returns SELECTED_CHECKLISTS
         every { auditPublisher.publishEvent(capture(slotAudit)) } just runs
 
         updateCallChecklists.updateCallChecklists(CALL_ID, SELECTED_CHECKLIST_IDS)
@@ -84,7 +104,7 @@ class UpdateCallChecklistsTest : UnitTest() {
         val call = callWithStatus(1L, CallStatus.DRAFT)
         every { persistence.getCallChecklists(CALL_ID, any()) } returns EXISTING_CHECKLISTS
         every { persistence.getCallById(CALL_ID) } returns call
-        every { persistence.updateCallChecklistSelection(CALL_ID, SELECTED_CHECKLIST_IDS) } just runs
+        every { persistence.updateCallChecklistSelection(CALL_ID, SELECTED_CHECKLIST_IDS) } returns SELECTED_CHECKLISTS
         every { auditPublisher.publishEvent(capture(slotAudit)) } just runs
 
         updateCallChecklists.updateCallChecklists(CALL_ID, SELECTED_CHECKLIST_IDS)
@@ -98,7 +118,7 @@ class UpdateCallChecklistsTest : UnitTest() {
         val call = callWithStatus(1L, CallStatus.DRAFT)
         every { persistence.getCallChecklists(CALL_ID, any()) } returns EXISTING_CHECKLISTS
         every { persistence.getCallById(CALL_ID) } returns call
-        every { persistence.updateCallChecklistSelection(CALL_ID, setOf(1L)) } just runs
+        every { persistence.updateCallChecklistSelection(CALL_ID, setOf(1L)) } returns SELECTED_CHECKLISTS
         every { auditPublisher.publishEvent(capture(slotAudit)) } just runs
 
         updateCallChecklists.updateCallChecklists(CALL_ID, SELECTED_CHECKLIST_IDS)
