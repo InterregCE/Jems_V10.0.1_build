@@ -45,10 +45,7 @@ export class ReportFileManagementStore {
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
 
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
-
   canUpload$: Observable<boolean>;
-  canReadFiles$: Observable<boolean>;
-
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
