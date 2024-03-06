@@ -264,7 +264,8 @@ fun AdvancePaymentUpdate.toEntity(
     project: ProjectFull,
     projectVersion: String,
     partner: ProjectPartnerSummary,
-    existing: AdvancePaymentEntity?,
+    paymentAuthorizedUser: UserEntity?,
+    paymentConfirmedUser: UserEntity?
 ) = AdvancePaymentEntity(
     id = id ?: 0,
     projectId = project.id!!,
@@ -278,12 +279,12 @@ fun AdvancePaymentUpdate.toEntity(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,
-    isPaymentAuthorizedInfo = existing?.isPaymentAuthorizedInfo,
-    paymentAuthorizedInfoUser = existing?.paymentAuthorizedInfoUser,
-    paymentAuthorizedDate = existing?.paymentAuthorizedDate,
-    isPaymentConfirmed = existing?.isPaymentConfirmed,
-    paymentConfirmedUser = existing?.paymentConfirmedUser,
-    paymentConfirmedDate = existing?.paymentConfirmedDate
+    isPaymentAuthorizedInfo = paymentAuthorized,
+    paymentAuthorizedInfoUser = paymentAuthorizedUser,
+    paymentAuthorizedDate = paymentAuthorizedDate,
+    isPaymentConfirmed = paymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser,
+    paymentConfirmedDate = paymentConfirmedDate
 ).also { entity ->
     entity.paymentSettlements = paymentSettlements.map { it.toEntity(entity) }.toMutableSet()
 }

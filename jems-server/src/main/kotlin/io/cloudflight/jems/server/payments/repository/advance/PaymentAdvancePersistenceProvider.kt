@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.payments.entity.QAdvancePaymentSettlementEntit
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
@@ -46,7 +45,7 @@ class PaymentAdvancePersistenceProvider(
     private val fileRepository: JemsProjectFileService,
     private val reportFileRepository: JemsFileMetadataRepository,
     private val jpaQueryFactory: JPAQueryFactory,
-) : PaymentAdvancePersistence {
+): PaymentAdvancePersistence {
 
     @Transactional(readOnly = true)
     override fun list(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
@@ -60,7 +59,7 @@ class PaymentAdvancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentsByProjectId(projectId: Long): List<AdvancePayment> =
-        advancePaymentRepository.findAllByProjectId(projectId).map { it.toModel() }
+         advancePaymentRepository.findAllByProjectId(projectId).map { it.toModel() }
 
     @Transactional
     override fun deleteByPaymentId(paymentId: Long) {
@@ -69,7 +68,7 @@ class PaymentAdvancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentDetail(paymentId: Long): AdvancePaymentDetail {
-        return advancePaymentRepository.getReferenceById(paymentId).toDetailModel()
+       return advancePaymentRepository.getReferenceById(paymentId).toDetailModel()
     }
 
     @Transactional
@@ -101,20 +100,21 @@ class PaymentAdvancePersistenceProvider(
         val partner = partnerPersistence.getById(paymentDetail.partnerId, version).toSummary()
 
         return advancePaymentRepository.save(
-            paymentDetail.toEntity(
-                project = project,
-                partner = partner,
-                projectVersion = version,
-                existing = existing,
-            ).also {
-                setSourceOfContribution(
-                    entity = it,
-                    fundId = paymentDetail.programmeFundId,
-                    contributionId = paymentDetail.partnerContributionId,
-                    contributionSpfId = paymentDetail.partnerContributionSpfId
-                )
-            }
-        ).toDetailModel()
+                paymentDetail.toEntity(
+                    project = project,
+                    partner = partner,
+                    projectVersion = version,
+                    paymentAuthorizedUser = getUserOrNull(paymentDetail.paymentAuthorizedUserId),
+                    paymentConfirmedUser = getUserOrNull(paymentDetail.paymentConfirmedUserId)
+                ).also {
+                    setSourceOfContribution(
+                        entity = it,
+                        fundId = paymentDetail.programmeFundId,
+                        contributionId = paymentDetail.partnerContributionId,
+                        contributionSpfId = paymentDetail.partnerContributionSpfId
+                    )
+                }
+            ).toDetailModel()
     }
 
     @Transactional
