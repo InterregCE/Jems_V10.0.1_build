@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.plugin.contract.models.call.AllowedRealCostsData
 import io.cloudflight.jems.plugin.contract.models.call.ApplicationFormFieldConfigurationData
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
@@ -24,6 +25,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSp
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
@@ -41,8 +43,8 @@ import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 import java.util.*
 
-fun CallDetail.toDataModel(inputLanguages: List<ProgrammeLanguage>) =
-    pluginCallDataMapper.map(this, inputLanguages.toSystemLanguageData())
+fun CallDetail.toDataModel(inputLanguages: List<ProgrammeLanguage>, allowedRealCosts: AllowedRealCosts) =
+    pluginCallDataMapper.map(this, inputLanguages.toSystemLanguageData(), allowedRealCosts.toAllowedRealCostsData())
 
 fun ProgrammePriority.toDataModel() =
     pluginCallDataMapper.map(this)
@@ -61,6 +63,15 @@ fun MutableSet<ApplicationFormFieldConfiguration>.toDataModel() =
 
 fun List<ProgrammeLanguage>.toSystemLanguageData()=
     map { SystemLanguageData.valueOf(it.code.name) }.toSet()
+
+fun AllowedRealCosts.toAllowedRealCostsData()=
+    AllowedRealCostsData(
+        allowRealStaffCosts,
+        allowRealTravelAndAccommodationCosts,
+        allowRealExternalExpertiseAndServicesCosts,
+        allowRealEquipmentCosts,
+        allowRealInfrastructureCosts
+    )
 
 private val pluginCallDataMapper = Mappers.getMapper(PluginCallDataMapper::class.java)
 
@@ -82,13 +93,14 @@ abstract class PluginCallDataMapper {
     abstract fun map(callStatus: CallStatus): CallStatusData
     @Mappings(
         Mapping(source = "inputLanguages", target = "inputLanguages"),
+        Mapping(source = "allowedRealCosts", target = "allowedRealCosts"),
         Mapping(source = "callDetail.startDate", target = "startDateTime"),
         Mapping(source = "callDetail.endDateStep1", target = "endDateTimeStep1"),
         Mapping(source = "callDetail.endDate", target = "endDateTime"),
         Mapping(source = "callDetail.additionalFundAllowed", target = "isAdditionalFundAllowed"),
         Mapping(source = "callDetail.directContributionsAllowed", target = "isDirectContributionsAllowed")
     )
-    abstract fun map(callDetail: CallDetail, inputLanguages: Set<SystemLanguageData>): CallDetailData
+    abstract fun map(callDetail: CallDetail, inputLanguages: Set<SystemLanguageData>, allowedRealCosts: AllowedRealCostsData): CallDetailData
     abstract fun map(programmeStrategy: SortedSet<ProgrammeStrategy>): SortedSet<ProgrammeStrategyData>
 
     fun map(callFundRate: CallFundRate): ProgrammeFundData =
