@@ -95,16 +95,20 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
       .pipe(
         map(versions => ({
             currentVersion: versions.find(version => version.current),
-            lastApprovedVersion: versions.find(version => this.isStatusApprovedOrContracted(version)),
+            lastApprovedVersion: versions.find(version => this.isApprovedOrLater(version)),
             pastVersions: versions.filter(version => !version.current &&
-              (version !== versions.find((approvedVersion) => this.isStatusApprovedOrContracted(approvedVersion))))
+              (version !== versions.find((approvedVersion) => this.isApprovedOrLater(approvedVersion))))
           }
         ))
       );
   }
 
-  isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): boolean {
-    return currentVersion.status === ProjectStatusDTO.StatusEnum.APPROVED || currentVersion.status === ProjectStatusDTO.StatusEnum.CONTRACTED;
+  isApprovedOrLater(currentVersion: ProjectVersionDTO): boolean {
+    return [
+      ProjectStatusDTO.StatusEnum.APPROVED,
+      ProjectStatusDTO.StatusEnum.CONTRACTED,
+      ProjectStatusDTO.StatusEnum.CLOSED
+    ].includes(currentVersion.status);
   }
 
   private isSelectedSameAsLastApproved(selectedVersion: ProjectVersionDTO | undefined): boolean {
@@ -116,7 +120,12 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   noDecisionTaken(currentVersion: ProjectVersionDTO): boolean {
-    return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED;
+    return ![
+      ProjectStatusEnum.MODIFICATIONREJECTED,
+      ProjectStatusEnum.APPROVED,
+      ProjectStatusEnum.CONTRACTED,
+      ProjectStatusEnum.CLOSED
+    ].includes(currentVersion.status);
   }
 
   getIconForProjectStatus(status: ProjectStatusEnum): String {
