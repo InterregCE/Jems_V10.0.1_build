@@ -5,8 +5,8 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
   ContractReportingStore
-} from "@project/project-application/contracting/contract-reporting/contract-reporting.store";
-import {ProjectVersionStore} from "@project/common/services/project-version-store.service";
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Component({
   selector: 'jems-project-detail-page',

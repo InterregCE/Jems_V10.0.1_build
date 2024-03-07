@@ -183,17 +183,22 @@
                                             </div>
                                         </div>
                                         <div class="column-installment-date justif start">
-                                            <mat-form-field class="w-100">
-                                                <input name="paymentDate"
-                                                       [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                                       [matDatepicker]="paymentDatePicker"
-                                                       aria-label="date">
+                                            <mat-form-field class="w-100" >
+                                                <span [class.marked-as-required]="isPaymentDateRequired(index, installmentIndex)">
+                                                        <input name="paymentDate"
+                                                               class="mat-required-marker"
+                                                               [required]="installmentsArray(index).at(installmentIndex).get('paymentConfirmed')?.value"
+                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                                               [matDatepicker]="paymentDatePicker"
+                                                               aria-label="date">
+                                                </span>
                                                 <mat-error>
                                                     <jems-form-field-errors condensed="true"
                                                                             [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
                                                 </mat-error>
                                                 <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
                                                 <mat-datepicker #paymentDatePicker></mat-datepicker>
+
                                             </mat-form-field>
                                         </div>
                                         <div class="column-installment-confirm-checkbox justify-start">

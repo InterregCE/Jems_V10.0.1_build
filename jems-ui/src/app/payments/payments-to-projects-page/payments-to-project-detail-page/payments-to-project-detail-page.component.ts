@@ -271,12 +271,15 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   setConfirmPaymentDate(isChecked: boolean, paymentIndex: number, installmentIndex: number) {
     if (isChecked) {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.setValidators([Validators.required]);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(this.getFormattedCurrentLocaleDate());
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
+
       if(!this.isPaymentDateEmpty(paymentIndex, installmentIndex)) {
         this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
       }
     } else {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.clearValidators();
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
@@ -383,6 +386,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   getAvailableCorrectionsForPartner(availableCorrections: AvailableCorrectionsForPaymentDTO[], partnerId: number): AuditControlCorrectionDTO[] {
     return availableCorrections.find(el => el.partnerId === partnerId)?.corrections ?? [];
+  }
+
+  isPaymentDateRequired(paymentIndex: number, installmentIndex: number): boolean {
+    return this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmed')?.value && this.isPaymentDateEmpty(paymentIndex, installmentIndex);
   }
 }
 

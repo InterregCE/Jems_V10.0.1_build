@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import { CallChecklistDTO, CallService, PageCallChecklistDTO } from '@cat/api'
+import { CallChecklistDTO, CallService, PageCallChecklistDTO } from '@cat/api';
 import { Log } from '@common/utils/log';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import { BehaviorSubject } from 'rxjs';
-import { CallStore } from '../services/call-store.service'
-import { RoutingService } from '@common/services/routing.service'
+import { CallStore } from '../services/call-store.service';
+import { RoutingService } from '@common/services/routing.service';
 
 @Injectable()
 export class ChecklistsPageStore {
@@ -26,7 +26,7 @@ export class ChecklistsPageStore {
     this.checklists$ = this.checklists();
   }
 
-  private checklists(): Observable<Array<CallChecklistDTO>> {
+  private checklists(): Observable<CallChecklistDTO[]> {
     return combineLatest([
       this.callId$.pipe(filter(Boolean), map(Number)),
       this.newSort$.pipe(
@@ -46,7 +46,7 @@ export class ChecklistsPageStore {
         switchMap(callId => this.callService.updateSelectedChecklists(callId, checklistIds)),
         tap(() => this.newRefresh$.next(1)),
         tap(saved => Log.info('Updated selected checklists for call:', this, saved))
-    )
+    );
   }
 
 }

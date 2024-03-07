@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
@@ -90,7 +90,7 @@ export class AdvancePaymentsDetailPageComponent {
 
   constructor(private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
-              private formService: FormService,
+              public formService: FormService,
               private advancePaymentsDetailPageStore: AdvancePaymentsDetailPageStoreStore,
               private securityService: SecurityService,
               private localeDatePipe: LocaleDatePipe,
@@ -432,7 +432,6 @@ export class AdvancePaymentsDetailPageComponent {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.disable();
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(this.getFormattedCurrentLocaleDate());
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
     } else {
@@ -491,6 +490,8 @@ export class AdvancePaymentsDetailPageComponent {
 
   setConfirmPaymentDate(isChecked: boolean) {
     if (isChecked) {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.setValidators([Validators.required]);
+
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(this.getFormattedCurrentLocaleDate());
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
 
@@ -498,6 +499,8 @@ export class AdvancePaymentsDetailPageComponent {
         this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
       }
     } else {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.clearValidators();
+
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(null);
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(null);
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
@@ -523,8 +526,7 @@ export class AdvancePaymentsDetailPageComponent {
   }
 
   isPaymentConfirmationDisabled(): boolean {
-    return this.isPaymentDateEmpty()
-      || !this.isPaymentAuthorised()
+    return !this.isPaymentAuthorised()
       || this.settlementsArray.value.length > 0;
   }
 
@@ -587,29 +589,8 @@ export class AdvancePaymentsDetailPageComponent {
     return null;
   }
 
-  private showSuccessMessageAfterPaymentAuthorised(): void {
-    this.successfulAuthorizationMessage = true;
-    setTimeout(() => {
-      this.successfulAuthorizationMessage = false;
-      this.changeDetectorRef.markForCheck();
-    }, 4000);
+  isPaymentDateRequired(): boolean {
+    return this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value && this.isPaymentDateEmpty();
   }
-
-  private showSuccessMessageAfterPaymentConfirmed(): void {
-    this.successfulConfirmationMessage = true;
-    setTimeout(() => {
-      this.successfulConfirmationMessage = false;
-      this.changeDetectorRef.markForCheck();
-    }, 4000);
-  }
-
-  public showErrorMessage(error: APIError): Observable<null> {
-    this.error$.next(error);
-    setTimeout(() => {
-      this.error$.next(null);
-    }, 4000);
-    return of(null);
-  }
-
 }
 

@@ -31,7 +31,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.time.LocalDate
 
 @Repository
 class PaymentAdvancePersistenceProvider(
@@ -52,7 +51,6 @@ class PaymentAdvancePersistenceProvider(
         return fetchAdvancePayments(pageable, filters)
     }
 
-
     @Transactional(readOnly = true)
     override fun existsById(id: Long) =
         advancePaymentRepository.existsById(id)
@@ -69,26 +67,6 @@ class PaymentAdvancePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentDetail(paymentId: Long): AdvancePaymentDetail {
        return advancePaymentRepository.getReferenceById(paymentId).toDetailModel()
-    }
-
-    @Transactional
-    override fun updateAdvancePaymentStatus(paymentId: Long, status: AdvancePaymentStatus, currentUserId: Long): AdvancePaymentDetail {
-        return advancePaymentRepository.getReferenceById(paymentId).apply {
-            if (isPaymentAuthorizedInfo != true && status == AdvancePaymentStatus.AUTHORIZED) {
-                isPaymentAuthorizedInfo = true
-                paymentAuthorizedDate = LocalDate.now()
-                paymentAuthorizedInfoUser = getUserOrNull(currentUserId)
-            } else if (status == AdvancePaymentStatus.DRAFT) {
-                isPaymentAuthorizedInfo = false
-                paymentAuthorizedDate = null
-                paymentAuthorizedInfoUser = null
-            }
-
-            val isNewlyConfirmed = status == AdvancePaymentStatus.CONFIRMED
-            isPaymentConfirmed = isNewlyConfirmed
-            paymentConfirmedDate = if (isNewlyConfirmed) LocalDate.now() else null
-            paymentConfirmedUser = if (isNewlyConfirmed) getUserOrNull(currentUserId) else null
-        }.toDetailModel()
     }
 
     @Transactional
