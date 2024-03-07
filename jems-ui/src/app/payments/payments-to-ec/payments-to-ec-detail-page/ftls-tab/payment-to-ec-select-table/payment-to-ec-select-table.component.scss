@@ -27,8 +27,12 @@ $input-col-width: 9rem;
   max-width: 4.5rem;
 }
 
+.mat-column-paymentId {
+  min-width: 5rem;
+  padding-left: 0.5rem;
+}
 .mat-column-projectId {
-  min-width: 6rem;
+  min-width: 7rem;
 }
 .mat-column-projectAcronym {
   min-width: 8rem;
