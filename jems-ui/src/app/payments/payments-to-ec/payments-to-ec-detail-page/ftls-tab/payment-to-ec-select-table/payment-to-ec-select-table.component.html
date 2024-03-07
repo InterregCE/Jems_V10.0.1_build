@@ -15,6 +15,15 @@
             </mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="paymentId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="paymentId">
+                <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.payment.id' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let i = index">
+                {{data.paymentToEcLinking.content[i].payment.id}}
+            </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="projectId">
             <mat-header-cell *matHeaderCellDef mat-sort-header="projectCustomIdentifier">
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.project.id' | translate }}</span>

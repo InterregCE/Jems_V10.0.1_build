@@ -65,6 +65,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   displayedColumns: string[] = [];
   displayedColumnsAll = [
     'select',
+    'paymentId',
     'projectId',
     'projectAcronym',
     'priorityAxis',
