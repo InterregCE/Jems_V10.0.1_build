@@ -64,7 +64,9 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
             reportProjectOfOriginId = PROJECT_REPORT_ID,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = EXPENDITURE_ID,
+            parkedOn = YESTERDAY
         )
 
         private val dummyLineLumpSum = ProjectPartnerReportLumpSum(

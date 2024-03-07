@@ -28,6 +28,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val PARTNER_ID = 11L
     private val CONTRACT_ID = 17L
     private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
+    private val TODAY = ZonedDateTime.now()
 
     private val reportExpenditureVerification = ProjectPartnerReportExpenditureVerification(
         id = 754,
@@ -64,7 +65,9 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = 754,
+            parkedOn = TODAY
         ),
         partOfSampleLocked = false
     )
@@ -104,7 +107,9 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
             reportOfOriginId = 72L,
             reportOfOriginNumber = 4,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = 754,
+            parkedOn = TODAY
         ),
         partOfSampleLocked = false
     )

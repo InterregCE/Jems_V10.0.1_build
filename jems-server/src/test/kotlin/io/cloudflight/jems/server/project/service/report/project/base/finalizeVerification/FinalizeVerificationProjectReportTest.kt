@@ -72,6 +72,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 21L
+        private val DATE_TIME_NOW = ZonedDateTime.now()
 
         private fun reportSubmissionSummary(reportId: Long, reportNumber: Int) = ProjectReportSubmissionSummary(
             id = reportId,
@@ -156,7 +157,9 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
             reportProjectOfOriginId = PROJECT_REPORT_ID,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = EXPENDITURE_ID,
+            parkedOn = DATE_TIME_NOW
         )
 
         private val expenditureItem = ProjectPartnerReportExpenditureItem(

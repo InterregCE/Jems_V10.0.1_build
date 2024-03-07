@@ -75,14 +75,12 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
             expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId = projectReportId)
                 .associateBy { it.expenditure.id }
 
-        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
-
         expenditureVerification.forEach {
             existingEntities.getValue(it.expenditureId).updateWith(it, existingEntities[it.expenditureId]!!)
         }
-        val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditureVerification.map { it.expenditureId }.toSet())
 
-        return existingEntities.values.toExtendedModel(procurementsById, parkedInfo.toList())
+        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
+        return existingEntities.values.toExtendedModel(procurementsById)
     }
 
     @Transactional

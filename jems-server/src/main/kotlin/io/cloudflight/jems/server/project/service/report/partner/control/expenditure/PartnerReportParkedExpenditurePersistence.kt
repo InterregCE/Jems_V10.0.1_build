@@ -14,4 +14,6 @@ interface PartnerReportParkedExpenditurePersistence {
     fun unParkExpenditures(expenditureIds: Collection<Long>)
 
     fun getParkedExpenditureIds(reportId: Long): Set<Long>
+
+    fun findAllByProjectReportId(projectReportId: Long): List<ExpenditureParkingMetadata>
 }

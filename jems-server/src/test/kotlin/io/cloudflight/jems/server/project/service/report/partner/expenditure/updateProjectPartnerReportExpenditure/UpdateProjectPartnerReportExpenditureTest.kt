@@ -27,12 +27,14 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.hibernate.type.descriptor.java.ZonedDateTimeJavaDescriptor
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
@@ -40,6 +42,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         private const val PARTNER_ID = 877L
         private val DAYS_AGO_2 = LocalDate.now().minusDays(1)
         private val DAYS_AGO_3 = LocalDate.now().minusDays(1)
+        private val DATE_TIME_NOW = ZonedDateTime.now()
+
 
         private fun report(id: Long, status: ReportStatus): ProjectPartnerReport {
             val report = mockk<ProjectPartnerReport>()
@@ -474,7 +478,9 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                     reportOfOriginId = 388L,
                     reportProjectOfOriginId = null,
                     reportOfOriginNumber = 2,
-                    originalExpenditureNumber = 2
+                    originalExpenditureNumber = 2,
+                    parkedFromExpenditureId = 14L,
+                    parkedOn = DATE_TIME_NOW
                 )
             ),
         )
@@ -488,7 +494,9 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                     reportOfOriginId = 388L,
                     reportProjectOfOriginId = null,
                     reportOfOriginNumber = 2,
-                    originalExpenditureNumber = 2
+                    originalExpenditureNumber = 2,
+                    parkedFromExpenditureId = 14L,
+                    parkedOn = DATE_TIME_NOW
                 )
             ),
         )

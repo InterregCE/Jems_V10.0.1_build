@@ -74,7 +74,9 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             reportOfOriginId = 75L,
             reportOfOriginNumber = 10,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 11
+            originalExpenditureNumber = 11,
+            parkedOn = time,
+            parkedFromExpenditureId = 400L
         )
 
         every { reportExpenditurePersistence.getExpenditureAttachment(4L, 400L) } returns null
@@ -84,7 +86,10 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 10,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 11
+                originalExpenditureNumber = 11,
+                parkedFromExpenditureId = 400L,
+                parkedOn = time
+
             )
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(4L, 40L, 400L) } returns mockedResult
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(400L)) } answers { }
@@ -119,7 +124,9 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             reportOfOriginId = reportId,
             reportOfOriginNumber = 10,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 11
+            originalExpenditureNumber = 11,
+            parkedFromExpenditureId = 400L,
+            parkedOn = time
         )
         every { reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId = 400L)  } returns expenditureMetadata
 
@@ -160,7 +167,9 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             reportOfOriginId = 19L,
             reportOfOriginNumber = 10,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 11
+            originalExpenditureNumber = 11,
+            parkedFromExpenditureId = 500L,
+            parkedOn = time
         )
         every { reportParkedExpenditurePersistence.getParkedExpenditureById(expenditureId = 500L)  } returns expenditureMetadata
         every { reportExpenditurePersistence.getExpenditureAttachment(5L, 500L) } returns file
@@ -168,7 +177,16 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         val newExpenditure = mockk<ProjectPartnerReportExpenditureCost>()
         every { newExpenditure.id } returns 945L
         every { newExpenditure.parkingMetadata } returns
-            ExpenditureParkingMetadata(reportOfOriginId = 77L, reportOfOriginNumber = 3, reportProjectOfOriginId = null, originalExpenditureNumber = 4)
+                ExpenditureParkingMetadata(
+                    reportOfOriginId = 77L,
+                    reportOfOriginNumber = 3,
+                    reportProjectOfOriginId = null,
+                    originalExpenditureNumber = 4,
+                    parkedFromExpenditureId = 500L,
+                    parkedOn = time
+
+
+                )
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(5L, 50L, 500L) } returns newExpenditure
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(500L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(5L) } returns 55L

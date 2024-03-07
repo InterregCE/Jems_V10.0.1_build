@@ -34,6 +34,7 @@ import java.time.ZonedDateTime
 internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : UnitTest() {
 
     private val TODAY = LocalDate.now()
+    private val DATE_TIME_NOW = ZonedDateTime.now()
 
     private val verification = ProjectPartnerReportExpenditureVerification(
         id = 14L,
@@ -99,7 +100,9 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
             reportOfOriginId = 14L,
             reportOfOriginNumber = 2,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 9
+            originalExpenditureNumber = 9,
+            parkedFromExpenditureId = 14L,
+            parkedOn = DATE_TIME_NOW
         ),
         partOfSampleLocked = false
     )
@@ -354,7 +357,9 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
                     reportOfOriginId = 54L,
                     reportOfOriginNumber = 4,
                     reportProjectOfOriginId = null,
-                    originalExpenditureNumber = 1
+                    originalExpenditureNumber = 1,
+                    parkedFromExpenditureId = 14L,
+                    parkedOn = DATE_TIME_NOW
                 ),
             ))
         every { reportParkedExpenditurePersistence.getParkedExpenditureIds(54L)} returns setOf(14L)

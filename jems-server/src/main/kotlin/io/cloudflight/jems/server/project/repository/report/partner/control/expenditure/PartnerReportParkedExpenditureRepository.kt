@@ -39,4 +39,6 @@ interface PartnerReportParkedExpenditureRepository : JpaRepository<PartnerReport
 
     @Query("SELECT pe.id FROM #{#entityName} pe WHERE pe.parkedFrom.partnerReport.id = :reportId")
     fun getAvailableParkedExpenditureIdsFromPartnerReport(reportId: Long): Set<Long>
+
+    fun findAllByParkedInProjectReportId(projectReportId: Long): List<PartnerReportParkedExpenditureEntity>
 }

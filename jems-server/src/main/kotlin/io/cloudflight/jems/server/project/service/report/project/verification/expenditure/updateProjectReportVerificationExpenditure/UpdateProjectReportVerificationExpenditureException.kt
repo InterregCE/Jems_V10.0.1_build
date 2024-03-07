@@ -17,3 +17,12 @@ class VerificationNotOpen : ApplicationUnprocessableException(
     code = "$ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$ERROR_KEY_PREFIX.verification.not.open"),
 )
+
+
+class UnParkExpenditureException(expenditureIds: Set<Long>) : ApplicationUnprocessableException(
+    code = "$ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage(
+        "$ERROR_KEY_PREFIX.verification.unpark.not.allowed",
+                i18nArguments = expenditureIds.associateBy({it.toString()}) { it.toString() }
+    ),
+)

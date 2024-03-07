@@ -3,12 +3,14 @@ package io.cloudflight.jems.server.project.service.report.project.verification.e
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
@@ -27,6 +29,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -54,7 +57,9 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = EXPENDITURE_ID,
+            parkedOn = YESTERDAY
         )
 
 
@@ -212,6 +217,18 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "ReOpenFinalized"])
     fun updateExpenditureVerification(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
+
+        val updatedExpenditure = ProjectReportVerificationExpenditureLine(
+            expenditure = expenditureItem,
+            partOfVerificationSample = false,
+            deductedByJs = BigDecimal.valueOf(100),
+            deductedByMa = BigDecimal.valueOf(200),
+            amountAfterVerification = BigDecimal.valueOf(300),
+            typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+            parked = true,
+            verificationComment = "NEW VERIFICATION COMM",
+            parkedOn = null
+        )
         every { report.status } returns status
         every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
 
@@ -219,26 +236,53 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
             projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(
                 PROJECT_REPORT_ID
             )
-        } returns listOf(expenditureLine)
+        } returns listOf(expenditureLine) andThen listOf(updatedExpenditure)
         every {
             projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
                 PROJECT_REPORT_ID,
                 any()
             )
-        } returns listOf(expectedExpenditureLine)
-        every { partnerReportParkedExpenditurePersistence.parkExpenditures(any()) } returns Unit
+        } returns listOf(updatedExpenditure)
+
+        val parkedSlot = slot<Collection<ParkExpenditureData>>()
+        every { partnerReportParkedExpenditurePersistence.parkExpenditures(capture(parkedSlot)) } returns Unit
         every { partnerReportParkedExpenditurePersistence.unParkExpenditures(any()) } returns Unit
 
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(TypologyErrors(PROJECT_ID, "Typology 1"))
 
+
         assertThat(
             updateProjectReportVerificationExpenditure.updateExpenditureVerification(
                 PROJECT_REPORT_ID,
-                expendituresToUpdate("NEW COMMENT VERIFICATION")
+                listOf(
+                    ProjectReportVerificationExpenditureLineUpdate(
+                        expenditureId = EXPENDITURE_ID,
+                        partOfVerificationSample = false,
+                        deductedByJs = BigDecimal.valueOf(150),
+                        deductedByMa = BigDecimal.valueOf(250),
+                        typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+                        parked = true,
+                        verificationComment = "NEW VERIFICATION COMM"
+                    )
+                )
             )
         ).isEqualTo(
-            listOf(expectedExpenditureLine)
+            listOf(
+                ProjectReportVerificationExpenditureLine(
+                    expenditure = expenditureItem,
+                    partOfVerificationSample = false,
+                    deductedByJs = BigDecimal.valueOf(100),
+                    deductedByMa = BigDecimal.valueOf(200),
+                    amountAfterVerification = BigDecimal.valueOf(300),
+                    typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+                    parked = true,
+                    verificationComment = "NEW VERIFICATION COMM",
+                    parkedOn = null
+                )
+            )
         )
+
+        assertThat(parkedSlot.captured).isNotEmpty()
     }
 
     @ParameterizedTest(name = "updateExpenditureVerification - wrong status {0}")

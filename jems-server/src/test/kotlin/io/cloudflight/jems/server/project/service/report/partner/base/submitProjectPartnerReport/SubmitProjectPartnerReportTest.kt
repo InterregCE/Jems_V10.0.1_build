@@ -76,6 +76,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         private val TODAY = LocalDate.now()
         private val YEAR = TODAY.year
         private val MONTH = TODAY.monthValue
+        private val DATE_TIME_NOW = ZonedDateTime.now()
 
         private val mockedResult = ProjectPartnerReportSubmissionSummary(
             id = 888L,
@@ -142,7 +143,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 reportOfOriginId = 70L,
                 reportOfOriginNumber = 5,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 3
+                originalExpenditureNumber = 3,
+                parkedFromExpenditureId = 631,
+                parkedOn = DATE_TIME_NOW
             ),
         )
 

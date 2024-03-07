@@ -35,12 +35,15 @@ class GetProjectReportVerificationExpenditureTest: UnitTest() {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
         private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
+        private val DATE_TIME_NOW = ZonedDateTime.now()
 
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedFromExpenditureId = EXPENDITURE_ID,
+            parkedOn = DATE_TIME_NOW
         )
 
         private val dummyLineLumpSum = ProjectPartnerReportLumpSum(

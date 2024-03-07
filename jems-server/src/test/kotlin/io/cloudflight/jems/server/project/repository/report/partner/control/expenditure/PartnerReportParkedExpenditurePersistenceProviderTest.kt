@@ -75,7 +75,9 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
                     reportOfOriginId = 40L,
                     reportOfOriginNumber = 401,
                     reportProjectOfOriginId = 43L,
-                    originalExpenditureNumber = 21
+                    originalExpenditureNumber = 21,
+                    parkedFromExpenditureId = 5499L,
+                    parkedOn = dateTime
                 )
             )
         )

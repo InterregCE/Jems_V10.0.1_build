@@ -69,6 +69,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         private const val EXPENDITURE_TO_ADD_1 = -1L
         private const val EXPENDITURE_TO_ADD_2 = -2L
 
+        private val TODAY = ZonedDateTime.now()
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
 
@@ -173,7 +174,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 reportOfOriginId = 75L,
                 reportProjectOfOriginId = null,
                 reportOfOriginNumber = 4,
-                originalExpenditureNumber = 8
+                originalExpenditureNumber = 8,
+                parkedFromExpenditureId = id,
+                parkedOn = TODAY
             ),
         )
 
@@ -185,7 +188,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         reportOfOriginId = 80L,
                         reportOfOriginNumber = 81,
                         reportProjectOfOriginId = null,
-                        originalExpenditureNumber = 14
+                        originalExpenditureNumber = 14,
+                        parkedFromExpenditureId = 14L,
+                        parkedOn = null
                     )
                 ),
             lumpSum = ProjectPartnerReportParkedLinked(828L, 8281L, 4, false),
@@ -230,7 +235,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 4,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 8
+                originalExpenditureNumber = 8,
+                parkedFromExpenditureId = id,
+                parkedOn = TODAY
             ),
         )
 
@@ -444,7 +451,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 reportOfOriginId = 11L,
                 reportOfOriginNumber = 111,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 4
+                originalExpenditureNumber = 4,
+                parkedFromExpenditureId = 0,
+                parkedOn = null
             ),
         )
     }
@@ -518,7 +527,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                             reportOfOriginId = 60L,
                             reportOfOriginNumber = 61,
                             reportProjectOfOriginId = null,
-                            originalExpenditureNumber = 14
+                            originalExpenditureNumber = 14,
+                            parkedFromExpenditureId = 14L,
+                            parkedOn = null
                         )
                     )
             )
@@ -769,7 +780,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         reportOfOriginId = 75L,
                         reportOfOriginNumber = 4,
                         reportProjectOfOriginId = null,
-                        originalExpenditureNumber = 14
+                        originalExpenditureNumber = 14,
+                        parkedFromExpenditureId = EXPENDITURE_TO_STAY,
+                        parkedOn = null
                     )
                 ),
             dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2)
@@ -823,6 +836,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { investment.id } returns 71L
         every { investment.investmentId } returns 638L
         val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
+        every { unParkedFrom.id } returns expenditureId
 
         val proLumpSum = mockk<PartnerReportLumpSumEntity>()
         every { proLumpSum.id } returns 636L
@@ -947,7 +961,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         reportOfOriginId = 2L,
                         reportOfOriginNumber = 21,
                         reportProjectOfOriginId = null,
-                        originalExpenditureNumber = 4
+                        originalExpenditureNumber = 4,
+                        parkedFromExpenditureId = 0,
+                        parkedOn = null
                     ),
                 )
             )
@@ -996,7 +1012,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         reportOfOriginId = 2L,
                         reportOfOriginNumber = 21,
                         reportProjectOfOriginId = null,
-                        originalExpenditureNumber = 4
+                        originalExpenditureNumber = 4,
+                        parkedFromExpenditureId = 0,
+                        parkedOn = null
                     ),
                 )
             )
