@@ -26,7 +26,7 @@ class ChecklistInstancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun findChecklistInstances(searchRequest: ChecklistInstanceSearchRequest): List<ChecklistInstance> =
-        repository.findAll(ChecklistInstanceRepository.buildSearchPredicate(searchRequest)!!).toList().toModel()
+        repository.findAll(ChecklistInstanceRepository.buildSearchPredicate(searchRequest)).toList().toModel()
 
     @Transactional(readOnly = true)
     override fun getChecklistDetail(id: Long): ChecklistInstanceDetail {
