@@ -52,7 +52,7 @@ export class SideNavService {
   }
 
   navigate(headline: HeadlineRoute): void {
-    if (this.router.url !== headline.route || headline.extras !== null) {
+    if (this.router.url !== headline.route) {
       if (headline.route) {
         this.navigateToRoute(headline);
         return;
@@ -66,7 +66,7 @@ export class SideNavService {
   }
 
   private navigateToRoute(headline: HeadlineRoute): void {
-    this.routingService.navigate([headline.route], headline.extras);
+    this.routingService.navigate([headline.route]);
     this.navigateTo$.next(headline);
   }
 
