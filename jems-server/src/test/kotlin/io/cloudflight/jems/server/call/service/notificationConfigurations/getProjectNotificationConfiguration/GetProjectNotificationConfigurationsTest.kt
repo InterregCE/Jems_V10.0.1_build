@@ -76,6 +76,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
             NotificationType.ProjectReturnedForConditions,
             NotificationType.ProjectConditionsSubmitted,
             NotificationType.ProjectContracted,
+            NotificationType.ProjectClosed,
             NotificationType.ProjectInModification,
             NotificationType.ProjectModificationSubmitted,
             NotificationType.ProjectModificationApproved,

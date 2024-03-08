@@ -57,7 +57,7 @@
                 <mat-select-trigger>
                     <span *ngIf="data.selectedVersion.current"> {{'project.versions.select.format.current' | translate }} </span>
                     <span *ngIf="data.selectedVersion.status === ProjectStatusEnum.MODIFICATIONREJECTED"><mat-icon>clear</mat-icon></span>
-                    <span *ngIf="isStatusApprovedOrContracted(data.selectedVersion)"><mat-icon>check_circle_outline</mat-icon></span>
+                    <span *ngIf="isApprovedOrLater(data.selectedVersion)"><mat-icon>check_circle_outline</mat-icon></span>
                     <span *ngIf="noDecisionTaken(data.selectedVersion)"><mat-icon>edit</mat-icon></span>
                     <span >{{'project.versions.select.format' | translate : {version: data.selectedVersion.version} }}</span>
                 </mat-select-trigger>
@@ -82,7 +82,7 @@
                     <mat-option *ngFor="let projectVersion of data.versions.pastVersions"
                                 [value]="projectVersion">
                         <span *ngIf="projectVersion.status === ProjectStatusEnum.MODIFICATIONREJECTED"><mat-icon class="color-red">clear</mat-icon></span>
-                        <span *ngIf="isStatusApprovedOrContracted(projectVersion)"><mat-icon class="color-green">check_circle_outline</mat-icon></span>
+                        <span *ngIf="isApprovedOrLater(projectVersion)"><mat-icon class="color-green">check_circle_outline</mat-icon></span>
                         <span *ngIf="noDecisionTaken(projectVersion)"><mat-icon><!--Empty placeholder--></mat-icon></span>
                         <ng-container *ngIf="!projectVersion.current">
                             {{'project.versions.select.format' | translate : {version: projectVersion.version} }}

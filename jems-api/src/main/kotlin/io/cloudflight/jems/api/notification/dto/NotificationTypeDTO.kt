@@ -17,6 +17,7 @@ enum class NotificationTypeDTO {
     ProjectReturnedForConditions,
     ProjectConditionsSubmitted,
     ProjectContracted,
+    ProjectClosed,
     ProjectInModification,
     ProjectModificationSubmitted,
     ProjectModificationApproved,
