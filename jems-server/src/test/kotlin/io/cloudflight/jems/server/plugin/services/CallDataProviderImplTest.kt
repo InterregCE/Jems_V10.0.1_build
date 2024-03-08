@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.plugin.contract.models.call.AllowedRealCostsData
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
 import io.cloudflight.jems.plugin.contract.models.call.CallTypeData
@@ -12,6 +13,7 @@ import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -85,6 +87,14 @@ internal class CallDataProviderImplTest : UnitTest() {
             controlReportSamplingCheckPluginKey = null
         )
 
+        private val allowedRealCosts = AllowedRealCosts(
+            allowRealEquipmentCosts = true,
+            allowRealStaffCosts = true,
+            allowRealInfrastructureCosts = false,
+            allowRealTravelAndAccommodationCosts = false,
+            allowRealExternalExpertiseAndServicesCosts = true
+        )
+
         private val programmeLanguages = listOf(
             ProgrammeLanguage(code = SystemLanguage.EN, ui = true, fallback = true, input = true),
             ProgrammeLanguage(code = SystemLanguage.DE, ui = true, fallback = false, input = true),
@@ -96,6 +106,7 @@ internal class CallDataProviderImplTest : UnitTest() {
     fun `should return call data by call id`() {
         every { programmeLanguagePersistence.getLanguages() } returns programmeLanguages
         every { callPersistence.getCallById(CALL_ID) } returns callDetail
+        every { callPersistence.getAllowedRealCosts(CALL_ID) } returns allowedRealCosts
 
         assertThat(callDataProviderImpl.getCallData(CALL_ID)).isEqualTo(
             CallDetailData(
@@ -117,7 +128,14 @@ internal class CallDataProviderImplTest : UnitTest() {
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
                 inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
-                type = CallTypeData.STANDARD
+                type = CallTypeData.STANDARD,
+                allowedRealCosts = AllowedRealCostsData(
+                    allowRealEquipmentCosts = true,
+                    allowRealStaffCosts = true,
+                    allowRealInfrastructureCosts = false,
+                    allowRealTravelAndAccommodationCosts = false,
+                    allowRealExternalExpertiseAndServicesCosts = true
+                )
             )
         )
     }
@@ -126,6 +144,7 @@ internal class CallDataProviderImplTest : UnitTest() {
     fun `should return call data by project id`() {
         every { programmeLanguagePersistence.getLanguages() } returns programmeLanguages
         every { callPersistence.getCallByProjectId(PROJECT_ID) } returns callDetail
+        every { callPersistence.getAllowedRealCosts(CALL_ID) } returns allowedRealCosts
 
         assertThat(callDataProviderImpl.getCallDataByProjectId(PROJECT_ID)).isEqualTo(
             CallDetailData(
@@ -147,7 +166,14 @@ internal class CallDataProviderImplTest : UnitTest() {
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
                 inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
-                type = CallTypeData.STANDARD
+                type = CallTypeData.STANDARD,
+                allowedRealCosts = AllowedRealCostsData(
+                    allowRealEquipmentCosts = true,
+                    allowRealStaffCosts = true,
+                    allowRealInfrastructureCosts = false,
+                    allowRealTravelAndAccommodationCosts = false,
+                    allowRealExternalExpertiseAndServicesCosts = true
+                )
             )
         )
     }

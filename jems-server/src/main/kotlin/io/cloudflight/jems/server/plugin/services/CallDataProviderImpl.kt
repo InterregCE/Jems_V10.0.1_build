@@ -25,16 +25,20 @@ class CallDataProviderImpl(
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetCallException::class)
     override fun getCallData(callId: Long): CallDetailData =
-        persistence.getCallById(callId).toDataModel(getInputLanguages()).also {
+        persistence.getCallById(callId).toDataModel(getInputLanguages(), persistence.getAllowedRealCosts(callId)).also {
             logger.info("Retrieved call data for call id=$callId via plugin.")
         }
 
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetCallByProjectIdException::class)
-    override fun getCallDataByProjectId(projectId: Long): CallDetailData =
-        persistence.getCallByProjectId(projectId).toDataModel(getInputLanguages()).also {
+    override fun getCallDataByProjectId(projectId: Long): CallDetailData {
+        val call = persistence.getCallByProjectId(projectId)
+        return persistence.getCallByProjectId(projectId)
+        .toDataModel(getInputLanguages(), persistence.getAllowedRealCosts(call.id)).also {
             logger.info("Retrieved call data for project id=$projectId via plugin.")
         }
+    }
+
 
     private fun getInputLanguages(): List<ProgrammeLanguage> =
         programmeLanguagePersistence.getLanguages().filter { it.input }
