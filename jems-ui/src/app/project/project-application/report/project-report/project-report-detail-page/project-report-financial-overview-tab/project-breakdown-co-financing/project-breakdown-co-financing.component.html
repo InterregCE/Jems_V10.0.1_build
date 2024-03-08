@@ -24,7 +24,7 @@
 
     <ng-container matColumnDef="previouslyReported">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.previously.reported.header' | translate }}</span>
             <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.previously.reported.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyReported | asMoney }}</mat-cell>
@@ -33,7 +33,7 @@
 
     <ng-container matColumnDef="currentReport">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.current.report' | translate }}</span>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.current.report.header' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.currentReport | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.currentReport | asMoney }}</mat-footer-cell>
@@ -41,7 +41,7 @@
 
     <ng-container matColumnDef="totalReportedSoFar">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far' | translate }}</span>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.total.reported.so.far.header' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.totalReportedSoFar | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFar | asMoney }}</mat-footer-cell>
@@ -49,7 +49,7 @@
 
     <ng-container matColumnDef="totalReportedSoFarPercentage">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far.perc' | translate }}</span>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.total.reported.so.far.percentage.header' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
             <span *ngIf="line.totalEligibleBudget">{{ line.totalReportedSoFarPercentage | asMoney }}&nbsp;%</span>
@@ -59,8 +59,8 @@
 
     <ng-container matColumnDef="remainingBudget">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.remaining.budget' | translate }}</span>
-            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.remaining.budget.tooltip' | translate}}"></jems-context-info>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.remaining.budget.header' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.remaining.budget.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.remainingBudget | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
@@ -85,8 +85,8 @@
 
     <ng-container matColumnDef="previouslyPaid">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.paid' | translate }}</span>
-            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previously.paid.tooltip' | translate}}"></jems-context-info>
+            <span jemsText maxLines="2">{{ 'project.application.project.report.financial.previously.paid.header' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.previously.paid.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
             {{ line.isProgrammeLanguage ? (line.previouslyPaid | asMoney) : ('common.not.applicable.option' | translate) }}

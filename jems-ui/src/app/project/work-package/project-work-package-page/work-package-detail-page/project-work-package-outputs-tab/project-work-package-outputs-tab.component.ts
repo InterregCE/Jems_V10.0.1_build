@@ -129,7 +129,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
         outputNumber: this.formBuilder.control(existing?.outputNumber || 0),
         programmeOutputIndicatorId: this.formBuilder.control(existing?.programmeOutputIndicatorId || null),
         title: this.formBuilder.control(existing?.title || [], this.constants.TITLE.validators),
-        targetValue: this.formBuilder.control(existing?.targetValue || 1),
+        targetValue: this.formBuilder.control(existing?.targetValue ?? 1),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
         deactivated: this.isParentWorkPackageDeactivated ? true : this.formBuilder.control(!!existing?.deactivated),

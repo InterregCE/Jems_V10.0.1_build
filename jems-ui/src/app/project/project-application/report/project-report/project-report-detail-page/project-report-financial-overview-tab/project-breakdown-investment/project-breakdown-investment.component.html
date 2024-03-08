@@ -29,7 +29,7 @@
 
         <ng-container matColumnDef="previouslyReported">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.previously.reported.header' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">
                 <div>{{ line.previouslyReported | asMoney }}</div>
@@ -41,7 +41,7 @@
 
         <ng-container matColumnDef="currentReport">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.current.report' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.current.report.header' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">
                 <div>{{ line.currentReport | asMoney }}</div>
@@ -53,7 +53,7 @@
 
         <ng-container matColumnDef="totalReportedSoFar">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.total.reported.so.far.header' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">
                 <span >{{ line.totalReportedSoFar | asMoney }}</span>
@@ -63,7 +63,7 @@
 
         <ng-container matColumnDef="totalReportedSoFarPercentage">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far.perc' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.total.reported.so.far.percentage.header' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">
                 <span>{{ line.totalReportedSoFarPercentage | asMoney }}</span>
@@ -73,7 +73,7 @@
 
         <ng-container matColumnDef="remainingBudget">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.remaining.budget' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.remaining.budget.header' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">{{ line.remainingBudget | asMoney }}</mat-cell>
             <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
