@@ -17,11 +17,11 @@ enum class NotificationType {
     ProjectReturnedForConditions,
     ProjectConditionsSubmitted,
     ProjectContracted,
-    ProjectClosed,
     ProjectInModification,
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
+    ProjectClosed,
 
     // Partner Report
     PartnerReportSubmitted,
@@ -92,6 +92,7 @@ enum class NotificationType {
         )
 
         val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
+
         val partnerReportFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
 
         val projectFileVerificationCommunicationNotifications = setOf(ProjectReportVerificationFileUpload, ProjectReportVerificationFileDelete)

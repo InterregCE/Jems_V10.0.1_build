@@ -17,11 +17,11 @@ enum class NotificationTypeDTO {
     ProjectReturnedForConditions,
     ProjectConditionsSubmitted,
     ProjectContracted,
-    ProjectClosed,
     ProjectInModification,
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
+    ProjectClosed,
 
     // Partner Report
     PartnerReportSubmitted,
