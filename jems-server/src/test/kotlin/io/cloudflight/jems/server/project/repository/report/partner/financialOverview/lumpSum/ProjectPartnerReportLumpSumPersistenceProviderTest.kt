@@ -40,6 +40,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
                     description = "lump sum desc EN",
                 )
             )
+            every { it.isFastTrack } returns true
         }
 
         private fun lumpSumEntity(id: Long) = PartnerReportLumpSumEntity(
@@ -65,6 +66,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             lumpSumId = 335L,
             period = 255,
             name = setOf(InputTranslation(SystemLanguage.EN, "lump sum name EN")),
+            fastTrack = true,
             totalEligibleBudget = BigDecimal.valueOf(10),
             previouslyReported = BigDecimal.valueOf(30),
             previouslyPaid = BigDecimal.valueOf(40),

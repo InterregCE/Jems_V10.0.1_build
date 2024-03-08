@@ -7,6 +7,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="border-cell-right">
             <span jemsText maxLines="2">
+                <mat-icon class="fast-track-icon">{{ line.fastTrack ? 'fast_forward' : 'receipt_long' }}</mat-icon>
                 <span>{{ line.name | translateByInputLanguage | async }}</span>
                 <span *ngIf="line.period !== null && line.period !== undefined">
                     &nbsp;- {{ line.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
@@ -111,7 +112,8 @@
             <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previously.paid.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
-            {{ line.previouslyPaid | asMoney }}
+            <ng-container *ngIf="line.fastTrack">{{ line.previouslyPaid | asMoney }}</ng-container>
+            <ng-container *ngIf="!line.fastTrack">{{ 'common.not.applicable.option' | translate }}</ng-container>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyPaid | asMoney }}</mat-footer-cell>
     </ng-container>
