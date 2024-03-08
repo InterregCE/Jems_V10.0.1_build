@@ -22,7 +22,7 @@ data class ProjectLumpSumEntity(
     val endPeriod: Int? = null,
 
     @field:NotNull
-    val isReadyForPayment: Boolean = false,
+    var isReadyForPayment: Boolean = false,
 
     val comment: String? = null,
 

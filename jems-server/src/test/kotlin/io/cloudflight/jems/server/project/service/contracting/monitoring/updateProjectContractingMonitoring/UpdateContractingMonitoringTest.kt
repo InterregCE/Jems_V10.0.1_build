@@ -45,8 +45,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -246,7 +248,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, lumpSumsUpdated)} just runs
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
 
         every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
@@ -268,7 +270,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringOther) } returns monitoringOther
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSumsUpdated
-        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, lumpSumsUpdated)} just runs
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
 
         every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
@@ -316,7 +318,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectPersistence.updateProjectContractedOnDates(projectId, monitoring.addDates.get(0).entryIntoForceDate) } answers {}
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSumsNotReady
-        every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, any())} just runs
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         val payments = slot<Map<PaymentGroupingId, PaymentFtlsToCreate>>()
@@ -500,7 +502,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
         every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns emptyMap()
 
-        every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(any(), any()) } just runs
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         every { paymentPersistence.deleteFTLSByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
