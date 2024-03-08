@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services.report
 
+import io.cloudflight.jems.plugin.contract.models.report.project.closure.ProjectReportClosureData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCostCategoryBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCostCategoryBreakdownPerPartnerData
@@ -21,6 +22,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.closure.ProjectReportProjectClosurePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdown.GetReportCertificateInvestmentCalculatorService
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownCalculator
@@ -52,6 +54,7 @@ class ProjectReportDataProviderImpl(
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val reportCertificateUnitCostCalculatorService: GetReportCertificateUnitCostCalculatorService,
     private val reportCertificateInvestmentCalculatorService: GetReportCertificateInvestmentCalculatorService,
+    private val projectReportProjectClosurePersistence: ProjectReportProjectClosurePersistence
 ): ProjectReportDataProvider {
 
     @Transactional(readOnly = true)
@@ -135,6 +138,11 @@ class ProjectReportDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getUnitCostOverview(projectId: Long, reportId: Long): CertificateUnitCostBreakdownData =
         this.reportCertificateUnitCostCalculatorService.getSubmittedOrCalculateCurrent(projectId, reportId)
+            .toDataModel()
+
+    @Transactional(readOnly = true)
+    override fun getClosureData(projectId: Long, reportId: Long): ProjectReportClosureData =
+        this.projectReportProjectClosurePersistence.getProjectReportProjectClosure(reportId)
             .toDataModel()
 
 }

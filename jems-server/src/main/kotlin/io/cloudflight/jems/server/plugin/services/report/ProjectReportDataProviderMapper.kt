@@ -6,6 +6,8 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.Proj
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportPeriodData
+import io.cloudflight.jems.plugin.contract.models.report.project.closure.ProjectReportClosureData
+import io.cloudflight.jems.plugin.contract.models.report.project.closure.ProjectReportProjectClosurePrizeData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.BudgetCostsCalculationResultFullData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCostCategoryBreakdownData
@@ -33,6 +35,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
+import io.cloudflight.jems.server.project.service.report.model.project.closure.ProjectReportProjectClosure
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.investment.CertificateInvestmentBreakdown
@@ -88,6 +91,11 @@ fun ProjectReportIdentificationTargetGroup.toDataModel() = ProjectReportIdentifi
     type = ProjectTargetGroupData.valueOf(this.type.name),
     sortNumber = this.sortNumber,
     description = this.description.toDataModel()
+)
+
+fun ProjectReportProjectClosure.toDataModel() = ProjectReportClosureData(
+    story = story.toDataModel(),
+    prizes = prizes.mapIndexed {index, it -> ProjectReportProjectClosurePrizeData(it.toDataModel(), index.plus(1))  }
 )
 
 
