@@ -20,7 +20,9 @@
                 <span jemsText maxLines="2">{{ 'payments.to.ec.detail.ftls.column.payment.id' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let i = index">
-                {{data.paymentToEcLinking.content[i].payment.id}}
+                <a [routerLink]="'/app/payments/paymentsToProjects/'+data.paymentToEcLinking.content[i].payment.id">
+                    {{data.paymentToEcLinking.content[i].payment.id}}
+                </a>
             </mat-cell>
         </ng-container>
 
