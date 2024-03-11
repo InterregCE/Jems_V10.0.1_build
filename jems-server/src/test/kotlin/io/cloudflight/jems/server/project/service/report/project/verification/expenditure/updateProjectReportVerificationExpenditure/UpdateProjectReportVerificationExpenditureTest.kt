@@ -328,4 +328,58 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         }
 
     }
+
+
+    @Test
+    fun `should throw UnParkExpenditureException when unParking reincluded expenditures`() {
+        val report = mockk<ProjectReportModel>()
+        every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
+        every { report.status } returns ProjectReportStatus.ReOpenFinalized
+
+        every {
+            projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(
+                PROJECT_REPORT_ID
+            )
+        } returns listOf(
+            ProjectReportVerificationExpenditureLine(
+                expenditure = expenditureItem,
+                partOfVerificationSample = false,
+                deductedByJs = BigDecimal.valueOf(100),
+                deductedByMa = BigDecimal.valueOf(200),
+                amountAfterVerification = BigDecimal.valueOf(300),
+                typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+                parked = true,
+                verificationComment = "NEW VERIFICATION COMM",
+                parkedOn = null
+            )
+        )
+        every {
+            projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
+                PROJECT_REPORT_ID,
+                any()
+            )
+        } returns listOf(
+            ProjectReportVerificationExpenditureLine(
+                expenditure = expenditureItem,
+                partOfVerificationSample = false,
+                deductedByJs = BigDecimal.valueOf(100),
+                deductedByMa = BigDecimal.valueOf(200),
+                amountAfterVerification = BigDecimal.valueOf(300),
+                typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
+                parked = false,
+                verificationComment = "NEW VERIFICATION COMM",
+                parkedOn = null
+            )
+        )
+        every { typologyPersistence.getAllTypologyErrors() } returns listOf(TypologyErrors(PROJECT_ID, "Typology 1"))
+        every { partnerReportParkedExpenditurePersistence.parkExpenditures(any()) } returns Unit
+        every { partnerReportParkedExpenditurePersistence.findAllByProjectReportId(PROJECT_REPORT_ID) } returns emptyList()
+
+
+
+        assertThrows<UnParkExpenditureException> {
+            updateProjectReportVerificationExpenditure.updateExpenditureVerification(PROJECT_REPORT_ID, expendituresToUpdate(""))
+        }
+
+    }
 }

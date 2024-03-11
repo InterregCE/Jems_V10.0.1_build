@@ -458,8 +458,8 @@ export class ProjectVerificationReportExpenditureTabComponent {
 
   private reIncludedOrDeleted(item: AbstractControl): boolean {
       const parked = this.verification(item)?.get(this.VERIFICATION_CONTROL.parked)?.value;
-      const metadataParkedOn = this.verification(item)?.get(this.VERIFICATION_CONTROL.parkedOn)?.value;
-      if (parked && metadataParkedOn == null ) {
+      const parkedOn = this.verification(item)?.get(this.VERIFICATION_CONTROL.parkedOn)?.value;
+      if (parked && parkedOn == null ) {
           return true;
       }
       return false;
