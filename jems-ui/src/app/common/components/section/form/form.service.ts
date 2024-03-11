@@ -108,7 +108,7 @@ export class FormService {
     if(dirty){
       this.setSuccess(null);
     }
-    this.setValid(this.form?.valid);
+    this.setValid(!this.form?.invalid);
     this.dirty$.next(dirty);
   }
 
