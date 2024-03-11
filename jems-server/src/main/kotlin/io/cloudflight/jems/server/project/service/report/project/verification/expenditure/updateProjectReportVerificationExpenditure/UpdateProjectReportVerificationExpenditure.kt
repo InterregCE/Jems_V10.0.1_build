@@ -34,40 +34,45 @@ class UpdateProjectReportVerificationExpenditure(
 
         validateVerificationCommentLength(expenditureVerificationUpdate)
 
-        val existingExpenditures = projectReportExpenditureVerificationPersistence
-            .getProjectReportExpenditureVerification(reportId)
+        val oldVerificationExpenditures = projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId)
 
-        val parkedOldIds = existingExpenditures.getParkedIds()
-        val unParkedOldIds = existingExpenditures.getNotParkedIds()
-
-        return projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
-            projectReportId = reportId, expenditureVerificationUpdate
-        ).also {
-            updateParkedItems(
-                projectReportId = reportId,
-                parkedOldIds = parkedOldIds,
-                unparkedOldIds = unParkedOldIds,
-                newVerifications = it
-            )
-        }
+        val verificationExpenditures = projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
+            reportId,
+            expenditureVerificationUpdate
+        )
+        updateParkedItems(
+            projectReportId = reportId,
+            oldVerificationExpenditures,
+            newVerificationExpenditures = verificationExpenditures
+        )
+        return projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId)
     }
 
     private fun updateParkedItems(
         projectReportId: Long,
-        parkedOldIds: Set<Long>,
-        unparkedOldIds: Set<Long>,
-        newVerifications: Collection<ProjectReportVerificationExpenditureLine>,
+        oldVerificationExpenditures: Collection<ProjectReportVerificationExpenditureLine>,
+        newVerificationExpenditures: Collection<ProjectReportVerificationExpenditureLine>,
     ) {
-        val parkedNew = newVerifications.getParkedIds()
-        val unParkedNew = newVerifications.getNotParkedIds()
 
-        val newlyParked = parkedNew.minus(parkedOldIds)
-        val newlyUnParkedExpenditureIds = unParkedNew.minus(unparkedOldIds)
+        val parkedNew = newVerificationExpenditures.getParkedIds().minus(oldVerificationExpenditures.getParkedIds())
+        val unParkedNew = newVerificationExpenditures.getNotParkedIds().minus(oldVerificationExpenditures.getNotParkedIds())
 
         partnerReportParkedExpenditurePersistence.parkExpenditures(
-            newVerifications.filter { it.expenditure.id in newlyParked }.toParkData(projectReportId)
+            newVerificationExpenditures.filter { it.expenditure.id in parkedNew }.toParkData(projectReportId)
         )
-        partnerReportParkedExpenditurePersistence.unParkExpenditures(newlyUnParkedExpenditureIds)
+
+        unParkedNew.takeIf { it.isNotEmpty() }?.let { unParkedIds ->
+
+            val parkedExpendituresIds = partnerReportParkedExpenditurePersistence.findAllByProjectReportId(projectReportId)
+                .map { it.parkedFromExpenditureId }.toSet()
+
+            val reIncludedOrDeleted = unParkedIds.minus(parkedExpendituresIds)
+            if (reIncludedOrDeleted.isNotEmpty()) {
+                throw UnParkExpenditureException(reIncludedOrDeleted)
+            }
+            partnerReportParkedExpenditurePersistence.unParkExpenditures(unParkedIds)
+        }
+
     }
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.getParkedIds() =

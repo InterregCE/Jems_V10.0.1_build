@@ -190,7 +190,9 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     reportOfOriginId = 600L,
                     reportOfOriginNumber = 601,
                     reportProjectOfOriginId = null,
-                    originalExpenditureNumber = 12
+                    originalExpenditureNumber = 12,
+                    parkedFromExpenditureId = id,
+                    parkedOn = null
                 ),
                 partOfSampleLocked = false
             )

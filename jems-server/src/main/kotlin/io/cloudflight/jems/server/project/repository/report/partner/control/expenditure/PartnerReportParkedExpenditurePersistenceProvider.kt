@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.entity.report.control.expenditure.Part
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
@@ -37,7 +36,9 @@ class PartnerReportParkedExpenditurePersistenceProvider(
                         reportOfOriginId = it.reportOfOrigin.id,
                         reportOfOriginNumber = it.reportOfOrigin.number,
                         reportProjectOfOriginId = it.parkedInProjectReport?.id,
-                        originalExpenditureNumber = it.originalNumber
+                        originalExpenditureNumber = it.originalNumber,
+                        parkedOn = it.parkedOn,
+                        parkedFromExpenditureId = it.parkedFromExpenditureId
                     )
                 )
             }
@@ -66,4 +67,8 @@ class PartnerReportParkedExpenditurePersistenceProvider(
         reportParkedExpenditureRepository.deleteAllById(expenditureIds)
     }
 
+    @Transactional
+    override fun findAllByProjectReportId(projectReportId: Long): List<ExpenditureParkingMetadata> {
+        return reportParkedExpenditureRepository.findAllByParkedInProjectReportId(projectReportId).map { it.toModel() }
+    }
 }

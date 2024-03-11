@@ -446,17 +446,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 typologyOfErrorId = null,
                 parked = true,
                 verificationComment = "JS/MA VERIFICATION COMMENT, PARKED",
-                parkedOn = LAST_WEEK
+                parkedOn = null
             )
         )
-
-        val partnerReportParkedExpenditureEntity = mockk<PartnerReportParkedExpenditureEntity>()
-        every { partnerReportParkedExpenditureEntity.parkedFromExpenditureId } returns EXPENDITURE_ID_2
-        every { partnerReportParkedExpenditureEntity.parkedOn } returns LAST_WEEK
-
-        every {reportParkedExpenditureRepository
-                .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1, EXPENDITURE_ID_2))
-        } returns listOf(partnerReportParkedExpenditureEntity)
 
         every {
             expenditureVerificationRepository

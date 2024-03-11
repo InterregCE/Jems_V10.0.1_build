@@ -60,6 +60,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
     companion object {
         private const val PROJECT_ID = 256L
         private const val PARTNER_ID = 581L
+        private val TODAY = ZonedDateTime.now()
 
         private val mockedResult = ProjectPartnerReportSubmissionSummary(
             id = 42L,
@@ -279,7 +280,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                             reportOfOriginId = 70L,
                             reportOfOriginNumber = 5,
                             reportProjectOfOriginId = null,
-                            originalExpenditureNumber = 3
+                            originalExpenditureNumber = 3,
+                            parkedFromExpenditureId = 631,
+                            parkedOn = TODAY
                         ),
                         parked = true
                     ),

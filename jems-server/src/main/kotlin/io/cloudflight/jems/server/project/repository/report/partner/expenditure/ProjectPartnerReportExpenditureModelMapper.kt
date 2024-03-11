@@ -68,7 +68,9 @@ fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingM
             reportOfOriginId = reportOfOrigin!!.id,
             reportOfOriginNumber = reportOfOrigin!!.number,
             reportProjectOfOriginId = parkedInProjectReport?.id,
-            originalExpenditureNumber = originalNumber!!
+            originalExpenditureNumber = originalNumber!!,
+            parkedFromExpenditureId = id ,
+            parkedOn = null,
         )
     return null
 }

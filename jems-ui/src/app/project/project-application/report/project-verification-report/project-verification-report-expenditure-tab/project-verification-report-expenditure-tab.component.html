@@ -554,7 +554,7 @@
                                     <mat-cell class="justify-start left-separator" *matCellDef="let item;let i=index" [formGroupName]="i">
                                         <ng-container [formGroupName]="VERIFICATION_DATA"  >
                                             <mat-slide-toggle color="primary"
-                                                              [disabled]="expenditureItem(item, EXPENDITURE_CONTROL.parked) || isParkedBeforeVerificationReopening(item, data.projectReport)"
+                                                              [disabled]="expenditureItem(item, EXPENDITURE_CONTROL.parked)"
                                                               (change)="parkedChange(item, $event)"
                                                               [formControlName]="VERIFICATION_CONTROL.parked"
                                                               [matTooltip]="getTooltipForParkedExpenditures(item, data.projectReport)">

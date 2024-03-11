@@ -31,6 +31,7 @@ import java.time.ZonedDateTime
 internal class DeleteParkedExpenditureTest : UnitTest() {
 
     companion object {
+        private val DATE_TIME_NOW = ZonedDateTime.now()
         fun report(reportId: Long, status: ReportStatus): ProjectPartnerReport {
             val identification = mockk<PartnerReportIdentification>()
             every { identification.projectIdentifier } returns "PROJ-TEST"
@@ -79,7 +80,10 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
             reportOfOriginId = 348L,
             reportOfOriginNumber = 1,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 2
+            originalExpenditureNumber = 2,
+            parkedOn = DATE_TIME_NOW,
+            parkedFromExpenditureId = 845L
+
         )
         every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartnerReport(partnerId, reportId) } returns
             mapOf(845L to expenditure)

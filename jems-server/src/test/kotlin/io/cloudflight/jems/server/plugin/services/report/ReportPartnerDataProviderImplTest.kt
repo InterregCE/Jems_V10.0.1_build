@@ -360,7 +360,9 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 4,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 3
+                originalExpenditureNumber = 3,
+                parkedFromExpenditureId = 770L,
+                parkedOn = DATE_TIME_1
             ),
         )
 
