@@ -76,13 +76,13 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
             NotificationType.ProjectReturnedForConditions,
             NotificationType.ProjectConditionsSubmitted,
             NotificationType.ProjectContracted,
-            NotificationType.ProjectClosed,
             NotificationType.ProjectInModification,
             NotificationType.ProjectModificationSubmitted,
             NotificationType.ProjectModificationApproved,
             NotificationType.ProjectModificationRejected,
             NotificationType.SharedFolderFileUpload,
             NotificationType.SharedFolderFileDelete,
+            NotificationType.ProjectClosed,
         )
 
         assertThat(notifications).containsAll(expectedProjectNotificationConfigurations)
