@@ -17,7 +17,7 @@ import {Forms} from '@common/utils/forms';
 import {APIError} from '@common/models/APIError';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateService} from '@ngx-translate/core';
-import {getNextToLastParentNode} from "codelyzer/util/utils";
+import {getNextToLastParentNode} from 'codelyzer/util/utils';
 
 @UntilDestroy()
 @Component({

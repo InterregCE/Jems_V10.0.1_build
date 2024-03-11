@@ -34,7 +34,7 @@ import {
   ProjectReportNotificationsSettingsTabComponent
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
 import {CallRoutingModule} from './call-routing.module';
-import { ChecklistsPageComponent } from './checklists-page/checklists-page.component'
+import { ChecklistsPageComponent } from './checklists-page/checklists-page.component';
 
 @NgModule({
   declarations: [

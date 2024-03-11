@@ -25,7 +25,7 @@ import {
 } from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
 import {NgModule} from '@angular/core';
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
-import { ChecklistsPageComponent } from './checklists-page/checklists-page.component'
+import { ChecklistsPageComponent } from './checklists-page/checklists-page.component';
 
 const callRoutes: Routes = [
   {

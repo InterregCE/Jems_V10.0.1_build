@@ -3,7 +3,6 @@ package io.cloudflight.jems.api.payments
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -49,13 +48,6 @@ interface PaymentAdvanceApi {
     fun updateAdvancePayment(
         @RequestBody advancePayment: AdvancePaymentUpdateDTO
     ): AdvancePaymentDetailDTO
-
-    @ApiOperation("Update advance payment status")
-    @PutMapping("$ENDPOINT_API_ADV_PAYMENTS/{paymentId}/status", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateAdvancePaymentStatus(
-        @PathVariable paymentId: Long,
-        @RequestBody status: AdvancePaymentStatusUpdateDTO
-    )
 
     @ApiOperation("Delete advance payment by id")
     @DeleteMapping("${ENDPOINT_API_ADV_PAYMENTS}/{paymentId}")

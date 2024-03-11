@@ -16,5 +16,12 @@ data class AdvancePaymentUpdate(
     val paymentDate: LocalDate? = null,
     val comment: String?,
 
+    val paymentAuthorized: Boolean? = null,
+    var paymentAuthorizedUserId: Long? = null,
+    var paymentAuthorizedDate: LocalDate? = null,
+    val paymentConfirmed: Boolean? = null,
+    var paymentConfirmedUserId: Long? = null,
+    var paymentConfirmedDate: LocalDate? = null,
+
     val paymentSettlements: List<AdvancePaymentSettlement>
 )

@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild } from '@angular/core'
-import { ChecklistsPageStore } from './checklists-page-store.service'
-import { FormService } from '@common/components/section/form/form.service'
-import { CallChecklistDTO } from '@cat/api'
-import { SelectionModel } from '@angular/cdk/collections'
-import { combineLatest, Observable } from 'rxjs'
-import { catchError, map, take, tap } from 'rxjs/operators'
-import { UntilDestroy } from '@ngneat/until-destroy'
-import { TableConfiguration } from '@common/components/table/model/table.configuration'
-import { ColumnWidth } from '@common/components/table/model/column-width'
-import { ColumnType } from '@common/components/table/model/column-type.enum'
+import { ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChecklistsPageStore } from './checklists-page-store.service';
+import { FormService } from '@common/components/section/form/form.service';
+import { CallChecklistDTO } from '@cat/api';
+import { SelectionModel } from '@angular/cdk/collections';
+import { combineLatest, Observable } from 'rxjs';
+import { catchError, map, take, tap } from 'rxjs/operators';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { TableConfiguration } from '@common/components/table/model/table.configuration';
+import { ColumnWidth } from '@common/components/table/model/column-width';
+import { ColumnType } from '@common/components/table/model/column-type.enum';
 
 @UntilDestroy()
 @Component({
@@ -41,7 +41,7 @@ export class ChecklistsPageComponent implements OnInit {
         this.pageStore.canEditCall$
     ]).pipe(
         map(([checklists, canEditCall]) => ({
-          checklists: checklists,
+          checklists,
           callIsEditable: canEditCall
         })),
         tap(data => this.resetForm(data.checklists, data.callIsEditable)),
@@ -50,7 +50,7 @@ export class ChecklistsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeTableConfiguration()
+    this.initializeTableConfiguration();
   }
 
   private initializeTableConfiguration(): void {
@@ -59,7 +59,7 @@ export class ChecklistsPageComponent implements OnInit {
       sortable: false,
       columns: [
         {
-          displayedColumn: "common.selected",
+          displayedColumn: 'common.selected',
           columnWidth: ColumnWidth.SmallColumn,
           customCellTemplate: this.actionsCell,
           clickable: false
@@ -89,9 +89,9 @@ export class ChecklistsPageComponent implements OnInit {
   }
 
   resetForm(checklists: CallChecklistDTO[], isEditable: boolean): void {
-    this.selection.clear()
-    this.selection.select(...checklists.filter(c => c.selected).map(c => c.id))
-    this.formService.setEditable(isEditable)
+    this.selection.clear();
+    this.selection.select(...checklists.filter(c => c.selected).map(c => c.id));
+    this.formService.setEditable(isEditable);
   }
 
   onSubmit(): void {
@@ -100,16 +100,16 @@ export class ChecklistsPageComponent implements OnInit {
         take(1),
         tap(() => this.formService.setSuccess('call.detail.checklists.updated.success')),
         catchError(err => this.formService.setError(err))
-    ).subscribe()
+    ).subscribe();
   }
 
   toggleChecklist(checklistId: number): void {
-    this.selection.toggle(checklistId)
-    this.formChanged()
+    this.selection.toggle(checklistId);
+    this.formChanged();
   }
 
   isSelected(checklistId: number): boolean {
-    return this.selection.isSelected(checklistId)
+    return this.selection.isSelected(checklistId);
   }
 
   formChanged(): void {
