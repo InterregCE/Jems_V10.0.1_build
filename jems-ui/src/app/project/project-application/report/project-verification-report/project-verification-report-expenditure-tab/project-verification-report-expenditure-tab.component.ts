@@ -432,6 +432,17 @@ export class ProjectVerificationReportExpenditureTabComponent {
       : this.customTranslatePipe.transform('common.not.applicable.option') as string);
   }
 
+  getContractId(contract?: ProjectPartnerReportProcurementDTO) {
+    return contract?.id;
+  }
+
+  getProcurementLinkForItem(projectID:number, expenditureItem: AbstractControl): string {
+    return '/app/project/detail/' + projectID
+      + '/reporting/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerId)
+      + '/reports/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerReportId)
+      + '/procurements/' + this.getContractId(this.expenditure(expenditureItem)?.get(this.EXPENDITURE_CONTROL.contract)?.value);
+  }
+
   getTooltipForParkedExpenditures(item: AbstractControl, projectReport: ProjectReportDTO): String {
     if (this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked)) {
       return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message.parked.by.controller');
