@@ -56,10 +56,12 @@ class ListProjectReportAnnexes(
             reportId = searchRequest.reportId,
         )
 
+        val filterSubtypes = searchRequest.filterSubtypes.ifEmpty { ALLOWED_FILTERS.values.flatten().toSet() }
+
         return filePersistence.listAttachments(
             pageable = pageable,
             indexPrefix = filePathPrefix,
-            filterSubtypes = searchRequest.filterSubtypes,
+            filterSubtypes = filterSubtypes,
             filterUserIds = emptySet()
         )
     }
