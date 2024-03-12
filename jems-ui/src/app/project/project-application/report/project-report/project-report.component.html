@@ -65,6 +65,10 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
                     <span jemsText maxLines="2">{{ projectReport.linkedFormVersion }}</span>
+                    <mat-icon *ngIf="projectReport.status === ProjectReportSummaryDTO.StatusEnum.Draft && projectReport.linkedFormVersion !== data.currentApprovedVersion"
+                              matTooltip="{{ 'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="ml-1">
+                        warning_amber
+                    </mat-icon>
                 </mat-cell>
             </ng-container>
 
