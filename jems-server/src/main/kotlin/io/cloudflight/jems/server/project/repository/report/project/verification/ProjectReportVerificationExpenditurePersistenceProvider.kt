@@ -80,7 +80,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         }
 
         val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
-        return existingEntities.values.toExtendedModel(procurementsById)
+        return existingEntities.values.toModels(procurementsById, emptyList())
     }
 
     @Transactional

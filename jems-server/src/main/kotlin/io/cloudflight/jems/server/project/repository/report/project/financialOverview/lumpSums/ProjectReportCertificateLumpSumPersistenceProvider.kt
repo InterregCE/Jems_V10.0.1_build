@@ -22,6 +22,7 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 name = it.programmeLumpSum.translatedValues.mapTo(HashSet()) {
                     InputTranslation(it.translationId.language, it.name)
                 },
+                fastTrack = it.programmeLumpSum.isFastTrack,
                 period = it.periodNumber,
                 orderNr = it.orderNr,
                 totalEligibleBudget = it.total,

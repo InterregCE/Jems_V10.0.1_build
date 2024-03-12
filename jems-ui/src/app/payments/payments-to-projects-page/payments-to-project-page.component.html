@@ -110,7 +110,7 @@
 
 <ng-template #typeCell let-payment>
     <mat-icon class="mr-1">{{ payment.paymentType === PaymentTypeEnum.FTLS ? 'fast_forward' : 'receipt_long' }}</mat-icon>
-    {{ payment.paymentType }}
+    {{ 'payments.payment.to.project.table.column.payment.type.' + payment.paymentType | translate }}
 </ng-template>
 
 <ng-template #claimNoCell let-payment>

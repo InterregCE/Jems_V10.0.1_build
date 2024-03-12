@@ -25,6 +25,7 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 name = it.programmeLumpSum.translatedValues.mapTo(HashSet()) {
                     InputTranslation(it.translationId.language, it.name)
                 },
+                fastTrack = it.programmeLumpSum.isFastTrack,
                 period = it.period,
                 totalEligibleBudget = it.total,
                 previouslyReported = it.previouslyReported,

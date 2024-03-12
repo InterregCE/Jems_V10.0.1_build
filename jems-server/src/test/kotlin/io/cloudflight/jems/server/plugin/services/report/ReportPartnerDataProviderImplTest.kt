@@ -548,6 +548,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             reportLumpSumId = 36L,
             lumpSumId = 945L,
             name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
+            fastTrack = true,
             period = 4,
             totalEligibleBudget = BigDecimal.valueOf(1),
             previouslyReported = BigDecimal.valueOf(2),
