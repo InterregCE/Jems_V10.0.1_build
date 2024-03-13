@@ -105,7 +105,7 @@ export class AdvancePaymentAttachmentsStore {
       map(id => Number(id)),
       take(1),
       switchMap(advancePaymentId => {
-        this.downloadService.download(`/api/advancepayment/attachment/byFileId/${fileId}`, 'payment-attachment');
+        this.downloadService.download(`/api/advancePayment/attachment/byFileId/${fileId}`, 'payment-attachment');
         return of(null);
       }),
     );
