@@ -87,7 +87,7 @@ class UploadCallTranslationFile(
 
     private fun archiveFileIfThereIsOldOne(callId: Long, fileName: String) {
         filePersistence.fileIdIfExists(exactPath = CallTranslation.generatePath(callId), fileName = fileName)?.let { previousFileId ->
-            fileService.moveFile(
+            fileService.archiveCallTranslation(
                 previousFileId,
                 newName = archivedFileNameFor(fileName),
                 newLocation = JemsFileType.CallTranslationArchive.generatePath(callId),
