@@ -617,6 +617,9 @@ import {
 import {
   ProjectApplicationStatusComponent
 } from '@project/project-application/project-application-status/project-application-status.component';
+import {
+  ProjectReportProjectClosureChecklistPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-checklist-page/project-report-project-closure-checklist-page.component';
 
 @NgModule({
   declarations: [
@@ -834,7 +837,8 @@ import {
     AuditControlCorrectionImpactComponent,
     ProjectReportSpfContributionsTabComponent,
     ProjectReportProjectClosureTabComponent,
-    ProjectApplicationStatusComponent
+    ProjectApplicationStatusComponent,
+    ProjectReportProjectClosureChecklistPageComponent,
   ],
   imports: [
     SharedModule,

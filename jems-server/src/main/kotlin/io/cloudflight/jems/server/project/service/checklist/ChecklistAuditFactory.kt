@@ -165,6 +165,40 @@ fun projectVerificationReportChecklistDeleted(
     )
 }
 
+fun projectClosureChecklistStatusChanged(
+    context: Any,
+    checklist: ChecklistInstance,
+    oldStatus: ChecklistInstanceStatus,
+    projectId: Long,
+    reportNumber: Int
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_STATUS_CHANGE,
+            project = AuditProject(id = projectId.toString()),
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} " +
+                "for project report R.${reportNumber} changed status from '$oldStatus' to '${checklist.status}'"
+        )
+    )
+}
+
+fun projectClosureChecklistDeleted(
+    context: Any,
+    checklist: ChecklistInstanceDetail,
+    projectId: Long,
+    reportNumber: Int
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_DELETED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for project report R.${reportNumber} was deleted"
+        )
+    )
+}
+
 private fun getPartnerName(partner: ProjectPartnerDetail?): String =
     partner?.role?.isLead.let {
         if (it == true) "LP${partner?.sortNumber}" else "PP${partner?.sortNumber}"

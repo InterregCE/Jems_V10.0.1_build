@@ -310,6 +310,9 @@ import {
   ProjectReportProjectClosureTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-tab.component';
 import {NgModule} from '@angular/core';
+import {
+  ProjectReportProjectClosureChecklistPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-checklist-page/project-report-project-closure-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -545,6 +548,11 @@ export const routes: Routes = [
                       {
                         path: 'projectClosure',
                         component: ProjectReportProjectClosureTabComponent,
+                      },
+                      {
+                        path: 'projectClosure/checklist/:checklistId',
+                        component: ProjectReportProjectClosureChecklistPageComponent,
+                        data: {breadcrumb: 'checklists.instance.title'},
                       },
                       {
                         path: 'annexes',

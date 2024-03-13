@@ -113,6 +113,9 @@ import {
 } from '@project/project-application/report/project-report/project-report-status/project-report-status.component';
 import {AccountingYearPipe} from '@common/pipe/accounting-year.pipe';
 import {AsPercentagePipe} from '@common/pipe/as-percentage.pipe';
+import {
+  ClosureChecklistInstanceListComponent
+} from '@common/components/checklist/closure-checklist-instance-list/closure-checklist-instance-list.component';
 
 const modules = [
   CommonModule,
@@ -200,7 +203,8 @@ const declarations = [
   ProjectReportListComponent,
   PartnerReportStatusComponent,
   ProjectReportStatusComponent,
-  VerificationChecklistInstanceListComponent
+  VerificationChecklistInstanceListComponent,
+  ClosureChecklistInstanceListComponent,
 ];
 
 const providers = [
