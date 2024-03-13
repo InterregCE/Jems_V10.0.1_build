@@ -218,4 +218,15 @@ class AdvancePaymentValidatorTest : UnitTest() {
         }
         assertEquals(PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY, ex.i18nKey)
     }
+
+    @Test
+    fun `should throw for unconfirming payment with settlements`() {
+        val ex = assertThrows<I18nValidationException> {
+            validator.validateDetail(
+                update= advancePaymentUpdate.copy(paymentAuthorized = true, paymentConfirmed = false),
+                saved = advancePaymentDetail.copy(paymentAuthorized = true, paymentConfirmed = true)
+            )
+        }
+        assertEquals(AdvancePaymentValidator.PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY, ex.i18nKey)
+    }
 }

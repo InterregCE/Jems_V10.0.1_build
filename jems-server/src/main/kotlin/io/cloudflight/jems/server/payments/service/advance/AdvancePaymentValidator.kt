@@ -27,11 +27,11 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY)
         }
 
-        if (paymentConfirmationRemoved(update, saved) && saved.hasSettlements()) {
+        if (paymentConfirmationRemoved(update, saved) && update.hasSettlements()) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY)
         }
 
-        if (update.hasSettlements() && update.paymentConfirmed == false) {
+        if (update.hasSettlements() && update.paymentConfirmed == false && saved?.paymentConfirmed == false) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY)
         }
 
@@ -88,9 +88,6 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
     }
     private fun isNotSet(id: Long?): Boolean =
         id == null || id <= 0
-
-    private fun AdvancePaymentDetail?.hasSettlements() =
-        this != null && this.paymentSettlements.isNotEmpty()
 
     private fun AdvancePaymentUpdate.hasSettlements() =
         this.paymentSettlements.isNotEmpty()
