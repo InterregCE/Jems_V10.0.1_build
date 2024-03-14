@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.user.service.user.update_user
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
@@ -59,6 +60,9 @@ internal class UserUpdatedEventListenersTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var AppProperties: AppProperties
+
+    @RelaxedMockK
+    lateinit var SecurityService: SecurityService
 
     @InjectMockKs
     lateinit var userUpdatedEventListeners: UserUpdatedEventListeners

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.user.service.user.update_user
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.event.JemsMailEvent
@@ -19,14 +20,16 @@ data class UserUpdatedEvent(val updatedUser: User, val oldUser: User, val confir
 
 @Service
 data class UserUpdatedEventListeners(
-    private val eventPublisher: ApplicationEventPublisher, private val appProperties: AppProperties
+    private val eventPublisher: ApplicationEventPublisher,
+    private val appProperties: AppProperties,
+    private val securityService: SecurityService,
 ) {
 
     @TransactionalEventListener
     fun publishJemsAuditEvent(event: UserUpdatedEvent) =
         eventPublisher.publishEvent(
             JemsAuditEvent(
-                auditUser = event.updatedUser.toAuditUser(),
+                auditUser = securityService.currentUser?.user?.toAuditUser(),
                 auditCandidate = AuditBuilder(AuditAction.USER_DATA_CHANGED)
                     .entityRelatedId(event.updatedUser.id)
                     .description(
