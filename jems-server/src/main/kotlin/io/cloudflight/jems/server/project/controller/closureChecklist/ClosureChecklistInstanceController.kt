@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.project.controller.checklist.toDetailDto
 import io.cloudflight.jems.server.project.controller.checklist.toDetailModel
 import io.cloudflight.jems.server.project.controller.checklist.toDto
-import io.cloudflight.jems.server.project.controller.checklist.toModel
 import io.cloudflight.jems.server.project.service.checklist.clone.closure.CloneClosureChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.closure.CreateClosureChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.closure.DeleteClosureChecklistInstanceInteractor

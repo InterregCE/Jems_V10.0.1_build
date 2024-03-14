@@ -123,7 +123,7 @@ export class ClosureChecklistInstanceListComponent implements OnInit {
     this.pageStore.closureChecklistInstances(this.projectId, this.reportId).pipe(
       map(data => this.checklistInstances$.next(data))
     ).subscribe();
-    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
+    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType, this.projectId);
     this.instancesTableConfiguration = this.checklistUtils.initializeTableConfiguration(this.actionsCell, this.descriptionCell);
   }
 
