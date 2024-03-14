@@ -67,7 +67,7 @@ class UpdateContractingMonitoring(
                 .fillLumpSumsList(lumpSums = projectLumpSumPersistence.getLumpSums(projectId = projectId, version))
             val project = projectPersistence.getProject(projectId = projectId, version)
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
-                contractMonitoring.copy(projectId = projectId,  closureDate = oldMonitoring.closureDate)
+                contractMonitoring.copy(projectId = projectId, closureDate = oldMonitoring.closureDate)
             ).fillEndDateWithDuration(resolveDuration = { project.duration })
                 .apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
 
@@ -82,8 +82,7 @@ class UpdateContractingMonitoring(
                 orderNrsToBeAdded = lumpSumsOrderNrTobeAdded,
                 orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted
             )
-            projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-
+            projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, contractMonitoring.fastTrackLumpSums!!)
             updatePaymentRelatedData(
                 project,
                 lumpSumsOrderNrTobeAdded,
@@ -91,6 +90,7 @@ class UpdateContractingMonitoring(
                 fastTrackLumpSums = fastTrackLumpSums,
                 version = version,
             )
+
             updateProjectContractedOnDate(updated, projectId)
 
             if (projectSummary.status.isAlreadyContracted()) {
@@ -126,7 +126,7 @@ class UpdateContractingMonitoring(
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: MutableSet<Int>
     ) {
-       val lumpSumsPaymentLinksToEcApplication = paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId)
+        val lumpSumsPaymentLinksToEcApplication = paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId)
         lumpSums.forEach {
             val lumpSum = savedFastTrackLumpSums.first { o -> o.orderNr == it.orderNr }
             it.lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
@@ -145,6 +145,7 @@ class UpdateContractingMonitoring(
             }
         }
     }
+
     private fun validateReadyFlagChangeIsAllowed(
         projectId: Long,
         lumpSum: ProjectLumpSum,
@@ -158,6 +159,7 @@ class UpdateContractingMonitoring(
             throw UpdateContractingMonitoringFTLSLinkedToEcPaymentException()
         }
     }
+
     private fun updatePaymentRelatedData(
         projectOfCorrectVersion: ProjectFull,
         lumpSumOrderNrsToBeAdded: MutableSet<Int>,
