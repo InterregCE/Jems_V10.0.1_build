@@ -14,6 +14,7 @@ import partner from '@fixtures/api/application/partner/partner.json';
 import {projectReportPage} from './reports-page.pom';
 import {ProjectReportType} from './ProjectReportType';
 import controllerAssignment from "@fixtures/api/control/assignment.json";
+import date from 'date-and-time';
 
 context('Project report tests', () => {
 
@@ -597,6 +598,39 @@ context('Project report tests', () => {
             });
         });
     });
+
+    it('TB-1128 PR - Financial overview - Breakdown per Lump Sums and Unit Costs shows correct figures across multiple project reports', function () {
+        cy.fixture('project/reporting/TB-1128.json').then(testData => {
+            cy.loginByRequest(user.applicantUser.email);
+            cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+                const leadPartnerId = this[application.partners[0].details.abbreviation];
+                const rawPartnerReportDetails = {
+                  partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
+                  controlWork: reporting.projectReports[0].partnerReports[0].controlWork
+                };
+                const partnerReportDetails = JSON.parse(JSON.stringify(rawPartnerReportDetails));
+                partnerReportDetails.partnerReport.expenditures = testData.partnerReportExpenditures;
+                partnerReportDetails.controlWork.expenditureVerification = testData.expenditureVerifications;
+
+                cy.createCertifiedPartnerReport(leadPartnerId, partnerReportDetails, user.controllerUser.email);
+
+                cy.loginByRequest(paymentsUser.email);
+                editFTLSPayment(applicationId, 0, true);
+                editFTLSPayment(applicationId, 1, false);
+
+                cy.loginByRequest(user.applicantUser.email);
+                cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+                cy.wait(2000);
+                createProjectReport(2); // Finance type
+                cy.wait(2000);
+                cy.url().then(url => {
+                    const reportId = Number(url.replace('/identification', '').split('/').pop());
+                    cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+                    projectReportPage.verifyAmountsInTables(testData.expectedResults);
+                });
+            });
+        });
+    });
 });
 
 
@@ -707,4 +741,19 @@ function createVerifiedProjectReport(applicationId: number, verificationExpendit
     const projectReportDetails = JSON.parse(JSON.stringify(rawProjectReportDetails));
     projectReportDetails.verificationWork.expenditures = Array(10).fill(verificationExpenditure);
     cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email);
+}
+
+function editFTLSPayment(applicationId: number, ftlsNumber: number, isPaid: boolean) {
+    cy.visit(`app/payments/paymentsToProjects`, {failOnStatusCode: false});
+    cy.contains('mat-expansion-panel-header', 'Filters').click();
+    cy.get('mat-expansion-panel').contains('div','ProjectID').find('input').type(applicationId + '{enter}');
+    cy.get('jems-table').find('mat-row').eq(ftlsNumber).click();
+    cy.contains('button', 'Add installment').click();
+    cy.get('.installments-table').find('mat-checkbox').eq(0).click();
+    if (isPaid) {
+      cy.get('mat-datepicker-toggle').find('button').click();
+      cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+      cy.get('.installments-table').find('mat-checkbox').eq(1).click();
+    }
+    cy.contains('Save changes').click();
 }
