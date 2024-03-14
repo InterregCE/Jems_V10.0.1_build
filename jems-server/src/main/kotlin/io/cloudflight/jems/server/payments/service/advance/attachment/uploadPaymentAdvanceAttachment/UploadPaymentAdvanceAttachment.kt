@@ -34,7 +34,7 @@ class UploadPaymentAdvanceAttachment(
             val location = generatePath(paymentId)
 
             if (filePersistence.existsFile(exactPath = location, fileName = file.name))
-                throw FileAlreadyExists()
+                throw FileAlreadyExists(file.name)
 
             val fileToSave = file.getFileMetadata(
                 projectId = payment.projectId,

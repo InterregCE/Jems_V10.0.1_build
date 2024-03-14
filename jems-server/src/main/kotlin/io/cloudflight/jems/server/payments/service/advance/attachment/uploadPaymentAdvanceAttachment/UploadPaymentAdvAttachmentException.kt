@@ -13,9 +13,12 @@ class UploadPaymentAdvAttachmentException(cause: Throwable) : ApplicationExcepti
     cause = cause,
 )
 
-class FileAlreadyExists : ApplicationUnprocessableException(
+class FileAlreadyExists(fileName: String) : ApplicationUnprocessableException(
     code = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_KEY_PREFIX.file.already.exists"),
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_KEY_PREFIX.file.already.exists",
+        i18nArguments = mapOf("fileName" to fileName)
+    )
 )
 
 class FileTypeNotSupported : ApplicationUnprocessableException(
