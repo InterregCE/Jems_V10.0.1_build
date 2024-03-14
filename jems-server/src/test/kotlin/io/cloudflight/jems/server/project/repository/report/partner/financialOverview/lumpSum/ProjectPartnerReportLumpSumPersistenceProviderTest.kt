@@ -58,6 +58,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             previouslyReportedParked = BigDecimal.valueOf(1000),
             currentReIncluded = BigDecimal.valueOf(100),
             currentParked = BigDecimal.valueOf(100),
+            currentParkedVerification = BigDecimal.ZERO,
             previouslyValidated = BigDecimal.valueOf(5)
         )
 

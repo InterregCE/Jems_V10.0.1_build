@@ -238,6 +238,7 @@ fun List<PreviouslyReportedFund>.toEntity(
         previouslyValidated = fund.previouslyValidated,
         previouslyPaid = fund.previouslyPaid,
         currentParked = ZERO,
+        currentParkedVerification = ZERO,
         currentReIncluded = ZERO,
         previouslyReportedParked = fund.previouslyReportedParked,
         previouslyReportedSpf = fund.previouslyReportedSpf,
@@ -304,6 +305,14 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionCurrentReIncluded = ZERO,
         privateContributionCurrentReIncluded = ZERO,
         sumCurrentReIncluded = ZERO,
+
+        partnerContributionCurrentParkedVerification = ZERO,
+        publicContributionCurrentParkedVerification = ZERO,
+        automaticPublicContributionCurrentParkedVerification = ZERO,
+        privateContributionCurrentParkedVerification = ZERO,
+        sumCurrentParkedVerification = ZERO,
+
+
     )
 }
 
@@ -448,6 +457,18 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         unitCostCurrentParked = ZERO,
         spfCostCurrentParked = ZERO,
         sumCurrentParked = ZERO,
+
+        staffCurrentParkedVerification = ZERO,
+        officeCurrentParkedVerification = ZERO,
+        travelCurrentParkedVerification = ZERO,
+        externalCurrentParkedVerification = ZERO,
+        equipmentCurrentParkedVerification = ZERO,
+        infrastructureCurrentParkedVerification = ZERO,
+        otherCurrentParkedVerification = ZERO,
+        lumpSumCurrentParkedVerification = ZERO,
+        unitCostCurrentParkedVerification = ZERO,
+        spfCostCurrentParkedVerification = ZERO,
+        sumCurrentParkedVerification = ZERO,
 
         staffCurrentReIncluded = ZERO,
         officeCurrentReIncluded = ZERO,

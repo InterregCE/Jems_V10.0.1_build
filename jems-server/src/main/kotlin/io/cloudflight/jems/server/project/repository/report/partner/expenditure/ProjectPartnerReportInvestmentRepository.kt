@@ -30,6 +30,17 @@ interface ProjectPartnerReportInvestmentRepository :
     @Query("""
         SELECT new kotlin.Pair(
             investment.investmentId,
+            COALESCE(SUM(investment.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} investment
+        WHERE investment.reportEntity.projectReport.id IN :projectReportIds
+        GROUP BY investment.investmentId
+    """)
+    fun findVerificationParkedCumulativeForProjectReportIds(projectReportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            investment.investmentId,
             COALESCE(SUM(investment.totalEligibleAfterControl), 0)
         )
         FROM #{#entityName} investment

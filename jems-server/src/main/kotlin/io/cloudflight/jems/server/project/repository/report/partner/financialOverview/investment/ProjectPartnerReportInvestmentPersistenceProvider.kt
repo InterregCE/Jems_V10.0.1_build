@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectPartnerReportInvestmentPersistenceProvider(
@@ -25,6 +26,10 @@ class ProjectPartnerReportInvestmentPersistenceProvider(
         reportInvestmentRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, ExpenditureInvestmentCurrent(current = it.second, currentParked = it.third)) }
 
+
+    @Transactional(readOnly = true)
+    override fun getVerificationParkedInvestmentsCumulative(projectReportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportInvestmentRepository.findVerificationParkedCumulativeForProjectReportIds(projectReportIds).toMap()
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -54,6 +59,21 @@ class ProjectPartnerReportInvestmentPersistenceProvider(
                 if (afterControl.containsKey(it.id)) {
                     it.totalEligibleAfterControl = afterControl.get(it.id)!!.current
                     it.currentParked = afterControl.get(it.id)!!.currentParked
+                }
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationParkedValues(
+        partnerId: Long,
+        reportId: Long,
+        afterVerificationValues: Map<Long, BigDecimal>
+    ) {
+        reportInvestmentRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(partnerId = partnerId, reportId = reportId)
+            .forEach {
+                if (afterVerificationValues.containsKey(it.investmentId)) {
+                    it.currentParkedVerification = afterVerificationValues[it.investmentId]!!
                 }
             }
     }

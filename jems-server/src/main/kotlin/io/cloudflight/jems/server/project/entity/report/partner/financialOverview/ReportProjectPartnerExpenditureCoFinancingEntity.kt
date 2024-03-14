@@ -77,4 +77,10 @@ class ReportProjectPartnerExpenditureCoFinancingEntity(
     @field:NotNull var privateContributionCurrentReIncluded: BigDecimal,
     @field:NotNull var sumCurrentReIncluded: BigDecimal,
 
+    // parking verification values
+    @field:NotNull var partnerContributionCurrentParkedVerification: BigDecimal,
+    @field:NotNull var publicContributionCurrentParkedVerification: BigDecimal,
+    @field:NotNull var automaticPublicContributionCurrentParkedVerification: BigDecimal,
+    @field:NotNull var privateContributionCurrentParkedVerification: BigDecimal,
+    @field:NotNull var sumCurrentParkedVerification: BigDecimal,
     ) : Serializable

@@ -270,6 +270,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             currentParked = BigDecimal.valueOf(200),
             currentReIncluded = BigDecimal.valueOf(1000),
             previouslyReportedParked = BigDecimal.valueOf(1000),
+            currentParkedVerification = BigDecimal.ZERO,
             previouslyValidated = BigDecimal.valueOf(5)
         )
 
@@ -312,6 +313,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             currentParked = BigDecimal.TEN,
             currentReIncluded = BigDecimal.valueOf(50),
             previouslyReportedParked = BigDecimal.ZERO,
+            currentParkedVerification = BigDecimal.ZERO,
             previouslyValidated = BigDecimal.valueOf(6)
         )
 
@@ -329,6 +331,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             currentParked = BigDecimal.valueOf(200),
             currentReIncluded = BigDecimal.valueOf(1000),
             previouslyReportedParked = BigDecimal.valueOf(1000),
+            currentParkedVerification = BigDecimal.ZERO,
             deactivated = false,
             previouslyValidated = BigDecimal.valueOf(7)
         ).apply {

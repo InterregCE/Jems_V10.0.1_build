@@ -102,6 +102,18 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull var spfCostCurrentParked: BigDecimal,
     @field:NotNull var sumCurrentParked: BigDecimal,
 
+    @field:NotNull var staffCurrentParkedVerification: BigDecimal,
+    @field:NotNull var officeCurrentParkedVerification: BigDecimal,
+    @field:NotNull var travelCurrentParkedVerification: BigDecimal,
+    @field:NotNull var externalCurrentParkedVerification: BigDecimal,
+    @field:NotNull var equipmentCurrentParkedVerification: BigDecimal,
+    @field:NotNull var infrastructureCurrentParkedVerification: BigDecimal,
+    @field:NotNull var otherCurrentParkedVerification: BigDecimal,
+    @field:NotNull var lumpSumCurrentParkedVerification: BigDecimal,
+    @field:NotNull var unitCostCurrentParkedVerification: BigDecimal,
+    @field:NotNull var spfCostCurrentParkedVerification: BigDecimal,
+    @field:NotNull var sumCurrentParkedVerification: BigDecimal,
+
     @field:NotNull var staffCurrentReIncluded: BigDecimal,
     @field:NotNull var officeCurrentReIncluded: BigDecimal,
     @field:NotNull var travelCurrentReIncluded: BigDecimal,

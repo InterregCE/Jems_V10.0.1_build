@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
@@ -31,6 +32,10 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
         previouslyReportedParked = expenditureCostCategoryRepository.findParkedCumulativeForReportIds(reportIds),
         previouslyValidated = expenditureCostCategoryRepository.findCumulativeTotalsForReportIds(finalizedReportIds)
     )
+
+    @Transactional(readOnly = true)
+    override fun getVerificationCostCategoriesCumulative(finalizedProjectrepotIds: Set<Long>)=
+        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(finalizedProjectrepotIds)
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -95,6 +100,28 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 lumpSumCurrentParked = afterControlWithParked.currentlyReportedParked.lumpSum
                 unitCostCurrentParked = afterControlWithParked.currentlyReportedParked.unitCost
                 sumCurrentParked = afterControlWithParked.currentlyReportedParked.sum
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationParkedValues(
+        partnerId: Long,
+        reportId: Long,
+        parkedAfterVerification: BudgetCostsCalculationResultFull
+    ) {
+        expenditureCostCategoryRepository
+            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
+                staffCurrentParkedVerification = parkedAfterVerification.staff
+                officeCurrentParkedVerification = parkedAfterVerification.office
+                travelCurrentParkedVerification = parkedAfterVerification.travel
+                externalCurrentParkedVerification = parkedAfterVerification.external
+                equipmentCurrentParkedVerification = parkedAfterVerification.equipment
+                infrastructureCurrentParkedVerification = parkedAfterVerification.infrastructure
+                otherCurrentParkedVerification = parkedAfterVerification.other
+                lumpSumCurrentParkedVerification = parkedAfterVerification.lumpSum
+                unitCostCurrentParkedVerification = parkedAfterVerification.unitCost
+                spfCostCurrentParkedVerification = parkedAfterVerification.spfCost
+                sumCurrentParkedVerification = parkedAfterVerification.sum
             }
     }
 
