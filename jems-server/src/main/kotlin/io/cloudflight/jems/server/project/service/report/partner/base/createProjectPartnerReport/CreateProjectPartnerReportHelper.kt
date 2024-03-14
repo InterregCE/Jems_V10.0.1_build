@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import java.math.BigDecimal
 
-
 fun List<ProjectWorkPackageFull>.toCreateEntity() = map { wp ->
     CreateProjectPartnerReportWorkPackage(
         workPackageId = wp.id,
@@ -95,8 +94,8 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                         previousCurrentReport = previousDeliverable?.currentReport ?: BigDecimal.ZERO,
                         currentReport = previousDeliverable?.currentReport ?: BigDecimal.ZERO,
                         previousProgress = previousDeliverable?.progress ?: emptySet(),
-                        progress =previousDeliverable?.progress ?: emptySet()
-                        )
+                        progress = previousDeliverable?.progress ?: emptySet()
+                    )
                 },
                 previousProgress = previousActivity?.progress ?: emptySet(),
                 previousStatus = previousActivity?.status,
@@ -118,9 +117,9 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 previousProgress = previousOutput?.progress ?: emptySet(),
                 previousCurrentReport = previousOutput?.currentReport ?: BigDecimal.ZERO,
                 currentReport = previousOutput?.currentReport ?: BigDecimal.ZERO
-                )
+            )
         },
-        investments = wp.investments.map {i ->
+        investments = wp.investments.map { i ->
             val previousInvestment = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
                 ?.investments?.firstOrNull { it.number == i.investmentNumber }
             ProjectReportWorkPackageInvestmentCreate(
@@ -141,14 +140,15 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 ownershipMaintenance = i.ownershipMaintenance,
                 deactivated = i.deactivated,
                 progress = previousInvestment?.progress ?: emptySet(),
-                previousProgress = previousInvestment?.progress ?: emptySet()
-                )
+                previousProgress = previousInvestment?.progress ?: emptySet(),
+                status = previousInvestment?.status
+            )
         },
         previousCommunicationExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationExplanation ?: emptySet(),
         previousSpecificExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificExplanation ?: emptySet(),
         previousSpecificStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificStatus,
         previousCompleted = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.completed ?: false,
-        previousCommunicationStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationStatus    ,
+        previousCommunicationStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationStatus,
         communicationExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationExplanation ?: emptySet(),
         specificExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificExplanation ?: emptySet(),
         previousDescription = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.description ?: emptySet(),

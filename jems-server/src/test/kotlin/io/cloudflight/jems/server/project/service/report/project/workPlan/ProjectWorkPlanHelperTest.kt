@@ -3,20 +3,17 @@ package io.cloudflight.jems.server.project.service.report.project.workPlan
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestment
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.*
 import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag.Gray
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag.Green
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag.Yellow
 
 class ProjectWorkPlanHelperTest : UnitTest() {
 
-    private val investment = ProjectReportWorkPackageInvestment(
+    private val investment1 = ProjectReportWorkPackageInvestment(
         id = 1L,
         number = 1,
         title = emptySet(),
@@ -24,7 +21,35 @@ class ProjectWorkPlanHelperTest : UnitTest() {
         period = null,
         nutsRegion3 = null,
         previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress")),
-        progress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress new"))
+        progress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress new")),
+        status = ProjectReportWorkPlanInvestmentStatus.Finalized,
+        previousStatus = null
+    )
+
+    private val investment2= ProjectReportWorkPackageInvestment(
+        id = 2L,
+        number = 2,
+        title = emptySet(),
+        deactivated = false,
+        period = null,
+        nutsRegion3 = null,
+        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress")),
+        progress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress new")),
+        status = ProjectReportWorkPlanInvestmentStatus.Finalized,
+        previousStatus = ProjectReportWorkPlanInvestmentStatus.Finalized
+    )
+
+    private val investment3 = ProjectReportWorkPackageInvestment(
+        id = 3L,
+        number = 3,
+        title = emptySet(),
+        deactivated = false,
+        period = null,
+        nutsRegion3 = null,
+        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress")),
+        progress = setOf(InputTranslation(SystemLanguage.EN, "[1] progress")),
+        status = ProjectReportWorkPlanInvestmentStatus.Finalized,
+        previousStatus = ProjectReportWorkPlanInvestmentStatus.Finalized
     )
 
     private val output = ProjectReportWorkPackageOutput(
@@ -125,7 +150,7 @@ class ProjectWorkPlanHelperTest : UnitTest() {
         description = setOf(InputTranslation(SystemLanguage.EN, "[1] description")),
         activities = listOf(activityOne, activityTwo, activityThree),
         outputs = listOf(output),
-        investments = listOf(investment),
+        investments = listOf(investment1, investment2, investment3),
         specificStatusLabel = null,
         communicationStatusLabel = null,
         workPlanStatusLabel = null
@@ -215,21 +240,25 @@ class ProjectWorkPlanHelperTest : UnitTest() {
             projectReportWorkPackage,
             projectReportWorkPackageTwo,
             projectReportWorkPackageThree,
-            projectReportWorkPackageFourth).fillInFlags()
-        assertThat(workplans.find { it.id == 1L }?.specificStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Green)
-        assertThat(workplans.find { it.id == 1L }?.communicationStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 1L }?.workPlanStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Yellow)
-        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 1L }?.activityStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Green)
-        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 2L }?.activityStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Yellow)
-        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 3L }?.activityStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 2L }?.specificStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Yellow)
-        assertThat(workplans.find { it.id == 2L }?.communicationStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Green)
-        assertThat(workplans.find { it.id == 2L }?.workPlanStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Green)
-        assertThat(workplans.find { it.id == 3L }?.specificStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 3L }?.communicationStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 3L }?.workPlanStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 4L }?.specificStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Gray)
-        assertThat(workplans.find { it.id == 4L }?.communicationStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Yellow)
-        assertThat(workplans.find { it.id == 4L }?.workPlanStatusLabel).isEqualTo(ProjectReportWorkPlanFlag.Yellow)
+            projectReportWorkPackageFourth
+        ).fillInFlags()
+        assertThat(workplans.find { it.id == 1L }?.specificStatusLabel).isEqualTo(Green)
+        assertThat(workplans.find { it.id == 1L }?.communicationStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 1L }?.workPlanStatusLabel).isEqualTo(Yellow)
+        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 1L }?.activityStatusLabel).isEqualTo(Green)
+        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 2L }?.activityStatusLabel).isEqualTo(Yellow)
+        assertThat(workplans.find { it.id == 1L }?.activities?.find { it.id == 3L }?.activityStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 1L }?.investments?.find { it.id == 1L }?.statusLabel).isEqualTo(Green)
+        assertThat(workplans.find { it.id == 1L }?.investments?.find { it.id == 2L }?.statusLabel).isEqualTo(Yellow)
+        assertThat(workplans.find { it.id == 1L }?.investments?.find { it.id == 3L }?.statusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 2L }?.specificStatusLabel).isEqualTo(Yellow)
+        assertThat(workplans.find { it.id == 2L }?.communicationStatusLabel).isEqualTo(Green)
+        assertThat(workplans.find { it.id == 2L }?.workPlanStatusLabel).isEqualTo(Green)
+        assertThat(workplans.find { it.id == 3L }?.specificStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 3L }?.communicationStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 3L }?.workPlanStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 4L }?.specificStatusLabel).isEqualTo(Gray)
+        assertThat(workplans.find { it.id == 4L }?.communicationStatusLabel).isEqualTo(Yellow)
+        assertThat(workplans.find { it.id == 4L }?.workPlanStatusLabel).isEqualTo(Yellow)
     }
 }

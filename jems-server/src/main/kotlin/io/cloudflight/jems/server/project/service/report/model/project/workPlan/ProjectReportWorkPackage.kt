@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.project.workPlan
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.project.workPlan.haveDeliverablesChanged
 
 data class ProjectReportWorkPackage(
     val id: Long,
@@ -30,4 +31,29 @@ data class ProjectReportWorkPackage(
     var specificStatusLabel: ProjectReportWorkPlanFlag? = null,
     var communicationStatusLabel: ProjectReportWorkPlanFlag? = null,
     var workPlanStatusLabel: ProjectReportWorkPlanFlag? = null,
-)
+){
+    fun hasSpecificExplanationChanged() = specificExplanation != previousSpecificExplanation
+
+    fun hasSpecificStatusChanged() = specificStatus != previousSpecificStatus
+
+    fun hasCommunicationExplanationChanged() = communicationExplanation != previousCommunicationExplanation
+
+    fun hasCommunicationStatusChanged() = communicationStatus != previousCommunicationStatus
+
+    fun haveActivitiesChanged(): Boolean = activities.any {
+        it.previousProgress != it.progress
+                || it.previousStatus != it.status
+                || haveDeliverablesChanged(it.deliverables)
+    }
+
+    fun haveOutputsChanged(): Boolean =  outputs.any {
+        it.currentReport.compareTo(it.previousCurrentReport) != 0 || it.previousProgress != it.progress
+    }
+
+    fun haveInvestmentsChanged(): Boolean = investments.any {
+        it.previousProgress != it.progress
+                || it.previousStatus != it.status
+    }
+
+    fun hasDescriptionChanged() = description != previousDescription
+}

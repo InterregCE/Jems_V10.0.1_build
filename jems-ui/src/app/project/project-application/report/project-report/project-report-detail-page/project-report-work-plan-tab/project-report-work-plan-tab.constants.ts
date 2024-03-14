@@ -35,6 +35,18 @@ export class ProjectReportWorkPlanTabConstants {
     maxLength: 2000,
   };
 
+  public static INVESTMENT_SPECIFIC_STATUS: AppControl = {
+    name: 'investmentSpecificStatus',
+  };
+
+  public static INVESTMENT_STATUS_LABEL: AppControl = {
+    name: 'investmentStatusLabel',
+  };
+
+  public static INVESTMENT_PREVIOUS_STATUS_FULLY_ACHIEVED: AppControl = {
+    name: 'isPreviousStatusFullyAchieved',
+  };
+
   public static ACTIVITIES: AppControl = {
     name: 'activities'
   };
