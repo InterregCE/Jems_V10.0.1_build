@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.report.project.workPlan
 
 import io.cloudflight.jems.server.project.entity.AddressEntity
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanInvestmentStatus
 import javax.persistence.CascadeType
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -52,4 +52,10 @@ class ProjectReportWorkPackageInvestmentEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportWorkPackageInvestmentTranslEntity> = mutableSetOf(),
-    )
+
+    @Enumerated(EnumType.STRING)
+    var status: ProjectReportWorkPlanInvestmentStatus?,
+
+    @Enumerated(EnumType.STRING)
+    var previousStatus: ProjectReportWorkPlanInvestmentStatus?,
+)

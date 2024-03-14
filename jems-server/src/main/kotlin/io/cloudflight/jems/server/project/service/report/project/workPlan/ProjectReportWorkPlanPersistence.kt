@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanInvestmentStatus
 import java.math.BigDecimal
 
 interface ProjectReportWorkPlanPersistence {
@@ -27,12 +28,11 @@ interface ProjectReportWorkPlanPersistence {
 
     fun updateReportWorkPackageOutput(outputId: Long, currentReport: BigDecimal, progress: Set<InputTranslation>)
 
-    fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>)
+    fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>, status: ProjectReportWorkPlanInvestmentStatus?)
 
     fun getDeliverableCumulative(reportIds: Set<Long>): Map<Int, Map<Int, Map<Int, BigDecimal>>>
 
     fun getOutputCumulative(reportIds: Set<Long>): Map<Int, Map<Int, BigDecimal>>
 
     fun deleteWorkPlan(reportId: Long)
-
 }

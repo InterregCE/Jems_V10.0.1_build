@@ -22,4 +22,12 @@ data class ProjectReportWorkPackageActivity(
 
     val deliverables: List<ProjectReportWorkPackageActivityDeliverable>,
     var activityStatusLabel: ProjectReportWorkPlanFlag? = null
-)
+) {
+
+    fun hasProgressChanged() = progress != previousProgress
+
+    fun haveDeliverablesChanged() = deliverables.any {
+            it.currentReport.compareTo(it.previousCurrentReport) != 0 || it.previousProgress != it.progress
+        }
+
+}

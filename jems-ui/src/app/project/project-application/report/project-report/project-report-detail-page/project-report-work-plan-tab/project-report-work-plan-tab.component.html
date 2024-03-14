@@ -166,15 +166,37 @@
                                                       [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
                                                 do_not_disturb
                                             </mat-icon>
+
+                                            <span *ngIf="isInvestmentFinalized(investment)">
+                                              <mat-icon class="mr-2 green-icon">check_circle_outline</mat-icon>
+                                            </span>
+
                                             <span [innerText]="'project.application.project.report.tab.work.plan.investment.nr.entry' | translate: {
                                                     workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
                                                     investmentNr: investment.get(constants.INVESTMENT_NUMBER.name)?.value}"></span>
                                             <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE"
                                                   [innerText]="investment.get(constants.INVESTMENT_TITLE.name)?.value | translateByInputLanguage | async"></span>
                                         </mat-panel-title>
+
+                                        <mat-panel-description class="centered-header" *ngIf="isInvestmentFinalized(investment)">
+                                          <mat-chip-list *ngIf="isInvestmentFinalized(investment)" aria-label="status">
+                                            <mat-chip *ngIf="investment.get(constants.INVESTMENT_STATUS_LABEL.name)?.value === InvestmentStatusLabelEnum.Green" class="ml-4 green-bg status-chip" [removable]="false" [selectable]="false" >
+                                              <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
+                                            </mat-chip>
+
+                                            <mat-chip *ngIf="investment.get(constants.INVESTMENT_PREVIOUS_STATUS_FULLY_ACHIEVED.name)?.value && investment.get(constants.INVESTMENT_STATUS_LABEL.name)?.value === InvestmentStatusLabelEnum.Gray" class="ml-4 grey-bg status-chip" [removable]="false" [selectable]="false" >
+                                              <span>{{'project.application.project.report.tab.work.plan.work.package.no.changes.prior' | translate}}</span>
+                                            </mat-chip>
+
+                                            <mat-chip *ngIf="investment.get(constants.INVESTMENT_PREVIOUS_STATUS_FULLY_ACHIEVED.name)?.value && investment.get(constants.INVESTMENT_STATUS_LABEL.name)?.value === InvestmentStatusLabelEnum.Yellow" class="ml-4 yellow-bg status-chip" [removable]="false" [selectable]="false" >
+                                              <span>{{'project.application.project.report.tab.work.plan.work.package.new.changes.after.completion' | translate}}</span>
+                                            </mat-chip>
+                                          </mat-chip-list>
+                                        </mat-panel-description>
                                     </mat-expansion-panel-header>
 
-                                    <mat-form-field
+                                    <div class="input-field-row">
+                                      <mat-form-field
                                             *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD"
                                             class="input-field">
                                         <mat-label
@@ -183,15 +205,25 @@
                                                  ProjectUtil.getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )"
                                                [value]="investment.get(constants.INVESTMENT_PERIOD.name)?.value && ProjectUtil.getPeriodKey(investment.get(constants.INVESTMENT_PERIOD.name)?.value.startDate) | translate :
                                                  ProjectUtil.getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )">
-                                    </mat-form-field>
+                                      </mat-form-field>
 
-                                    <mat-form-field jemsFormFieldWidth="xxx-large"
-                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS"
-                                            class="input-field">
-                                        <mat-label
-                                                [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.location.nuts3' | translate"></mat-label>
-                                        <input matInput disabled [value]="investment.get(constants.INVESTMENT_NUTS3.name)?.value">
-                                    </mat-form-field>
+                                      <mat-form-field
+                                              *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS"
+                                              class="input-field">
+                                          <mat-label
+                                                  [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.location.nuts3' | translate"></mat-label>
+                                          <input matInput disabled [value]="investment.get(constants.INVESTMENT_NUTS3.name)?.value"
+                                                 [matTooltip]="'project.application.project.report.tab.work.plan.work.package.investment.location.nuts3' | translate">
+                                      </mat-form-field>
+
+                                      <mat-form-field class="input-field">
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.status' | translate"></mat-label>
+                                        <mat-select [disabled]="data.reopenedLimited" [formControlName]="constants.INVESTMENT_SPECIFIC_STATUS.name">
+                                          <mat-option *ngFor="let status of investmentSpecificStatus" [value]="status"
+                                                      [innerText]="('project.application.project.report.tab.work.plan.work.package.investment.status.' + status) | translate"></mat-option>
+                                        </mat-select>
+                                      </mat-form-field>
+                                    </div>
 
                                     <jems-multi-language-container>
                                         <jems-multi-language-form-field type="textarea"

@@ -13,4 +13,8 @@ data class ProjectReportWorkPackageInvestmentDTO(
     val nutsRegion3: String?,
     val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
+    val status: ProjectReportWorkPlanInvestmentStatusDTO?,
+    val previousStatus: ProjectReportWorkPlanInvestmentStatusDTO?,
+
+    val statusLabel: ProjectReportWorkPlanFlagDTO?
 )

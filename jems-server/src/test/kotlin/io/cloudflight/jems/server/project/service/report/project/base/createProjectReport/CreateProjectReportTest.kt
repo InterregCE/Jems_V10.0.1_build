@@ -374,12 +374,14 @@ internal class CreateProjectReportTest : UnitTest() {
                         institutionName = "BOR"
                     ),
                     costType = ProjectPartnerCostType.Management,
-                    budgetPerFund = setOf( PartnerBudgetPerFund(
-                        fund = ERDF_FUND.copy(id = 410L),
-                        percentage = BigDecimal(80),
-                        percentageOfTotal = BigDecimal(100).setScale(2),
-                        value = BigDecimal.valueOf(1500)
-                    )),
+                    budgetPerFund = setOf(
+                        PartnerBudgetPerFund(
+                            fund = ERDF_FUND.copy(id = 410L),
+                            percentage = BigDecimal(80),
+                            percentageOfTotal = BigDecimal(100).setScale(2),
+                            value = BigDecimal.valueOf(1500)
+                        )
+                    ),
                     publicContribution = BigDecimal(3),
                     autoPublicContribution = BigDecimal.ZERO,
                     privateContribution = BigDecimal.ZERO,
@@ -515,13 +517,13 @@ internal class CreateProjectReportTest : UnitTest() {
                 lastVerificationReOpening = null,
                 riskBasedVerification = false,
                 riskBasedVerificationDescription = null
-                ),
-                reportBudget = ProjectReportBudget(
-                        coFinancing = PreviouslyProjectReportedCoFinancing(
-                                fundsSorted = listOf(
-                                        PreviouslyProjectReportedFund(
-                                                fundId = 410L,
-                                                total = BigDecimal.valueOf(1500),
+            ),
+            reportBudget = ProjectReportBudget(
+                coFinancing = PreviouslyProjectReportedCoFinancing(
+                    fundsSorted = listOf(
+                        PreviouslyProjectReportedFund(
+                            fundId = 410L,
+                            total = BigDecimal.valueOf(1500),
                             previouslyReported = BigDecimal.valueOf(256),
                             previouslyVerified = BigDecimal.valueOf(104),
                             previouslyPaid = BigDecimal.valueOf(512),
@@ -642,37 +644,37 @@ internal class CreateProjectReportTest : UnitTest() {
                         previouslyVerified = BigDecimal.ONE,
                     )
                 ),
-                    spfContributionClaims = emptyList(),
-                    budgetPerPartner = listOf(
-                        ProjectPartnerBudgetPerFund(
-                            partner = ProjectPartnerSummary(
-                                id = 11L,
-                                sortNumber = 6,
-                                abbreviation = "LP abbr",
-                                role = ProjectPartnerRole.LEAD_PARTNER,
-                                country = "country-6",
-                                region = null,
-                                currencyCode = null,
-                                active = true,
-                                institutionName = "BOR"
-                            ),
-                            costType = ProjectPartnerCostType.Management,
-                            budgetPerFund = setOf(
-                                PartnerBudgetPerFund(
-                                    fund = ERDF_FUND.copy(id = 410L),
-                                    percentage = BigDecimal(80),
-                                    percentageOfTotal = BigDecimal(100).setScale(2),
-                                    value = BigDecimal.valueOf(1500)
-                                )
-                            ),
-                            publicContribution = BigDecimal(3),
-                            autoPublicContribution = BigDecimal.ZERO,
-                            privateContribution = BigDecimal.ZERO,
-                            totalPartnerContribution = BigDecimal(3),
-                            totalEligibleBudget = BigDecimal(30).setScale(2),
-                            percentageOfTotalEligibleBudget = BigDecimal(100).setScale(2, RoundingMode.HALF_UP)
-                        )
+                spfContributionClaims = emptyList(),
+                budgetPerPartner = listOf(
+                    ProjectPartnerBudgetPerFund(
+                        partner = ProjectPartnerSummary(
+                            id = 11L,
+                            sortNumber = 6,
+                            abbreviation = "LP abbr",
+                            role = ProjectPartnerRole.LEAD_PARTNER,
+                            country = "country-6",
+                            region = null,
+                            currencyCode = null,
+                            active = true,
+                            institutionName = "BOR"
+                        ),
+                        costType = ProjectPartnerCostType.Management,
+                        budgetPerFund = setOf(
+                            PartnerBudgetPerFund(
+                                fund = ERDF_FUND.copy(id = 410L),
+                                percentage = BigDecimal(80),
+                                percentageOfTotal = BigDecimal(100).setScale(2),
+                                value = BigDecimal.valueOf(1500)
+                            )
+                        ),
+                        publicContribution = BigDecimal(3),
+                        autoPublicContribution = BigDecimal.ZERO,
+                        privateContribution = BigDecimal.ZERO,
+                        totalPartnerContribution = BigDecimal(3),
+                        totalEligibleBudget = BigDecimal(30).setScale(2),
+                        percentageOfTotalEligibleBudget = BigDecimal(100).setScale(2, RoundingMode.HALF_UP)
                     )
+                )
             ),
             workPackages = listOf(
                 ProjectReportWorkPackageCreate(
@@ -747,6 +749,7 @@ internal class CreateProjectReportTest : UnitTest() {
                             deactivated = false,
                             previousProgress = emptySet(),
                             progress = emptySet(),
+                            status = null
                         )
                     ),
                     previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
@@ -883,8 +886,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
@@ -988,8 +995,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns emptyList()
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns null
@@ -1006,7 +1017,7 @@ internal class CreateProjectReportTest : UnitTest() {
             every { isSpf() } returns true
         }
 
-        every { createProjectReportBudget.retrieveBudgetDataFor(projectId, version = "version",  emptyList(), emptyList()) } returns mockk()
+        every { createProjectReportBudget.retrieveBudgetDataFor(projectId, version = "version", emptyList(), emptyList()) } returns mockk()
 
         val data = ProjectReportUpdate(
             startDate = YESTERDAY,
@@ -1031,8 +1042,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns listOf(1966, 1985)
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns listOf(1966, 1985)
 
         val data = ProjectReportUpdate(
             startDate = YESTERDAY,
@@ -1069,5 +1084,4 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.countForProject(projectId) } returns 100
         assertThrows<MaxAmountOfReportsReachedException> { interactor.createReportFor(projectId, mockk()) }
     }
-
 }
