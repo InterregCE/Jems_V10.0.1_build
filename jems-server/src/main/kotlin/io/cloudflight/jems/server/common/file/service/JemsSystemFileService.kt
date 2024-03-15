@@ -63,14 +63,30 @@ class JemsSystemFileService(
     override fun delete(file: JemsFileMetadataEntity) {
         validateType(file.type, allowedFileTypes)
 
-        val savedFile = file
-
         super.delete(file)
 
         auditPublisher.publishEvent(
             systemFileDeleted(
-                context = this, fileMeta = savedFile.toModel(),
-                location = savedFile.minioLocation, type = savedFile.type
+                context = this, fileMeta = file.toModel(),
+                location = file.minioLocation, type = file.type
+            )
+        )
+    }
+
+    @Transactional
+    fun archiveCallTranslation(fileId: Long, newName: String, newLocation: String) {
+        val file = projectFileMetadataRepository.findById(fileId).orElseThrow { ResourceNotFoundException("file") }
+        validateType(file.type, setOf(JemsFileType.CallTranslation))
+
+        val oldFile = file.toModel()
+        val oldLocation = file.minioLocation
+
+        super.moveFile(fileId, newName, newLocation)
+
+        auditPublisher.publishEvent(
+            systemFileDeleted(
+                context = this, fileMeta = oldFile,
+                location = oldLocation, type = file.type
             )
         )
     }
