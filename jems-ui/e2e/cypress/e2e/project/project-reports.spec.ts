@@ -530,8 +530,9 @@ context('Project report tests', () => {
                     projectReportPage.verifyAmountsInTables(testData.expectedResults.firstResults);
 
                     cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/certificate`, {failOnStatusCode: false});
-                    cy.get('mat-table').find('mat-checkbox').eq(0).click();
+                    cy.contains('mat-row', 'PP2').find('mat-checkbox').click();
                     cy.contains('Confirm').click();
+                    cy.contains('mat-row', 'PP2').find('mat-checkbox').should('not.be.checked')
 
                     cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
                     cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
