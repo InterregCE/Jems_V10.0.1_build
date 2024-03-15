@@ -407,13 +407,12 @@ context('Project partners tests', () => {
         });
 
         cy.contains('button', 'Create').click();
+        cy.wait(500);
         cy.contains('Associated organisations').click();
 
-        cy.wait(1000);
-
-        cy.get('jems-project-application-form-associated-organizations-list').within(() => {
-          cy.contains('AO1').should('exist');
-          cy.contains('Active').should('exist');
+        cy.get('jems-project-application-form-associated-organizations-list').should((section) => {
+          expect(section).to.contain.text('AO1')
+          expect(section).to.contain.text('Active')
         });
       });
     });
