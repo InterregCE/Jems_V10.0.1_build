@@ -42,8 +42,8 @@ export class ClosureChecklistInstanceListStore {
     this.instancesSort$.next(sort);
   }
 
-  checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum): Observable<IdNamePairDTO[]> {
-    return this.programmeChecklistService.getProgrammeChecklistsByType(relatedType).pipe(
+  checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, projectId?: number): Observable<IdNamePairDTO[]> {
+    return this.programmeChecklistService.getProgrammeChecklistsByType(relatedType, projectId).pipe(
       map(templates => [...templates].sort((a, b) => b.id - a.id)),
       tap(templates => Log.info('Fetched the programme checklist templates', this, templates))
     );
@@ -68,7 +68,7 @@ export class ClosureChecklistInstanceListStore {
   }
 
   createInstance(projectId: number, reportId: number, programmeChecklistId: number): Observable<number> {
-    return this.closureChecklistInstanceService.createClosureChecklistInstance(projectId, reportId, programmeChecklistId)
+    return this.closureChecklistInstanceService.createClosureChecklistInstance(programmeChecklistId, projectId, reportId)
       .pipe(
         take(1),
         tap(checklistInstance => Log.info('Created a new closure checklist instance', this, checklistInstance)),

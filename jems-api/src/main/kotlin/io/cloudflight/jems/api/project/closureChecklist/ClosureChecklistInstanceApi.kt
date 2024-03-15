@@ -35,7 +35,7 @@ interface ClosureChecklistInstanceApi {
     ): ChecklistInstanceDetailDTO
 
     @ApiOperation("Create a new closure checklist instance")
-    @PostMapping(ENDPOINT_API_CLOSURE_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("${ENDPOINT_API_CLOSURE_CHECKLIST_INSTANCE}/byProgrammeChecklist/{programmeChecklistId}")
     fun createClosureChecklistInstance(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
