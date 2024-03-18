@@ -10,4 +10,6 @@ data class PaymentToEcLinkingUpdateDTO (
     val correctedTotalEligibleWithoutSco: BigDecimal?,
     val correctedFundAmountUnionContribution: BigDecimal?,
     val correctedFundAmountPublicContribution: BigDecimal?,
+
+    val comment: String,
 )

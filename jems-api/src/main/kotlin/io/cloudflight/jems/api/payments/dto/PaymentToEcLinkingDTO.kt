@@ -22,4 +22,6 @@ data class PaymentToEcLinkingDTO(
 
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
+
+    val comment: String?,
 )

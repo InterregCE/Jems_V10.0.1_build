@@ -76,7 +76,6 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
@@ -588,6 +587,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
                 any(), any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(),
+                any(),
             )
         } returns query
         val slotFrom = slot<EntityPath<Any>>()
@@ -628,6 +628,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleFtls.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(28)
         every { tupleFtls.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(29)
         every { tupleFtls.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(30)
+        every { tupleFtls.get(18, String::class.java) } returns "comment"
 
         val tupleRegular = mockk<Tuple>()
         every { tupleRegular.get(0, PaymentEntity::class.java) } returns paymentRegularEntity()
@@ -649,6 +650,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleRegular.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(38)
         every { tupleRegular.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(39)
         every { tupleRegular.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(49)
+        every { tupleRegular.get(18, String::class.java) } returns "comment"
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 2

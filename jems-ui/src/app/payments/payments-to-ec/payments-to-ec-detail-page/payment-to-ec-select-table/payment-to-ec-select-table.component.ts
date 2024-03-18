@@ -19,9 +19,6 @@ import {Subject} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
-import {
-  AdvancePaymentsDetailPageConstants
-} from '../../../../advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.constants';
 import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
 
 @Component({
@@ -55,7 +52,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
   @Output()
   submitPayment = new EventEmitter<{ ecId: number; paymentId: number; updateDto: PaymentToEcLinkingUpdateDTO }>();
 
-  constants = AdvancePaymentsDetailPageConstants;
+  MAX_VALUE = 999_999_999.99;
   PaymentTypeEnum = PaymentTypeEnum;
 
   form = this.formBuilder.group({
@@ -79,7 +76,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     'publicContribution',
     'autoPublicContribution',
     'privateContribution',
-    'correction'
+    'comment',
+    'correction',
   ];
   dataSource: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
   editedRowIndex: number | null = null;
@@ -120,6 +118,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: this.formBuilder.control(link.correctedPrivateContribution),
       totalEligibleWithoutScoArt9495: this.formBuilder.control(link.correctedTotalEligibleWithoutSco),
       unionContribution: this.formBuilder.control(link.correctedFundAmountUnionContribution),
+      comment: this.formBuilder.control(link.comment),
       fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.fundAmount)
     });
     this.paymentToEcLinking.push(item);
@@ -136,7 +135,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       correctedPrivateContribution: this.paymentToEcLinking.at(rowIndex).get('privateContribution')?.value,
       correctedTotalEligibleWithoutSco: this.paymentToEcLinking.at(rowIndex).get('totalEligibleWithoutScoArt9495')?.value,
       correctedFundAmountUnionContribution: this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value,
-      correctedFundAmountPublicContribution: this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value
+      correctedFundAmountPublicContribution: this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value,
+      comment: this.paymentToEcLinking.at(rowIndex).get('comment')?.value,
     } as PaymentToEcLinkingUpdateDTO;
     this.submitPayment.emit({ecId,paymentId, updateDto});
     this.editedRowIndex = null;
@@ -162,6 +162,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: linkingDTO.correctedPrivateContribution,
       totalEligibleWithoutScoArt9495: linkingDTO.correctedTotalEligibleWithoutSco,
       unionContribution: linkingDTO.correctedFundAmountUnionContribution,
+      comment: linkingDTO.comment,
       fundAmount: this.flaggedArt9495 ? linkingDTO.correctedFundAmountPublicContribution : linkingDTO.payment.fundAmount
     });
     this.editedRowIndex = null;

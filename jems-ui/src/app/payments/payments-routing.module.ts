@@ -9,7 +9,6 @@ import {AdvancePaymentsPageComponent} from './advance-payments-page/advance-paym
 import {PaymentsToProjectPageComponent} from './payments-to-projects-page/payments-to-project-page.component';
 import {PaymentToEcDetailPageComponent} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {PermissionGuard} from '../security/permission.guard';
-import {PaymentToEcRegularProjectsTabComponent} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-regular-projects-tab.component';
 import {PaymentToEcSummaryTabComponent} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
 import {
   PaymentToEcCorrectionTabComponent
@@ -29,6 +28,9 @@ import {AccountsReconciliationTabComponent} from './accounts-page/account-detail
 import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 import {NgModule} from '@angular/core';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {
+  PaymentToEcRegularProjectsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/projects-not-flagged-art-9495-tab/payment-to-ec-regular-projects-tab.component';
 
 const paymentsRoutes: Routes = [
   {

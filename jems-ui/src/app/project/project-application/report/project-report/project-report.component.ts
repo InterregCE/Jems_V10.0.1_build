@@ -20,7 +20,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from "@project/common/services/project-version-store.service";
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Component({
   selector: 'jems-project-report',

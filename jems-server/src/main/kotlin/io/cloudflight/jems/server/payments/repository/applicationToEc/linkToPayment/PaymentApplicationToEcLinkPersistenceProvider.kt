@@ -128,6 +128,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             this.correctedTotalEligibleWithoutSco = paymentToEcLinkingUpdate.correctedTotalEligibleWithoutSco ?: correctedTotalEligibleWithoutSco
             this.correctedFundAmountUnionContribution = paymentToEcLinkingUpdate.correctedFundAmountUnionContribution ?: correctedFundAmountUnionContribution
             this.correctedFundAmountPublicContribution = paymentToEcLinkingUpdate.correctedFundAmountPublicContribution ?: correctedFundAmountPublicContribution
+
+            this.comment = paymentToEcLinkingUpdate.comment
         }
     }
 

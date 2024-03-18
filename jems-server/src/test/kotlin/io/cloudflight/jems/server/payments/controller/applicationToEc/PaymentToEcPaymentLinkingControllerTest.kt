@@ -55,7 +55,8 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             priorityAxis = "code",
             correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
             correctedFundAmountUnionContribution = BigDecimal.ZERO,
-            correctedFundAmountPublicContribution = BigDecimal.ZERO
+            correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "comment",
         )
 
         private fun paymentByType(type: PaymentType) =
@@ -93,7 +94,8 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             priorityAxis = "code",
             correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
             correctedFundAmountUnionContribution = BigDecimal.ZERO,
-            correctedFundAmountPublicContribution = BigDecimal.ZERO
+            correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "comment",
         )
 
         private val paymentsIncludedInPaymentsToEc = listOf(
@@ -219,6 +221,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
             correctedFundAmountUnionContribution = BigDecimal.ZERO,
             correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "newComment",
         )
         val slotUpdate = slot<PaymentToEcLinkingUpdate>()
         every { updateLinkedPayment.updateLinkedPayment(paymentId = 75L, capture(slotUpdate)) } answers { }
@@ -234,6 +237,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
                 correctedFundAmountUnionContribution = BigDecimal.ZERO,
                 correctedFundAmountPublicContribution = BigDecimal.ZERO,
+                comment = "newComment"
             )
         )
     }

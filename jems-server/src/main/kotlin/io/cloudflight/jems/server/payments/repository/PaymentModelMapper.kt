@@ -374,5 +374,6 @@ fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntit
     correctedPrivateContribution = defaultOfWhichPrivate,
     publicContribution = defaultOfWhichPublic,
     correctedPublicContribution = defaultOfWhichPublic,
+    comment = null,
     finalScoBasis = null,
 )

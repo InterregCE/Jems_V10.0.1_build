@@ -20,16 +20,10 @@ import {PaymentToEcSummaryTabComponent} from './payments-to-ec/payments-to-ec-de
 import {
   PaymentToEcSummaryAttachmentsComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/attachments/payment-to-ec-summary-attachments.component';
-import {PaymentToEcRegularProjectsTabComponent} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-regular-projects-tab.component';
 import {
   PaymentToEcCumulativeTableComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-cumulative-table/payment-to-ec-cumulative-table.component';
-import {
-  RegularPaymentsNotFlagged9495Component
-} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/regular-payments-not-flagged-9495/regular-payments-not-flagged-9495.component';
-import {
-  PaymentToEcSelectTableComponent
-} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-select-table/payment-to-ec-select-table.component';
+import {PaymentToEcSelectTableComponent} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-select-table/payment-to-ec-select-table.component';
 import {
   PaymentToEcCorrectionTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
@@ -53,9 +47,13 @@ import {AccountsCumulativeTableComponent} from './accounts-page/account-detail/a
 import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
 import {AccountsWithdrawnTabComponent} from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
 import {AccountsReconciliationTabComponent} from './accounts-page/account-detail/accounts-reconciliation-tab/accounts-reconciliation-tab.component';
+import {AccountsAttachmentsComponent} from './accounts-page/account-detail/accounts-summary-tab/attachments/accounts-attachments.component';
 import {
-  AccountsAttachmentsComponent
-} from './accounts-page/account-detail/accounts-summary-tab/attachments/accounts-attachments.component';
+  RegularPaymentsNotFlagged9495Component
+} from './payments-to-ec/payments-to-ec-detail-page/projects-not-flagged-art-9495-tab/regular-payments-not-flagged-9495/regular-payments-not-flagged-9495.component';
+import {
+  PaymentToEcRegularProjectsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/projects-not-flagged-art-9495-tab/payment-to-ec-regular-projects-tab.component';
 
 @NgModule({
   declarations: [
