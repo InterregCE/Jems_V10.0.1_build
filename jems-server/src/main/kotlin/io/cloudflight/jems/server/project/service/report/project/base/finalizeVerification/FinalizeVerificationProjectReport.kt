@@ -7,13 +7,29 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegular
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerInvestment
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerLumpSum
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureIdentifiers
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -23,6 +39,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.plusSpf
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.calculateCertified
 import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
@@ -53,7 +70,14 @@ class FinalizeVerificationProjectReport(
     private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
     private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
-) : FinalizeVerificationProjectReportInteractor {
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+    private val partnerReportPersistence: ProjectPartnerReportPersistence,
+    private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
+    private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
+    private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
+
+    ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
     @CanFinalizeReportVerification
@@ -92,6 +116,8 @@ class FinalizeVerificationProjectReport(
         saveAfterVerificationUnitCosts(expendituresByCertificate.values.getAfterVerificationForUnitCosts(), report) // table 4
         saveAfterVerificationInvestments(expendituresByCertificate.values.getAfterVerificationForInvestments(), report) // table 5
 
+        calculateAndSaveCertificatesParkedValues(expendituresByCertificate)
+
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
 
@@ -106,6 +132,65 @@ class FinalizeVerificationProjectReport(
                 )
             )
         }.status
+    }
+
+    private fun calculateAndSaveCertificatesParkedValues(expendituresByCertificate: Map<ExpenditureIdentifiers, List<ExpenditureVerification>>) {
+        expendituresByCertificate.entries.forEach { (certificate, expenditures) ->
+            val partnerId = certificate.partnerId
+            val partnerReportId = certificate.partnerReportId
+            val partnerReport = partnerReportPersistence.getPartnerReportById(partnerId, partnerReportId)
+            val parkedVerificationExpenditures = expenditures.filter { expenditureVerification -> expenditureVerification.parked }
+            val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = partnerReportId)
+
+            val parkedExpendituresCostCategoriesValues = parkedVerificationExpenditures.calculateCertified(options = costCategories.options)
+
+            // table 1 summary
+            calculateCertificateCoFinParkedAfterVerification(
+                partnerId = partnerId,
+                partnerReportId = partnerReportId,
+                totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
+                afterVerificationExpenditureParked = parkedExpendituresCostCategoriesValues.sum,
+                partnerCoFinancing = partnerReport.identification.coFinancing
+            ).also { parkedValues ->
+                partnerReportCoFinancingPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            }
+            // table 2 breakdown cost-category
+            parkedExpendituresCostCategoriesValues.let { parkedValues ->
+                reportExpenditureCostCategoryPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            }
+            // table 3
+            parkedVerificationExpenditures.getTotalCertifiedPerLumpSum().let { parkedValues ->
+                reportLumpSumPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            }
+            // table 4
+            parkedVerificationExpenditures.getTotalCertifiedPerUnitCost().let { parkedValues ->
+                reportUnitCostPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            }
+            // table 5
+            parkedVerificationExpenditures.getTotalCertifiedPerInvestment().let { parkedValues ->
+                reportInvestmentPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            }
+        }
+
+    }
+
+    private fun calculateCertificateCoFinParkedAfterVerification(
+        partnerId: Long,
+        partnerReportId: Long,
+        totalEligibleBudget: BigDecimal,
+        afterVerificationExpenditureParked: BigDecimal,
+        partnerCoFinancing: List<ProjectPartnerCoFinancing>): ReportExpenditureCoFinancingColumn {
+
+        val contributions = reportContributionPersistence
+            .getPartnerReportContribution(partnerId, reportId = partnerReportId).extractOverview()
+
+        return getCurrentFrom(
+            contributions.generateCoFinCalculationInputData(
+                totalEligibleBudget = totalEligibleBudget,
+                currentValueToSplit = afterVerificationExpenditureParked,
+                funds = partnerCoFinancing
+            )
+        ).toColumn()
     }
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {

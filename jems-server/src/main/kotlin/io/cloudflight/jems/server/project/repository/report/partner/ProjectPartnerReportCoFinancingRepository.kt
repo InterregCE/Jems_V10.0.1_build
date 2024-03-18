@@ -26,6 +26,19 @@ interface ProjectPartnerReportCoFinancingRepository :
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<ReportCumulativeFund>
 
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund(
+            report.programmeFund.id,
+            COALESCE(SUM(report.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.id.report.projectReport.id IN :projectReportIds
+        GROUP BY report.programmeFund.id
+    """)
+    fun findCumulativeParkedForProjectReportIds(projectReportIds: Set<Long>): List<ProjectReportCumulativeFund>
+
+
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund(
             report.programmeFund.id,

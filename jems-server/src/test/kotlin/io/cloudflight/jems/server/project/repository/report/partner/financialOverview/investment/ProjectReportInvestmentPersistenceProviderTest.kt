@@ -39,6 +39,7 @@ class ProjectReportInvestmentPersistenceProviderTest : UnitTest() {
             previouslyReportedParked = BigDecimal.valueOf(1000),
             currentReIncluded = BigDecimal.valueOf(101),
             currentParked = BigDecimal.valueOf(100),
+            currentParkedVerification = BigDecimal.ZERO,
             deactivated = false,
             previouslyValidated = BigDecimal.valueOf(5)
         )

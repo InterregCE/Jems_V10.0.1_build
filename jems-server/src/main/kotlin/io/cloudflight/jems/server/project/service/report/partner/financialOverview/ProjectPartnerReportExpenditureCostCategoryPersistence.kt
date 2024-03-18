@@ -14,6 +14,8 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
 
     fun getCostCategoriesCumulative(reportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCostCategoryPreviouslyReportedWithParked
 
+    fun getVerificationCostCategoriesCumulative(finalizedProjectrepotIds: Set<Long>): BudgetCostsCalculationResultFull
+
     fun updateCurrentlyReportedValues(
         partnerId: Long,
         reportId: Long,
@@ -24,6 +26,13 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
         partnerId: Long,
         reportId: Long,
         afterControlWithParked: BudgetCostsCurrentValuesWrapper,
+    )
+
+
+    fun updateAfterVerificationParkedValues(
+        partnerId: Long,
+        reportId: Long,
+        parkedAfterVerification:BudgetCostsCalculationResultFull
     )
 
     fun getCostCategoriesTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull

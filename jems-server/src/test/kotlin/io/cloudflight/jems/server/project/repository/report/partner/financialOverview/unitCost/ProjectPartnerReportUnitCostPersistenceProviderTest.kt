@@ -53,6 +53,7 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             totalEligibleAfterControl = BigDecimal.valueOf(40),
             previouslyReported = BigDecimal.valueOf(30),
             currentParked = BigDecimal.ZERO,
+            currentParkedVerification = BigDecimal.ZERO,
             currentReIncluded = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.valueOf(50),
             previouslyValidated = BigDecimal.valueOf(5)

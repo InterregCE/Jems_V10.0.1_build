@@ -42,6 +42,11 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
         reportLumpSumRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, ExpenditureLumpSumCurrent(current = it.second, currentParked = it.third)) }
 
+
+    @Transactional(readOnly = true)
+    override fun getCumulativeVerificationParked(projectReportIds: Set<Long>): Map<Int, BigDecimal> =
+        reportLumpSumRepository.findCumulativeVerificationParkedForProjectReportIds(projectReportIds).toMap()
+
     @Transactional
     override fun updateCurrentlyReportedValues(
         partnerId: Long,
@@ -70,6 +75,21 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 if (afterControl.containsKey(it.id)) {
                     it.totalEligibleAfterControl = afterControl.get(it.id)!!.current
                     it.currentParked = afterControl.get(it.id)!!.currentParked
+                }
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationParkedValues(
+        partnerId: Long,
+        reportId: Long,
+        afterVerificationParked: Map<Long, BigDecimal>
+    ) {
+        reportLumpSumRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = partnerId, reportId = reportId)
+            .forEach {
+                if (afterVerificationParked.containsKey(it.programmeLumpSum.id)) {
+                    it.currentParkedVerification = afterVerificationParked[it.programmeLumpSum.id]!!
                 }
             }
     }

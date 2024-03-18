@@ -53,9 +53,10 @@ fun PartnerReportLumpSum.toEntity(
     previouslyValidated = previouslyValidated,
     previouslyPaid = previouslyPaid,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked
-)
+ )
 
 fun PartnerReportUnitCostBase.toEntity(
     report: ProjectPartnerReportEntity,
@@ -69,6 +70,7 @@ fun PartnerReportUnitCostBase.toEntity(
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked,
     previouslyValidated = previouslyValidated,
@@ -88,6 +90,7 @@ fun PartnerReportInvestment.toEntity(
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked,
     previouslyValidated = previouslyValidated,
