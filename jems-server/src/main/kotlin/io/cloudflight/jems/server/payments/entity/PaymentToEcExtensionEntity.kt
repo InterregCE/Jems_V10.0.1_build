@@ -53,6 +53,8 @@ class PaymentToEcExtensionEntity (
     @field:NotNull
     var correctedPrivateContribution: BigDecimal,
 
+    var comment: String?,
+
     @Enumerated(EnumType.STRING)
     var finalScoBasis: PaymentSearchRequestScoBasis?,
 

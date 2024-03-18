@@ -16,4 +16,5 @@ data class PaymentToEcExtensionTmp(
     val correctedAutoPublicContribution: BigDecimal,
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
+    val comment: String?,
 )

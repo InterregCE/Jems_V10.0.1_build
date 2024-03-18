@@ -83,11 +83,11 @@ $input-col-width: 9rem;
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-autoPublicContribution,
-.mat-column-comment,
-.mat-column-privateContribution {
+.mat-column-privateContribution,
+.mat-column-comment {
   padding-left: .5rem;
 }
-.mat-column-privateContribution {
+.mat-column-comment {
   padding-right: .5rem;
 }
 

@@ -165,7 +165,7 @@ class PaymentPersistenceProvider(
                 correctedAutoPublicContribution = it.paymentToEcExtension.correctedAutoPublicContribution,
                 privateContribution = it.paymentToEcExtension.privateContribution,
                 correctedPrivateContribution = it.paymentToEcExtension.correctedPrivateContribution,
-
+                comment = it.paymentToEcExtension.comment,
             )
         }
     }
@@ -192,6 +192,7 @@ class PaymentPersistenceProvider(
                 paymentToEcExtension.correctedAutoPublicContribution,
                 paymentToEcExtension.privateContribution,
                 paymentToEcExtension.correctedPrivateContribution,
+                paymentToEcExtension.comment,
             )
             .from(payment)
                 .leftJoin(paymentPartner)

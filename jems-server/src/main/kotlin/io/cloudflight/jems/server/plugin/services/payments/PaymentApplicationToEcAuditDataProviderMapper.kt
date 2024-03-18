@@ -92,4 +92,5 @@ fun PaymentToEcPayment.toDataModel() = PaymentToEcPaymentData(
     correctedTotalEligibleWithoutSco = correctedTotalEligibleWithoutSco,
     correctedFundAmountUnionContribution = correctedFundAmountUnionContribution,
     correctedFundAmountPublicContribution = correctedFundAmountPublicContribution,
+    comment = comment ?: "",
 )

@@ -436,7 +436,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
     return contract?.id;
   }
 
-  getProcurementLinkForItem(projectID:number, expenditureItem: AbstractControl): string {
+  getProcurementLinkForItem(projectID: number, expenditureItem: AbstractControl): string {
     return '/app/project/detail/' + projectID
       + '/reporting/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerId)
       + '/reports/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerReportId)

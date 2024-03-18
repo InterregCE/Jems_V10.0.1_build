@@ -126,7 +126,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
                 correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
                 correctedFundAmountUnionContribution = BigDecimal.ZERO,
                 correctedFundAmountPublicContribution = BigDecimal.ZERO,
-
+                comment = "comment"
             )
 
         private val paymentToEcExtensionModel = PaymentToEcExtension(
@@ -360,6 +360,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             correctedTotalEligibleWithoutSco = BigDecimal.valueOf(146.33),
             correctedFundAmountUnionContribution = BigDecimal.valueOf(25.00),
             correctedFundAmountPublicContribution = BigDecimal.valueOf(9.23),
+            comment = "newComment"
         )
         persistenceProvider.updatePaymentToEcCorrectedAmounts(99L, update)
         assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(100.00))
@@ -369,6 +370,7 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
         assertThat(entity.correctedTotalEligibleWithoutSco).isEqualTo(BigDecimal.valueOf(146.33))
         assertThat(entity.correctedFundAmountUnionContribution).isEqualTo(BigDecimal.valueOf(25.00))
         assertThat(entity.correctedFundAmountPublicContribution).isEqualTo(BigDecimal.valueOf(9.23))
+        assertThat(entity.comment).isEqualTo("newComment")
     }
 
     @Test

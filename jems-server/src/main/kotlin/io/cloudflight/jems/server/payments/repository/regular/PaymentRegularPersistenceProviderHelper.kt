@@ -87,6 +87,7 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
                 correctedAutoPublicContribution = it.get(15, BigDecimal::class.java)!!,
                 privateContribution = it.get(16, BigDecimal::class.java)!!,
                 correctedPrivateContribution = it.get(17, BigDecimal::class.java)!!,
+                comment = it.get(18, String::class.java),
             ),
         )
     },

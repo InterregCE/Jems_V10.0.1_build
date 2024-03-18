@@ -24,4 +24,5 @@ data class PaymentToEcPayment(
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
 
+    val comment: String?,
 )
