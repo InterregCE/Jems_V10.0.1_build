@@ -1,6 +1,6 @@
 <ng-container *ngIf="data$ | async as data">
     <ng-container *ngIf="reportStatus !== ProjectPartnerReportDTO.StatusEnum.Draft && data.canView">
-        <jems-pending-button *ngIf="reportStatus === ProjectPartnerReportDTO.StatusEnum.Submitted" class="ml-1"
+        <jems-pending-button *ngIf="reportStatus === ProjectPartnerReportDTO.StatusEnum.Submitted && !data.isProjectOwner" class="ml-1"
                              [pending]="pendingAction$ | async"
                              [disabled]="!data.canEdit"
                              (clicked)="createControlReportForPartnerReport(data.partnerId, reportId, !data.canEdit)">

@@ -35,6 +35,7 @@ export class StartControlReportComponent {
     isController: boolean;
     canView: boolean;
     canEdit: boolean;
+    isProjectOwner: boolean;
   }>;
 
   constructor(
@@ -49,13 +50,15 @@ export class StartControlReportComponent {
       pageStore.institutionUserCanViewControlReports$,
       pageStore.institutionUserCanEditControlReports$,
       pageStore.userCanViewReport$,
-      pageStore.userCanEditReport$
+      pageStore.userCanEditReport$,
+      pageStore.isProjectOwner$
     ]).pipe(
-      map(([partnerId, institutionView, institutionEdit, reportView, reportEdit]) => ({
+      map(([partnerId, institutionView, institutionEdit, reportView, reportEdit, isProjectOwner]) => ({
         partnerId,
         isController: institutionView || institutionEdit,
         canView: (institutionView || institutionEdit) || reportView || reportEdit,
-        canEdit: institutionEdit
+        canEdit: institutionEdit,
+        isProjectOwner
       })),
     );
   }

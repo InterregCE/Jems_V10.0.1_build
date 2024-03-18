@@ -19,6 +19,9 @@ import {ProgrammeEditableStateStore} from '../../../programme/programme-page/ser
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {MatSort} from '@angular/material/sort';
+import {
+  ProjectStore
+} from "@project/project-application/containers/project-application-detail/services/project-store.service";
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -34,6 +37,7 @@ export class PartnerReportPageStore {
   institutionUserCanEditControlReports$: Observable<boolean>;
   userCanViewGdpr$: Observable<boolean>;
   canCreateReport$: Observable<boolean>;
+  isProjectOwner$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -48,7 +52,8 @@ export class PartnerReportPageStore {
               private permissionService: PermissionService,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
               private controllerInstitutionService: ControllerInstitutionsApiService,
-              private privilegesPageStore: PrivilegesPageStore) {
+              private privilegesPageStore: PrivilegesPageStore,
+              private projectStore: ProjectStore) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
@@ -59,6 +64,7 @@ export class PartnerReportPageStore {
     this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
     this.userCanViewGdpr$ = this.userCanViewGdpr();
     this.canCreateReport$ = this.canCreateReport();
+    this.isProjectOwner$ = this.projectStore.userIsProjectOwner$;
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
