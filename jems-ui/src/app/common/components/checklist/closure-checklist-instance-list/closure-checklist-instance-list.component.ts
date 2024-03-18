@@ -210,7 +210,7 @@ export class ClosureChecklistInstanceListComponent implements OnInit {
       map(([plugins, systemLanguage]) => {
         const plugin = plugins[0];
         if (plugin?.type) {
-          const url = `/api/closureReportChecklist/byProjectId/${this.projectId}/byReportId/${this.reportId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
+          const url = `/api/closureChecklist/byProjectId/${this.projectId}/byReportId/${this.reportId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
           this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
