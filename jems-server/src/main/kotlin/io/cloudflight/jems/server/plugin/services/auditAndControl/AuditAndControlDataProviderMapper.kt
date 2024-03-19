@@ -72,7 +72,7 @@ fun AuditControlCorrectionLine.toModelData() = AuditControlCorrectionLineData(
     canBeDeleted = canBeDeleted,
     partnerReport = partnerReport,
     partnerId = partnerId,
-    partnerRole = if(partnerRole != null) ProjectPartnerRoleData.valueOf(partnerRole.name) else null,
+    partnerRole = if(partnerRole != null) ProjectPartnerRoleData.valueOf(partnerRole!!.name) else null,
     partnerNumber = partnerNumber,
     partnerDisabled = partnerDisabled,
     lumpSumOrderNr = lumpSumOrderNr,
