@@ -8,7 +8,8 @@
 
             <jems-filter-template
                     [formGroup]="filterForm"
-                    [isThereAnyActiveFilter]="filtersActive">
+                    [isThereAnyActiveFilter]="filtersActive"
+                    initiallyExpanded="false">
                 <div alignItems="start" jemsMultiColumnRow display="block">
 
                     <div class="mb-3" jemsMultiColumnRow display="block">
@@ -111,6 +112,10 @@
 <ng-template #typeCell let-payment>
     <mat-icon class="mr-1">{{ payment.paymentType === PaymentTypeEnum.FTLS ? 'fast_forward' : 'receipt_long' }}</mat-icon>
     {{ 'payments.payment.to.project.table.column.payment.type.' + payment.paymentType | translate }}
+</ng-template>
+
+<ng-template #fundCell let-payment>
+    {{ payment.fund.abbreviation | translateBySystemLanguage | async }}
 </ng-template>
 
 <ng-template #claimNoCell let-payment>

@@ -11,4 +11,7 @@ export class FilterTemplateComponent {
   @Input()
   isThereAnyActiveFilter: boolean;
 
+  @Input()
+  initiallyExpanded = true;
+
 }

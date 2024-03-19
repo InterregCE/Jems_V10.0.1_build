@@ -25,7 +25,7 @@ class UploadPaymentAttachment(
     @Transactional
     @ExceptionWrapper(UploadPaymentAttachmentException::class)
     override fun upload(paymentId: Long, file: ProjectFile): JemsFileMetadata {
-        val payment = paymentPersistence.getPaymentDetails(paymentId)
+        val projectId = paymentPersistence.getProjectIdForPayment(paymentId)
 
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
@@ -37,7 +37,7 @@ class UploadPaymentAttachment(
                 throw FileAlreadyExists()
 
             val fileToSave = file.getFileMetadata(
-                projectId = payment.projectId,
+                projectId = projectId,
                 partnerId = null,
                 location = location,
                 type = this,

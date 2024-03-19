@@ -31,6 +31,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
   @ViewChild('paymentToEcCell', {static: true})
   paymentToEcCell: TemplateRef<any>;
 
+  @ViewChild('fundCell', {static: true})
+  fundCell: TemplateRef<any>;
+
   data$: Observable<{
     userCanView: boolean;
     page: PagePaymentToProjectDTO;
@@ -160,7 +163,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.fund',
-          elementProperty: 'fundName',
+          customCellTemplate: this.fundCell,
           sortProperty: 'fund.type',
           columnWidth: ColumnWidth.MediumColumn,
           infoMessage: 'payments.payment.to.project.table.column.fund.info'

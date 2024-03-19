@@ -199,7 +199,7 @@ class UpdateContractingMonitoring(
                         .add(ftlsByFund.getFundValue(id).partnerContribution)
                     PaymentFtlsToCreate(
                         partnerPayments.first().programmeLumpSumId,
-                        partnerPayments.toPartnerPaymentsToCreate(),
+                        partnerPayments.toPartnerPaymentsToCreate(version),
                         partnerPayments.sumOf { it.amountApprovedPerPartner },
                         projectCustomIdentifier = projectOfCorrectVersion.customIdentifier,
                         projectAcronym = projectOfCorrectVersion.acronym,
@@ -227,9 +227,17 @@ class UpdateContractingMonitoring(
         }
     }
 
-    private fun List<PaymentPerPartner>.toPartnerPaymentsToCreate() =
+    private fun List<PaymentPerPartner>.toPartnerPaymentsToCreate(version: String) =
         this.map { ppp ->
-            PaymentPartnerToCreate(ppp.partnerId, null, ppp.amountApprovedPerPartner)
+            val partner = partnerPersistence.getById(ppp.partnerId, version)
+            return@map PaymentPartnerToCreate(
+                partnerId = ppp.partnerId,
+                partnerReportId = null,
+                amountApprovedPerPartner = ppp.amountApprovedPerPartner,
+                partnerAbbreviationIfFtls = partner.abbreviation,
+                partnerNameInOriginalLanguageIfFtls = partner.nameInOriginalLanguage ?: "",
+                partnerNameInEnglishIfFtls = partner.nameInEnglish ?: "",
+            )
         }
 
     private fun Map<Int, Map<Long?, DetailedSplit>>.getFundValue(id: PaymentGroupingId) =
