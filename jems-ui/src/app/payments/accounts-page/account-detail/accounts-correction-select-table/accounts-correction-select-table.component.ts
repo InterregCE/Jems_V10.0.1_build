@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild} from '@angular/core';
 import {PagePaymentAccountCorrectionLinkingDTO, PaymentAccountCorrectionLinkingDTO, PaymentAccountCorrectionLinkingUpdateDTO,} from '@cat/api';
 import {Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
@@ -199,6 +199,14 @@ export class AccountsCorrectionSelectTableComponent implements OnChanges {
 
   scrollToRight(): void {
     this.correctionTable.nativeElement.scrollLeft = this.correctionTable.nativeElement.scrollWidth;
+  }
+
+  editedFunds(rowIndex: number, row: PaymentAccountCorrectionLinkingDTO) {
+    return [
+      this.correctionLinking.at(rowIndex).get('publicContribution')?.value != row.publicContribution,
+      this.correctionLinking.at(rowIndex).get('autoPublicContribution')?.value != row.autoPublicContribution,
+      this.correctionLinking.at(rowIndex).get('privateContribution')?.value != row.privateContribution,
+    ].some(Boolean);
   }
 
 }

@@ -43,8 +43,7 @@ $input-col-width: 9rem;
 }
 
 .mat-column-totalEligible,
-.mat-column-controllingBody,
-.mat-column-comment {
+.mat-column-controllingBody {
   min-width: 8rem;
 }
 .mat-column-scenario {
@@ -59,6 +58,11 @@ $input-col-width: 9rem;
 .mat-column-privateContribution {
   min-width: $input-col-width;
   max-width: $input-col-width;
+}
+
+.mat-column-comment {
+  min-width: $input-col-width;
+  flex-grow: 1.5;
 }
 
 .mat-column-correction {
@@ -78,11 +82,11 @@ $input-col-width: 9rem;
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-autoPublicContribution,
-.mat-column-comment,
-.mat-column-privateContribution {
+.mat-column-privateContribution,
+.mat-column-comment {
   padding-left: .5rem;
 }
-.mat-column-privateContribution {
+.mat-column-comment {
   padding-right: .5rem;
 }
 
@@ -90,13 +94,14 @@ $input-col-width: 9rem;
   width: $input-col-width;
 }
 
-.vertical-align {
-  margin-bottom: 30%;;
-}
-
-.edited-row {
+mat-row.edited-row {
   height: 10rem;
 }
+
+mat-row.edited-funds .mat-cell {
+  background-color: var(--pale-yellow) !important;
+}
+
 
 .save-icon {
   transform: scale(0.8);
@@ -115,6 +120,10 @@ $input-col-width: 9rem;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.comment-align {
+  margin-bottom: 2rem;
 }
 
 .button-cell {

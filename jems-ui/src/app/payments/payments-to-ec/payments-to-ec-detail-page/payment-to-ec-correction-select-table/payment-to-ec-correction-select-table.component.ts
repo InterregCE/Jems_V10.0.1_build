@@ -201,4 +201,15 @@ export class PaymentToEcCorrectionSelectTableComponent {
     const totalCorrection = this.data.content[rowIndex].amountApprovedPerFund + this.data.content[rowIndex].partnerContribution;
     this.array.at(rowIndex).patchValue({totalEligibleWithoutArt94or95: totalCorrection - updatedUnionContribution});
   }
+
+  editedFunds(rowIndex: number, row: PaymentToEcInclusionRow) {
+    return [
+      this.array.at(rowIndex).get('totalEligibleWithoutArt94or95')?.value != row.totalEligibleWithoutArt94or95,
+      this.array.at(rowIndex).get('unionContribution')?.value != row.unionContribution,
+      this.array.at(rowIndex).get('fundAmount')?.value != row.amountApprovedPerFund,
+      this.array.at(rowIndex).get('publicContribution')?.value != row.publicContribution,
+      this.array.at(rowIndex).get('autoPublicContribution')?.value != row.autoPublicContribution,
+      this.array.at(rowIndex).get('privateContribution')?.value != row.privateContribution,
+    ].some(Boolean);
+  }
 }

@@ -243,7 +243,7 @@
                             {{ row.get('comment').value }}
                         </span>
                         <jems-expandable-textarea *ngIf="i === editedRowIndex"
-                                                  class="vertical-align comment-display button-cell"
+                                                  class="comment-align comment-display button-cell"
                                                   [control]="row.get('comment')"
                                                   [errors]="row.get('comment')?.errors"
                                                   [characterLimit]="500"
@@ -270,7 +270,9 @@
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row;let i = index; columns: displayedColumns" [class.edited-row]="i === editedRowIndex"></mat-row>
+        <mat-row *matRowDef="let row;let i = index; columns: displayedColumns"
+                 [class.edited-row]="i === editedRowIndex"
+                 [class.edited-funds]="editedFunds(i, data.content[i])"></mat-row>
 
     </mat-table>
 </ng-container>

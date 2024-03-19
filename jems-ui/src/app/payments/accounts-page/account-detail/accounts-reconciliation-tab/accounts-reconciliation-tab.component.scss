@@ -16,19 +16,11 @@ $input-col-width: 9rem;
   width: $input-col-width;
 }
 
-.edited-row {
-  height: 10rem;
-}
-
 .comment-display {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-}
-
-.button-cell {
-  margin-top: 2rem;
 }
 
 .border-cell-left {
