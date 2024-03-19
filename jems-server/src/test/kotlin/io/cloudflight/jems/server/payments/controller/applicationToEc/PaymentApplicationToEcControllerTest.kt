@@ -156,15 +156,11 @@ class PaymentApplicationToEcControllerTest : UnitTest() {
 
     @Test
     fun getPaymentApplicationsToEc() {
-        every { getPaymentApplicationsToEc.getPaymentApplicationsToEc(Pageable.unpaged()) } returns PageImpl(
-            listOf(
-                paymentApplicationToEc
-            )
-        )
+        every { getPaymentApplicationsToEc.getPaymentApplicationsToEc(Pageable.unpaged()) } returns
+                PageImpl(listOf(paymentApplicationToEc))
 
-        assertThat(controller.getPaymentApplicationsToEc(Pageable.unpaged())).isEqualTo(
-            PageImpl(listOf(paymentApplicationToEcDTO))
-        )
+        assertThat(controller.getPaymentApplicationsToEc(Pageable.unpaged()))
+            .containsExactly(paymentApplicationToEcDTO)
     }
 
     @Test

@@ -323,13 +323,16 @@ class PaymentPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
+    override fun getProjectIdForPayment(paymentId: Long): Long =
+        paymentRepository.getReferenceById(paymentId).project.id
+
+    @Transactional(readOnly = true)
     override fun getAllPartnerPayments(
         paymentId: Long
     ): List<PartnerPayment> =
         paymentPartnerRepository.findAllByPaymentId(paymentId)
             .map {
                 it.toDetailModel(
-                    partnerEntity = it.projectPartner,
                     installments = findPaymentPartnerInstallments(it.id),
                     partnerReportId = it.partnerCertificate?.id,
                     partnerReportNumber = it.partnerCertificate?.number

@@ -682,8 +682,8 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 1L to PaymentRegularToCreate(
                     PROJECT_ID,
                     partnerPayments = listOf(
-                        PaymentPartnerToCreate(PARTNER_ID, PARTNER_REPORT_ID, BigDecimal.valueOf(225L)),
-                        PaymentPartnerToCreate(PARTNER_ID, null, BigDecimal.valueOf(140L)),
+                        PaymentPartnerToCreate(PARTNER_ID, PARTNER_REPORT_ID, BigDecimal.valueOf(225L), null, null, null),
+                        PaymentPartnerToCreate(PARTNER_ID, null, BigDecimal.valueOf(140L), null, null, null),
                     ),
                     amountApprovedPerFund = BigDecimal.valueOf(365L),
                     defaultPartnerContribution = BigDecimal.valueOf(135L),
@@ -750,15 +750,18 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = 92,
                         partnerReportId = 106,
-                        amountApprovedPerPartner = BigDecimal(800.00)
+                        amountApprovedPerPartner = BigDecimal(800.00),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal(400.00),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal(400.00),
+                        null, null, null,
                     )
                 ),
                 amountApprovedPerFund = BigDecimal(1600.00),
@@ -776,11 +779,13 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(180.00)
+                        amountApprovedPerPartner = BigDecimal(180.00),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(180.00)
+                        amountApprovedPerPartner = BigDecimal(180.00),
+                        null, null, null,
                     )
                 ),
                 amountApprovedPerFund = BigDecimal(360.00),
@@ -797,11 +802,13 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal(90.00),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = 91,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal(90.00),
+                        null, null, null,
                     )
                 ),
                 amountApprovedPerFund = BigDecimal(180.00),

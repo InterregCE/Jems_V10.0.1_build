@@ -36,7 +36,7 @@ fun PaymentToProject.toDTO() = mapper.map(this)
 fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    fundName = fundName,
+    fund = fund.toDto(),
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
@@ -48,12 +48,14 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
 
 fun PartnerPayment.toDTO() = PaymentPartnerDTO(
     id = id,
-    partnerId = partnerId,
-    partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
-    partnerNumber = partnerNumber,
-    partnerAbbreviation = partnerAbbreviation,
     partnerReportId = partnerReportId,
     partnerReportNumber = partnerReportNumber,
+    partnerId = partnerId,
+    partnerRole = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+    partnerNumber = partnerNumber,
+    partnerAbbreviation = partnerAbbreviation,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
     amountApproved = amountApprovedPerPartner,
     installments = installments.map { it.toDTO() }
 )

@@ -224,7 +224,10 @@ class FinalizeVerificationProjectReport(
                         PaymentPartnerToCreate(
                             partnerId = it.partnerId,
                             partnerReportId = it.partnerReportId,
-                            amountApprovedPerPartner = it.value
+                            amountApprovedPerPartner = it.value,
+                            partnerAbbreviationIfFtls = null,
+                            partnerNameInOriginalLanguageIfFtls = null,
+                            partnerNameInEnglishIfFtls = null,
                         )
                     },
                     defaultTotalEligibleWithoutSco = amountApprovedPerFund.add(partnerContribution),

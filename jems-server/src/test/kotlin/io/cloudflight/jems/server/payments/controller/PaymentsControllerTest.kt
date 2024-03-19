@@ -6,6 +6,10 @@ import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
 import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
@@ -19,7 +23,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -72,10 +76,12 @@ class PaymentsControllerTest : UnitTest() {
             applicant = call.creator,
             currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = account),
         )
-        private val fund = ProgrammeFundEntity(
+        private val fund = ProgrammeFund(
             id = 5L,
             selected = true,
-            type = ProgrammeFundType.OTHER
+            type = ProgrammeFundType.OTHER,
+            abbreviation = setOf(InputTranslation(SystemLanguage.ES, "fund ES abbr")),
+            description = setOf(InputTranslation(SystemLanguage.ES, "fund ES desc")),
         )
         val ftlsPaymentToProject = PaymentToProject(
             id = ftlsPaymentId,
@@ -86,8 +92,7 @@ class PaymentsControllerTest : UnitTest() {
             paymentClaimId = null,
             paymentClaimNo = 0,
             paymentToEcId = 6L,
-            fundId = 5L,
-            fundName = fund.type.name,
+            fund = fund,
             fundAmount = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,
             amountAuthorizedPerFund = BigDecimal.ZERO,
@@ -107,15 +112,14 @@ class PaymentsControllerTest : UnitTest() {
             paymentClaimId = paymentClaimId,
             paymentClaimNo = projectReportNumber,
             paymentToEcId = 6L,
-            fundId = 5L,
-            fundName = fund.type.name,
-            fundAmount = BigDecimal.TEN,
-            amountPaidPerFund = BigDecimal.ZERO,
+            fund = fund,
+            fundAmount = BigDecimal.ONE,
+            amountPaidPerFund = BigDecimal.TEN,
             amountAuthorizedPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
-            totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            totalEligibleAmount = BigDecimal.ZERO,
+            lastApprovedVersionBeforeReadyForPayment = "v2.0",
             remainingToBePaid = BigDecimal.valueOf(515L),
         )
 
@@ -152,7 +156,7 @@ class PaymentsControllerTest : UnitTest() {
         private val ftlsPaymentDetail = PaymentDetail(
             id = ftlsPaymentId,
             paymentType = PaymentType.FTLS,
-            fundName = fund.type.name,
+            fund = fund,
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
@@ -165,23 +169,33 @@ class PaymentsControllerTest : UnitTest() {
                     projectId = projectId,
                     orderNr = 1,
                     programmeLumpSumId = lumpSumId,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     programmeFundId = fund.id,
                     partnerId = partnerId,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner nameOriginal",
+                    nameInEnglish = "partner nameEn",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentFirst),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
+        )
+
+        val expectedFund = ProgrammeFundDTO(
+            id = 5L,
+            selected = true,
+            type = ProgrammeFundTypeDTO.OTHER,
+            abbreviation = setOf(InputTranslation(SystemLanguage.ES, "fund ES abbr")),
+            description = setOf(InputTranslation(SystemLanguage.ES, "fund ES desc")),
         )
 
         private val ftlsPaymentDetailDTO = PaymentDetailDTO(
             id = ftlsPaymentId,
             paymentType = PaymentTypeDTO.FTLS,
-            fundName = fund.type.name,
+            fund = expectedFund,
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
@@ -191,14 +205,16 @@ class PaymentsControllerTest : UnitTest() {
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 1L,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     partnerId = partnerId,
-                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner nameOriginal",
+                    nameInEnglish = "partner nameEn",
                     amountApproved = BigDecimal.ONE,
                     installments = listOf(installmentFirstDTO),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
@@ -206,7 +222,7 @@ class PaymentsControllerTest : UnitTest() {
         private val regularPaymentDetail = PaymentDetail(
             id = regularPaymentId,
             paymentType = PaymentType.REGULAR,
-            fundName = fund.type.name,
+            fund = fund,
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
@@ -219,15 +235,17 @@ class PaymentsControllerTest : UnitTest() {
                     projectId = projectId,
                     orderNr = null,
                     programmeLumpSumId = null,
+                    partnerReportId = 10L,
+                    partnerReportNumber = 5,
                     programmeFundId = fund.id,
                     partnerId = partnerId,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner nameOriginal",
+                    nameInEnglish = "partner nameEn",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(),
-                    partnerReportId = 10L,
-                    partnerReportNumber = 5
                 )
             )
         )
@@ -235,7 +253,7 @@ class PaymentsControllerTest : UnitTest() {
         private val regularPaymentDetailDTO = PaymentDetailDTO(
             id = regularPaymentId,
             paymentType = PaymentTypeDTO.REGULAR,
-            fundName = fund.type.name,
+            fund = expectedFund,
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
@@ -245,14 +263,16 @@ class PaymentsControllerTest : UnitTest() {
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 8L,
+                    partnerReportId = 10L,
+                    partnerReportNumber = 5,
                     partnerId = partnerId,
-                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner nameOriginal",
+                    nameInEnglish = "partner nameEn",
                     amountApproved = BigDecimal.ONE,
                     installments = listOf(),
-                    partnerReportId = 10L,
-                    partnerReportNumber = 5
                 )
             )
         )
@@ -271,7 +291,7 @@ class PaymentsControllerTest : UnitTest() {
             lastPaymentDateTo = currentDate.minusDays(1),
         )
 
-        private val dummyFilter = PaymentSearchRequest(
+        private val expectedFilter = PaymentSearchRequest(
             paymentId = 855L,
             paymentType = null,
             projectIdentifiers = setOf("472", "INT00473", ""),
@@ -287,6 +307,49 @@ class PaymentsControllerTest : UnitTest() {
             contractingScoBasis = null,
             finalScoBasis = null,
         )
+
+        private val expectedFtlsPayment = PaymentToProjectDTO(
+            id = ftlsPaymentId,
+            paymentType = PaymentTypeDTO.FTLS,
+            projectId = 2L,
+            projectCustomIdentifier = "T1000",
+            projectAcronym = "project",
+            paymentClaimId = null,
+            paymentClaimNo = 0,
+            paymentToEcId = 6L,
+            paymentClaimSubmissionDate = null,
+            paymentApprovalDate = currentTime,
+            totalEligibleAmount = BigDecimal.TEN,
+            fund = expectedFund,
+            fundAmount = BigDecimal.TEN,
+            amountPaidPerFund = BigDecimal.ZERO,
+            amountAuthorizedPerFund = BigDecimal.ZERO,
+            dateOfLastPayment = null,
+            lastApprovedVersionBeforeReadyForPayment = "v1.0",
+            remainingToBePaid = BigDecimal.valueOf(514L),
+        )
+
+        private val expectedRegularPayment = PaymentToProjectDTO(
+            id = regularPaymentId,
+            paymentType = PaymentTypeDTO.REGULAR,
+            projectId = 2L,
+            projectCustomIdentifier = "T1000",
+            projectAcronym = "project",
+            paymentClaimId = 5L,
+            paymentClaimNo = 5,
+            paymentToEcId = 6L,
+            paymentClaimSubmissionDate = null,
+            paymentApprovalDate = currentTime,
+            totalEligibleAmount = BigDecimal.ZERO,
+            fund = expectedFund,
+            fundAmount = BigDecimal.ONE,
+            amountPaidPerFund = BigDecimal.TEN,
+            amountAuthorizedPerFund = BigDecimal.ZERO,
+            dateOfLastPayment = null,
+            lastApprovedVersionBeforeReadyForPayment = "v2.0",
+            remainingToBePaid = BigDecimal.valueOf(515L),
+        )
+
     }
 
     @MockK
@@ -305,51 +368,15 @@ class PaymentsControllerTest : UnitTest() {
     fun getPaymentsToProjects() {
         val slotFilter = slot<PaymentSearchRequest>()
         every { getPayments.getPayments(any(), capture(slotFilter)) } returns PageImpl(listOf(
-            ftlsPaymentToProject, regularPaymentToProject))
+            ftlsPaymentToProject,
+            regularPaymentToProject,
+        ))
 
         assertThat(controller.getPaymentsToProjects(Pageable.unpaged(), dummyFilterDto)).containsExactly(
-            PaymentToProjectDTO(
-                id = ftlsPaymentId,
-                paymentType = PaymentTypeDTO.FTLS,
-                projectId = ftlsPaymentToProject.projectId,
-                projectCustomIdentifier = ftlsPaymentToProject.projectCustomIdentifier,
-                projectAcronym = ftlsPaymentToProject.projectAcronym,
-                paymentClaimId = null,
-                paymentClaimNo = ftlsPaymentToProject.paymentClaimNo,
-                paymentToEcId = ftlsPaymentToProject.paymentToEcId,
-                paymentClaimSubmissionDate = ftlsPaymentToProject.paymentClaimSubmissionDate,
-                paymentApprovalDate = ftlsPaymentToProject.paymentApprovalDate,
-                totalEligibleAmount = ftlsPaymentToProject.totalEligibleAmount,
-                fundName = ftlsPaymentToProject.fundName,
-                fundAmount = ftlsPaymentToProject.fundAmount,
-                amountPaidPerFund = ftlsPaymentToProject.amountPaidPerFund,
-                amountAuthorizedPerFund = ftlsPaymentToProject.amountAuthorizedPerFund,
-                dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = ftlsPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
-                remainingToBePaid = BigDecimal.valueOf(514L),
-            ),
-            PaymentToProjectDTO(
-                id = regularPaymentId,
-                paymentType = PaymentTypeDTO.REGULAR,
-                projectId = regularPaymentToProject.projectId,
-                projectCustomIdentifier = regularPaymentToProject.projectCustomIdentifier,
-                projectAcronym = regularPaymentToProject.projectAcronym,
-                paymentClaimId = regularPaymentToProject.paymentClaimId,
-                paymentClaimNo = regularPaymentToProject.paymentClaimNo,
-                paymentToEcId = regularPaymentToProject.paymentToEcId,
-                paymentClaimSubmissionDate = regularPaymentToProject.paymentClaimSubmissionDate,
-                paymentApprovalDate = regularPaymentToProject.paymentApprovalDate,
-                totalEligibleAmount = regularPaymentToProject.totalEligibleAmount,
-                fundName = regularPaymentToProject.fundName,
-                fundAmount = regularPaymentToProject.fundAmount,
-                amountPaidPerFund = regularPaymentToProject.amountPaidPerFund,
-                amountAuthorizedPerFund = regularPaymentToProject.amountAuthorizedPerFund,
-                dateOfLastPayment = null,
-                lastApprovedVersionBeforeReadyForPayment = regularPaymentToProject.lastApprovedVersionBeforeReadyForPayment,
-                remainingToBePaid = BigDecimal.valueOf(515L),
-            ),
+            expectedFtlsPayment,
+            expectedRegularPayment,
         )
-        assertThat(slotFilter.captured).isEqualTo(dummyFilter)
+        assertThat(slotFilter.captured).isEqualTo(expectedFilter)
     }
 
     @Test
@@ -386,7 +413,7 @@ class PaymentsControllerTest : UnitTest() {
                 paymentType = PaymentTypeDTO.FTLS,
                 projectId = project.id,
                 projectCustomIdentifier = project.customIdentifier,
-                fundName = fund.type.name,
+                fund = expectedFund,
                 projectAcronym = project.acronym,
                 spf = false,
                 amountApprovedPerFund = BigDecimal.TEN,
@@ -394,14 +421,16 @@ class PaymentsControllerTest : UnitTest() {
                 partnerPayments = listOf(
                     PaymentPartnerDTO(
                         id = 1L,
+                        partnerReportId = null,
+                        partnerReportNumber = null,
                         partnerId = partnerId,
-                        partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                        partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                         partnerNumber = 1,
                         partnerAbbreviation = "partner",
+                        nameInOriginalLanguage = "partner nameOriginal",
+                        nameInEnglish = "partner nameEn",
                         amountApproved = BigDecimal.ONE,
                         installments = listOf(installmentFirstDTO),
-                        partnerReportId = null,
-                        partnerReportNumber = null
                     )
                 )
             )

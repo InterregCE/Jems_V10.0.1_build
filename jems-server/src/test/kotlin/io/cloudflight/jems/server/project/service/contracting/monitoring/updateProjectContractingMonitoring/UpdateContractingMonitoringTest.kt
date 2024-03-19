@@ -335,6 +335,11 @@ class UpdateContractingMonitoringTest : UnitTest() {
             ProjectPartnerSummary(45L, "45-abbr", null, true, ProjectPartnerRole.PARTNER, 4),
         )
         every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns mapOf(45L to LocalDate.of(2024, 1, 29))
+        every { partnerPersistence.getById(1L, version) } returns mockk {
+            every { abbreviation } returns "abbr 1"
+            every { nameInOriginalLanguage } returns "orig 1"
+            every { nameInEnglish } returns "eng 1"
+        }
         val result = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
         assertThat(result)
             .isEqualTo(
@@ -411,7 +416,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
                         PaymentFtlsToCreate(
                             programmeLumpSumId = 2L,
-                            partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
+                            partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE, "abbr 1", "orig 1", "eng 1")),
                             amountApprovedPerFund = BigDecimal.ONE,
                             projectCustomIdentifier = "TSTCM",
                             projectAcronym = "TCM",

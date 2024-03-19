@@ -35,6 +35,8 @@ interface PaymentPersistence {
 
     fun getPaymentDetails(paymentId: Long): PaymentDetail
 
+    fun getProjectIdForPayment(paymentId: Long): Long
+
     fun getAllPartnerPayments(paymentId: Long): List<PartnerPayment>
 
     fun getAllPartnerPaymentsForPartner(partnerId: Long): List<PartnerPaymentSimple>

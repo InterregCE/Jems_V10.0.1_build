@@ -19,9 +19,9 @@
         <h3 id="project-title">
             {{'payments.payment.to.project.detail.header.1' | translate : {paymentId: data.paymentDetail.id} }}
             <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId">
-                {{'payments.payment.to.project.detail.header.2' | translate : {projectId: data.paymentDetail.projectCustomIdentifier} }}
+                {{'payments.payment.to.project.detail.header.2' | translate : {projectId: data.paymentDetail.projectCustomIdentifier + ' ' + data.paymentDetail.projectAcronym } }}
             </a>
-            {{'payments.payment.to.project.detail.header.3' | translate : {fundName: data.paymentDetail.fundName} }}
+            {{'payments.payment.to.project.detail.header.3' | translate : {fundName: data.paymentDetail.fund.abbreviation | translateBySystemLanguage | async } }}
         </h3>
 
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
@@ -68,11 +68,11 @@
                             <span *ngIf="data.paymentDetail.spf">PP1</span>
                                 <span *ngIf="!data.paymentDetail.spf" matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
                                       [matTooltipDisabled]="!this.showPaymentIndicatorForIndex(index)">
-                                    {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                                    {{partnerPayment.partnerRole === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
                                     <mat-icon *ngIf="this.showPaymentIndicatorForIndex(index)" class="open-payment-indicator">circle</mat-icon>
                                 </span>
                         </div>
-                        <div class="column-partner-name justify-start">
+                        <div class="column-partner-name justify-start" matTooltip="{{ partnerPayment.nameInOriginalLanguage + ' ' + partnerPayment.nameInEnglish }}">
                             <span *ngIf="data.paymentDetail.spf">{{ 'project.partner.spf.cost.type.spf' | translate }}</span>
                             <span *ngIf="!data.paymentDetail.spf">{{ partnerPayment.partnerAbbreviation }}</span>
                         </div>

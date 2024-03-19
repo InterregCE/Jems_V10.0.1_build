@@ -11,10 +11,13 @@ data class PartnerPayment(
     val partnerReportId: Long?,
     val partnerReportNumber: Int?,
     val programmeFundId: Long,
+
     val partnerId: Long,
     val partnerRole: ProjectPartnerRole,
-    val partnerNumber: Int?,
+    val partnerNumber: Int,
     val partnerAbbreviation: String,
+    val nameInOriginalLanguage: String,
+    val nameInEnglish: String,
     val amountApprovedPerPartner: BigDecimal?,
 
     val installments: List<PaymentPartnerInstallment>

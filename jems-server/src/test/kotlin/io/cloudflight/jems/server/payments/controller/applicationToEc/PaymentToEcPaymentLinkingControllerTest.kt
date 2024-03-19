@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest
+import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.expectedFund
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.ftlsPaymentToProject
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.regularPaymentToProject
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
@@ -61,7 +62,9 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
         private fun paymentByType(type: PaymentType) =
             if (type == PaymentType.FTLS) ftlsPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
-            else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
+            else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID,
+                totalEligibleAmount = BigDecimal.TEN, fundAmount = BigDecimal.TEN, amountPaidPerFund = BigDecimal.ZERO,
+                lastApprovedVersionBeforeReadyForPayment = "v1.0")
 
         private fun expectedPayment(type: PaymentTypeDTO) = PaymentToEcLinkingDTO(
             payment = PaymentToProjectDTO(
@@ -73,7 +76,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 paymentClaimId = if (type == PaymentTypeDTO.FTLS) null else 5L,
                 paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
                 paymentToEcId = PAYMENT_TO_EC_ID,
-                fundName = "OTHER",
+                fund = expectedFund,
                 fundAmount = BigDecimal.TEN,
                 amountPaidPerFund = BigDecimal.ZERO,
                 amountAuthorizedPerFund = BigDecimal.ZERO,

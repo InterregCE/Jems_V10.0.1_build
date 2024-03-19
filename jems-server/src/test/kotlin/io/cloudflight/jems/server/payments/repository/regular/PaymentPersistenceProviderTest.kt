@@ -15,6 +15,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
@@ -54,12 +55,14 @@ import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.fund.toEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -259,6 +262,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
             id = fundId,
             selected = true,
             type = ProgrammeFundType.OTHER,
+            translatedValues = mutableSetOf(
+                ProgrammeFundTranslationEntity(TranslationId(mockk(), SystemLanguage.ES), "fund ES abbr", "fund ES desc"),
+            ),
         )
 
         private fun paymentFtlsEntity() = PaymentEntity(
@@ -301,8 +307,11 @@ class PaymentPersistenceProviderTest : UnitTest() {
             id = 1L,
             payment = paymentFtlsEntity(),
             projectPartner = projectPartnerEntity,
+            partnerCertificate = null,
+            partnerAbbreviation = "abbr 1",
+            partnerNameInOriginalLanguage = "original 1",
+            partnerNameInEnglish = "english 1",
             amountApprovedPerPartner = BigDecimal.ONE,
-            partnerCertificate = null
         )
 
         private val projectPartnerEntity = ProjectPartnerEntity(
@@ -361,10 +370,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentConfirmedDate = currentDate,
             correctionId = 15L,
         )
-        private val paymentDetail = PaymentDetail(
+        private val expectedFund = ProgrammeFund(
+            id = fundId,
+            selected = true,
+            type = ProgrammeFundType.OTHER,
+            abbreviation = setOf(InputTranslation(SystemLanguage.ES, "fund ES abbr")),
+            description = setOf(InputTranslation(SystemLanguage.ES, "fund ES desc")),
+        )
+        private val expectedPaymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            fundName = fund.type.name,
+            fund = expectedFund,
             projectId = projectId,
             projectCustomIdentifier = dummyProject.customIdentifier,
             projectAcronym = dummyProject.acronym,
@@ -377,15 +393,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     projectId = projectId,
                     orderNr = 13,
                     programmeLumpSumId = lumpSumId,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     programmeFundId = fund.id,
                     partnerId = partnerId_5,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
-                    partnerAbbreviation = "Lead",
+                    partnerAbbreviation = "abbr 1",
+                    nameInOriginalLanguage = "original 1",
+                    nameInEnglish = "english 1",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = emptyList(),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
@@ -395,8 +413,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentFtlsToCreate(
                         lumpSumId,
                         listOf(
-                            PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35)),
-                            PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65)),
+                            PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35), "abbr 5", "original 5", "english 5"),
+                            PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65), null, null, null),
                         ),
                         amountApprovedPerFund = BigDecimal.valueOf(100), "proj-iden", "proj-acr",
                         defaultPartnerContribution = BigDecimal.valueOf(32),
@@ -418,8 +436,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentClaimId = null,
             paymentClaimNo = 0,
             paymentToEcId = null,
-            fundName = "OTHER",
-            fundId = fundId,
+            fund = expectedFund,
             lumpSumId = 50L,
             orderNr = 13,
             fundAmount = BigDecimal(100),
@@ -481,8 +498,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             orderNr = 13,
             paymentApprovalDate = currentTime,
             totalEligibleAmount = BigDecimal.valueOf(23L),
-            fundId = fundId,
-            fundName = "OTHER",
+            fund = expectedFund,
             fundAmount = BigDecimal(100),
             amountAuthorizedPerFund = BigDecimal.valueOf(22),
             amountPaidPerFund = BigDecimal.valueOf(21),
@@ -505,8 +521,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             orderNr = null,
             paymentApprovalDate = yearAgo,
             totalEligibleAmount = BigDecimal.valueOf(13),
-            fundId = fundId,
-            fundName = "OTHER",
+            fund = expectedFund,
             fundAmount = BigDecimal(100),
             amountAuthorizedPerFund = BigDecimal.valueOf(12),
             amountPaidPerFund = BigDecimal.valueOf(11),
@@ -525,22 +540,25 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = partnerId_6,
                         partnerReportId = 106,
-                        amountApprovedPerPartner = BigDecimal(800.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(800_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(400_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(400_00L, 2),
+                        null, null, null,
                     )
                 ),
                 defaultPartnerContribution = BigDecimal.valueOf(50),
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(150),
                 defaultOfWhichPrivate = BigDecimal.valueOf(40),
-                amountApprovedPerFund = BigDecimal(90),
+                amountApprovedPerFund = BigDecimal.valueOf(90_00L, 2),
                 defaultTotalEligibleWithoutSco = BigDecimal.valueOf(210),
                 defaultFundAmountUnionContribution = BigDecimal.valueOf(99.15),
                 defaultFundAmountPublicContribution = BigDecimal.valueOf(75.00),
@@ -551,18 +569,20 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(90_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(90_00L, 2),
+                        null, null, null,
                     )
                 ),
                 defaultPartnerContribution = BigDecimal.valueOf(100),
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(300),
                 defaultOfWhichPrivate = BigDecimal.valueOf(80),
-                amountApprovedPerFund = BigDecimal(180),
+                amountApprovedPerFund = BigDecimal.valueOf(180_00L, 2),
                 defaultTotalEligibleWithoutSco = BigDecimal.ZERO,
                 defaultFundAmountUnionContribution = BigDecimal.ZERO,
                 defaultFundAmountPublicContribution = BigDecimal.ZERO,
@@ -892,7 +912,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(get(0).projectLumpSum).isNull()
             assertThat(get(0).projectReport).isNotNull
             assertThat(get(0).fund).isEqualTo(fundERDFEntity)
-            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal(90.00))
+            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal.valueOf(90_00L, 2))
         }
         with(slotPayments.captured) {
             assertThat(get(1).id).isEqualTo(0L)
@@ -903,17 +923,25 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(get(1).projectLumpSum).isNull()
             assertThat(get(1).projectReport).isNotNull
             assertThat(get(1).fund).isEqualTo(fundIPAEntity)
-            assertThat(get(1).amountApprovedPerFund).isEqualTo(BigDecimal(180.00))
+            assertThat(get(1).amountApprovedPerFund).isEqualTo(BigDecimal.valueOf(180_00L, 2))
         }
 
         assertThat(slotPartners.captured.size).isEqualTo(2)
         with(slotPartners.captured) {
 
-            assertThat(get(0).partnerCertificate).isNotNull
-            assertThat(get(0).partnerCertificate?.id).isEqualTo(107L)
+            assertThat(get(0).payment).isEqualTo(slotPayments.captured.get(1))
+            assertThat(get(0).projectPartner).isEqualTo(leadPartner)
+            assertThat(get(0).partnerCertificate).isEqualTo(leadPartnerR1)
+            assertThat(get(0).partnerAbbreviation).isEqualTo("")
+            assertThat(get(0).partnerNameInOriginalLanguage).isEqualTo("")
+            assertThat(get(0).partnerNameInEnglish).isEqualTo("")
 
-            assertThat(get(1).partnerCertificate).isNotNull
-            assertThat(get(1).partnerCertificate?.id).isEqualTo(108L)
+            assertThat(get(1).payment).isEqualTo(slotPayments.captured.get(1))
+            assertThat(get(1).projectPartner).isEqualTo(leadPartner)
+            assertThat(get(1).partnerCertificate).isEqualTo(leadPartnerR2)
+            assertThat(get(1).partnerAbbreviation).isEqualTo("")
+            assertThat(get(1).partnerNameInOriginalLanguage).isEqualTo("")
+            assertThat(get(1).partnerNameInEnglish).isEqualTo("")
         }
 
         with(slotExtensions[0]) {
@@ -954,7 +982,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { projectPartnerRepository.getReferenceById(partnerId_5) } returns projectPartnerEntity
 
         assertThat(paymentPersistenceProvider.getPaymentDetails(paymentId))
-            .isEqualTo(paymentDetail)
+            .isEqualTo(expectedPaymentDetail)
     }
 
     @Test

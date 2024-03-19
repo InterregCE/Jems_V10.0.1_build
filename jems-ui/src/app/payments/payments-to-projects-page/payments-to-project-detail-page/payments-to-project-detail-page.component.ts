@@ -56,7 +56,6 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
     projectCustomIdentifier: '',
-    fundName: '',
     partnerPayments: this.formBuilder.array([this.formBuilder.group({
         installments: this.formBuilder.array([])
       })
@@ -123,7 +122,6 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   resetForm(paymentDetail: PaymentDetailDTO) {
     this.partnerPaymentsForm.get('id')?.setValue(this.paymentId);
     this.partnerPaymentsForm.get('projectCustomIdentifier')?.setValue(paymentDetail.projectCustomIdentifier);
-    this.partnerPaymentsForm.get('fundName')?.setValue(paymentDetail.fundName);
 
     this.partnerPayments.clear();
 
@@ -167,7 +165,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         id: partnerPayment.id,
         partnerId: partnerPayment.partnerId,
         partnerNumber: this.formBuilder.control(partnerPayment.partnerNumber),
-        partnerType: this.formBuilder.control(partnerPayment.partnerType),
+        partnerRole: this.formBuilder.control(partnerPayment.partnerRole),
         partnerAbbreviation: this.formBuilder.control(partnerPayment.partnerAbbreviation),
         amountApproved: this.formBuilder.control(partnerPayment.amountApproved),
         installments: this.formBuilder.array([])
