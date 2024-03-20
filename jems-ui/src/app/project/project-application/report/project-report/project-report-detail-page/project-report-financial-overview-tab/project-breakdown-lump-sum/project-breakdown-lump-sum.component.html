@@ -79,8 +79,8 @@
 
         <ng-container matColumnDef="previouslyPaid">
             <mat-header-cell *matHeaderCellDef class="text-right">
-                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.previously.paid.header' | translate }}</span>
-                <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.previously.paid.tooltip' | translate}}"></jems-context-info>
+                <span jemsText maxLines="2">{{ 'project.application.project.report.financial.previously.paid.ftls.header' | translate }}</span>
+                <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.previously.paid.ftls.tooltip' | translate}}"></jems-context-info>
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right">
                 <ng-container *ngIf="line.fastTrack">{{ line.previouslyPaid | asMoney }}</ng-container>
