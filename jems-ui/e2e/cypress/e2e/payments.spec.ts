@@ -85,7 +85,7 @@ context('Payments tests', () => {
                     assertSubmissionDate(row, date.format(new Date(), 'MM/DD/YYYY'));
                     assertMAApprovalDate(row, date.format(new Date(), 'MM/DD/YYYY'));
                     assertTotalApproved(row, '392,51');
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '293,05');
                     assertAuthorised(row, '0,00');
                     assertPaid(row, '0,00');
@@ -108,12 +108,12 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '296,45');
                     assertRemainingToBePaid(row, '296,45');
                   });
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '249,75');
                     assertRemainingToBePaid(row, '249,75');
 
@@ -131,13 +131,13 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '97,49');
                     assertRemainingToBePaid(row, '97,49');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '162,49');
                     assertRemainingToBePaid(row, '162,49');
                   });
@@ -157,13 +157,13 @@ context('Payments tests', () => {
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
 
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '97,49');
                     assertRemainingToBePaid(row, '97,49');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '162,49');
                     assertRemainingToBePaid(row, '162,49');
                   });
@@ -176,20 +176,20 @@ context('Payments tests', () => {
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
                     assertTotalApproved(row, '99,90');
-                    assertFund(row, 'OTHER');
+                    assertFund(row, programmeFund.abbreviation[1].translation);
                     assertApprovedPerFund(row, '49,95');
                     assertRemainingToBePaid(row, '49,95');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
                     assertTotalApproved(row, '196,36');
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '146,60');
                     assertRemainingToBePaid(row, '146,60');
                   });
 
                   cy.get('table mat-row:nth-child(3)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '299,70');
                     assertRemainingToBePaid(row, '299,70');
                   });

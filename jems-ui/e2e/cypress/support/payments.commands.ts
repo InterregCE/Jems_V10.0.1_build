@@ -14,7 +14,9 @@ Cypress.Commands.add('addAuthorizedPayments', (applicationId, testDataAuthorized
     testDataAuthorizedPayment.projectId = applicationId;
 
     findProjectPayments(applicationId).then(projectPayments => {
-      const fundPayment = projectPayments.find((payment) => payment.fundName === testDataAuthorizedPayment.fundName);
+      const fundPayment = projectPayments.find(payment =>
+          payment.fund.abbreviation.find(abbreviation => abbreviation.language === 'EN')
+              .translation === testDataAuthorizedPayment.fundName);
       testDataAuthorizedPayment.partnerPayments.forEach(testDataPartnerPayment => {
         cy.request(`api/payments/${fundPayment.id}`).then(function (response: any) {
           const partnerPaymentInfo = response.body.partnerPayments.find((partnerPaymentInfo) => partnerPaymentInfo.partnerAbbreviation === testDataPartnerPayment.partnerAbbreviation)
