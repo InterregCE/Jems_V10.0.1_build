@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -164,6 +165,8 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var projectReportProjectClosurePersistence: ProjectReportProjectClosurePersistence
     @MockK
+    lateinit var projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -289,6 +292,8 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId) } answers { }
         every { reportWorkPlanPersistence.deleteWorkPlan(reportId) } answers { }
 
+        every { projectReportExpenditureVerificationPersistence.reInitiateVerificationForProjectReport(reportId) } answers { }
+
         val newStatus = slot<ProjectReportStatus>()
         val submissionTime = slot<ZonedDateTime>()
         val result = mockedResult(status = expectedStatus)
@@ -296,6 +301,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportPersistence.submitReportInitially(PROJECT_ID, reportId, capture(submissionTime)) } returns result
 
         every { projectReportProjectClosurePersistence.deleteProjectReportProjectClosure(reportId) } returnsArgument 0
+
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

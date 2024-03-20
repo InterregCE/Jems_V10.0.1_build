@@ -10,4 +10,6 @@ interface ProjectReportVerificationExpenditureRepository:
         fun findAllByExpenditurePartnerReportProjectReportId(projectReportId: Long): List<ProjectReportVerificationExpenditureEntity>
 
         fun findAllByExpenditurePartnerReportProjectReportIdAndParkedIsTrue(projectReportId: Long): List<ProjectReportVerificationExpenditureEntity>
+
+        fun deleteAllByExpenditurePartnerReportProjectReportIdIsNull()
 }

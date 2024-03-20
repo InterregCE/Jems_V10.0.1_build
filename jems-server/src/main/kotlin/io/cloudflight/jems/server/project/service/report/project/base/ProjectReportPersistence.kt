@@ -7,11 +7,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 
 interface ProjectReportPersistence {
 
@@ -77,6 +77,7 @@ interface ProjectReportPersistence {
 
     fun getCurrentLatestReportOfType(projectId: Long, havingType: ContractingDeadlineType): ProjectReportModel?
 
-    fun reOpenReportTo(reportId: Long, newStatus: ProjectReportStatus, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
+    fun reOpenProjectReport(reportId: Long, newStatus: ProjectReportStatus): ProjectReportSubmissionSummary
 
+    fun reOpenFinalizedVerificationAndResetDate(reportId: Long, lastVerificationReOpening: ZonedDateTime): ProjectReportSubmissionSummary
 }
