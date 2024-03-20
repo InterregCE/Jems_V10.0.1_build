@@ -1,18 +1,5 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  ViewChild
-} from '@angular/core';
-import {
-  PagePaymentToEcLinkingDTO, PaymentDetailDTO,
-  PaymentToEcLinkingDTO,
-  PaymentToEcLinkingUpdateDTO,
-  PaymentToProjectDTO
-} from '@cat/api';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild} from '@angular/core';
+import {PagePaymentToEcLinkingDTO, PaymentDetailDTO, PaymentToEcLinkingDTO, PaymentToEcLinkingUpdateDTO, PaymentToProjectDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -138,7 +125,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       correctedFundAmountPublicContribution: this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value,
       comment: this.paymentToEcLinking.at(rowIndex).get('comment')?.value,
     } as PaymentToEcLinkingUpdateDTO;
-    this.submitPayment.emit({ecId,paymentId, updateDto});
+    this.submitPayment.emit({ecId, paymentId, updateDto});
     this.editedRowIndex = null;
     this.formService.setDirty(false);
   }
@@ -188,6 +175,17 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
     const updatedUnionContribution = this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value;
     const totalCorrection = this.data.paymentToEcLinking.content[rowIndex].payment.fundAmount + this.data.paymentToEcLinking.content[rowIndex].partnerContribution;
     this.paymentToEcLinking.at(rowIndex).patchValue({totalEligibleWithoutScoArt9495: totalCorrection - updatedUnionContribution});
+  }
+
+  editedFunds(rowIndex: number, row: PaymentToEcLinkingDTO) {
+    return [
+      this.paymentToEcLinking.at(rowIndex).get('totalEligibleWithoutScoArt9495')?.value != row.payment.fundAmount + row.partnerContribution,
+      this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value != 0,
+      this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value != row.payment.fundAmount,
+      this.paymentToEcLinking.at(rowIndex).get('publicContribution')?.value != row.publicContribution,
+      this.paymentToEcLinking.at(rowIndex).get('autoPublicContribution')?.value != row.autoPublicContribution,
+      this.paymentToEcLinking.at(rowIndex).get('privateContribution')?.value != row.privateContribution,
+    ].some(Boolean);
   }
 
 }

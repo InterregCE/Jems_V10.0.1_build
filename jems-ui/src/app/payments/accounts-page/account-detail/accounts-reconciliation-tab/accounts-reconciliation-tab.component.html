@@ -75,7 +75,7 @@
                             {{ row.get('comment')?.value }}
                           </span>
                 <div *ngIf="i === editedRowIndex">
-                  <jems-expandable-textarea class="vertical-align comment-display button-cell"
+                  <jems-expandable-textarea class="comment-display"
                                             [control]="row.get('comment')"
                                             [errors]="row.get('comment')?.errors"
                                             [characterLimit]="500"
