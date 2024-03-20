@@ -267,13 +267,15 @@ context('Project report tests', () => {
                             const ftlsPayments = projectPayments.filter(payment => payment.paymentType === "FTLS");
                             expect(ftlsPayments.length).to.be.equal(2);
 
-                            const paymentFundERDF = ftlsPayments.find(payment => payment.fundName === "ERDF");
+                            const paymentFundERDF = ftlsPayments.find(payment => payment.fund.abbreviation.find(abbreviation =>
+                                abbreviation.language === 'EN').translation === "ERDF");
                             expect(paymentFundERDF.fundAmount).to.be.equal(1199.99);
                             expect(paymentFundERDF.amountAuthorizedPerFund).to.be.equal(0);
                             expect(paymentFundERDF.amountPaidPerFund).to.be.equal(0);
                             expect(paymentFundERDF.totalEligibleAmount).to.be.equal(1607.29);
 
-                            const paymentFundOTHER = ftlsPayments.find(payment => payment.fundName = "OTHER");
+                            const paymentFundOTHER = ftlsPayments.find(payment => payment.fund.abbreviation.find(abbreviation =>
+                                abbreviation.language === 'EN').translation === "Other fund EN");
                             expect(paymentFundOTHER.fundAmount).to.be.equal(293.19);
                             expect(paymentFundOTHER.amountAuthorizedPerFund).to.be.equal(0);
                             expect(paymentFundOTHER.amountPaidPerFund).to.be.equal(0);
