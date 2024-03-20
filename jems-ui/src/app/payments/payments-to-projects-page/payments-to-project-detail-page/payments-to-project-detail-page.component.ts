@@ -193,7 +193,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.partnerPayments.forEach(pp => // transform 0 into null
       pp.installments.forEach(i => i.correction = i.correction || null)
     );
-    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
+    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail.partnerPayments).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {

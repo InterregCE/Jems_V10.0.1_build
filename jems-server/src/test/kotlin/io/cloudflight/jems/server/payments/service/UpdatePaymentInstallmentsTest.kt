@@ -339,7 +339,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailDTO)
+            partnerPayments = paymentDetailDTO.partnerPayments)
         ).isEqualTo(paymentDetail)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -385,7 +385,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailMultipleInstallmentsDTO)
+            partnerPayments = paymentDetailMultipleInstallmentsDTO.partnerPayments)
         ).isEqualTo(paymentDetailMultipleInstallments)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -463,7 +463,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         val exception = assertThrows<CorrectionsNotValidException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments,
             )
         }
         assertThat(exception.code).isEqualTo("S-UPPI-02")
@@ -486,7 +486,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         assertThrows<I18nValidationException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments
             )
         }
     }

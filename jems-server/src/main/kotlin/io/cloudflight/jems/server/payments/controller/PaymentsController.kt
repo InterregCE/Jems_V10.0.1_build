@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.controller
 
 import io.cloudflight.jems.api.payments.PaymentsApi
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
@@ -30,12 +31,12 @@ class PaymentsController(
 
     override fun updatePaymentInstallments(
         paymentId: Long,
-        paymentDetail: PaymentDetailDTO
+        partnerPayments: List<PaymentPartnerDTO>,
     ): PaymentDetailDTO {
         return updatePaymentInstallments
             .updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetail
+                partnerPayments = partnerPayments,
             ).toDTO()
     }
 }
