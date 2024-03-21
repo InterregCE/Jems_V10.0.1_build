@@ -44,8 +44,8 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun getCumulativeVerificationParked(projectReportIds: Set<Long>): Map<Int, BigDecimal> =
-        reportLumpSumRepository.findCumulativeVerificationParkedForProjectReportIds(projectReportIds).toMap()
+    override fun getCumulativeVerificationParked(partnerId: Long, projectReportIds: Set<Long>): Map<Int, BigDecimal> =
+        reportLumpSumRepository.findCumulativeVerificationParkedForProjectReportIds(partnerId, projectReportIds).toMap()
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -79,17 +79,16 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
             }
     }
 
-    @Transactional
-    override fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerificationParked: Map<Long, BigDecimal>
-    ) {
-        reportLumpSumRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = partnerId, reportId = reportId)
+    override fun updateAfterVerificationParkedValues(afterVerificationParkedPerCertificate: Map<Long, Map<Long, BigDecimal>>) {
+        reportLumpSumRepository.findAllByReportEntityIdIn(afterVerificationParkedPerCertificate.keys)
+            .groupBy { it.reportEntity.id }
             .forEach {
-                if (afterVerificationParked.containsKey(it.programmeLumpSum.id)) {
-                    it.currentParkedVerification = afterVerificationParked[it.programmeLumpSum.id]!!
+                val afterVerificationParked = afterVerificationParkedPerCertificate[it.key]!!
+                it.value.forEach { lumpSumEntity ->
+                    if (afterVerificationParked.containsKey(lumpSumEntity.programmeLumpSum.id)) {
+                        lumpSumEntity.currentParkedVerification =
+                            afterVerificationParked[lumpSumEntity.programmeLumpSum.id]!!
+                    }
                 }
             }
     }

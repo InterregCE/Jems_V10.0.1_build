@@ -246,6 +246,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             createdInThisReport = true,
             historyIdentifier = UUID.randomUUID(),
             id = 0L,
+            reportId = 35L,
             idFromApplicationForm = null,
             sourceOfContribution = null,
         )

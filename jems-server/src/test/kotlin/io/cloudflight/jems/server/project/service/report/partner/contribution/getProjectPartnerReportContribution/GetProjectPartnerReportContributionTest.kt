@@ -25,6 +25,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
 
         private val contributionPublic1 = ProjectPartnerReportEntityContribution(
             id = 1L,
+            reportId = 74L,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,
@@ -37,6 +38,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
         )
         private val contributionPublic2 = ProjectPartnerReportEntityContribution(
             id = 2L,
+            reportId = 74L,
             sourceOfContribution = "source public 2",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 201L,
@@ -49,6 +51,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
         )
         private val contributionPrivate = ProjectPartnerReportEntityContribution(
             id = 3L,
+            reportId = 74L,
             sourceOfContribution = "source private",
             legalStatus = ProjectPartnerContributionStatus.Private,
             idFromApplicationForm = null,
@@ -61,6 +64,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
         )
         private val contributionAutomatic = ProjectPartnerReportEntityContribution(
             id = 4L,
+            reportId = 74L,
             sourceOfContribution = "source automaticPublic",
             legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
             idFromApplicationForm = 900L,

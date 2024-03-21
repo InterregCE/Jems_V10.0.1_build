@@ -11,7 +11,7 @@ interface ProjectPartnerReportUnitCostPersistence {
 
     fun getUnitCostCumulative(reportIds: Set<Long>): Map<Long, ExpenditureUnitCostCurrent>
 
-    fun getVerificationParkedUnitCostCumulative(projectReportIds: Set<Long>): Map<Long, BigDecimal>
+    fun getVerificationParkedUnitCostCumulative(partnerId: Long, projectReportIds: Set<Long>): Map<Long, BigDecimal>
 
     fun getValidatedUnitCostCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
 
@@ -23,11 +23,7 @@ interface ProjectPartnerReportUnitCostPersistence {
         afterControl: Map<Long, ExpenditureUnitCostCurrent>,
     )
 
-    fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerificationValues: Map<Long, BigDecimal>,
-    )
+    fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, Map<Long, BigDecimal>> )
 
     fun getUnitCostCumulativeAfterControl(reportIds: Set<Long>): Map<Long, BigDecimal>
 }

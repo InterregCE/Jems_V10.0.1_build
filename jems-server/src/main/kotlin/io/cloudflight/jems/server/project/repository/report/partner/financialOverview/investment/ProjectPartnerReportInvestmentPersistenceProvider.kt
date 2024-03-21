@@ -28,8 +28,8 @@ class ProjectPartnerReportInvestmentPersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun getVerificationParkedInvestmentsCumulative(projectReportIds: Set<Long>): Map<Long, BigDecimal> =
-        reportInvestmentRepository.findVerificationParkedCumulativeForProjectReportIds(projectReportIds).toMap()
+    override fun getVerificationParkedInvestmentsCumulative(partnerId: Long, projectReportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportInvestmentRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, projectReportIds).toMap()
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -64,18 +64,18 @@ class ProjectPartnerReportInvestmentPersistenceProvider(
     }
 
     @Transactional
-    override fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerificationValues: Map<Long, BigDecimal>
-    ) {
-        reportInvestmentRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(partnerId = partnerId, reportId = reportId)
+    override fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, Map<Long, BigDecimal>>) {
+        reportInvestmentRepository.findAllByReportEntityIdIn(parkedValuesPerCertificate.keys)
+            .groupBy { it.reportEntity.id }
             .forEach {
-                if (afterVerificationValues.containsKey(it.investmentId)) {
-                    it.currentParkedVerification = afterVerificationValues[it.investmentId]!!
+                val parkedValues = parkedValuesPerCertificate[it.key]!!
+                it.value.forEach { investmentEntity ->
+                    if (parkedValues.containsKey(investmentEntity.investmentId)) {
+                        investmentEntity.currentParkedVerification = parkedValues[investmentEntity.investmentId]!!
+                    }
                 }
             }
+
     }
 
     @Transactional(readOnly = true)

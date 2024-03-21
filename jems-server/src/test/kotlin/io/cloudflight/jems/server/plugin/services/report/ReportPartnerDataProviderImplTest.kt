@@ -277,6 +277,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
         private val contribution = ProjectPartnerReportEntityContribution(
             id = 18L,
+            reportId = report.id,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,

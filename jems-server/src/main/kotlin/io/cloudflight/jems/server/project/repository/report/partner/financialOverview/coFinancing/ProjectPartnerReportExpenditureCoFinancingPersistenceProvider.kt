@@ -89,16 +89,15 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
     }
 
     @Transactional
-    override fun getVerificationParkedCoFinancingCumulative(finalizedProjectReportIds: Set<Long>): ReportCertificateCoFinancingColumn {
+    override fun getVerificationParkedCoFinancingCumulative(partnerId: Long, finalizedProjectReportIds: Set<Long>): ReportCertificateCoFinancingColumn {
         val cumulativeByFund =
-            partnerReportCoFinancingRepository.findCumulativeParkedForProjectReportIds(finalizedProjectReportIds)
+            partnerReportCoFinancingRepository.findCumulativeParkedForProjectReportIds(partnerId, finalizedProjectReportIds)
                 .filter { it.reportFundId != null }
                 .associateBy({it.reportFundId}, {it.sum})
 
-
         val fundSumWithoutPartnerContributionParked = cumulativeByFund.values.sumOf { it }
 
-        return with(expenditureCoFinancingRepository.findCumulativeVerificationParkedForReportIds(finalizedProjectReportIds)) {
+        return with(expenditureCoFinancingRepository.findCumulativeVerificationParkedForReportIds(partnerId, finalizedProjectReportIds)) {
             ReportCertificateCoFinancingColumn(
                 funds = cumulativeByFund.plus(Pair(null, sum.minus(fundSumWithoutPartnerContributionParked))),
                 partnerContribution = partnerContribution,
@@ -177,26 +176,26 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             }
     }
 
-
     @Transactional
-    override fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerification: ReportExpenditureCoFinancingColumn
-    ) {
-        partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
-            .forEachIndexed { index, coFin ->
-                coFin.currentParkedVerification = afterVerification.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
-            }
+    override fun updateAfterVerificationParkedValues(parkedCertificateValuesPerCertificate: Map<Long, ReportExpenditureCoFinancingColumn>) {
 
-        expenditureCoFinancingRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
-                partnerContributionCurrentParkedVerification = afterVerification.partnerContribution
-                publicContributionCurrentParkedVerification = afterVerification.publicContribution
-                automaticPublicContributionCurrentParkedVerification = afterVerification.automaticPublicContribution
-                privateContributionCurrentParkedVerification = afterVerification.privateContribution
-                sumCurrentParkedVerification = afterVerification.sum
-            }
+        partnerReportCoFinancingRepository.findAllByIdReportIdInOrderByIdFundSortNumber(
+            parkedCertificateValuesPerCertificate.keys
+        ).forEachIndexed { index, coFin ->
+            val coFinancingReportId = coFin.id.report.id
+            coFin.currentParkedVerification =
+                parkedCertificateValuesPerCertificate[coFinancingReportId]?.funds?.get(coFin.programmeFund?.id) ?: BigDecimal.ZERO
+        }
+       expenditureCoFinancingRepository.findAllByReportIdIn(parkedCertificateValuesPerCertificate.keys).forEach {
+          val parkedValues = parkedCertificateValuesPerCertificate[it.reportId]
+           it.apply {
+               partnerContributionCurrentParkedVerification = parkedValues?.partnerContribution ?: BigDecimal.ZERO
+               publicContributionCurrentParkedVerification = parkedValues?.publicContribution ?: BigDecimal.ZERO
+               automaticPublicContributionCurrentParkedVerification = parkedValues?.automaticPublicContribution ?: BigDecimal.ZERO
+               privateContributionCurrentParkedVerification = parkedValues?.privateContribution ?: BigDecimal.ZERO
+               sumCurrentParkedVerification = parkedValues?.sum ?: BigDecimal.ZERO
+           }
+       }
     }
 
     @Transactional(readOnly = true)

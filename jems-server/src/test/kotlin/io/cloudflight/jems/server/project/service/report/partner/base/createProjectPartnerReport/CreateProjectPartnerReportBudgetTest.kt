@@ -163,6 +163,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private val previousContributions = listOf(
         ProjectPartnerReportEntityContribution(
             id = 1L,
+            reportId = 408L,
             sourceOfContribution = "old source, should be not forgotten",
             legalStatus = ProjectPartnerContributionStatus.Public, // should also be ignored
             idFromApplicationForm = 200L,
@@ -175,6 +176,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         ),
         ProjectPartnerReportEntityContribution(
             id = 2L,
+            reportId = 408L,
             sourceOfContribution = "this has been added inside reporting (not linked to AF)",
             legalStatus = ProjectPartnerContributionStatus.Private,
             idFromApplicationForm = null,
@@ -187,6 +189,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         ),
         ProjectPartnerReportEntityContribution(
             id = 3L,
+            reportId = 408L,
             sourceOfContribution = "this is coming from AF",
             legalStatus = ProjectPartnerContributionStatus.Private,
             idFromApplicationForm = 300L,
@@ -898,7 +901,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L, 409L)) } returns previousContributions
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
-        every { reportLumpSumPersistence.getCumulativeVerificationParked(any()) } returns mapOf(
+        every { reportLumpSumPersistence.getCumulativeVerificationParked(partnerId = partnerId, any()) } returns mapOf(
             14 to BigDecimal.valueOf(7399, 2),
             15 to BigDecimal.ZERO,
             16 to BigDecimal.valueOf(100)
@@ -939,13 +942,15 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 8L to ExpenditureUnitCostCurrent(current = BigDecimal.ZERO, currentParked = BigDecimal.ZERO)
             )
 
-        every { reportUnitCostPersistence.getVerificationParkedUnitCostCumulative(any()) } returns mapOf(
+        every { reportUnitCostPersistence.getVerificationParkedUnitCostCumulative(partnerId, any()) } returns mapOf(
             6L to BigDecimal.valueOf(100),
             7L to BigDecimal.valueOf(1399, 2),
             8L to BigDecimal.ZERO
         )
         // investments
-        every { reportInvestmentPersistence.getVerificationParkedInvestmentsCumulative(any()) } returns mapOf(485L to BigDecimal.valueOf(19533,2))
+        every {
+            reportInvestmentPersistence.getVerificationParkedInvestmentsCumulative(partnerId, any())
+        } returns mapOf(485L to BigDecimal.valueOf(19533, 2))
         every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L, 409L)) } returns mapOf(
             485L to ExpenditureInvestmentCurrent(
                 current = BigDecimal.valueOf(30),
@@ -986,7 +991,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         // previously reported
         every { paymentPersistence.getFtlsCumulativeForPartner(partnerId) } returns previousPayments
 
-        every { reportExpenditureCostCategoryPersistence.getVerificationCostCategoriesCumulative(any()) } returns
+        every { reportExpenditureCostCategoryPersistence.getVerificationCostCategoriesCumulative(partnerId,  any()) } returns
                 BudgetCostsCalculationResultFull(
                     staff = BigDecimal.valueOf(100),
                     office = BigDecimal.valueOf(100),
@@ -1001,7 +1006,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                     sum = BigDecimal.valueOf(100)
                 )
 
-        every { reportExpenditureCoFinancingPersistence.getVerificationParkedCoFinancingCumulative(any()) } returns
+        every { reportExpenditureCoFinancingPersistence.getVerificationParkedCoFinancingCumulative(partnerId, any()) } returns
                 ReportCertificateCoFinancingColumn(
                     funds = mapOf(
                         fund.id to BigDecimal.valueOf(2399, 2),

@@ -15,13 +15,13 @@ interface ProjectPartnerReportExpenditureCoFinancingPersistence {
 
     fun getCoFinancingCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCoFinancingPrevious
 
-    fun getVerificationParkedCoFinancingCumulative(finalizedProjectReportIds: Set<Long>): ReportCertificateCoFinancingColumn
+    fun getVerificationParkedCoFinancingCumulative(partnerId: Long, finalizedProjectReportIds: Set<Long>): ReportCertificateCoFinancingColumn
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: ExpenditureCoFinancingCurrentWithReIncluded)
 
     fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: ExpenditureCoFinancingCurrent)
 
-    fun updateAfterVerificationParkedValues(partnerId: Long, reportId: Long, afterControl: ReportExpenditureCoFinancingColumn)
+    fun updateAfterVerificationParkedValues(parkedCertificateValuesPerCertificate: Map<Long, ReportExpenditureCoFinancingColumn>)
 
     fun getCoFinancingTotalEligible(reportIds: Set<Long>): ReportCertificateCoFinancingColumn
 
