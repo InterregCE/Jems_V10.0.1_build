@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.payments
 
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.swagger.annotations.Api
@@ -48,6 +49,6 @@ interface PaymentsApi {
     )
     fun updatePaymentInstallments(
         @PathVariable paymentId: Long,
-        @RequestBody paymentDetail: PaymentDetailDTO
+        @RequestBody partnerPayments: List<PaymentPartnerDTO>,
     ): PaymentDetailDTO
 }

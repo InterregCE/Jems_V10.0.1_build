@@ -339,7 +339,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailDTO)
+            partnerPayments = paymentDetailDTO.partnerPayments)
         ).isEqualTo(paymentDetail)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -385,7 +385,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailMultipleInstallmentsDTO)
+            partnerPayments = paymentDetailMultipleInstallmentsDTO.partnerPayments)
         ).isEqualTo(paymentDetailMultipleInstallments)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -463,7 +463,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         val exception = assertThrows<CorrectionsNotValidException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments,
             )
         }
         assertThat(exception.code).isEqualTo("S-UPPI-02")
@@ -473,6 +473,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
     fun `update installments for a payment partner - invalid`() {
         every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
+        every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
         every {
             validator.validateInstallments(any(), any(), any(), any())
         } throws I18nValidationException()
@@ -486,7 +487,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         assertThrows<I18nValidationException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments
             )
         }
     }

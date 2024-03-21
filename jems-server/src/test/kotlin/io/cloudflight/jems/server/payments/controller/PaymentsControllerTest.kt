@@ -453,7 +453,7 @@ class PaymentsControllerTest : UnitTest() {
         } returns ftlsPaymentDetail
 
         assertThat(
-            controller.updatePaymentInstallments(ftlsPaymentId, ftlsPaymentDetailDTO)
+            controller.updatePaymentInstallments(ftlsPaymentId, ftlsPaymentDetailDTO.partnerPayments)
         ).isEqualTo(ftlsPaymentDetailDTO)
     }
 }
