@@ -36,8 +36,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toSimpleModel
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
@@ -265,7 +265,7 @@ fun PaymentPartnerInstallmentUpdate.toEntity(
 fun AdvancePaymentUpdate.toEntity(
     project: ProjectFull,
     projectVersion: String,
-    partner: ProjectPartnerSummary,
+    partner: ProjectPartnerDetail,
     paymentAuthorizedUser: UserEntity?,
     paymentConfirmedUser: UserEntity?
 ) = AdvancePaymentEntity(
@@ -286,7 +286,9 @@ fun AdvancePaymentUpdate.toEntity(
     paymentAuthorizedDate = paymentAuthorizedDate,
     isPaymentConfirmed = paymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    partnerNameInOriginalLanguage = partner.nameInOriginalLanguage,
+    partnerNameInEnglish = partner.nameInEnglish,
 ).also { entity ->
     entity.paymentSettlements = paymentSettlements.map { it.toEntity(entity) }.toMutableSet()
 }
@@ -339,8 +341,11 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         programmeFund = programmeFund?.toModel(),
         partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
         partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName),
-        paymentSettlements = paymentSettlements?.map { it.toModel() } ?: emptyList()
-
+        paymentSettlements = paymentSettlements?.map { it.toModel() } ?: emptyList(),
+        partnerNameInOriginalLanguage = partnerNameInOriginalLanguage ?: "",
+        partnerNameInEnglish = partnerNameInEnglish ?: "",
+        projectId = projectId,
+        linkedProjectVersion = projectVersion
     )
 }
 

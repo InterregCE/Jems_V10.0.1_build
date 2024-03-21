@@ -55,7 +55,11 @@ class PaymentAdvanceControllerTest : UnitTest() {
             programmeFund = fundDTO,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
-            amountSettled = BigDecimal.ONE
+            amountSettled = BigDecimal.ONE,
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0",
         )
         private val advancePayment = AdvancePayment(
             id = paymentId,
@@ -68,7 +72,12 @@ class PaymentAdvanceControllerTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             amountSettled = BigDecimal.ONE,
-            paymentSettlements = emptyList()
+            paymentSettlements = emptyList(),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0",
+            projectId = projectId
         )
 
         private val advancePaymentSettlement = AdvancePaymentSettlement(

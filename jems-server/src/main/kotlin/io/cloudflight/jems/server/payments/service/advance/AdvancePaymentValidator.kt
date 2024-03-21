@@ -23,6 +23,9 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
 
         validateCheckboxStates(update)
 
+        if (saved != null && saved.projectId != update.projectId)
+            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_SAVE_ERROR_KEY)
+
         if (isInstallmentAuthorized(saved) && update.paymentAuthorized == false) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY)
         }

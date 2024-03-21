@@ -36,6 +36,8 @@ class AdvancePaymentEntity (
     @field:NotNull
     val partnerId: Long,
     val partnerAbbreviation: String?,
+    val partnerNameInOriginalLanguage: String?,
+    val partnerNameInEnglish: String?,
     @Enumerated(EnumType.STRING)
     @field:NotNull
     val partnerRole: ProjectPartnerRole,

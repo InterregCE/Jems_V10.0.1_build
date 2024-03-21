@@ -42,7 +42,11 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable): PageImpl<AdvancePaymen
                     it.get(13, Long::class.java),
                     it.get(14, String::class.java)
                 ),
-                paymentSettlements  = emptyList()
+                paymentSettlements  = emptyList(),
+                partnerNameInOriginalLanguage = it.get(15, String::class.java) ?: "",
+                partnerNameInEnglish = it.get(16, String::class.java) ?: "",
+                projectId = it.get(17, Long::class.java)!!,
+                linkedProjectVersion = it.get(18, String::class.java)!!,
             )
         },
         pageable,
