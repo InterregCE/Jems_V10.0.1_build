@@ -105,7 +105,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: this.formBuilder.control(link.correctedPrivateContribution),
       totalEligibleWithoutScoArt9495: this.formBuilder.control(link.correctedTotalEligibleWithoutSco),
       unionContribution: this.formBuilder.control(link.correctedFundAmountUnionContribution),
-      comment: this.formBuilder.control(link.comment),
+      comment: this.formBuilder.control(link.comment ? link.comment : ""),
       fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.fundAmount)
     });
     this.paymentToEcLinking.push(item);
@@ -137,7 +137,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       privateContribution: linkingDTO.privateContribution,
       fundAmount: linkingDTO.payment.fundAmount,
       totalEligibleWithoutScoArt9495: linkingDTO.payment.fundAmount + linkingDTO.partnerContribution,
-      unionContribution: 0
+      unionContribution: 0,
+      comment: this.formBuilder.control(linkingDTO.comment ? linkingDTO.comment : ""),
     });
     this.formService.setDirty(true);
   }
