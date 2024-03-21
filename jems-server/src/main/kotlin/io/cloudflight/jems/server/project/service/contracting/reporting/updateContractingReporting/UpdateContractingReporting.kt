@@ -175,5 +175,5 @@ class UpdateContractingReporting(
     private fun forbiddenChangeAfterSubmission(
         old: ProjectContractingReportingSchedule,
         new: ProjectContractingReportingSchedule,
-    ) = old.date != new.date || old.periodNumber != new.periodNumber || old.type != new.type
+    ) = old.periodNumber != new.periodNumber || old.type != new.type || old.finalReport != new.finalReport
 }

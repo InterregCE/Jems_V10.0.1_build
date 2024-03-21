@@ -574,20 +574,10 @@ class UpdateContractingReportingTest : UnitTest() {
     }
 
     @Test
-    fun `try to updated submitted report linked reporting schedule`() {
+    fun `try to update submitted report linked reporting schedule by type`() {
         val projectId = 308L
         val version = "V_3"
-        val reportingSchedule = ProjectContractingReportingSchedule(
-            id = 99,
-            type = ContractingDeadlineType.Content,
-            periodNumber = 1,
-            date = LocalDate.of(2022, 8, 9) /* first possible date */,
-            comment = "dummy comment 44",
-            number = 1,
-            linkedSubmittedProjectReportNumbers = setOf(1),
-            linkedDraftProjectReportNumbers = setOf(),
-            finalReport = false,
-        )
+        val reportingSchedule = deadlineAt(1, LocalDate.of(2022, 8, 9))
 
         every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
@@ -603,10 +593,37 @@ class UpdateContractingReportingTest : UnitTest() {
         every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
         every { contractingReportingPersistence.getContractingReporting(projectId) } returns
             listOf(reportingSchedule)
-        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf(99L to ProjectReportStatus.Submitted)
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf(101L to ProjectReportStatus.Submitted)
 
         assertThrows<LinkedDeadlineUpdateException> {
             interactor.updateReportingSchedule(projectId, listOf(reportingSchedule.copy(type = ContractingDeadlineType.Finance)))
+        }
+    }
+
+    @Test
+    fun `try to update submitted report linked reporting schedule by final report flag`() {
+        val projectId = 308L
+        val version = "V_3"
+        val reportingSchedule = deadlineAt(1, LocalDate.of(2022, 8, 9))
+
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.CONTRACTED
+        every { project.periods } returns listOf(ProjectPeriod(number = 1, start = 1, end = 12))
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns
+            listOf(reportingSchedule)
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf(101L to ProjectReportStatus.Submitted)
+
+        assertThrows<LinkedDeadlineUpdateException> {
+            interactor.updateReportingSchedule(projectId, listOf(reportingSchedule.copy(finalReport = true)))
         }
     }
 }
