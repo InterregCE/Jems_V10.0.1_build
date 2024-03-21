@@ -58,4 +58,7 @@ class PaymentToEcExtensionEntity (
     @Enumerated(EnumType.STRING)
     var finalScoBasis: PaymentSearchRequestScoBasis?,
 
+    // temporary field to save values before big re-calculation MP2-4546
+    val beforeFixPartnerContribution: BigDecimal? = null,
+
 )
