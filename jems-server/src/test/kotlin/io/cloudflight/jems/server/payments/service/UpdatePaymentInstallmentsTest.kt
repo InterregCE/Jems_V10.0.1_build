@@ -473,6 +473,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
     fun `update installments for a payment partner - invalid`() {
         every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
+        every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
         every {
             validator.validateInstallments(any(), any(), any(), any())
         } throws I18nValidationException()
