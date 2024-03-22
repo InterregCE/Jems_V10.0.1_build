@@ -479,7 +479,8 @@ abstract class PluginDataMapper {
     abstract fun map(contractingDimensionCodes: ContractingDimensionCode): ContractingDimensionCodeData
 
     @Mappings(
-        Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")
+        Mapping(target = "programmeLumpSum", source = "lumpSumsDetail"),
+        Mapping(target = "fastTrack", source = "lumpSumsDetail.fastTrack"),
     )
     abstract fun map(projectLumpSum: ProjectLumpSum, lumpSumsDetail: ProgrammeLumpSum?): ProjectLumpSumData
 
