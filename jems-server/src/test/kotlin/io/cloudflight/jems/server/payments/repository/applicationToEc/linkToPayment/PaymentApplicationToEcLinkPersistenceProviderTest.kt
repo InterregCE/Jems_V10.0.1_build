@@ -114,19 +114,24 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
             PaymentToEcExtensionEntity(
                 paymentId = 99L,
                 payment = ftlsPayment,
-                autoPublicContribution = BigDecimal.ZERO,
-                correctedAutoPublicContribution = BigDecimal.ZERO,
+
                 partnerContribution = BigDecimal.valueOf(45.80),
-                publicContribution = BigDecimal.valueOf(25.00),
-                correctedPublicContribution = BigDecimal.valueOf(55.00),
-                privateContribution = BigDecimal.ZERO,
-                correctedPrivateContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.valueOf(25_00L, 2),
+                correctedPublicContribution = BigDecimal.valueOf(25_50L, 2),
+                autoPublicContribution = BigDecimal.valueOf(30_00L, 2),
+                correctedAutoPublicContribution = BigDecimal.valueOf(30_50L, 2),
+                privateContribution = BigDecimal.valueOf(35_00L, 2),
+                correctedPrivateContribution = BigDecimal.valueOf(35_50L, 2),
+
                 paymentApplicationToEc = paymentApplicationToEcEntity,
+                totalEligibleWithoutSco = BigDecimal.valueOf(16_0L, 1),
+                correctedTotalEligibleWithoutSco = BigDecimal.valueOf(16_5L, 1),
+                fundAmountUnionContribution = BigDecimal.valueOf(17_0L, 1),
+                correctedFundAmountUnionContribution = BigDecimal.valueOf(17_5L, 1),
+                fundAmountPublicContribution = BigDecimal.valueOf(18_0L, 1),
+                correctedFundAmountPublicContribution = BigDecimal.valueOf(18_5L, 1),
+                comment = "comment",
                 finalScoBasis = null,
-                correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
-                correctedFundAmountUnionContribution = BigDecimal.ZERO,
-                correctedFundAmountPublicContribution = BigDecimal.ZERO,
-                comment = "comment"
             )
 
         private val paymentToEcExtensionModel = PaymentToEcExtension(
@@ -338,14 +343,27 @@ class PaymentApplicationToEcLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun deselectPaymentFromEcPaymentAndResetFields() {
-        val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity())
+        val ecEntity = paymentApplicationToEcEntity()
+        val entity = paymentToEcExtensionEntity(ecEntity)
         every { ecPaymentExtensionRepository.findAllById(setOf(99L)) } returns listOf(entity)
 
+        assertThat(entity.paymentApplicationToEc).isEqualTo(ecEntity)
+        assertThat(entity.correctedPublicContribution).isNotEqualTo(BigDecimal.valueOf(25_00L, 2))
+        assertThat(entity.correctedAutoPublicContribution).isNotEqualTo(BigDecimal.valueOf(30_00L, 2))
+        assertThat(entity.correctedPrivateContribution).isNotEqualTo(BigDecimal.valueOf(35_00L, 2))
+        assertThat(entity.correctedTotalEligibleWithoutSco).isNotEqualTo(BigDecimal.valueOf(16_0L, 1))
+        assertThat(entity.correctedFundAmountUnionContribution).isNotEqualTo(BigDecimal.valueOf(17_0L, 1))
+        assertThat(entity.correctedFundAmountPublicContribution).isNotEqualTo(BigDecimal.valueOf(18_0L, 1))
+
         persistenceProvider.deselectPaymentFromEcPaymentAndResetFields(setOf(99L))
-        assertThat(entity.paymentApplicationToEc).isEqualTo(null)
-        assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(25.00))
-        assertThat(entity.correctedAutoPublicContribution).isEqualTo(BigDecimal.ZERO)
-        assertThat(entity.correctedPrivateContribution).isEqualTo(BigDecimal.ZERO)
+
+        assertThat(entity.paymentApplicationToEc).isNull()
+        assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(25_00L, 2))
+        assertThat(entity.correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(30_00L, 2))
+        assertThat(entity.correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(35_00L, 2))
+        assertThat(entity.correctedTotalEligibleWithoutSco).isEqualTo(BigDecimal.valueOf(16_0L, 1))
+        assertThat(entity.correctedFundAmountUnionContribution).isEqualTo(BigDecimal.valueOf(17_0L, 1))
+        assertThat(entity.correctedFundAmountPublicContribution).isEqualTo(BigDecimal.valueOf(18_0L, 1))
     }
 
     @Test
