@@ -111,15 +111,14 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field jemsFormFieldWidth="full"
-                                        [ngClass]="{'mat-form-field-invalid': control.get('deadlineDate').errors && control.get('isDeadlineApplicable').value, 'date-readonly': control.get('deadlineAnyLinkedProjectReportSubmitted').value}">
+                                        [ngClass]="{'mat-form-field-invalid': control.get('deadlineDate').errors && control.get('isDeadlineApplicable').value}">
                             <mat-label>{{'project.application.contract.reporting.column.date' | translate}}</mat-label>
                             <input formControlName="deadlineDate" matInput
                                    [min]="control.get('deadlinePeriodStartDate').value"
                                    [matDatepicker]="deadlineDate"
-                                   [readonly]="control.get('deadlineAnyLinkedProjectReportSubmitted').value"
                                    [required]="!control.get('deadlineAnyLinkedProjectReportSubmitted').value && control.get('isDeadlineApplicable').value">
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
-                            <mat-datepicker [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value" #deadlineDate></mat-datepicker>
+                            <mat-datepicker #deadlineDate></mat-datepicker>
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
