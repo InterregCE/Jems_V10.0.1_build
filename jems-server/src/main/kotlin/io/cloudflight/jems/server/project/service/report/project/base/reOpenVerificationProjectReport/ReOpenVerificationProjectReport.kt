@@ -31,7 +31,7 @@ class ReOpenVerificationProjectReport(
         validateReportCanBeReOpened(reportToBeReOpen)
         paymentPersistence.deleteRegularPayments(projectReportId = reportId)
 
-        return reportPersistence.reOpenReportTo(reportId = reportId, ProjectReportStatus.ReOpenFinalized, ZonedDateTime.now()).also {
+        return reportPersistence.reOpenFinalizedVerificationAndResetDate(reportId = reportId, lastVerificationReOpening = ZonedDateTime.now()).also {
             eventPublisher.publishEvent(ProjectReportStatusChanged(this, it, reportToBeReOpen.status))
             eventPublisher.publishEvent(projectReportVerificationReOpenedAudit(this, it))
         }.status

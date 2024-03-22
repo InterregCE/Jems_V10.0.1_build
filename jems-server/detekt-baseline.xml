@@ -656,6 +656,7 @@
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
+    <ID>TooManyFunctions:ProjectReportStatus.kt$ProjectReportStatus</ID>
     <ID>TooManyFunctions:ProjectStatusController.kt$ProjectStatusController : ProjectStatusApi</ID>
     <ID>TooManyFunctions:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider : ProjectWorkflowPersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>

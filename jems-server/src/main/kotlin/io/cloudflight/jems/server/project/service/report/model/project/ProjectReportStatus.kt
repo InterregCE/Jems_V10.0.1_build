@@ -25,8 +25,6 @@ enum class ProjectReportStatus {
 
     fun isFinalized() = this == Finalized
 
-    fun isProjectReportReOpened() = this == VerificationReOpenedLast || this == VerificationReOpenedLimited
-
     fun submitStatus(hasVerificationStartedBefore: Boolean) = when (this) {
         Draft, ReOpenSubmittedLast, ReOpenSubmittedLimited -> Submitted
         VerificationReOpenedLimited, VerificationReOpenedLast -> if (hasVerificationStartedBefore) ReOpenFinalized else InVerification

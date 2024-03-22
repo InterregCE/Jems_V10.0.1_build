@@ -21,6 +21,8 @@ interface ProjectReportVerificationExpenditurePersistence {
 
     fun initiateEmptyVerificationForProjectReport(projectReportId: Long)
 
+    fun reInitiateVerificationForProjectReport(projectReportId: Long)
+
     fun updateProjectReportExpenditureVerification(
         projectReportId: Long,
         expenditureVerification: List<ProjectReportVerificationExpenditureLineUpdate>

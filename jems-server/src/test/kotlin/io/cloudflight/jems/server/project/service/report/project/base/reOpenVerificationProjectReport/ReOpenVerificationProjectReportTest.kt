@@ -75,7 +75,7 @@ class ReOpenVerificationProjectReportTest: UnitTest() {
 
         val slotTime = slot<ZonedDateTime>()
         val result = submissionSummary()
-        every { reportPersistence.reOpenReportTo(REPORT_ID, any(), capture(slotTime)) } returns result
+        every { reportPersistence.reOpenFinalizedVerificationAndResetDate(REPORT_ID, capture(slotTime)) } returns result
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { eventPublisher.publishEvent(capture(slotAudit)) } answers { }
@@ -84,7 +84,7 @@ class ReOpenVerificationProjectReportTest: UnitTest() {
 
         interactor.reOpen(PROJECT_ID, REPORT_ID)
 
-        verify(exactly = 1) { reportPersistence.reOpenReportTo(REPORT_ID, ProjectReportStatus.ReOpenFinalized, any()) }
+        verify(exactly = 1) { reportPersistence.reOpenFinalizedVerificationAndResetDate(REPORT_ID, any()) }
 
         assertThat(slotStatusChanged.captured.projectReportSummary).isEqualTo(result)
         assertThat(slotStatusChanged.captured.previousReportStatus).isEqualTo(ProjectReportStatus.Finalized)
