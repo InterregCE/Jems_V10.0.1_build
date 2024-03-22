@@ -168,6 +168,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         partnerRole: this.formBuilder.control(partnerPayment.partnerRole),
         partnerAbbreviation: this.formBuilder.control(partnerPayment.partnerAbbreviation),
         amountApproved: this.formBuilder.control(partnerPayment.amountApproved),
+        nameInEnglish: this.formBuilder.control(partnerPayment.nameInEnglish),
+        nameInOriginalLanguage: this.formBuilder.control(partnerPayment.nameInOriginalLanguage),
         installments: this.formBuilder.array([])
       })
     );
