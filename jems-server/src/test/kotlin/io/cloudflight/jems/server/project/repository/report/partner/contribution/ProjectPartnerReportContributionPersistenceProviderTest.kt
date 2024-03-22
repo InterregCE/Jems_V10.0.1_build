@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
@@ -45,9 +46,12 @@ class ProjectPartnerReportContributionPersistenceProviderTest : UnitTest() {
             description = "example description",
         )
 
+
         private val contributionEntity = ProjectPartnerReportContributionEntity(
             id = 989L,
-            reportEntity = mockk(),
+            reportEntity = mockk {
+                every { id } returns 1L
+            },
             sourceOfContribution = "source text",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,
@@ -61,6 +65,7 @@ class ProjectPartnerReportContributionPersistenceProviderTest : UnitTest() {
 
         private val expectedContribution = ProjectPartnerReportEntityContribution(
             id = 989L,
+            reportId = 1L,
             sourceOfContribution = "source text",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,

@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerInvestment
 import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerLumpSum
 import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -116,7 +117,9 @@ class FinalizeVerificationProjectReport(
         saveAfterVerificationUnitCosts(expendituresByCertificate.values.getAfterVerificationForUnitCosts(), report) // table 4
         saveAfterVerificationInvestments(expendituresByCertificate.values.getAfterVerificationForInvestments(), report) // table 5
 
-        calculateAndSaveCertificatesParkedValues(expendituresByCertificate)
+        expendituresByCertificate.onlyParkedExpenditures().let {
+            if (it.isNotEmpty()) { calculateAndSaveCertificatesParkedValues(it) }
+        }
 
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
@@ -135,63 +138,65 @@ class FinalizeVerificationProjectReport(
     }
 
     private fun calculateAndSaveCertificatesParkedValues(expendituresByCertificate: Map<ExpenditureIdentifiers, List<ExpenditureVerification>>) {
-        expendituresByCertificate.entries.forEach { (certificate, expenditures) ->
-            val partnerId = certificate.partnerId
+        val certificateIds = expendituresByCertificate.keys.map { it.partnerReportId }.toSet()
+        val coFinancingPerPartnerReport = partnerReportPersistence.getPartnerReportCoFinancingForReports(certificateIds)
+        val contributionsPerPartnerReport = reportContributionPersistence.getAllContributionsForReportIds(certificateIds).groupBy{ it.reportId }
+        val costCategoriesPerPartnerReport = reportExpenditureCostCategoryPersistence.getCostCategoriesFor(certificateIds)
+
+        val coFinancingParkedValuesPerCertificate = mutableMapOf<Long, ReportExpenditureCoFinancingColumn>()
+        val costCategoriesParkedValuesPerCertificate = mutableMapOf<Long, BudgetCostsCalculationResultFull>()
+        val lumpSumsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+        val unitCostsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+        val investmentsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+
+        expendituresByCertificate.entries.forEach { (certificate, parkedVerificationExpenditures) ->
             val partnerReportId = certificate.partnerReportId
-            val partnerReport = partnerReportPersistence.getPartnerReportById(partnerId, partnerReportId)
-            val parkedVerificationExpenditures = expenditures.filter { expenditureVerification -> expenditureVerification.parked }
-            val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = partnerReportId)
+            val partnerCoFinancing = coFinancingPerPartnerReport[partnerReportId]!!
+            val costCategories = costCategoriesPerPartnerReport[partnerReportId]!!
+            val partnerReportContributions = contributionsPerPartnerReport[partnerReportId]!!.extractOverview()
 
             val parkedExpendituresCostCategoriesValues = parkedVerificationExpenditures.calculateCertified(options = costCategories.options)
-
-            // table 1 summary
-            calculateCertificateCoFinParkedAfterVerification(
-                partnerId = partnerId,
-                partnerReportId = partnerReportId,
+            val certificateCoFinancingParkedValues = calculateCertificateCoFinParkedAfterVerification(
                 totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
                 afterVerificationExpenditureParked = parkedExpendituresCostCategoriesValues.sum,
-                partnerCoFinancing = partnerReport.identification.coFinancing
-            ).also { parkedValues ->
-                partnerReportCoFinancingPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+                partnerCoFinancing = partnerCoFinancing,
+                partnerReportContributions = partnerReportContributions
+            )
+
+            coFinancingParkedValuesPerCertificate[partnerReportId] = certificateCoFinancingParkedValues
+            costCategoriesParkedValuesPerCertificate[partnerReportId] = parkedExpendituresCostCategoriesValues
+
+            parkedVerificationExpenditures.getTotalCertifiedPerLumpSum().let {
+                if (it.isNotEmpty()) { lumpSumsParkedValuesPerCertificate[partnerReportId] = it }
             }
-            // table 2 breakdown cost-category
-            parkedExpendituresCostCategoriesValues.let { parkedValues ->
-                reportExpenditureCostCategoryPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            parkedVerificationExpenditures.getTotalCertifiedPerUnitCost().let {
+                if (it.isNotEmpty()) { unitCostsParkedValuesPerCertificate[partnerReportId] = it }
             }
-            // table 3
-            parkedVerificationExpenditures.getTotalCertifiedPerLumpSum().let { parkedValues ->
-                reportLumpSumPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
-            }
-            // table 4
-            parkedVerificationExpenditures.getTotalCertifiedPerUnitCost().let { parkedValues ->
-                reportUnitCostPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
-            }
-            // table 5
-            parkedVerificationExpenditures.getTotalCertifiedPerInvestment().let { parkedValues ->
-                reportInvestmentPersistence.updateAfterVerificationParkedValues(partnerId = partnerId, reportId = partnerReportId, parkedValues)
+            parkedVerificationExpenditures.getTotalCertifiedPerInvestment().let {
+                if (it.isNotEmpty()) { investmentsParkedValuesPerCertificate[partnerReportId] = it }
             }
         }
 
+        partnerReportCoFinancingPersistence.updateAfterVerificationParkedValues(coFinancingParkedValuesPerCertificate)
+        reportExpenditureCostCategoryPersistence.updateAfterVerificationParkedValues(costCategoriesParkedValuesPerCertificate)
+        reportLumpSumPersistence.updateAfterVerificationParkedValues(lumpSumsParkedValuesPerCertificate)
+        reportUnitCostPersistence.updateAfterVerificationParkedValues(unitCostsParkedValuesPerCertificate)
+        reportInvestmentPersistence.updateAfterVerificationParkedValues(investmentsParkedValuesPerCertificate)
     }
 
     private fun calculateCertificateCoFinParkedAfterVerification(
-        partnerId: Long,
-        partnerReportId: Long,
         totalEligibleBudget: BigDecimal,
         afterVerificationExpenditureParked: BigDecimal,
-        partnerCoFinancing: List<ProjectPartnerCoFinancing>): ReportExpenditureCoFinancingColumn {
-
-        val contributions = reportContributionPersistence
-            .getPartnerReportContribution(partnerId, reportId = partnerReportId).extractOverview()
-
-        return getCurrentFrom(
-            contributions.generateCoFinCalculationInputData(
+        partnerReportContributions: ProjectPartnerReportContributionOverview,
+        partnerCoFinancing: List<ProjectPartnerCoFinancing>
+    ): ReportExpenditureCoFinancingColumn =
+        getCurrentFrom(
+            partnerReportContributions.generateCoFinCalculationInputData(
                 totalEligibleBudget = totalEligibleBudget,
                 currentValueToSplit = afterVerificationExpenditureParked,
                 funds = partnerCoFinancing
             )
         ).toColumn()
-    }
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {
         if (!report.status.canBeVerified())
@@ -307,5 +312,9 @@ class FinalizeVerificationProjectReport(
             verifiedValues = afterVerificationInvestments,
         )
     }
+
+    private fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.onlyParkedExpenditures() =
+        this.mapValues { it.value.filter { expenditure -> expenditure.parked } }
+
 
 }

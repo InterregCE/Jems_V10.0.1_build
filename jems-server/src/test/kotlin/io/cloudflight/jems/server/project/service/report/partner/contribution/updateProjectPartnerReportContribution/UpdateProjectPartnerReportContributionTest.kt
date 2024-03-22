@@ -57,6 +57,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val oldContribution = ProjectPartnerReportEntityContribution(
             id = 45L,
+            reportId = 8L,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,
@@ -70,6 +71,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val toBeDeletedUnsuccessfully = ProjectPartnerReportEntityContribution(
             id = 46L,
+            reportId = 8L,
             sourceOfContribution = "to be deleted but cannot be because created sooner",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = null,
@@ -83,6 +85,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val toBeDeleted = ProjectPartnerReportEntityContribution(
             id = 47L,
+            reportId = 8L,
             sourceOfContribution = "to be deleted",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = null,
@@ -96,6 +99,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val oldContributionFromThisReport = ProjectPartnerReportEntityContribution(
             id = 48L,
+            reportId = 8L,
             sourceOfContribution = "this value will be updated",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = null,
@@ -109,6 +113,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val notAllowedToBeReported = ProjectPartnerReportEntityContribution(
             id = 49L,
+            reportId = 8L,
             sourceOfContribution = "this value needs to be zero because it is removed from AF",
             legalStatus = ProjectPartnerContributionStatus.AutomaticPublic,
             idFromApplicationForm = 333L,
@@ -122,6 +127,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val newContribution = ProjectPartnerReportEntityContribution(
             id = 45L,
+            reportId = 8L,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,
@@ -135,6 +141,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val createdContribution = ProjectPartnerReportEntityContribution(
             id = 0L,
+            reportId = 8L,
             sourceOfContribution = "source private created now",
             legalStatus = ProjectPartnerContributionStatus.Private,
             idFromApplicationForm = null,
@@ -148,6 +155,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val oldContributionFromThisReportUpdated = ProjectPartnerReportEntityContribution(
             id = 48L,
+            reportId = 8L,
             sourceOfContribution = "this value has been updated",
             legalStatus = ProjectPartnerContributionStatus.Private,
             idFromApplicationForm = null,

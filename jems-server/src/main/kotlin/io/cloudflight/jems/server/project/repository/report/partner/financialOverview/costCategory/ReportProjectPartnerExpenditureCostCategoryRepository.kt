@@ -92,9 +92,10 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             COALESCE(SUM(report.sumCurrentParkedVerification), 0)
         )
         FROM #{#entityName} report
-        WHERE report.reportEntity.projectReport.id IN :finalizedProjectReportIds
+        WHERE report.reportEntity.partnerId=:partnerId AND
+                report.reportEntity.projectReport.id IN :finalizedProjectReportIds
     """)
-    fun findVerificationParkedCumulativeForProjectReportIds(finalizedProjectReportIds: Set<Long>): BudgetCostsCalculationResultFull
+    fun findVerificationParkedCumulativeForProjectReportIds(partnerId: Long, finalizedProjectReportIds: Set<Long>): BudgetCostsCalculationResultFull
 
     @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(

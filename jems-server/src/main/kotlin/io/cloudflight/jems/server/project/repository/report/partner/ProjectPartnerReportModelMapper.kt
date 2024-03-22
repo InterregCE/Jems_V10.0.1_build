@@ -193,6 +193,12 @@ fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {
     )
 }
 
+fun ProjectPartnerReportCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
+    fundType = this.programmeFund?.let { MainFund } ?: PartnerContribution,
+    fund = this.programmeFund?.toModel(),
+    percentage = this.percentage,
+)
+
 fun ProjectPartnerReportCreate.toEntity(
     legalStatus: ProgrammeLegalStatusEntity?
 ) = ProjectPartnerReportEntity(

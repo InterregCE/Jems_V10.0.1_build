@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import java.math.BigDecimal
 
@@ -119,5 +120,6 @@ private val mapper = Mappers.getMapper(ProjectPartnerReportContributionModelMapp
 
 @Mapper
 interface ProjectPartnerReportContributionModelMapper {
+    @Mapping(target = "reportId", source = "reportEntity.id" )
     fun map(entity: ProjectPartnerReportContributionEntity): ProjectPartnerReportEntityContribution
 }

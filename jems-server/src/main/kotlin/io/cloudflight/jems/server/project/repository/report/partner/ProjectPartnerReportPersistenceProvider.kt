@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEn
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
@@ -211,6 +212,13 @@ class ProjectPartnerReportPersistenceProvider(
             .fetch()
             .map { it.toTmpModel() }
     }
+
+
+    @Transactional(readOnly = true)
+    override fun getPartnerReportCoFinancingForReports(partnerReportIds: Set<Long>) =
+        partnerReportCoFinancingRepository.findAllByIdReportIdInOrderByIdFundSortNumber(partnerReportIds)
+            .groupBy({ it.id.report.id }, { it.toModel() })
+
 
     private fun Tuple.toTmpModel(): CorrectionAvailableReportTmp =
         CorrectionAvailableReportTmp(

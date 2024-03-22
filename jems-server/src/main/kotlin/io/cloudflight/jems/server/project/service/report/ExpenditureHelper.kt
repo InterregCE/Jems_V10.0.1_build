@@ -15,4 +15,3 @@ fun List<ExpenditureVerification>.getTotalCertifiedPerInvestment() =
     filter { it.investmentId != null }
         .groupBy { it.investmentId!! }
         .mapValues { it.value.sumOf { it.certifiedAmount } }
-

@@ -25,8 +25,8 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
             .associate { Pair(it.first, ExpenditureUnitCostCurrent(current = it.second, currentParked = it.third)) }
 
     @Transactional(readOnly = true)
-    override fun getVerificationParkedUnitCostCumulative(projectReportIds: Set<Long>): Map<Long, BigDecimal> =
-        reportUnitCostRepository.findVerificationParkedCumulativeForProjectReportIds(projectReportIds).toMap()
+    override fun getVerificationParkedUnitCostCumulative(partnerId:Long, projectReportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportUnitCostRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, projectReportIds).toMap()
 
     @Transactional
     override fun getValidatedUnitCostCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
@@ -65,17 +65,18 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
             }
     }
 
+
     @Transactional
-    override fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerificationValues: Map<Long, BigDecimal>
-    ) {
-        reportUnitCostRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId = partnerId, reportId = reportId)
+    override fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, Map<Long, BigDecimal>>, ) {
+        reportUnitCostRepository.findAllByReportEntityIdIn(parkedValuesPerCertificate.keys)
+            .groupBy { it.reportEntity.id }
             .forEach {
-                if (afterVerificationValues.containsKey(it.programmeUnitCost.id)) {
-                    it.currentParkedVerification = afterVerificationValues[it.programmeUnitCost.id]!!
+                val afterVerificationParked = parkedValuesPerCertificate[it.key]!!
+                it.value.forEach { unitCostEntity ->
+                    if (afterVerificationParked.containsKey(unitCostEntity.programmeUnitCost.id)) {
+                        unitCostEntity.currentParkedVerification =
+                            afterVerificationParked[unitCostEntity.programmeUnitCost.id]!!
+                    }
                 }
             }
     }

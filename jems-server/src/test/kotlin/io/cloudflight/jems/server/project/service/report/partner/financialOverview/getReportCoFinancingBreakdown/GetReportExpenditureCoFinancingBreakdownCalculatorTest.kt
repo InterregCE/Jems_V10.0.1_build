@@ -208,6 +208,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             createdInThisReport = true,
             historyIdentifier = UUID.randomUUID(),
             id = 0L,
+            reportId = 97658L,
             idFromApplicationForm = null,
             sourceOfContribution = null,
         )

@@ -11,7 +11,7 @@ interface ProjectPartnerReportLumpSumPersistence {
 
     fun getLumpSumCumulative(reportIds: Set<Long>): Map<Int, ExpenditureLumpSumCurrent>
 
-    fun getCumulativeVerificationParked(projectReportIds: Set<Long>): Map<Int, BigDecimal>
+    fun getCumulativeVerificationParked(partnerId: Long, projectReportIds: Set<Long>): Map<Int, BigDecimal>
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: Map<Long, ExpenditureLumpSumCurrentWithReIncluded>)
 
@@ -21,10 +21,6 @@ interface ProjectPartnerReportLumpSumPersistence {
         afterControl: Map<Long, ExpenditureLumpSumCurrent>,
     )
 
-    fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        afterVerificationParked: Map<Long, BigDecimal>,
-    )
+      fun updateAfterVerificationParkedValues(afterVerificationParkedPerCertificate:  Map<Long, Map<Long, BigDecimal>>)
     fun getLumpSumCumulativeAfterControl(reportIds: Set<Long>): Map<Int, BigDecimal>
 }

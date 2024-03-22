@@ -34,8 +34,8 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
     )
 
     @Transactional(readOnly = true)
-    override fun getVerificationCostCategoriesCumulative(finalizedProjectrepotIds: Set<Long>)=
-        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(finalizedProjectrepotIds)
+    override fun getVerificationCostCategoriesCumulative(partnerId: Long, finalizedProjectrepotIds: Set<Long>)=
+        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, finalizedProjectrepotIds)
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -104,25 +104,23 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
     }
 
     @Transactional
-    override fun updateAfterVerificationParkedValues(
-        partnerId: Long,
-        reportId: Long,
-        parkedAfterVerification: BudgetCostsCalculationResultFull
-    ) {
-        expenditureCostCategoryRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
-                staffCurrentParkedVerification = parkedAfterVerification.staff
-                officeCurrentParkedVerification = parkedAfterVerification.office
-                travelCurrentParkedVerification = parkedAfterVerification.travel
-                externalCurrentParkedVerification = parkedAfterVerification.external
-                equipmentCurrentParkedVerification = parkedAfterVerification.equipment
-                infrastructureCurrentParkedVerification = parkedAfterVerification.infrastructure
-                otherCurrentParkedVerification = parkedAfterVerification.other
-                lumpSumCurrentParkedVerification = parkedAfterVerification.lumpSum
-                unitCostCurrentParkedVerification = parkedAfterVerification.unitCost
-                spfCostCurrentParkedVerification = parkedAfterVerification.spfCost
-                sumCurrentParkedVerification = parkedAfterVerification.sum
+    override fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, BudgetCostsCalculationResultFull>) {
+        expenditureCostCategoryRepository.findAllByReportEntityIdIn(parkedValuesPerCertificate.keys).forEach {
+            val parkedAfterVerification = parkedValuesPerCertificate[it.reportId]
+            it.apply {
+                staffCurrentParkedVerification = parkedAfterVerification?.staff ?: BigDecimal.ZERO
+                officeCurrentParkedVerification = parkedAfterVerification?.office ?: BigDecimal.ZERO
+                travelCurrentParkedVerification = parkedAfterVerification?.travel ?: BigDecimal.ZERO
+                externalCurrentParkedVerification = parkedAfterVerification?.external ?: BigDecimal.ZERO
+                equipmentCurrentParkedVerification = parkedAfterVerification?.equipment ?: BigDecimal.ZERO
+                infrastructureCurrentParkedVerification = parkedAfterVerification?.infrastructure ?: BigDecimal.ZERO
+                otherCurrentParkedVerification = parkedAfterVerification?.other ?: BigDecimal.ZERO
+                lumpSumCurrentParkedVerification = parkedAfterVerification?.lumpSum ?: BigDecimal.ZERO
+                unitCostCurrentParkedVerification = parkedAfterVerification?.unitCost ?: BigDecimal.ZERO
+                spfCostCurrentParkedVerification = parkedAfterVerification?.spfCost ?: BigDecimal.ZERO
+                sumCurrentParkedVerification = parkedAfterVerification?.sum ?: BigDecimal.ZERO
             }
+        }
     }
 
     @Transactional(readOnly = true)
