@@ -39,6 +39,7 @@ class AuditControlCorrectionPagingServiceTest: UnitTest() {
             auditControlNr = 8,
         ),
         partnerId = 300L,
+        lumpSumPartnerId = null,
         partnerNumber = 5,
         partnerAbbreviation = "partner abbr",
         partnerRole = ProjectPartnerRole.LEAD_PARTNER,

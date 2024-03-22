@@ -71,6 +71,7 @@
 
 <ng-template #reportCell let-correction>
     <span class="id" *ngIf="correction.partnerReport">{{'R' + correction.partnerReport}}</span>
+    <span class="id" *ngIf="correction.lumpSumOrderNr">{{ 'payments.payment.to.project.table.column.payment.type.FTLS' | translate}}</span>
 </ng-template>
 <ng-template #linkedCell let-correction>
     <ng-container [ngSwitch]="correction.type">

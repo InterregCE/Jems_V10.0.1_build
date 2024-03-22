@@ -121,6 +121,7 @@ class AuditControlCorrectionPersistenceProvider(
                 AuditControlCorrectionLineTmp(
                     correction = correctionEntity.toSimpleModel(),
                     partnerId = correctionEntity.partnerReport?.partnerId,
+                    lumpSumPartnerId = correctionEntity.lumpSumPartnerId,
                     partnerNumber = correctionEntity.partnerReport?.identification?.partnerNumber,
                     partnerAbbreviation = correctionEntity.partnerReport?.identification?.partnerAbbreviation,
                     partnerRole = correctionEntity.partnerReport?.identification?.partnerRole,
