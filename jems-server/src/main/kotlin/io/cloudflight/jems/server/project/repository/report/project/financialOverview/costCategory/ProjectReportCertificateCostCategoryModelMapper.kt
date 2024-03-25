@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 
@@ -80,14 +81,15 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
     partnersAvailable: List<ProjectReportSpendingProfileEntity>,
 ): List<PerPartnerCostCategoryBreakdownLine> {
     val partnersById = partnersAvailable.associateBy { it.id.partnerId }
+
     return map {
-        val partnerData = partnersById[it.partnerId]!!
+        val partnerData = partnersById[it.partnerId]
         return@map PerPartnerCostCategoryBreakdownLine(
-            partnerId = partnerData.id.partnerId,
-            partnerNumber = partnerData.partnerNumber,
-            partnerAbbreviation = partnerData.partnerAbbreviation,
-            partnerRole = partnerData.partnerRole,
-            country = partnerData.country,
+            partnerId = partnerData?.id?.partnerId ?: 0,
+            partnerNumber = partnerData?.partnerNumber ?: 0,
+            partnerAbbreviation = partnerData?.partnerAbbreviation ?: "",
+            partnerRole = partnerData?.partnerRole ?: ProjectPartnerRole.PARTNER,
+            country = partnerData?.country ?: "",
             officeAndAdministrationOnStaffCostsFlatRate = it.officeAndAdministrationOnStaffCostsFlatRate,
             officeAndAdministrationOnDirectCostsFlatRate = it.officeAndAdministrationOnDirectCostsFlatRate,
             travelAndAccommodationOnStaffCostsFlatRate = it.travelAndAccommodationOnStaffCostsFlatRate,
