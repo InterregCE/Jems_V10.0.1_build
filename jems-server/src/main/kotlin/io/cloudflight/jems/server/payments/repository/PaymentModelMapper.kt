@@ -365,9 +365,12 @@ fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntit
     paymentId = payment.id,
     payment = payment,
 
+    totalEligibleWithoutSco = defaultTotalEligibleWithoutSco,
     correctedTotalEligibleWithoutSco = defaultTotalEligibleWithoutSco,
+    fundAmountUnionContribution = defaultFundAmountUnionContribution,
     correctedFundAmountUnionContribution = defaultFundAmountUnionContribution,
-    correctedFundAmountPublicContribution = defaultFundAmountPublicContribution ,
+    fundAmountPublicContribution = defaultFundAmountPublicContribution,
+    correctedFundAmountPublicContribution = defaultFundAmountPublicContribution,
 
     autoPublicContribution = defaultOfWhichAutoPublic,
     correctedAutoPublicContribution = defaultOfWhichAutoPublic,

@@ -26,32 +26,26 @@ class PaymentToEcExtensionEntity (
     @ManyToOne(optional = true)
     var paymentApplicationToEc: PaymentApplicationToEcEntity? = null,
 
-    @field:NotNull
-    var correctedTotalEligibleWithoutSco: BigDecimal,
+    @field:NotNull val totalEligibleWithoutSco: BigDecimal,
+    @field:NotNull var correctedTotalEligibleWithoutSco: BigDecimal,
 
-    @field:NotNull
-    var correctedFundAmountUnionContribution: BigDecimal,
+    @field:NotNull val fundAmountUnionContribution: BigDecimal,
+    @field:NotNull var correctedFundAmountUnionContribution: BigDecimal,
 
-    @field:NotNull
-    var correctedFundAmountPublicContribution: BigDecimal,
+    @field:NotNull val fundAmountPublicContribution: BigDecimal,
+    @field:NotNull var correctedFundAmountPublicContribution: BigDecimal,
 
     @field:NotNull
     val partnerContribution: BigDecimal,
 
-    @field:NotNull
-    val publicContribution: BigDecimal,
-    @field:NotNull
-    var correctedPublicContribution: BigDecimal,
+    @field:NotNull val publicContribution: BigDecimal,
+    @field:NotNull var correctedPublicContribution: BigDecimal,
 
-    @field:NotNull
-    val autoPublicContribution: BigDecimal,
-    @field:NotNull
-    var correctedAutoPublicContribution: BigDecimal,
+    @field:NotNull val autoPublicContribution: BigDecimal,
+    @field:NotNull var correctedAutoPublicContribution: BigDecimal,
 
-    @field:NotNull
-    val privateContribution: BigDecimal,
-    @field:NotNull
-    var correctedPrivateContribution: BigDecimal,
+    @field:NotNull val privateContribution: BigDecimal,
+    @field:NotNull var correctedPrivateContribution: BigDecimal,
 
     var comment: String?,
 

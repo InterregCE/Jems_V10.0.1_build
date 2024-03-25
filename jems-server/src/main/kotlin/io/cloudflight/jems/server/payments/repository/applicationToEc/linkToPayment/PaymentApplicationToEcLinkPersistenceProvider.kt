@@ -105,12 +105,15 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     }
 
     @Transactional
-    override fun  deselectPaymentFromEcPaymentAndResetFields(paymentIds: Set<Long>) {
+    override fun deselectPaymentFromEcPaymentAndResetFields(paymentIds: Set<Long>) {
         ecPaymentExtensionRepository.findAllById(paymentIds).forEach {
             it.paymentApplicationToEc = null
             it.correctedPublicContribution = it.publicContribution
             it.correctedAutoPublicContribution = it.autoPublicContribution
             it.correctedPrivateContribution = it.privateContribution
+            it.correctedTotalEligibleWithoutSco = it.totalEligibleWithoutSco
+            it.correctedFundAmountUnionContribution = it.fundAmountUnionContribution
+            it.correctedFundAmountPublicContribution = it.fundAmountPublicContribution
         }
     }
 
@@ -121,8 +124,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate
     ) {
         ecPaymentExtensionRepository.getReferenceById(paymentId).apply {
-            this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = paymentToEcLinkingUpdate.correctedPublicContribution
+            this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
             this.correctedPrivateContribution = paymentToEcLinkingUpdate.correctedPrivateContribution
 
             this.correctedTotalEligibleWithoutSco = paymentToEcLinkingUpdate.correctedTotalEligibleWithoutSco ?: correctedTotalEligibleWithoutSco
