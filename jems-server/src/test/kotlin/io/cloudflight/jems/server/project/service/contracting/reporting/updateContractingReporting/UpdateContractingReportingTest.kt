@@ -93,7 +93,7 @@ class UpdateContractingReportingTest : UnitTest() {
 
     @ParameterizedTest(name = "updateReportingSchedule status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION",
-        "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"])
+        "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED", "MODIFICATION_PRECONTRACTING_SUBMITTED"])
     fun updateReportingSchedule(status: ApplicationStatus) {
         val projectId = 100L + status.ordinal
         val version = "V_${status.ordinal}"
@@ -233,7 +233,7 @@ class UpdateContractingReportingTest : UnitTest() {
 
     @ParameterizedTest(name = "updateReportingSchedule - wrong status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION",
-        "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"], mode = EnumSource.Mode.EXCLUDE)
+        "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED", "MODIFICATION_PRECONTRACTING_SUBMITTED"], mode = EnumSource.Mode.EXCLUDE)
     fun `updateReportingSchedule - wrong status`(status: ApplicationStatus) {
         val projectId = 200L + status.ordinal
         val version = "V_${status.ordinal}"
