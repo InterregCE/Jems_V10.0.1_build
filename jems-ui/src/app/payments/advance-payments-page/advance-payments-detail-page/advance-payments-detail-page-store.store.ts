@@ -91,7 +91,7 @@ export class AdvancePaymentsDetailPageStoreStore {
 
   getLastApprovedProjectVersion(projectId: number): Observable<ProjectVersionDTO | undefined> {
     return this.projectService.getProjectVersions(projectId).pipe(
-      map(versions => versions.find(v => v.current && (v.status === ProjectVersionDTO.StatusEnum.APPROVED || v.status === ProjectVersionDTO.StatusEnum.CONTRACTED)))
+      map(versions => versions.find(v => v.status === ProjectVersionDTO.StatusEnum.APPROVED || v.status === ProjectVersionDTO.StatusEnum.CONTRACTED || v.status === ProjectVersionDTO.StatusEnum.CLOSED))
     );
   }
 }

@@ -32,9 +32,9 @@
             <p>{{'payment.advance.confirmation.payment.update.successful' | translate}}</p>
         </jems-alert>
 
-        <jems-alert [show]="displayOldProjectVersionAlert"
+        <jems-alert [show]="displayOldProjectVersionAlert && !data.paymentDetail.paymentAuthorized"
                     [type]="Alert.WARNING">
-            <p>There is a new version of the selected project!</p>
+            <p>{{'payment.advance.payment.version.old.warning' | translate}}</p>
         </jems-alert>
 
         <jems-alert *ngIf="error$ | async as error"

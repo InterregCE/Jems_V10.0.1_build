@@ -28,7 +28,7 @@
 
 <ng-template #linkedProjectVersionCell let-payment>
     <span>{{ payment.linkedProjectVersion }}</span>
-    <mat-icon *ngIf="payment.linkedProjectVersion !== payment.lastApprovedProjectVersion"
+    <mat-icon *ngIf="payment.linkedProjectVersion !== payment.lastApprovedProjectVersion && !payment.paymentAuthorized"
               matTooltip="{{ 'payments.advance.payment.table.header.af.version.linked.warning' | translate }}" color="accent" class="ml-1">
         warning_amber
     </mat-icon>
