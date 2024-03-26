@@ -72,10 +72,9 @@ class PaymentAdvancePersistenceProvider(
     @Transactional
     override fun updatePaymentDetail(paymentDetail: AdvancePaymentUpdate): AdvancePaymentDetail {
         val existing = paymentDetail.id?.let { advancePaymentRepository.getReferenceById(it) }
-        val version = if (existing?.isPaymentAuthorizedInfo == true) existing.projectVersion else
-            projectVersion.getLatestApprovedOrCurrent(paymentDetail.projectId)
+        val version = existing?.projectVersion ?: projectVersion.getLatestApprovedOrCurrent(paymentDetail.projectId)
         val project = projectPersistence.getProject(paymentDetail.projectId, version)
-        val partner = partnerPersistence.getById(paymentDetail.partnerId, version).toSummary()
+        val partner = partnerPersistence.getById(paymentDetail.partnerId, version)
 
         return advancePaymentRepository.save(
                 paymentDetail.toEntity(
@@ -130,6 +129,10 @@ class PaymentAdvancePersistenceProvider(
                 specPayment.partnerContributionName,
                 specPayment.partnerContributionSpfId,
                 specPayment.partnerContributionSpfName,
+                specPayment.partnerNameInOriginalLanguage,
+                specPayment.partnerNameInEnglish,
+                specPayment.projectId,
+                specPayment.projectVersion
             ).from(specPayment)
             .leftJoin(specSettlement)
                 .on(specSettlement.advancePayment.id.eq(specPayment.id))

@@ -197,6 +197,8 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             isPaymentConfirmed = true,
             paymentConfirmedUser = paymentConfirmedUser,
             paymentConfirmedDate = currentDate.minusDays(2),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en"
         )
 
         private fun advancePaymentEntity(settlements: MutableSet<AdvancePaymentSettlementEntity>? = null) =
@@ -233,7 +235,11 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             paymentDate = currentDate.minusDays(3),
             // amountSettled is not yet included
             amountSettled = BigDecimal.ZERO,
-            paymentSettlements = listOf(paymentSettlement)
+            paymentSettlements = listOf(paymentSettlement),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = projectId,
+            linkedProjectVersion = "2.0"
         )
 
         private val advancePaymentDetail = AdvancePaymentDetail(
@@ -341,13 +347,17 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             amountSettled = BigDecimal.TEN,
             partnerContribution=IdNamePair(id=22L, name="Source one"),
             partnerContributionSpf=IdNamePair(id=43L, name="SPF source one"),
-            paymentSettlements = emptyList()
+            paymentSettlements = emptyList(),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = projectId,
+            linkedProjectVersion = "v1.0"
         )
 
         val query = mockk<JPAQuery<Tuple>>()
         every {
             jpaQueryFactory.select(
-                any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(), any(), any(), any()
             )
         } returns query
@@ -386,6 +396,10 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { tupleAdvancePayment.get(12, String::class.java) } returns "Source one"
         every { tupleAdvancePayment.get(13, Long::class.java) } returns 43L
         every { tupleAdvancePayment.get(14, String::class.java) } returns "SPF source one"
+        every { tupleAdvancePayment.get(15, String::class.java) } returns "name org lang"
+        every { tupleAdvancePayment.get(16, String::class.java) } returns "name en"
+        every { tupleAdvancePayment.get(17, Long::class.java) } returns projectId
+        every { tupleAdvancePayment.get(18, String::class.java) } returns "v1.0"
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 1
@@ -449,7 +463,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
     fun `create advance payment`() {
         every { projectVersion.getLatestApprovedOrCurrent(projectId) } returns "2.0"
         every { projectPersistence.getProject(projectId, "2.0") } returns project
-        every { partnerPersistence.getById(partnerId, "2.0").toSummary()} returns partnerDetail.toSummary()
+        every { partnerPersistence.getById(partnerId, "2.0")} returns partnerDetail
 
         every { programmeFundRepository.getReferenceById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
         every { userRepository.getReferenceById(userEntity.id) } returns userEntity
@@ -480,7 +494,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
     fun `update advance payment`() {
         every { projectVersion.getLatestApprovedOrCurrent(projectId) } returns "2.0"
         every { projectPersistence.getProject(projectId, "2.0") } returns project
-        every { partnerPersistence.getById(partnerId, "2.0").toSummary()} returns partnerDetail.toSummary()
+        every { partnerPersistence.getById(partnerId, "2.0")} returns partnerDetail
         every { programmeFundRepository.getReferenceById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
         every { userRepository.getReferenceById(userEntity.id) } returns userEntity
         every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2
@@ -495,7 +509,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
     fun `update advance payment with source of contribution`() {
         every { projectVersion.getLatestApprovedOrCurrent(projectId) } returns "2.0"
         every { projectPersistence.getProject(projectId, "2.0") } returns project
-        every { partnerPersistence.getById(partnerId, "2.0").toSummary() } returns partnerDetail.toSummary()
+        every { partnerPersistence.getById(partnerId, "2.0") } returns partnerDetail
         every {
             partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "2.0")
         } returns coFinancingContribution
@@ -521,7 +535,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
     fun `update advance payment with source of contribution SPF`() {
         every { projectVersion.getLatestApprovedOrCurrent(projectId) } returns "2.0"
         every { projectPersistence.getProject(projectId, "2.0") } returns project
-        every { partnerPersistence.getById(partnerId, "2.0").toSummary() } returns partnerDetail.toSummary()
+        every { partnerPersistence.getById(partnerId, "2.0") } returns partnerDetail
         every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "2.0") } returns coFinancingContributionSpf
         every { userRepository.getReferenceById(userEntity.id) } returns userEntity
         every { userRepository.getReferenceById(userEntity2.id) } returns userEntity2

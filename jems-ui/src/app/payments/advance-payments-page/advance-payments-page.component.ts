@@ -35,6 +35,12 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild('deleteButtonCell', {static: true})
   deleteButtonCell: TemplateRef<any>;
 
+  @ViewChild('partnerAbbreviatedNameCell', {static: true})
+  partnerAbbreviatedNameCell: TemplateRef<any>;
+
+  @ViewChild('linkedProjectVersionCell', {static: true})
+  linkedProjectVersionCell: TemplateRef<any>;
+
   SOURCE_TYPE = {
     fund: 'fund',
     contribution: 'contribution'
@@ -81,6 +87,12 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           columnWidth: ColumnWidth.MediumColumn,
         },
         {
+          displayedColumn: 'payments.advance.payment.table.header.af.version.linked',
+          columnType: ColumnType.CustomComponent,
+          columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.linkedProjectVersionCell
+        },
+        {
           displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
           elementProperty: 'projectAcronym',
           sortProperty: 'projectAcronym',
@@ -94,9 +106,9 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.partner.name',
-          elementProperty: 'partnerAbbreviation',
           sortProperty: 'partnerAbbreviation',
           columnWidth: ColumnWidth.WideColumn,
+          customCellTemplate: this.partnerAbbreviatedNameCell
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.source.advance.granted',

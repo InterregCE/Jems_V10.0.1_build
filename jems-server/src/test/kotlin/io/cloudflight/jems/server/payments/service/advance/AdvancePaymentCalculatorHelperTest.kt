@@ -44,7 +44,11 @@ class AdvancePaymentCalculatorHelperTest : UnitTest() {
                     settlementDate = currentDate.minusDays(1),
                     comment = "half"
                 )
-            )
+            ),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = 10L,
+            linkedProjectVersion = "v1.0"
         )
     }
 

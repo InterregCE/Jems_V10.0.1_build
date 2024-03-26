@@ -156,7 +156,11 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     paymentAuthorized = paymentAuthorized,
     amountPaid = amountPaid,
     paymentDate = paymentDate,
-    amountSettled = amountSettled
+    amountSettled = amountSettled,
+    partnerNameInOriginalLanguage = partnerNameInOriginalLanguage,
+    partnerNameInEnglish = partnerNameInEnglish,
+    linkedProjectVersion = linkedProjectVersion,
+    lastApprovedProjectVersion = lastApprovedProjectVersion
 )
 
 fun AdvancePaymentSettlement.toDto() = AdvancePaymentSettlementDTO(

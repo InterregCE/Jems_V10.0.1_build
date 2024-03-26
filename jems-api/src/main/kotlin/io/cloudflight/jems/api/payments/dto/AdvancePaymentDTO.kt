@@ -14,6 +14,8 @@ data class AdvancePaymentDTO(
     val partnerType: ProjectPartnerRoleDTO,
     val partnerSortNumber: Int?,
     val partnerAbbreviation: String,
+    val partnerNameInOriginalLanguage: String,
+    val partnerNameInEnglish: String,
 
     val programmeFund: ProgrammeFundDTO? = null,
     val partnerContribution: IdNamePairDTO? = null,
@@ -22,5 +24,8 @@ data class AdvancePaymentDTO(
     val paymentAuthorized: Boolean? = null,
     val amountPaid: BigDecimal?,
     val paymentDate: LocalDate? = null,
-    val amountSettled: BigDecimal?
+    val amountSettled: BigDecimal?,
+
+    val linkedProjectVersion: String,
+    val lastApprovedProjectVersion: String?,
 )

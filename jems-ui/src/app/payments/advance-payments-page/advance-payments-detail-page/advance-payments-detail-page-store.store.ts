@@ -4,7 +4,7 @@ import {
   AdvancePaymentDetailDTO,
   AdvancePaymentsService, AdvancePaymentUpdateDTO,
   OutputProjectSimple, ProjectPartnerPaymentSummaryDTO, ProjectPartnerService,
-  ProjectService,
+  ProjectService, ProjectVersionDTO,
   UserRoleCreateDTO,
 } from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
@@ -35,7 +35,7 @@ export class AdvancePaymentsDetailPageStoreStore {
               private permissionService: PermissionService,
               private routingService: RoutingService,
               private projectService: ProjectService,
-              private projectPartnerService: ProjectPartnerService) {
+              private projectPartnerService: ProjectPartnerService,) {
     this.advancePaymentDetail$ = this.paymentDetail();
     this.userCanEdit$ = this.userCanEdit();
   }
@@ -86,6 +86,12 @@ export class AdvancePaymentsDetailPageStoreStore {
       tap(partnerList => Log.info('Fetched filtered partners for project:', this, partnerList)),
       untilDestroyed(this),
       shareReplay(1)
+    );
+  }
+
+  getLastApprovedProjectVersion(projectId: number): Observable<ProjectVersionDTO | undefined> {
+    return this.projectService.getProjectVersions(projectId).pipe(
+      map(versions => versions.find(v => v.current && (v.status === ProjectVersionDTO.StatusEnum.APPROVED || v.status === ProjectVersionDTO.StatusEnum.CONTRACTED)))
     );
   }
 }

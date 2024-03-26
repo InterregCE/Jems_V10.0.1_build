@@ -6,6 +6,9 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchReq
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePayments
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
@@ -18,6 +21,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class GetAdvancePaymentsTest: UnitTest() {
 
@@ -53,12 +57,20 @@ class GetAdvancePaymentsTest: UnitTest() {
                     settlementDate = currentDate.minusDays(1),
                     comment = "half"
                 )
-            )
+            ),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = 10L,
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0"
         )
     }
 
     @MockK
     private lateinit var paymentPersistence: PaymentAdvancePersistence
+
+    @MockK
+    private lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @InjectMockKs
     private lateinit var getAdvancePayments: GetAdvancePayments
@@ -69,6 +81,15 @@ class GetAdvancePaymentsTest: UnitTest() {
 
         val filters = mockk<AdvancePaymentSearchRequest>()
         every { paymentPersistence.list(Pageable.unpaged(), filters) } returns PageImpl(listOf(advancePayment))
+        every { projectVersionPersistence.getAllVersionsByProjectIdIn(setOf(10L)) } returns listOf(
+            ProjectVersion(
+                version = "v1.0",
+                createdAt = ZonedDateTime.now().minusDays(1),
+                projectId = 10L,
+                current = true,
+                status = ApplicationStatus.CONTRACTED
+            )
+        )
 
         val result = advancePayment.copy(amountSettled = 100.00.toScaledBigDecimal())
         assertThat(getAdvancePayments.list(Pageable.unpaged(), filters)).contains(result)

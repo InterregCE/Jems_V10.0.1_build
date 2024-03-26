@@ -52,6 +52,9 @@ export class AdvancePaymentsDetailPageComponent {
   successfulAuthorizationMessage = false;
   successfulConfirmationMessage = false;
   error$ = new BehaviorSubject<APIError | null>(null);
+  selectedProjectVersion: string | undefined;
+  displayOldProjectVersionAlert = false;
+  isProjectSelected = false;
 
   advancePaymentForm = this.formBuilder.group({
     id: '',
@@ -189,6 +192,15 @@ export class AdvancePaymentsDetailPageComponent {
   }
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO, userCanEdit: boolean) {
+    if (paymentDetail.projectId) {
+      this.isProjectSelected = true;
+      this.selectedProjectVersion = paymentDetail.projectVersion;
+      this.advancePaymentsDetailPageStore.getLastApprovedProjectVersion(paymentDetail.projectId)
+        .pipe(
+          tap(data => this.displayOldProjectVersionAlert = this.selectedProjectVersion !== data?.version)
+        ).subscribe();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.disable();
+    }
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(paymentDetail?.projectCustomIdentifier ?? '');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
@@ -435,7 +447,6 @@ export class AdvancePaymentsDetailPageComponent {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(this.getFormattedCurrentLocaleDate());
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
     } else {
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.enable();
@@ -452,7 +463,6 @@ export class AdvancePaymentsDetailPageComponent {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.disable();
     } else {
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.enable();
@@ -544,6 +554,7 @@ export class AdvancePaymentsDetailPageComponent {
   }
 
   projectSelected(project: OutputProjectSimple) {
+    this.isProjectSelected = true;
     this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project.id);
     this.resetFundsAndContributionData();
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
