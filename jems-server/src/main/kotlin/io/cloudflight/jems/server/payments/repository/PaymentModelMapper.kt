@@ -180,18 +180,18 @@ fun PaymentPartnerToCreate.toEntity(
     amountApprovedPerPartner = amountApprovedPerPartner,
 )
 
-fun PaymentEntity.toDetailModel(
+fun PaymentToProjectTmp.toDetailModel(
     partnerPayments: List<PartnerPayment>
 ) = PaymentDetail(
-    id = id,
-    paymentType = type,
-    projectId = project.id,
-    projectCustomIdentifier = project.customIdentifier,
-    projectAcronym = project.acronym,
-    spf = project.call.type == CallType.SPF,
-    fund = fund.toModel(),
-    amountApprovedPerFund = amountApprovedPerFund!!,
-    dateOfLastPayment = null,
+    id = payment.id,
+    paymentType = payment.type,
+    projectId = payment.project.id,
+    projectCustomIdentifier = payment.projectCustomIdentifier,
+    projectAcronym = payment.projectAcronym,
+    spf = payment.project.call.type == CallType.SPF,
+    fund = payment.fund.toModel(),
+    amountApprovedPerFund = payment.amountApprovedPerFund!!,
+    dateOfLastPayment = dateOfLastPayment,
     partnerPayments = partnerPayments,
 )
 
@@ -274,7 +274,7 @@ fun AdvancePaymentUpdate.toEntity(
     projectCustomIdentifier = project.customIdentifier,
     projectAcronym = project.acronym,
     projectVersion = projectVersion,
-    partnerId = partner.id!!,
+    partnerId = partner.id,
     partnerRole = partner.role,
     partnerSortNumber = partner.sortNumber,
     partnerAbbreviation = partner.abbreviation,

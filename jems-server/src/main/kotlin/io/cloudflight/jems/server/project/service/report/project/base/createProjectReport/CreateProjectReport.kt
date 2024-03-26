@@ -142,8 +142,8 @@ class CreateProjectReport(
         partnersBudget:  List<ProjectPartnerBudgetPerFund>,
     ): List<ProjectReportPartnerCreateModel> {
         val previouslyReported = projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
-        return partnersBudget.filter {it.partner != null }.map { partnersBudget ->
-            val partnerSummary = partnersBudget.partner
+        return partnersBudget.filter {it.partner != null }.map { budget ->
+            val partnerSummary = budget.partner
             ProjectReportPartnerCreateModel(
                 partnerId = partnerSummary!!.id!!,
                 partnerNumber = partnerSummary.sortNumber!!,
@@ -151,7 +151,7 @@ class CreateProjectReport(
                 partnerRole = partnerSummary.role,
                 country = partnerSummary.country,
                 previouslyReported = previouslyReported[partnerSummary.id] ?: BigDecimal.ZERO,
-                partnerTotalEligibleBudget = partnersBudget.totalEligibleBudget
+                partnerTotalEligibleBudget = budget.totalEligibleBudget
             )
         }
     }

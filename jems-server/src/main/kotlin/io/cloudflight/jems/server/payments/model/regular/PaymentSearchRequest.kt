@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.model.regular
 
 import java.time.LocalDate
 
-data class PaymentSearchRequest (
+data class PaymentSearchRequest(
     val paymentId: Long?,
     val paymentType: PaymentType?,
     val projectIdentifiers: Set<String>,

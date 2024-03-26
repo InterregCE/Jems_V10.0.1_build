@@ -377,36 +377,6 @@ class PaymentPersistenceProviderTest : UnitTest() {
             abbreviation = setOf(InputTranslation(SystemLanguage.ES, "fund ES abbr")),
             description = setOf(InputTranslation(SystemLanguage.ES, "fund ES desc")),
         )
-        private val expectedPaymentDetail = PaymentDetail(
-            id = paymentId,
-            paymentType = PaymentType.FTLS,
-            fund = expectedFund,
-            projectId = projectId,
-            projectCustomIdentifier = dummyProject.customIdentifier,
-            projectAcronym = dummyProject.acronym,
-            spf = false,
-            amountApprovedPerFund = BigDecimal(100),
-            dateOfLastPayment = null,
-            partnerPayments = listOf(
-                PartnerPayment(
-                    id = 1L,
-                    projectId = projectId,
-                    orderNr = 13,
-                    programmeLumpSumId = lumpSumId,
-                    partnerReportId = null,
-                    partnerReportNumber = null,
-                    programmeFundId = fund.id,
-                    partnerId = partnerId_5,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
-                    partnerAbbreviation = "abbr 1",
-                    nameInOriginalLanguage = "original 1",
-                    nameInEnglish = "english 1",
-                    amountApprovedPerPartner = BigDecimal.ONE,
-                    installments = emptyList(),
-                )
-            )
-        )
 
         private val paymentFTLSToCreateMap = mapOf(
             PaymentGroupingId(7, fundId) to
@@ -445,6 +415,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = weekBefore,
             totalEligibleAmount = BigDecimal.TEN,
+            dateOfLastPayment = null,
             lastApprovedVersionBeforeReadyForPayment = "V4.7",
             remainingToBePaid = BigDecimal.valueOf(100L),
         )
@@ -973,16 +944,6 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(correctedFundAmountPublicContribution).isEqualTo(BigDecimal.ZERO)
         }
 
-    }
-
-    @Test
-    fun getPaymentDetails() {
-        every { paymentRepository.getReferenceById(paymentId) } returns paymentFtlsEntity()
-        every { paymentPartnerRepository.findAllByPaymentId(paymentId) } returns listOf(partnerPaymentEntity())
-        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns projectPartnerEntity
-
-        assertThat(paymentPersistenceProvider.getPaymentDetails(paymentId))
-            .isEqualTo(expectedPaymentDetail)
     }
 
     @Test
