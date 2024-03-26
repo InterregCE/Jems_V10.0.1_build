@@ -35,6 +35,10 @@ export class CategoryTreeComponent implements OnChanges {
     this.categorySelected.emit(node.info);
   }
 
+  isSelectedCategory(node: CategoryNode, selectedCategory: any): boolean {
+    return node?.info?.id == selectedCategory?.id && node?.info?.type == selectedCategory?.type;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.categories) {
       this.dataSource.data = [changes.categories.currentValue];
