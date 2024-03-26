@@ -7,6 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
 import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
+import {NumberService} from "@common/services/number.service";
 
 @Component({
   selector: 'jems-payment-to-ec-select-table',
@@ -136,7 +137,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       publicContribution: linkingDTO.publicContribution,
       privateContribution: linkingDTO.privateContribution,
       fundAmount: linkingDTO.payment.fundAmount,
-      totalEligibleWithoutScoArt9495: linkingDTO.payment.fundAmount + linkingDTO.partnerContribution,
+      totalEligibleWithoutScoArt9495: NumberService.sum([linkingDTO.payment.fundAmount, linkingDTO.partnerContribution]),
       unionContribution: 0,
       comment: linkingDTO.comment ?? '',
     });
@@ -180,8 +181,8 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
 
   editedFunds(rowIndex: number, row: PaymentToEcLinkingDTO) {
     return [
-      this.paymentToEcLinking.at(rowIndex).get('totalEligibleWithoutScoArt9495')?.value != row.payment.fundAmount + row.partnerContribution,
-      this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value != 0,
+      this.flaggedArt9495 ? this.paymentToEcLinking.at(rowIndex).get('totalEligibleWithoutScoArt9495')?.value != NumberService.sum([row.payment.fundAmount, row.partnerContribution]) : false,
+      this.flaggedArt9495 ? this.paymentToEcLinking.at(rowIndex).get('unionContribution')?.value != 0 : false,
       this.paymentToEcLinking.at(rowIndex).get('fundAmount')?.value != row.payment.fundAmount,
       this.paymentToEcLinking.at(rowIndex).get('publicContribution')?.value != row.publicContribution,
       this.paymentToEcLinking.at(rowIndex).get('autoPublicContribution')?.value != row.autoPublicContribution,
