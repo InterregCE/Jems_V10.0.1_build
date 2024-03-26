@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.model.regular
 
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import java.math.BigDecimal
-import java.time.ZonedDateTime
+import java.time.LocalDate
 
 data class PaymentDetail(
     val id: Long,
@@ -14,7 +14,7 @@ data class PaymentDetail(
     val spf: Boolean,
 
     val amountApprovedPerFund: BigDecimal,
-    val dateOfLastPayment: ZonedDateTime? = null,
+    val dateOfLastPayment: LocalDate?,
 
     val partnerPayments: List<PartnerPayment>
 )

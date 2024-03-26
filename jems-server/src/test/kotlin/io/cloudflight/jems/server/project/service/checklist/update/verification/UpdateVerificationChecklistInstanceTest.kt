@@ -200,7 +200,7 @@ internal class UpdateVerificationChecklistInstanceTest : UnitTest() {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
         every { report.verificationEndDate } returns TODAY
-        every { report.lastVerificationReOpening } returns null
+        every { report.lastVerificationReOpening } returns lastVerificationReOpening
         return report
     }
 

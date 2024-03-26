@@ -73,7 +73,7 @@ class ProjectReportProjectClosurePersistenceProviderTest: UnitTest() {
         val translation = mockk<TranslationId<ProjectReportEntity>>()
         every { translation.language } returns SystemLanguage.EN
         val storyTranslEntity = ProjectReportClosureStoryTranslEntity(translation, "story")
-        every { projectReportRepository.getById(REPORT_ID) } returns report
+        every { projectReportRepository.getReferenceById(REPORT_ID) } returns report
         every { closureStoryRepository.findAllByTranslationIdSourceEntity(report) } returns mutableSetOf(storyTranslEntity)
         every { closurePrizeRepository.findAllByReportIdOrderBySortNumberAsc(REPORT_ID) } returns mutableListOf(closurePrizeEntity)
 
@@ -90,7 +90,7 @@ class ProjectReportProjectClosurePersistenceProviderTest: UnitTest() {
         val storyTranslEntity = ProjectReportClosureStoryTranslEntity(translation, "story")
 
         every { report.id } returns REPORT_ID
-        every { projectReportRepository.getById(REPORT_ID) } returns report
+        every { projectReportRepository.getReferenceById(REPORT_ID) } returns report
         every { closurePrizeRepository.save(capture(prizesSlot)) } returnsArgument 0
         every { closureStoryRepository.findAllByTranslationIdSourceEntity(report) } returns mutableSetOf(storyTranslEntity)
         every { closurePrizeRepository.findAllByReportIdOrderBySortNumberAsc(REPORT_ID) } returns mutableListOf(closurePrizeEntity)
@@ -108,7 +108,7 @@ class ProjectReportProjectClosurePersistenceProviderTest: UnitTest() {
     fun deleteProjectReportProjectClosure() {
         val report = mockk<ProjectReportEntity>()
         every { report.id } returns REPORT_ID
-        every { projectReportRepository.getById(REPORT_ID) } returns report
+        every { projectReportRepository.getReferenceById(REPORT_ID) } returns report
 
         every { closureStoryRepository.deleteAllByTranslationIdSourceEntity(report) } returnsArgument 0
         every { closurePrizeRepository.deleteAllByReportId(REPORT_ID) } returnsArgument 0

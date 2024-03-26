@@ -172,6 +172,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         paymentApprovalDate = currentTime,
         paymentClaimSubmissionDate = null,
         totalEligibleAmount = BigDecimal(10),
+        dateOfLastPayment = mockk(),
         lastApprovedVersionBeforeReadyForPayment = "v1.0",
         remainingToBePaid = BigDecimal.valueOf(954L),
     )

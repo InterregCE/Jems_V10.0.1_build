@@ -99,6 +99,7 @@ class PaymentsControllerTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.TEN,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             lastApprovedVersionBeforeReadyForPayment = "v1.0",
             remainingToBePaid = BigDecimal.valueOf(514L),
         )
@@ -119,6 +120,7 @@ class PaymentsControllerTest : UnitTest() {
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
             totalEligibleAmount = BigDecimal.ZERO,
+            dateOfLastPayment = LocalDate.of(2024, 3, 25),
             lastApprovedVersionBeforeReadyForPayment = "v2.0",
             remainingToBePaid = BigDecimal.valueOf(515L),
         )
@@ -162,7 +164,7 @@ class PaymentsControllerTest : UnitTest() {
             projectAcronym = project.acronym,
             spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
-            dateOfLastPayment = null,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PartnerPayment(
                     id = 1L,
@@ -201,7 +203,7 @@ class PaymentsControllerTest : UnitTest() {
             projectAcronym = project.acronym,
             spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
-            dateOfLastPayment = null,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 1L,
@@ -324,7 +326,7 @@ class PaymentsControllerTest : UnitTest() {
             fundAmount = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,
             amountAuthorizedPerFund = BigDecimal.ZERO,
-            dateOfLastPayment = null,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             lastApprovedVersionBeforeReadyForPayment = "v1.0",
             remainingToBePaid = BigDecimal.valueOf(514L),
         )
@@ -345,7 +347,7 @@ class PaymentsControllerTest : UnitTest() {
             fundAmount = BigDecimal.ONE,
             amountPaidPerFund = BigDecimal.TEN,
             amountAuthorizedPerFund = BigDecimal.ZERO,
-            dateOfLastPayment = null,
+            dateOfLastPayment = LocalDate.of(2024, 3, 25),
             lastApprovedVersionBeforeReadyForPayment = "v2.0",
             remainingToBePaid = BigDecimal.valueOf(515L),
         )
@@ -417,7 +419,7 @@ class PaymentsControllerTest : UnitTest() {
                 projectAcronym = project.acronym,
                 spf = false,
                 amountApprovedPerFund = BigDecimal.TEN,
-                dateOfLastPayment = null,
+                dateOfLastPayment = LocalDate.of(2024, 3, 26),
                 partnerPayments = listOf(
                     PaymentPartnerDTO(
                         id = 1L,

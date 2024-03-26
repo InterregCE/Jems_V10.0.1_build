@@ -170,9 +170,8 @@ class PaymentPersistenceProvider(
         }
     }
 
-    private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
-
-        val results = jpaQueryFactory
+    private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> =
+        jpaQueryFactory
             .select(
                 payment,
                 amountPaid(),
@@ -220,9 +219,7 @@ class PaymentPersistenceProvider(
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())
             .fetchResults()
-
-        return results.toPageResult(pageable)
-    }
+            .toPageResult(pageable)
 
     @Transactional(readOnly = true)
     override fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo {
@@ -318,9 +315,9 @@ class PaymentPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
-        paymentRepository.getReferenceById(paymentId).toDetailModel(
-            partnerPayments = getAllPartnerPayments(paymentId)
-        )
+        fetchPayments(Pageable.ofSize(1), filterById(paymentId))
+            .content.first()
+            .toDetailModel(partnerPayments = getAllPartnerPayments(paymentId))
 
     @Transactional(readOnly = true)
     override fun getProjectIdForPayment(paymentId: Long): Long =
@@ -543,6 +540,26 @@ class PaymentPersistenceProvider(
         if (userId != null) {
             userRepository.getReferenceById(userId)
         } else null
+
+    private fun filterById(
+        paymentId: Long,
+    ) = PaymentSearchRequest(
+        paymentId = paymentId,
+        paymentType = null,
+        projectIdentifiers = emptySet(),
+        projectAcronym = null,
+        claimSubmissionDateFrom = null,
+        claimSubmissionDateTo = null,
+        approvalDateFrom = null,
+        approvalDateTo = null,
+        fundIds = emptySet(),
+        lastPaymentDateFrom = null,
+        lastPaymentDateTo = null,
+        ecPaymentIds = emptySet(),
+        contractingScoBasis = null,
+        finalScoBasis = null,
+    )
+
 
 }
 
