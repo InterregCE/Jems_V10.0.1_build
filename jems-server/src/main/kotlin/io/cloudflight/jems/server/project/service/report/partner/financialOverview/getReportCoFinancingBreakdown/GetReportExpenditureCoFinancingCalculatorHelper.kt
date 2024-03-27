@@ -132,7 +132,7 @@ fun ExpenditureCoFinancingBreakdown.fillInOverviewFields() = apply {
     total.fillInOverviewFields()
 }
 
-fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMode = RoundingMode.DOWN): BigDecimal = this.multiply(
+fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMode = RoundingMode.FLOOR): BigDecimal = this.multiply(
     percentage.divide(BigDecimal.valueOf(100))
 ).setScale(2, roundingMode)
 

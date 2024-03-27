@@ -74,7 +74,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerIds: List<Long>,
         projectId: Long,
         version: String?
-    ): Map<Long, List<ProjectPartnerCoFinancing>>? {
+    ): Map<Long, List<ProjectPartnerCoFinancing>> {
         return projectVersionUtils.fetch(version,
             projectId,
             currentVersionFetcher = {

@@ -21,7 +21,7 @@ interface ProjectPartnerCoFinancingPersistence {
         partnerIds: List<Long>,
         projectId: Long,
         version: String? = null
-    ): Map<Long, List<ProjectPartnerCoFinancing>>?
+    ): Map<Long, List<ProjectPartnerCoFinancing>>
 
     fun updateCoFinancingAndContribution(
         partnerId: Long,
