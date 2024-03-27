@@ -16,7 +16,7 @@ Furthermore, Jems is built by the improved [Cloudflight Gradle Plugin]<sup>[2]</
 
 Requirements:
 
- - Java, recommended: OpenJDK 17
+ - Java, recommended: OpenJDK 17 or later
  - Gradle
  - npm
  - docker or manual configuration of: MariaDB, MinIO, ElasticSearch
