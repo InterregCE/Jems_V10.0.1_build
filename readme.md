@@ -40,7 +40,7 @@ The following commands are used for development:
  - `gradlew clean build` - for building the project; specifically use `clean` if changes for generated files are necessary
  - `spring boot` - with MainClass `io.cloudflight.jems.server.Application` starts the server (on default port `8080`)
  - `npm run serve:local` - starts the angular build watch (run for automatic reload after frontend changes)
- - `PUBLISH_BUILD=true PUBLISH_NPM_AUTH=x ./gradlew assemble` - should generate the full executable jems-server.jar (no snapshot)
+ - `PUBLISH_BUILD=true PUBLISH_NPM_AUTH=x JENKINS_URL=true BUILD_ID=true ./gradlew assemble` - should generate the full executable jems-server.jar (no snapshot)
 
 ### ... deploy to an environment
 
