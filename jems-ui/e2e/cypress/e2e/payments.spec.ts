@@ -262,7 +262,7 @@ context('Payments tests', () => {
             // group order 7
             cy.loginByRequest(paymentsUser.email);
             cy.findProjectPayments(applicationId).then(projectPayments => {
-              const projectPayment = projectPayments.find(payment => payment.fundName === testData.authorizedPayments[0].fundName);
+              const projectPayment = projectPayments.find(payment => payment.fund.type === testData.authorizedPayments[0].fundType);
               cy.visit(`app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
 
               cy.contains('expand_more').click();
