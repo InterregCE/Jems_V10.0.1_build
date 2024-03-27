@@ -1,0 +1,122 @@
+{
+  "budget": {
+    "options": {
+      "officeAndAdministrationOnStaffCostsFlatRate": null,
+      "officeAndAdministrationOnDirectCostsFlatRate": null,
+      "staffCostsFlatRate": null,
+      "travelAndAccommodationOnStaffCostsFlatRate": null,
+      "otherCostsOnStaffCostsFlatRate": null
+    },
+    "staff": [
+      {
+        "description": [
+          {
+            "language": "EN",
+            "translation": "API generated staff cost description EN"
+          },
+          {
+            "language": "DE",
+            "translation": "API generated staff cost description DE"
+          }
+        ],
+        "comments": [
+          {
+            "language": "DE",
+            "translation": "API generated staff cost comments DE"
+          },
+          {
+            "language": "EN",
+            "translation": "API generated staff cost comments EN"
+          }
+        ],
+        "unitType": [
+          {
+            "language": "EN",
+            "translation": "API generated staff cost unit type EN"
+          },
+          {
+            "language": "DE",
+            "translation": "API generated staff cost unit type DE"
+          }
+        ],
+        "numberOfUnits": 1,
+        "pricePerUnit": 544724.16,
+        "rowSum": 544724.16,
+        "budgetPeriods": [
+          {
+            "amount": 333.33,
+            "number": 1
+          },
+          {
+            "amount": 666.66,
+            "number": 2
+          },
+          {
+            "amount": 333.33,
+            "number": 3
+          },
+          {
+            "amount": 391.02,
+            "number": 4
+          },
+          {
+            "amount": 333.33,
+            "number": 5
+          },
+          {
+            "amount": 333.33,
+            "number": 6
+          },
+          {
+            "amount": 542333.16,
+            "number": 7
+          },
+          {
+            "amount": 0,
+            "number": 8
+          }
+        ]
+      }
+    ]
+  },
+  "cofinancingLP": {
+    "finances": [
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 90
+      }, {
+        "percentage": 10,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Lead Partner",
+        "status": "Public",
+        "amount": 54472.42,
+        "partner": true
+      }
+    ]
+  },
+  "cofinancingPP": {
+    "finances": [
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 99.99
+      }, {
+        "percentage": 0.01,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Project Partner",
+        "status": "Public",
+        "amount": 54.48,
+        "partner": true
+      }
+    ]
+  }
+}
