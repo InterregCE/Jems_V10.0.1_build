@@ -8,5 +8,18 @@ enum class ProjectCorrectionProgrammeMeasureScenario {
     SCENARIO_4,
     SCENARIO_5;
 
-    fun scenarioAllowsLinkingToEcPayment() = this == NA || this == SCENARIO_2 || this == SCENARIO_5
+    companion object {
+        val linkableToPaymentAccount = setOf(
+            SCENARIO_3,
+            SCENARIO_4,
+        )
+        val linkableToEcPayment = setOf(
+            NA,
+            SCENARIO_2,
+            SCENARIO_5,
+        )
+    }
+
+    fun allowsLinkingToEcPayment() = this in linkableToEcPayment
+    fun allowsLinkingToPaymentAccount() = this in linkableToPaymentAccount
 }

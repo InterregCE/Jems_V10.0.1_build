@@ -29,14 +29,14 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
 
         private fun isVisible(visible: Boolean?) = if (visible == null) null else instanceEntity.visible.eq(visible)
 
-        fun buildSearchPredicate(searchRequest: ChecklistInstanceSearchRequest?): Predicate? =
+        fun buildSearchPredicate(searchRequest: ChecklistInstanceSearchRequest?): Predicate =
             ExpressionUtils.allOf(
                 withRelatedToId(searchRequest?.relatedToId),
                 withType(searchRequest?.type),
                 withCreatorId(searchRequest?.creatorId),
                 withStatus(searchRequest?.status),
                 isVisible(searchRequest?.visible)
-            )
+            )!!
     }
 
     @Query("SELECT COUNT(checklist) FROM #{#entityName} checklist where checklist.programmeChecklist.id=:checklistTemplateId")

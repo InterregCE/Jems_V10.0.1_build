@@ -195,10 +195,12 @@ export class PaymentToEcCorrectionTabComponent implements OnInit {
       content: corrections.map(correction => ({
         correctionId: correction.correction.id,
         paymentToEcId: correction.paymentToEcId,
+        projectId: correction.projectId,
         projectCustomIdentifier: correction.projectCustomIdentifier,
         projectAcronym: correction.projectAcronym,
         priorityAxis: correction.priorityAxis,
         paymentCorrectionNo: correction.correction.auditControlNumber + '.' + correction.correction.orderNr,
+        paymentCorrectionAuditControlId: correction.correction.auditControlId,
         scenario: correction.scenario,
         controllingBody: correction.controllingBody,
         amountApprovedPerFund: correction.fundAmount,

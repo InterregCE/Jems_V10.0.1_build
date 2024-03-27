@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class PaymentApplicationToEcPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val accountingYearRepository: AccountingYearRepository,
     private val fileRepository: JemsSystemFileService,
@@ -30,8 +30,8 @@ class PaymentApplicationToEcPersistenceProvider(
 
     @Transactional
     override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
-        val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
-        val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
+        val programmeFund = programmeFundRepository.getReferenceById(paymentApplicationsToEcUpdate.programmeFundId)
+        val accountingYear = accountingYearRepository.getReferenceById(paymentApplicationsToEcUpdate.accountingYearId)
 
         return ecPaymentRepository.save(
             PaymentApplicationToEcEntity(
@@ -52,14 +52,14 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentApplicationId: Long,
         paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate
     ): PaymentApplicationToEcDetail {
-        val existingEcPayment = ecPaymentRepository.getById(paymentApplicationId)
+        val existingEcPayment = ecPaymentRepository.getReferenceById(paymentApplicationId)
         existingEcPayment.update(paymentApplicationsToEcUpdate)
         return existingEcPayment.toDetailModel()
     }
 
     @Transactional
     override fun updatePaymentToEcSummaryOtherSection(paymentToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
-        val existingEcPayment = ecPaymentRepository.getById(paymentToEcUpdate.id!!)
+        val existingEcPayment = ecPaymentRepository.getReferenceById(paymentToEcUpdate.id!!)
 
         existingEcPayment.updateOther(paymentToEcUpdate)
 
@@ -86,7 +86,7 @@ class PaymentApplicationToEcPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentApplicationToEcDetail(id: Long): PaymentApplicationToEcDetail =
-        ecPaymentRepository.getById(id).toDetailModel()
+        ecPaymentRepository.getReferenceById(id).toDetailModel()
 
     @Transactional(readOnly = true)
     override fun findAll(pageable: Pageable): Page<PaymentApplicationToEc> =
@@ -97,11 +97,11 @@ class PaymentApplicationToEcPersistenceProvider(
         ecPaymentRepository.findAll(pageable).toDetailModel()
 
     @Transactional(readOnly = true)
-    override fun getIdsFinishedForYearAndFund(accountingYearId: Long, fundId: Long): Set<Long> =
-        ecPaymentRepository.findAllByStatusAndAccountingYearIdAndProgrammeFundId(
+    override fun getFinishedIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long> =
+        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(
             status = PaymentEcStatus.Finished,
             accountingYearId = accountingYearId,
-            programmeFundId = fundId,
+            programmeFundId = programmeFundId,
         ).mapTo(HashSet()) { it.id }
 
     @Transactional
@@ -109,7 +109,7 @@ class PaymentApplicationToEcPersistenceProvider(
         paymentId: Long,
         status: PaymentEcStatus
     ): PaymentApplicationToEcDetail =
-        ecPaymentRepository.getById(paymentId).apply {
+        ecPaymentRepository.getReferenceById(paymentId).apply {
             this.status = status
         }.toDetailModel()
 
@@ -130,6 +130,10 @@ class PaymentApplicationToEcPersistenceProvider(
     @Transactional(readOnly = true)
     override fun existsDraftByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Boolean =
         ecPaymentRepository.existsByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft)
+
+    @Transactional(readOnly = true)
+    override fun getDraftIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long> =
+        ecPaymentRepository.getByProgrammeFundIdAndAccountingYearIdAndStatus(programmeFundId, accountingYearId, PaymentEcStatus.Draft).map { it.id }.toSet()
 
     @Transactional(readOnly = true)
     override fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYearAvailability> =

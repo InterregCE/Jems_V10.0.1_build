@@ -1,18 +1,23 @@
 <jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable, data.reopenedLimited)">
 
     <form jemsFormLayout [formGroup]="form">
-        <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>
+        <h3>{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>
+        <p>{{'project.application.project.report.tab.results.and.principles.intro' | translate }}</p>
 
+        <mat-accordion multi="true">
         <div *ngFor="let result of results.controls; let i = index" class="project-results">
             <ng-container formArrayName="results">
                 <ng-container [formGroupName]="i">
-                    <h4>
-                        <mat-icon *ngIf="result.get('deactivated').value" class="vertical-middle"
-                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
-                            do_not_disturb
-                        </mat-icon>
-                        {{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}
-                    </h4>
+                    <mat-expansion-panel [expanded]="getResultsRowToggleStateAtIndex(i)">
+                    <mat-expansion-panel-header (click)="toggleResultsRowAtIndex(i)">
+                        <h4>
+                            <mat-icon *ngIf="result.get('deactivated').value" class="vertical-middle"
+                                      [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                                do_not_disturb
+                            </mat-icon>
+                            {{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}
+                        </h4>
+                    </mat-expansion-panel-header>
 
                     <mat-form-field jemsFormFieldWidth="full">
                         <mat-label>{{'project.application.project.report.tab.results.and.principles.result.indicator' | translate }}</mat-label>
@@ -72,7 +77,7 @@
                                     formControlName="description"
                                     maxLength="2000"
                                     minRows="2"
-                                    maxRows="4"
+                                    maxRows="12"
                                     type="textarea"
                                     label="project.application.project.report.tab.results.and.principles.result.description"
                                     [disabled]="!data.reportEditable">
@@ -89,9 +94,11 @@
                                                    (delete)="onDelete(result.get('resultNumber').value, i)">
                         </jems-partner-actions-cell>
                     </div>
+                    </mat-expansion-panel>
                 </ng-container>
             </ng-container>
         </div>
+        </mat-accordion>
 
 
         <ng-container

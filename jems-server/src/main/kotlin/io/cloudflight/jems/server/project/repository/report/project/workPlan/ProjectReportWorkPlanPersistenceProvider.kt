@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanInvestmentStatus
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -71,19 +72,25 @@ class ProjectReportWorkPlanPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun existsByActivityId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long) =
-        workPlanActivityRepository.existsByActivityId(activityId = activityId,
-            workPackageId = workPackageId, reportId = reportId, projectId = projectId)
+        workPlanActivityRepository.existsByActivityId(
+            activityId = activityId,
+            workPackageId = workPackageId, reportId = reportId, projectId = projectId
+        )
 
     @Transactional(readOnly = true)
     override fun existsByDeliverableId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long) =
         workPlanActivityDeliverableRepository
-            .existsByDeliverableId(deliverableId = deliverableId, activityId = activityId,
-                workPackageId = workPackageId, reportId = reportId, projectId = projectId)
+            .existsByDeliverableId(
+                deliverableId = deliverableId, activityId = activityId,
+                workPackageId = workPackageId, reportId = reportId, projectId = projectId
+            )
 
     @Transactional(readOnly = true)
     override fun existsByOutputId(projectId: Long, reportId: Long, workPackageId: Long, outputId: Long) =
-        workPlanOutputRepository.existsByOutputId(outputId = outputId,
-            workPackageId = workPackageId, reportId = reportId, projectId = projectId)
+        workPlanOutputRepository.existsByOutputId(
+            outputId = outputId,
+            workPackageId = workPackageId, reportId = reportId, projectId = projectId
+        )
 
     @Transactional
     override fun updateReportWorkPackage(workPackageId: Long, data: ProjectReportWorkPackageOnlyUpdate) {
@@ -139,14 +146,16 @@ class ProjectReportWorkPlanPersistenceProvider(
     }
 
     @Transactional
-    override fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>) {
+    override fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>, status: ProjectReportWorkPlanInvestmentStatus?) {
         workPlanInvestmentRepository.findById(investmentId).get().apply {
             this.translatedValues.updateWith(
                 entitySupplier = { lang ->
-                    ProjectReportWorkPackageInvestmentTranslEntity(TranslationId(this, lang)) },
+                    ProjectReportWorkPackageInvestmentTranslEntity(TranslationId(this, lang))
+                },
                 allTranslations = listOf(progress),
                 { e -> e.progress = progress.inLang(e.language()) },
             )
+            this.status = status
         }
     }
 
@@ -154,24 +163,27 @@ class ProjectReportWorkPlanPersistenceProvider(
     override fun getDeliverableCumulative(reportIds: Set<Long>): Map<Int, Map<Int, Map<Int, BigDecimal>>> =
         workPlanActivityDeliverableRepository.getCumulativeValues(reportIds)
             .groupBy { it.wpNumber }
-            .mapValues { it.value
-                .groupBy { it.activityNumber }
-                .mapValues { it.value
-                    .associateBy({ it.deliverableNumber }, { it.cumulative })
-                }
+            .mapValues {
+                it.value
+                    .groupBy { it.activityNumber }
+                    .mapValues {
+                        it.value
+                            .associateBy({ it.deliverableNumber }, { it.cumulative })
+                    }
             }
 
     @Transactional(readOnly = true)
     override fun getOutputCumulative(reportIds: Set<Long>): Map<Int, Map<Int, BigDecimal>> =
         workPlanOutputRepository.getCumulativeValues(reportIds)
             .groupBy { it.wpNumber }
-            .mapValues { it.value
-                .associateBy({ it.outputNumber }, { it.cumulative })
+            .mapValues {
+                it.value
+                    .associateBy({ it.outputNumber }, { it.cumulative })
             }
 
     @Transactional
     override fun deleteWorkPlan(reportId: Long) {
-        val reportEntity = reportRepository.getById(reportId)
+        val reportEntity = reportRepository.getReferenceById(reportId)
 
         workPlanActivityRepository
             .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)
@@ -191,5 +203,4 @@ class ProjectReportWorkPlanPersistenceProvider(
             fileService.delete(this)
         }
     }
-
 }

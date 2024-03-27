@@ -16,6 +16,8 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
         reportId: Long,
     ): ReportProjectPartnerExpenditureCoFinancingEntity
 
+    fun findAllByReportIdIn(reportIds: Set<Long>): List<ReportProjectPartnerExpenditureCoFinancingEntity>
+
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumnWithoutFunds(
             COALESCE(SUM(report.partnerContributionCurrent), 0),
@@ -41,6 +43,19 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
         WHERE report.reportEntity.id IN :reportIds
     """)
     fun findCumulativeParkedForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumnWithoutFunds(
+            COALESCE(SUM(report.partnerContributionCurrentParkedVerification), 0),
+            COALESCE(SUM(report.publicContributionCurrentParkedVerification), 0),
+            COALESCE(SUM(report.automaticPublicContributionCurrentParkedVerification), 0),
+            COALESCE(SUM(report.privateContributionCurrentParkedVerification), 0),
+            COALESCE(SUM(report.sumCurrentParkedVerification), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.partnerId=:partnerId AND report.reportEntity.projectReport.id IN :projectReportIds
+    """)
+    fun findCumulativeVerificationParkedForReportIds(partnerId:Long, projectReportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
 
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumnWithoutFunds(

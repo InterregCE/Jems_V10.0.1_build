@@ -39,6 +39,8 @@ class ProjectPartnerReportCoFinancingEntity(
 
     // parking
     @field:NotNull var currentParked: BigDecimal,
+    @field:NotNull var currentParkedVerification: BigDecimal,
+
     @field:NotNull var currentReIncluded: BigDecimal,
     @field:NotNull val previouslyReportedParked: BigDecimal,
     @field:NotNull val previouslyReportedSpf: BigDecimal,

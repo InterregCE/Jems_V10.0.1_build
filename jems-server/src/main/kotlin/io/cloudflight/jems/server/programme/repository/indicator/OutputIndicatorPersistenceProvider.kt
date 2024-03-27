@@ -44,7 +44,7 @@ class OutputIndicatorPersistenceProvider(
     override fun saveOutputIndicator(outputIndicator: OutputIndicator) =
         outputIndicatorRepository.save(
             outputIndicator.toOutputIndicatorEntity(
-                outputIndicator.programmeObjectivePolicy?.let { programmeSpecificObjectiveRepository.getById(it) },
+                outputIndicator.programmeObjectivePolicy?.let { programmeSpecificObjectiveRepository.getReferenceById(it) },
                 outputIndicator.getResultIndicatorIfPresent()
             )
         ).toOutputIndicatorDetail()
@@ -58,7 +58,7 @@ class OutputIndicatorPersistenceProvider(
     private fun OutputIndicator.getResultIndicatorIfPresent(): ResultIndicatorEntity? {
         if (resultIndicatorId == null || resultIndicatorId == 0L)
             return null
-        return resultIndicatorRepository.getById(resultIndicatorId)
+        return resultIndicatorRepository.getReferenceById(resultIndicatorId)
     }
 
     @Transactional

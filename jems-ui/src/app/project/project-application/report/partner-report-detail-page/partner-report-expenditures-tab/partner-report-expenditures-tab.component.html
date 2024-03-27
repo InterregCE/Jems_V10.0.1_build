@@ -12,7 +12,8 @@
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
-                    <mat-table jemsNoWidthLimit
+                    <mat-table #expenditureCostsTable
+                               jemsNoWidthLimit
                                id="expenditure-costs-table"
                                class="table-condensed"
                                [jemsTableConfig]="data.withConfigs"
@@ -522,9 +523,9 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
-                                     (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
+                                     (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
-                                    <div class="custom-text-area" >
+                                    <div class="custom-text-area">
                                         {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | asMoney}}
                                     </div>
                                 </div>
@@ -713,7 +714,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
+                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay; sticky:true"></mat-header-row>
                         <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
                                  [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
 
@@ -731,7 +732,7 @@
         </form>
 
         <jems-partner-report-expenditures-parked
-                *ngIf="data.parkedExpenditures.length && data.isReportEditable && !data.isReopenedLimited"
+                *ngIf="data.parkedExpenditures.length && !data.isReopenedLimited"
                 [listDirty$]="formService.dirty$"
                 [expenditures]="data.parkedExpenditures"
                 [columns]="data.columnsToDisplay">

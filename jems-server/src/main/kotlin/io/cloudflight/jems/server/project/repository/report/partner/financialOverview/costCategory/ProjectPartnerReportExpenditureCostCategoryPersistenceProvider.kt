@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
@@ -31,6 +32,10 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
         previouslyReportedParked = expenditureCostCategoryRepository.findParkedCumulativeForReportIds(reportIds),
         previouslyValidated = expenditureCostCategoryRepository.findCumulativeTotalsForReportIds(finalizedReportIds)
     )
+
+    @Transactional(readOnly = true)
+    override fun getVerificationCostCategoriesCumulative(partnerId: Long, finalizedProjectrepotIds: Set<Long>)=
+        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, finalizedProjectrepotIds)
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -96,6 +101,26 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 unitCostCurrentParked = afterControlWithParked.currentlyReportedParked.unitCost
                 sumCurrentParked = afterControlWithParked.currentlyReportedParked.sum
             }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, BudgetCostsCalculationResultFull>) {
+        expenditureCostCategoryRepository.findAllByReportEntityIdIn(parkedValuesPerCertificate.keys).forEach {
+            val parkedAfterVerification = parkedValuesPerCertificate[it.reportId]
+            it.apply {
+                staffCurrentParkedVerification = parkedAfterVerification?.staff ?: BigDecimal.ZERO
+                officeCurrentParkedVerification = parkedAfterVerification?.office ?: BigDecimal.ZERO
+                travelCurrentParkedVerification = parkedAfterVerification?.travel ?: BigDecimal.ZERO
+                externalCurrentParkedVerification = parkedAfterVerification?.external ?: BigDecimal.ZERO
+                equipmentCurrentParkedVerification = parkedAfterVerification?.equipment ?: BigDecimal.ZERO
+                infrastructureCurrentParkedVerification = parkedAfterVerification?.infrastructure ?: BigDecimal.ZERO
+                otherCurrentParkedVerification = parkedAfterVerification?.other ?: BigDecimal.ZERO
+                lumpSumCurrentParkedVerification = parkedAfterVerification?.lumpSum ?: BigDecimal.ZERO
+                unitCostCurrentParkedVerification = parkedAfterVerification?.unitCost ?: BigDecimal.ZERO
+                spfCostCurrentParkedVerification = parkedAfterVerification?.spfCost ?: BigDecimal.ZERO
+                sumCurrentParkedVerification = parkedAfterVerification?.sum ?: BigDecimal.ZERO
+            }
+        }
     }
 
     @Transactional(readOnly = true)

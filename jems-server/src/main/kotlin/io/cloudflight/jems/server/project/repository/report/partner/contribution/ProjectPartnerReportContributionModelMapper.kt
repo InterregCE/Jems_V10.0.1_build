@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import java.math.BigDecimal
 
@@ -53,9 +54,10 @@ fun PartnerReportLumpSum.toEntity(
     previouslyValidated = previouslyValidated,
     previouslyPaid = previouslyPaid,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked
-)
+ )
 
 fun PartnerReportUnitCostBase.toEntity(
     report: ProjectPartnerReportEntity,
@@ -69,6 +71,7 @@ fun PartnerReportUnitCostBase.toEntity(
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked,
     previouslyValidated = previouslyValidated,
@@ -88,6 +91,7 @@ fun PartnerReportInvestment.toEntity(
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
     currentParked = BigDecimal.ZERO,
+    currentParkedVerification = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked,
     previouslyValidated = previouslyValidated,
@@ -116,5 +120,6 @@ private val mapper = Mappers.getMapper(ProjectPartnerReportContributionModelMapp
 
 @Mapper
 interface ProjectPartnerReportContributionModelMapper {
+    @Mapping(target = "reportId", source = "reportEntity.id" )
     fun map(entity: ProjectPartnerReportContributionEntity): ProjectPartnerReportEntityContribution
 }

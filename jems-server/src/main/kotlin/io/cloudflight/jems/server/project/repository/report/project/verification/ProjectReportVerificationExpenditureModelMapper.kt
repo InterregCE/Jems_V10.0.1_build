@@ -18,17 +18,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-fun Collection<ProjectReportVerificationExpenditureEntity>.toExtendedModel(
-    procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>,
-    parkedInfo: List<PartnerReportParkedExpenditureEntity>,
-) =
-    map { entity ->
-        entity.toModel(
-            procurement = entity.expenditure.procurementId?.let{ procurementsById[it] },
-            parkedOn = parkedInfo.find { p -> p.parkedFromExpenditureId == entity.expenditureId }?.parkedOn
-        )
-    }
-
 fun PartnerReportExpenditureCostEntity.toEmptyVerificationEntity() =
     ProjectReportVerificationExpenditureEntity(
         expenditureId = this.id,
@@ -43,7 +32,7 @@ fun PartnerReportExpenditureCostEntity.toEmptyVerificationEntity() =
     )
 
 
-fun List<ProjectReportVerificationExpenditureEntity>.toModels(
+fun Collection<ProjectReportVerificationExpenditureEntity>.toModels(
     procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>,
     parkedInfo: List<PartnerReportParkedExpenditureEntity>,
 ): List<ProjectReportVerificationExpenditureLine> = map {

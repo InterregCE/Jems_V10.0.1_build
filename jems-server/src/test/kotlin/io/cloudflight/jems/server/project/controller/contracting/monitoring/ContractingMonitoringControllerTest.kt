@@ -3,10 +3,18 @@ package io.cloudflight.jems.server.project.controller.contracting.monitoring
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectiveDimensionDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.contracting.*
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureLastPaymentDateDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureLastPaymentDateUpdateDTO
+import io.cloudflight.jems.api.project.dto.contracting.lastPaymentDate.ContractingClosureUpdateDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.model.*
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosure
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureUpdate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringProjectBudget.GetContractingMonitoringProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateException
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateInteractor
@@ -14,7 +22,9 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.getLast
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringException
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringInteractor
+import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingPartnerPaymentDate.UpdateContractingPartnerPaymentDateInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -37,6 +47,11 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
             endDate = ZonedDateTime.parse("2022-07-10T10:00:00+02:00").toLocalDate(),
+            closureDate = LocalDate.of(2024, 1, 24),
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -66,6 +81,11 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
             endDate = ZonedDateTime.parse("2022-07-10T10:00:00+02:00").toLocalDate(),
+            closureDate = LocalDate.of(2024, 1, 24),
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDateDTO(774L, 14, "774-abbr",
+                    ProjectPartnerRoleDTO.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOptionDTO.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOptionDTO.Yes,
@@ -119,6 +139,9 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
     lateinit var updateContractingMonitoringInteractor: UpdateContractingMonitoringInteractor
 
     @MockK
+    private lateinit var updateContractingPartnerPaymentDate: UpdateContractingPartnerPaymentDateInteractor
+
+    @MockK
     lateinit var getLastApprovedPeriodsInteractor: GetLastApprovedPeriodsInteractor
 
     @MockK
@@ -147,6 +170,24 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
         assertThat(contractingMonitoringController.updateContractingMonitoring(projectId, monitoringDTO))
             .isEqualTo(monitoringDTO)
         assertThat(projectMonitoringSlot.captured).isEqualTo(monitoring)
+    }
+
+    @Test
+    fun updateContractingPartnerPaymentDate() {
+        val projectId = 554L
+        val closureSlot = slot<ContractingClosureUpdate>()
+        every {
+            updateContractingPartnerPaymentDate.updatePartnerPaymentDate(projectId, capture(closureSlot))
+        } returns ContractingClosure(monitoring.closureDate, monitoring.lastPaymentDates)
+
+        val toUpdate = ContractingClosureUpdateDTO(monitoring.closureDate,
+            listOf(
+                ContractingClosureLastPaymentDateUpdateDTO(774L, LocalDate.of(2025, 3, 18)),
+                ContractingClosureLastPaymentDateUpdateDTO(-1L, null),
+            ),
+        )
+        assertThat(contractingMonitoringController.updateContractingPartnerPaymentDate(projectId, toUpdate))
+            .isEqualTo(ContractingClosureDTO(monitoringDTO.closureDate, monitoringDTO.lastPaymentDates))
     }
 
     @Test

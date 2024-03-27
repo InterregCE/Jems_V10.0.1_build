@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments
 
-import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
@@ -33,11 +32,12 @@ class UpdatePaymentInstallments(
     @ExceptionWrapper(UpdatePaymentInstallmentsException::class)
     override fun updatePaymentInstallments(
         paymentId: Long,
-        paymentDetail: PaymentDetailDTO
+        partnerPayments: List<PaymentPartnerDTO>,
     ): PaymentDetail {
-        validatePartnerPayments(paymentId, paymentDetail.partnerPayments)
-        validateCorrections(paymentDetail)
-        for ((index, partnerPayment) in paymentDetail.partnerPayments.withIndex()) {
+        validatePartnerPayments(paymentId, partnerPayments)
+        val payment = paymentPersistence.getPaymentDetails(paymentId)
+        validateCorrections(payment.projectId, partnerPayments)
+        for ((index, partnerPayment) in partnerPayments.withIndex()) {
             val installments = partnerPayment.installments.toModelList()
             val partnerId = partnerPayment.partnerId
 
@@ -63,7 +63,6 @@ class UpdatePaymentInstallments(
             }
 
             // load project, partner for audit
-            val payment = paymentPersistence.getPaymentDetails(paymentId)
             val partner = payment.partnerPayments.find { it.partnerId == partnerId }
 
             paymentPersistence.updatePaymentPartnerInstallments(
@@ -134,12 +133,12 @@ class UpdatePaymentInstallments(
         }
     }
 
-    private fun validateCorrections(paymentDetail: PaymentDetailDTO) {
+    private fun validateCorrections(projectId: Long, partnerPayments: List<PaymentPartnerDTO>) {
         val correctionIdsByPartnerId = auditControlCorrectionPersistence
-            .getAvailableCorrectionsForPayments(projectId = paymentDetail.projectId)
+            .getAvailableCorrectionsForPayments(projectId = projectId)
             .associateBy({ it.partnerId }, { it.corrections.mapTo(HashSet()) { it.id } })
 
-        val invalidCorrectionIds = paymentDetail.partnerPayments.map {
+        val invalidCorrectionIds = partnerPayments.map {
             val correctionIds = it.installments.mapNotNullTo(HashSet()) { it.correction?.id }
             val allowedCorrectionIds = correctionIdsByPartnerId[it.partnerId] ?: emptySet()
 

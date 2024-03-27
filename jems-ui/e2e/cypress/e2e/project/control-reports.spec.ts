@@ -166,9 +166,10 @@ context('Control report tests', () => {
           cy.assignInstitution(controllerAssignment);
         });
 
-        // create checklist
-        testData.controlChecklist.name = `control_checklist_${faker.string.alphanumeric(5)}`;
-        cy.createChecklist(testData.controlChecklist);
+        // create checklist and update the call
+        cy.createChecklist(testData.controlChecklist).then(checklistId => {
+          cy.updateCallChecklists(this.callId, [checklistId]);
+        });
 
         // create partner report
         cy.loginByRequest(user.applicantUser.email);
@@ -194,9 +195,9 @@ context('Control report tests', () => {
           cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
           cy.get('table mat-row').then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Draft');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            expect(row.get(0).childNodes[2]).to.contain('Draft');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser1.email);
           });
 
           // RTM Group 2
@@ -214,15 +215,15 @@ context('Control report tests', () => {
           // assert Checklist is Finished
           cy.get('table mat-row').then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Finished');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser2.email);
+            expect(row.get(0).childNodes[2]).to.contain('Finished');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser2.email);
           });
           cy.get('table mat-row').eq(1).then(row => {
             expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain('Draft');
-            expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
-            expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            expect(row.get(0).childNodes[2]).to.contain('Draft');
+            expect(row.get(0).childNodes[3]).to.contain(testData.controlChecklist.name);
+            expect(row.get(0).childNodes[4]).to.contain(testData.controllerUser1.email);
           });
 
           // RTM Group 3
@@ -625,6 +626,87 @@ context('Control report tests', () => {
     });
   });
 
+  it('TB-937 Control – Creation, structure and calculations in overview table 2', () => {
+    cy.fixture('project/control-reports/TB-937.json').then(testData => {
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+
+        cy.loginByRequest(user.admin.email);
+        testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+        testData.controllerInstitution.institutionUsers[0].userEmail = user.controllerUser.email;
+        cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+          controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+          controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+          cy.assignInstitution(controllerAssignment);
+        });
+
+        const partnerId = this[application.partners[0].details.abbreviation];
+
+        cy.loginByRequest(user.applicantUser.email);
+
+        cy.addPartnerReport(partnerId).then(reportId => {
+          cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+          cy.updatePartnerReportExpenditures(partnerId, reportId, testData.expenditures);
+          cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+          cy.submitPartnerReport(partnerId, reportId);
+
+          cy.loginByRequest(testData.controllerInstitution.institutionUsers[0].userEmail);
+          cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+
+          cy.contains('Start control').should('be.enabled').click();
+          cy.contains('Confirm').should('be.visible').click();
+          cy.contains('Control ongoing').should('be.visible');
+          cy.get('.mat-tab-header-pagination-after').click();
+          cy.wait(200);
+          cy.contains('a', 'Overview and Finalize').click();
+          cy.contains('Overview of control deduction for current report, by type of errors (in Euro)').should('not.exist');
+
+          cy.contains('a', 'Expenditure verification').click();
+          fillExpenditureVerification('Equipment', '33,67', 'Typology-TB936');
+
+          cy.get('.mat-tab-header-pagination-after').click();
+          cy.wait(200);
+          cy.contains('a', 'Overview and Finalize').click();
+
+          cy.get('jems-control-report-deduction-overview').within(() => {
+            cy.get('mat-row').should('have.length', 2);
+            cy.contains('Typology-TB936').parentsUntil('mat-row').siblings().eq(4).contains('33,67');
+            cy.contains('Flat rates').parentsUntil('mat-row').siblings().eq(0).contains('6,73');
+            cy.contains('Flat rates').parentsUntil('mat-row').siblings().eq(1).contains('0,67');
+            cy.contains('mat-footer-cell', 'Total').siblings().eq(9).contains('41,07');
+          });
+
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`app/programme/typologyErrors`, {failOnStatusCode: false});
+          cy.contains('button', 'Edit').click();
+          cy.contains('mat-icon', 'add').parentsUntil('button').click();
+          cy.get('mat-form-field').last().find('input').type('EU flag missing');
+          cy.contains('button', 'Save changes').click();
+
+          cy.loginByRequest(testData.controllerInstitution.institutionUsers[0].userEmail);
+          cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+          cy.contains('button', 'Open controller work').click();
+          cy.contains('a', 'Expenditure verification').click();
+          fillExpenditureVerification('Unit cost multi', '11,23', 'EU flag missing');
+          fillExpenditureVerification('Implementation Lump', '88,34', 'EU flag missing');
+
+          cy.get('.mat-tab-header-pagination-after').click();
+          cy.wait(200);
+          cy.contains('a', 'Overview and Finalize').click();
+          cy.get('jems-control-report-deduction-overview').within(() => {
+            cy.get('mat-row').should('have.length', 3);
+            cy.contains('EU flag missing').parentsUntil('mat-row').siblings().eq(6).contains('88,34');
+            cy.contains('EU flag missing').parentsUntil('mat-row').siblings().eq(7).contains('11,23');
+            cy.contains('EU flag missing').parentsUntil('mat-row').siblings().eq(9).contains('99,57');
+            cy.contains('Flat rates').parentsUntil('mat-row').siblings().eq(6).should('have.value', '');
+            cy.contains('Flat rates').parentsUntil('mat-row').siblings().eq(7).should('have.value', '');
+            cy.contains('mat-footer-cell', 'Total').siblings().eq(9).contains('140,64');
+          });
+        });
+      });
+    });
+  });
+
   function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklistName) {
     cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
     cy.contains('Control checklists').should('be.visible').click();
@@ -644,7 +726,7 @@ context('Control report tests', () => {
   }
 
 
-//region TB-936 METHODS
+  //region TB-936 METHODS
   function addExpendituresAndSubmit(partnerId, reportId) {
     cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
     cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures)
@@ -756,6 +838,18 @@ context('Control report tests', () => {
       .each((el) => cy.wrap(el).should('be.disabled'));
     cy.get('#expenditure-costs-table mat-cell.mat-column-parked mat-slide-toggle input')
       .each((el) => cy.wrap(el).should('be.disabled'));
+  }
+
+  //endregion
+
+  //region TB-937 METHODS
+
+  function fillExpenditureVerification(content, deduction, typologyOfError) {
+    cy.get('mat-table').contains(content).parentsUntil('mat-row').siblings().eq(22).find('input').type(deduction, {force: true});
+    cy.get('mat-table').contains(content).parentsUntil('mat-row').siblings().eq(24).click();
+    cy.contains('mat-option span', typologyOfError).click();
+    cy.contains('Save changes').click();
+    cy.wait(500);
   }
 
   //endregion

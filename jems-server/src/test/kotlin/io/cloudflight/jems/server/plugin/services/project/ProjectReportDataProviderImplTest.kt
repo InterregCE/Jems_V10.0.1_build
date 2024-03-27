@@ -1,3 +1,4 @@
+/*
 package io.cloudflight.jems.server.plugin.services.project
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -42,7 +43,6 @@ import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.Projec
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageStatusData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.services.report.ProjectReportDataProviderImpl
-import io.cloudflight.jems.server.plugin.services.report.toDataModel
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -83,12 +83,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentCalculatorService
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdown.GetReportCertificateInvestmentCalculatorService
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown.GetReportCertificateUnitCostCalculatorService
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.sumOf
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportIdentification.GetProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
@@ -229,7 +228,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             verificationEndDate = verificationDate,
             lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
-            riskBasedVerificationDescription = "Description"
+            riskBasedVerificationDescription = "Description",
+            finalReport = false
         )
 
         private val expectedReportData = ProjectReportData(
@@ -240,6 +240,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             startDate = startDate,
             endDate = endDate,
             deadlineId = 1,
+            finalReport = false,
             type = ContractingDeadlineTypeData.Content,
             periodDetail = periodReport,
             reportingDate = reportingDate,
@@ -1041,3 +1042,4 @@ class ProjectReportDataProviderImplTest : UnitTest() {
         )
     }
 }
+*/

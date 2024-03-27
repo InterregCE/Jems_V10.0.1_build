@@ -8,7 +8,8 @@
 
             <jems-filter-template
                     [formGroup]="filterForm"
-                    [isThereAnyActiveFilter]="filtersActive">
+                    [isThereAnyActiveFilter]="filtersActive"
+                    initiallyExpanded="false">
                 <div alignItems="start" jemsMultiColumnRow display="block">
 
                     <div class="mb-3" jemsMultiColumnRow display="block">
@@ -100,21 +101,21 @@
     </ng-container>
 </jems-main-page-template>
 
-<ng-template #remainingToBePaidCell let-payment>
-    {{(payment.amountApprovedPerFund - payment.amountPaidPerFund) | asMoney}}
-</ng-template>
-
 <ng-template #idCell let-payment>
     <span matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
-          [matTooltipDisabled]="(payment.amountApprovedPerFund - payment.amountPaidPerFund) === 0">
+          [matTooltipDisabled]="payment.remainingToBePaid === 0">
         {{payment.id}}
-        <mat-icon *ngIf="(payment.amountApprovedPerFund - payment.amountPaidPerFund) > 0" class="open-payment-indicator">circle</mat-icon>
+        <mat-icon *ngIf="payment.remainingToBePaid > 0" class="open-payment-indicator">circle</mat-icon>
     </span>
 </ng-template>
 
 <ng-template #typeCell let-payment>
     <mat-icon class="mr-1">{{ payment.paymentType === PaymentTypeEnum.FTLS ? 'fast_forward' : 'receipt_long' }}</mat-icon>
-    {{ payment.paymentType }}
+    {{ 'payments.payment.to.project.table.column.payment.type.' + payment.paymentType | translate }}
+</ng-template>
+
+<ng-template #fundCell let-payment>
+    {{ payment.fund.abbreviation | translateBySystemLanguage | async }}
 </ng-template>
 
 <ng-template #claimNoCell let-payment>

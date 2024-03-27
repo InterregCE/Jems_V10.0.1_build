@@ -43,6 +43,8 @@
     overflow-x: hidden;
     scroll-behavior: smooth;
 
+    overflow-anchor: none !important;
+
     .page-content-container {
       margin-top: 1rem;
     }

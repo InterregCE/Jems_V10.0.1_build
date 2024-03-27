@@ -10,6 +10,8 @@ declare global {
       create2StepCall(call, creatingUserEmail?: string);
 
       publishCall(callId: number, publishingUserEmail?: string);
+
+      updateCallChecklists(callId: number, checklistIds: number[]): void;
     }
   }
 }
@@ -41,6 +43,14 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
   }
 });
 
+Cypress.Commands.add('updateCallChecklists', (callId: number, checklistIds: number[]) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/call/byId/${callId}/checklists`,
+    body: checklistIds
+  });
+});
+
 function createCall(call, creatingUserEmail?: string) {
   call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.string.uuid()}`;
   if (creatingUserEmail)
@@ -61,6 +71,8 @@ function createCall(call, creatingUserEmail?: string) {
       allowedCostOption(callId, call.budgetSettings.allowedCostOption);
     if (call.applicationFormConfiguration)
       setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
+    if (call.checklists)
+      cy.updateCallChecklists(callId, call.checklists);
     if (call.preSubmissionCheckSettings)
       setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
     if (creatingUserEmail && this.currentUser) {

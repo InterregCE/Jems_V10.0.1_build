@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_DELETION_ERROR_KEY
@@ -76,6 +75,12 @@ class AdvancePaymentValidatorTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "random comment",
+            paymentAuthorized = true,
+            paymentAuthorizedUserId = userId,
+            paymentAuthorizedDate = currentDate.minusDays(3),
+            paymentConfirmed = true,
+            paymentConfirmedUserId = userId,
+            paymentConfirmedDate = currentDate.minusDays(2),
             paymentSettlements = listOf(paymentSettlement)
         )
     }
@@ -131,6 +136,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
                     programmeFundId = 1L,
+                    paymentConfirmed = false,
                     paymentDate = null,
                     paymentSettlements = emptyList()
                 ), null
@@ -144,6 +150,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
                     projectId = 0,
+                    paymentConfirmed = true,
                     paymentDate = null
                 ), null
             )
@@ -156,6 +163,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
         val ex = assertThrows<I18nValidationException> {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
+                    paymentConfirmed = false,
                     paymentDate = null,
                     paymentSettlements = emptyList()
                 ), null
@@ -167,11 +175,11 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should throw InputValidationException on confirmed payment if paymentDate is empty`() {
         val ex = assertThrows<AppInputValidationException> {
-            validator.validateStatus(
-                AdvancePaymentStatus.CONFIRMED,
-                advancePaymentDetail.copy(
+            validator.validateDetail(
+                advancePaymentUpdate.copy(
+                    paymentConfirmed = true,
                     paymentDate = null
-                )
+                ), null
             )
         }
         assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
@@ -180,9 +188,9 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should throw I18nValidationException if both checkboxes removed at same time`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateStatus(
-                status = AdvancePaymentStatus.DRAFT,
-                advancePaymentDetail.copy(paymentConfirmed = true),
+            validator.validateDetail(
+                advancePaymentUpdate.copy(paymentAuthorized = false, paymentConfirmed = false),
+                advancePaymentDetail
             )
         }
         assertEquals(PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY, ex.i18nKey)
@@ -191,10 +199,11 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should throw I18nValidationException if checkbox states are wrong`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateStatus(
-                status = AdvancePaymentStatus.CONFIRMED,
-                saved = advancePaymentDetail.copy(paymentAuthorized = false)
-            )
+            validator.validateCheckboxStates(
+                advancePaymentUpdate.copy(
+                paymentAuthorized = false,
+                paymentConfirmed = true
+            ))
         }
         assertEquals(PAYMENT_ADVANCE_SAVE_ERROR_KEY, ex.i18nKey)
     }
@@ -203,10 +212,21 @@ class AdvancePaymentValidatorTest : UnitTest() {
     fun `should throw for not confirmed payment with settlements `() {
         val ex = assertThrows<I18nValidationException> {
             validator.validateDetail(
-                update= advancePaymentUpdate,
+                update= advancePaymentUpdate.copy(paymentAuthorized = true, paymentConfirmed = false),
                 saved = advancePaymentDetail.copy(paymentAuthorized = false, paymentConfirmed = false, paymentSettlements = emptyList())
             )
         }
         assertEquals(PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw for unconfirming payment with settlements`() {
+        val ex = assertThrows<I18nValidationException> {
+            validator.validateDetail(
+                update= advancePaymentUpdate.copy(paymentAuthorized = true, paymentConfirmed = false),
+                saved = advancePaymentDetail.copy(paymentAuthorized = true, paymentConfirmed = true)
+            )
+        }
+        assertEquals(AdvancePaymentValidator.PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY, ex.i18nKey)
     }
 }

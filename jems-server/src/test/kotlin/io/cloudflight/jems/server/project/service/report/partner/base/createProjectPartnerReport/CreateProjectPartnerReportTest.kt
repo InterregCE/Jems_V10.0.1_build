@@ -378,7 +378,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can create report when status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"])
+    @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"])
     fun createReportFor(status: ApplicationStatus) {
         val partnerId = 66L
         val detail = partnerDetail(partnerId, "AT")
@@ -495,7 +495,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @ParameterizedTest(name = "cannot create report when status {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
         mode = EnumSource.Mode.EXCLUDE,
     )
     fun cannotCreateReportFor(status: ApplicationStatus) {
@@ -513,7 +513,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @ParameterizedTest(name = "cannotCreateReportWhenThereIsLastReOpenedReport and status {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
     )
     fun cannotCreateReportWhenThereIsLastReOpenedReport(status: ApplicationStatus) {
         val partnerId = 67L

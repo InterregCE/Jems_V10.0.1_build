@@ -4,10 +4,10 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
@@ -23,6 +23,7 @@ class FinalizePaymentApplicationToEc(
     private val ecPaymentPersistence: PaymentApplicationToEcPersistence,
     private val ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence,
     private val ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence,
+    private val paymentAccountPersistence: PaymentAccountPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : FinalizePaymentApplicationToEcInteractor {
 
@@ -76,14 +77,19 @@ class FinalizePaymentApplicationToEc(
         }
     }
 
-    private fun noOtherDraftEcPaymentExistsFor(paymentToEc: PaymentApplicationToEcSummary): Boolean =
-        !ecPaymentPersistence.existsDraftByFundAndAccountingYear(
-            programmeFundId = paymentToEc.programmeFund.id,
-            accountingYearId = paymentToEc.accountingYear.id,
-        )
+    private fun noOtherDraftEcPaymentExistsFor(fundId: Long, yearId: Long): Boolean =
+        !ecPaymentPersistence.existsDraftByFundAndAccountingYear(fundId, accountingYearId = yearId)
+
+    private fun accountingYearIsNotFinished(fundId: Long, yearId: Long): Boolean =
+        !paymentAccountPersistence.findByFundAndYear(fundId = fundId, accountingYearId = yearId).status.isFinished()
 
     private fun PaymentApplicationToEcDetail.fillInFlagForReOpening() = apply {
-        this.isAvailableToReOpen = status.isFinished() && noOtherDraftEcPaymentExistsFor(paymentApplicationToEcSummary)
+        val fundId = this.paymentApplicationToEcSummary.programmeFund.id
+        val accountingYearId = this.paymentApplicationToEcSummary.accountingYear.id
+
+        this.isAvailableToReOpen = status.isFinished()
+                && noOtherDraftEcPaymentExistsFor(fundId = fundId, yearId = accountingYearId)
+                && accountingYearIsNotFinished(fundId = fundId, yearId = accountingYearId)
     }
 
     private fun ContractingMonitoringExtendedOption?.fallsUnder94Or95() = (this ?: ContractingMonitoringExtendedOption.No).isYes()

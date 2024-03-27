@@ -6,12 +6,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
-import io.cloudflight.jems.server.payments.repository.regular.notFlagged
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
@@ -24,19 +23,19 @@ import java.math.BigDecimal
 
 @Repository
 class EcPaymentCorrectionLinkPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val ecPaymentCorrectionExtensionRepository: EcPaymentCorrectionExtensionRepository,
     private val auditControlCorrectionRepository: AuditControlCorrectionRepository,
     private val jpaQueryFactory: JPAQueryFactory
 ) : EcPaymentCorrectionLinkPersistence {
 
     @Transactional(readOnly = true)
-    override fun getCorrectionExtension(correctionId: Long): EcPaymentCorrectionExtension =
-        ecPaymentCorrectionExtensionRepository.getById(correctionId).toModel()
+    override fun getCorrectionExtension(correctionId: Long): PaymentToEcCorrectionExtension =
+        ecPaymentCorrectionExtensionRepository.getReferenceById(correctionId).toModel()
 
     @Transactional
     override fun selectCorrectionToEcPayment(correctionIds: Set<Long>, ecPaymentId: Long) {
-        val ecPayment = ecPaymentRepository.getById(ecPaymentId)
+        val ecPayment = ecPaymentRepository.getReferenceById(ecPaymentId)
         ecPaymentCorrectionExtensionRepository.findAllById(correctionIds).forEach {
             it.paymentApplicationToEc = ecPayment
         }
@@ -94,8 +93,8 @@ class EcPaymentCorrectionLinkPersistenceProvider(
     override fun updateCorrectionLinkedToEcPaymentCorrectedAmounts(
         correctionId: Long,
         ecPaymentCorrectionLinkingUpdate: PaymentToEcCorrectionLinkingUpdate
-    ): EcPaymentCorrectionExtension =
-        ecPaymentCorrectionExtensionRepository.getById(correctionId).apply {
+    ): PaymentToEcCorrectionExtension =
+        ecPaymentCorrectionExtensionRepository.getReferenceById(correctionId).apply {
             this.correctedAutoPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedAutoPublicContribution
             this.correctedPublicContribution = ecPaymentCorrectionLinkingUpdate.correctedPublicContribution
             this.correctedPrivateContribution = ecPaymentCorrectionLinkingUpdate.correctedPrivateContribution
@@ -123,7 +122,7 @@ class EcPaymentCorrectionLinkPersistenceProvider(
         totalEligibleWithoutArt94or95: BigDecimal,
         unionContribution: BigDecimal
     ) {
-        val correctionEntity = auditControlCorrectionRepository.getById(financialDescription.correctionId)
+        val correctionEntity = auditControlCorrectionRepository.getReferenceById(financialDescription.correctionId)
         val correctionExtensionEntity = PaymentToEcCorrectionExtensionEntity(
             correctionId = financialDescription.correctionId,
             correction = correctionEntity,
@@ -163,7 +162,8 @@ class EcPaymentCorrectionLinkPersistenceProvider(
             .leftJoin(paymentToEcCorrectionExtension)
             .on(specCorrection.id.eq(paymentToEcCorrectionExtension.correctionId))
             .where(whereExpressions.joinWithAnd())
-            .fetch().toSet()
+            .fetch()
+            .toSet()
     }
 
 }

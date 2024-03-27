@@ -21,14 +21,16 @@
   ],
   "authorizedPayments": [
     {
-      "projectCustomIdentifier": "setDuringTest",
-      "fundName": "ERDF",
-      "partnerPayments": [
+      "fundType": "ERDF",
+      "paymentType": "FTLS",
+      "payments": [
         {
           "id": 0,
           "partnerId": 0,
-          "partnerType": "LEAD_PARTNER",
+          "partnerRole": "LEAD_PARTNER",
           "partnerAbbreviation": "Lead Partner",
+          "nameInEnglish": "Lead Partner in english",
+          "nameInOriginalLanguage": "Lead Partner in original language",
           "amountApproved": 1199.99,
           "installments": [
             {
@@ -42,11 +44,7 @@
             }
           ]
         }
-      ],
-      "paymentType": "FTLS",
-      "projectId": 0,
-      "projectAcronym": "cross-platform program",
-      "amountApprovedPerFund": 1199.99
+      ]
     }
   ],
   "modifiedCofinancing": {
@@ -55,11 +53,13 @@
         "fundId": 3,
         "fundType": "MainFund",
         "percentage": 39.99
-      }, {
+      },
+      {
         "fundId": 8,
         "fundType": "MainFund",
         "percentage": 14.66
-      }, {
+      },
+      {
         "percentage": 45.35,
         "fundType": "PartnerContribution"
       }
@@ -70,12 +70,14 @@
         "status": "Public",
         "amount": 5698.97,
         "partner": true
-      }, {
+      },
+      {
         "name": "Lead contribution 1",
         "status": "Private",
         "amount": 3261.01,
         "partner": false
-      }, {
+      },
+      {
         "name": "Lead contribution 2",
         "status": "AutomaticPublic",
         "amount": 18911.42,

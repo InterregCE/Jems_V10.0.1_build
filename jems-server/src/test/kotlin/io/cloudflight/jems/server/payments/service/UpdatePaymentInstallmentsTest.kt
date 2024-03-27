@@ -101,7 +101,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         private val paymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            fundName = "name",
+            fund = mockk(),
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
@@ -113,22 +113,24 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     projectId = projectId,
                     orderNr = 1,
                     programmeLumpSumId = 4L,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     programmeFundId = 5L,
                     partnerId = partnerId,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner ORIG",
+                    nameInEnglish = "partner EN",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentToUpdateTo),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
         private val paymentDetailMultipleInstallments = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            fundName = "name",
+            fund = mockk(),
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
@@ -140,15 +142,17 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     projectId = projectId,
                     orderNr = 1,
                     programmeLumpSumId = 4L,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     programmeFundId = 5L,
                     partnerId = partnerId,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner ORIG",
+                    nameInEnglish = "partner EN",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentToUpdateTo, installmentNew),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
@@ -234,47 +238,51 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         )
         private val paymentDetailDTO = PaymentDetailDTO(
             id = paymentId,
-            paymentType = PaymentTypeDTO.FTLS,
-            fundName = "name",
+            paymentType = mockk(),
+            fund = mockk(),
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
             spf = false,
-            amountApprovedPerFund = BigDecimal.TEN,
+            amountApprovedPerFund = mockk(),
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 6L,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     partnerId = partnerId,
-                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner ORIG",
+                    nameInEnglish = "partner EN",
                     amountApproved = BigDecimal.ONE,
                     installments = listOf(installmentDTO),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
         private val paymentDetailMultipleInstallmentsDTO = PaymentDetailDTO(
             id = paymentId,
-            paymentType = PaymentTypeDTO.FTLS,
-            fundName = "name",
+            paymentType = mockk(),
+            fund = mockk(),
             projectId = projectId,
             projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
             spf = false,
-            amountApprovedPerFund = BigDecimal.TEN,
+            amountApprovedPerFund = mockk(),
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 6L,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     partnerId = partnerId,
-                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     partnerNumber = 1,
                     partnerAbbreviation = "partner",
+                    nameInOriginalLanguage = "partner ORIG",
+                    nameInEnglish = "partner EN",
                     amountApproved = BigDecimal.ONE,
                     installments = listOf(installmentDTO, installmentNewDTO),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
@@ -331,7 +339,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailDTO)
+            partnerPayments = paymentDetailDTO.partnerPayments)
         ).isEqualTo(paymentDetail)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -377,7 +385,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
 
         assertThat(updatePaymentInstallments.updatePaymentInstallments(
             paymentId = paymentId,
-            paymentDetail = paymentDetailMultipleInstallmentsDTO)
+            partnerPayments = paymentDetailMultipleInstallmentsDTO.partnerPayments)
         ).isEqualTo(paymentDetailMultipleInstallments)
         assertThat(toUpdateSlot.captured).containsExactly(
             PaymentPartnerInstallmentUpdate(
@@ -455,7 +463,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         val exception = assertThrows<CorrectionsNotValidException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments,
             )
         }
         assertThat(exception.code).isEqualTo("S-UPPI-02")
@@ -465,6 +473,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
     fun `update installments for a payment partner - invalid`() {
         every { paymentPersistence.getPaymentPartnersIdsByPaymentId(paymentId) } returns listOf(paymentPartnerId)
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
+        every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
         every {
             validator.validateInstallments(any(), any(), any(), any())
         } throws I18nValidationException()
@@ -478,7 +487,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         assertThrows<I18nValidationException> {
             updatePaymentInstallments.updatePaymentInstallments(
                 paymentId = paymentId,
-                paymentDetail = paymentDetailDTO
+                partnerPayments = paymentDetailDTO.partnerPayments
             )
         }
     }

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.server.project.repository.workpackage.TableRelation
 import org.intellij.lang.annotations.Language
 import org.slf4j.LoggerFactory
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.util.stream.Collectors
@@ -11,6 +12,7 @@ import javax.persistence.EntityManager
 import javax.sql.DataSource
 
 @Component
+@DependsOnDatabaseInitialization
 class RestoreProjectUtils(private val entityManager: EntityManager, private val datasource: DataSource) {
 
     private val projectTableName = "project"

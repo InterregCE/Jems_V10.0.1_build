@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.payments.service
 
+import io.cloudflight.jems.server.payments.model.account.PaymentAccount
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
@@ -20,6 +22,12 @@ fun PaymentApplicationToEcDetail.toDescription(previousStatus: PaymentEcStatus, 
         "for accounting Year ${computeYearNumber(paymentApplicationToEcSummary.accountingYear.startDate)}: " +
         "${paymentApplicationToEcSummary.accountingYear.startDate} - ${paymentApplicationToEcSummary.accountingYear.endDate} " +
         "changes status from ${previousStatus.name} to ${newStatus.name}"
+
+fun PaymentAccount.toDescription(previousStatus: PaymentAccountStatus, newStatus: PaymentAccountStatus) =
+    "Account ${id} Fund (${fund.id}, ${fund.type}) " +
+            "for accounting Year ${computeYearNumber(accountingYear.startDate)}: " +
+            "${accountingYear.startDate} - ${accountingYear.endDate} " +
+            "changed  status from ${previousStatus.name} to ${newStatus.name}"
 
 fun  Map<Long, CorrectionInEcPaymentMetadata>.formCorrectionId(): List<String> =
     this.values.map { "${it.projectId}_AC${it.auditControlNr}.${it.correctionNr}" }

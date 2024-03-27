@@ -11,6 +11,7 @@ export class ProjectLumpSum {
   paymentEnabledDate: Date;
   lastApprovedVersionBeforeReadyForPayment: string;
   installmentsAlreadyCreated: boolean;
+  linkedToEcPaymentId: number;
 
   constructor(
     orderNr: number,
@@ -22,7 +23,8 @@ export class ProjectLumpSum {
     fastTrack: boolean,
     paymentEnabledDate: Date,
     lastApprovedVersionBeforeReadyForPayment: string,
-    installmentsAlreadyCreated: boolean
+    installmentsAlreadyCreated: boolean,
+    linkedToEcPaymentId: number
   ) {
     this.orderNr = orderNr;
     this.programmeLumpSumId = programmeLumpSumId;
@@ -34,5 +36,6 @@ export class ProjectLumpSum {
     this.paymentEnabledDate = paymentEnabledDate;
     this.lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment;
     this.installmentsAlreadyCreated = installmentsAlreadyCreated;
+    this.linkedToEcPaymentId = linkedToEcPaymentId;
   }
 }

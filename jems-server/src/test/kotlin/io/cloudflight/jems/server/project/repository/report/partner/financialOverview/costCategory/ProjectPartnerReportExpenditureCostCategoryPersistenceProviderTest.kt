@@ -110,6 +110,18 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             spfCostCurrentParked = BigDecimal.valueOf(685, 1),
             sumCurrentParked = BigDecimal.valueOf(69),
 
+            staffCurrentParkedVerification = BigDecimal.valueOf(60),
+            officeCurrentParkedVerification = BigDecimal.valueOf(61),
+            travelCurrentParkedVerification = BigDecimal.valueOf(62),
+            externalCurrentParkedVerification = BigDecimal.valueOf(63),
+            equipmentCurrentParkedVerification = BigDecimal.valueOf(64),
+            infrastructureCurrentParkedVerification = BigDecimal.valueOf(65),
+            otherCurrentParkedVerification = BigDecimal.valueOf(66),
+            lumpSumCurrentParkedVerification = BigDecimal.valueOf(67),
+            unitCostCurrentParkedVerification = BigDecimal.valueOf(68),
+            spfCostCurrentParkedVerification = BigDecimal.valueOf(685, 1),
+            sumCurrentParkedVerification = BigDecimal.valueOf(69),
+
             staffCurrentReIncluded = BigDecimal.valueOf(70),
             officeCurrentReIncluded = BigDecimal.valueOf(71),
             travelCurrentReIncluded = BigDecimal.valueOf(72),

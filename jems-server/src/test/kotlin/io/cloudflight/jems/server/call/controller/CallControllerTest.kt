@@ -33,9 +33,11 @@ import io.cloudflight.jems.server.call.service.costOption.updateCallCostOption.U
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
 import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
+import io.cloudflight.jems.server.call.service.get_call_checklists.GetCallChecklistsInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsException
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -45,10 +47,12 @@ import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
 import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
+import io.cloudflight.jems.server.call.service.update_call_checklists.UpdateCallChecklistsInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
 import io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration.UpdatePreSubmissionCheckSettingsInteractor
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -57,6 +61,8 @@ import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpec
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -241,6 +247,23 @@ class CallControllerTest : UnitTest() {
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )
+
+        val callChecklists = listOf(
+            CallChecklist(
+                id = 1,
+                name = "Checklist 1",
+                type = ProgrammeChecklistType.CONTROL,
+                selected = true,
+                lastModificationDate = null
+            ),
+            CallChecklist(
+                id = 2,
+                name = "Checklist 2",
+                type = ProgrammeChecklistType.VERIFICATION,
+                selected = false,
+                lastModificationDate = null
+            )
+        )
     }
 
     @MockK
@@ -281,6 +304,12 @@ class CallControllerTest : UnitTest() {
 
     @MockK
     lateinit var updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
+
+    @MockK
+    lateinit var getCallChecklists: GetCallChecklistsInteractor
+
+    @MockK
+    lateinit var updateCallSelectedChecklists: UpdateCallChecklistsInteractor
 
     @InjectMockKs
     private lateinit var controller: CallController
@@ -410,4 +439,20 @@ class CallControllerTest : UnitTest() {
         )
     }
 
+    @Test
+    fun `get call checklists - ok`() {
+        every { getCallChecklists.getCallChecklists(ID, any()) } returns callChecklists
+        val checklists = controller.getChecklists(ID, Pageable.unpaged())
+        assertThat(checklists.size).isEqualTo(callChecklists.size)
+    }
+
+    @Test
+    fun `update call selected checklists - ok`() {
+        val selectedIds = setOf(1L, 2L, 3L)
+        val slotChecklists = slot<Set<Long>>()
+        every { updateCallSelectedChecklists.updateCallChecklists(ID, capture(slotChecklists)) } just runs
+
+        controller.updateSelectedChecklists(ID, selectedIds)
+        assertThat(slotChecklists.captured).isEqualTo(selectedIds)
+    }
 }

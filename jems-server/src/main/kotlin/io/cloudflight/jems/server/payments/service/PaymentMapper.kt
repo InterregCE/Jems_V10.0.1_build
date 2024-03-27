@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
@@ -19,7 +18,6 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
@@ -38,7 +36,7 @@ fun PaymentToProject.toDTO() = mapper.map(this)
 fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    fundName = fundName,
+    fund = fund.toDto(),
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
@@ -50,12 +48,14 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
 
 fun PartnerPayment.toDTO() = PaymentPartnerDTO(
     id = id,
-    partnerId = partnerId,
-    partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
-    partnerNumber = partnerNumber,
-    partnerAbbreviation = partnerAbbreviation,
     partnerReportId = partnerReportId,
     partnerReportNumber = partnerReportNumber,
+    partnerId = partnerId,
+    partnerRole = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+    partnerNumber = partnerNumber,
+    partnerAbbreviation = partnerAbbreviation,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
     amountApproved = amountApprovedPerPartner,
     installments = installments.map { it.toDTO() }
 )
@@ -120,6 +120,8 @@ fun AdvancePaymentDetail.toDTO() = AdvancePaymentDetailDTO(
 
 )
 
+fun PaymentTypeDTO.toModel() = PaymentType.valueOf(this.name)
+
 private fun idNamePairDtoOrNull(idName: IdNamePair?): IdNamePairDTO? {
     return if (idName != null) {
         IdNamePairDTO(idName.id, idName.name)
@@ -136,6 +138,8 @@ fun AdvancePaymentUpdateDTO.toModel() = AdvancePaymentUpdate(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,
+    paymentAuthorized = paymentAuthorized,
+    paymentConfirmed = paymentConfirmed,
     paymentSettlements = paymentSettlements.map { it.toModel() }
 )
 
@@ -152,7 +156,11 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     paymentAuthorized = paymentAuthorized,
     amountPaid = amountPaid,
     paymentDate = paymentDate,
-    amountSettled = amountSettled
+    amountSettled = amountSettled,
+    partnerNameInOriginalLanguage = partnerNameInOriginalLanguage,
+    partnerNameInEnglish = partnerNameInEnglish,
+    linkedProjectVersion = linkedProjectVersion,
+    lastApprovedProjectVersion = lastApprovedProjectVersion
 )
 
 fun AdvancePaymentSettlement.toDto() = AdvancePaymentSettlementDTO(
@@ -170,8 +178,6 @@ fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
     settlementDate = settlementDate,
     comment = comment
 )
-
-fun AdvancePaymentStatusUpdateDTO.toModel() = AdvancePaymentStatus.valueOf(this.status.name)
 
 private val mapper = Mappers.getMapper(PaymentMapper::class.java)
 

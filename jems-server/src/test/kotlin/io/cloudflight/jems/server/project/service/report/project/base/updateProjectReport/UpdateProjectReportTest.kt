@@ -72,6 +72,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Content,
             periodNumber = 12,
             reportingDate = TOMORROW,
+            finalReport = false,
 
             projectId = 56L,
             projectIdentifier = "identif",
@@ -103,6 +104,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Content,
             periodDetail = ProjectPeriod(12, 7, 15),
             reportingDate = TOMORROW,
+            finalReport = false,
 
             projectId = 56L,
             projectIdentifier = "identif",
@@ -166,6 +168,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = null,
             periodNumber = null,
             reportingDate = null,
+            finalReport = null,
         )
         // this assertion is only testing mapper on result
         assertThat(interactor.updateReport(projectId, reportId = 87L, data)).isEqualTo(expectedResult)
@@ -174,7 +177,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         assertThat(slotStartDate.captured).isEqualTo(MONTH_AGO)
         assertThat(slotEndDate.captured).isEqualTo(TOMORROW)
         assertThat(slotDeadline.captured).isEqualTo(ProjectReportDeadline(
-            deadlineId = 7L, type = null, periodNumber = null, reportingDate = null
+            deadlineId = 7L, type = null, periodNumber = null, reportingDate = null, finalReport = null,
         ))
     }
 
@@ -202,6 +205,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Content,
             periodNumber = 12,
             reportingDate = YESTERDAY,
+            finalReport = false,
         )
         // this assertion is only testing mapper on result
         assertThat(interactor.updateReport(projectId, reportId = 82L, data)).isEqualTo(expectedResult)
@@ -210,7 +214,11 @@ internal class UpdateProjectReportTest : UnitTest() {
         assertThat(slotStartDate.captured).isEqualTo(MONTH_AGO)
         assertThat(slotEndDate.captured).isEqualTo(TOMORROW)
         assertThat(slotDeadline.captured).isEqualTo(ProjectReportDeadline(
-            deadlineId = null, type = ContractingDeadlineType.Content, periodNumber = 12, reportingDate = YESTERDAY
+            deadlineId = null,
+            type = ContractingDeadlineType.Content,
+            periodNumber = 12,
+            reportingDate = YESTERDAY,
+            finalReport = false,
         ))
     }
 
@@ -248,6 +256,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = newType,
             periodNumber = 12,
             reportingDate = YESTERDAY,
+            finalReport = false,
         )
         assertThrows<TypeChangeIsForbiddenWhenReportIsReOpened> { interactor.updateReport(projectId, reportId = 82L, data) }
     }
@@ -271,6 +280,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = newType,
             periodNumber = 12,
             reportingDate = YESTERDAY,
+            finalReport = false,
         )
         every { reportPersistence.updateReport(projectId, reportId = 82L, any(), any(), any()) } returns mockedResult
         interactor.updateReport(projectId, 82L, data)
@@ -291,6 +301,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Content,
             periodNumber = -1,
             reportingDate = YESTERDAY,
+            finalReport = false,
         )
         assertThrows<PeriodNumberInvalid> { interactor.updateReport(projectId, reportId = 84L, data) }
     }
@@ -308,6 +319,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Content,
             periodNumber = 58,
             reportingDate = YESTERDAY,
+            finalReport = false,
         )
         assertThrows<LinkToDeadlineNotProvidedAndDataMissing> {
             interactor.updateReport(projectId, reportId = 86L, data.copy(type = null))
@@ -333,6 +345,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             type = null,
             periodNumber = null,
             reportingDate = null,
+            finalReport = false,
         )
         assertThrows<LinkToDeadlineProvidedWithManualDataOverride> {
             interactor.updateReport(projectId, reportId = 88L, data.copy(type = ContractingDeadlineType.Content))

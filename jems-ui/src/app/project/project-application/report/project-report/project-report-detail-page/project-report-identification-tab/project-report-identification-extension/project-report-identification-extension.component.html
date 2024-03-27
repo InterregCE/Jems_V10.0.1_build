@@ -1,5 +1,5 @@
-<jems-form *ngIf="reportIdentification$ | async as reportIdentification"
-           (discard)="resetForm(reportIdentification)"
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.projectReportIdentification)"
            (save)="saveIdentificationExtension()">
     <form [formGroup]="form" jemsFormLayout>
         <h3>{{'project.application.project.report.highlights.of.main.achievements.title' | translate}}
@@ -54,97 +54,211 @@
             </jems-multi-language-form-field>
         </jems-multi-language-container>
 
-        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
-            <div jemsNoWidthLimit *ngIf="reportType !== TYPE_ENUM.Content && tableData.length > 0">
+
+        <ng-container *ngIf="data.projectReportIdentification.spendingProfilePerPartner as spendingProfile">
+            <div jemsNoWidthLimit *ngIf="reportType !== TYPE_ENUM.Content && data?.spendingProfileTable.data.length > 0">
                 <div jemsFormLayout>
                     <h3>{{'project.application.project.report.partner.spending.profile.title' | translate }}</h3>
                     <p>{{'project.application.project.report.partner.spending.profile.explanation' | translate}}</p>
+
+                    <jems-alert *ngIf="!data.isSpendingProfileTotalEligibleSetAtReportCreation"
+                            [closable]="false" [show]="true" [type]="Alert.INFO">
+                        <p>{{'project.application.project.report.partner.spending.profile.missing.totalEligible.explanation' | translate}}</p>
+                    </jems-alert>
                 </div>
 
-                <mat-table formArrayName="spendingProfiles" [dataSource]="tableData" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}]"
+                <mat-table formArrayName="spendingProfiles"
+                           [dataSource]="data?.spendingProfileTable.data"
+                           [jemsTableConfig]="data?.spendingProfileTable.tableConfig"
                            class="table-padding mt-3">
-                    <ng-container matColumnDef="partnerNumber">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+
+                    <ng-container matColumnDef="partnerNumber" sticky>
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-left">
                             {{ 'project.application.form.partner.table.number' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-left">
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-left">
                             {{ 'common.label.project.partner.role.shortcut.' + control.get('partnerRole').value | adaptTranslationKeyByCallType | async | translate : {partner: control.get('partnerNumber').value} }}
-                        </td>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="periodBudget">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
-                            {{ 'project.report.partner.spending.periodBudget' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('periodBudget')?.value | asMoney }}
-                        </td>
+                    <ng-container matColumnDef="partnerAbbreviation">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+                            {{ 'project.application.form.partner.table.name' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-left">
+                            {{ control.get('partnerAbbreviation').value }}
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="border-cell-right"></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="partnerCountry">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+                            {{ 'project.partner.main-address.country' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-left">
+                            {{ control.get('partnerCountry').value }}
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="border-cell-right"></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="totalEligibleBudget">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.totalEligibleBudget' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('totalEligibleBudget').value| asMoney }}
+                            </span>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                 {{ spendingProfile.total.totalEligibleBudget | asMoney }}
+                            </span>
+                        </mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="previouslyReported">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.previouslyReported' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('previouslyReported').value | asMoney }}
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.previouslyReported | asMoney }}</mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="currentReport">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                             {{ 'project.report.partner.spending.currentReport' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
                             {{ control.get('currentReport').value | asMoney }}
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="periodBudgetCumulative">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
-                            {{ 'project.report.partner.spending.periodBudgetCumulative' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('periodBudgetCumulative')?.value | asMoney }}
-                        </td>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.currentReport | asMoney }}</mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="totalReportedSoFar">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                             {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
-                            <jems-context-info infoPosition="right"
-                                               infoText="{{ 'project.report.partner.spending.totalReportedSoFar.context.info' | translate }}">
-                            </jems-context-info>
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
                             {{ (control.get('previouslyReported').value + control.get('currentReport').value) | asMoney }}
-                        </td>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">{{ spendingProfile.total.totalReportedSoFar | asMoney }}</mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="differenceFromPlan">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
-                            {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('differenceFromPlan').value | asMoney }}
-                        </td>
+                    <ng-container matColumnDef="totalReportedSoFarPercentage">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.totalReportedSoFarPercentage' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('totalReportedSoFarPercentage').value | asPercentage }}
+                            </span>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ spendingProfile.total.totalReportedSoFarPercentage | asPercentage }}
+                            </span>
+                        </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="differenceFromPlanPercentage">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
-                            {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('differenceFromPlanPercentage').value | asMoney }}%
-                        </td>
+                    <ng-container matColumnDef="remainingBudget">
+                        <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.remainingBudget' | translate }}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ control.get('remainingBudget').value | asMoney }}
+                            </span>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef class="text-right">
+                            <span *ngIf="data.isSpendingProfileTotalEligibleSetAtReportCreation">
+                                {{ spendingProfile.total.remainingBudget | asMoney }}
+                            </span>
+                        </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="nextReportForecast">
-                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
-                            {{ 'project.report.partner.spending.nextReportForecast' | translate }}
-                        </th>
-                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
-                            {{ control.get('nextReportForecast')?.value | asMoney }}
-                        </td>
+                    <ng-container *ngIf="data.partnerBudgetPeriodsVisible">
+                        <ng-container matColumnDef="periodBudget">
+                            <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                                {{ 'project.report.partner.spending.periodBudget' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
+                                      class="text-right">
+                                {{ control.get('periodBudget')?.value | asMoney }}
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef class="text-right">
+                                {{ spendingProfile.total.periodBudget | asMoney }}
+                            </mat-footer-cell>
+                        </ng-container>
+
+
+                        <ng-container matColumnDef="periodBudgetCumulative">
+                            <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                                {{ 'project.report.partner.spending.periodBudgetCumulative' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
+                                      class="text-right">
+                                {{ control.get('periodBudgetCumulative')?.value | asMoney }}
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef class="text-right">
+                                {{ spendingProfile.total.periodBudgetCumulative | asMoney }}
+                            </mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="differenceFromPlan">
+                            <mat-header-cell *matHeaderCellDef mat-header-cell scope="col"
+                                             class="text-right respect-line-break">
+                                {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
+                                      class="text-right">
+                                {{ control.get('differenceFromPlan').value | asMoney }}
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef
+                                             class="text-right">{{ spendingProfile.total.differenceFromPlan | asMoney }}
+                            </mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="differenceFromPlanPercentage">
+                            <mat-header-cell *matHeaderCellDef mat-header-cell scope="col"
+                                             class="text-right respect-line-break">
+                                {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
+                                      class="text-right">
+                                {{ control.get('differenceFromPlanPercentage').value | asPercentage }}
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef
+                                             class="text-right">{{ spendingProfile.total.differenceFromPlanPercentage | asPercentage }}
+                            </mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="nextReportForecast">
+                            <mat-header-cell *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                                {{ 'project.report.partner.spending.nextReportForecast' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell
+                                      class="text-right">
+                                {{ control.get('nextReportForecast')?.value | asMoney }}
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef
+                                             class="text-right">{{ spendingProfile.total.nextReportForecast | asMoney }}
+                            </mat-footer-cell>
+                        </ng-container>
                     </ng-container>
 
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    <mat-header-row *matHeaderRowDef="data.spendingProfileTable.tableColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: data.spendingProfileTable.tableColumns;"></mat-row>
+                    <mat-footer-row *matFooterRowDef="data.spendingProfileTable.tableColumns"></mat-footer-row>
                 </mat-table>
             </div>
         </ng-container>
 
-        <ng-container *ngIf="reportIdentification.targetGroups?.length > 0">
+        <ng-container *ngIf="data.projectReportIdentification.targetGroups?.length > 0">
             <h3>{{'project.application.project.report.target.groups.title' | translate}}</h3>
             <p>{{'project.application.project.report.target.groups.explanation' | translate}}</p>
 
@@ -154,7 +268,7 @@
                         <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
                         <span class="mat-body-strong">{{ 'project.application.partner.report.target.group.description' | translate }}</span>
                     </div>
-                    <div *ngFor="let targetGroup of reportIdentification.targetGroups;let i=index">
+                    <div *ngFor="let targetGroup of data.projectReportIdentification.targetGroups;let i=index">
                         <ng-container>
                             <ng-container [formGroupName]="i">
                                 <span>{{'project.application.form.relevance.target.group.' + targetGroup.type | translate}}</span>

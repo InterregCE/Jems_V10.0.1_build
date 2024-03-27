@@ -35,7 +35,7 @@ class DeleteCallTranslationFileTest : UnitTest() {
     fun `delete - not existing`() {
         every { filePersistence.fileIdIfExists("CallTranslation/000045/", "call-id-45-Application_no.properties") } returns null
         assertThrows<FileNotFound> { interactor.delete(45L, SystemLanguage.NO) }
-        verify(exactly = 0) { fileService.moveFile(any(), any(), any()) }
+        verify(exactly = 0) { fileService.archiveCallTranslation(any(), any(), any()) }
     }
 
     @Test
@@ -44,11 +44,11 @@ class DeleteCallTranslationFileTest : UnitTest() {
         every{ messageSource.clearCache() } answers {}
 
         val fileArchivedNameSlot = slot<String>()
-        every { fileService.moveFile(655L, capture(fileArchivedNameSlot), "CallTranslationArchive/000017/") } answers { }
+        every { fileService.archiveCallTranslation(655L, capture(fileArchivedNameSlot), "CallTranslationArchive/000017/") } answers { }
         every { appProperties.translationsFolder } returns "transl-folder"
 
         interactor.delete(17L, SystemLanguage.NO)
-        verify(exactly = 1) { fileService.moveFile(655L, any(), "CallTranslationArchive/000017/") }
+        verify(exactly = 1) { fileService.archiveCallTranslation(655L, any(), "CallTranslationArchive/000017/") }
 
         assertThat(fileArchivedNameSlot.captured).startsWith("archived-").endsWith("-call-id-17-Application_no.properties")
     }

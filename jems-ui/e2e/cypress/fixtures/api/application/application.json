@@ -2545,6 +2545,7 @@
   },
   "contractMonitoring": {
     "startDate": "2023-01-01T00:00:00.000Z",
+    "lastPaymentDates": [],
     "addDates": [
       {
         "comment": "Entry into force date comment",
@@ -2666,21 +2667,25 @@
   ],
   "reportingDeadlines": [
     {
-      "date": "2023-04-30T00:00:00.000Z",
+      "id": null,
+      "date": "2024-04-30T00:00:00.000Z",
       "type": "Content",
       "periodNumber": 1,
       "comment": "Only content comment",
       "linkedSubmittedProjectReportNumbers": [],
       "linkedDraftProjectReportNumbers": []
     }, {
-      "date": "2023-08-31T00:00:00.000Z",
+      "id": null,
+      "date": "2024-08-31T00:00:00.000Z",
       "type": "Finance",
       "periodNumber": 2,
       "comment": "Only finance comment",
       "linkedSubmittedProjectReportNumbers": [],
       "linkedDraftProjectReportNumbers": []
     }, {
-      "date": "2023-12-31T00:00:00.000Z",
+      "id": null,
+      "cypressDeadlineReference": "bothDeadline",
+      "date": "2024-12-31T00:00:00.000Z",
       "type": "Both",
       "periodNumber": 3,
       "comment": "Both comment",

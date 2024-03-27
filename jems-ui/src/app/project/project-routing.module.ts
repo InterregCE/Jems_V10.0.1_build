@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {
   ProjectApplicationComponent
 } from './project-application/containers/project-application-page/project-application.component';
@@ -305,6 +305,14 @@ import {
   AuditControlCorrectionDetailComponent
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-detail.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import {
+  ProjectReportProjectClosureTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-tab.component';
+import {NgModule} from '@angular/core';
+import {
+  ProjectReportProjectClosureChecklistPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-checklist-page/project-report-project-closure-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -536,6 +544,15 @@ export const routes: Routes = [
                       {
                         path: 'spfContributions',
                         component: ProjectReportSpfContributionsTabComponent,
+                      },
+                      {
+                        path: 'projectClosure',
+                        component: ProjectReportProjectClosureTabComponent,
+                      },
+                      {
+                        path: 'projectClosure/checklist/:checklistId',
+                        component: ProjectReportProjectClosureChecklistPageComponent,
+                        data: {breadcrumb: 'checklists.instance.title'},
                       },
                       {
                         path: 'annexes',
@@ -994,3 +1011,13 @@ export const routes: Routes = [
     ]
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class ProjectRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(routes);
+  }
+}

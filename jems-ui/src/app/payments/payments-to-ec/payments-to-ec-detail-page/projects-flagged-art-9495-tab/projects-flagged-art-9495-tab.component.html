@@ -1,0 +1,86 @@
+<div>
+    <div jemsFormLayout>
+        <h3 class="mt-4">{{ 'payments.to.ec.detail.ftls.tab.cumulative.amounts.title' | translate }}</h3>
+        <div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.1' | translate }}</div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.2' | translate }}</div>
+            <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.title.description.3' | translate }}</div>
+        </div>
+        <ng-container *ngIf="cumulativeForCurrentTab$ | async as cumulativeForCurrentTab">
+            <jems-payment-to-ec-cumulative-table [data]=cumulativeForCurrentTab.data></jems-payment-to-ec-cumulative-table>
+        </ng-container>
+    </div>
+
+    <ng-container *ngIf="data$ | async as data">
+        <ng-container>
+            <div>
+                <h3 class="mt-4">{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.ftls' | translate }}</h3>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.ftls.description.1' | translate }}</div>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.ftls.description.2' | translate }}</div>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.ftls.description.3' | translate }}</div>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.ftls.description.4' | translate }}</div>
+            </div>
+
+            <jems-alert *ngIf="ftlsError$ | async as error"
+                        [show]="!!error.i18nMessage?.i18nKey"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+
+            <jems-alert [show]="ftlsSuccess$ | async"
+                        [type]="Alert.SUCCESS">
+                <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+            </jems-alert>
+
+            <jems-payment-to-ec-select-table [data]="ftlsData"
+                                             [newSort]="pageStore.ftlsNewSort$"
+                                             [newIndex]="pageStore.ftlsNewPageIndex$"
+                                             [newSize]="pageStore.ftlsNewPageSize$"
+                                             [paymentType]="PaymentTypeEnum.FTLS"
+                                             [flaggedArt9495]="true"
+                                             (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox, true)"
+                                             (submitPayment)="updateLinkedPayment($event.ecId, $event.paymentId, $event.updateDto, true)">
+            </jems-payment-to-ec-select-table>
+
+            <jems-alert [show]="data.ftlsPaymentToEcLinking.content?.length === 0" [type]="Alert.INFO">
+                <p>{{ 'payments.to.ec.detail.ftls.table.empty' | translate }}</p>
+            </jems-alert>
+
+        </ng-container>
+
+        <ng-container>
+            <div>
+                <h3 class="mt-4">{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.regular.projects' | translate }}</h3>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.regular.projects.description.1' | translate }}</div>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.regular.projects.description.2' | translate }}</div>
+                <div>{{ 'payments.to.ec.detail.projects.flagged.art.9495.tab.regular.projects.description.3' | translate }}</div>
+            </div>
+
+            <jems-alert *ngIf="regularError$ | async as error"
+                        [show]="!!error.i18nMessage?.i18nKey"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+
+            <jems-alert [show]="regularSuccess$ | async"
+                        [type]="Alert.SUCCESS">
+                <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+            </jems-alert>
+
+            <jems-payment-to-ec-select-table [data]="regularData"
+                                             [newSort]="pageStore.ftlsNewSort$"
+                                             [newIndex]="pageStore.ftlsNewPageIndex$"
+                                             [newSize]="pageStore.ftlsNewPageSize$"
+                                             [paymentType]="PaymentTypeEnum.REGULAR"
+                                             [flaggedArt9495]="true"
+                                             (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox, false)"
+                                             (submitPayment)="updateLinkedPayment($event.ecId, $event.paymentId, $event.updateDto, false)">
+            </jems-payment-to-ec-select-table>
+
+            <jems-alert [show]="data.regularPaymentToEcLinking.content?.length === 0" [type]="Alert.INFO">
+                <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.table.empty' | translate }}</p>
+            </jems-alert>
+
+        </ng-container>
+    </ng-container>
+</div>

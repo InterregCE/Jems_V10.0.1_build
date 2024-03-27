@@ -15,6 +15,8 @@ enum class JemsFileType(
       Audit(Payment, false),
         PaymentToEcAuditExport(Audit, false),
         PaymentAuditAttachment(Audit, false),
+      Account(Payment, true),
+        PaymentAccountAttachment(Account, false),
 
     Project(null, true, "application"),
       Report(Project, false),

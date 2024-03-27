@@ -14,6 +14,7 @@ interface ProjectPartnerReportCoFinancingRepository :
 
     fun findAllByIdReportIdOrderByIdFundSortNumber(reportId: Long): List<ProjectPartnerReportCoFinancingEntity>
 
+    fun findAllByIdReportIdInOrderByIdFundSortNumber(reportIds: Set<Long>): List<ProjectPartnerReportCoFinancingEntity>
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportCumulativeFund(
             report.programmeFund.id,
@@ -25,6 +26,19 @@ interface ProjectPartnerReportCoFinancingRepository :
         GROUP BY report.programmeFund.id
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<ReportCumulativeFund>
+
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund(
+            report.programmeFund.id,
+            COALESCE(SUM(report.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.id.report.partnerId=:partnerId AND report.id.report.projectReport.id IN :projectReportIds
+        GROUP BY report.programmeFund.id
+    """)
+    fun findCumulativeParkedForProjectReportIds(partnerId:Long, projectReportIds: Set<Long>): List<ProjectReportCumulativeFund>
+
 
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund(

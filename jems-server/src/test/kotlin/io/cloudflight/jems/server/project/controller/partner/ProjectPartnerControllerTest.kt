@@ -70,7 +70,7 @@ class ProjectPartnerControllerTest {
                 active = true,
                 sortNumber = 1
             ),
-            partnerCoFinancing = listOf(
+            partnerCoFinancing = mutableListOf(
                 ProgrammeFund(
                     id = 2L,
                     selected = true,

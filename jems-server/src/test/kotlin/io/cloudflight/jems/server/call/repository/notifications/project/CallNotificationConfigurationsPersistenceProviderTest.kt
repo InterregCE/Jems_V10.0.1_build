@@ -58,7 +58,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
                 sendToControllers = false,
             )
         )
-        every { callRepository.getById(CALL_ID) } returns callEntity
+        every { callRepository.getReferenceById(CALL_ID) } returns callEntity
         every {
             projectNotificationConfigurationRepository
                 .saveAll(any<MutableSet<ProjectNotificationConfigurationEntity>>())
@@ -98,7 +98,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToProjectAssigned = false,
             sendToControllers = false
         )
-        every { callRepository.getById(CALL_ID) } returns callEntity
+        every { callRepository.getReferenceById(CALL_ID) } returns callEntity
         every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns listOf(configEntity)
         assertThat(persistence.getProjectNotificationConfigurations(CALL_ID).toDto())
             .containsExactly(expectedConfig)

@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.dataGenerator.DRAFT_PROJECT_LUMP_SUMS
 import io.cloudflight.jems.server.dataGenerator.DRAFT_PROJECT_PP
 import io.cloudflight.jems.server.dataGenerator.PROGRAMME_LUMP_SUMS
 import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -18,7 +18,8 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
+
 import java.math.BigDecimal
 
 
@@ -29,7 +30,7 @@ class DraftProjectSectionEDataGeneratorTest(@LocalServerPort private val port: I
         FeignTestClientFactory.createClientApi(ProjectLumpSumApi::class.java, port, config)
 
     @Test
-    @ExpectSelect(28)
+    @ExpectSelect(27)
     @ExpectInsert(3)
     @ExpectUpdate(0)
     @ExpectDelete(1)

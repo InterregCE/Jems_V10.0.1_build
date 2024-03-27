@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
@@ -20,6 +20,7 @@ class CreatePaymentApplicationToEc(
     private val ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence,
     private val ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence,
     private val paymentPersistence: PaymentPersistence,
+    private val paymentAccountPersistence: PaymentAccountPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : CreatePaymentApplicationToEcInteractor {
 
@@ -27,11 +28,13 @@ class CreatePaymentApplicationToEc(
     @Transactional
     @ExceptionWrapper(CreatePaymentApplicationToEcException::class)
     override fun createPaymentApplicationToEc(paymentApplicationToEc: PaymentApplicationToEcCreate): PaymentApplicationToEcDetail {
-        validateNoOtherDraftExist(paymentApplicationToEc)
-        val ecPayment = ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationToEc)
+        val fundId = paymentApplicationToEc.programmeFundId
+        val yearId = paymentApplicationToEc.accountingYearId
 
-        val fundId = ecPayment.paymentApplicationToEcSummary.programmeFund.id
-        val yearId = ecPayment.paymentApplicationToEcSummary.accountingYear.id
+        validateNoOtherEcPaymentIsOpenForThisFundAndYear(fundId = fundId, yearId = yearId)
+        validateAccountingYearIsNotFinished(fundId = fundId, yearId = yearId)
+
+        val ecPayment = ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationToEc)
 
         preSelectAllAvailablePayments(ecPayment.id, fundId = fundId)
         preSelectAllAvailableCorrections(ecPayment.id, fundId = fundId)
@@ -41,29 +44,32 @@ class CreatePaymentApplicationToEc(
         return ecPayment
     }
 
-    fun validateNoOtherDraftExist(paymentApplicationToEc: PaymentApplicationToEcCreate) {
-        val existingEcPaymentApplication = ecPaymentPersistence.existsDraftByFundAndAccountingYear(
-                paymentApplicationToEc.programmeFundId,
-                paymentApplicationToEc.accountingYearId
-            )
-        if (existingEcPaymentApplication) {
-            throw EcPaymentApplicationSameFundAccountingYearExistsException()
+    private fun validateNoOtherEcPaymentIsOpenForThisFundAndYear(fundId: Long, yearId: Long) {
+        val thereIsAlreadyOtherDraftEcPayment = ecPaymentPersistence
+            .existsDraftByFundAndAccountingYear(programmeFundId = fundId, accountingYearId = yearId)
+        if (thereIsAlreadyOtherDraftEcPayment) {
+            throw ThereIsOtherEcPaymentInDraftException()
         }
     }
 
-    fun preSelectAllAvailablePayments(ecPaymentId: Long, fundId: Long) {
-        val basis = PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
-        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fundId, basis = basis)
+    private fun validateAccountingYearIsNotFinished(fundId: Long, yearId: Long) {
+        val account = paymentAccountPersistence.findByFundAndYear(fundId = fundId, accountingYearId = yearId)
+        if (account.status.isFinished())
+            throw AccountingYearHasBeenAlreadyFinishedException()
+    }
+
+    private fun preSelectAllAvailablePayments(ecPaymentId: Long, fundId: Long) {
+        val paymentIdsWithoutEcPayment = paymentPersistence.getPaymentIdsAvailableForEcPayments(fundId = fundId)
         ecPaymentLinkPersistence.selectPaymentToEcPayment(paymentIdsWithoutEcPayment, ecPaymentId)
     }
 
-    fun preSelectAllAvailableCorrections(ecPaymentId: Long, fundId: Long) {
+    private fun preSelectAllAvailableCorrections(ecPaymentId: Long, fundId: Long) {
         val correctionIdsWithoutEcPayment = ecPaymentCorrectionLinkPersistence.getCorrectionIdsAvailableForEcPayments(fundId = fundId)
         ecPaymentCorrectionLinkPersistence.selectCorrectionToEcPayment(correctionIdsWithoutEcPayment, ecPaymentId)
     }
 
-    fun storeCumulativeValues(ecPaymentId: Long, fundId: Long, yearId: Long) {
-        val finishedEcPaymentIds = ecPaymentPersistence.getIdsFinishedForYearAndFund(yearId, fundId = fundId)
+    private fun storeCumulativeValues(ecPaymentId: Long, fundId: Long, yearId: Long) {
+        val finishedEcPaymentIds = ecPaymentPersistence.getFinishedIdsByFundAndAccountingYear(programmeFundId = fundId, accountingYearId = yearId)
         val cumulativeAmounts = ecPaymentLinkPersistence.getCumulativeAmounts(finishedEcPaymentIds)
         ecPaymentLinkPersistence.saveCumulativeAmounts(ecPaymentId, cumulativeAmounts)
     }

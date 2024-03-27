@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.payments.model.account.PaymentAccount
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
@@ -30,7 +32,7 @@ fun monitoringFtlsReadyForPayment(
             .project(project)
             .description(
                 "Fast track lump sum $ftlsId for project ${project.customIdentifier}" +
-                    " set as ${getAnswer(state)} for Ready for payment"
+                        " set as ${getAnswer(state)} for Ready for payment"
             )
             .build()
     )
@@ -48,8 +50,8 @@ fun paymentInstallmentConfirmed(
             .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
             .description(
                 "Amount ${installment.amountPaid} EUR was confirmed for payment ${payment.id}, installment $installmentNr" +
-                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
-                        if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
+                        " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
+                        if (payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
             )
             .build()
     )
@@ -68,7 +70,7 @@ fun paymentInstallmentAuthorized(
             .description(
                 "Amount ${installment.amountPaid} EUR was authorised for payment ${payment.id}, installment $installmentNr" +
                         " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
-                        if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
+                        if (payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
             )
             .build()
     )
@@ -85,8 +87,8 @@ fun paymentInstallmentDeleted(
             .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
             .description(
                 "Payment installment $installmentNr for payment ${payment.id}" +
-                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
-                        (if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else "") + " is deleted"
+                        " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
+                        (if (payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else "") + " is deleted"
             )
             .build()
     )
@@ -101,13 +103,13 @@ fun advancePaymentCreated(
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
             "Advance payment number ${paymentDetail.id} is created for " +
-                "partner ${
-                    getPartnerName(
-                        paymentDetail.partnerType,
-                        paymentDetail.partnerNumber
-                    )
-                } for funding source " +
-                getFundingSourceName(paymentDetail)
+                    "partner ${
+                        getPartnerName(
+                            paymentDetail.partnerType,
+                            paymentDetail.partnerNumber
+                        )
+                    } for funding source " +
+                    getFundingSourceName(paymentDetail)
         )
         .build()
 )
@@ -121,13 +123,13 @@ fun advancePaymentDeleted(
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
             "Advance payment number ${paymentDetail.id} is deleted for " +
-                "partner ${
-                    getPartnerName(
-                        paymentDetail.partnerType,
-                        paymentDetail.partnerNumber
-                    )
-                } for funding source " +
-                getFundingSourceName(paymentDetail)
+                    "partner ${
+                        getPartnerName(
+                            paymentDetail.partnerType,
+                            paymentDetail.partnerNumber
+                        )
+                    } for funding source " +
+                    getFundingSourceName(paymentDetail)
         )
         .build()
 )
@@ -141,8 +143,8 @@ fun advancePaymentAuthorized(
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
             "Advance payment details for advance payment ${paymentDetail.id} of " +
-                "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                "for funding source ${getFundingSourceName(paymentDetail)} are authorised"
+                    "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                    "for funding source ${getFundingSourceName(paymentDetail)} are authorised"
         )
         .build()
 )
@@ -156,8 +158,8 @@ fun advancePaymentConfirmed(
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
             "Advance payment details for advance payment ${paymentDetail.id} of " +
-                "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                "for funding source ${getFundingSourceName(paymentDetail)} are confirmed"
+                    "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                    "for funding source ${getFundingSourceName(paymentDetail)} are confirmed"
         )
         .build()
 )
@@ -177,13 +179,13 @@ fun advancePaymentSettlementCreated(
                     RoundingMode.HALF_UP
                 )
             } EUR was settled in settlement no. ${settlement.number} " +
-                "for advance payment no. ${paymentDetail.id} of partner ${
-                    getPartnerName(
-                        paymentDetail.partnerType,
-                        paymentDetail.partnerNumber
-                    )
-                } " +
-                "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is created"
+                    "for advance payment no. ${paymentDetail.id} of partner ${
+                        getPartnerName(
+                            paymentDetail.partnerType,
+                            paymentDetail.partnerNumber
+                        )
+                    } " +
+                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is created"
         )
         .build()
 )
@@ -198,13 +200,13 @@ fun advancePaymentSettlementDeleted(
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
             "${settlement.amountSettled} EUR was settled in settlement no. ${settlement.number} " +
-                "for advance payment no. ${paymentDetail.id} of partner ${
-                    getPartnerName(
-                        paymentDetail.partnerType,
-                        paymentDetail.partnerNumber
-                    )
-                } " +
-                "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is deleted"
+                    "for advance payment no. ${paymentDetail.id} of partner ${
+                        getPartnerName(
+                            paymentDetail.partnerType,
+                            paymentDetail.partnerNumber
+                        )
+                    } " +
+                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is deleted"
         )
         .build()
 )
@@ -217,11 +219,11 @@ fun paymentApplicationToEcCreated(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_CREATED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "was created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
-                    paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}"
+                    "was created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                    "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                    "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                        paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                    } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}"
         )
         .build()
 )
@@ -260,7 +262,7 @@ fun paymentApplicationToEcReOpened(
                 .toDescription(previousStatus = PaymentEcStatus.Finished, newStatus = PaymentEcStatus.Draft)
         )
         .build()
-    )
+)
 
 fun paymentApplicationToEcDeleted(
     context: Any,
@@ -270,13 +272,46 @@ fun paymentApplicationToEcDeleted(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                    "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                    "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                    "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
                         paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate} was deleted"
+                    } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate} was deleted"
         )
         .build()
+)
+
+
+fun paymentAccountsFinished(
+    context: Any,
+    updatedPaymentAccount: PaymentAccount,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED)
+            .description(
+                updatedPaymentAccount.toDescription(
+                    previousStatus = PaymentAccountStatus.DRAFT,
+                    newStatus = PaymentAccountStatus.FINISHED
+                )
+            )
+            .build()
+)
+
+fun paymentAccountsReOpened(
+    context: Any,
+    updatedPaymentAccount: PaymentAccount,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED)
+            .description(
+                updatedPaymentAccount.toDescription(
+                    previousStatus = PaymentAccountStatus.FINISHED,
+                    newStatus = PaymentAccountStatus.DRAFT
+                )
+            )
+            .build()
 )
 
 fun paymentApplicationToEcAuditExportCreated(

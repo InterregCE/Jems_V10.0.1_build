@@ -80,10 +80,11 @@ export class ProjectReportDetailPageStore {
       ),
       tap(report => this.reportVersion$.next(report.linkedFormVersion)),
       tap(report => Log.info('Fetched the project report:', this, report)),
-      shareReplay(1)
     );
 
-    return merge(initialReport$, this.updatedReport$);
+    return merge(initialReport$, this.updatedReport$).pipe(
+      shareReplay(1)
+    );
   }
 
   private projectReportVerificationNotification(): Observable<ProjectReportVerificationNotificationDTO> {
@@ -107,6 +108,7 @@ export class ProjectReportDetailPageStore {
 
     return merge(initialReportNotification$, this.updatedNotificationData$);
   }
+
   public saveIdentification(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
     return combineLatest([
       this.projectStore.projectId$,

@@ -10,10 +10,15 @@ data class AdvancePayment (
     val id: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+    val projectId: Long,
+    val linkedProjectVersion: String,
+    var lastApprovedProjectVersion: String? = null,
 
     val partnerType: ProjectPartnerRole,
     val partnerSortNumber: Int?,
     val partnerAbbreviation: String,
+    val partnerNameInOriginalLanguage: String,
+    val partnerNameInEnglish: String,
 
     val programmeFund: ProgrammeFund? = null,
     val partnerContribution: IdNamePair? = null,

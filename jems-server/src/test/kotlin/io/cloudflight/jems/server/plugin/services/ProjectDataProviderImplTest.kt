@@ -1819,6 +1819,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val contractMonitoring = ProjectContractingMonitoring(
             projectId = projectId,
             startDate = projectStartDate,
+            closureDate = mockk(),
+            lastPaymentDates = mockk(),
             endDate = null,
             typologyProv94 = ContractingMonitoringExtendedOption.Yes,
             typologyProv94Comment = null,

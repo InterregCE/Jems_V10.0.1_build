@@ -7,13 +7,30 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegular
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerInvestment
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerLumpSum
+import io.cloudflight.jems.server.project.service.report.getTotalCertifiedPerUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureIdentifiers
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -23,6 +40,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.plusSpf
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.calculateCertified
 import io.cloudflight.jems.server.project.service.report.project.verification.calculateCostCategoriesCurrentVerified
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
@@ -53,7 +71,14 @@ class FinalizeVerificationProjectReport(
     private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
     private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
-) : FinalizeVerificationProjectReportInteractor {
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+    private val partnerReportPersistence: ProjectPartnerReportPersistence,
+    private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
+    private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
+    private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
+
+    ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
     @CanFinalizeReportVerification
@@ -92,6 +117,10 @@ class FinalizeVerificationProjectReport(
         saveAfterVerificationUnitCosts(expendituresByCertificate.values.getAfterVerificationForUnitCosts(), report) // table 4
         saveAfterVerificationInvestments(expendituresByCertificate.values.getAfterVerificationForInvestments(), report) // table 5
 
+        expendituresByCertificate.onlyParkedExpenditures().let {
+            if (it.isNotEmpty()) { calculateAndSaveCertificatesParkedValues(it) }
+        }
+
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
 
@@ -107,6 +136,67 @@ class FinalizeVerificationProjectReport(
             )
         }.status
     }
+
+    private fun calculateAndSaveCertificatesParkedValues(expendituresByCertificate: Map<ExpenditureIdentifiers, List<ExpenditureVerification>>) {
+        val certificateIds = expendituresByCertificate.keys.map { it.partnerReportId }.toSet()
+        val coFinancingPerPartnerReport = partnerReportPersistence.getPartnerReportCoFinancingForReports(certificateIds)
+        val contributionsPerPartnerReport = reportContributionPersistence.getAllContributionsForReportIds(certificateIds).groupBy{ it.reportId }
+        val costCategoriesPerPartnerReport = reportExpenditureCostCategoryPersistence.getCostCategoriesFor(certificateIds)
+
+        val coFinancingParkedValuesPerCertificate = mutableMapOf<Long, ReportExpenditureCoFinancingColumn>()
+        val costCategoriesParkedValuesPerCertificate = mutableMapOf<Long, BudgetCostsCalculationResultFull>()
+        val lumpSumsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+        val unitCostsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+        val investmentsParkedValuesPerCertificate = mutableMapOf<Long, Map<Long, BigDecimal>>()
+
+        expendituresByCertificate.entries.forEach { (certificate, parkedVerificationExpenditures) ->
+            val partnerReportId = certificate.partnerReportId
+            val partnerCoFinancing = coFinancingPerPartnerReport[partnerReportId]!!
+            val costCategories = costCategoriesPerPartnerReport[partnerReportId]!!
+            val partnerReportContributions = contributionsPerPartnerReport[partnerReportId]!!.extractOverview()
+
+            val parkedExpendituresCostCategoriesValues = parkedVerificationExpenditures.calculateCertified(options = costCategories.options)
+            val certificateCoFinancingParkedValues = calculateCertificateCoFinParkedAfterVerification(
+                totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
+                afterVerificationExpenditureParked = parkedExpendituresCostCategoriesValues.sum,
+                partnerCoFinancing = partnerCoFinancing,
+                partnerReportContributions = partnerReportContributions
+            )
+
+            coFinancingParkedValuesPerCertificate[partnerReportId] = certificateCoFinancingParkedValues
+            costCategoriesParkedValuesPerCertificate[partnerReportId] = parkedExpendituresCostCategoriesValues
+
+            parkedVerificationExpenditures.getTotalCertifiedPerLumpSum().let {
+                if (it.isNotEmpty()) { lumpSumsParkedValuesPerCertificate[partnerReportId] = it }
+            }
+            parkedVerificationExpenditures.getTotalCertifiedPerUnitCost().let {
+                if (it.isNotEmpty()) { unitCostsParkedValuesPerCertificate[partnerReportId] = it }
+            }
+            parkedVerificationExpenditures.getTotalCertifiedPerInvestment().let {
+                if (it.isNotEmpty()) { investmentsParkedValuesPerCertificate[partnerReportId] = it }
+            }
+        }
+
+        partnerReportCoFinancingPersistence.updateAfterVerificationParkedValues(coFinancingParkedValuesPerCertificate)
+        reportExpenditureCostCategoryPersistence.updateAfterVerificationParkedValues(costCategoriesParkedValuesPerCertificate)
+        reportLumpSumPersistence.updateAfterVerificationParkedValues(lumpSumsParkedValuesPerCertificate)
+        reportUnitCostPersistence.updateAfterVerificationParkedValues(unitCostsParkedValuesPerCertificate)
+        reportInvestmentPersistence.updateAfterVerificationParkedValues(investmentsParkedValuesPerCertificate)
+    }
+
+    private fun calculateCertificateCoFinParkedAfterVerification(
+        totalEligibleBudget: BigDecimal,
+        afterVerificationExpenditureParked: BigDecimal,
+        partnerReportContributions: ProjectPartnerReportContributionOverview,
+        partnerCoFinancing: List<ProjectPartnerCoFinancing>
+    ): ReportExpenditureCoFinancingColumn =
+        getCurrentFrom(
+            partnerReportContributions.generateCoFinCalculationInputData(
+                totalEligibleBudget = totalEligibleBudget,
+                currentValueToSplit = afterVerificationExpenditureParked,
+                funds = partnerCoFinancing
+            )
+        ).toColumn()
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {
         if (!report.status.canBeVerified())
@@ -129,17 +219,27 @@ class FinalizeVerificationProjectReport(
     ) =
         certificateSplits.groupBy { it.fundId }
             .mapValues { (_, certificateFundSplits) ->
+
+                val amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund()
+                val partnerContribution = certificateFundSplits.sumOf { it.defaultPartnerContribution }
                 PaymentRegularToCreate(
                     projectId = projectReport.projectId,
-                    amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund(),
+                    amountApprovedPerFund = amountApprovedPerFund,
                     partnerPayments = certificateFundSplits.map {
                         PaymentPartnerToCreate(
                             partnerId = it.partnerId,
                             partnerReportId = it.partnerReportId,
-                            amountApprovedPerPartner = it.value
+                            amountApprovedPerPartner = it.value,
+                            partnerAbbreviationIfFtls = null,
+                            partnerNameInOriginalLanguageIfFtls = null,
+                            partnerNameInEnglishIfFtls = null,
                         )
                     },
-                    defaultPartnerContribution = certificateFundSplits.sumOf { it.defaultPartnerContribution },
+                    defaultTotalEligibleWithoutSco = amountApprovedPerFund.add(partnerContribution),
+                    defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                    defaultFundAmountPublicContribution = amountApprovedPerFund,
+
+                    defaultPartnerContribution = partnerContribution,
                     defaultOfWhichPublic = certificateFundSplits.sumOf { it.defaultOfWhichPublic },
                     defaultOfWhichAutoPublic = certificateFundSplits.sumOf { it.defaultOfWhichAutoPublic },
                     defaultOfWhichPrivate = certificateFundSplits.sumOf { it.defaultOfWhichPrivate },
@@ -212,5 +312,9 @@ class FinalizeVerificationProjectReport(
             verifiedValues = afterVerificationInvestments,
         )
     }
+
+    private fun Map<ExpenditureIdentifiers, List<ExpenditureVerification>>.onlyParkedExpenditures() =
+        this.mapValues { it.value.filter { expenditure -> expenditure.parked } }
+
 
 }

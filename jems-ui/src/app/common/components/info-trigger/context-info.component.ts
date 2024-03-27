@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {TooltipPosition} from '@angular/material/tooltip';
-import {TranslateService} from "@ngx-translate/core";
-import {LanguageStore} from "@common/services/language-store.service";
+import {TranslateService} from '@ngx-translate/core';
+import {LanguageStore} from '@common/services/language-store.service';
 
 @Component({
   selector: 'jems-context-info',

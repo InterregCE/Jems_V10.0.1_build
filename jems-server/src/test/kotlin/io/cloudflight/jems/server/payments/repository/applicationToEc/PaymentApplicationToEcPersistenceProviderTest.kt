@@ -158,7 +158,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var ecPaymentRepository: PaymentApplicationsToEcRepository
+    private lateinit var ecPaymentRepository: EcPaymentRepository
 
     @MockK
     private lateinit var programmeFundRepository: ProgrammeFundRepository
@@ -182,8 +182,8 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun createPaymentApplicationToEc() {
-        every { programmeFundRepository.getById(programmeFundId) } returns programmeFundEntity
-        every { accountingYearRepository.getById(accountingYearId) } returns accountingYearEntity
+        every { programmeFundRepository.getReferenceById(programmeFundId) } returns programmeFundEntity
+        every { accountingYearRepository.getReferenceById(accountingYearId) } returns accountingYearEntity
         every { ecPaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(persistenceProvider.createPaymentApplicationToEc(paymentApplicationToEcCreate)).isEqualTo(
@@ -195,7 +195,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
     @Test
     fun updatePaymentApplicationToEc() {
 
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns PaymentApplicationToEcEntity(
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns PaymentApplicationToEcEntity(
             id = paymentApplicationsToEcId,
             programmeFund = expectedProgrammeFundEntity,
             accountingYear = expectedAccountingYearEntity,
@@ -225,7 +225,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun updatePaymentApplicationToEcSummaryOtherSection() {
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
 
         assertThat(persistenceProvider.updatePaymentToEcSummaryOtherSection(paymentApplicationToEcUpdate)).isEqualTo(
             expectedPaymentApplicationToEc
@@ -234,7 +234,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentApplicationToEcDetail() {
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
         assertThat(persistenceProvider.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)).isEqualTo(
             expectedPaymentApplicationToEc
         )
@@ -253,7 +253,7 @@ class PaymentApplicationToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun updatePaymentApplicationToEcStatus() {
-        every { ecPaymentRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+        every { ecPaymentRepository.getReferenceById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
         assertThat(
             persistenceProvider.updatePaymentApplicationToEcStatus(
                 paymentApplicationsToEcId,

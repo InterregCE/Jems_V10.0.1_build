@@ -69,6 +69,7 @@ class PaymentAuditExportPersistenceProvider(
             PaymentAuditExportMetaDataNotFoundException()
         }
 
+    @Transactional
     override fun saveExportFile(
         pluginKey: String,
         fundType: ProgrammeFundType?,
@@ -93,8 +94,8 @@ class PaymentAuditExportPersistenceProvider(
     override fun saveExportMetaData(
         pluginKey: String, programmeFundId: Long?, accountingYearId: Long?, requestTime: ZonedDateTime
     ): PaymentToEcExportMetadata {
-        val programmeFundEntity = programmeFundId?.let { fundRepository.getById(programmeFundId) }
-        val accountingYearEntity = accountingYearId?.let { accountingYearRepository.getById(accountingYearId) }
+        val programmeFundEntity = programmeFundId?.let { fundRepository.getReferenceById(programmeFundId) }
+        val accountingYearEntity = accountingYearId?.let { accountingYearRepository.getReferenceById(accountingYearId) }
 
         return paymentAuditExportRepository.save(
             PaymentAuditExportEntity(

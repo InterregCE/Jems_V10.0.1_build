@@ -23,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.closure.ProjectReportProjectClosurePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
@@ -31,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -161,6 +163,10 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportSpfClaimPersistence : ProjectReportSpfContributionClaimPersistence
     @MockK
+    lateinit var projectReportProjectClosurePersistence: ProjectReportProjectClosurePersistence
+    @MockK
+    lateinit var projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -245,6 +251,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { report.lastVerificationReOpening } returns null
         every { report.linkedFormVersion } returns "v1.0"
         every { report.periodNumber } returns 1
+        every { report.finalReport } returns false
 
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         every { preSubmissionCheckService.preCheck(PROJECT_ID, reportId).isSubmissionAllowed } returns true
@@ -285,11 +292,16 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(reportId) } answers { }
         every { reportWorkPlanPersistence.deleteWorkPlan(reportId) } answers { }
 
+        every { projectReportExpenditureVerificationPersistence.reInitiateVerificationForProjectReport(reportId) } answers { }
+
         val newStatus = slot<ProjectReportStatus>()
         val submissionTime = slot<ZonedDateTime>()
         val result = mockedResult(status = expectedStatus)
         every { reportPersistence.reSubmitReport(PROJECT_ID, reportId, capture(newStatus), capture(submissionTime)) } returns result
         every { reportPersistence.submitReportInitially(PROJECT_ID, reportId, capture(submissionTime)) } returns result
+
+        every { projectReportProjectClosurePersistence.deleteProjectReportProjectClosure(reportId) } returnsArgument 0
+
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -314,6 +326,7 @@ internal class SubmitProjectReportTest : UnitTest() {
 
         verify(exactly = 0) { reportCertificatePersistence.deselectCertificatesOfProjectReport(reportId) }
         verify(exactly = 0) { reportSpfClaimPersistence.resetSpfContributionClaims(reportId) }
+        verify(exactly = 1) { projectReportProjectClosurePersistence.deleteProjectReportProjectClosure(reportId) }
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(

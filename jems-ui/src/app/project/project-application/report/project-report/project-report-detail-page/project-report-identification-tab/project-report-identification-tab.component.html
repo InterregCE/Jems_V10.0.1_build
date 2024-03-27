@@ -41,7 +41,7 @@
 
     <form [formGroup]="form" jemsFormLayout>
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="half">
+            <mat-form-field jemsFormFieldWidth="xx-large">
                 <mat-label>{{'project.application.project.report.start.date' | translate | dateFormatInfo : false}}</mat-label>
                 <input [max]="form?.controls?.endDate?.value"
                        formControlName="startDate"
@@ -61,7 +61,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="half">
+            <mat-form-field jemsFormFieldWidth="xx-large">
                 <mat-label>{{'project.application.project.report.end.date' | translate | dateFormatInfo : false}}</mat-label>
                 <input [min]="form?.controls?.startDate?.value"
                        formControlName="endDate" matInput
@@ -79,6 +79,21 @@
                     </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
+
+            <div jemsFormFieldWidth="large" class="small-toggle-group justify-center final-report-toggle">
+                <div jemsLabel>
+                    {{'project.application.project.report.final.report' | translate}}
+                </div>
+                <mat-button-toggle-group formControlName="finalReport" [disabled]="availableDeadlines.length !== 0">
+                    <mat-button-toggle [value]="true">
+                        <span>{{'common.yes' | translate}}</span>
+                    </mat-button-toggle>
+                    <mat-button-toggle [value]="false">
+                        <span>{{'common.no' | translate}}</span>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+
         </div>
         <div jemsMultiColumnRow>
             <mat-form-field class="mt-4" jemsFormFieldWidth="half">
@@ -91,12 +106,18 @@
                         placeholder="{{'project.application.project.report.deadline.placeholder' | translate}}">
                     <mat-option *ngIf="availableDeadlines.length === 0" [value]="0">{{'project.application.project.report.no.deadline' | translate}}</mat-option>
                     <mat-option *ngFor="let deadline of availableDeadlines" [value]="deadline.id">
-                        {{'project.application.project.report.deadline.selection' | translate : {
-                            deadlineNumber : deadline.number,
-                            periodNumber : deadline.periodNumber,
-                            start: getStartMonth(deadline.periodNumber),
-                            end: getEndMonth(deadline.periodNumber)
-                        } }}</mat-option>
+                        <span *ngIf="deadline.periodNumber !== 255"> {{'project.application.project.report.deadline.selection' | translate : {
+                                deadlineNumber : deadline.number,
+                                periodNumber : deadline.periodNumber,
+                                start: getStartMonth(deadline.periodNumber),
+                                end: getEndMonth(deadline.periodNumber)
+                            } }}
+                        </span>
+                        <span *ngIf="deadline.periodNumber === 255">{{'project.application.project.report.deadline.selection.after.project.implementation' | translate : {
+                                deadlineNumber : deadline.number
+                            } }}
+                        </span>
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
             <div jemsFormFieldWidth="half" class="small-toggle-group justify-center">

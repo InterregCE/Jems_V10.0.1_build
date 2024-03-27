@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest
+import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.expectedFund
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.ftlsPaymentToProject
 import io.cloudflight.jems.server.payments.controller.PaymentsControllerTest.Companion.regularPaymentToProject
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
@@ -20,10 +21,11 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.deselectPayment.DeselectPaymentFromEcInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeAmountsForArtNot94Not95.GetOverviewByTypeInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getCumulativeOverview.GetCumulativeOverviewInteractor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.ftls.GetFtlsPaymentsAvailableForArtNot94Not95Interactor
-import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.regular.GetRegularPaymentsAvailableForArtNot94Not95Interactor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.art94Art95.GetPaymentsAvailableForArt94Art95Interactor
+import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.getPayments.artNot94Not95.GetPaymentsAvailableArtNot94Not95Interactor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.selectPayment.SelectPaymentToEcInteractor
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.updatePayment.UpdateLinkedPaymentInteractor
+import io.cloudflight.jems.server.payments.service.toModel
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -31,6 +33,8 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -50,11 +54,17 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             privateContribution = BigDecimal.valueOf(9),
             correctedPrivateContribution = BigDecimal.valueOf(10),
             priorityAxis = "code",
+            correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
+            correctedFundAmountUnionContribution = BigDecimal.ZERO,
+            correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "comment",
         )
 
         private fun paymentByType(type: PaymentType) =
             if (type == PaymentType.FTLS) ftlsPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
-            else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
+            else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID,
+                totalEligibleAmount = BigDecimal.TEN, fundAmount = BigDecimal.TEN, amountPaidPerFund = BigDecimal.ZERO,
+                lastApprovedVersionBeforeReadyForPayment = "v1.0")
 
         private fun expectedPayment(type: PaymentTypeDTO) = PaymentToEcLinkingDTO(
             payment = PaymentToProjectDTO(
@@ -66,14 +76,15 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 paymentClaimId = if (type == PaymentTypeDTO.FTLS) null else 5L,
                 paymentClaimNo = if (type == PaymentTypeDTO.FTLS) 0 else 5,
                 paymentToEcId = PAYMENT_TO_EC_ID,
-                fundName = "OTHER",
-                amountApprovedPerFund = BigDecimal.TEN,
+                fund = expectedFund,
+                fundAmount = BigDecimal.TEN,
                 amountPaidPerFund = BigDecimal.ZERO,
                 amountAuthorizedPerFund = BigDecimal.ZERO,
                 paymentApprovalDate = PaymentsControllerTest.currentTime,
                 paymentClaimSubmissionDate = null,
                 totalEligibleAmount = BigDecimal.TEN,
                 lastApprovedVersionBeforeReadyForPayment = "v1.0",
+                remainingToBePaid = if (type == PaymentTypeDTO.FTLS) BigDecimal.valueOf(514L) else BigDecimal.valueOf(515L),
             ),
             paymentToEcId = PAYMENT_TO_EC_ID,
             partnerContribution = BigDecimal.valueOf(4),
@@ -84,6 +95,10 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             privateContribution = BigDecimal.valueOf(9),
             correctedPrivateContribution = BigDecimal.valueOf(10),
             priorityAxis = "code",
+            correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
+            correctedFundAmountUnionContribution = BigDecimal.ZERO,
+            correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "comment",
         )
 
         private val paymentsIncludedInPaymentsToEc = listOf(
@@ -142,12 +157,6 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var getFtlsPaymentsAvailableForArtNot94Not95: GetFtlsPaymentsAvailableForArtNot94Not95Interactor
-
-    @MockK
-    private lateinit var getRegularPaymentsAvailableForArtNot94Not95: GetRegularPaymentsAvailableForArtNot94Not95Interactor
-
-    @MockK
     private lateinit var deselectPaymentFromEc: DeselectPaymentFromEcInteractor
 
     @MockK
@@ -162,38 +171,47 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
     @MockK
     private lateinit var getCumulativeOverviewInteractor: GetCumulativeOverviewInteractor
 
+    @MockK
+    private lateinit var  getPaymentsAvailableForArt94Art95Interactor: GetPaymentsAvailableForArt94Art95Interactor
+
+    @MockK
+    private lateinit var  getPaymentsAvailableArtNot94Not95Interactor: GetPaymentsAvailableArtNot94Not95Interactor
+
     @InjectMockKs
     private lateinit var controller: PaymentToEcPaymentLinkingController
 
-    @Test
-    fun getFTLSPaymentsLinkedWithEcForArtNot94Not95() {
-        every { getFtlsPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID) } returns
-                PageImpl(listOf(payment(PaymentType.FTLS)))
 
-        assertThat(controller.getFTLSPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), PAYMENT_TO_EC_ID))
-            .containsExactly(expectedPayment(PaymentTypeDTO.FTLS))
+    @ParameterizedTest(name = "can fetch available payment for art 94 95 by paymentType {0}")
+    @EnumSource(value = PaymentTypeDTO::class)
+    fun getPaymentAvailableForArt94Art95(paymentType: PaymentTypeDTO) {
+        every { getPaymentsAvailableForArt94Art95Interactor.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID, paymentType.toModel()) } returns
+                PageImpl(listOf(payment(paymentType.toModel())))
+
+        assertThat(controller.getPaymentsLinkedWithEcForArt94OrArt95(Pageable.unpaged(), PAYMENT_TO_EC_ID,  paymentType))
+            .containsExactly(expectedPayment(paymentType))
     }
 
-    @Test
-    fun getRegularPaymentsLinkedWithEcForArtNot94Not95() {
-        every { getRegularPaymentsAvailableForArtNot94Not95.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID) } returns
-                PageImpl(listOf(payment(PaymentType.REGULAR)))
+    @ParameterizedTest(name = "can fetch available payment NOT art 94 95 by paymentType {0}")
+    @EnumSource(value = PaymentTypeDTO::class)
+    fun getPaymentAvailableNotArt94NotArt95(paymentType: PaymentTypeDTO) {
+        every { getPaymentsAvailableArtNot94Not95Interactor.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID, paymentType.toModel()) } returns
+                PageImpl(listOf(payment(paymentType.toModel())))
 
-        assertThat(controller.getRegularPaymentsLinkedWithEcForArtNot94Not95(Pageable.unpaged(), PAYMENT_TO_EC_ID))
-            .containsExactly(expectedPayment(PaymentTypeDTO.REGULAR))
+        assertThat(controller.getPaymentsLinkedWithEcNotArt94NotArt95(Pageable.unpaged(), PAYMENT_TO_EC_ID,  paymentType))
+            .containsExactly(expectedPayment(paymentType))
     }
 
     @Test
     fun selectPaymentToEc() {
         every { selectPaymentToEc.selectPaymentToEcPayment(85L, ecPaymentId = 22L) } answers { }
-        controller.selectPaymentToEcPayment(paymentId = 85L, ecApplicationId = 22L)
+        controller.selectPaymentToEcPayment(paymentId = 85L, ecPaymentId = 22L)
         verify(exactly = 1) { selectPaymentToEc.selectPaymentToEcPayment(85L, ecPaymentId = 22L) }
     }
 
     @Test
     fun deselectPaymentFromEc() {
         every { deselectPaymentFromEc.deselectPaymentFromEcPayment(69L) } answers { }
-        controller.deselectPaymentFromEcPayment(paymentId = 69L)
+        controller.deselectPaymentFromEcPayment(ecPaymentId = 22L, paymentId = 69L)
         verify(exactly = 1) { deselectPaymentFromEc.deselectPaymentFromEcPayment(69L) }
     }
 
@@ -203,11 +221,15 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             correctedPublicContribution = BigDecimal.valueOf(60),
             correctedAutoPublicContribution = BigDecimal.valueOf(65),
             correctedPrivateContribution = BigDecimal.valueOf(70),
+            correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
+            correctedFundAmountUnionContribution = BigDecimal.ZERO,
+            correctedFundAmountPublicContribution = BigDecimal.ZERO,
+            comment = "newComment",
         )
         val slotUpdate = slot<PaymentToEcLinkingUpdate>()
         every { updateLinkedPayment.updateLinkedPayment(paymentId = 75L, capture(slotUpdate)) } answers { }
 
-        controller.updateLinkedPayment(paymentId = 75L, toUpdate)
+        controller.updateLinkedPayment(ecPaymentId = PAYMENT_TO_EC_ID, paymentId = 75L, toUpdate)
         verify(exactly = 1) { updateLinkedPayment.updateLinkedPayment(75L, any()) }
 
         assertThat(slotUpdate.captured).isEqualTo(
@@ -215,6 +237,10 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 correctedPublicContribution = BigDecimal.valueOf(60),
                 correctedAutoPublicContribution = BigDecimal.valueOf(65),
                 correctedPrivateContribution = BigDecimal.valueOf(70),
+                correctedTotalEligibleWithoutSco = BigDecimal.ZERO,
+                correctedFundAmountUnionContribution = BigDecimal.ZERO,
+                correctedFundAmountPublicContribution = BigDecimal.ZERO,
+                comment = "newComment"
             )
         )
     }

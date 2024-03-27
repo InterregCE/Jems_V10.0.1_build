@@ -40,11 +40,11 @@ fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
         previousCommunicationStatus = communicationStatus,
         previousCompleted = completed
     ).apply {
-        val specMap = specificObjective.associateBy( { it.language }, { it.translation } )
-        val commMap = communicationObjective.associateBy( { it.language }, { it.translation } )
-        val specExpMap = specificExplanation.associateBy( { it.language }, { it.translation } )
-        val commExpMap = communicationExplanation.associateBy( { it.language }, { it.translation } )
-        val descMap = description.associateBy( { it.language }, { it.translation } )
+        val specMap = specificObjective.associateBy({ it.language }, { it.translation })
+        val commMap = communicationObjective.associateBy({ it.language }, { it.translation })
+        val specExpMap = specificExplanation.associateBy({ it.language }, { it.translation })
+        val commExpMap = communicationExplanation.associateBy({ it.language }, { it.translation })
+        val descMap = description.associateBy({ it.language }, { it.translation })
 
         val languages = specMap.keys union commMap.keys union specExpMap.keys union commExpMap.keys union descMap.keys
 
@@ -77,8 +77,8 @@ fun ProjectReportWorkPackageActivityCreate.toEntity(wp: ProjectReportWorkPackage
         attachment = null,
         previousStatus = status,
     ).apply {
-        val translMap = title.associateBy( { it.language }, { it.translation } )
-        val progMap = progress.associateBy( { it.language }, { it.translation } )
+        val translMap = title.associateBy({ it.language }, { it.translation })
+        val progMap = progress.associateBy({ it.language }, { it.translation })
 
         val languages = translMap.keys union progMap.keys
 
@@ -108,8 +108,8 @@ fun List<ProjectReportWorkPackageActivityDeliverableCreate>.toEntity(
         attachment = null,
         previousCurrentReport = BigDecimal.ZERO
     ).apply {
-        val translMap = it.title.associateBy( { it.language }, { it.translation } )
-        val progMap = it.progress.associateBy( { it.language }, { it.translation } )
+        val translMap = it.title.associateBy({ it.language }, { it.translation })
+        val progMap = it.progress.associateBy({ it.language }, { it.translation })
 
         val languages = translMap.keys union progMap.keys
 
@@ -143,8 +143,8 @@ fun List<ProjectReportWorkPackageOutputCreate>.toEntity(
             attachment = null,
             previousCurrentReport = BigDecimal.ZERO
         ).apply {
-            val translMap = it.title.associateBy( { it.language }, { it.translation } )
-            val progMap = it.progress.associateBy( { it.language }, { it.translation } )
+            val translMap = it.title.associateBy({ it.language }, { it.translation })
+            val progMap = it.progress.associateBy({ it.language }, { it.translation })
 
             val languages = translMap.keys union progMap.keys
 
@@ -171,19 +171,21 @@ fun List<ProjectReportWorkPackageInvestmentCreate>.toEntity(
             deactivated = it.deactivated,
             expectedDeliveryPeriod = it.expectedDeliveryPeriod,
             address = it.address?.toAddressEntity(),
+            status = it.status,
+            previousStatus = it.status
         ).apply {
-            val titleMap = it.title.associateBy( { it.language }, { it.translation } )
-            val jEMap = it.justificationExplanation.associateBy( { it.language }, { it.translation } )
-            val jTRMap = it.justificationTransactionalRelevance.associateBy( { it.language }, { it.translation } )
-            val jBMap = it.justificationBenefits.associateBy( { it.language }, { it.translation } )
-            val jPMap = it.justificationPilot.associateBy( { it.language }, { it.translation } )
-            val rMap = it.risk.associateBy( { it.language }, { it.translation } )
-            val dMap = it.documentation.associateBy( { it.language }, { it.translation } )
-            val dEIMap = it.documentationExpectedImpacts.associateBy( { it.language }, { it.translation } )
-            val oSLMap = it.ownershipSiteLocation.associateBy( { it.language }, { it.translation } )
-            val oRMap = it.ownershipRetain.associateBy( { it.language }, { it.translation } )
-            val oMMap = it.ownershipMaintenance.associateBy( { it.language }, { it.translation } )
-            val pMap = it.progress.associateBy( { it.language }, { it.translation } )
+            val titleMap = it.title.associateBy({ it.language }, { it.translation })
+            val jEMap = it.justificationExplanation.associateBy({ it.language }, { it.translation })
+            val jTRMap = it.justificationTransactionalRelevance.associateBy({ it.language }, { it.translation })
+            val jBMap = it.justificationBenefits.associateBy({ it.language }, { it.translation })
+            val jPMap = it.justificationPilot.associateBy({ it.language }, { it.translation })
+            val rMap = it.risk.associateBy({ it.language }, { it.translation })
+            val dMap = it.documentation.associateBy({ it.language }, { it.translation })
+            val dEIMap = it.documentationExpectedImpacts.associateBy({ it.language }, { it.translation })
+            val oSLMap = it.ownershipSiteLocation.associateBy({ it.language }, { it.translation })
+            val oRMap = it.ownershipRetain.associateBy({ it.language }, { it.translation })
+            val oMMap = it.ownershipMaintenance.associateBy({ it.language }, { it.translation })
+            val pMap = it.progress.associateBy({ it.language }, { it.translation })
 
             val languages = titleMap.keys union jEMap.keys union jTRMap.keys union jBMap.keys union jPMap.keys union rMap.keys union dMap.keys union dEIMap.keys union oSLMap.keys union oRMap.keys union oMMap.keys union pMap.keys
 
@@ -202,8 +204,8 @@ fun List<ProjectReportWorkPackageInvestmentCreate>.toEntity(
                         ownershipSiteLocation = oSLMap[it] ?: "",
                         ownershipRetain = oRMap[it] ?: "",
                         ownershipMaintenance = oMMap[it] ?: "",
-                        progress =  pMap[it] ?: "",
-                        previousProgress =  pMap[it] ?: ""
+                        progress = pMap[it] ?: "",
+                        previousProgress = pMap[it] ?: ""
                     )
                 }
             )
@@ -252,7 +254,7 @@ private fun combineInvestmentTranslatedValues(
     title: Set<InputTranslation>,
 ): MutableSet<ReportProjectCertificateInvestmentTranslEntity> {
     val titleMap = title.filter { !it.translation.isNullOrBlank() }
-        .associateBy( { it.language }, { it.translation } )
+        .associateBy({ it.language }, { it.translation })
 
     return titleMap.keys.mapTo(HashSet()) {
         ReportProjectCertificateInvestmentTranslEntity(

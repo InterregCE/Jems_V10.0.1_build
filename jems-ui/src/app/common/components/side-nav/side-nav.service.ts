@@ -3,7 +3,7 @@ import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
 import {delay, filter, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {ResolveEnd, Router} from '@angular/router';
+import {NavigationExtras, ResolveEnd, Router} from '@angular/router';
 import {RoutingService} from '../../services/routing.service';
 
 @Injectable({providedIn: 'root'})

@@ -2,7 +2,13 @@ import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, debounceTime, filter, map, mergeMap, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {ProjectPartnerUserCollaboratorService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
+  ProjectVersionDTO,
+  UserRoleDTO,
+  WorkPackageService
+} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -232,7 +238,7 @@ export class ProjectApplicationFormSidenavService {
                   },
                   iconBeforeHeadline: partner.active ? '' : 'person_off',
                   route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
-                  baseRoute: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}`,
+                  baseRoute: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}`
                 }
               ))
             )
@@ -332,7 +338,7 @@ export class ProjectApplicationFormSidenavService {
                     },
                     iconBeforeHeadline: workPackage.deactivated ? 'do_not_disturb' : '',
                     route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
-                    baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`,
+                    baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`
                   }
                 ))
               )
@@ -411,7 +417,7 @@ export class ProjectApplicationFormSidenavService {
                lockedContractingSections,
                canSeeSharedFolder,
                canSeeAdvancePayment,
-               canSeeCorrections,
+               canSeeCorrections
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
@@ -607,12 +613,12 @@ export class ProjectApplicationFormSidenavService {
         bullets: [
           {
             headline: {i18nKey: 'project.application.form.section.part.a'},
-            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormIdentification`,
+            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormIdentification`
           },
           ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES) ?
             [{
               headline: {i18nKey: 'project.application.form.section.part.a.overview.tables'},
-              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverviewTables`,
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverviewTables`
             }] : [],
         ],
         versionedSection: true
@@ -628,7 +634,7 @@ export class ProjectApplicationFormSidenavService {
           ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS) ?
             [{
               headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
-              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormAssociatedOrganization`,
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormAssociatedOrganization`
             }] : []
         ],
         versionedSection: true
@@ -646,16 +652,16 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPartner`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPartner`
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudget`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudget`
               },
               ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.d.subsection.three'},
-                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPeriod`,
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPeriod`
                 }] : [],
             ],
             versionedSection: true
@@ -665,7 +671,7 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.e.subsection.one'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`
               },
               ...(this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() || this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed()) ?
                 [{
@@ -674,7 +680,7 @@ export class ProjectApplicationFormSidenavService {
                   bullets: this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed() ? [
                     {
                       headline: {i18nKey: 'project.application.form.section.part.e.subsection.two.subsection.one'},
-                      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts/projectProposed`,
+                      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts/projectProposed`
                     }
                   ] : []
                 }] : []
@@ -690,7 +696,7 @@ export class ProjectApplicationFormSidenavService {
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT) ?
         [{
@@ -717,7 +723,7 @@ export class ProjectApplicationFormSidenavService {
       this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RESULT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.six'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationTimePlan`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationTimePlan`
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT) ?
         [{

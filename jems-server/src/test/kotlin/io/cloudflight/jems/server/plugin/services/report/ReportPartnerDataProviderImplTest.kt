@@ -277,6 +277,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
         private val contribution = ProjectPartnerReportEntityContribution(
             id = 18L,
+            reportId = report.id,
             sourceOfContribution = "source public 1",
             legalStatus = ProjectPartnerContributionStatus.Public,
             idFromApplicationForm = 200L,
@@ -360,7 +361,9 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                 reportOfOriginId = 75L,
                 reportOfOriginNumber = 4,
                 reportProjectOfOriginId = null,
-                originalExpenditureNumber = 3
+                originalExpenditureNumber = 3,
+                parkedFromExpenditureId = 770L,
+                parkedOn = DATE_TIME_1
             ),
         )
 
@@ -546,6 +549,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             reportLumpSumId = 36L,
             lumpSumId = 945L,
             name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
+            fastTrack = true,
             period = 4,
             totalEligibleBudget = BigDecimal.valueOf(1),
             previouslyReported = BigDecimal.valueOf(2),

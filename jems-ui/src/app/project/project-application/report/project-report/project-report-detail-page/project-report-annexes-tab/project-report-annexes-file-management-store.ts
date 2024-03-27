@@ -19,7 +19,6 @@ import {
     filter,
     finalize,
     map,
-    shareReplay,
     startWith,
     switchMap,
     take,
@@ -49,7 +48,7 @@ export class ProjectReportAnnexesFileManagementStore {
     reportId$: Observable<number>;
     fileList$: Observable<PageJemsFileDTO>;
     fileCategories$: Observable<CategoryNode>;
-    isEditable$: Observable<boolean>;
+    canUpload$: Observable<boolean>;
     isReportOpen$: Observable<boolean>;
     isInLimitedReopened$: Observable<boolean>;
     currentProjectReport$: Observable<ProjectReportSummaryDTO>;
@@ -75,7 +74,7 @@ export class ProjectReportAnnexesFileManagementStore {
         this.reportId$ = this.projectReportId();
         this.currentProjectReport$ = this.getCurrentProjectReport();
         this.fileList$ = this.fileList();
-        this.isEditable$ = this.isEditable();
+        this.canUpload$ = this.canUpload();
         this.isReportOpen$ = this.isReportOpen();
         this.isInLimitedReopened$ = this.isInLimitedReopened();
     }
@@ -103,7 +102,6 @@ export class ProjectReportAnnexesFileManagementStore {
                 if (currentReport === undefined) {
                     throw new Error('Could not fetch the current project report!');
                 }
-
                 return currentReport;
             })
         );
@@ -125,7 +123,7 @@ export class ProjectReportAnnexesFileManagementStore {
         );
     }
 
-    private isEditable(): Observable<boolean> {
+    private canUpload(): Observable<boolean> {
         return combineLatest([
             this.selectedCategory$,
             this.isReportOpen()
@@ -233,7 +231,7 @@ export class ProjectReportAnnexesFileManagementStore {
 
     uploadFile(file: File): Observable<JemsFileMetadataDTO> {
         const serviceId = uuid();
-        this.routingService.confirmLeaveMap.set(serviceId, true);
+        this.routingService.confirmLeaveSet.add(serviceId);
         return combineLatest([
             this.projectId$.pipe(map(id => Number(id))),
             this.reportId$.pipe(map(id => Number(id))),
@@ -244,7 +242,7 @@ export class ProjectReportAnnexesFileManagementStore {
             ),
             tap(() => this.filesChanged$.next()),
             tap(() => this.error$.next(null)),
-            finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+            finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
             catchError(error => {
                 this.error$.next(error.error);
                 return of({} as JemsFileMetadataDTO);

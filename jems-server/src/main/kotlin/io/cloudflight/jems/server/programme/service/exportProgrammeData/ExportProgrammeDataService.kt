@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersis
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 
@@ -20,7 +21,6 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
     }
 
     @Async
-    @Transactional
     fun execute(plugin: ProgrammeDataExportPlugin, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, pluginOptions: String) {
         runCatching {
             plugin.export(exportLanguage.toDataModel(), inputLanguage.toDataModel(), pluginOptions).also { result ->
@@ -37,7 +37,7 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
         }.getOrNull()
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun saveExportFileMetaData(pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage) {
         with(programmeDataPersistence.listExportMetadata()) {
             throwIfAnyExportIsInProgress(this)

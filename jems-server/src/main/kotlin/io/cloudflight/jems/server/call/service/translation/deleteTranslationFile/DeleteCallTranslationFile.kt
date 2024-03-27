@@ -34,7 +34,7 @@ class DeleteCallTranslationFile(
         val fileId = filePersistence.fileIdIfExists(exactPath = CallTranslation.generatePath(callId), fileName = fileName)
             ?: throw FileNotFound()
 
-        fileService.moveFile(
+        fileService.archiveCallTranslation(
             fileId,
             newName = archivedFileNameFor(fileName),
             newLocation = JemsFileType.CallTranslationArchive.generatePath(callId),

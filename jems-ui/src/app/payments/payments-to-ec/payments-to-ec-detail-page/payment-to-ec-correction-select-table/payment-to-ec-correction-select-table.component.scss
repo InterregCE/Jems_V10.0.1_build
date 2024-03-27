@@ -1,13 +1,16 @@
 @use '../../../../project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
 $input-col-width: 9rem;
 
 .mat-table {
   overflow: auto;
   max-height: calc(100vh - 15rem);
+
   .mat-header-row {
     position: sticky;
     top: 0;
     z-index: 1000;
+
     mat-header-cell {
       background-color: var(--table-backaground-color);
     }
@@ -17,6 +20,7 @@ $input-col-width: 9rem;
 .border-cell-right {
   border-right: .0625rem solid var(--table-border-color);
 }
+
 .border-cell-left {
   border-left: .0625rem solid var(--table-border-color);
 }
@@ -30,6 +34,7 @@ $input-col-width: 9rem;
 .mat-column-projectId {
   min-width: 6rem;
 }
+
 .mat-column-projectAcronym {
   min-width: 8rem;
 }
@@ -44,10 +49,10 @@ $input-col-width: 9rem;
 }
 
 .mat-column-totalEligible,
-.mat-column-controllingBody,
-.mat-column-comment {
+.mat-column-controllingBody {
   min-width: 8rem;
 }
+
 .mat-column-scenario {
   min-width: 5rem;
   max-width: 5rem;
@@ -63,6 +68,12 @@ $input-col-width: 9rem;
   min-width: $input-col-width;
   max-width: $input-col-width;
 }
+
+.mat-column-comment {
+  min-width: $input-col-width;
+  flex-grow: 1.5;
+}
+
 .mat-column-correction {
   padding-right: 0;
   min-width: 4.5rem;
@@ -83,11 +94,12 @@ $input-col-width: 9rem;
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-autoPublicContribution,
-.mat-column-comment,
-.mat-column-privateContribution {
+.mat-column-privateContribution,
+.mat-column-comment {
   padding-left: .5rem;
 }
-.mat-column-privateContribution {
+
+.mat-column-comment {
   padding-right: .5rem;
 }
 
@@ -95,12 +107,12 @@ $input-col-width: 9rem;
   width: $input-col-width;
 }
 
-.vertical-align {
-  margin-bottom: 30%;;
+mat-row.edited-row {
+  height: 10rem;
 }
 
-.edited-row {
-  height: 10rem;
+mat-row.edited-funds .mat-cell {
+  background-color: var(--pale-yellow) !important;
 }
 
 .save-icon {
@@ -119,7 +131,12 @@ $input-col-width: 9rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 100%;
   max-width: 100%;
+}
+
+.comment-align {
+  margin-bottom: 2rem;
 }
 
 .button-cell {

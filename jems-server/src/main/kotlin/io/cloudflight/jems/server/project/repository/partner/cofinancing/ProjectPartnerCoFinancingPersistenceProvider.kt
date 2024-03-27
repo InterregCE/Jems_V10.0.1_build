@@ -39,7 +39,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAvailableFunds(partnerId: Long): Set<ProgrammeFund> =
        projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)?.let { projectId ->
-            projectRepository.getById(projectId)
+            projectRepository.getReferenceById(projectId)
                 .call.funds.map { it.setupId.programmeFund.toModel() }
                 .toSet()
         } ?: throw ProjectNotFoundException()
@@ -74,7 +74,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerIds: List<Long>,
         projectId: Long,
         version: String?
-    ): Map<Long, List<ProjectPartnerCoFinancing>>? {
+    ): Map<Long, List<ProjectPartnerCoFinancing>> {
         return projectVersionUtils.fetch(version,
             projectId,
             currentVersionFetcher = {

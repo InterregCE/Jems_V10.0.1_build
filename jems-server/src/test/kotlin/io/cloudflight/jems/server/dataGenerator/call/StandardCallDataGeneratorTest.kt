@@ -28,7 +28,7 @@ import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSampl
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -36,7 +36,7 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.Ordered
 import java.math.BigDecimal
 import java.time.ZonedDateTime

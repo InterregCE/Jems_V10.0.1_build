@@ -2,13 +2,11 @@ package io.cloudflight.jems.server.plugin.services.payments
 
 import io.cloudflight.jems.plugin.contract.models.payments.export.AccountingYearData
 import io.cloudflight.jems.plugin.contract.models.payments.export.AuditControlCorrectionData
-import io.cloudflight.jems.plugin.contract.models.payments.export.ControllingBodyData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentApplicationToEcSummaryData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcAmountSummaryData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcAmountSummaryLineData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcCorrectionLinkingData
 import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentToEcPaymentData
-import io.cloudflight.jems.plugin.contract.models.payments.export.ProjectCorrectionProgrammeMeasureScenarioData
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummary
@@ -53,8 +51,8 @@ fun PaymentToEcCorrectionLinking.toDataModel() = PaymentToEcCorrectionLinkingDat
     projectAcronym = projectAcronym,
     projectCustomIdentifier = projectCustomIdentifier,
     priorityAxis = priorityAxis,
-    controllingBody = ControllingBodyData.valueOf(controllingBody.name),
-    scenario = ProjectCorrectionProgrammeMeasureScenarioData.valueOf(scenario.name),
+    controllingBody = controllingBody.toDataModel(),
+    scenario = scenario.toDataModel(),
     projectFlagged94Or95 = projectFlagged94Or95,
     paymentToEcId = paymentToEcId,
     fundAmount = fundAmount,
@@ -65,7 +63,12 @@ fun PaymentToEcCorrectionLinking.toDataModel() = PaymentToEcCorrectionLinkingDat
     correctedAutoPublicContribution = correctedAutoPublicContribution,
     privateContribution = privateContribution,
     correctedPrivateContribution = correctedPrivateContribution,
-    comment = comment
+    comment = comment,
+    correctedFundAmount = correctedFundAmount,
+    totalEligibleWithoutArt94or95 = totalEligibleWithoutArt94or95,
+    correctedTotalEligibleWithoutArt94or95 = correctedTotalEligibleWithoutArt94or95,
+    unionContribution = unionContribution,
+    correctedUnionContribution = correctedUnionContribution
 )
 
 fun AuditControlCorrection.toDataModel() = AuditControlCorrectionData(
@@ -85,5 +88,9 @@ fun PaymentToEcPayment.toDataModel() = PaymentToEcPaymentData(
     correctedAutoPublicContribution = correctedAutoPublicContribution,
     privateContribution = privateContribution,
     correctedPrivateContribution = correctedPrivateContribution,
-    priorityAxis = priorityAxis
+    priorityAxis = priorityAxis,
+    correctedTotalEligibleWithoutSco = correctedTotalEligibleWithoutSco,
+    correctedFundAmountUnionContribution = correctedFundAmountUnionContribution,
+    correctedFundAmountPublicContribution = correctedFundAmountPublicContribution,
+    comment = comment ?: "",
 )

@@ -49,6 +49,12 @@
             </span>
         </a>
 
+        <a *ngIf="data.paymentDetail.id" [active]="activeTab('flaggedArt9495')" mat-tab-link (click)="routeTo('flaggedArt9495')">
+            <span jemsText maxWidth="230">
+                {{'payments.to.ec.detail.projects.flagged.art.9495.tab' | translate}}
+            </span>
+        </a>
+
         <a *ngIf="data.paymentDetail.id" [active]="activeTab('corrections')" mat-tab-link (click)="routeTo('corrections')">
             <span jemsText maxWidth="230">
                 {{'payments.to.ec.detail.corrections.tab' | translate}}

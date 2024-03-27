@@ -19,9 +19,9 @@
         <h3 id="project-title">
             {{'payments.payment.to.project.detail.header.1' | translate : {paymentId: data.paymentDetail.id} }}
             <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId">
-                {{'payments.payment.to.project.detail.header.2' | translate : {projectId: data.paymentDetail.projectCustomIdentifier} }}
+                {{'payments.payment.to.project.detail.header.2' | translate : {projectId: data.paymentDetail.projectCustomIdentifier + ' ' + data.paymentDetail.projectAcronym } }}
             </a>
-            {{'payments.payment.to.project.detail.header.3' | translate : {fundName: data.paymentDetail.fundName} }}
+            {{'payments.payment.to.project.detail.header.3' | translate : {fundName: data.paymentDetail.fund.abbreviation | translateBySystemLanguage | async } }}
         </h3>
 
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
@@ -68,11 +68,11 @@
                             <span *ngIf="data.paymentDetail.spf">PP1</span>
                                 <span *ngIf="!data.paymentDetail.spf" matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
                                       [matTooltipDisabled]="!this.showPaymentIndicatorForIndex(index)">
-                                    {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                                    {{partnerPayment.partnerRole === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
                                     <mat-icon *ngIf="this.showPaymentIndicatorForIndex(index)" class="open-payment-indicator">circle</mat-icon>
                                 </span>
                         </div>
-                        <div class="column-partner-name justify-start">
+                        <div class="column-partner-name justify-start" matTooltip="{{ partnerPayment.nameInOriginalLanguage + ' ' + partnerPayment.nameInEnglish }}">
                             <span *ngIf="data.paymentDetail.spf">{{ 'project.partner.spf.cost.type.spf' | translate }}</span>
                             <span *ngIf="!data.paymentDetail.spf">{{ partnerPayment.partnerAbbreviation }}</span>
                         </div>
@@ -183,17 +183,22 @@
                                             </div>
                                         </div>
                                         <div class="column-installment-date justif start">
-                                            <mat-form-field class="w-100">
-                                                <input name="paymentDate"
-                                                       [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                                       [matDatepicker]="paymentDatePicker"
-                                                       aria-label="date">
+                                            <mat-form-field class="w-100" >
+                                                <span [class.marked-as-required]="isPaymentDateRequired(index, installmentIndex)">
+                                                        <input name="paymentDate"
+                                                               class="mat-required-marker"
+                                                               [required]="installmentsArray(index).at(installmentIndex).get('paymentConfirmed')?.value"
+                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                                               [matDatepicker]="paymentDatePicker"
+                                                               aria-label="date">
+                                                </span>
                                                 <mat-error>
                                                     <jems-form-field-errors condensed="true"
                                                                             [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
                                                 </mat-error>
                                                 <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
                                                 <mat-datepicker #paymentDatePicker></mat-datepicker>
+
                                             </mat-form-field>
                                         </div>
                                         <div class="column-installment-confirm-checkbox justify-start">

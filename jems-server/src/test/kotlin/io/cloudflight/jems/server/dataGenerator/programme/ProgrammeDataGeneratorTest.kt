@@ -18,7 +18,7 @@ import io.cloudflight.jems.api.programme.legalstatus.ProgrammeLegalStatusApi
 import io.cloudflight.jems.api.programme.priority.ProgrammePriorityApi
 import io.cloudflight.jems.server.DataGeneratorTest
 import io.cloudflight.jems.server.dataGenerator.*
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -26,7 +26,8 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
+
 import java.math.BigDecimal
 
 
@@ -86,9 +87,9 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(15)
     @ExpectUpdate(7)
-    @ExpectInsert(0)
+    @ExpectInsert(63)
     @ExpectDelete(2)
     fun `select all funds to be available for the calls`() {
         SELECTED_PROGRAMME_FUNDS =

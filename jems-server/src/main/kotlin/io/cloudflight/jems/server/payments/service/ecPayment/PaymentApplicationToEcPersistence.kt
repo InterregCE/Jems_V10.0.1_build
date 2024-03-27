@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.service.ecPayment
 
+import io.cloudflight.jems.server.payments.model.ec.AccountingYearAvailability
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
-import io.cloudflight.jems.server.payments.model.ec.AccountingYearAvailability
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -26,8 +26,6 @@ interface PaymentApplicationToEcPersistence {
 
     fun findAllWithDetails(pageable: Pageable): Page<PaymentApplicationToEcDetail>
 
-    fun getIdsFinishedForYearAndFund(accountingYearId: Long, fundId: Long): Set<Long>
-
     fun updatePaymentApplicationToEcStatus(paymentId: Long, status: PaymentEcStatus): PaymentApplicationToEcDetail
 
     fun deleteById(id: Long)
@@ -35,6 +33,10 @@ interface PaymentApplicationToEcPersistence {
     fun deletePaymentToEcAttachment(fileId: Long)
 
     fun existsDraftByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Boolean
+
+    fun getDraftIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long>
+
+    fun getFinishedIdsByFundAndAccountingYear(programmeFundId: Long, accountingYearId: Long): Set<Long>
 
     fun getAvailableAccountingYearsForFund(programmeFundId: Long): List<AccountingYearAvailability>
 

@@ -25,8 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 class ReOpenProjectReportTest : UnitTest() {
 
@@ -82,9 +80,8 @@ class ReOpenProjectReportTest : UnitTest() {
         every { latestReportOfType.id } returns lastReportId
         every { reportPersistence.getCurrentLatestReportOfType(projectId, ContractingDeadlineType.Finance) } returns latestReportOfType
 
-        val slotTime = slot<ZonedDateTime>()
         val result = submissionSummary(projectId, reportId, expectedStatus)
-        every { reportPersistence.reOpenReportTo(reportId, any(), capture(slotTime)) } returns result
+        every { reportPersistence.reOpenProjectReport(reportId, any()) } returns result
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { eventPublisher.publishEvent(capture(slotAudit)) } answers { }
@@ -93,7 +90,7 @@ class ReOpenProjectReportTest : UnitTest() {
 
         interactor.reOpen(projectId, reportId)
 
-        verify(exactly = 1) { reportPersistence.reOpenReportTo(reportId, expectedStatus, any()) }
+        verify(exactly = 1) { reportPersistence.reOpenProjectReport(reportId, expectedStatus) }
 
         assertThat(slotStatusChanged.captured.projectReportSummary).isEqualTo(result)
         assertThat(slotStatusChanged.captured.previousReportStatus).isEqualTo(statusFrom)

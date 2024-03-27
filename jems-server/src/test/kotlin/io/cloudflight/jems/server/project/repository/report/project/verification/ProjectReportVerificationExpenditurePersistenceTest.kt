@@ -26,7 +26,10 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -60,6 +63,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadline = mockk(),
+            finalReport = false,
             reportingDate = mockk(),
             periodNumber = 4,
             projectIdentifier = "projectIdentifier",
@@ -309,7 +313,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
         )
-        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds)  } returns listOf(procurementEntity)
+        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds) } returns listOf(procurementEntity)
         every {
             expenditureVerificationRepository
                 .findAllByExpenditurePartnerReportProjectReportId(PROJECT_REPORT_ID)
@@ -319,8 +323,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         every { partnerReportParkedExpenditureEntity.parkedFromExpenditureId } returns EXPENDITURE_ID_1
         every { partnerReportParkedExpenditureEntity.parkedOn } returns LAST_WEEK
 
-        every {reportParkedExpenditureRepository
-            .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1))
+        every {
+            reportParkedExpenditureRepository
+                .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1))
         } returns listOf(partnerReportParkedExpenditureEntity)
 
 
@@ -333,22 +338,31 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
     @Test
     fun saveEmptyIncludedExpendituresTest() {
-        val reportOfOrigin = mockk<ProjectPartnerReportEntity>()
-        every { reportOfOrigin.id } returns 11L
-        every { reportOfOrigin.number } returns 111
-
         every { expenditureRepository.findAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns listOf(firstExpenditure)
-
-        val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
-        every { unParkedFrom.id } returns 5L
-
-        every { expenditureRepository.getById(EXPENDITURE_ID_1) } returns unParkedFrom
         every { expenditureVerificationRepository.saveAll(any() as List<ProjectReportVerificationExpenditureEntity>) } returnsArgument 0
 
         projectReportVerificationExpenditurePersistenceProvider.initiateEmptyVerificationForProjectReport(
             PROJECT_REPORT_ID
         )
         verify(exactly = 1) { expenditureVerificationRepository.saveAll(any() as List<ProjectReportVerificationExpenditureEntity>) }
+    }
+
+    @Test
+    fun saveEmptyIncludedExpendituresWhenResubmittedTest() {
+        every { expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(PROJECT_REPORT_ID) } returns listOf(
+            mockk { every { expenditure.id } returns EXPENDITURE_ID_1 },
+            mockk { every { expenditure.id } returns EXPENDITURE_ID_2 },
+        )
+        every { expenditureRepository.findAllByPartnerReportProjectReportId(PROJECT_REPORT_ID) } returns listOf(firstExpenditure)
+        val newExpenditures = slot<List<ProjectReportVerificationExpenditureEntity>>()
+        every { expenditureVerificationRepository.saveAll(capture(newExpenditures)) } returnsArgument 0
+        every { expenditureVerificationRepository.deleteAllByExpenditurePartnerReportProjectReportIdIsNull() } just runs
+
+        projectReportVerificationExpenditurePersistenceProvider.reInitiateVerificationForProjectReport(PROJECT_REPORT_ID)
+
+        assertThat(newExpenditures.captured).allMatch {
+            it.expenditure == firstExpenditure && it.expenditureId == firstExpenditure.id
+        }
     }
 
     @Test
@@ -381,7 +395,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         every { projectReportCertificatePersistence.listCertificatesOfProjectReport(PROJECT_REPORT_ID) } returns listOf(
             certificate
         )
-        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds)  } returns listOf(procurementEntity)
+        every { procurementRepository.findAllByReportEntityPartnerIdIn(partnerIds) } returns listOf(procurementEntity)
 
         val reportEntity = ProjectPartnerReportEntity(
             id = PARTNER_REPORT_ID,
@@ -445,17 +459,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 typologyOfErrorId = null,
                 parked = true,
                 verificationComment = "JS/MA VERIFICATION COMMENT, PARKED",
-                parkedOn = LAST_WEEK
+                parkedOn = null
             )
         )
-
-        val partnerReportParkedExpenditureEntity = mockk<PartnerReportParkedExpenditureEntity>()
-        every { partnerReportParkedExpenditureEntity.parkedFromExpenditureId } returns EXPENDITURE_ID_2
-        every { partnerReportParkedExpenditureEntity.parkedOn } returns LAST_WEEK
-
-        every {reportParkedExpenditureRepository
-                .findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_ID_1, EXPENDITURE_ID_2))
-        } returns listOf(partnerReportParkedExpenditureEntity)
 
         every {
             expenditureVerificationRepository

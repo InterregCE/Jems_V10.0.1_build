@@ -5,14 +5,17 @@ import java.math.BigDecimal
 
 data class PaymentPartnerDTO(
     val id: Long,
-    val partnerId: Long,
-    val partnerType: ProjectPartnerRoleDTO,
-    val partnerNumber: Int?,
-    val partnerAbbreviation: String,
-    val amountApproved: BigDecimal?,
 
     val partnerReportId: Long?,
     val partnerReportNumber: Int?,
+
+    val partnerId: Long,
+    val partnerRole: ProjectPartnerRoleDTO,
+    val partnerNumber: Int?,
+    val partnerAbbreviation: String,
+    val nameInOriginalLanguage: String,
+    val nameInEnglish: String,
+    val amountApproved: BigDecimal?,
 
     val installments: List<PaymentPartnerInstallmentDTO>
 )

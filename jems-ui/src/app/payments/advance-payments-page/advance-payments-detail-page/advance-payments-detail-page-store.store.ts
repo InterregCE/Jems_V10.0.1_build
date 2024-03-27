@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
-  AdvancePaymentsService, AdvancePaymentStatusUpdateDTO, AdvancePaymentUpdateDTO,
+  AdvancePaymentsService, AdvancePaymentUpdateDTO,
   OutputProjectSimple, ProjectPartnerPaymentSummaryDTO, ProjectPartnerService,
-  ProjectService,
+  ProjectService, ProjectVersionDTO,
   UserRoleCreateDTO,
 } from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
@@ -24,7 +24,6 @@ export class AdvancePaymentsDetailPageStoreStore {
 
   advancePaymentDetail$: Observable<AdvancePaymentDetailDTO>;
   savedAdvancePaymentDetail$ = new Subject<AdvancePaymentDetailDTO>();
-  refresh$ = new Subject();
   searchProjectsByName$ = new Subject<string>();
   getProjectPartnersByProjectId$ = new Subject<number>();
   newPageSize$ = new Subject<number>();
@@ -36,20 +35,18 @@ export class AdvancePaymentsDetailPageStoreStore {
               private permissionService: PermissionService,
               private routingService: RoutingService,
               private projectService: ProjectService,
-              private projectPartnerService: ProjectPartnerService) {
+              private projectPartnerService: ProjectPartnerService,) {
     this.advancePaymentDetail$ = this.paymentDetail();
     this.userCanEdit$ = this.userCanEdit();
   }
 
 
   private paymentDetail(): Observable<AdvancePaymentDetailDTO> {
-    const initialPaymentDetail$ =
-      combineLatest([
-        this.routingService.routeParameterChanges(AdvancePaymentsDetailPageStoreStore.ADVANCE_PAYMENT_PATH, 'advancePaymentId'),
-        this.refresh$.pipe(startWith(1)),
-      ]).pipe(
-        switchMap(([paymentId, _]) => paymentId ? this.advancePaymentsService.getAdvancePaymentDetail(Number(paymentId)) : of({}) as Observable<AdvancePaymentDetailDTO>),
-        tap(data => Log.info('Fetched advance payment detail', this, data))
+    const initialPaymentDetail$ = this.routingService.routeParameterChanges(AdvancePaymentsDetailPageStoreStore.ADVANCE_PAYMENT_PATH, 'advancePaymentId')
+      .pipe(
+        switchMap((paymentId: number) => paymentId ? this.advancePaymentsService.getAdvancePaymentDetail(paymentId) : of({}) as Observable<AdvancePaymentDetailDTO>),
+        tap(data => Log.info('Fetched advance payment detail', this, data)),
+        shareReplay(1),
       );
 
     return merge(initialPaymentDetail$, this.savedAdvancePaymentDetail$);
@@ -67,7 +64,7 @@ export class AdvancePaymentsDetailPageStoreStore {
   }
 
   private userCanEdit(): Observable<boolean> {
-    return this.permissionService.hasPermission(PermissionsEnum.AdvancePaymentsUpdate)
+    return  this.permissionService.hasPermission(PermissionsEnum.AdvancePaymentsUpdate)
       .pipe(
         map((canUpdate) => canUpdate)
       );
@@ -83,20 +80,18 @@ export class AdvancePaymentsDetailPageStoreStore {
   getPartnerData(): Observable<ProjectPartnerPaymentSummaryDTO[]> {
     return combineLatest([
       this.getProjectPartnersByProjectId$,
-      this.advancePaymentDetail$.pipe(map(paymentDetail => paymentDetail.paymentAuthorized ? paymentDetail.projectVersion : undefined))
+      this.paymentDetail()
     ]).pipe(
-      switchMap(([projectId, projectVersion]) => this.projectPartnerService.getProjectPartnersAndContributions(projectId, projectVersion)),
+      switchMap(([projectId, paymentDetail]) => this.projectPartnerService.getProjectPartnersAndContributions(projectId, paymentDetail.projectVersion)),
       tap(partnerList => Log.info('Fetched filtered partners for project:', this, partnerList)),
       untilDestroyed(this),
       shareReplay(1)
     );
   }
 
-  updateStatus(paymentId: number, status: AdvancePaymentStatusUpdateDTO.StatusEnum): Observable<any> {
-    return this.advancePaymentsService.updateAdvancePaymentStatus(paymentId, {status})
-      .pipe(
-        tap(() => Log.info(`Advance payment status updated`, this, status)),
-        tap(() => this.refresh$.next())
-      );
+  getLastApprovedProjectVersion(projectId: number): Observable<ProjectVersionDTO | undefined> {
+    return this.projectService.getProjectVersions(projectId).pipe(
+      map(versions => versions.find(v => v.status === ProjectVersionDTO.StatusEnum.APPROVED || v.status === ProjectVersionDTO.StatusEnum.CONTRACTED || v.status === ProjectVersionDTO.StatusEnum.CLOSED))
+    );
   }
 }

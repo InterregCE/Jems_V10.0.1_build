@@ -4,22 +4,24 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallFundRateEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistId
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
 import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
-import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -34,6 +36,7 @@ import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheck
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
@@ -46,7 +49,7 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-import java.util.*
+import java.util.TreeSet
 
 fun CallEntity.toModel() = CallSummary(
     id = id,
@@ -223,7 +226,7 @@ fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
 
 fun List<ProjectNotificationConfigurationEntity>.toNotificationModel() =
-    map {it.toModel()}
+    map { it.toModel() }
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
@@ -239,7 +242,24 @@ fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.
 fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)
 
-private fun getDefaultAllowedRealCosts(callType: CallType) : AllowedRealCostsEntity {
+fun ProgrammeChecklistEntity.toModel(selected: Boolean): CallChecklist = CallChecklist(
+    id = id,
+    name = name,
+    type = type,
+    lastModificationDate = lastModificationDate,
+    selected = selected
+)
+
+fun List<ProgrammeChecklistEntity>.toCallSelectedEntity(call: CallEntity): List<CallSelectedChecklistEntity> = map {
+    CallSelectedChecklistEntity(
+        id = CallSelectedChecklistId(
+            call = call,
+            programmeChecklist = it
+        )
+    )
+}
+
+private fun getDefaultAllowedRealCosts(callType: CallType): AllowedRealCostsEntity {
     return when (callType) {
         CallType.STANDARD -> AllowedRealCostsEntity()
         CallType.SPF -> AllowedRealCostsEntity(

@@ -60,10 +60,13 @@ class JemsSystemFileServiceTest : UnitTest() {
 
     @MockK
     lateinit var fileRepository: JemsFileMetadataRepository
+
     @MockK
     lateinit var minioStorage: MinioStorage
+
     @MockK
     lateinit var userRepository: UserRepository
+
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -76,7 +79,10 @@ class JemsSystemFileServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction (type {0})")
-    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment"])
+    @EnumSource(
+        value = JemsFileType::class,
+        names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment", "PaymentAccountAttachment"]
+    )
     fun persistFileAndPerformAction(type: JemsFileType) {
         val expectedBucket = if (type == JemsFileType.CallTranslation) "jems-translation-file-bucket" else "payment"
 
@@ -87,7 +93,7 @@ class JemsSystemFileServiceTest : UnitTest() {
         every { userEntity.email } returns "email"
         every { userEntity.name } returns "name-user"
         every { userEntity.surname } returns "surname-user"
-        every { userRepository.getById(USER_ID) } returns userEntity
+        every { userRepository.getReferenceById(USER_ID) } returns userEntity
 
         val slotFileEntity = slot<JemsFileMetadataEntity>()
         every { fileRepository.save(capture(slotFileEntity)) } returnsArgument 0
@@ -100,7 +106,15 @@ class JemsSystemFileServiceTest : UnitTest() {
         val result = service.persistFileAndPerformAction(file) { additionalStepInvoked = true }
         assertThat(result).isEqualTo(expectedFile(type).copy(uploaded = slotFileEntity.captured.uploaded))
 
-        verify(exactly = 1) { minioStorage.saveFile(expectedBucket, "/our/indexed/path/new_file.txt", any(), any(), true) }
+        verify(exactly = 1) {
+            minioStorage.saveFile(
+                expectedBucket,
+                "/our/indexed/path/new_file.txt",
+                any(),
+                any(),
+                true
+            )
+        }
 
         assertThat(slotFileEntity.captured.projectId).isNull()
         assertThat(slotFileEntity.captured.partnerId).isNull()
@@ -124,7 +138,11 @@ class JemsSystemFileServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction wrong type (type {0})")
-    @EnumSource(value = JemsFileType::class, names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(
+        value = JemsFileType::class,
+        names = ["CallTranslation", "PaymentToEcAttachment", "PaymentAuditAttachment", "PaymentAccountAttachment"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
     fun `persistProjectFileAndPerformAction - wrong type`(type: JemsFileType) {
         val file = file(type = type)
         assertThrows<WrongFileTypeException> {
@@ -154,11 +172,13 @@ class JemsSystemFileServiceTest : UnitTest() {
 
         service.setDescription(85L, "new desc")
         assertThat(file.description).isEqualTo("new desc")
-        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
-            action = AuditAction.SYSTEM_FILE_DESCRIPTION_CHANGED,
-            entityRelatedId = 85L,
-            description = "Description of file \"word.docx\" uploaded to  has changed from \"old desc\" to \"new desc\"",
-        ))
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.SYSTEM_FILE_DESCRIPTION_CHANGED,
+                entityRelatedId = 85L,
+                description = "Description of file \"word.docx\" uploaded to  has changed from \"old desc\" to \"new desc\"",
+            )
+        )
 
     }
 

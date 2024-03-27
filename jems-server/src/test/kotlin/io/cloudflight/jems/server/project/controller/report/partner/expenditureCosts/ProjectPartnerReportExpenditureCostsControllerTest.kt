@@ -87,7 +87,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
             reportOfOriginId = 14L,
             reportOfOriginNumber = 2,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 9
+            originalExpenditureNumber = 9,
+            parkedFromExpenditureId = 0,
+            parkedOn = null
         ),
     )
 

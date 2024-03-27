@@ -62,7 +62,7 @@ context('Payments tests', () => {
                 testData.projectLumpSums[3].programmeLumpSumId = lumpSumId2;
 
                 application.lumpSums = testData.projectLumpSums;
-                
+
                 testData.contractingFastTrackLumpSums[1].programmeLumpSumId = lumpSumId1;
                 testData.contractingFastTrackLumpSums[2].programmeLumpSumId = lumpSumId1;
                 testData.contractingFastTrackLumpSums[3].programmeLumpSumId = lumpSumId2;
@@ -84,8 +84,8 @@ context('Payments tests', () => {
                     assertClaimNo(row, '0');
                     assertSubmissionDate(row, date.format(new Date(), 'MM/DD/YYYY'));
                     assertMAApprovalDate(row, date.format(new Date(), 'MM/DD/YYYY'));
-                    assertTotalApproved(row, '1.999,00');
-                    assertFund(row, 'OTHER');
+                    assertTotalApproved(row, '392,51');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '293,05');
                     assertAuthorised(row, '0,00');
                     assertPaid(row, '0,00');
@@ -95,7 +95,7 @@ context('Payments tests', () => {
                   cy.get('table mat-row:nth-child(2)').then(row => {
                     assertPaymentProjectId(row, applicationId);
                     assertProjectAcronym(row, application.identification.acronym);
-                    assertTotalApproved(row, '1.999,00');
+                    assertTotalApproved(row, '1.606,49');
                     assertFund(row, 'ERDF');
                     assertApprovedPerFund(row, '1.199,40');
                     assertRemainingToBePaid(row, '1.199,40');
@@ -108,12 +108,12 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '296,45');
                     assertRemainingToBePaid(row, '296,45');
                   });
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '249,75');
                     assertRemainingToBePaid(row, '249,75');
 
@@ -131,13 +131,13 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '97,49');
                     assertRemainingToBePaid(row, '97,49');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '162,49');
                     assertRemainingToBePaid(row, '162,49');
                   });
@@ -157,13 +157,13 @@ context('Payments tests', () => {
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
 
-                    assertFund(row, 'OTHER');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '97,49');
                     assertRemainingToBePaid(row, '97,49');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '162,49');
                     assertRemainingToBePaid(row, '162,49');
                   });
@@ -175,21 +175,21 @@ context('Payments tests', () => {
                   cy.contains('Payments').click();
                   cy.get('table mat-row:nth-child(1)').then(row => {
                     assertPaymentProjectId(row, applicationId);
-                    assertTotalApproved(row, '1.999,00');
-                    assertFund(row, 'OTHER');
+                    assertTotalApproved(row, '99,90');
+                    assertFund(row, programmeFund.abbreviation[1].translation);
                     assertApprovedPerFund(row, '49,95');
                     assertRemainingToBePaid(row, '49,95');
                   });
 
                   cy.get('table mat-row:nth-child(2)').then(row => {
-                    assertTotalApproved(row, '1.999,00');
-                    assertFund(row, 'OTHER');
+                    assertTotalApproved(row, '196,36');
+                    assertFund(row, 'Other fund EN');
                     assertApprovedPerFund(row, '146,60');
                     assertRemainingToBePaid(row, '146,60');
                   });
 
                   cy.get('table mat-row:nth-child(3)').then(row => {
-                    assertFund(row, 'NEIGHBOURHOOD_CBC');
+                    assertFund(row, 'Neighbourhood CBC');
                     assertApprovedPerFund(row, '299,70');
                     assertRemainingToBePaid(row, '299,70');
                   });
@@ -262,7 +262,7 @@ context('Payments tests', () => {
             // group order 7
             cy.loginByRequest(paymentsUser.email);
             cy.findProjectPayments(applicationId).then(projectPayments => {
-              const projectPayment = projectPayments.find(payment => payment.fundName === testData.authorizedPayments[0].fundName);
+              const projectPayment = projectPayments.find(payment => payment.fund.type === testData.authorizedPayments[0].fundType);
               cy.visit(`app/payments/paymentsToProjects/${projectPayment.id}`, {failOnStatusCode: false});
 
               cy.contains('expand_more').click();

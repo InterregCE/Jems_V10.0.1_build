@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
+import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionTmp
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
@@ -87,4 +89,26 @@ fun PartnerReportExpenditureCostEntity.toCorrectionCostItem() = CorrectionCostIt
     declaredAmountAfterSubmission = declaredAmountAfterSubmission,
     comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
+)
+
+fun PaymentAccountCorrectionTmp.toModel() = PaymentAccountCorrectionLinking(
+    correction = correctionEntity.toSimpleModel(),
+
+    projectId = projectId,
+    projectAcronym = projectAcronym,
+    projectCustomIdentifier = projectCustomIdentifier,
+    priorityAxis = priorityAxis ?: "N/A",
+    controllingBody = controllingBody,
+    scenario = scenario,
+    paymentAccountId = paymentAccountId,
+
+    fundAmount = fundAmount,
+    partnerContribution = publicContribution.add(autoPublicContribution).add(privateContribution),
+    publicContribution = publicContribution,
+    correctedPublicContribution = correctedPublicContribution,
+    autoPublicContribution = autoPublicContribution,
+    correctedAutoPublicContribution = correctedAutoPublicContribution,
+    privateContribution = privateContribution,
+    correctedPrivateContribution = correctedPrivateContribution,
+    comment = comment,
 )

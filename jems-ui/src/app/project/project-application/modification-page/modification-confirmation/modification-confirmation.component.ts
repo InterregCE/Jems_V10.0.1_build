@@ -164,7 +164,7 @@ export class ModificationConfirmationComponent implements OnInit, OnChanges {
 
   private filterNotSelectedCorrections() {
     const usedIds: number[] = this.correctionsForm().value.map((c: any) => c.id);
-    this.availableCorrections = this.corrections.filter(c => !usedIds.includes(c.id));
+    this.availableCorrections = this.corrections?.filter(c => !usedIds.includes(c.id)) ?? [];
   }
 
 }

@@ -38,4 +38,13 @@ interface OptimizationProjectVersionRepository : JpaRepository<OptimizationProje
     )
     fun getInitialMigrationTimeStamp(): LocalDateTime
 
+
+    @Query(
+        """
+            SELECT installed_on FROM flyway_schema_history WHERE version = :version
+        """,
+        nativeQuery = true
+    )
+    fun getMigrationInstallationDateByVersion(version: String): LocalDateTime
+
 }

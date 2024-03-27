@@ -52,5 +52,7 @@ fun PartnerReportParkedExpenditureEntity.toModel() = ExpenditureParkingMetadata 
     reportOfOriginId = reportOfOrigin.id,
     reportOfOriginNumber = reportOfOrigin.number,
     reportProjectOfOriginId = parkedInProjectReport?.id,
-    originalExpenditureNumber = originalNumber
+    originalExpenditureNumber = originalNumber,
+    parkedFromExpenditureId = parkedFromExpenditureId,
+    parkedOn = parkedOn,
 )

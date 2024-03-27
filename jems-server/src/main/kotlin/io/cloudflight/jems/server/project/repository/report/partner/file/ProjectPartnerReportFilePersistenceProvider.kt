@@ -97,7 +97,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         procurementId: Long,
         file: JemsFileCreate,
     ): JemsFileMetadata {
-        val procurement = procurementRepository.getById(procurementId)
+        val procurement = procurementRepository.getReferenceById(procurementId)
 
         return persistFileAndUpdateLink(file = file) {
             reportProcurementAttachmentRepository.save(
@@ -116,7 +116,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         procurementId: Long,
         file: JemsFileCreate,
     ): JemsFileMetadata {
-        val procurement = procurementRepository.getById(procurementId)
+        val procurement = procurementRepository.getReferenceById(procurementId)
 
         return persistFileAndUpdateLink(file = file) {
             reportProcurementGdprAttachmentRepository.save(

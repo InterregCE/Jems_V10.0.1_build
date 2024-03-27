@@ -1,0 +1,92 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="resetForm(data.projectClosure)">
+    <h3>{{'project.application.project.report.tab.project.closure' | translate}}</h3>
+
+    <form jemsFormLayout [formGroup]="form">
+        <h4>{{'project.application.project.report.tab.project.closure.project.story' | translate}}</h4>
+        <p>{{'project.application.project.report.tab.project.closure.project.story.description' | translate}}</p>
+        <ul>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.1" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.2" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.3" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.4" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.5" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.6" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.7" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.8" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.9" | translate}}</li>
+            <li>{{ "project.application.project.report.tab.project.closure.project.story.question.10" | translate}}</li>
+        </ul>
+        <ng-container>
+            <jems-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
+                                           [staticLanguages]="[LANGUAGE.EN]">
+                <jems-multi-language-form-field
+                        formControlName="storyEn"
+                        label="project.application.project.report.tab.project.closure.project.story.in.english"
+                        maxLength="5000"
+                        type="textarea">
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
+
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
+                        type="textarea"
+                        formControlName="story"
+                        maxLength="5000"
+                        label="common.textarea.enter.text">
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
+        </ng-container>
+
+        <h4>{{'project.application.project.report.tab.project.closure.project.mentions.and.prizes' | translate}}</h4>
+        <p>{{'project.application.project.report.tab.project.closure.project.mentions.and.prizes.description' | translate}}</p>
+
+        <ng-container>
+            <jems-multi-language-container *ngIf="prizes.controls.length > 0">
+                <div [jemsTableConfig]="[{}, {maxInRem:2}]">
+                    <div>
+                        <span class="mat-body-strong">
+                            {{'project.application.project.report.tab.project.closure.project.mentions.and.prizes.table' | translate}}
+                        </span>
+                        <div class="mat-body-strong"></div>
+                    </div>
+                    <div *ngFor="let synergy of prizes.controls;let i=index">
+                        <ng-container formArrayName="prizes">
+                            <ng-container [formGroupName]="i">
+                                <div>
+                                    <jems-multi-language-form-field
+                                            [disabled]="!data.reportEditable"
+                                            type="textarea"
+                                            formControlName="prize"
+                                            maxLength="500"
+                                            minRows="1"
+                                            label="common.textarea.enter.text">
+                                    </jems-multi-language-form-field>
+                                </div>
+                                <div>
+                                    <button *ngIf="data.reportEditable" type="button" (click)="deletePrize(i)" mat-icon-button color="accent"
+                                            aria-label="delete">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </jems-multi-language-container>
+            <button jemsText *ngIf="data.reportEditable && prizes.controls?.length <= 100" mat-stroked-button type="button"
+                    (click)="addNewPrize()" aria-label="add">
+                <mat-icon>add</mat-icon>
+                <span>{{'project.application.project.report.tab.project.closure.project.mentions.and.prizes.add' | translate}}</span>
+            </button>
+        </ng-container>
+
+        <ng-container>
+            <h4>{{'project.application.project.report.tab.project.closure.checklists' | translate}}</h4>
+            <jems-closure-checklist-instance-list jemsNoWidthLimit>
+            </jems-closure-checklist-instance-list>
+        </ng-container>
+
+    </form>
+</jems-form>

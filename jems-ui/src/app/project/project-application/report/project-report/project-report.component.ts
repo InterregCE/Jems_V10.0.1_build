@@ -20,6 +20,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Component({
   selector: 'jems-project-report',
@@ -43,6 +44,7 @@ export class ProjectReportComponent {
 
   data$: Observable<{
     projectReports: PageProjectReportSummaryDTO;
+    currentApprovedVersion: string | undefined;
     canEditReports: boolean;
     totalElements: number;
     viewVerification: boolean;
@@ -50,6 +52,7 @@ export class ProjectReportComponent {
 
   constructor(
     public pageStore: ProjectReportPageStore,
+    public versionStore: ProjectVersionStore,
     public store: PartnerControlReportStore,
     private activatedRoute: ActivatedRoute,
     private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -62,19 +65,21 @@ export class ProjectReportComponent {
   ) {
     this.data$ = combineLatest([
       pageStore.projectReports$,
+      versionStore.lastApprovedOrContractedVersion$,
       pageStore.userCanEditReport$,
       pageStore.userCanViewVerification$,
       projectStore.projectPeriods$
     ]).pipe(
-      tap(([projectReports, _, viewVerification, projectPeriods]) => {
+      tap(([projectReports, approvedVersion, _, viewVerification, projectPeriods]) => {
         if (!viewVerification) {
           this.displayedColumns = this.displayedColumns.filter(column => column !== 'verification');
         }
         this.dataSource.data = projectReports.content;
-        this.availablePeriodNumbers = projectPeriods.map(p => p.number);
+        this.availablePeriodNumbers = [...projectPeriods.map(p => p.number), 255];
       }),
-      map(([projectReports, isEditable, viewVerification]) => ({
+      map(([projectReports, approvedVersion, isEditable, viewVerification]) => ({
         projectReports,
+        currentApprovedVersion: approvedVersion?.version,
         canEditReports: isEditable,
         totalElements: projectReports.totalElements,
         viewVerification

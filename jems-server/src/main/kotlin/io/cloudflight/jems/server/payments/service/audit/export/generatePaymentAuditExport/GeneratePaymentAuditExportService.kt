@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 
@@ -24,7 +25,6 @@ class GeneratePaymentAuditExportService(
     }
 
     @Async
-    @Transactional
     fun execute(
         plugin: PaymentApplicationToEcAuditExportPlugin,
         fund: ProgrammeFund?,
@@ -38,13 +38,14 @@ class GeneratePaymentAuditExportService(
                     accountingYear?.year,
                     result.content,
                     true
-                ).also { savedFile ->
+                ).also { _ ->
                     paymentAuditExportPersistence.updateExportMetaData(
                         plugin.getKey(), fund?.id, accountingYear?.id, result.fileName, result.contentType,
                         result.startTime, endTime = ZonedDateTime.now()
                     )
                 }
             }
+
         }.onFailure {
             logger.warn("Failed to export payment to ec audit data for '${plugin.getKey()}'", it)
             paymentAuditExportPersistence.updateExportMetaData(
@@ -59,7 +60,7 @@ class GeneratePaymentAuditExportService(
         }.getOrNull()
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun saveExportFileMetaData(pluginKey: String, programmeFundId: Long?, accountingYearId: Long?) {
         with(paymentAuditExportPersistence.listExportMetadata()) {
             throwIfAnyExportIsInProgress(this)

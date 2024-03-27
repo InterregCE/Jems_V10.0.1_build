@@ -5,8 +5,6 @@ import com.querydsl.core.types.EntityPath
 import com.querydsl.core.types.Expression
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanOperation
-import com.querydsl.core.types.dsl.EnumPath
-import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.UnitTest
@@ -15,11 +13,11 @@ import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.entity.PaymentToEcCorrectionExtensionEntity
 import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadata
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -53,7 +51,7 @@ import java.time.ZonedDateTime
 class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @MockK
-    private lateinit var ecPaymentRepository: PaymentApplicationsToEcRepository
+    private lateinit var ecPaymentRepository: EcPaymentRepository
 
     @MockK
     private lateinit var ecPaymentCorrectionExtensionRepository: EcPaymentCorrectionExtensionRepository
@@ -173,7 +171,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
                 correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(5.00)
             )
 
-        private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
+        private val paymentToEcExtensionModel = PaymentToEcCorrectionExtension(
             correctionId = CORRECTION_ID,
             ecPaymentId = EC_PAYMENT_ID,
             ecPaymentStatus = PaymentEcStatus.Draft,
@@ -223,7 +221,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentExtension() {
-        every { ecPaymentCorrectionExtensionRepository.getById(99L) } returns paymentToEcExtensionEntity(
+        every { ecPaymentCorrectionExtensionRepository.getReferenceById(99L) } returns paymentToEcExtensionEntity(
             paymentApplicationToEcEntity
         )
         assertThat(persistenceProvider.getCorrectionExtension(99L)).isEqualTo(paymentToEcExtensionModel)
@@ -271,7 +269,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
     fun selectCorrectionToEcPayment() {
         val entity = paymentToEcExtensionEntity(null)
         every { ecPaymentCorrectionExtensionRepository.findAllById(setOf(CORRECTION_ID)) } returns listOf(entity)
-        every { ecPaymentRepository.getById(EC_PAYMENT_ID) } returns paymentApplicationToEcEntity
+        every { ecPaymentRepository.getReferenceById(EC_PAYMENT_ID) } returns paymentApplicationToEcEntity
 
         persistenceProvider.selectCorrectionToEcPayment(
             correctionIds = setOf(CORRECTION_ID),
@@ -295,7 +293,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
     @Test
     fun updateCorrectionLinkedToEcPaymentCorrectedAmounts() {
         val entity = paymentToEcExtensionEntity(paymentApplicationToEcEntity)
-        every { ecPaymentCorrectionExtensionRepository.getById(CORRECTION_ID) } returns entity
+        every { ecPaymentCorrectionExtensionRepository.getReferenceById(CORRECTION_ID) } returns entity
 
         persistenceProvider.updateCorrectionLinkedToEcPaymentCorrectedAmounts(CORRECTION_ID, correctionUpdate)
         assertThat(entity.correctedPublicContribution).isEqualTo(BigDecimal.valueOf(206))
@@ -313,7 +311,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `createCorrectionExtension - negative sign`() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0
@@ -334,7 +332,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `createCorrectionExtension - positive sign`() {
-        every { auditControlCorrectionRepository.getById(CORRECTION_ID) } returns correctionEntity
+        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
 
         val extensionSlot = slot<PaymentToEcCorrectionExtensionEntity>()
         every { ecPaymentCorrectionExtensionRepository.save(capture(extensionSlot)) } returnsArgument 0

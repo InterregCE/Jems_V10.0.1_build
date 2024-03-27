@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED_WITH_CONDITIONS
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.CONDITIONS_SUBMITTED
@@ -30,8 +31,10 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_NOT_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_SUBMITTED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.SUBMITTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.CLOSED
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ClosedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ContractedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
@@ -233,6 +236,13 @@ class ApplicationStateFactory(
                 projectPersistence,
             )
             CONTRACTED -> ContractedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            CLOSED -> ClosedApplicationState(
                 projectSummary,
                 projectWorkflowPersistence,
                 auditPublisher,

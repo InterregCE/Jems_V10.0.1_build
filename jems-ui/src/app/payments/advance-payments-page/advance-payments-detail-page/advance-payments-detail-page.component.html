@@ -32,6 +32,11 @@
             <p>{{'payment.advance.confirmation.payment.update.successful' | translate}}</p>
         </jems-alert>
 
+        <jems-alert [show]="displayOldProjectVersionAlert && !data.paymentDetail.paymentAuthorized"
+                    [type]="Alert.WARNING">
+            <p>{{'payment.advance.payment.version.old.warning' | translate}}</p>
+        </jems-alert>
+
         <jems-alert *ngIf="error$ | async as error"
                     [show]="!!error.i18nMessage?.i18nKey"
                     [type]="Alert.ERROR">
@@ -172,9 +177,10 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox [disabled]="isPaymentAuthorisationDisabled() || (formService.dirty$ | async)"
-                                              [checked]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true"
-                                              (change)="setPaymentAuthorised($event.checked, data.paymentDetail.id)">
+                                <mat-checkbox
+                                        [disabled]="isPaymentAuthorisationDisabled()"
+                                        (change)="setPaymentAuthorised($event.checked)"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
@@ -187,11 +193,12 @@
 
                         <div class="column-date">
                             <mat-form-field class="w-100">
-                                <span [ngClass]="{'marked-as-required' : advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value === true && !advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.value}">
-                                <input name="paymentDate"
-                                       class="placeholder-required"
-                                       [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                       [matDatepicker]="paymentDatePicker">
+                                <span [class.marked-as-required]="isPaymentDateRequired()">
+                                    <input name="paymentDate"
+                                           class="mat-required-marker"
+                                           [required]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value"
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                           [matDatepicker]="paymentDatePicker">
                                 </span>
                                 <mat-error>
                                     <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
@@ -205,9 +212,11 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox [disabled]="isPaymentConfirmationDisabled() || (formService.dirty$ | async)"
+                                <mat-checkbox [disabled]="isPaymentConfirmationDisabled()"
+                                              [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed"
                                               [checked]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value === true"
-                                              (change)="setConfirmPaymentDate($event.checked, data.paymentDetail.id)">
+                                              (change)="setConfirmPaymentDate($event.checked)">
+
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
                                     <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>

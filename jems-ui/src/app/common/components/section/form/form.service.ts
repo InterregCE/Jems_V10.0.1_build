@@ -100,15 +100,15 @@ export class FormService {
         this.form.markAsPristine();
         this.form.markAsUntouched();
       }
-      this.routingService.confirmLeaveMap.set(this.serviceId, false);
+      this.routingService.confirmLeaveSet.delete(this.serviceId);
     } else if (this.saveLabel !== 'common.create.label') {
       // confirm page leave unless the form is in create mode
-      this.routingService.confirmLeaveMap.set(this.serviceId, true);
+      this.routingService.confirmLeaveSet.add(this.serviceId);
     }
     if(dirty){
       this.setSuccess(null);
     }
-    this.setValid(this.form?.valid);
+    this.setValid(!this.form?.invalid);
     this.dirty$.next(dirty);
   }
 

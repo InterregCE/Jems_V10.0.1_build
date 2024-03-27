@@ -174,6 +174,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
 
     this.tableData = [...this.expenditureLines.controls];
     this.formService.resetEditable();
+    this.disableParkToggleForReIncludedOrDeletedExpenditures(this.expenditureLines);
   }
 
   private setColumnWidths() {
@@ -431,10 +432,21 @@ export class ProjectVerificationReportExpenditureTabComponent {
       : this.customTranslatePipe.transform('common.not.applicable.option') as string);
   }
 
+  getContractId(contract?: ProjectPartnerReportProcurementDTO) {
+    return contract?.id;
+  }
+
+  getProcurementLinkForItem(projectID: number, expenditureItem: AbstractControl): string {
+    return '/app/project/detail/' + projectID
+      + '/reporting/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerId)
+      + '/reports/' + this.expenditureItem(expenditureItem, this.EXPENDITURE_CONTROL.partnerReportId)
+      + '/procurements/' + this.getContractId(this.expenditure(expenditureItem)?.get(this.EXPENDITURE_CONTROL.contract)?.value);
+  }
+
   getTooltipForParkedExpenditures(item: AbstractControl, projectReport: ProjectReportDTO): String {
     if (this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked)) {
       return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message.parked.by.controller');
-    } else if (this.isParkedBeforeVerificationReopening(item, projectReport)) {
+    } else if (this.reIncludedOrDeleted(item)) {
       return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message.parked.before.reopening');
     } else {
       return '';
@@ -455,15 +467,13 @@ export class ProjectVerificationReportExpenditureTabComponent {
     return this.getParkedByControlOrJsMa(item) || !isFormEditable;
   }
 
-  isParkedBeforeVerificationReopening(item: AbstractControl, projectReport: ProjectReportDTO): boolean {
-    if (projectReport.status === ProjectReportDTO.StatusEnum.ReOpenFinalized) {
+  private reIncludedOrDeleted(item: AbstractControl): boolean {
       const parked = this.verification(item)?.get(this.VERIFICATION_CONTROL.parked)?.value;
-      if (parked) {
-        const parkedOn = this.verification(item)?.get(this.VERIFICATION_CONTROL.parkedOn)?.value as Date;
-        return parkedOn < projectReport.verificationLastReOpenDate;
+      const parkedOn = this.verification(item)?.get(this.VERIFICATION_CONTROL.parkedOn)?.value;
+      if (parked && parkedOn == null ) {
+          return true;
       }
-    }
-    return false;
+      return false;
   }
 
   private setAndDisablePartOfSample(item: FormControl) {
@@ -493,5 +503,11 @@ export class ProjectVerificationReportExpenditureTabComponent {
       typologyOfError?.markAsDirty();
       typologyOfError?.updateValueAndValidity();
     }
+  }
+
+  private disableParkToggleForReIncludedOrDeletedExpenditures(expenditureLines: FormArray ) {
+      expenditureLines.controls.forEach(control =>
+          this.reIncludedOrDeleted(control) ? this.verification(control)?.disable() : ''
+      );
   }
 }

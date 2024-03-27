@@ -47,7 +47,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             highlights = setOf(),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = null,
         )
 
         private val projectReportEntity = ProjectReportEntity(
@@ -61,6 +61,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadline = mockk(),
+            finalReport = false,
             reportingDate = mockk(),
             periodNumber = 4,
             projectIdentifier = "projectIdentifier",
@@ -149,6 +150,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
                 country = "CNTR",
                 previouslyReported = BigDecimal.TEN,
                 currentlyReported = BigDecimal.ONE,
+                partnerTotalEligibleBudget = BigDecimal(1000)
             )
         )
         assertThat(persistence.getSpendingProfileReportedValues(5L)).containsExactly(
@@ -156,6 +158,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
                 partnerId = 45L,
                 previouslyReported = BigDecimal.TEN,
                 currentlyReported = BigDecimal.ONE,
+                partnerTotalEligibleBudget = BigDecimal(1000)
             )
         )
     }
@@ -192,7 +195,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
     @Test
     fun updateSpendingProfile() {
         val report = mockk<ProjectReportEntity>()
-        every { projectReportRepository.getById(15L) } returns report
+        every { projectReportRepository.getReferenceById(15L) } returns report
 
         val existing514 = ProjectReportSpendingProfileEntity(
             ProjectReportSpendingProfileId(mockk(), 514L),
@@ -202,6 +205,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             country = "nice country",
             previouslyReported = BigDecimal(4),
             currentlyReported = BigDecimal(8),
+            partnerTotalEligibleBudget = BigDecimal(1000)
         )
         every { spendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(15L) } returns listOf(existing514)
         val slotSaved = slot<ProjectReportSpendingProfileEntity>()

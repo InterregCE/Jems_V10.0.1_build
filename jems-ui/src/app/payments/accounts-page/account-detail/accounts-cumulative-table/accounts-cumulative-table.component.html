@@ -1,0 +1,44 @@
+<mat-table jemsNoWidthLimit  [dataSource]="dataSource">
+    <ng-container matColumnDef="priorityAxis">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.accounts.corrections.overview.amounts.priority.axis' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line">
+            <span>{{line.priorityAxis}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'payments.accounts.corrections.overview.amounts.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalEligibleExpenditure">
+        <mat-header-cell class="justify-end" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.accounts.corrections.overview.amounts.total.eligible.expenditure' | translate }}</span>
+            <jems-context-info
+                    infoText="{{ totalEligibleInfo | translate}}"
+                    infoPosition="right">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.totalEligibleExpenditure | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ data.totals.totalEligibleExpenditure | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalPublicContribution">
+        <mat-header-cell class="justify-end" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'payments.accounts.corrections.overview.amounts.total.public.contribution' | translate }}</span>
+            <jems-context-info
+                    infoText="{{ totalPublicInfo | translate}}"
+                    infoPosition="right">
+            </jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            <span>{{ line.totalPublicContribution | asMoney}}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ data.totals.totalPublicContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row;let i = index; columns: displayedColumns"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>

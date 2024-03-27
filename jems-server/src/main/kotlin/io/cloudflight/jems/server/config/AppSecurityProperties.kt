@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.config
 
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 @ConfigurationProperties(prefix = "app.security")
 class AppSecurityProperties {
     var defaultPasswordPrefix: String = "Jems@2020"

@@ -46,6 +46,7 @@ export class ProjectReportWorkPlanTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   constants = ProjectReportWorkPlanTabConstants;
   specificStatus = Object.keys(ProjectReportWorkPackageDTO.SpecificStatusEnum);
+  investmentSpecificStatus = Object.keys(ProjectReportWorkPackageInvestmentDTO.StatusEnum);
   communicationStatus = Object.keys(ProjectReportWorkPackageDTO.CommunicationStatusEnum);
   activityStatus = Object.keys(ProjectReportWorkPackageActivityDTO.StatusEnum);
   WorkPlanStatusLabelEnum = ProjectReportWorkPackageDTO.WorkPlanStatusLabelEnum;
@@ -55,6 +56,8 @@ export class ProjectReportWorkPlanTabComponent {
   CommunicationStatusLabelEnum = ProjectReportWorkPackageDTO.CommunicationStatusLabelEnum;
   ActivityStatusEnum = ProjectReportWorkPackageActivityDTO.StatusEnum;
   ActivityStatusLabelEnum = ProjectReportWorkPackageActivityDTO.ActivityStatusLabelEnum;
+  InvestmentSpecificStatusEnum = ProjectReportWorkPackageInvestmentDTO.StatusEnum;
+  InvestmentStatusLabelEnum = ProjectReportWorkPackageInvestmentDTO.StatusLabelEnum;
 
   form = this.formBuilder.group({
     workPackages: this.formBuilder.array([])
@@ -68,6 +71,8 @@ export class ProjectReportWorkPlanTabComponent {
 
   isUploadDone: boolean;
   ProjectUtil = ProjectUtil;
+
+  toggleStatesOfWorkPackages: boolean[] = [];
 
   constructor(
     private readonly projectStore: ProjectStore,
@@ -177,7 +182,8 @@ export class ProjectReportWorkPlanTabComponent {
   private convertInvestmentFormToDTO(investments: any[]): UpdateProjectReportWorkPackageInvestmentDTO[] {
     return investments.map(investmentForm => ({
       id: investmentForm.id,
-      progress: investmentForm.progress
+      progress: investmentForm.progress,
+      status: investmentForm.investmentSpecificStatus,
     } as UpdateProjectReportWorkPackageInvestmentDTO));
   }
 
@@ -283,7 +289,10 @@ export class ProjectReportWorkPlanTabComponent {
       deactivated: this.formBuilder.control(dto.deactivated),
       period: this.formBuilder.control(dto.period),
       nutsRegion3: this.formBuilder.control(dto.nutsRegion3),
-      progress: this.formBuilder.control(dto.progress)
+      progress: this.formBuilder.control(dto.progress),
+      investmentSpecificStatus: this.formBuilder.control(dto.status),
+      investmentStatusLabel: this.formBuilder.control(dto.statusLabel),
+      isPreviousStatusFullyAchieved: this.formBuilder.control(dto.previousStatus === ProjectReportWorkPackageInvestmentDTO.PreviousStatusEnum.Finalized)
     });
   }
 
@@ -389,5 +398,17 @@ export class ProjectReportWorkPlanTabComponent {
 
   canExpandWorkPackage(completed: AbstractControl | null, status: AbstractControl | null): boolean {
     return completed?.value && (status?.value === WorkPlanStatusLabelEnum.Yellow || status?.value === WorkPlanStatusLabelEnum.Green);
+  }
+
+  toggleWorkPackageRowAtIndex(index: number): void {
+    this.toggleStatesOfWorkPackages[index] = !this.toggleStatesOfWorkPackages[index];
+  }
+
+  getWorkPackageRowToggleStateAtIndex(index: number): boolean {
+    return this.toggleStatesOfWorkPackages[index];
+  }
+
+  isInvestmentFinalized(investment: AbstractControl): boolean {
+    return investment.get(this.constants.INVESTMENT_SPECIFIC_STATUS.name)?.value === this.InvestmentSpecificStatusEnum.Finalized;
   }
 }

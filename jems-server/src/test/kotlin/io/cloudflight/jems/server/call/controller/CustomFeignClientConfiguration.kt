@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.call.controller
 
 import feign.auth.BasicAuthRequestInterceptor
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.cloud.openfeign.FeignClientsConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 class CustomFeignClientConfiguration : FeignClientsConfiguration() {
     @Bean
     fun basicAuthRequestInterceptor(): BasicAuthRequestInterceptor {

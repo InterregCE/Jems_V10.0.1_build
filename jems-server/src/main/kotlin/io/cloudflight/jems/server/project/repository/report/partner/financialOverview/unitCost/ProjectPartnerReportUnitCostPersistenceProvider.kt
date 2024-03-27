@@ -24,6 +24,10 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
         reportUnitCostRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, ExpenditureUnitCostCurrent(current = it.second, currentParked = it.third)) }
 
+    @Transactional(readOnly = true)
+    override fun getVerificationParkedUnitCostCumulative(partnerId:Long, projectReportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportUnitCostRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, projectReportIds).toMap()
+
     @Transactional
     override fun getValidatedUnitCostCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
         reportUnitCostRepository.findCumulativeForReportIdsAfterControl(reportIds)
@@ -57,6 +61,22 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
                 if (afterControl.containsKey(it.id)) {
                     it.totalEligibleAfterControl = afterControl.get(it.id)!!.current
                     it.currentParked = afterControl.get(it.id)!!.currentParked
+                }
+            }
+    }
+
+
+    @Transactional
+    override fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, Map<Long, BigDecimal>>, ) {
+        reportUnitCostRepository.findAllByReportEntityIdIn(parkedValuesPerCertificate.keys)
+            .groupBy { it.reportEntity.id }
+            .forEach {
+                val afterVerificationParked = parkedValuesPerCertificate[it.key]!!
+                it.value.forEach { unitCostEntity ->
+                    if (afterVerificationParked.containsKey(unitCostEntity.programmeUnitCost.id)) {
+                        unitCostEntity.currentParkedVerification =
+                            afterVerificationParked[unitCostEntity.programmeUnitCost.id]!!
+                    }
                 }
             }
     }

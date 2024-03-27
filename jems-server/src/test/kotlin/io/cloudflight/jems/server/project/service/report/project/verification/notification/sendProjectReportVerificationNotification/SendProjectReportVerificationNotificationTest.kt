@@ -60,6 +60,7 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = null,
+            finalReport = false,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = PROJECT_ID,

@@ -163,7 +163,7 @@
             <mat-form-field *ngIf="linkedToCostOptionType === LinkedToCostOptionType.FTLS">
                 <mat-label>{{'project.application.reporting.corrections.identification.ftls' | translate}}</mat-label>
                 <mat-select formControlName="lumpSumOrderNr"
-                            [disabled]="!data.canEdit || partnerReports?.length === 0"
+                            [disabled]="!data.canEdit || ftls?.length === 0"
                             (selectionChange)="selectFtls($event.value)"
                             class="placeholder-required"
                             [placeholder]="'common.not.applicable.option' | translate"
@@ -183,9 +183,13 @@
                             class="placeholder-required"
                             placeholder="{{'project.application.reporting.corrections.identification.partner.report.fund.not.available' | translate}}"
                             required>
-                    <mat-option *ngFor="let fund of funds"
-                                [value]="fund.id">
-                        {{fund.abbreviation | translateBySystemLanguage | async}}
+                    <mat-select-trigger *ngIf="fundShown">
+                        <mat-icon *ngIf="fundShown.disabled" class="disabled-fund mr-0">hide_source</mat-icon>
+                        {{ fundShown.abbreviation | translateBySystemLanguage | async }}
+                    </mat-select-trigger>
+                    <mat-option *ngFor="let fund of funds" [value]="fund.id" [disabled]="fund.disabled">
+                        <mat-icon *ngIf="fund.disabled" class="disabled-fund mr-0">hide_source</mat-icon>
+                        {{ fund.abbreviation | translateBySystemLanguage | async }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

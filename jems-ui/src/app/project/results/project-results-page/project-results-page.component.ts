@@ -135,7 +135,7 @@ export class ProjectResultsPageComponent implements OnInit {
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
         resultNumber: this.formBuilder.control(existing?.resultNumber || 0),
-        targetValue: this.formBuilder.control(existing?.targetValue || 1),
+        targetValue: this.formBuilder.control(existing?.targetValue ?? 1),
         baseline: this.formBuilder.control(existing?.baseline || 0),
         baselineMaxValue: this.formBuilder.control(baselineMaxValue),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),

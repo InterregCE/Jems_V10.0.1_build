@@ -1,0 +1,47 @@
+<div jemsFormLayout>
+    <h3 class="mt-4">{{ 'payments.accounts.corrections.tab.overview.amounts.title' | translate }}</h3>
+    <div>
+        <div>{{ 'payments.accounts.corrections.tab.overview.amounts.description.1' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.overview.amounts.description.2' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.overview.amounts.description.3' | translate }}</div>
+    </div>
+    <ng-container *ngIf="overviewForCurrentTab$ | async as cumulativeForCurrentTab">
+        <jems-accounts-cumulative-table [data]=cumulativeForCurrentTab.data></jems-accounts-cumulative-table>
+    </ng-container>
+
+</div>
+
+<div class="mt-5">
+    <h3>{{ 'payments.accounts.corrections.tab.title' | translate }}</h3>
+    <div class="mb-2">
+        <div>{{ 'payments.accounts.corrections.tab.description.1' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.description.2' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.description.3' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.description.4' | translate }}</div>
+        <div>{{ 'payments.accounts.corrections.tab.description.5' | translate }}</div>
+    </div>
+
+    <ng-container *ngIf="data$ | async as data">
+        <jems-alert [show]="success$ | async"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+        </jems-alert>
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content *ngIf="error.i18nMessage?.i18nKey" [error]="error"></jems-api-error-content>
+        </jems-alert>
+
+        <jems-accounts-correction-select-table [data]="data"
+                                               [newSort]="pageStore.correctionNewSort$"
+                                               [newIndex]="pageStore.correctionNewPageIndex$"
+                                               [newSize]="pageStore.correctionNewPageSize$"
+                                               (selectionChanged$)="selectionChanged($event)"
+                                               (submitPayment$)="updateLinkedCorrection($event.correctionId, $event.updateDto)">
+        </jems-accounts-correction-select-table>
+
+        <jems-alert [show]="data?.correctionLinking.content?.length === 0" [type]="Alert.INFO">
+            <p>{{ 'payments.accounts.corrections.table.empty' | translate }}</p>
+        </jems-alert>
+    </ng-container>
+</div>

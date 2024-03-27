@@ -52,7 +52,11 @@ class GetProjectAdvancePaymentsTest: UnitTest() {
                 )
             ),
             projectAcronym = "project",
-            projectCustomIdentifier = "identifier"
+            projectCustomIdentifier = "identifier",
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = 10L,
+            linkedProjectVersion = "v1.0"
         )
     }
 

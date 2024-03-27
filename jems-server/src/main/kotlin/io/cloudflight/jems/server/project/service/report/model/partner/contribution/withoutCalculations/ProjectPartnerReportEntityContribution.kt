@@ -7,6 +7,7 @@ import java.util.UUID
 
 data class ProjectPartnerReportEntityContribution(
     val id: Long,
+    val reportId: Long,
     val sourceOfContribution: String?,
     val legalStatus: ProjectPartnerContributionStatus?,
     val idFromApplicationForm: Long?,

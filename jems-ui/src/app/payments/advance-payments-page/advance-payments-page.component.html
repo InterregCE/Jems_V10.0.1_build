@@ -26,8 +26,22 @@
 </ng-container>
 </jems-main-page-template>
 
+<ng-template #linkedProjectVersionCell let-payment>
+    <span>{{ payment.linkedProjectVersion }}</span>
+    <mat-icon *ngIf="payment.linkedProjectVersion !== payment.lastApprovedProjectVersion && !payment.paymentAuthorized"
+              matTooltip="{{ 'payments.advance.payment.table.header.af.version.linked.warning' | translate }}" color="accent" class="ml-1">
+        warning_amber
+    </mat-icon>
+</ng-template>
+
 <ng-template #partnerRoleCell let-payment>
     {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerSortNumber }}
+</ng-template>
+
+<ng-template #partnerAbbreviatedNameCell let-payment>
+    <div matTooltip="{{ payment.partnerNameInOriginalLanguage + ' ' + payment.partnerNameInEnglish }}">
+        <span> {{payment.partnerAbbreviation}} </span>
+    </div>
 </ng-template>
 
 <ng-template #sourceForAdvanceCell let-payment>

@@ -26,11 +26,11 @@ class ProjectLumpSumPersistenceProvider(
             previousVersionFetcher = { timestamp ->
                 projectLumpSumRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toProjectLumpSumHistoricalData()
             }
-        )?: emptyList()
+        ) ?: emptyList()
 
     @Transactional
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
-        if(lumpSums.isNotEmpty())
+        if (lumpSums.isNotEmpty())
             updateLumpSumsOrderNr(lumpSums)
 
         return projectRepository.save(
@@ -44,16 +44,30 @@ class ProjectLumpSumPersistenceProvider(
         ).lumpSums.toModel()
     }
 
+    @Transactional
+    override fun updateLumpSumsReadyForPayment(projectId: Long, lumpSums: List<ProjectLumpSum>) {
+        val lumpSumByOrderNr = lumpSums.associateBy { it.orderNr }
+
+        getProjectOrThrow(projectId).lumpSums.onEach { lumpSum ->
+            lumpSumByOrderNr[lumpSum.id.orderNr]?.let { updated ->
+                lumpSum.isReadyForPayment = updated.readyForPayment
+                lumpSum.paymentEnabledDate = updated.paymentEnabledDate
+                lumpSum.lastApprovedVersionBeforeReadyForPayment = updated.lastApprovedVersionBeforeReadyForPayment
+            }
+        }
+    }
+
     @Transactional(readOnly = true)
     override fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long) =
         projectLumpSumRepository.findAllByProgrammeLumpSumId(programmeLumpSumId).any { it.readyForPayment }
 
     private fun updateLumpSumsOrderNr(lumpSums: List<ProjectLumpSum>) {
-        var lastAvailableOrderNr = lumpSums.map { it.orderNr }.sortedDescending().first()
+        var lastAvailableOrderNr: Int = lumpSums.maxOf { it.orderNr }
 
-        lumpSums.filter{ it.orderNr == 0 }.forEach {
-            it.orderNr = ++lastAvailableOrderNr
-        }
+        lumpSums.filter { it.orderNr == 0 }
+            .forEach {
+                it.orderNr = ++lastAvailableOrderNr
+            }
     }
 
     private fun getProjectOrThrow(projectId: Long) =

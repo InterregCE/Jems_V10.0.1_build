@@ -14,6 +14,8 @@ interface ProjectPartnerReportLumpSumRepository : JpaRepository<PartnerReportLum
         reportId: Long,
     ): MutableList<PartnerReportLumpSumEntity>
 
+    fun findAllByReportEntityIdIn(reportIds: Set<Long>): List<PartnerReportLumpSumEntity>
+
     fun findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(
         reportId: Long,
         programmeLumpSumId: Long,
@@ -31,6 +33,19 @@ interface ProjectPartnerReportLumpSumRepository : JpaRepository<PartnerReportLum
         GROUP BY lumpSum.orderNr
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Int, BigDecimal, BigDecimal>>
+
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            lumpSum.orderNr,
+            COALESCE(SUM(lumpSum.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} lumpSum
+        WHERE lumpSum.reportEntity.partnerId=:partnerId AND
+                lumpSum.reportEntity.projectReport.id IN :projectReportIds
+        GROUP BY lumpSum.orderNr
+    """)
+    fun findCumulativeVerificationParkedForProjectReportIds(partnerId: Long, projectReportIds: Set<Long>): List<Pair<Int, BigDecimal>>
 
     @Query("""
         SELECT new kotlin.Pair(

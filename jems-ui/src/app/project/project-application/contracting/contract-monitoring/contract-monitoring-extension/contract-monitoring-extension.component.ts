@@ -7,6 +7,7 @@ import {
   ContractMonitoringExtensionStore
 } from '@project/project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {
+  ContractingClosureLastPaymentDateDTO, ContractingClosureUpdateDTO,
   ContractingDimensionCodeDTO,
   InputTranslation,
   ProgrammeChecklistDetailDTO,
@@ -55,6 +56,8 @@ export class ContractMonitoringExtensionComponent {
   decisionForm: FormGroup = this.formBuilder.group({
     startDate: [''],
     endDate: [''],
+    closureDate: [''],
+    lastPaymentDates: this.formBuilder.array([]),
     entryIntoForceDate: [''],
     entryIntoForceComment: ['', Validators.maxLength(200)],
     additionalEntryIntoForceItems: this.formBuilder.array([], Validators.maxLength(25)),
@@ -183,6 +186,7 @@ export class ContractMonitoringExtensionComponent {
     this.dimensionCodesFormItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
     this.decisionForm.controls.endDate.setValue(projectContractingMonitoring.endDate);
+    this.decisionForm.controls.closureDate.setValue(projectContractingMonitoring.closureDate);
     this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.entryIntoForceDate);
     this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.entryIntoForceComment);
     this.decisionForm.controls.typologyProv94.setValue(projectContractingMonitoring.typologyProv94);
@@ -205,7 +209,20 @@ export class ContractMonitoringExtensionComponent {
         comment: this.formBuilder.control(lumpSum?.comment || '', Validators.maxLength(200)),
         readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
         fastTrack: this.formBuilder.control(lumpSum?.fastTrack || false),
-        installmentsAlreadyCreated: this.formBuilder.control(lumpSum?.installmentsAlreadyCreated || false)
+        installmentsAlreadyCreated: this.formBuilder.control(lumpSum?.installmentsAlreadyCreated || false),
+        linkedToEcPaymentId: this.formBuilder.control(lumpSum?.linkedToEcPaymentId)
+      }));
+    });
+
+    this.lastPaymentDatesForm.clear();
+    projectContractingMonitoring.lastPaymentDates.forEach(date => {
+      this.lastPaymentDatesForm.push(this.formBuilder.group({
+        partnerId: this.formBuilder.control(date.partnerId),
+        partnerNumber: this.formBuilder.control(date.partnerNumber),
+        partnerAbbreviation: this.formBuilder.control(date.partnerAbbreviation),
+        partnerRole: this.formBuilder.control(date.partnerRole),
+        partnerDisabled: this.formBuilder.control(date.partnerDisabled),
+        lastPaymentDate: this.formBuilder.control(date.lastPaymentDate),
       }));
     });
 
@@ -222,6 +239,7 @@ export class ContractMonitoringExtensionComponent {
     }
     if (!isEditable) {
       this.additionalEntryIntoForceItems.disable();
+      this.lastPaymentDatesForm.disable();
     }
     this.tableData = [...this.additionalEntryIntoForceItems.controls];
 
@@ -236,7 +254,7 @@ export class ContractMonitoringExtensionComponent {
   }
 
   onSubmit(): void {
-    this.contractMonitoringExtensionStore.save(this.getUpdatedProjectContractingMonitoring())
+    this.contractMonitoringExtensionStore.save(this.getContractingClosureUpdate(), this.getUpdatedProjectContractingMonitoring())
       .pipe(
         tap(data => this.decisionForm.controls.endDate.setValue(data.endDate)),
         tap(data => this.contractMonitoringExtensionStore.savedProjectContractingMonitoring$.next(data)),
@@ -245,11 +263,23 @@ export class ContractMonitoringExtensionComponent {
       ).subscribe();
   }
 
+  private getContractingClosureUpdate(): ContractingClosureUpdateDTO {
+    return {
+      closureDate: this.decisionForm.controls.closureDate.value,
+      lastPaymentDates: this.lastPaymentDatesForm.value.map((paymentDate: any) =>( {
+        partnerId: paymentDate.partnerId,
+        lastPaymentDate: paymentDate.lastPaymentDate,
+      }))
+    } as ContractingClosureUpdateDTO;
+  }
+
   private getUpdatedProjectContractingMonitoring(): ProjectContractingMonitoringDTO {
     return {
       projectId: this.projectId,
       startDate: this.decisionForm.controls.startDate.value,
       endDate: this.decisionForm.controls.endDate.value,
+      entryIntoForceDate: '',
+      entryIntoForceComment: '',
       addDates: this.toAddDatesDTO(),
       typologyProv94: this.decisionForm.controls.typologyProv94.value,
       typologyProv94Comment: this.decisionForm.controls.typologyProv94Comment.value,
@@ -268,7 +298,8 @@ export class ContractMonitoringExtensionComponent {
         comment: lumpSum.comment,
         readyForPayment: lumpSum.readyForPayment,
         fastTrack: lumpSum.fastTrack,
-        installmentsAlreadyCreated: lumpSum.installmentsAlreadyCreated
+        installmentsAlreadyCreated: lumpSum.installmentsAlreadyCreated,
+        linkedToEcPaymentId: lumpSum.linkedToEcPaymentId
       }))
     } as ProjectContractingMonitoringDTO;
   }
@@ -303,6 +334,10 @@ export class ContractMonitoringExtensionComponent {
           projectBudgetAmountShare: element.projectBudgetAmountShare
         })
     );
+  }
+
+  get lastPaymentDatesForm(): FormArray {
+    return this.decisionForm.get('lastPaymentDates') as FormArray;
   }
 
   get lumpSumsForm(): FormArray {
@@ -350,6 +385,16 @@ export class ContractMonitoringExtensionComponent {
 
   tableChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  getFTLSEditTooltipOnHover(lumpSum: AbstractControl): string {
+    if (lumpSum?.value?.installmentsAlreadyCreated) {
+      return this.translateService.instant('project.application.contract.monitoring.ftls.disabled.due.to.installments');
+    } else if (lumpSum?.value?.linkedToEcPaymentId) {
+      return this.translateService.instant('project.application.contract.monitoring.ftls.disabled.due.to.payment.ec',{ecId :  lumpSum?.value?.linkedToEcPaymentId});
+    } else {
+      return '';
+    }
   }
 
   private getProjectDimensionCodes(objectivesWithPolicies: {[p: string]: ProgrammeSpecificObjectiveDTO[]}): {[p: string]: string[]} {

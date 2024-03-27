@@ -16,6 +16,6 @@ class AccountingYearPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): AccountingYear =
-        repository.getById(id).toModel()
+        repository.getReferenceById(id).toModel()
 
 }

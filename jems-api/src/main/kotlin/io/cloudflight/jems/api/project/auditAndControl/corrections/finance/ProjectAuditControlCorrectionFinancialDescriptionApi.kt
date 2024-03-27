@@ -20,7 +20,7 @@ interface ProjectAuditControlCorrectionFinancialDescriptionApi {
     }
 
     @ApiOperation("Get financial description section of correction")
-    @GetMapping("$ENDPOINT_API_PROJECT_CORRECTION_FINANCIAL_DESCRIPTION")
+    @GetMapping(ENDPOINT_API_PROJECT_CORRECTION_FINANCIAL_DESCRIPTION)
     fun getCorrectionFinancialDescription(
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,
@@ -28,7 +28,7 @@ interface ProjectAuditControlCorrectionFinancialDescriptionApi {
     ): ProjectCorrectionFinancialDescriptionDTO
 
     @ApiOperation("Update financial description section of correction")
-    @PutMapping("$ENDPOINT_API_PROJECT_CORRECTION_FINANCIAL_DESCRIPTION", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_CORRECTION_FINANCIAL_DESCRIPTION, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateCorrectionFinancialDescription(
         @PathVariable projectId: Long,
         @PathVariable auditControlId: Long,

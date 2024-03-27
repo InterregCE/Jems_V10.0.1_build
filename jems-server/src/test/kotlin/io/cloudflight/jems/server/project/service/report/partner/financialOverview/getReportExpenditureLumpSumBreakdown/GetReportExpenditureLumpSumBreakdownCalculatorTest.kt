@@ -22,11 +22,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 597L
+        private val DATE_TIME_NOW = ZonedDateTime.now()
 
         private fun report(reportId: Long, status: ReportStatus) =
             ProjectPartnerReportStatusAndVersion(
@@ -39,6 +41,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             reportLumpSumId = 1L,
             lumpSumId = 101L,
             name = setOf(InputTranslation(SystemLanguage.ES, "name 1 ES")),
+            fastTrack = false,
             period = 11,
             totalEligibleBudget = BigDecimal.valueOf(52),
             previouslyReported = BigDecimal.valueOf(23),
@@ -54,6 +57,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             reportLumpSumId = 2L,
             lumpSumId = 102L,
             name = setOf(InputTranslation(SystemLanguage.TR, "name 2 TR")),
+            fastTrack = true,
             period = 12,
             totalEligibleBudget = BigDecimal.valueOf(18),
             previouslyReported = BigDecimal.valueOf(7),
@@ -69,6 +73,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             reportLumpSumId = 3L,
             lumpSumId = 103L,
             name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+            fastTrack = false,
             period = 13,
             totalEligibleBudget = BigDecimal.valueOf(15),
             previouslyReported = BigDecimal.ZERO,
@@ -111,6 +116,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 1L,
                     lumpSumId = 101L,
                     name = setOf(InputTranslation(SystemLanguage.ES, "name 1 ES")),
+                    fastTrack = false,
                     period = 11,
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
@@ -128,6 +134,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 2L,
                     lumpSumId = 102L,
                     name = setOf(InputTranslation(SystemLanguage.TR, "name 2 TR")),
+                    fastTrack = true,
                     period = 12,
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
@@ -145,6 +152,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 3L,
                     lumpSumId = 103L,
                     name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+                    fastTrack = false,
                     period = 13,
                     totalEligibleBudget = BigDecimal.valueOf(15),
                     previouslyReported = BigDecimal.ZERO,
@@ -163,6 +171,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 reportLumpSumId = 0L,
                 lumpSumId = 0L,
                 name = emptySet(),
+                fastTrack = false,
                 period = null,
                 totalEligibleBudget = BigDecimal.valueOf(85),
                 previouslyReported = BigDecimal.valueOf(30),
@@ -184,6 +193,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 1L,
                     lumpSumId = 101L,
                     name = setOf(InputTranslation(SystemLanguage.ES, "name 1 ES")),
+                    fastTrack = false,
                     period = 11,
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
@@ -201,6 +211,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 2L,
                     lumpSumId = 102L,
                     name = setOf(InputTranslation(SystemLanguage.TR, "name 2 TR")),
+                    fastTrack = true,
                     period = 12,
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
@@ -218,6 +229,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     reportLumpSumId = 3L,
                     lumpSumId = 103L,
                     name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+                    fastTrack = false,
                     period = 13,
                     totalEligibleBudget = BigDecimal.valueOf(15),
                     previouslyReported = BigDecimal.ZERO,
@@ -237,6 +249,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 reportLumpSumId = 0L,
                 lumpSumId = 0L,
                 name = emptySet(),
+                fastTrack = false,
                 period = null,
                 totalEligibleBudget = BigDecimal.valueOf(85),
                 previouslyReported = BigDecimal.valueOf(30),
@@ -295,7 +308,9 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                         reportOfOriginId = 70L,
                         reportOfOriginNumber = 5,
                         reportProjectOfOriginId = null,
-                        originalExpenditureNumber = 3
+                        originalExpenditureNumber = 3,
+                        parkedFromExpenditureId = 2965L,
+                        parkedOn = DATE_TIME_NOW
                     )
                 )
             )

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectReportWorkPlan(
-//    private val reportPersistence: ProjectReportPersistence,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectReportWorkPlanInteractor {
@@ -35,7 +34,7 @@ class UpdateProjectReportWorkPlan(
         workPlan: List<ProjectReportWorkPackageUpdate>,
     ): List<ProjectReportWorkPackage> {
         // TODO validate only changes to comments are allowed when limited
-//        validateReportNotClosed(status = reportPersistence.getReportById(projectId, reportId = reportId).status)
+        //        validateReportNotClosed(status = reportPersistence.getReportById(projectId, reportId = reportId).status)
         validateInputs(workPlan = workPlan)
 
         val existingWpsById = reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId)
@@ -47,15 +46,18 @@ class UpdateProjectReportWorkPlan(
             if (thereAreChanges(wpNew, existingWp)) // update WP (itself)
                 reportWorkPlanPersistence.updateReportWorkPackage(workPackageId = wpId, wpNew.onlyWpChangesThemselves())
 
-            updateNestedActivities( // update WP activities
+            updateNestedActivities(
+                // update WP activities
                 activitiesWithNewData = wpNew.activities,
                 existingActivitiesById = existingWp.activities.associateBy { it.id },
             )
-            updateNestedOutputs(    // update WP outputs
+            updateNestedOutputs(
+                // update WP outputs
                 outputsWithNewData = wpNew.outputs,
                 existingOutputsById = existingWp.outputs.associateBy { it.id },
             )
-            updateNestedInvestments(    // update WP investment
+            updateNestedInvestments(
+                // update WP investment
                 investmentsWithNewData = wpNew.investments,
                 existingInvestmentsById = existingWp.investments.associateBy { it.id },
             )
@@ -144,12 +146,13 @@ class UpdateProjectReportWorkPlan(
         existingInvestmentsById: Map<Long, ProjectReportWorkPackageInvestment>,
     ) {
         investmentsWithNewData.associateBy { it.id }.forEach { (investmentId, investmentNew) ->
-            val existingOutput = existingInvestmentsById.getByIdOrThrow(investmentId)
+            val existingInvestment = existingInvestmentsById.getByIdOrThrow(investmentId)
 
-            if (thereAreChanges(investmentNew, existingOutput))
+            if (thereAreChanges(investmentNew, existingInvestment))
                 reportWorkPlanPersistence.updateReportWorkPackageInvestment(
                     investmentId = investmentId,
                     progress = investmentNew.progress,
+                    status = investmentNew.status
                 )
         }
     }
@@ -158,11 +161,11 @@ class UpdateProjectReportWorkPlan(
         first: ProjectReportWorkPackageUpdate,
         second: ProjectReportWorkPackage,
     ) = first.specificStatus != second.specificStatus
-        || first.specificExplanation != second.specificExplanation
-        || first.communicationStatus != second.communicationStatus
-        || first.communicationExplanation != second.communicationExplanation
-        || first.completed != second.completed
-        || first.description != second.description
+            || first.specificExplanation != second.specificExplanation
+            || first.communicationStatus != second.communicationStatus
+            || first.communicationExplanation != second.communicationExplanation
+            || first.completed != second.completed
+            || first.description != second.description
 
     private fun thereAreChanges(
         first: ProjectReportWorkPackageActivityUpdate,
@@ -173,18 +176,19 @@ class UpdateProjectReportWorkPlan(
         first: ProjectReportWorkPackageActivityDeliverableUpdate,
         second: ProjectReportWorkPackageActivityDeliverable,
     ) = first.currentReport != second.currentReport
-        || first.progress != second.progress
+            || first.progress != second.progress
 
     private fun thereAreChanges(
         first: ProjectReportWorkPackageOutputUpdate,
         second: ProjectReportWorkPackageOutput,
     ) = first.currentReport != second.currentReport
-        || first.progress != second.progress
+            || first.progress != second.progress
 
     private fun thereAreChanges(
         first: ProjectReportWorkPackageInvestmentUpdate,
         second: ProjectReportWorkPackageInvestment,
     ) = first.progress != second.progress
+            || first.status != second.status
 
     private fun Map<Long, ProjectReportWorkPackage>.getByIdOrThrow(id: Long) = get(id)
         ?: throw WorkPackageNotFoundException(workPackageId = id)

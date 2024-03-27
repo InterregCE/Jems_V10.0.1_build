@@ -14,7 +14,7 @@ import {
 } from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
-import {filter, map, switchMap, tap} from 'rxjs/operators';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {UntilDestroy} from '@ngneat/until-destroy';
@@ -53,7 +53,7 @@ export class PaymentsToEcDetailPageStore {
     this.accountingYears$ = this.accountingYears();
     this.paymentToEcDetail$ = this.paymentDetail();
     this.userCanEdit$ = this.userCanEdit();
-    this.programmeFunds$ = this.allFunds();
+    this.programmeFunds$ = this.selectedFunds();
     this.userCanView$ = this.userCanView();
   }
 
@@ -152,9 +152,10 @@ export class PaymentsToEcDetailPageStore {
         );
   }
 
-   private allFunds(): Observable<ProgrammeFundDTO[]> {
+   private selectedFunds(): Observable<ProgrammeFundDTO[]> {
     return this.programmeFundService.getProgrammeFundList()
       .pipe(
+        map(programmeFunds => programmeFunds.filter(fund => fund.selected)),
         tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds))
       );
   }

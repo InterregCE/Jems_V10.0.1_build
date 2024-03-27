@@ -68,7 +68,7 @@ class AssociatedOrganizationPersistenceProvider(
 
     @Transactional
     override fun deactivate(id: Long) {
-        projectAssociatedOrganizationRepo.getById(id).apply {
+        projectAssociatedOrganizationRepo.getReferenceById(id).apply {
             active = false
         }
     }

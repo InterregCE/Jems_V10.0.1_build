@@ -5,7 +5,7 @@
     <div jemsFormLayout>
         <h3>{{'programme.data.export.table.header' | translate}}</h3>
         <div jemsNoWidthLimit class="mb-4"
-             [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:3}, {minInRem:3}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
+             [jemsTableConfig]="[{minInRem: 15}, {minInRem: 15}, {minInRem:5, maxInRem: 5}, {minInRem:5, maxInRem: 5}, {minInRem: 8, maxInRem: 8}, {minInRem: 8, maxInRem: 5}, {minInRem: 3, maxInRem: 3}]">
             <div>
                 <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
                 <span>{{ 'programme.data.export.table.filename' | translate}}</span>
@@ -19,9 +19,9 @@
             <div *ngIf="!data.programmeDataExportMetadata.length">{{'programme.data.export.no.data.info' | translate}}</div>
 
             <ng-container *ngFor="let exportedFileData of data.programmeDataExportMetadata">
-                <div>
-                    <span>{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
-                    <span>{{exportedFileData.fileName}}</span>
+                <div >
+                    <span class="name-column">{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
+                    <span class="name-column">{{exportedFileData.fileName}}</span>
                     <span>{{exportedFileData.inputLanguage}}</span>
                     <span>{{exportedFileData.exportLanguage}}</span>
                     <span>{{exportedFileData.requestTime | localeDate : 'L' : 'LT'}}</span>

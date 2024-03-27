@@ -5,7 +5,7 @@ export class PaymentsToProjectDetailPageConstants {
   public static FORM_CONTROL_NAMES = {
     partnerPayments: 'partnerPayments',
     partnerNumber: 'partnerNumber',
-    partnerType: 'partnerType',
+    partnerRole: 'partnerRole',
     partnerAbbreviation: 'partnerAbbreviation',
     amountApproved: 'amountApproved',
     installments: 'installments',

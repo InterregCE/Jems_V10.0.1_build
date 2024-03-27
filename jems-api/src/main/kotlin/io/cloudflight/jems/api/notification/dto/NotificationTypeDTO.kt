@@ -21,6 +21,7 @@ enum class NotificationTypeDTO {
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
+    ProjectClosed,
 
     // Partner Report
     PartnerReportSubmitted,

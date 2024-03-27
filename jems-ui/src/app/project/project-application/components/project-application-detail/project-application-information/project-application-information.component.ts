@@ -95,6 +95,10 @@ export class ProjectApplicationInformationComponent {
     return this.projectStatus === ProjectStatusDTO.StatusEnum.CONTRACTED;
   }
 
+  hasClosedStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.CLOSED;
+  }
+
   private get projectStatus(): ProjectStatusDTO.StatusEnum {
     return this.project?.projectStatus.status;
   }

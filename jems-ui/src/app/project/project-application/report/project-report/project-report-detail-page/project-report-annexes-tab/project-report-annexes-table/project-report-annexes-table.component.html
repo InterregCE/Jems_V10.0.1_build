@@ -18,7 +18,7 @@
                     [length]="data.files.totalElements">
     </jems-paginator>
 
-    <div *ngIf="projectReportFileStore.isEditable$ | async">
+    <div *ngIf="projectReportFileStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                type="file" [accept]="acceptedFilesTypes" [hidden]="true"
                aria-label="file to upload">

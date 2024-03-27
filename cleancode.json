@@ -24,11 +24,11 @@
     },
     {
       "hash": "da53ad27",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentPersistenceProvider.getAllPaymentToProject - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "c2f38036",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "ProjectReportPersistenceProvider.listReports - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "cc26f5aa",
@@ -39,16 +39,12 @@
       "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
     },
     {
+      "hash": "fbfc945f",
+      "reason": "PaymentPersistenceProvider.getPaymentIdsAvailableForEcPayments - queryDSL cannot be marked as Transactional"
+    },
+    {
       "hash": "6cea37d6",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
-    },
-    {
-      "hash": "60b8c302",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
-    },
-    {
-      "hash": "3159aa01",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentPersistenceProvider.getAllPaymentToEcPayment - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "13285bf0",
@@ -56,59 +52,87 @@
     },
     {
       "hash": "fe90b98c",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
-    },
-    {
-      "hash": "a15e31cb",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentApplicationToEcLinkPersistenceProvider.getPaymentsLinkedToEcPayment - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "c4e85ca5",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentApplicationToEcLinkPersistenceProvider.getCumulativeAmounts - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "7a205810",
-      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason":"AuditControlCorrectionPersistenceProvider.getAvailableCorrectionsForModification - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "28f75461",
-      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason":"AuditControlCorrectionPersistenceProvider.getAvailableCorrectionsForPayments - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "d50ecbfe",
-      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason":"AuditControlCorrectionPersistenceProvider.getCorrectionsForModificationDecisions - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "edd2048b",
+      "reason":"AuditControlCorrectionPersistenceProvider.getCorrectionsLinkedToEcPayment - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "e677362b",
-      "reason":"queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
-    },
-    {
-      "hash": "1a2e2e94",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason":"ProjectPartnerReportPersistenceProvider.getAvailableReports - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "7c296b17",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "EcPaymentCorrectionLinkPersistenceProvider.getCorrectionsLinkedToEcPayment - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "02dfb4b5",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "EcPaymentCorrectionLinkPersistenceProvider.getCorrectionIdsAvailableForEcPayments - queryDSL JPAQueryFactory cannot be marked as Transactional"
     },
     {
       "hash": "3263478f",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "AuditControlCorrectionPersistenceProvider.getAllCorrectionsByAuditControlId - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "4f35a59c",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentAdvancePersistenceProvider.list - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "459fdfe1",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentPersistenceProvider.getAvailableFtlsPayments - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "542e1ec2",
+      "reason": "PaymentAccountCorrectionLinkingPersistenceProvider.calculateOverviewForDraftPaymentAccount - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "a624e7ec",
+      "reason": "PaymentAccountCorrectionLinkingPersistenceProvider.getCorrectionIdsAvailableForPaymentAccounts - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "0e4e429b",
+      "reason": "AuditControlCorrectionPersistenceProvider.getCorrectionsLinkedToPaymentAccount - queryDSL cannot be marked as Transactional"
     },
     {
       "hash": "4f9636cd",
-      "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
+      "reason": "PaymentApplicationToEcLinkPersistenceProvider.calculateAndGetOverviewForDraftEcPayment - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "3d8d4c66",
+      "reason": "PaymentAccountFinancePersistenceProvider.getCorrectionsOnlyDeductionsAndNonClericalMistake - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "0aaefd2b",
+      "reason": "PaymentAccountFinancePersistenceProvider.getTotalsForFinishedEcPayments - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "0327496b",
+      "reason": "PaymentAccountFinancePersistenceProvider.getReconciliationOverview - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "c45b8412",
+      "reason": "PaymentAccountFinancePersistenceProvider.getCorrectionTotalsForFinishedPaymentAccounts - queryDSL cannot be marked as Transactional"
+    },
+    {
+      "hash": "68a7ea54",
+      "reason": "PaymentAccountFinancePersistenceProvider.getEcPaymentTotalsForFinishedPaymentAccounts - queryDSL cannot be marked as Transactional"
     }
   ]
 }

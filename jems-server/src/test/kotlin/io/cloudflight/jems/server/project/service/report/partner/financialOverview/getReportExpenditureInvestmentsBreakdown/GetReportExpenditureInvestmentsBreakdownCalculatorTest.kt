@@ -26,12 +26,14 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
 
     companion object {
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
+        private val DATE_TIME_NOW = ZonedDateTime.now()
 
         private fun report(reportId: Long, status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
             reportId = reportId,
@@ -267,7 +269,9 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     reportOfOriginId = 70L,
                     reportOfOriginNumber = 5,
                     reportProjectOfOriginId = null,
-                    originalExpenditureNumber = 3
+                    originalExpenditureNumber = 3,
+                    parkedFromExpenditureId = 205L,
+                    parkedOn = DATE_TIME_NOW
                 ),
                 currencyConversionRate = BigDecimal.valueOf(175, 2)
             ))

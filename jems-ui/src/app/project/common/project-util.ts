@@ -68,7 +68,8 @@ export class ProjectUtil {
     return status === ProjectStatusDTO.StatusEnum.CONTRACTED
       || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED
-      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED
+      || status === ProjectStatusDTO.StatusEnum.CLOSED;
   }
 
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum | string) {

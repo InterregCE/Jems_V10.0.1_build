@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.base.updateAuditControl.UpdateAuditControlTest
@@ -12,6 +13,8 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.Aud
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_4
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
@@ -40,9 +43,9 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         private const val PROJECT_ID = 2L
         private const val CORRECTION_ID = 170L
 
-        private val programmeMeasureModel = ProjectCorrectionProgrammeMeasure(
+        private fun programmeMeasureModel(scenario: ProjectCorrectionProgrammeMeasureScenario) = ProjectCorrectionProgrammeMeasure(
             correctionId = CORRECTION_ID,
-            scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
+            scenario = scenario,
             comment = "comment",
             includedInAccountingYear = null,
         )
@@ -110,7 +113,10 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     private lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    private lateinit var correctionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence
+    private lateinit var ecPaymentCorrectionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence
+
+    @MockK
+   private lateinit var paymentAccountCorrectionExtensionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence
 
     @MockK
     private lateinit var auditControlCorrectionFinancePersistence: AuditControlCorrectionFinancePersistence
@@ -122,14 +128,14 @@ class CloseAuditControlCorrectionTest : UnitTest() {
     lateinit var closeProjectAuditControlCorrection: CloseAuditControlCorrection
 
     @Test
-    fun closeCorrection() {
+    fun `closeCorrection - linked to EcPayment`() {
         every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
             correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, lumpSumOrderNr = null, programmeFundId = 60L, id = AUDIT_CONTROL_ID)
         every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
                 projectAuditControl(AuditControlStatus.Ongoing).copy(id = AUDIT_CONTROL_ID)
-        every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel
+        every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel(SCENARIO_5)
         every { auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(CORRECTION_ID) } returns financialDescription
-        every { correctionExtensionLinkingPersistence.createCorrectionExtension(
+        every { ecPaymentCorrectionExtensionLinkingPersistence.createCorrectionExtension(
             financialDescription, BigDecimal.valueOf(11), BigDecimal.ZERO
         ) } returns Unit
 
@@ -144,9 +150,42 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         assertThat(closeProjectAuditControlCorrection.closeCorrection(CORRECTION_ID))
             .isEqualTo(AuditControlStatus.Closed)
 
-        verify(exactly = 1) { correctionExtensionLinkingPersistence.createCorrectionExtension(
+        verify(exactly = 1) { ecPaymentCorrectionExtensionLinkingPersistence.createCorrectionExtension(
             financialDescription, BigDecimal.valueOf(11), BigDecimal.ZERO
         ) }
+
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.CORRECTION_IS_CLOSED,
+                project = AuditProject(id = "2", customIdentifier = "01", name = "01 acr"),
+                entityRelatedId = AUDIT_CONTROL_ID,
+                description = "Correction AC1.4 for Audit/Control number 01_AC_1 is closed."
+            )
+        )
+    }
+
+    @Test
+    fun `closeCorrection - linked to PaymentAccount`() {
+        every { auditControlCorrectionPersistence.getByCorrectionId(CORRECTION_ID) } returns
+                correctionIdentification(AuditControlStatus.Ongoing, reportId = 50L, lumpSumOrderNr = null, programmeFundId = 60L, id = AUDIT_CONTROL_ID)
+        every { auditControlPersistence.getById(AUDIT_CONTROL_ID) } returns
+                projectAuditControl(AuditControlStatus.Ongoing).copy(id = AUDIT_CONTROL_ID)
+        every { auditControlCorrectionMeasurePersistence.getProgrammeMeasure(CORRECTION_ID) } returns programmeMeasureModel(SCENARIO_4)
+        every { auditControlCorrectionFinancePersistence.getCorrectionFinancialDescription(CORRECTION_ID) } returns financialDescription
+        every { paymentAccountCorrectionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) } returns Unit
+
+        every { auditControlCorrectionPersistence.closeCorrection(CORRECTION_ID) } returns mockk {
+            every { orderNr } returns 4
+            every { status } returns AuditControlStatus.Closed
+        }
+
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+
+        assertThat(closeProjectAuditControlCorrection.closeCorrection(CORRECTION_ID))
+            .isEqualTo(AuditControlStatus.Closed)
+
+        verify(exactly = 1) { paymentAccountCorrectionExtensionLinkingPersistence.createCorrectionExtension(financialDescription) }
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(

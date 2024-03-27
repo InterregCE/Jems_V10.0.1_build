@@ -9,7 +9,7 @@ import {
 } from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
-import {finalize, map, switchMap, take} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {
@@ -25,6 +25,7 @@ import {FileListComponent} from '@common/components/file-list/file-list.componen
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -37,6 +38,7 @@ export class ReportAnnexesTableComponent {
 
   Alert = Alert;
   PermissionsEnum = PermissionsEnum;
+  ReportUtil = ReportUtil;
 
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
@@ -78,10 +80,8 @@ export class ReportAnnexesTableComponent {
                   author: file.author,
                   sizeString: file.sizeString,
                   description: file.description,
-                  editable: this.isNotAnonymized(file) && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && canEdit,
-                  deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport
-                      && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
-                      && canEdit,
+                  editable: this.isNotAnonymized(file) && ReportUtil.isPartnerReportSubmittable(reportStatus) && canEdit,
+                  deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport && ReportUtil.isPartnerReportSubmittable(reportStatus) && canEdit,
                   tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
                   iconIfNotDeletable: canEdit ? 'delete_forever' : ''
                 })),

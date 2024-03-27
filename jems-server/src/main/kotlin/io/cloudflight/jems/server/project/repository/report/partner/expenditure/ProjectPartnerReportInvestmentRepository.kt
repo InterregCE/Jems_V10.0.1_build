@@ -13,6 +13,7 @@ interface ProjectPartnerReportInvestmentRepository :
         reportId: Long,
     ): MutableList<PartnerReportInvestmentEntity>
 
+    fun findAllByReportEntityIdIn(reportIds: Set<Long>): List<PartnerReportInvestmentEntity>
     fun findByReportEntityIdAndInvestmentId(reportId: Long, projectInvestmentId: Long): PartnerReportInvestmentEntity
 
     @Query("""
@@ -26,6 +27,17 @@ interface ProjectPartnerReportInvestmentRepository :
         GROUP BY investment.investmentId
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Long, BigDecimal, BigDecimal>>
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            investment.investmentId,
+            COALESCE(SUM(investment.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} investment
+        WHERE investment.reportEntity.partnerId=:partnerId AND investment.reportEntity.projectReport.id IN :projectReportIds
+        GROUP BY investment.investmentId
+    """)
+    fun findVerificationParkedCumulativeForProjectReportIds(partnerId:Long, projectReportIds: Set<Long>): List<Pair<Long, BigDecimal>>
 
     @Query("""
         SELECT new kotlin.Pair(

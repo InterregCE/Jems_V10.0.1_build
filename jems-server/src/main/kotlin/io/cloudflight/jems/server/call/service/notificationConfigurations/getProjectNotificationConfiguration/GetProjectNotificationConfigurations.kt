@@ -18,7 +18,10 @@ class GetProjectNotificationConfigurations(
         val savedNotifications = persistence.getProjectNotificationConfigurations(callId).associateBy { it.id }
 
         val projectNotifications = NotificationType.projectNotifications.sorted().toMutableList()
-        projectNotifications.addAll(NotificationType.projectFileSharedFolderNotifications.sorted())
+        projectNotifications.addAll(
+            projectNotifications.size - 1, // make Closed type the last one.
+            NotificationType.projectFileSharedFolderNotifications.sorted()
+        )
 
         return projectNotifications.map {
             savedNotifications.getOrDefault(it, getDefaultProjectNotificationConfiguration(it))

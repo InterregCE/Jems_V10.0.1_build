@@ -1,0 +1,57 @@
+:host {
+  max-width: 100%;
+}
+mat-chip {
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding-left: .25rem;
+  margin: 0 .25rem !important;
+  overflow: hidden;
+  color: var(--font-color-primary);
+  font-weight: 600;
+  font-size: 1em;
+
+  .chip-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.status-chip-container {
+  padding-right: 0;
+}
+.status-Disabled {
+  border: 1px solid var(--table-border-color);
+  background: white !important;
+  opacity: 0.6;
+}
+.status-DRAFT, .status-STEP1_DRAFT {
+  background-color: var(--status-draft) !important;
+}
+.status-RETURNED_TO_APPLICANT, .status-RETURNED_TO_APPLICANT_FOR_CONDITIONS {
+  background-color: var(--status-draft) !important;
+}
+.status-IN_MODIFICATION, .status-MODIFICATION_PRECONTRACTING {
+  background-color: var(--status-draft) !important;
+}
+.status-SUBMITTED, .status-STEP1_SUBMITTED, .status-MODIFICATION_SUBMITTED, .status-MODIFICATION_PRECONTRACTING_SUBMITTED, .status-CONDITIONS_SUBMITTED {
+  background-color: var(--status-submitted) !important;
+}
+.status-ELIGIBLE, .status-STEP1_ELIGIBLE {
+  background-color: var(--status-eligible) !important;
+}
+.status-INELIGIBLE, .status-NOT_APPROVED, .status-STEP1_INELIGIBLE, .status-STEP1_NOT_APPROVED {
+  background-color: var(--status-declined) !important;
+}
+.status-APPROVED, .status-STEP1_APPROVED {
+  background-color: var(--status-approved) !important;
+}
+.status-APPROVED_WITH_CONDITIONS, .status-STEP1_APPROVED_WITH_CONDITIONS {
+  background-color: var(--status-approved-with-conditions) !important;
+}
+.status-CONTRACTED {
+  background-color: var(--status-contracted) !important;
+}
+.status-CLOSED {
+  background-color: var(--status-closed) !important;
+}

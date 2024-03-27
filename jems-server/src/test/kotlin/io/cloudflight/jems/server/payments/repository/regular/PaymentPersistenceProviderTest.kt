@@ -15,6 +15,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
@@ -50,18 +51,24 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToC
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
+import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.fund.toEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.entity.QProjectEntity
+import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
@@ -71,7 +78,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
@@ -255,6 +262,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
             id = fundId,
             selected = true,
             type = ProgrammeFundType.OTHER,
+            translatedValues = mutableSetOf(
+                ProgrammeFundTranslationEntity(TranslationId(mockk(), SystemLanguage.ES), "fund ES abbr", "fund ES desc"),
+            ),
         )
 
         private fun paymentFtlsEntity() = PaymentEntity(
@@ -297,8 +307,11 @@ class PaymentPersistenceProviderTest : UnitTest() {
             id = 1L,
             payment = paymentFtlsEntity(),
             projectPartner = projectPartnerEntity,
+            partnerCertificate = null,
+            partnerAbbreviation = "abbr 1",
+            partnerNameInOriginalLanguage = "original 1",
+            partnerNameInEnglish = "english 1",
             amountApprovedPerPartner = BigDecimal.ONE,
-            partnerCertificate = null
         )
 
         private val projectPartnerEntity = ProjectPartnerEntity(
@@ -357,10 +370,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentConfirmedDate = currentDate,
             correctionId = 15L,
         )
-        private val paymentDetail = PaymentDetail(
+        private val expectedFund = ProgrammeFund(
+            id = fundId,
+            selected = true,
+            type = ProgrammeFundType.OTHER,
+            abbreviation = setOf(InputTranslation(SystemLanguage.ES, "fund ES abbr")),
+            description = setOf(InputTranslation(SystemLanguage.ES, "fund ES desc")),
+        )
+        private val expectedPaymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            fundName = fund.type.name,
+            fund = expectedFund,
             projectId = projectId,
             projectCustomIdentifier = dummyProject.customIdentifier,
             projectAcronym = dummyProject.acronym,
@@ -373,15 +393,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     projectId = projectId,
                     orderNr = 13,
                     programmeLumpSumId = lumpSumId,
+                    partnerReportId = null,
+                    partnerReportNumber = null,
                     programmeFundId = fund.id,
                     partnerId = partnerId_5,
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     partnerNumber = 1,
-                    partnerAbbreviation = "Lead",
+                    partnerAbbreviation = "abbr 1",
+                    nameInOriginalLanguage = "original 1",
+                    nameInEnglish = "english 1",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = emptyList(),
-                    partnerReportId = null,
-                    partnerReportNumber = null
                 )
             )
         )
@@ -391,14 +413,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentFtlsToCreate(
                         lumpSumId,
                         listOf(
-                            PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35)),
-                            PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65)),
+                            PaymentPartnerToCreate(partnerId_5, null, BigDecimal.valueOf(35), "abbr 5", "original 5", "english 5"),
+                            PaymentPartnerToCreate(partnerId_6, null, BigDecimal.valueOf(65), null, null, null),
                         ),
                         amountApprovedPerFund = BigDecimal.valueOf(100), "proj-iden", "proj-acr",
                         defaultPartnerContribution = BigDecimal.valueOf(32),
                         defaultOfWhichPublic = BigDecimal.valueOf(33),
                         defaultOfWhichAutoPublic = BigDecimal.valueOf(34),
                         defaultOfWhichPrivate = BigDecimal.valueOf(35),
+                        defaultTotalEligibleWithoutSco = BigDecimal.ZERO,
+                        defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                        defaultFundAmountPublicContribution = BigDecimal.ZERO,
                     ),
         )
 
@@ -411,17 +436,17 @@ class PaymentPersistenceProviderTest : UnitTest() {
             paymentClaimId = null,
             paymentClaimNo = 0,
             paymentToEcId = null,
-            fundName = "OTHER",
-            fundId = fundId,
+            fund = expectedFund,
             lumpSumId = 50L,
             orderNr = 13,
-            amountApprovedPerFund = BigDecimal(100),
+            fundAmount = BigDecimal(100),
             amountPaidPerFund = BigDecimal.ZERO,
             amountAuthorizedPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = weekBefore,
             totalEligibleAmount = BigDecimal.TEN,
-            lastApprovedVersionBeforeReadyForPayment = "V4.7"
+            lastApprovedVersionBeforeReadyForPayment = "V4.7",
+            remainingToBePaid = BigDecimal.valueOf(100L),
         )
         val programmeLumpSum = programmeLumpSum(id = 50)
 
@@ -472,14 +497,14 @@ class PaymentPersistenceProviderTest : UnitTest() {
             lumpSumId = 50L,
             orderNr = 13,
             paymentApprovalDate = currentTime,
-            totalEligibleAmount = BigDecimal.TEN,
-            fundId = fundId,
-            fundName = "OTHER",
-            amountApprovedPerFund = BigDecimal(100),
+            totalEligibleAmount = BigDecimal.valueOf(23L),
+            fund = expectedFund,
+            fundAmount = BigDecimal(100),
             amountAuthorizedPerFund = BigDecimal.valueOf(22),
             amountPaidPerFund = BigDecimal.valueOf(21),
             dateOfLastPayment = currentDate.plusDays(1),
-            lastApprovedVersionBeforeReadyForPayment = "V4.7"
+            lastApprovedVersionBeforeReadyForPayment = "V4.7",
+            remainingToBePaid = BigDecimal.valueOf(24L),
         )
 
         private val expectedRegularPayment = expectedFtlsPayment.copy(
@@ -496,13 +521,13 @@ class PaymentPersistenceProviderTest : UnitTest() {
             orderNr = null,
             paymentApprovalDate = yearAgo,
             totalEligibleAmount = BigDecimal.valueOf(13),
-            fundId = fundId,
-            fundName = "OTHER",
-            amountApprovedPerFund = BigDecimal(100),
+            fund = expectedFund,
+            fundAmount = BigDecimal(100),
             amountAuthorizedPerFund = BigDecimal.valueOf(12),
             amountPaidPerFund = BigDecimal.valueOf(11),
             dateOfLastPayment = currentDate,
             lastApprovedVersionBeforeReadyForPayment = null,
+            remainingToBePaid = BigDecimal.valueOf(14L),
         )
 
 
@@ -515,22 +540,28 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = partnerId_6,
                         partnerReportId = 106,
-                        amountApprovedPerPartner = BigDecimal(800.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(800_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(400_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(400.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(400_00L, 2),
+                        null, null, null,
                     )
                 ),
                 defaultPartnerContribution = BigDecimal.valueOf(50),
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(150),
                 defaultOfWhichPrivate = BigDecimal.valueOf(40),
-                amountApprovedPerFund = BigDecimal(90)
+                amountApprovedPerFund = BigDecimal.valueOf(90_00L, 2),
+                defaultTotalEligibleWithoutSco = BigDecimal.valueOf(210),
+                defaultFundAmountUnionContribution = BigDecimal.valueOf(99.15),
+                defaultFundAmountPublicContribution = BigDecimal.valueOf(75.00),
             ),
             4L to PaymentRegularToCreate(
                 projectId = projectId,
@@ -538,18 +569,23 @@ class PaymentPersistenceProviderTest : UnitTest() {
                     PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 107,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(90_00L, 2),
+                        null, null, null,
                     ), PaymentPartnerToCreate(
                         partnerId = partnerId_5,
                         partnerReportId = 108,
-                        amountApprovedPerPartner = BigDecimal(90.00)
+                        amountApprovedPerPartner = BigDecimal.valueOf(90_00L, 2),
+                        null, null, null,
                     )
                 ),
                 defaultPartnerContribution = BigDecimal.valueOf(100),
                 defaultOfWhichPublic = BigDecimal.valueOf(75),
                 defaultOfWhichAutoPublic = BigDecimal.valueOf(300),
                 defaultOfWhichPrivate = BigDecimal.valueOf(80),
-                amountApprovedPerFund = BigDecimal(180)
+                amountApprovedPerFund = BigDecimal.valueOf(180_00L, 2),
+                defaultTotalEligibleWithoutSco = BigDecimal.ZERO,
+                defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                defaultFundAmountPublicContribution = BigDecimal.ZERO,
             )
         )
     }
@@ -569,7 +605,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every {
             jpaQueryFactory.select(
                 any(), any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(),
+                any(),
             )
         } returns query
         val slotFrom = slot<EntityPath<Any>>()
@@ -596,16 +634,21 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleFtls.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(22) // amount authorized
         every { tupleFtls.get(3, LocalDate::class.java) } returns currentDate.plusDays(1)
         every { tupleFtls.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
-        every { tupleFtls.get(5, String::class.java) } returns "PO4"
+        every { tupleFtls.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
+        every { tupleFtls.get(6, String::class.java) } returns "PO4"
 
-        every { tupleFtls.get(6, Long::class.java) } returns 14L
-        every { tupleFtls.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(21)
-        every { tupleFtls.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(22)
-        every { tupleFtls.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
-        every { tupleFtls.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
-        every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
-        every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
-        every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
+        every { tupleFtls.get(7, Long::class.java) } returns 14L
+        every { tupleFtls.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(21)
+        every { tupleFtls.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(22)
+        every { tupleFtls.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(23)
+        every { tupleFtls.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(24)
+        every { tupleFtls.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(25)
+        every { tupleFtls.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(26)
+        every { tupleFtls.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(27)
+        every { tupleFtls.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(28)
+        every { tupleFtls.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(29)
+        every { tupleFtls.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(30)
+        every { tupleFtls.get(18, String::class.java) } returns "comment"
 
         val tupleRegular = mockk<Tuple>()
         every { tupleRegular.get(0, PaymentEntity::class.java) } returns paymentRegularEntity()
@@ -613,16 +656,21 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { tupleRegular.get(2, BigDecimal::class.java) } returns BigDecimal.valueOf(12) // amount authorized
         every { tupleRegular.get(3, LocalDate::class.java) } returns currentDate
         every { tupleRegular.get(4, BigDecimal::class.java) } returns BigDecimal.valueOf(13)
-        every { tupleRegular.get(5, String::class.java) } returns "SO15"
+        every { tupleRegular.get(5, BigDecimal::class.java) } returns BigDecimal.valueOf(14)
+        every { tupleRegular.get(6, String::class.java) } returns "SO15"
 
-        every { tupleRegular.get(6, Long::class.java) } returns null
-        every { tupleRegular.get(7, BigDecimal::class.java) } returns BigDecimal.valueOf(31)
-        every { tupleRegular.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(32)
-        every { tupleRegular.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(33)
-        every { tupleRegular.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(34)
-        every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
-        every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
-        every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
+        every { tupleRegular.get(7, Long::class.java) } returns null
+        every { tupleRegular.get(8, BigDecimal::class.java) } returns BigDecimal.valueOf(31)
+        every { tupleRegular.get(9, BigDecimal::class.java) } returns BigDecimal.valueOf(32)
+        every { tupleRegular.get(10, BigDecimal::class.java) } returns BigDecimal.valueOf(33)
+        every { tupleRegular.get(11, BigDecimal::class.java) } returns BigDecimal.valueOf(34)
+        every { tupleRegular.get(12, BigDecimal::class.java) } returns BigDecimal.valueOf(35)
+        every { tupleRegular.get(13, BigDecimal::class.java) } returns BigDecimal.valueOf(36)
+        every { tupleRegular.get(14, BigDecimal::class.java) } returns BigDecimal.valueOf(37)
+        every { tupleRegular.get(15, BigDecimal::class.java) } returns BigDecimal.valueOf(38)
+        every { tupleRegular.get(16, BigDecimal::class.java) } returns BigDecimal.valueOf(39)
+        every { tupleRegular.get(17, BigDecimal::class.java) } returns BigDecimal.valueOf(49)
+        every { tupleRegular.get(18, String::class.java) } returns "comment"
 
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 2
@@ -634,11 +682,24 @@ class PaymentPersistenceProviderTest : UnitTest() {
 
         assertThat(slotFrom.captured).isInstanceOf(QPaymentEntity::class.java)
         assertThat(slotLeftJoin[0]).isInstanceOf(QPaymentPartnerEntity::class.java)
-        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("paymentPartnerEntity.payment.id = paymentEntity.id")
+        assertThat(slotLeftJoinOn[0].toString()).isEqualTo("paymentPartnerEntity.payment = paymentEntity")
         assertThat(slotLeftJoin[1]).isInstanceOf(QPaymentPartnerInstallmentEntity::class.java)
-        assertThat(slotLeftJoinOn[1].toString()).isEqualTo("paymentPartnerInstallmentEntity.paymentPartner.id = paymentPartnerEntity.id")
-        assertThat(slotLeftJoin[2]).isInstanceOf(QReportProjectCertificateCoFinancingEntity::class.java)
-        assertThat(slotLeftJoinOn[2].toString()).isEqualTo("reportProjectCertificateCoFinancingEntity.reportEntity.id = paymentEntity.projectReport.id")
+        assertThat(slotLeftJoinOn[1].toString()).isEqualTo("paymentPartnerInstallmentEntity.paymentPartner = paymentPartnerEntity")
+        assertThat(slotLeftJoin[2]).isInstanceOf(QProjectLumpSumEntity::class.java)
+        assertThat(slotLeftJoinOn[2].toString()).isEqualTo("projectLumpSumEntity = paymentEntity.projectLumpSum")
+        assertThat(slotLeftJoin[3]).isInstanceOf(QProjectReportEntity::class.java)
+        assertThat(slotLeftJoinOn[3].toString()).isEqualTo("projectReportEntity = paymentEntity.projectReport")
+        assertThat(slotLeftJoin[4]).isInstanceOf(QProjectContractingMonitoringEntity::class.java)
+        assertThat(slotLeftJoinOn[4].toString()).isEqualTo("projectContractingMonitoringEntity.projectId = paymentEntity.project.id")
+        assertThat(slotLeftJoin[5]).isInstanceOf(QProjectEntity::class.java)
+        assertThat(slotLeftJoinOn[5].toString()).isEqualTo("projectEntity = paymentEntity.project")
+        assertThat(slotLeftJoin[6]).isInstanceOf(QProgrammeSpecificObjectiveEntity::class.java)
+        assertThat(slotLeftJoinOn[6].toString())
+            .isEqualTo("programmeSpecificObjectiveEntity.programmeObjectivePolicy = projectEntity.priorityPolicy.programmeObjectivePolicy")
+        assertThat(slotLeftJoin[7]).isInstanceOf(QProgrammePriorityEntity::class.java)
+        assertThat(slotLeftJoinOn[7].toString()).isEqualTo("programmePriorityEntity = programmeSpecificObjectiveEntity.programmePriority")
+        assertThat(slotLeftJoin[8]).isInstanceOf(QPaymentToEcExtensionEntity::class.java)
+        assertThat(slotLeftJoinOn[8].toString()).isEqualTo("paymentToEcExtensionEntity.payment = paymentEntity")
         assertThat(slotWhere.captured.toString()).isEqualTo(
             "paymentEntity.id = 855 " +
                     "&& paymentEntity.type = FTLS " +
@@ -734,9 +795,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
     @Test
     fun saveFTLSPaymentToProjects() {
         val project = mockk<ProjectEntity>()
-        every { projectRepository.getById(projectId) } returns project
+        every { projectRepository.getReferenceById(projectId) } returns project
         val fund = mockk<ProgrammeFundEntity>()
-        every { fundRepository.getById(any()) } returns fund
+        every { fundRepository.getReferenceById(any()) } returns fund
         every { fund.id } returns fundId
         val lumpSum = mockk<ProjectLumpSumEntity>()
         every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, 7) } returns lumpSum
@@ -748,8 +809,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
         val leadPartner = projectPartnerEntity
         val partner = projectPartnerEntity(partnerId_6, abbreviation = "B", role = ProjectPartnerRole.PARTNER, sortNumber = 2)
 
-        every { projectPartnerRepository.getById(partnerId_5) } returns leadPartner
-        every { projectPartnerRepository.getById(partnerId_6) } returns partner
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns leadPartner
+        every { projectPartnerRepository.getReferenceById(partnerId_6) } returns partner
 
 
         val slotPartners = slot<MutableList<PaymentPartnerEntity>>()
@@ -795,10 +856,10 @@ class PaymentPersistenceProviderTest : UnitTest() {
     @Test
     fun saveRegularPaymentToProjects() {
         val project = mockk<ProjectEntity>()
-        every { projectRepository.getById(projectId) } returns project
+        every { projectRepository.getReferenceById(projectId) } returns project
 
 
-        every { projectReportRepository.getById(projectReportId) } returns
+        every { projectReportRepository.getReferenceById(projectReportId) } returns
                 projectReportEntity(projectReportId, projectIdentifier = "proj-iden", projectAcronym = "proj-acr")
 
         val fundERDFEntity = ERDF_FUND.toEntity()
@@ -815,8 +876,8 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { paymentRepository.saveAll(capture(slotPayments)) } answers { slotPayments.captured }
 
 
-        every { projectPartnerRepository.getById(partnerId_5) } returns leadPartner
-        every { projectPartnerRepository.getById(partnerId_6) } returns partner
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns leadPartner
+        every { projectPartnerRepository.getReferenceById(partnerId_6) } returns partner
 
 
         val leadPartnerR1 = mockk<ProjectPartnerReportEntity>()
@@ -831,9 +892,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
         every { secondPartnerR3.id } returns 106L
         every { secondPartnerR3.partnerId } returns 6L
 
-        every { projectPartnerReportRepository.getById(107L) } returns leadPartnerR1
-        every { projectPartnerReportRepository.getById(108L) } returns leadPartnerR2
-        every { projectPartnerReportRepository.getById(106L) } returns secondPartnerR3
+        every { projectPartnerReportRepository.getReferenceById(107L) } returns leadPartnerR1
+        every { projectPartnerReportRepository.getReferenceById(108L) } returns leadPartnerR2
+        every { projectPartnerReportRepository.getReferenceById(106L) } returns secondPartnerR3
         val slotExtensions = mutableListOf<PaymentToEcExtensionEntity>()
         every { paymentToEcExtensionRepository.save(capture(slotExtensions)) } returnsArgument 0
 
@@ -851,7 +912,7 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(get(0).projectLumpSum).isNull()
             assertThat(get(0).projectReport).isNotNull
             assertThat(get(0).fund).isEqualTo(fundERDFEntity)
-            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal(90.00))
+            assertThat(get(0).amountApprovedPerFund).isEqualTo(BigDecimal.valueOf(90_00L, 2))
         }
         with(slotPayments.captured) {
             assertThat(get(1).id).isEqualTo(0L)
@@ -862,17 +923,25 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(get(1).projectLumpSum).isNull()
             assertThat(get(1).projectReport).isNotNull
             assertThat(get(1).fund).isEqualTo(fundIPAEntity)
-            assertThat(get(1).amountApprovedPerFund).isEqualTo(BigDecimal(180.00))
+            assertThat(get(1).amountApprovedPerFund).isEqualTo(BigDecimal.valueOf(180_00L, 2))
         }
 
         assertThat(slotPartners.captured.size).isEqualTo(2)
         with(slotPartners.captured) {
 
-            assertThat(get(0).partnerCertificate).isNotNull
-            assertThat(get(0).partnerCertificate?.id).isEqualTo(107L)
+            assertThat(get(0).payment).isEqualTo(slotPayments.captured.get(1))
+            assertThat(get(0).projectPartner).isEqualTo(leadPartner)
+            assertThat(get(0).partnerCertificate).isEqualTo(leadPartnerR1)
+            assertThat(get(0).partnerAbbreviation).isEqualTo("")
+            assertThat(get(0).partnerNameInOriginalLanguage).isEqualTo("")
+            assertThat(get(0).partnerNameInEnglish).isEqualTo("")
 
-            assertThat(get(1).partnerCertificate).isNotNull
-            assertThat(get(1).partnerCertificate?.id).isEqualTo(108L)
+            assertThat(get(1).payment).isEqualTo(slotPayments.captured.get(1))
+            assertThat(get(1).projectPartner).isEqualTo(leadPartner)
+            assertThat(get(1).partnerCertificate).isEqualTo(leadPartnerR2)
+            assertThat(get(1).partnerAbbreviation).isEqualTo("")
+            assertThat(get(1).partnerNameInOriginalLanguage).isEqualTo("")
+            assertThat(get(1).partnerNameInEnglish).isEqualTo("")
         }
 
         with(slotExtensions[0]) {
@@ -885,6 +954,9 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(150))
             assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(40))
             assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(40))
+            assertThat(correctedTotalEligibleWithoutSco).isEqualTo( BigDecimal.valueOf(210))
+            assertThat(correctedFundAmountUnionContribution).isEqualTo(BigDecimal.valueOf(99.15))
+            assertThat(correctedFundAmountPublicContribution).isEqualTo(BigDecimal.valueOf(75.00))
         }
         with(slotExtensions[1]) {
             assertThat(paymentId).isEqualTo(0L)
@@ -896,18 +968,21 @@ class PaymentPersistenceProviderTest : UnitTest() {
             assertThat(correctedAutoPublicContribution).isEqualTo(BigDecimal.valueOf(300))
             assertThat(privateContribution).isEqualTo(BigDecimal.valueOf(80))
             assertThat(correctedPrivateContribution).isEqualTo(BigDecimal.valueOf(80))
+            assertThat(correctedTotalEligibleWithoutSco).isEqualTo(BigDecimal.ZERO)
+            assertThat(correctedFundAmountUnionContribution).isEqualTo(BigDecimal.ZERO)
+            assertThat(correctedFundAmountPublicContribution).isEqualTo(BigDecimal.ZERO)
         }
 
     }
 
     @Test
     fun getPaymentDetails() {
-        every { paymentRepository.getById(paymentId) } returns paymentFtlsEntity()
+        every { paymentRepository.getReferenceById(paymentId) } returns paymentFtlsEntity()
         every { paymentPartnerRepository.findAllByPaymentId(paymentId) } returns listOf(partnerPaymentEntity())
-        every { projectPartnerRepository.getById(partnerId_5) } returns projectPartnerEntity
+        every { projectPartnerRepository.getReferenceById(partnerId_5) } returns projectPartnerEntity
 
         assertThat(paymentPersistenceProvider.getPaymentDetails(paymentId))
-            .isEqualTo(paymentDetail)
+            .isEqualTo(expectedPaymentDetail)
     }
 
     @Test
@@ -927,13 +1002,13 @@ class PaymentPersistenceProviderTest : UnitTest() {
     fun updatePaymentPartnerInstallments() {
         val deleteIds = setOf(2L)
         every { paymentPartnerInstallmentRepository.deleteAllByIdInBatch(deleteIds) } returns Unit
-        every { paymentPartnerRepository.getById(1L) } returns partnerPaymentEntity()
-        every { userRepository.getById(paymentConfirmedUser.id) } returns paymentConfirmedUser
-        every { userRepository.getById(savePaymentUser.id) } returns savePaymentUser
+        every { paymentPartnerRepository.getReferenceById(1L) } returns partnerPaymentEntity()
+        every { userRepository.getReferenceById(paymentConfirmedUser.id) } returns paymentConfirmedUser
+        every { userRepository.getReferenceById(savePaymentUser.id) } returns savePaymentUser
         every {
             paymentPartnerInstallmentRepository.saveAll(any<List<PaymentPartnerInstallmentEntity>>())
         } returns listOf(installmentEntity())
-        every { auditControlCorrectionRepository.getById(15L) } returns mockk { every { id } returns 15L }
+        every { auditControlCorrectionRepository.getReferenceById(15L) } returns mockk { every { id } returns 15L }
 
         assertThat(
             paymentPersistenceProvider.updatePaymentPartnerInstallments(

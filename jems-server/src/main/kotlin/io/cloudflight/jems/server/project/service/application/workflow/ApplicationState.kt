@@ -91,6 +91,12 @@ abstract class ApplicationState(
     open fun setToContracted(): ApplicationStatus  =
         throw SetToContractedIsNotAllowedException(projectSummary.status)
 
+    open fun setToClosed(): ApplicationStatus  =
+        throw SetToClosedIsNotAllowedException(projectSummary.status)
+
+    open fun revertToContracted(): ApplicationStatus  =
+        throw RevertToContractedIsNotAllowedException(projectSummary.status)
+
     protected fun getPossibleStatusToRevertToDefaultImpl(validRevertStatuses: Set<ApplicationStatus>) =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
             validRevertStatuses.firstOrNull { it === previousStatus.status }

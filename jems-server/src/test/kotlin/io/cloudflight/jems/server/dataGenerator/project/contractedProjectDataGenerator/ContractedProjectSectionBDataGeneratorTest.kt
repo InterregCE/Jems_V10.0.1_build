@@ -14,7 +14,7 @@ import io.cloudflight.jems.server.dataGenerator.project.FIRST_VERSION
 import io.cloudflight.jems.server.dataGenerator.project.projectPartnerDTO
 import io.cloudflight.jems.server.dataGenerator.project.versionedInputTranslation
 import io.cloudflight.jems.server.dataGenerator.project.versionedString
-import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import io.cloudflight.platform.spring.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 20)
 class ContractedProjectSectionBDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
@@ -34,7 +34,7 @@ class ContractedProjectSectionBDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(1)
-    @ExpectSelect(26)
+    @ExpectSelect(25)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -50,7 +50,7 @@ class ContractedProjectSectionBDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(1)
-    @ExpectSelect(26)
+    @ExpectSelect(25)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)

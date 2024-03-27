@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
@@ -19,6 +20,7 @@ import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
+import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
@@ -30,6 +32,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -48,6 +51,8 @@ class CallPersistenceProvider(
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
     private val projectPersistence: ProjectPersistence,
     private val partnerRepository: ProjectPartnerRepository,
+    private val callSelectedChecklistRepository: CallSelectedChecklistRepository,
+    private val programmeChecklistRepository: ProgrammeChecklistRepository,
     private val auditPublisher: ApplicationEventPublisher
 ) : CallPersistence {
 
@@ -78,7 +83,7 @@ class CallPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCallSimpleByPartnerId(partnerId: Long): CallDetail =
-        partnerRepository.getById(partnerId).project.call.toDetailModel(mutableSetOf(), mutableSetOf())
+        partnerRepository.getReferenceById(partnerId).project.call.toDetailModel(mutableSetOf(), mutableSetOf())
 
     @Transactional(readOnly = true)
     override fun getCallIdForNameIfExists(name: String): Long? =
@@ -91,8 +96,8 @@ class CallPersistenceProvider(
 
         val created = callRepo.saveAndFlush(
             call.toEntity(
-                user = userRepo.getById(userId),
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
+                user = userRepo.getReferenceById(userId),
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getReferenceById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() }
             )
         )
@@ -127,7 +132,7 @@ class CallPersistenceProvider(
         return callRepo.save(
             call.toEntity(
                 user = existingCall.creator,
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getReferenceById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
                 existingEntity = existingCall,
             )
@@ -218,7 +223,6 @@ class CallPersistenceProvider(
             projectCallStateAidRepo.findAllByIdCallId(callId)
         )
     }
-
 
     @Transactional
     override fun updateAllowedRealCosts(callId: Long, allowedRealCosts: AllowedRealCosts): AllowedRealCosts {
@@ -335,6 +339,30 @@ class CallPersistenceProvider(
             projectDefinedUnitCostAllowed = call.projectDefinedUnitCostAllowed,
             projectDefinedLumpSumAllowed = call.projectDefinedLumpSumAllowed,
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCallChecklists(callId: Long, sort: Sort): List<CallChecklist> {
+        val programmeChecklists = programmeChecklistRepository.findAll(sort)
+        val selectedIdsByCall = callSelectedChecklistRepository.findAllByIdCallId(callId).mapTo(HashSet()) { it.id.programmeChecklist.id }
+        return programmeChecklists.map { it.toModel(selected = it.id in selectedIdsByCall) }
+    }
+
+    @Transactional
+    override fun updateCallChecklistSelection(callId: Long, checklistIds: Set<Long>): List<CallChecklist> {
+        val call = findOrThrow(callId)
+        val programmeChecklistsById = programmeChecklistRepository.findAllById(checklistIds).associateBy { it.id }
+        val selectedChecklists = callSelectedChecklistRepository.findAllByIdCallId(callId)
+
+        val toCreate = checklistIds.filter { id -> !selectedChecklists.any { it.id.programmeChecklist.id == id } }
+            .mapNotNull { programmeChecklistsById[it] }
+            .toCallSelectedEntity(call = call)
+        val toDelete = selectedChecklists.filter { it.id.programmeChecklist.id !in checklistIds }
+
+        callSelectedChecklistRepository.deleteAll(toDelete)
+        callSelectedChecklistRepository.saveAll(toCreate)
+
+        return programmeChecklistsById.values.map { it.toModel(selected = it.id in checklistIds) }
     }
 
     private fun findOrThrow(callId: Long) = callRepo.findById(callId).orElseThrow { CallNotFound() }

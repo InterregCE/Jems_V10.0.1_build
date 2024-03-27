@@ -7,12 +7,22 @@ data class PaymentToEcPayment(
     val payment: PaymentToProject,
 
     val paymentToEcId: Long?,
+    val priorityAxis: String,
+
     val partnerContribution: BigDecimal,
+
+    val correctedTotalEligibleWithoutSco: BigDecimal,
+    val correctedFundAmountUnionContribution: BigDecimal,
+    val correctedFundAmountPublicContribution: BigDecimal,
+
     val publicContribution: BigDecimal,
     val correctedPublicContribution: BigDecimal,
+
     val autoPublicContribution: BigDecimal,
     val correctedAutoPublicContribution: BigDecimal,
+
     val privateContribution: BigDecimal,
     val correctedPrivateContribution: BigDecimal,
-    val priorityAxis: String,
+
+    val comment: String?,
 )

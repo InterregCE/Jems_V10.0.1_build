@@ -4,13 +4,14 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.model.account.PaymentAccountStatus
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcCreate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
 import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
+import io.cloudflight.jems.server.payments.service.account.PaymentAccountPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
@@ -74,13 +75,16 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
     lateinit var ecPaymentLinkPersistence: PaymentApplicationToEcLinkPersistence
 
     @MockK
+    lateinit var ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence
+
+    @MockK
     lateinit var paymentPersistence: PaymentPersistence
 
     @MockK
-    lateinit var auditPublisher: ApplicationEventPublisher
+    private lateinit var paymentAccountPersistence: PaymentAccountPersistence
 
     @MockK
-    lateinit var ecPaymentCorrectionLinkPersistence: EcPaymentCorrectionLinkPersistence
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var service: CreatePaymentApplicationToEc
@@ -88,19 +92,20 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
     @Test
     fun createPaymentApplicationToEc() {
         every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(fund.id, accountingYear.id) } returns false
+        every { paymentAccountPersistence.findByFundAndYear(fund.id, accountingYear.id).status } returns PaymentAccountStatus.DRAFT
 
         every {
             ecPaymentPersistence.createPaymentApplicationToEc(paymentApplicationsToEcToCreate)
         } returns paymentApplicationsToEcDetail
 
-        every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95) } returns
+        every { paymentPersistence.getPaymentIdsAvailableForEcPayments(3L) } returns
                 setOf(19L, 20L, 21L)
         every { ecPaymentCorrectionLinkPersistence.getCorrectionIdsAvailableForEcPayments(fundId = fund.id) } returns
             setOf(22L, 23L)
         every { ecPaymentLinkPersistence.selectPaymentToEcPayment(setOf(19L, 20L, 21L), 108L) } answers { }
         every {ecPaymentCorrectionLinkPersistence.selectCorrectionToEcPayment(setOf(22L, 23L), 108L) } answers { }
 
-        every { ecPaymentPersistence.getIdsFinishedForYearAndFund(accountingYear.id, fundId = fund.id) } returns
+        every { ecPaymentPersistence.getFinishedIdsByFundAndAccountingYear(programmeFundId = fund.id, accountingYearId = accountingYear.id) } returns
                 setOf(514L, 515L)
         val cumulativeValues = mockk<Map<Long?, EcPaymentSummaryLine>>()
         every { ecPaymentLinkPersistence.getCumulativeAmounts(setOf(514L, 515L)) } returns cumulativeValues
@@ -133,7 +138,24 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
         every { toCreate.programmeFundId } returns 74L
         every { toCreate.accountingYearId } returns 88L
 
-        assertThrows<EcPaymentApplicationSameFundAccountingYearExistsException> {
+        assertThrows<ThereIsOtherEcPaymentInDraftException> {
+            service.createPaymentApplicationToEc(toCreate)
+        }
+    }
+
+    @Test
+    fun `createPaymentApplicationToEc - accounting year finished`() {
+        every { ecPaymentPersistence.existsDraftByFundAndAccountingYear(
+            programmeFundId = 75L,
+            accountingYearId = 89L,
+        ) } returns false
+        every { paymentAccountPersistence.findByFundAndYear(75L, 89L).status } returns PaymentAccountStatus.FINISHED
+
+        val toCreate = mockk<PaymentApplicationToEcCreate>()
+        every { toCreate.programmeFundId } returns 75L
+        every { toCreate.accountingYearId } returns 89L
+
+        assertThrows<AccountingYearHasBeenAlreadyFinishedException> {
             service.createPaymentApplicationToEc(toCreate)
         }
     }

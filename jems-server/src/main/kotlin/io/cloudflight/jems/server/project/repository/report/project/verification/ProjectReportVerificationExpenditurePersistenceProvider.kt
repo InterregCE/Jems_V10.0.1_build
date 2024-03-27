@@ -49,21 +49,30 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         projectReportId: Long
     ): List<ProjectReportVerificationExpenditureLine> {
         val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
-        val expenditures =  expenditureVerificationRepository
-            .findAllByExpenditurePartnerReportProjectReportIdAndParkedIsTrue(projectReportId)
+        val expenditures = expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportIdAndParkedIsTrue(projectReportId)
         val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditures.map { it.expenditureId }.toSet())
 
         return expenditures.toModels(procurementsById, parkedInfo.toList())
     }
 
     @Transactional
-    override fun initiateEmptyVerificationForProjectReport(
-        projectReportId: Long
-    ) {
+    override fun initiateEmptyVerificationForProjectReport(projectReportId: Long) {
         val expenditures = expenditureRepository.findAllByPartnerReportProjectReportId(projectReportId)
-        expenditureVerificationRepository.saveAll(expenditures.map {
-            it.toEmptyVerificationEntity()
-        })
+            .map { it.toEmptyVerificationEntity() }
+        expenditureVerificationRepository.saveAll(expenditures)
+    }
+
+    @Transactional
+    override fun reInitiateVerificationForProjectReport(projectReportId: Long) {
+        val oldExpenditureIds = expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId)
+            .map { it.expenditure.id }
+        val newExpenditures = expenditureRepository.findAllByPartnerReportProjectReportId(projectReportId)
+            .filter { it.id !in oldExpenditureIds }
+            .map { it.toEmptyVerificationEntity() }
+
+        // delete VerificationExpenditures that are no longer linked to any ProjectReport
+        expenditureVerificationRepository.deleteAllByExpenditurePartnerReportProjectReportIdIsNull()
+        expenditureVerificationRepository.saveAll(newExpenditures)
     }
 
     @Transactional
@@ -75,14 +84,12 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
             expenditureVerificationRepository.findAllByExpenditurePartnerReportProjectReportId(projectReportId = projectReportId)
                 .associateBy { it.expenditure.id }
 
-        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
-
         expenditureVerification.forEach {
             existingEntities.getValue(it.expenditureId).updateWith(it, existingEntities[it.expenditureId]!!)
         }
-        val parkedInfo = reportParkedExpenditureRepository.findAllByParkedFromExpenditureIdIn(expenditureVerification.map { it.expenditureId }.toSet())
 
-        return existingEntities.values.toExtendedModel(procurementsById, parkedInfo.toList())
+        val procurementsById = fetchAllProcurementsForProjectReport(projectReportId)
+        return existingEntities.values.toModels(procurementsById, emptyList())
     }
 
     @Transactional

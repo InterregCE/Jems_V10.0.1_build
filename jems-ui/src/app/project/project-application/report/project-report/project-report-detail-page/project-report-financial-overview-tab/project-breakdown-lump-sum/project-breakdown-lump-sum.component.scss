@@ -5,32 +5,12 @@
 }
 
 .mat-column-name {
-  min-width: 10rem;
+  min-width: 12rem;
 }
 
-.mat-column-totalEligibleBudget,
-.mat-column-previouslyReported,
-.mat-column-previouslyPaid,
-.mat-column-currentReport,
-.mat-column-totalReportedSoFar,
-.mat-column-totalReportedSoFarPercentage,
-.mat-column-remainingBudget {
-  padding-left: .5rem;
-}
-
-.mat-column-totalEligibleBudget,
-.mat-column-previouslyReported,
-.mat-column-previouslyPaid,
-.mat-column-currentReport,
-.mat-column-totalReportedSoFar,
-.mat-column-remainingBudget {
-  min-width: 8rem;
-}
-
-.mat-column-totalReportedSoFarPercentage {
-  min-width: 6rem;
-}
-
-.respect-line-break {
-  white-space: pre-wrap;
+.fast-track-icon {
+  margin-right: .25rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
 }

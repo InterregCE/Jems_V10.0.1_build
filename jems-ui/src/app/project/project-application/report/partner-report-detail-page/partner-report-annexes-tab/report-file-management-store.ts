@@ -45,10 +45,7 @@ export class ReportFileManagementStore {
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
 
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
-
   canUpload$: Observable<boolean>;
-  canReadFiles$: Observable<boolean>;
-
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
@@ -82,7 +79,7 @@ export class ReportFileManagementStore {
 
   uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -91,7 +88,7 @@ export class ReportFileManagementStore {
         switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadReportFileForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
-        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+        finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as JemsFileMetadataDTO);

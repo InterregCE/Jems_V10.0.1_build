@@ -30,7 +30,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
@@ -58,7 +57,6 @@ import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
@@ -101,6 +99,36 @@ class PaymentPersistenceProvider(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentPersistence {
 
+    companion object {
+        val payment = QPaymentEntity.paymentEntity
+        private val paymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
+        val paymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+        private val projectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
+        private val projectReport = QProjectReportEntity.projectReportEntity
+        private val projectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
+        private val project = QProjectEntity.projectEntity
+        private val programmeSpecificObjective = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
+        private val programmePriority = QProgrammePriorityEntity.programmePriorityEntity
+        val paymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
+
+        fun totalEligible() =
+            payment.amountApprovedPerFund.add(paymentToEcExtension.partnerContribution)
+        fun remainingToBePaid() =
+            payment.amountApprovedPerFund.subtract(amountPaid())
+
+        fun amountPaid() =
+            CaseBuilder().`when`(paymentPartnerInstallment.isPaymentConfirmed.isTrue)
+                .then(paymentPartnerInstallment.amountPaid)
+                .otherwise(BigDecimal.ZERO)
+                .sum()
+
+        fun amountAuthorized() =
+            CaseBuilder().`when`(paymentPartnerInstallment.isSavePaymentInfo.isTrue)
+                .then(paymentPartnerInstallment.amountPaid)
+                .otherwise(BigDecimal.ZERO)
+                .sum()
+    }
+
     @Transactional(readOnly = true)
     override fun existsById(id: Long) =
         paymentRepository.existsById(id)
@@ -124,6 +152,12 @@ class PaymentPersistenceProvider(
                     PaymentType.FTLS -> it.toFTLSPaymentModel()
                 },
                 paymentToEcId = it.paymentToEcExtension.paymentToEcId,
+                priorityAxis = it.code ?: "N/A",
+
+                correctedTotalEligibleWithoutSco = it.paymentToEcExtension.correctedTotalEligibleWithoutSco,
+                correctedFundAmountUnionContribution = it.paymentToEcExtension.correctedFundAmountUnionContribution,
+                correctedFundAmountPublicContribution = it.paymentToEcExtension.correctedFundAmountPublicContribution,
+
                 partnerContribution = it.paymentToEcExtension.partnerContribution,
                 publicContribution = it.paymentToEcExtension.publicContribution,
                 correctedPublicContribution = it.paymentToEcExtension.correctedPublicContribution,
@@ -131,66 +165,57 @@ class PaymentPersistenceProvider(
                 correctedAutoPublicContribution = it.paymentToEcExtension.correctedAutoPublicContribution,
                 privateContribution = it.paymentToEcExtension.privateContribution,
                 correctedPrivateContribution = it.paymentToEcExtension.correctedPrivateContribution,
-                priorityAxis = it.code ?: "N/A",
+                comment = it.paymentToEcExtension.comment,
             )
         }
     }
 
     private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
-        val specPayment = QPaymentEntity.paymentEntity
-        val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
-        val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
-        val specPartnerReportCertificateCoFin = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
-        val specProjectLumpSum = QProjectLumpSumEntity.projectLumpSumEntity
-        val specProjectReport = QProjectReportEntity.projectReportEntity
-        val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
-        val specProjectEntity = QProjectEntity.projectEntity
-        val specProgrammeSpecificObjectiveEntity = QProgrammeSpecificObjectiveEntity.programmeSpecificObjectiveEntity
-        val specProgrammePriorityEntity = QProgrammePriorityEntity.programmePriorityEntity
-        val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
 
         val results = jpaQueryFactory
             .select(
-                specPayment,
-                specPaymentPartnerInstallment.amountPaid(),
-                specPaymentPartnerInstallment.amountAuthorized(),
-                specPaymentPartnerInstallment.paymentDate.max(),
-                specPartnerReportCertificateCoFin.sumCurrentVerified,
-                specProgrammePriorityEntity.code,
-
-                specPaymentToEcExtensionEntity.paymentApplicationToEc.id,
-                specPaymentToEcExtensionEntity.partnerContribution,
-                specPaymentToEcExtensionEntity.publicContribution,
-                specPaymentToEcExtensionEntity.correctedPublicContribution,
-                specPaymentToEcExtensionEntity.autoPublicContribution,
-                specPaymentToEcExtensionEntity.correctedAutoPublicContribution,
-                specPaymentToEcExtensionEntity.privateContribution,
-                specPaymentToEcExtensionEntity.correctedPrivateContribution,
+                payment,
+                amountPaid(),
+                amountAuthorized(),
+                paymentPartnerInstallment.paymentDate.max(),
+                totalEligible(),
+                remainingToBePaid(),
+                programmePriority.code,
+                paymentToEcExtension.paymentApplicationToEc.id,
+                paymentToEcExtension.correctedTotalEligibleWithoutSco,
+                paymentToEcExtension.correctedFundAmountUnionContribution,
+                paymentToEcExtension.correctedFundAmountPublicContribution,
+                paymentToEcExtension.partnerContribution,
+                paymentToEcExtension.publicContribution,
+                paymentToEcExtension.correctedPublicContribution,
+                paymentToEcExtension.autoPublicContribution,
+                paymentToEcExtension.correctedAutoPublicContribution,
+                paymentToEcExtension.privateContribution,
+                paymentToEcExtension.correctedPrivateContribution,
+                paymentToEcExtension.comment,
             )
-            .from(specPayment)
-            .leftJoin(specPaymentPartner)
-            .on(specPaymentPartner.payment.id.eq(specPayment.id))
-            .leftJoin(specPaymentPartnerInstallment)
-            .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
-            .leftJoin(specPartnerReportCertificateCoFin)
-            .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
-            .leftJoin(specProjectLumpSum) // we need this manual join for MA-Approval filter to work
-            .on(specProjectLumpSum.id.eq(specPayment.projectLumpSum.id))
-            .leftJoin(specProjectReport) // we need this manual join for MA-Approval filter to work
-            .on(specProjectReport.id.eq(specPayment.projectReport.id))
-            .leftJoin(specProjectContracting)
-            .on(specProjectContracting.projectId.eq(specPayment.project.id))
-            .leftJoin(specProjectEntity)
-            .on(specProjectEntity.id.eq(specPayment.project.id))
-            .leftJoin(specProgrammeSpecificObjectiveEntity)
-            .on(specProgrammeSpecificObjectiveEntity.programmeObjectivePolicy.eq(specProjectEntity.priorityPolicy.programmeObjectivePolicy))
-            .leftJoin(specProgrammePriorityEntity)
-            .on(specProgrammePriorityEntity.id.eq(specProgrammeSpecificObjectiveEntity.programmePriority.id))
-            .leftJoin(specPaymentToEcExtensionEntity)
-            .on(specPaymentToEcExtensionEntity.payment.id.eq(specPayment.id))
-            .where(filters.transformToWhereClause(specPayment, specProjectLumpSum, specProjectReport, specProjectContracting, specPaymentToEcExtensionEntity))
-            .groupBy(specPayment)
-            .having(filters.transformToHavingClause(specPaymentPartnerInstallment))
+            .from(payment)
+                .leftJoin(paymentPartner)
+                    .on(paymentPartner.payment.eq(payment))
+                .leftJoin(paymentPartnerInstallment)
+                    .on(paymentPartnerInstallment.paymentPartner.eq(paymentPartner))
+                .leftJoin(projectLumpSum) // we need this manual join for MA-Approval filter to work
+                    .on(projectLumpSum.eq(payment.projectLumpSum))
+                .leftJoin(projectReport) // we need this manual join for MA-Approval filter to work
+                    .on(projectReport.eq(payment.projectReport))
+                .leftJoin(projectContracting)
+                    .on(projectContracting.projectId.eq(payment.project.id))
+                .leftJoin(project)
+                    .on(project.eq(payment.project))
+                .leftJoin(programmeSpecificObjective)
+                    .on(programmeSpecificObjective.programmeObjectivePolicy.eq(project.priorityPolicy.programmeObjectivePolicy))
+                .leftJoin(programmePriority)
+                    .on(programmePriority.eq(programmeSpecificObjective.programmePriority))
+                .leftJoin(paymentToEcExtension)
+                    .on(paymentToEcExtension.payment.eq(payment))
+            .where(filters.transformToWhereClause(payment, projectLumpSum, projectReport, projectContracting, paymentToEcExtension))
+            .groupBy(payment)
+            .having(filters.transformToHavingClause(paymentPartnerInstallment))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(pageable.sort.toQueryDslOrderBy())
@@ -237,34 +262,34 @@ class PaymentPersistenceProvider(
 
     @Transactional
     override fun saveFTLSPayments(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentFtlsToCreate>) {
-        val projectEntity = projectRepository.getById(projectId)
+        val projectEntity = projectRepository.getReferenceById(projectId)
         val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
             model.toFTLSPaymentEntity(
                 projectEntity = projectEntity,
                 lumpSum = projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, id.orderNr),
-                fundEntity = fundRepository.getById(id.programmeFundId),
+                fundEntity = fundRepository.getReferenceById(id.programmeFundId),
             )
         }).associateBy { PaymentGroupingId(it.projectLumpSum!!.id.orderNr, it.fund.id) }
 
-        paymentEntities.forEach { (paymentId, entity) ->
+        paymentEntities.forEach { (paymentId, paymentEntity) ->
             val toCreate = paymentsToBeSaved[paymentId]!!
             paymentPartnerRepository.saveAll(
                 toCreate.partnerPayments.map {
                     it.toEntity(
-                        paymentEntity = entity,
-                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
+                        paymentEntity = paymentEntity,
+                        partnerEntity = projectPartnerRepository.getReferenceById(it.partnerId),
                         partnerReportEntity = null
                     )
                 }
             )
-            paymentToEcExtensionRepository.save(toCreate.toEntity(entity))
+            paymentToEcExtensionRepository.save(toCreate.toEntity(paymentEntity))
         }
     }
 
     @Transactional
     override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: Map<Long, PaymentRegularToCreate>) {
-        val projectReportEntity = projectReportRepository.getById(projectReportId)
-        val projectEntity = projectRepository.getById(projectReportEntity.projectId)
+        val projectReportEntity = projectReportRepository.getReferenceById(projectReportId)
+        val projectEntity = projectRepository.getReferenceById(projectReportEntity.projectId)
         val fundIdToFundEntity =
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
                 .mapNotNull { it.programmeFund }.associateBy { it.id }
@@ -282,8 +307,8 @@ class PaymentPersistenceProvider(
                 toCreate.partnerPayments.map {
                     it.toEntity(
                         paymentEntity = entity,
-                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
-                        partnerReportEntity = it.partnerReportId?.let { projectPartnerReportRepository.getById(it) },
+                        partnerEntity = projectPartnerRepository.getReferenceById(it.partnerId),
+                        partnerReportEntity = it.partnerReportId?.let { projectPartnerReportRepository.getReferenceById(it) },
                     )
                 }
             )
@@ -293,9 +318,13 @@ class PaymentPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
-        paymentRepository.getById(paymentId).toDetailModel(
+        paymentRepository.getReferenceById(paymentId).toDetailModel(
             partnerPayments = getAllPartnerPayments(paymentId)
         )
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdForPayment(paymentId: Long): Long =
+        paymentRepository.getReferenceById(paymentId).project.id
 
     @Transactional(readOnly = true)
     override fun getAllPartnerPayments(
@@ -304,7 +333,6 @@ class PaymentPersistenceProvider(
         paymentPartnerRepository.findAllByPaymentId(paymentId)
             .map {
                 it.toDetailModel(
-                    partnerEntity = it.projectPartner,
                     installments = findPaymentPartnerInstallments(it.id),
                     partnerReportId = it.partnerCertificate?.id,
                     partnerReportNumber = it.partnerCertificate?.number
@@ -345,10 +373,10 @@ class PaymentPersistenceProvider(
         return paymentPartnerInstallmentRepository.saveAll(
             paymentPartnerInstallments.map {
                 it.toEntity(
-                    paymentPartner = paymentPartnerRepository.getById(paymentPartnerId),
+                    paymentPartner = paymentPartnerRepository.getReferenceById(paymentPartnerId),
                     savePaymentInfoUser = getUserOrNull(it.savePaymentInfoUserId),
                     paymentConfirmedUser = getUserOrNull(it.paymentConfirmedUserId),
-                    correction = it.correctionId?.let { correctionId -> auditControlCorrectionRepository.getById(correctionId) },
+                    correction = it.correctionId?.let { correctionId -> auditControlCorrectionRepository.getReferenceById(correctionId) },
                 )
             }
         ).toModelList()
@@ -415,7 +443,7 @@ class PaymentPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getPaymentIdsAvailableForEcPayments(fundId: Long, basis: PaymentSearchRequestScoBasis): Set<Long> {
+    override fun getPaymentIdsAvailableForEcPayments(fundId: Long): Set<Long> {
         val specPayment = QPaymentEntity.paymentEntity
         val specPaymentToEcExtension = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
         val specProjectContracting = QProjectContractingMonitoringEntity.projectContractingMonitoringEntity
@@ -424,12 +452,6 @@ class PaymentPersistenceProvider(
             specPaymentToEcExtension.paymentApplicationToEc.isNull(),
         )
 
-        val allAnswersNo = specProjectContracting.notFlagged()
-        val scoBasisFilter = when (basis) {
-            PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 -> allAnswersNo
-            PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 -> allAnswersNo.not()
-        }
-        whereExpressions.add(scoBasisFilter)
 
         return jpaQueryFactory
             .select(specPayment.id)
@@ -519,14 +541,8 @@ class PaymentPersistenceProvider(
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
-            userRepository.getById(userId)
+            userRepository.getReferenceById(userId)
         } else null
-
-    private fun QPaymentPartnerInstallmentEntity.amountPaid() =
-        CaseBuilder().`when`(this.isPaymentConfirmed.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
-
-    private fun QPaymentPartnerInstallmentEntity.amountAuthorized() =
-        CaseBuilder().`when`(this.isSavePaymentInfo.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
 
 }
 

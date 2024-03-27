@@ -51,7 +51,7 @@ class UploadCallTranslationFileTest : UnitTest() {
         every { filePersistence.fileIdIfExists("CallTranslation/000007/", translationCallSpecific) } returns null
 
         uploadTest("call-specific-translation/$translationProcessed")
-        verify(exactly = 0) { fileService.moveFile(any(), any(), any()) }
+        verify(exactly = 0) { fileService.archiveCallTranslation(any(), any(), any()) }
     }
 
     @Test
@@ -59,17 +59,17 @@ class UploadCallTranslationFileTest : UnitTest() {
         every { filePersistence.fileIdIfExists("CallTranslation/000007/", translationCallSpecific) } returns null
 
         uploadTest("call-specific-translation/$translationWithIssues")
-        verify(exactly = 0) { fileService.moveFile(any(), any(), any()) }
+        verify(exactly = 0) { fileService.archiveCallTranslation(any(), any(), any()) }
     }
 
     @Test
     fun `previous file is archived`() {
         every { filePersistence.fileIdIfExists("CallTranslation/000007/", translationCallSpecific) } returns 497L
         val fileArchivedNameSlot = slot<String>()
-        every { fileService.moveFile(497L, capture(fileArchivedNameSlot), "CallTranslationArchive/000007/") } answers { }
+        every { fileService.archiveCallTranslation(497L, capture(fileArchivedNameSlot), "CallTranslationArchive/000007/") } answers { }
 
         uploadTest("call-specific-translation/$translationProcessed")
-        verify(exactly = 1) { fileService.moveFile(497L, any(), "CallTranslationArchive/000007/") }
+        verify(exactly = 1) { fileService.archiveCallTranslation(497L, any(), "CallTranslationArchive/000007/") }
 
         assertThat(fileArchivedNameSlot.captured).startsWith("archived-").endsWith("-call-id-7-Application_no.properties")
     }

@@ -1,0 +1,34 @@
+<ng-container>
+    <h3 class="mt-5">{{ 'payments.to.ec.detail.regular.projects.regular.payments.title' | translate }}</h3>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.1' | translate }}</div>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.2' | translate }}</div>
+    <div>{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.3' | translate }}</div>
+    <div class="mb-2">{{ 'payments.to.ec.detail.regular.projects.regular.payments.description.4' | translate }}</div>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <ng-container *ngIf="data$ | async as data">
+        <jems-alert [show]="success$ | async"
+                    [type]="Alert.SUCCESS">
+            <p>{{'payments.to.ec.detail.regular.projects.regular.payments.update.save.message' | translate}}</p>
+        </jems-alert>
+
+        <jems-payment-to-ec-select-table [data]="data"
+                                         [newSort]="pageStore.regularNewSort$"
+                                         [newIndex]="pageStore.regularNewPageIndex$"
+                                         [newSize]="pageStore.regularNewPageSize$"
+                                         [paymentType]="PaymentTypeEnum.REGULAR"
+                                         [flaggedArt9495]="false"
+                                         (selectionChanged)="selectionChanged($event.ecId, $event.paymentId, $event.checked, $event.checkbox)"
+                                         (submitPayment)="updateLinkedPayment($event.ecId, $event.paymentId, $event.updateDto)"
+        ></jems-payment-to-ec-select-table>
+
+        <jems-alert [show]="data.paymentToEcLinking.content?.length === 0" [type]="Alert.INFO">
+            <p>{{ 'payments.to.ec.detail.regular.projects.regular.payments.table.empty' | translate }}</p>
+        </jems-alert>
+    </ng-container>
+</ng-container>

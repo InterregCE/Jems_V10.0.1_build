@@ -38,9 +38,9 @@ class ProjectReportIdentificationPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getReportIdentification(projectId: Long, reportId: Long): ProjectReportIdentification {
         val projectReport = projectReportRepository.getByIdAndProjectId(reportId, projectId)
-        return toProjectReportIdentification(
-            projectReport,
-            targetGroupRepository.findAllByProjectReportEntityOrderBySortNumber(projectReport)
+        return projectReport.toProjectReportIdentification(
+            targetGroupEntities = targetGroupRepository.findAllByProjectReportEntityOrderBySortNumber(projectReport),
+            spendingProfilePerPartner = null,
         )
     }
 
@@ -68,7 +68,7 @@ class ProjectReportIdentificationPersistenceProvider(
             highlights = translatedValues.map { InputTranslation(it.language(), it.highlights) }.toSet(),
             deviations = translatedValues.map { InputTranslation(it.language(), it.deviations) }.toSet(),
             partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = null,
         )
     }
 
@@ -88,8 +88,9 @@ class ProjectReportIdentificationPersistenceProvider(
                         profile(
                             reportId,
                             partnerId = partnerId,
-                            currentValue = partnerCurrentValue
-                        )
+                            currentValue = partnerCurrentValue,
+                            totalEligibleBudget = BigDecimal.ZERO
+                         )
                     ).also { log.error("We are persisting current partner value for partner ${it.id.partnerId} " +
                         "(project reportId=$reportId) that was not available during creation") }
                 }
@@ -174,9 +175,9 @@ class ProjectReportIdentificationPersistenceProvider(
             Optional.empty()
     }
 
-    private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal) = ProjectReportSpendingProfileEntity(
+    private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal, totalEligibleBudget: BigDecimal) = ProjectReportSpendingProfileEntity(
         ProjectReportSpendingProfileId(
-            projectReport = projectReportRepository.getById(reportId),
+            projectReport = projectReportRepository.getReferenceById(reportId),
             partnerId = partnerId,
         ),
         partnerNumber = 0,
@@ -185,6 +186,7 @@ class ProjectReportIdentificationPersistenceProvider(
         country = null,
         previouslyReported = BigDecimal.ZERO,
         currentlyReported = currentValue,
+        partnerTotalEligibleBudget = totalEligibleBudget
     )
 
 }

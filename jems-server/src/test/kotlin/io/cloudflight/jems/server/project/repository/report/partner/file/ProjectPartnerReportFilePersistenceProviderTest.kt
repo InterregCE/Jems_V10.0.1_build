@@ -282,7 +282,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val procurementId = 500L
         val procurement = mockk<ProjectPartnerReportProcurementEntity>()
-        every { procurementRepository.getById(procurementId) } returns procurement
+        every { procurementRepository.getReferenceById(procurementId) } returns procurement
 
         val fileCreate = fileCreate(type = JemsFileType.ProcurementAttachment)
         val extraStep = slot<(JemsFileMetadataEntity) -> Unit>()
@@ -300,7 +300,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val procurementId = 500L
         val procurement = mockk<ProjectPartnerReportProcurementEntity>()
-        every { procurementRepository.getById(procurementId) } returns procurement
+        every { procurementRepository.getReferenceById(procurementId) } returns procurement
 
         val fileCreate = fileCreate(type = JemsFileType.ProcurementGdprAttachment)
         val extraStep = slot<(JemsFileMetadataEntity) -> Unit>()

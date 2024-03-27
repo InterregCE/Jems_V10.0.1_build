@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
 
 class UpdateProjectReportVerificationConclusionTest : UnitTest() {
@@ -111,9 +111,9 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
         assertThrows<ReportVerificationInvalidInputException> {  interactor.updateVerificationConclusion(
             PROJECT_ID, REPORT_ID, ProjectReportVerificationConclusion(
                 startDate = YESTERDAY,
-                conclusionJS = RandomStringUtils.random(5001),
-                conclusionMA = RandomStringUtils.random(5001),
-                verificationFollowUp = RandomStringUtils.random(5001)
+                conclusionJS = getStringOfLength(5001),
+                conclusionMA = getStringOfLength(5001),
+                verificationFollowUp = getStringOfLength(5001)
             )
         )}
     }

@@ -50,7 +50,7 @@ class ContractingReportingPersistenceProvider(
         // remove those that were removed
         projectContractingReportingRepository.deleteAll(existingById.minus(toStayIds).values)
 
-        val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getById(projectId)
+        val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getReferenceById(projectId)
 
         // update existing or create new ones
         deadlines.forEach { deadline ->
@@ -93,6 +93,7 @@ class ContractingReportingPersistenceProvider(
         periodNumber = newData.periodNumber
         deadline = newData.date
         comment = newData.comment
+        finalReport = newData.finalReport
     }
 
     private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity) =
@@ -103,6 +104,7 @@ class ContractingReportingPersistenceProvider(
             deadline = date,
             comment = comment,
             number = number,
+            finalReport = finalReport
         )
 
 }

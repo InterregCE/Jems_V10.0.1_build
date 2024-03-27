@@ -4,5 +4,6 @@ enum class ProgrammeChecklistTypeDTO {
     APPLICATION_FORM_ASSESSMENT,
     CONTRACTING,
     CONTROL,
-    VERIFICATION
+    VERIFICATION,
+    CLOSURE,
 }

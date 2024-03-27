@@ -73,6 +73,12 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             privateContributionCurrentParked = BigDecimal.valueOf(200),
             sumCurrentParked = BigDecimal.valueOf(400),
 
+            partnerContributionCurrentParkedVerification = BigDecimal.valueOf(50),
+            publicContributionCurrentParkedVerification = BigDecimal.valueOf(100),
+            automaticPublicContributionCurrentParkedVerification = BigDecimal.valueOf(150),
+            privateContributionCurrentParkedVerification = BigDecimal.valueOf(200),
+            sumCurrentParkedVerification = BigDecimal.valueOf(400),
+
             partnerContributionCurrentReIncluded = BigDecimal.valueOf(50),
             publicContributionCurrentReIncluded = BigDecimal.valueOf(100),
             automaticPublicContributionCurrentReIncluded = BigDecimal.valueOf(150),
@@ -179,6 +185,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             previouslyValidated = BigDecimal.valueOf(71L, 1),
             previouslyPaid = BigDecimal.valueOf(81L),
             currentParked = BigDecimal.valueOf(50L),
+            currentParkedVerification = BigDecimal.ZERO,
             currentReIncluded = BigDecimal.valueOf(125L),
             previouslyReportedParked = BigDecimal.valueOf(50L),
             previouslyReportedSpf = BigDecimal.valueOf(72L, 1),
@@ -197,6 +204,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             previouslyValidated = BigDecimal.valueOf(82L, 1),
             previouslyPaid = BigDecimal.valueOf(123L),
             currentParked = BigDecimal.valueOf(150L),
+            currentParkedVerification = BigDecimal.ZERO,
             currentReIncluded = BigDecimal.valueOf(375L),
             previouslyReportedParked = BigDecimal.valueOf(150L),
             previouslyReportedSpf = BigDecimal.valueOf(83L, 1),

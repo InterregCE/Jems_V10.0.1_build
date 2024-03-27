@@ -39,7 +39,7 @@ class ProjectContractingPartnerAuthorization(
     private val projectPartnerReportAuthorization: ProjectPartnerReportAuthorization,
     private val institutionPersistence: ControllerInstitutionPersistence,
     val projectAuthorization: ProjectAuthorization,
-): Authorization(securityService) {
+) : Authorization(securityService) {
 
     fun hasPartnersPermission(projectId: Long): Boolean {
         if (hasPermission(UserRolePermission.ProjectContractingPartnerView, projectId))
@@ -77,14 +77,16 @@ class ProjectContractingPartnerAuthorization(
 
     fun hasEditPermission(partnerId: Long): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val hasProjectPermission = projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerEdit, projectId)
-        val isProjectCollaboratorWithEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
-        val level = partnerCollaboratorPersistence.findByUserIdAndPartnerId(
+
+        val canMonitorEdit = hasPermission(UserRolePermission.ProjectContractingPartnerEdit, projectId)
+        val canPartnerEdit = partnerCollaboratorPersistence.findByUserIdAndPartnerId(
             userId = securityService.getUserIdOrThrow(),
-            partnerId = partnerId,
+            partnerId = partnerId
         )
-        return (level.isPresent && level.get() == PartnerCollaboratorLevel.EDIT) || hasProjectPermission || isProjectCollaboratorWithEdit
+            .map { it == PartnerCollaboratorLevel.EDIT }
+            .orElse(false)
+
+        return canMonitorEdit || canPartnerEdit
     }
 
     fun getLevelForUserCollaboratorProject(projectId: Long) =

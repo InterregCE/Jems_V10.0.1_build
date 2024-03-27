@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
+import io.cloudflight.jems.api.call.dto.CallChecklistDTO
 import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
@@ -17,6 +18,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.CallChecklist
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
@@ -26,6 +28,7 @@ import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
+import io.cloudflight.jems.server.programme.controller.checklist.toDto
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
 import io.cloudflight.jems.server.programme.controller.stateaid.toDto
@@ -103,6 +106,7 @@ fun CallCostOptionDTO.toModel() = CallCostOption(
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
 )
+
 fun CallCostOption.toDto() = CallCostOptionDTO(
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
@@ -160,6 +164,13 @@ fun ProjectNotificationConfigurationDTO.toModel() = ProjectNotificationConfigura
     emailBody = emailBody,
 )
 
+fun CallChecklist.toDTO() = CallChecklistDTO(
+    id = id,
+    name = name,
+    type = type.toDto(),
+    lastModificationDate = lastModificationDate,
+    selected = selected
+)
 
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
@@ -209,5 +220,4 @@ abstract class CallDTOMapper {
             this.map(applicationFormFieldConfiguration, callType)
         }.toMutableSet()
     }
-
 }

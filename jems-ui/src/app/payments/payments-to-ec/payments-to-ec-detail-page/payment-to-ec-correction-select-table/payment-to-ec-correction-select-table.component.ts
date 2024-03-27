@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 import {MatDialog} from '@angular/material/dialog';
 import {AbstractControl, FormArray, FormGroup} from '@angular/forms';
@@ -66,6 +66,8 @@ export class PaymentToEcCorrectionSelectTableComponent {
   @Output()
   sortChanged$: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
+  @ViewChild('paymentToEcTable', {read: ElementRef}) private paymentToEcTable: ElementRef;
+
   constants = AdvancePaymentsDetailPageConstants;
 
   editedRowIndex: number | null = null;
@@ -85,6 +87,13 @@ export class PaymentToEcCorrectionSelectTableComponent {
 
   editAmounts(rowIndex: number) {
     this.editedRowIndex = rowIndex;
+    setTimeout(() => {
+      this.scrollToRight();
+    });
+  }
+
+  scrollToRight(): void {
+    this.paymentToEcTable.nativeElement.scrollLeft = this.paymentToEcTable.nativeElement.scrollWidth;
   }
 
   resetAmounts(rowIndex: number, row: PaymentToEcInclusionRow) {
@@ -191,5 +200,16 @@ export class PaymentToEcCorrectionSelectTableComponent {
     const updatedUnionContribution = this.array.at(rowIndex).get('unionContribution')?.value;
     const totalCorrection = this.data.content[rowIndex].amountApprovedPerFund + this.data.content[rowIndex].partnerContribution;
     this.array.at(rowIndex).patchValue({totalEligibleWithoutArt94or95: totalCorrection - updatedUnionContribution});
+  }
+
+  editedFunds(rowIndex: number, row: PaymentToEcInclusionRow) {
+    return [
+      this.array.at(rowIndex).get('totalEligibleWithoutArt94or95')?.value != row.totalEligibleWithoutArt94or95,
+      this.array.at(rowIndex).get('unionContribution')?.value != row.unionContribution,
+      this.array.at(rowIndex).get('fundAmount')?.value != row.amountApprovedPerFund,
+      this.array.at(rowIndex).get('publicContribution')?.value != row.publicContribution,
+      this.array.at(rowIndex).get('autoPublicContribution')?.value != row.autoPublicContribution,
+      this.array.at(rowIndex).get('privateContribution')?.value != row.privateContribution,
+    ].some(Boolean);
   }
 }

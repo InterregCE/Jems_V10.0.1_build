@@ -13,13 +13,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.QProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableReportTmp
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import kotlin.streams.asSequence
 
@@ -80,7 +81,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerReportByProjectIdAndId(projectId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion? {
-        val report = partnerReportRepository.getById(reportId)
+        val report = partnerReportRepository.getReferenceById(reportId)
         val projectIdInEntity = partnerRepository.getProjectIdForPartner(report.partnerId)
 
         return if (projectId == projectIdInEntity)
@@ -97,7 +98,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerReportByIdUnsecured(reportId: Long): ProjectPartnerReportSubmissionSummary =
-        partnerReportRepository.getById(reportId).toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
+        partnerReportRepository.getReferenceById(reportId).toSubmissionSummary(identificationRepository.getPartnerReportPeriod(reportId))
 
     @Transactional(readOnly = true)
     override fun getProjectPartnerReportSubmissionSummary(
@@ -163,7 +164,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getReportStatusById(reportId: Long): ReportStatus =
-        partnerReportRepository.getById(reportId).status
+        partnerReportRepository.getReferenceById(reportId).status
 
     @Transactional(readOnly = true)
     override fun getAvailableReports(partnerIds: Set<Long>): List<CorrectionAvailableReportTmp> {
@@ -183,6 +184,7 @@ class ProjectPartnerReportPersistenceProvider(
             reportProject.id,
             reportProject.number,
             programmeFund,
+            reportCoFin.total,
             ecPayment.id,
             ecPayment.status,
             accountingYear,
@@ -211,6 +213,13 @@ class ProjectPartnerReportPersistenceProvider(
             .map { it.toTmpModel() }
     }
 
+
+    @Transactional(readOnly = true)
+    override fun getPartnerReportCoFinancingForReports(partnerReportIds: Set<Long>) =
+        partnerReportCoFinancingRepository.findAllByIdReportIdInOrderByIdFundSortNumber(partnerReportIds)
+            .groupBy({ it.id.report.id }, { it.toModel() })
+
+
     private fun Tuple.toTmpModel(): CorrectionAvailableReportTmp =
         CorrectionAvailableReportTmp(
             partnerId = get(0, Long::class.java)!!,
@@ -219,9 +228,10 @@ class ProjectPartnerReportPersistenceProvider(
             projectReportId = get(3, Long::class.java),
             projectReportNumber = get(4, Int::class.java),
             availableFund = get(5, ProgrammeFundEntity::class.java)!!.toModel(),
-            ecPaymentId = get(6, Long::class.java),
-            ecPaymentStatus = get(7, PaymentEcStatus::class.java),
-            ecPaymentAccountingYear = get(8, AccountingYearEntity::class.java)?.toModel(),
+            fundShareTotal = get(6, BigDecimal::class.java)!!,
+            ecPaymentId = get(7, Long::class.java),
+            ecPaymentStatus = get(8, PaymentEcStatus::class.java),
+            ecPaymentAccountingYear = get(9, AccountingYearEntity::class.java)?.toModel(),
         )
 
 }

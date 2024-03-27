@@ -62,6 +62,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadline = deadline,
+            finalReport = false,
             reportingDate = YESTERDAY.minusDays(1),
             periodNumber = 4,
             projectIdentifier = "projectIdentifier",
@@ -101,6 +102,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = null,
+            finalReport = false,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = projectId,
@@ -132,6 +134,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = null,
+            finalReport = false,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = projectId,
@@ -273,6 +276,36 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun `listProjectReports - no project id - generates correct query condition`() {
+
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any()) } returns query
+        every { query.from(any()) } returns query
+        every { query.leftJoin(any<EntityPath<Any>>()) } returns query
+        every { query.on(any()) } returns query
+        val slotWhere = slot<Predicate>()
+        every { query.where(capture(slotWhere)) } returns query
+        every { query.offset(any()) } returns query
+        every { query.limit(any()) } returns query
+        every { query.orderBy(any()) } returns query
+
+
+        val result = mockk<QueryResults<Tuple>>()
+        every { result.total } returns 0
+        every { result.results } returns emptyList()
+        every { query.  fetchResults() } returns result
+
+        assertThat(persistence.listProjectReports(
+            emptySet(),
+            setOf(ProjectReportStatus.Submitted, ProjectReportStatus.InVerification),
+            Pageable.ofSize(1)
+        )).isEmpty()
+        assertThat(slotWhere.captured.toString())
+            .isEqualTo("projectReportEntity.projectId in [] && projectReportEntity.status in [Submitted, InVerification]")
+    }
+
+    @Test
     fun getAllProjectReportsBaseDataByProjectId() {
         val streamData = Stream.of(
             ProjectReportBaseData(80L, "v1.0", 1),
@@ -293,7 +326,15 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @Test
     fun getReportById() {
         val projectId = 94L
-        val deadline = ProjectContractingReportingEntity(804L, mockk(), ContractingDeadlineType.Finance, 5, MONTH_AGO, "", number = 1)
+        val deadline = ProjectContractingReportingEntity(
+            804L, mockk(),
+            ContractingDeadlineType.Finance,
+            5,
+            MONTH_AGO,
+            "",
+            number = 1,
+            finalReport = false,
+        )
         val report = reportEntity(45L, projectId, deadline)
         every { projectReportRepository.getByIdAndProjectId(22L, projectId) } returns report
         assertThat(persistence.getReportById(projectId, 22L)).isEqualTo(
@@ -312,7 +353,16 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(14L, projectId, deadline = null)
         every { projectReportRepository.getByIdAndProjectId(14L, projectId) } returns report
 
-        val deadlineEntity = ProjectContractingReportingEntity(84L, mockk(), ContractingDeadlineType.Finance, 5, MONTH_AGO, "", number = 1)
+        val deadlineEntity = ProjectContractingReportingEntity(
+            84L,
+            mockk(),
+            ContractingDeadlineType.Finance,
+            5,
+            MONTH_AGO,
+            "",
+            number = 1,
+            finalReport = false,
+        )
         every { contractingDeadlineRepository.findByProjectIdAndId(projectId, 84L) } returns deadlineEntity
 
         val deadline = ProjectReportDeadline(
@@ -320,6 +370,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             type = ContractingDeadlineType.Finance,
             periodNumber = 14,
             reportingDate = WEEK_AGO,
+            finalReport = false,
         )
         assertThat(
             persistence.updateReport(

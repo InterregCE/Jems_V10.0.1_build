@@ -82,7 +82,7 @@ class JemsProjectFileService(
         validateType(file.type, allowedFileTypes)
         val fileMeta = super.persistFileAndPerformAction(file, additionalStep)
 
-        val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
+        val projectRelated = projectRepository.getReferenceById(file.projectId!!).toSummaryModel()
         auditPublisher.publishEvent(
             projectFileUploadSuccess(
                 context = this, fileMeta = fileMeta.toSimple(),
@@ -101,7 +101,7 @@ class JemsProjectFileService(
         val oldDescription = file.description
         file.description = description
 
-        val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
+        val projectRelated = projectRepository.getReferenceById(file.projectId!!).toSummaryModel()
 
         auditPublisher.publishEvent(
             fileDescriptionChanged(
@@ -129,7 +129,7 @@ class JemsProjectFileService(
                 context = this,
                 fileId = fileId,
                 location = file.minioLocation,
-                projectSummary = projectRepository.getById(projectId).toSummaryModel()
+                projectSummary = projectRepository.getReferenceById(projectId).toSummaryModel()
             )
         )
     }

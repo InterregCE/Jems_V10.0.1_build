@@ -5,4 +5,5 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 data class UpdateProjectReportWorkPackageInvestmentDTO(
     val id: Long,
     val progress: Set<InputTranslation>,
+    val status: ProjectReportWorkPlanInvestmentStatusDTO?
 )

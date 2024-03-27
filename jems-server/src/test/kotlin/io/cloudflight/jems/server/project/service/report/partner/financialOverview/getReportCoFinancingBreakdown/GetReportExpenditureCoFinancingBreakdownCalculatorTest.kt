@@ -208,6 +208,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             createdInThisReport = true,
             historyIdentifier = UUID.randomUUID(),
             id = 0L,
+            reportId = 97658L,
             idFromApplicationForm = null,
             sourceOfContribution = null,
         )
@@ -614,7 +615,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 currentReportReIncluded = BigDecimal.valueOf(0, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(6),
                 totalReportedSoFar = BigDecimal.valueOf(0, 2),
-                totalReportedSoFarPercentage = BigDecimal.ZERO,
+                totalReportedSoFarPercentage = BigDecimal.valueOf(100L),
                 remainingBudget = BigDecimal.valueOf(0, 2),
                 previouslyValidated = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,

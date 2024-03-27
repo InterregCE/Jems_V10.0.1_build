@@ -10,6 +10,8 @@ interface ProjectPartnerReportInvestmentPersistence {
 
     fun getInvestmentsCumulative(reportIds: Set<Long>): Map<Long, ExpenditureInvestmentCurrent>
 
+    fun getVerificationParkedInvestmentsCumulative(partnerId: Long, projectReportIds: Set<Long>): Map<Long, BigDecimal>
+
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: Map<Long, ExpenditureInvestmentCurrentWithReIncluded>)
 
     fun updateAfterControlValues(
@@ -17,6 +19,8 @@ interface ProjectPartnerReportInvestmentPersistence {
         reportId: Long,
         afterControl: Map<Long, ExpenditureInvestmentCurrent>,
     )
+
+    fun updateAfterVerificationParkedValues(parkedValuesPerCertificate: Map<Long, Map<Long, BigDecimal>>)
 
     fun getInvestmentsCumulativeAfterControl(reportIds: Set<Long>): Map<Long, BigDecimal>
 }

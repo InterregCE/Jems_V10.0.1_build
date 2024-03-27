@@ -56,7 +56,6 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
     projectCustomIdentifier: '',
-    fundName: '',
     partnerPayments: this.formBuilder.array([this.formBuilder.group({
         installments: this.formBuilder.array([])
       })
@@ -123,7 +122,6 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   resetForm(paymentDetail: PaymentDetailDTO) {
     this.partnerPaymentsForm.get('id')?.setValue(this.paymentId);
     this.partnerPaymentsForm.get('projectCustomIdentifier')?.setValue(paymentDetail.projectCustomIdentifier);
-    this.partnerPaymentsForm.get('fundName')?.setValue(paymentDetail.fundName);
 
     this.partnerPayments.clear();
 
@@ -167,9 +165,11 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         id: partnerPayment.id,
         partnerId: partnerPayment.partnerId,
         partnerNumber: this.formBuilder.control(partnerPayment.partnerNumber),
-        partnerType: this.formBuilder.control(partnerPayment.partnerType),
+        partnerRole: this.formBuilder.control(partnerPayment.partnerRole),
         partnerAbbreviation: this.formBuilder.control(partnerPayment.partnerAbbreviation),
         amountApproved: this.formBuilder.control(partnerPayment.amountApproved),
+        nameInEnglish: this.formBuilder.control(partnerPayment.nameInEnglish),
+        nameInOriginalLanguage: this.formBuilder.control(partnerPayment.nameInOriginalLanguage),
         installments: this.formBuilder.array([])
       })
     );
@@ -195,7 +195,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.partnerPayments.forEach(pp => // transform 0 into null
       pp.installments.forEach(i => i.correction = i.correction || null)
     );
-    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
+    this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail.partnerPayments).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {
@@ -271,12 +271,15 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   setConfirmPaymentDate(isChecked: boolean, paymentIndex: number, installmentIndex: number) {
     if (isChecked) {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.setValidators([Validators.required]);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(this.getFormattedCurrentLocaleDate());
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
+
       if(!this.isPaymentDateEmpty(paymentIndex, installmentIndex)) {
         this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
       }
     } else {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.clearValidators();
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
@@ -383,6 +386,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   getAvailableCorrectionsForPartner(availableCorrections: AvailableCorrectionsForPaymentDTO[], partnerId: number): AuditControlCorrectionDTO[] {
     return availableCorrections.find(el => el.partnerId === partnerId)?.corrections ?? [];
+  }
+
+  isPaymentDateRequired(paymentIndex: number, installmentIndex: number): boolean {
+    return this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmed')?.value && this.isPaymentDateEmpty(paymentIndex, installmentIndex);
   }
 }
 

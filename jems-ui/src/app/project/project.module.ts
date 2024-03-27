@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {routes} from './project-routing.module';
+import {ProjectRoutingModule, routes} from './project-routing.module';
 import {
   ProjectApplicationComponent
 } from './project-application/containers/project-application-page/project-application.component';
@@ -611,6 +611,15 @@ import {
   AuditControlCorrectionImpactComponent
 } from '@project/project-application/report/report-corrections-overview/report-corrections-audit-control-detail-page/audit-control-correction-overview/audit-control-correction-detail/audit-control-correction-impact/audit-control-correction-impact.component';
 import { ProjectReportSpfContributionsTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-spf-contributions-tab/project-report-spf-contributions-tab.component';
+import {
+  ProjectReportProjectClosureTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-tab.component';
+import {
+  ProjectApplicationStatusComponent
+} from '@project/project-application/project-application-status/project-application-status.component';
+import {
+  ProjectReportProjectClosureChecklistPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-checklist-page/project-report-project-closure-checklist-page.component';
 
 @NgModule({
   declarations: [
@@ -826,11 +835,14 @@ import { ProjectReportSpfContributionsTabComponent } from './project-application
     CorrectionTypeOrderPipePipe,
     AuditControlCorrectionDetailMeasureComponent,
     AuditControlCorrectionImpactComponent,
-    ProjectReportSpfContributionsTabComponent
+    ProjectReportSpfContributionsTabComponent,
+    ProjectReportProjectClosureTabComponent,
+    ProjectApplicationStatusComponent,
+    ProjectReportProjectClosureChecklistPageComponent,
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes),
+    ProjectRoutingModule,
   ],
   exports: [
     ProjectDetailPageComponent

@@ -1,5 +1,12 @@
 @use '../partner-report-financial-overview-tab.component';
 
 .mat-column-name {
-  min-width: 10rem;
+  min-width: 12rem;
+}
+
+.fast-track-icon {
+  margin-right: .25rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
 }

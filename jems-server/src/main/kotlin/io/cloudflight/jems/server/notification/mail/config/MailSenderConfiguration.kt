@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.notification.mail.config
 
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.thymeleaf.ITemplateEngine
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect
 import org.thymeleaf.spring5.SpringTemplateEngine
@@ -14,7 +14,7 @@ import org.thymeleaf.templateresolver.StringTemplateResolver
 
 const val EMAIL_TEMPLATE_ENGINE = "emailTemplateEngine"
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = MAIL_CONFIG_PROPERTIES_PREFIX, name = [MAIL_ENABLED], havingValue = "true")
 class MailSenderConfiguration : MailSenderAutoConfiguration(){
 

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.updateProjectReportVerificationClarification
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationClarification
@@ -12,7 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
 
 class UpdateProjectReportVerificationClarificationTest: UnitTest() {
@@ -53,7 +54,7 @@ class UpdateProjectReportVerificationClarificationTest: UnitTest() {
             number = 4,
             requestDate = TODAY.minusDays(1),
             answerDate = TODAY,
-            comment = RandomStringUtils.random(3001)
+            comment = getStringOfLength(3001)
         )
 
         fun report(id: Long, status: ProjectReportStatus): ProjectReportModel {

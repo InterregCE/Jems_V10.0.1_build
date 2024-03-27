@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
+import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToPayment.PaymentApplicationToEcLinkPersistenceProvider
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -24,25 +25,30 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.model.lastPaymentDate.ContractingClosureLastPaymentDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -51,7 +57,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.internal.util.collections.Sets
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class UpdateContractingMonitoringTest : UnitTest() {
@@ -122,6 +130,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
             projectId = projectId,
             startDate = null,
             endDate = null,
+            lastPaymentDates = listOf(
+                ContractingClosureLastPaymentDate(774L, 14, "774-abbr",
+                    ProjectPartnerRole.PARTNER, false, LocalDate.of(2025, 3, 18)),
+            ),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -203,6 +215,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @MockK
     lateinit var getProjectBudget: GetProjectBudget
 
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
+
     @RelaxedMockK
     lateinit var validator: ContractingValidator
 
@@ -212,12 +227,16 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @MockK
     lateinit var paymentPersistence: PaymentPersistence
 
+    @MockK
+    lateinit var paymentToEcPersistenceProvider: PaymentApplicationToEcLinkPersistenceProvider
+
     @InjectMockKs
     lateinit var updateContractingMonitoring: UpdateContractingMonitoring
 
     @BeforeEach
     fun setup() {
-        clearMocks(auditPublisher, validator, getProjectBudget, partnerCoFinancingPersistence)
+        clearMocks(auditPublisher, validator, getProjectBudget, partnerCoFinancingPersistence,
+            partnerPersistence, contractingMonitoringPersistence)
     }
 
     @Test
@@ -229,8 +248,11 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, lumpSumsUpdated)} just runs
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
+
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)).isEqualTo(monitoring)
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -248,8 +270,11 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringOther) } returns monitoringOther
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSumsUpdated
-        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, lumpSumsUpdated)} just runs
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
+
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringOther))
             .isEqualTo(monitoringOther)
@@ -270,6 +295,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
         } returns monitoring.copy(
             startDate = oldDate,
+            lastPaymentDates = emptyList(),
             typologyProv94 = ContractingMonitoringExtendedOption.No,
             typologyProv95 = ContractingMonitoringExtendedOption.Partly,
             typologyStrategic = ContractingMonitoringOption.Yes,
@@ -286,12 +312,13 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 .copy(lumpSumContributions = lumpSumsNotReady.first().lumpSumContributions))
         )
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns emptyMap()
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectPersistence.updateProjectContractedOnDates(projectId, monitoring.addDates.get(0).entryIntoForceDate) } answers {}
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSumsNotReady
-        every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(projectId, any())} just runs
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         val payments = slot<Map<PaymentGroupingId, PaymentFtlsToCreate>>()
@@ -304,6 +331,15 @@ class UpdateContractingMonitoringTest : UnitTest() {
         val payContribs = slot<Collection<ContributionMeta>>()
         every { paymentPersistence.storePartnerContributionsWhenReadyForPayment(capture(payContribs)) } answers { }
 
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns listOf(
+            ProjectPartnerSummary(45L, "45-abbr", null, true, ProjectPartnerRole.PARTNER, 4),
+        )
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns mapOf(45L to LocalDate.of(2024, 1, 29))
+        every { partnerPersistence.getById(1L, version) } returns mockk {
+            every { abbreviation } returns "abbr 1"
+            every { nameInOriginalLanguage } returns "orig 1"
+            every { nameInEnglish } returns "eng 1"
+        }
         val result = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
         assertThat(result)
             .isEqualTo(
@@ -311,6 +347,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     projectId = projectId,
                     startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
                     endDate = ZonedDateTime.parse("2023-05-31T10:00:00+02:00").toLocalDate(),
+                    lastPaymentDates = listOf(
+                        ContractingClosureLastPaymentDate(45L, 4, "45-abbr",
+                            ProjectPartnerRole.PARTNER, false, LocalDate.of(2024, 1, 29)),
+                    ),
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -372,18 +412,22 @@ class UpdateContractingMonitoringTest : UnitTest() {
             )
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
-            mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                PaymentFtlsToCreate(
-                    programmeLumpSumId = 2L,
-                    partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE)),
-                    amountApprovedPerFund = BigDecimal.ONE,
-                    projectCustomIdentifier = "TSTCM",
-                    projectAcronym = "TCM",
-                    defaultPartnerContribution = BigDecimal.valueOf(85.35),
-                    defaultOfWhichPublic = BigDecimal.valueOf(25.13),
-                    defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
-                    defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
-                )
+            mapOf(
+                PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
+                        PaymentFtlsToCreate(
+                            programmeLumpSumId = 2L,
+                            partnerPayments = listOf(PaymentPartnerToCreate(1L, null, BigDecimal.ONE, "abbr 1", "orig 1", "eng 1")),
+                            amountApprovedPerFund = BigDecimal.ONE,
+                            projectCustomIdentifier = "TSTCM",
+                            projectAcronym = "TCM",
+                            defaultPartnerContribution = BigDecimal.valueOf(85.35),
+                            defaultOfWhichPublic = BigDecimal.valueOf(25.13),
+                            defaultOfWhichAutoPublic = BigDecimal.valueOf(28.45),
+                            defaultOfWhichPrivate = BigDecimal.valueOf(31.79),
+                            defaultTotalEligibleWithoutSco = BigDecimal.valueOf(100.41),
+                            defaultFundAmountUnionContribution = BigDecimal.ZERO,
+                            defaultFundAmountPublicContribution = BigDecimal.valueOf(15.06),
+                        )
             )
         )
         assertThat(payContribs.captured).containsExactly(
@@ -461,14 +505,18 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns emptyMap()
 
-        every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
+        every { projectLumpSumPersistence.updateLumpSumsReadyForPayment(any(), any()) } just runs
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         every { paymentPersistence.deleteFTLSByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
         every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
         val slotDeleted = slot<Set<Int>>()
         every { paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, capture(slotDeleted)) } answers { }
+
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, any(), version) } returns emptyList()
+        every { contractingMonitoringPersistence.getPartnerPaymentDate(projectId) } returns emptyMap()
 
         val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
 
@@ -500,7 +548,41 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
 
-        assertThrows<UpdateContractingMonitoringFTLSException> {
+        assertThrows<UpdateContractingMonitoringFTLSHasInstallmentsException> {
+            updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
+        }
+
+    }
+
+
+    @Test
+    fun `error on remove ready for payment when link exists to ec payment`() {
+
+        val monitoringNew = monitoring.copy(
+            fastTrackLumpSums = listOf(
+                ProjectLumpSum(
+                    orderNr = orderNr,
+                    programmeLumpSumId = lumpSumId,
+                    period = 1,
+                    fastTrack = true,
+                    readyForPayment = false,
+                    lastApprovedVersionBeforeReadyForPayment = version,
+                )
+            )
+        )
+
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
+        every { projectPersistence.getProject(projectId, version) } returns project
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+        every { paymentToEcPersistenceProvider.getFtlsIdLinkToEcPaymentIdByProjectId(projectId) } returns mapOf(orderNr to 21L)
+
+
+        assertThrows<UpdateContractingMonitoringFTLSLinkedToEcPaymentException> {
             updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
         }
 

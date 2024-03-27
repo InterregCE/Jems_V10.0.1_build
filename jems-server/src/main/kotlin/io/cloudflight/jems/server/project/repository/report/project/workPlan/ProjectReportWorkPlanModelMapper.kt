@@ -90,7 +90,7 @@ fun List<ProjectReportWorkPackageActivityDeliverableEntity>.toDeliverablesModel(
         progress = it.translatedValues.extractField { it.progress },
         attachment = it.attachment?.toModel(),
         previousCurrentReport = it.previousCurrentReport,
-        previousProgress = it.translatedValues.extractField { it.previousProgress}
+        previousProgress = it.translatedValues.extractField { it.previousProgress }
     )
 }
 
@@ -126,6 +126,8 @@ fun List<ProjectReportWorkPackageInvestmentEntity>.toInvestmentsModel(
         progress = it.translatedValues.extractField { it.progress },
         nutsRegion3 = it.address?.nutsRegion3,
         previousProgress = it.translatedValues.extractField { it.previousProgress },
+        status = it.status,
+        previousStatus = it.previousStatus
     )
 }
 

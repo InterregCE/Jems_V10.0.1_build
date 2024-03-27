@@ -16,6 +16,7 @@ interface ProjectPartnerReportUnitCostRepository : JpaRepository<PartnerReportUn
 
     fun findByReportEntityIdAndProgrammeUnitCostId(reportId: Long, programmeUnitCostId: Long): PartnerReportUnitCostEntity
 
+    fun findAllByReportEntityIdIn(reportIds: Set<Long>): List<PartnerReportUnitCostEntity>
     @Query("""
         SELECT new kotlin.Triple(
             unitCost.programmeUnitCost.id,
@@ -27,6 +28,18 @@ interface ProjectPartnerReportUnitCostRepository : JpaRepository<PartnerReportUn
         GROUP BY unitCost.programmeUnitCost.id
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Long, BigDecimal, BigDecimal>>
+
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            unitCost.programmeUnitCost.id,
+            COALESCE(SUM(unitCost.currentParkedVerification), 0)
+        )
+        FROM #{#entityName} unitCost
+        WHERE unitCost.reportEntity.partnerId=:partnerId AND unitCost.reportEntity.projectReport.id IN :projectReportIds
+        GROUP BY unitCost.programmeUnitCost.id
+    """)
+    fun findVerificationParkedCumulativeForProjectReportIds(partnerId:Long, projectReportIds: Set<Long>): List<Pair<Long, BigDecimal>>
 
     @Query("""
         SELECT new kotlin.Pair(

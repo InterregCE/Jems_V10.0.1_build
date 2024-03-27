@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.payments.service
 
-import io.cloudflight.jems.api.payments.dto.EcPaymentCorrectionExtensionDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionExtensionDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionLinkingDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToEcCorrectionLinkingUpdateDTO
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinking
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.project.controller.auditAndControl.correction.toSimpleDto
@@ -17,7 +17,7 @@ private val mapper = Mappers.getMapper(PaymentApplicationsToEcCorrectionLinkingM
 
 fun PaymentToEcCorrectionLinkingUpdateDTO.toModel(): PaymentToEcCorrectionLinkingUpdate = mapper.map(this)
 fun PaymentToEcCorrectionLinking.toDto(): PaymentToEcCorrectionLinkingDTO = mapper.map(this)
-fun EcPaymentCorrectionExtension.toDto(): EcPaymentCorrectionExtensionDTO = mapper.map(this)
+fun PaymentToEcCorrectionExtension.toDto(): PaymentToEcCorrectionExtensionDTO = mapper.map(this)
 
 @Mapper
 interface PaymentApplicationsToEcCorrectionLinkingMapper {
@@ -26,5 +26,5 @@ interface PaymentApplicationsToEcCorrectionLinkingMapper {
     @Mapping(source = "correction", target = "correction", qualifiedByName = ["toCorrectionDto"])
     fun map(model: PaymentToEcCorrectionLinking): PaymentToEcCorrectionLinkingDTO
     fun map(dto: PaymentToEcCorrectionLinkingUpdateDTO): PaymentToEcCorrectionLinkingUpdate
-    fun map(model: EcPaymentCorrectionExtension): EcPaymentCorrectionExtensionDTO
+    fun map(model: PaymentToEcCorrectionExtension): PaymentToEcCorrectionExtensionDTO
 }

@@ -89,8 +89,7 @@ class CreateProjectReportBudget(
             .getCostCategoriesCumulative(submittedReportIds = submittedReportIds, finalizedReportIds = finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
 
-        val totalFromAF = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
-            .first { it.partner === null }
+        val budgetPerPartner = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
         val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)
 
         val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
@@ -104,7 +103,7 @@ class CreateProjectReportBudget(
 
         return ProjectReportBudget(
             coFinancing = toCreateModel(
-                totalFromAF = totalFromAF,
+                totalFromAF = budgetPerPartner.first { it.partner === null },
                 previousValues = reportCertificateCoFinancingPersistence.getCoFinancingCumulative(submittedReportIds, finalizedReportIds),
                 totalFastTrackReady = sumOfPaymentReady,
                 paymentCumulativeData = paymentPersistence.getFtlsCumulativeForProject(projectId),
@@ -132,7 +131,8 @@ class CreateProjectReportBudget(
                 previouslyReported = reportInvestmentPersistence.getReportedInvestmentCumulative(submittedReportIds),
                 previouslyVerified = reportInvestmentPersistence.getVerifiedInvestmentCumulative(finalizedReportIds)
             ),
-            spfContributionClaims = spfProjectReportContributionClaims
+            spfContributionClaims = spfProjectReportContributionClaims,
+            budgetPerPartner = budgetPerPartner
         )
     }
 

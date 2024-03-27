@@ -33,3 +33,11 @@ annotation class CanRetrievePaymentsAudit
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('PaymentsAuditUpdate')")
 annotation class CanUpdatePaymentsAudit
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('PaymentsAccountRetrieve')")
+annotation class CanRetrievePaymentsAccount
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('PaymentsAccountUpdate')")
+annotation class CanUpdatePaymentsAccount

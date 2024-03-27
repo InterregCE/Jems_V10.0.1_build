@@ -24,7 +24,7 @@ class GetCoFinancing(
     @Transactional(readOnly = true)
     @CanRetrieveProjectForm
     @ExceptionWrapper(GetCoFinancingException::class)
-    override fun getCoFinancingForPartnerList(partnerIds: List<Long>, projectId: Long, version: String?): Map<Long, List<ProjectPartnerCoFinancing>>? =
+    override fun getCoFinancingForPartnerList(partnerIds: List<Long>, projectId: Long, version: String?): Map<Long, List<ProjectPartnerCoFinancing>> =
         persistence.getCoFinancingAndContributionsForPartnerList(partnerIds, projectId, version)
 
     @Transactional(readOnly = true)

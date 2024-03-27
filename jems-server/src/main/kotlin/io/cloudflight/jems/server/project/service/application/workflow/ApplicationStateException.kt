@@ -150,3 +150,19 @@ class InvalidPreviousStatusException(fromStatus: ApplicationStatus, toStatus:App
         mapOf("fromStatus" to fromStatus.name, "toStatus" to toStatus.name )
     )
 )
+
+class SetToClosedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-020",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.set.to.closed.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class RevertToContractedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-021",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.revert.to.contracted.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)

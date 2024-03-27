@@ -110,4 +110,64 @@ export class ChecklistUtilsComponent {
       ]
     });
   }
+
+  initializeTableConfigurationWithLock(actions: TemplateRef<any>, description: TemplateRef<any>, lock: TemplateRef<any>): TableConfiguration {
+    return new TableConfiguration({
+      isTableClickable: true,
+      sortable: false,
+      routerLink: 'checklist',
+      columns: [
+        {
+          displayedColumn: 'common.id',
+          elementProperty: 'id',
+          columnWidth: ColumnWidth.ThinColumn,
+          sortProperty: 'id',
+        },
+        {
+          displayedColumn: 'common.lock',
+          customCellTemplate: lock,
+          columnWidth: ColumnWidth.ThinColumn,
+          clickable: false
+        },
+        {
+          displayedColumn: 'common.status',
+          elementTranslationKey: 'checklists.instance.status',
+          elementProperty: 'status',
+          columnWidth: ColumnWidth.SmallColumn,
+          sortProperty: 'status',
+        },
+        {
+          displayedColumn: 'common.name',
+          elementProperty: 'name',
+          columnWidth: ColumnWidth.WideColumn,
+          sortProperty: 'name',
+        },
+        {
+          displayedColumn: 'common.user',
+          elementProperty: 'creatorEmail',
+          columnWidth: ColumnWidth.WideColumn,
+          sortProperty: 'creatorEmail',
+        },
+        {
+          displayedColumn: 'checklists.instance.finished.date',
+          elementProperty: 'finishedDate',
+          columnType: ColumnType.DateOnlyColumn,
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'finishedDate',
+        },
+        {
+          displayedColumn: 'file.table.column.name.description',
+          customCellTemplate: description,
+          columnWidth: ColumnWidth.WideColumn,
+          sortProperty: 'description'
+        },
+        {
+          displayedColumn: 'file.table.column.name.action',
+          customCellTemplate: actions,
+          columnWidth: ColumnWidth.WideColumn,
+          clickable: false
+        }
+      ]
+    });
+  }
 }

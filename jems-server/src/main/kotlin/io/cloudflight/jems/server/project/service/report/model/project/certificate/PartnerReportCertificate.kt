@@ -7,7 +7,6 @@ import java.time.ZonedDateTime
 data class PartnerReportCertificate(
     val partnerReportId: Long,
     val partnerReportNumber: Int,
-
     val partnerId: Long,
     val partnerRole: ProjectPartnerRole,
     val partnerNumber: Int,

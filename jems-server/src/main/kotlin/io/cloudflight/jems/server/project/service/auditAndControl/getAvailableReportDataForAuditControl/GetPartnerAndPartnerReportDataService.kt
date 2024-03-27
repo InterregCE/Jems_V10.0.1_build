@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionProjectReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.isZero
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -74,6 +75,7 @@ class GetPartnerAndPartnerReportDataService(
                                 accountingYear = it.ecPaymentAccountingYear!!,
                             )
                         },
+                        disabled = it.fundShareTotal.isZero(),
                     )
                 },
             )
@@ -96,6 +98,7 @@ class GetPartnerAndPartnerReportDataService(
                                 accountingYear = it.ecPaymentAccountingYear!!,
                             )
                         },
+                        disabled = false,
                     )
                 }
             )

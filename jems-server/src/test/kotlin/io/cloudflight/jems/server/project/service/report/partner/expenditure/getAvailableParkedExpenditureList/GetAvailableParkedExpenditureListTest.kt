@@ -34,11 +34,15 @@ import java.time.ZonedDateTime
 internal class GetAvailableParkedExpenditureListTest : UnitTest() {
 
     companion object {
+        private val DATE_TIME_NOW = ZonedDateTime.now()
+
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 75L,
             reportOfOriginNumber = 4,
             reportProjectOfOriginId = null,
-            originalExpenditureNumber = 3
+            originalExpenditureNumber = 3,
+            parkedOn = DATE_TIME_NOW,
+            parkedFromExpenditureId = 14L
         )
         private val uploadTime = ZonedDateTime.now()
 

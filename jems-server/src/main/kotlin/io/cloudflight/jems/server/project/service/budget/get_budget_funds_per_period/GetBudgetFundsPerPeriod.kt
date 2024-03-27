@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofina
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -143,22 +144,22 @@ class GetBudgetFundsPerPeriod(
         fund: ProgrammeFund,
         projectPeriods: List<ProjectPeriod>,
         partnersBudgetPerPeriod: Map<Long?, MutableList<ProjectPeriodBudget>>,
-        partnersCoFinancing: Map<Long, List<ProjectPartnerCoFinancing>>?
+        partnersCoFinancing: Map<Long, List<ProjectPartnerCoFinancing>>,
     ): ProjectFundBudgetPerPeriod {
+        val coFinancingPerPartnerPerFund = partnersCoFinancing.mapValues { it.value.associateBy { it.fund?.id } }
         val lastPeriodNumber = if (projectPeriods.isNotEmpty()) projectPeriods.maxOf { it.number } else 0
-        val totalFundBudget = getTotalBudgetForFund(fund, partnersBudgetPerPeriod, partnersCoFinancing)
+        val totalFundBudget = getTotalBudgetForFund(fund.id, partnersBudgetPerPeriod, coFinancingPerPartnerPerFund)
 
-        val preparation = getTotalFundPerPeriodForPartners(0, fund, partnersBudgetPerPeriod, partnersCoFinancing)
-        val closure = getTotalFundPerPeriodForPartners(255, fund, partnersBudgetPerPeriod, partnersCoFinancing)
+        val preparation = getTotalFundPerPeriodForPartners(0, fund.id, partnersBudgetPerPeriod, coFinancingPerPartnerPerFund)
+        val closure = getTotalFundPerPeriodForPartners(255, fund.id, partnersBudgetPerPeriod, coFinancingPerPartnerPerFund)
 
         val periodFundsWithoutLastPeriod = projectPeriods.filter { period -> period.number != lastPeriodNumber }
-            .map { getTotalFundPerPeriodForPartners(it.number, fund, partnersBudgetPerPeriod, partnersCoFinancing) }
+            .map { getTotalFundPerPeriodForPartners(it.number, fund.id, partnersBudgetPerPeriod, coFinancingPerPartnerPerFund) }
             .toMutableList()
         val lastPeriodFundBudget = totalFundBudget
             .minus(periodFundsWithoutLastPeriod.sumOf { it.totalFundsPerPeriod })
             .minus(preparation.totalFundsPerPeriod)
             .minus(closure.totalFundsPerPeriod)
-            .setScale(2, RoundingMode.DOWN)
         val lastPeriod = ProjectPeriodFund(periodNumber = lastPeriodNumber, totalFundsPerPeriod = lastPeriodFundBudget)
 
         if (projectPeriods.isNotEmpty()) {
@@ -178,47 +179,43 @@ class GetBudgetFundsPerPeriod(
 
     private fun getTotalFundPerPeriodForPartners(
         periodNumber: Int,
-        fund: ProgrammeFund,
+        fundId: Long,
         partnersBudgetPerPeriod: Map<Long?, MutableList<ProjectPeriodBudget>>,
-        partnersCoFinancing: Map<Long, List<ProjectPartnerCoFinancing>>?
+        coFinancingPerPartnerPerFund: Map<Long, Map<Long?, ProjectPartnerCoFinancing>>,
     ): ProjectPeriodFund {
         return ProjectPeriodFund(
             periodNumber = periodNumber,
-            totalFundsPerPeriod = partnersBudgetPerPeriod.entries.map {
+            totalFundsPerPeriod = partnersBudgetPerPeriod.map { (partnerId, periodBudgets) ->
                 getTotalFundPerPeriodForPartner(
-                    it.value.firstOrNull { budget -> budget.periodNumber == periodNumber },
-                    partnersCoFinancing!![it.key], fund
+                    partnerBudgetPerPeriod = periodBudgets.firstOrNull { budget -> budget.periodNumber == periodNumber },
+                    coFinancingPerFund = coFinancingPerPartnerPerFund[partnerId],
+                    fundId = fundId,
                 )
-            }.sumOf { it }.setScale(2, RoundingMode.DOWN)
+            }.sumOf { it }
         )
     }
 
     private fun getTotalFundPerPeriodForPartner(
         partnerBudgetPerPeriod: ProjectPeriodBudget?,
-        partnerCoFinancing: List<ProjectPartnerCoFinancing>?,
-        fund: ProgrammeFund
+        coFinancingPerFund: Map<Long?, ProjectPartnerCoFinancing>?,
+        fundId: Long,
     ): BigDecimal {
-        if (partnerBudgetPerPeriod == null || partnerCoFinancing.isNullOrEmpty()) {
+        if (partnerBudgetPerPeriod == null || coFinancingPerFund == null || !coFinancingPerFund.containsKey(fundId))
             return BigDecimal.ZERO
-        }
-        val selectedFund = partnerCoFinancing.firstOrNull { it.fund?.id == fund.id } ?: return BigDecimal.ZERO
 
-        return partnerBudgetPerPeriod.totalBudgetPerPeriod.multiply(selectedFund.percentage)
-            .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.DOWN)
+        return partnerBudgetPerPeriod.totalBudgetPerPeriod.applyPercentage(coFinancingPerFund[fundId]!!.percentage)
     }
 
     private fun getTotalBudgetForFund(
-        fund: ProgrammeFund,
+        fundId: Long,
         partnersBudgetPerPeriod: Map<Long?, MutableList<ProjectPeriodBudget>>,
-        partnersCoFinancing: Map<Long, List<ProjectPartnerCoFinancing>>?
+        coFinancingPerPartnerPerFund: Map<Long, Map<Long?, ProjectPartnerCoFinancing>>,
     ): BigDecimal {
-        return partnersBudgetPerPeriod.entries.map { periodBudgetList ->
-            val periodBudgets = periodBudgetList.value.map { it.totalBudgetPerPeriod }
-            val fundPercentage =
-                partnersCoFinancing!![periodBudgetList.key]?.firstOrNull { it.fund?.id == fund.id }?.percentage
-                    ?: BigDecimal.ZERO
-            calculateTotalBudgetForFund(periodBudgets, fundPercentage)
-        }.sumOf { it }.setScale(2, RoundingMode.DOWN)
+        return partnersBudgetPerPeriod.map { (partnerId, budgetPerPeriodList) ->
+            val budgetForPartner = budgetPerPeriodList.sumOf { it.totalBudgetPerPeriod }
+            val fundPercentage = coFinancingPerPartnerPerFund.get(partnerId)?.get(fundId)?.percentage ?: BigDecimal.ZERO
+            return@map budgetForPartner.applyPercentage(fundPercentage)
+        }.sumOf { it }
     }
 
     private fun getSpfBudgetPerPeriodForFund(
@@ -237,7 +234,6 @@ class GetBudgetFundsPerPeriod(
             .toMutableList()
         val lastPeriodFundBudget = totalFundBudget
             .minus(periodFundsWithoutLastPeriod.sumOf { it.totalFundsPerPeriod })
-            .setScale(2, RoundingMode.DOWN)
         val lastPeriod = ProjectPeriodFund(periodNumber = lastPeriodNumber, totalFundsPerPeriod = lastPeriodFundBudget)
         if (projectPeriods.isNotEmpty()) {
             periodFundsWithoutLastPeriod.add(lastPeriod)
@@ -263,9 +259,7 @@ class GetBudgetFundsPerPeriod(
         if (selectedFund != null) {
             val totalPerPeriod =
                 budgetsPerPeriod.firstOrNull { it.periodNumber == periodNumber }?.spfCostPerPeriod ?: BigDecimal.ZERO
-            totalFundPerPeriod = totalPerPeriod
-                .multiply(selectedFund.percentage)
-                .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.DOWN)
+            totalFundPerPeriod = totalPerPeriod.applyPercentage(selectedFund.percentage)
         }
         return ProjectPeriodFund(
             periodNumber = periodNumber,
@@ -280,15 +274,7 @@ class GetBudgetFundsPerPeriod(
     ): BigDecimal {
         val fundPercentage =
             spfBeneficiaryCoFinancing.finances.firstOrNull { it.fund?.id == fund.id }?.percentage ?: BigDecimal.ZERO
-        return calculateTotalBudgetForFund(listOf(totalSpfCosts), fundPercentage)
-            .setScale(2, RoundingMode.DOWN)
+        return totalSpfCosts.applyPercentage(fundPercentage)
     }
 
-    private fun calculateTotalBudgetForFund(
-        budgetsPerPeriod: List<BigDecimal>,
-        fundPercentage: BigDecimal
-    ): BigDecimal =
-        budgetsPerPeriod.sumOf { it }
-            .multiply(fundPercentage)
-            .divide(BigDecimal.valueOf(100))
 }

@@ -106,14 +106,16 @@
   },
   "authorizedPayments": [
     {
-      "projectCustomIdentifier": "setDuringTest",
-      "fundName": "ERDF",
-      "partnerPayments": [
+      "fundType": "ERDF",
+      "paymentType": "REGULAR",
+      "payments": [
         {
           "id": 0,
           "partnerId": 0,
-          "partnerType": "LEAD_PARTNER",
+          "partnerRole": "LEAD_PARTNER",
           "partnerAbbreviation": "Lead Partner",
+          "nameInEnglish": "Lead Partner in english",
+          "nameInOriginalLanguage": "Lead Partner in original language",
           "amountApproved": 1199.99,
           "installments": [
             {
@@ -127,22 +129,19 @@
             }
           ]
         }
-      ],
-      "paymentType": "FTLS",
-      "projectId": 0,
-      "projectAcronym": "cross-platform program",
-      "amountApprovedPerFund": 1199.99
+      ]
     },
-
     {
-      "projectCustomIdentifier": "setDuringTest",
-      "fundName": "OTHER",
-      "partnerPayments": [
+      "fundType": "OTHER",
+      "paymentType": "REGULAR",
+      "payments": [
         {
           "id": 0,
           "partnerId": 0,
-          "partnerType": "LEAD_PARTNER",
+          "partnerRole": "LEAD_PARTNER",
           "partnerAbbreviation": "Lead Partner",
+          "nameInEnglish": "Lead Partner in english",
+          "nameInOriginalLanguage": "Lead Partner in original language",
           "amountApproved": 293.19,
           "installments": [
             {
@@ -156,11 +155,7 @@
             }
           ]
         }
-      ],
-      "paymentType": "FTLS",
-      "projectId": 0,
-      "projectAcronym": "cross-platform program",
-      "amountApprovedPerFund": 293.19
+      ]
     }
   ]
 }

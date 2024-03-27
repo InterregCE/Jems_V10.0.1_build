@@ -44,6 +44,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
 
                 type = ContractingDeadlineType.Both,
                 deadline = deadline,
+                finalReport = false,
                 reportingDate = YESTERDAY.minusDays(1),
                 periodNumber = 4,
                 projectIdentifier = "projectIdentifier",

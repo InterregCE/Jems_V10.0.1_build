@@ -15,7 +15,7 @@ export class AsPercentagePipe implements PipeTransform {
       return '';
     }
 
-    const numberOrEmpty = NumberService.toLocale(value, locale ? locale : this.localeStore.userLocale(), numberFormatOptions)
+    const numberOrEmpty = NumberService.toLocale(value, locale ? locale : this.localeStore.userLocale(), numberFormatOptions);
     return numberOrEmpty ? `${numberOrEmpty}\u00A0%` : numberOrEmpty;
   }
 

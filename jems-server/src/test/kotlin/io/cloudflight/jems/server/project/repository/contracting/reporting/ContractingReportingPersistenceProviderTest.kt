@@ -31,6 +31,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             deadline = LocalDate.of(2022, 8, 9),
             comment = "dummy comment",
             number = 1,
+            finalReport = false,
         )
 
         private fun entityNew(id: Long) = ProjectContractingReportingEntity(
@@ -40,7 +41,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = id.toInt() + 100,
             deadline = LocalDate.of(2023, 2, 25),
             comment = "dummy comment new",
-            number = 1
+            number = 1,
+            finalReport = false,
         )
 
         private val model10 = ProjectContractingReportingSchedule(
@@ -51,7 +53,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             comment = "dummy comment",
             number = 1,
             linkedSubmittedProjectReportNumbers = setOf(),
-            linkedDraftProjectReportNumbers = setOf()
+            linkedDraftProjectReportNumbers = setOf(),
+            finalReport = false,
         )
 
         private fun modelNew(id: Long) = ProjectContractingReportingSchedule(
@@ -62,7 +65,8 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             comment = "dummy comment new",
             number = 1,
             linkedSubmittedProjectReportNumbers = setOf(),
-            linkedDraftProjectReportNumbers = setOf()
+            linkedDraftProjectReportNumbers = setOf(),
+            finalReport = false,
         )
     }
 
@@ -129,7 +133,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             assertThat(deadline).isEqualTo(LocalDate.of(2023, 2, 25))
             assertThat(comment).isEqualTo("dummy comment new")
         }
-        verify(exactly = 0) { projectRepository.getById(any()) }
+        verify(exactly = 0) { projectRepository.getReferenceById(any()) }
     }
 
     @Test
@@ -146,7 +150,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
         val created = mutableListOf<ProjectContractingReportingEntity>()
         every { projectContractingReportingRepository.save(capture(created)) } returnsArgument 0
 
-        every { projectRepository.getById(PROJECT_ID) } returns mockk()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns mockk()
 
         val deadlines = listOf(
             modelNew(0L) /* to be created */,

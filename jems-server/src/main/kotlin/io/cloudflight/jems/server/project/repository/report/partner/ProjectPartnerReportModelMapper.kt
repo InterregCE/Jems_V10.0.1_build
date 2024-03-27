@@ -76,11 +76,10 @@ fun CertificateSummary.toModel() =
         partnerId = partnerId,
         partnerRole = partnerRole,
         partnerNumber = partnerNumber,
-
         controlEnd = controlEnd.atZone(ZoneId.systemDefault()),
         totalEligibleAfterControl = totalEligibleAfterControl,
         projectReportId = projectReportId,
-        projectReportNumber = projectReportNumber,
+        projectReportNumber = projectReportNumber
     )
 
 fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
@@ -194,6 +193,12 @@ fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {
     )
 }
 
+fun ProjectPartnerReportCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
+    fundType = this.programmeFund?.let { MainFund } ?: PartnerContribution,
+    fund = this.programmeFund?.toModel(),
+    percentage = this.percentage,
+)
+
 fun ProjectPartnerReportCreate.toEntity(
     legalStatus: ProgrammeLegalStatusEntity?
 ) = ProjectPartnerReportEntity(
@@ -239,6 +244,7 @@ fun List<PreviouslyReportedFund>.toEntity(
         previouslyValidated = fund.previouslyValidated,
         previouslyPaid = fund.previouslyPaid,
         currentParked = ZERO,
+        currentParkedVerification = ZERO,
         currentReIncluded = ZERO,
         previouslyReportedParked = fund.previouslyReportedParked,
         previouslyReportedSpf = fund.previouslyReportedSpf,
@@ -305,6 +311,14 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionCurrentReIncluded = ZERO,
         privateContributionCurrentReIncluded = ZERO,
         sumCurrentReIncluded = ZERO,
+
+        partnerContributionCurrentParkedVerification = ZERO,
+        publicContributionCurrentParkedVerification = ZERO,
+        automaticPublicContributionCurrentParkedVerification = ZERO,
+        privateContributionCurrentParkedVerification = ZERO,
+        sumCurrentParkedVerification = ZERO,
+
+
     )
 }
 
@@ -449,6 +463,18 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         unitCostCurrentParked = ZERO,
         spfCostCurrentParked = ZERO,
         sumCurrentParked = ZERO,
+
+        staffCurrentParkedVerification = ZERO,
+        officeCurrentParkedVerification = ZERO,
+        travelCurrentParkedVerification = ZERO,
+        externalCurrentParkedVerification = ZERO,
+        equipmentCurrentParkedVerification = ZERO,
+        infrastructureCurrentParkedVerification = ZERO,
+        otherCurrentParkedVerification = ZERO,
+        lumpSumCurrentParkedVerification = ZERO,
+        unitCostCurrentParkedVerification = ZERO,
+        spfCostCurrentParkedVerification = ZERO,
+        sumCurrentParkedVerification = ZERO,
 
         staffCurrentReIncluded = ZERO,
         officeCurrentReIncluded = ZERO,

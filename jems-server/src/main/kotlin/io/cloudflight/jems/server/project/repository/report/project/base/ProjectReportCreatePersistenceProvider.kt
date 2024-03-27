@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.project.repository.contracting.reporting.Proje
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
-import io.cloudflight.jems.server.project.repository.report.project.spfContributionClaim.ProjectReportSpfContributionClaimRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.investment.ReportProjectCertificateInvestmentRepository
@@ -25,6 +24,7 @@ import io.cloudflight.jems.server.project.repository.report.project.identificati
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.toIndexedEntity
+import io.cloudflight.jems.server.project.repository.report.project.spfContributionClaim.ProjectReportSpfContributionClaimRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageInvestmentRepository
@@ -41,9 +41,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
-import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.spfContributionClaim.ProjectReportSpfContributionClaimCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
 import org.springframework.stereotype.Repository
@@ -76,7 +76,7 @@ class ProjectReportCreatePersistenceProvider(
     private val programmeUnitCostRepository: ProgrammeUnitCostRepository,
     private val reportProjectCertificateUnitCostRepository: ReportProjectCertificateUnitCostRepository,
     private val reportInvestmentRepository: ReportProjectCertificateInvestmentRepository,
-    private val reportSpfContributionClaimRepository: ProjectReportSpfContributionClaimRepository,
+    private val reportSpfContributionClaimRepository: ProjectReportSpfContributionClaimRepository
 ) : ProjectReportCreatePersistence {
 
     @Transactional
@@ -85,7 +85,7 @@ class ProjectReportCreatePersistenceProvider(
 
         persistWorkPlan(reportToCreate.workPackages, reportPersisted)
         persistTargetGroups(reportToCreate.targetGroups, reportPersisted)
-        persistPartners(reportToCreate.partners, reportPersisted)
+        persistPartnersSpendingProfile(reportToCreate.partners, reportPersisted)
         persistCoFinancing(reportToCreate.reportBudget.coFinancing, reportPersisted)
         persistCostCategories(reportToCreate.reportBudget.costCategorySetup, reportPersisted)
         persistAvailableLumpSums(reportToCreate.reportBudget.availableLumpSums, reportPersisted)
@@ -116,7 +116,7 @@ class ProjectReportCreatePersistenceProvider(
                 workPlanActivityDeliverableRepository.saveAll(activity.deliverables.toEntity(activityEntity))
             }
             // save WP outputs
-            workPlanOutputRepository.saveAll(wp.outputs.toEntity(wpEntity, { outputIndicatorRepository.getById(it) }))
+            workPlanOutputRepository.saveAll(wp.outputs.toEntity(wpEntity, { outputIndicatorRepository.getReferenceById(it) }))
             // save WP investments
             workPlanInvestmentRepository.saveAll(wp.investments.toEntity(wpEntity))
         }
@@ -144,7 +144,7 @@ class ProjectReportCreatePersistenceProvider(
         }
     }
 
-    private fun persistPartners(
+    private fun persistPartnersSpendingProfile(
         partners: List<ProjectReportPartnerCreateModel>,
         reportPersisted: ProjectReportEntity,
     ) {
@@ -157,6 +157,7 @@ class ProjectReportCreatePersistenceProvider(
                 country = it.country,
                 previouslyReported = it.previouslyReported,
                 currentlyReported = BigDecimal.ZERO,
+                partnerTotalEligibleBudget = it.partnerTotalEligibleBudget
             )
         }
         projectReportSpendingProfileRepository.saveAll(spendingProfiles)
@@ -169,7 +170,7 @@ class ProjectReportCreatePersistenceProvider(
         projectReportCoFinancingRepository.saveAll(
             coFinancing.fundsSorted.toProjectReportEntity(
                 reportEntity = report,
-                programmeFundResolver = { programmeFundRepository.getById(it) },
+                programmeFundResolver = { programmeFundRepository.getReferenceById(it) },
             )
         )
 
@@ -192,7 +193,7 @@ class ProjectReportCreatePersistenceProvider(
         projectResultRepository.saveAll(
             projectResults.toIndexedEntity(
                 projectReport = projectReport,
-                indicatorEntityResolver = { it?.let { resultIndicatorRepository.getById(it) } },
+                indicatorEntityResolver = { it?.let { resultIndicatorRepository.getReferenceById(it) } },
             )
         )
 
@@ -211,7 +212,7 @@ class ProjectReportCreatePersistenceProvider(
         report: ProjectReportEntity,
     ) =
         reportProjectCertificateLumpSumRepository.saveAll(
-            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getById(it) }) }
+            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getReferenceById(it) }) }
         )
 
     private fun persistUnitCosts(
@@ -219,7 +220,7 @@ class ProjectReportCreatePersistenceProvider(
         report: ProjectReportEntity,
     ) =
         reportProjectCertificateUnitCostRepository.saveAll(
-            unitCosts.map { ls -> ls.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
+            unitCosts.map { ls -> ls.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getReferenceById(it) }) }
         )
 
     private fun persistAvailableInvestmentsToReport(
@@ -233,7 +234,7 @@ class ProjectReportCreatePersistenceProvider(
     private fun persistSpfContributionClaims(spfContributionClaims: List<ProjectReportSpfContributionClaimCreate>, report: ProjectReportEntity) {
         reportSpfContributionClaimRepository.saveAll(spfContributionClaims.map {
             it.toEntity(
-                report, programmeFundResolver = { programmeFundRepository.getById(it) })
+                report, programmeFundResolver = { programmeFundRepository.getReferenceById(it) })
         })
     }
 }

@@ -8,7 +8,7 @@ interface GetCoFinancingInteractor {
 
     fun getCoFinancing(partnerId: Long, version: String? = null): ProjectPartnerCoFinancingAndContribution
 
-    fun getCoFinancingForPartnerList(partnerIds: List<Long>, projectId: Long, version: String? = null): Map<Long, List<ProjectPartnerCoFinancing>>?
+    fun getCoFinancingForPartnerList(partnerIds: List<Long>, projectId: Long, version: String? = null): Map<Long, List<ProjectPartnerCoFinancing>>
 
     fun getSpfCoFinancing(partnerId: Long, version: String? = null): ProjectPartnerCoFinancingAndContributionSpf
 

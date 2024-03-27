@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
@@ -25,8 +25,10 @@ import { ProgrammeConversionRatesComponent } from './programme-conversion-rates/
 import {
   ProgrammeTypologyErrorsComponent
 } from './programme-page/containers/programme-typology-errors/programme-typology-errors.component';
+import {NgModule} from '@angular/core';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
 
-export const routes: Routes = [
+const programmeRoutes: Routes = [
   {
     path: '',
     data: {
@@ -296,3 +298,13 @@ export const routes: Routes = [
     ]
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(programmeRoutes)],
+  exports: [RouterModule]
+})
+export class ProgrammeRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(programmeRoutes);
+  }
+}

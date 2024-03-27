@@ -36,7 +36,11 @@ class ProjectAdvancedPaymentsControllerTest : UnitTest() {
             paymentDate = currentDate,
             amountSettled = BigDecimal.ONE,
             projectAcronym = "project",
-            projectCustomIdentifier = "identifier"
+            projectCustomIdentifier = "identifier",
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            lastApprovedProjectVersion = "v1.0",
+            linkedProjectVersion = "v1.0"
         )
         private val advancePayment = AdvancePayment(
             id = paymentId,
@@ -49,7 +53,12 @@ class ProjectAdvancedPaymentsControllerTest : UnitTest() {
             amountSettled = BigDecimal.ONE,
             paymentSettlements = emptyList(),
             projectAcronym = "project",
-            projectCustomIdentifier = "identifier"
+            projectCustomIdentifier = "identifier",
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            projectId = 10L,
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0"
         )
     }
 

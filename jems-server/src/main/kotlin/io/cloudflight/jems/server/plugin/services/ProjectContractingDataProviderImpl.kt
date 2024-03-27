@@ -11,6 +11,7 @@ import io.cloudflight.jems.plugin.contract.models.project.contracting.partner.do
 import io.cloudflight.jems.plugin.contract.models.project.contracting.partner.gber.ProjectContractingPartnerStateAidGberData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.reporting.ProjectContractingReportingScheduleData
 import io.cloudflight.jems.plugin.contract.services.ProjectContractingDataProvider
+import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.contractInfo.getContractInfo.GetContractInfoService
 import io.cloudflight.jems.server.project.service.contracting.management.getProjectContractingManagement.GetContractingManagementService
@@ -37,8 +38,9 @@ class ProjectContractingDataProviderImpl(
     private val getContractingPartnerDocumentsLocationService: GetContractingPartnerDocumentsLocationService,
     private val getContractingReportingService: GetContractingReportingService,
     private val getContractingPartnerStateAidDeMinimisService: GetContractingPartnerStateAidDeMinimisService,
-    private val getContractingPartnerStateAidGberService: GetContractingPartnerStateAidGberService
-): ProjectContractingDataProvider {
+    private val getContractingPartnerStateAidGberService: GetContractingPartnerStateAidGberService,
+    private val projectPersistence: ProjectPersistenceProvider,
+) : ProjectContractingDataProvider {
 
     override fun getContractInfo(projectId: Long): ProjectContractInfoData =
         getContractInfoService.getContractInfo(projectId).toDataModel()
@@ -46,8 +48,22 @@ class ProjectContractingDataProviderImpl(
     override fun getContractingManagementInfo(projectId: Long): List<ProjectContractingManagementData> =
         getContractingManagementService.getContractingManagement(projectId).toDataModel()
 
-    override fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoringData =
-        getContractingMonitoringService.getContractingMonitoring(projectId).toDataModel()
+    override fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoringData {
+        val projectSummary = projectPersistence.getProjectSummary(projectId)
+
+        return if (!projectSummary.status.isAlreadyApproved()
+            && !projectSummary.status.isModifiableStatusAfterApproved()
+            && !projectSummary.status.isModificationSubmitted()
+        ) {
+            ProjectContractingMonitoringData(
+                projectId = projectId,
+                addDates = emptyList(),
+                dimensionCodes = emptyList()
+            )
+        } else {
+            getContractingMonitoringService.getContractingMonitoring(projectId).toDataModel()
+        }
+    }
 
     override fun getContractingPartnerBankingDetails(
         partnerId: Long
@@ -72,7 +88,8 @@ class ProjectContractingDataProviderImpl(
 
     override fun getContractingPartners(projectId: Long): List<ProjectContractingPartnersSummaryData> {
         val version = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
-        val partners = partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.by(Sort.Order.asc("sortNumber")), version)
+        val partners =
+            partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.by(Sort.Order.asc("sortNumber")), version)
         return partners.toPartnersDataModel()
     }
 

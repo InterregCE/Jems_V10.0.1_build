@@ -4,7 +4,12 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
-import io.cloudflight.jems.server.payments.entity.*
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisCumulativeOverviewEntity
+import io.cloudflight.jems.server.payments.entity.PaymentToEcPriorityAxisOverviewEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcCorrectionExtensionEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcExtensionEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentToEcPriorityAxisOverviewEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentInEcPaymentMetadata
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcAmountSummaryLineTmp
@@ -13,8 +18,9 @@ import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcOverviewType
 import io.cloudflight.jems.server.payments.model.ec.overview.EcPaymentSummaryLine
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentApplicationsToEcRepository
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis.FallsUnderArticle94Or95
+import io.cloudflight.jems.server.payments.repository.applicationToEc.EcPaymentRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcExtensionRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisCumulativeOverviewRepository
 import io.cloudflight.jems.server.payments.repository.applicationToEc.PaymentToEcPriorityAxisOverviewRepository
@@ -27,14 +33,13 @@ import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Repository
 class PaymentApplicationToEcLinkPersistenceProvider(
-    private val ecPaymentRepository: PaymentApplicationsToEcRepository,
+    private val ecPaymentRepository: EcPaymentRepository,
     private val ecPaymentExtensionRepository: PaymentToEcExtensionRepository,
     private val ecPaymentPriorityAxisOverviewRepository: PaymentToEcPriorityAxisOverviewRepository,
     private val ecPaymentPriorityAxisCumulativeOverviewRepository: PaymentToEcPriorityAxisCumulativeOverviewRepository,
@@ -49,8 +54,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
             return paymentExtensionEntity.paymentApplicationToEc.id.eq(ecPaymentId).and(
                 when (scoBasis) {
-                    PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95 -> contractingMonitoringEntity.notFlagged()
-                    PaymentSearchRequestScoBasis.FallsUnderArticle94Or95 -> contractingMonitoringEntity.notFlagged().not()
+                    DoesNotFallUnderArticle94Nor95 -> contractingMonitoringEntity.notFlagged()
+                    FallsUnderArticle94Or95 -> contractingMonitoringEntity.notFlagged().not()
                 }
             )
         }
@@ -58,7 +63,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPaymentExtension(paymentId: Long): PaymentToEcExtension =
-        ecPaymentExtensionRepository.getById(paymentId).toModel()
+        ecPaymentExtensionRepository.getReferenceById(paymentId).toModel()
 
     @Transactional(readOnly = true)
     override fun getPaymentsLinkedToEcPayment(ecPaymentId: Long): Map<Long, PaymentInEcPaymentMetadata> {
@@ -93,7 +98,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional
     override fun selectPaymentToEcPayment(paymentIds: Set<Long>, ecPaymentId: Long) {
-        val ecPayment = ecPaymentRepository.getById(ecPaymentId)
+        val ecPayment = ecPaymentRepository.getReferenceById(ecPaymentId)
         ecPaymentExtensionRepository.findAllById(paymentIds).forEach {
             it.paymentApplicationToEc = ecPayment
         }
@@ -106,6 +111,9 @@ class PaymentApplicationToEcLinkPersistenceProvider(
             it.correctedPublicContribution = it.publicContribution
             it.correctedAutoPublicContribution = it.autoPublicContribution
             it.correctedPrivateContribution = it.privateContribution
+            it.correctedTotalEligibleWithoutSco = it.totalEligibleWithoutSco
+            it.correctedFundAmountUnionContribution = it.fundAmountUnionContribution
+            it.correctedFundAmountPublicContribution = it.fundAmountPublicContribution
         }
     }
 
@@ -115,10 +123,16 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         paymentId: Long,
         paymentToEcLinkingUpdate: PaymentToEcLinkingUpdate
     ) {
-        ecPaymentExtensionRepository.getById(paymentId).apply {
-            this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
+        ecPaymentExtensionRepository.getReferenceById(paymentId).apply {
             this.correctedPublicContribution = paymentToEcLinkingUpdate.correctedPublicContribution
+            this.correctedAutoPublicContribution = paymentToEcLinkingUpdate.correctedAutoPublicContribution
             this.correctedPrivateContribution = paymentToEcLinkingUpdate.correctedPrivateContribution
+
+            this.correctedTotalEligibleWithoutSco = paymentToEcLinkingUpdate.correctedTotalEligibleWithoutSco ?: correctedTotalEligibleWithoutSco
+            this.correctedFundAmountUnionContribution = paymentToEcLinkingUpdate.correctedFundAmountUnionContribution ?: correctedFundAmountUnionContribution
+            this.correctedFundAmountPublicContribution = paymentToEcLinkingUpdate.correctedFundAmountPublicContribution ?: correctedFundAmountPublicContribution
+
+            this.comment = paymentToEcLinkingUpdate.comment
         }
     }
 
@@ -132,9 +146,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
     @Transactional(readOnly = true)
     override fun calculateAndGetOverviewForDraftEcPayment(ecPaymentId: Long): Map<PaymentToEcOverviewType, Map<Long?, PaymentToEcAmountSummaryLineTmp>> =
         mapOf(
-            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to
-                    calculateForPayments(ecPaymentId, PaymentSearchRequestScoBasis.DoesNotFallUnderArticle94Nor95),
-            PaymentToEcOverviewType.FallsUnderArticle94Or95 to emptyMap(),
+            PaymentToEcOverviewType.DoesNotFallUnderArticle94Nor95 to calculateForPayments(ecPaymentId, DoesNotFallUnderArticle94Nor95),
+            PaymentToEcOverviewType.FallsUnderArticle94Or95 to calculateForPayments(ecPaymentId, FallsUnderArticle94Or95 ),
             PaymentToEcOverviewType.Correction to calculateForCorrections(ecPaymentId),
         )
 
@@ -154,6 +167,9 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                 paymentToEcExtensionEntity.correctedPublicContribution.sum(),
                 paymentToEcExtensionEntity.correctedAutoPublicContribution.sum(),
                 paymentToEcExtensionEntity.correctedPrivateContribution.sum(),
+                paymentToEcExtensionEntity.correctedFundAmountUnionContribution.sum(),
+                paymentToEcExtensionEntity.correctedFundAmountPublicContribution.sum(),
+                paymentToEcExtensionEntity.correctedTotalEligibleWithoutSco.sum()
             )
             .from(paymentToEcExtensionEntity)
             .leftJoin(paymentEntity)
@@ -175,8 +191,9 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     partnerContribution = it.get(3, BigDecimal::class.java)!!,
                     ofWhichPublic = it.get(4, BigDecimal::class.java)!!,
                     ofWhichAutoPublic = it.get(5, BigDecimal::class.java)!!,
-                    unionContribution = BigDecimal.ZERO,
-                    correctedFundAmount = BigDecimal.ZERO
+                    unionContribution = it.get(7, BigDecimal::class.java)!!,
+                    correctedFundAmount = it.get(8, BigDecimal::class.java)!!,
+                    correctedTotalEligibleWithoutArt94Or95 = it.get(9, BigDecimal::class.java)!!,
                 )
             }.associateBy { it.priorityId }
     }
@@ -205,6 +222,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     .then(BigDecimal.ZERO).otherwise(paymentToEcCorrectionExtensionEntity.correctedUnionContribution).sum(),
                 CaseBuilder().`when`(specProjectContractingMonitoringEntity.notFlagged())
                     .then(paymentToEcCorrectionExtensionEntity.fundAmount).otherwise(paymentToEcCorrectionExtensionEntity.correctedFundAmount).sum(),
+                paymentToEcCorrectionExtensionEntity.correctedTotalEligibleWithoutArt94or95.sum()
             )
             .from(paymentToEcCorrectionExtensionEntity)
             .leftJoin(correctionEntity)
@@ -233,7 +251,8 @@ class PaymentApplicationToEcLinkPersistenceProvider(
                     ofWhichPublic = it.get(3, BigDecimal::class.java)!!,
                     ofWhichAutoPublic = it.get(4, BigDecimal::class.java)!!,
                     unionContribution = it.get(9, BigDecimal::class.java)!!,
-                    correctedFundAmount = it.get(10, BigDecimal::class.java)!!
+                    correctedFundAmount = it.get(10, BigDecimal::class.java)!!,
+                    correctedTotalEligibleWithoutArt94Or95 = it.get(11, BigDecimal::class.java)!!,
                 )
             }.associateBy { it.priorityId }
     }
@@ -245,7 +264,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         val priorityAxisIds = totals.values.flatMapTo(HashSet()) { it.keys.mapNotNull { it } }
 
         val priorityById = programmePriorityRepository.findAllById(priorityAxisIds).associateBy { it.id }
-        val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
+        val ecPaymentEntity = ecPaymentRepository.getReferenceById(ecPaymentId)
 
         ecPaymentPriorityAxisOverviewRepository.deleteAllByPaymentApplicationToEcId(ecPaymentId)
         ecPaymentPriorityAxisOverviewRepository.flush()
@@ -302,7 +321,7 @@ class PaymentApplicationToEcLinkPersistenceProvider(
 
     @Transactional
     override fun saveCumulativeAmounts(ecPaymentId: Long, totals: Map<Long?, EcPaymentSummaryLine>) {
-        val ecPaymentEntity = ecPaymentRepository.getById(ecPaymentId)
+        val ecPaymentEntity = ecPaymentRepository.getReferenceById(ecPaymentId)
         val priorityById = programmePriorityRepository.findAllById(totals.keys.mapNotNullTo(HashSet()) { it }).associateBy { it.id }
 
         val toSave = totals.mapKeys { (id, _) -> priorityById[id] }
@@ -329,5 +348,10 @@ class PaymentApplicationToEcLinkPersistenceProvider(
         ecPaymentExtensionRepository.findAllByPaymentApplicationToEcNotNullAndPaymentProjectReportId(projectReportId).map {
             it.paymentApplicationToEc!!.id
         }.toSet()
+
+    @Transactional(readOnly = true)
+    override fun getFtlsIdLinkToEcPaymentIdByProjectId(projectId: Long): Map<Int, Long> =
+        ecPaymentExtensionRepository.findAllEcPaymentIdsAndLinkedFTLSPaymentByProjectId(projectId)
+            .associateBy({it.first}, {it.second})
 
 }

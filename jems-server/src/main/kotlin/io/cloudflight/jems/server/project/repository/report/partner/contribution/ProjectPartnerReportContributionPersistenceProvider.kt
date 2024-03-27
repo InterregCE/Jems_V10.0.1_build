@@ -58,7 +58,7 @@ class ProjectPartnerReportContributionPersistenceProvider(
         reportId: Long,
         toBeCreated: List<CreateProjectPartnerReportContribution>,
     ) {
-        val reportEntity = reportRepository.getById(reportId)
+        val reportEntity = reportRepository.getReferenceById(reportId)
         reportContributionRepository.saveAll(
             toBeCreated.map { it.toEntity(reportEntity, attachment = null) }
         )

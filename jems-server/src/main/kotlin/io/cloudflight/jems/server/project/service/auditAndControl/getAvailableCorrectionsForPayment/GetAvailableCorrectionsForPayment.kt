@@ -18,9 +18,8 @@ class GetAvailableCorrectionsForPayment(
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetAvailableCorrectionsForPaymentException::class)
     override fun getAvailableCorrections(paymentId: Long): List<AvailableCorrectionsForPayment> {
-        val payment = paymentPersistence.getPaymentDetails(paymentId)
-        return correctionsPersistence.getAvailableCorrectionsForPayments(
-            projectId = payment.projectId,
-        )
+        val projectId = paymentPersistence.getProjectIdForPayment(paymentId)
+        return correctionsPersistence.getAvailableCorrectionsForPayments(projectId = projectId)
     }
+
 }

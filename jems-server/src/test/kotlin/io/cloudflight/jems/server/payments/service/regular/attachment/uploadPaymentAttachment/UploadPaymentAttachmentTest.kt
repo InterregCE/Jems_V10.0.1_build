@@ -58,10 +58,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun upload() {
         val paymentId = 4L
-        val payment = mockk<PaymentDetail>()
-        every { payment.id } returns paymentId
-        every { payment.projectId } returns 540L
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
+        every { paymentPersistence.getProjectIdForPayment(paymentId) } returns 540L
         every { filePersistence.existsFile("Payment/Regular/000004/PaymentAttachment/", "test.xlsx") } returns false
 
         val fileToAdd = slot<JemsFileCreate>()
@@ -90,9 +87,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun `upload - duplicate`() {
         val paymentId = 11L
-        val payment = mockk<PaymentDetail>()
-        every { payment.id } returns paymentId
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
+        every { paymentPersistence.getProjectIdForPayment(paymentId) } returns -112L
         every { filePersistence.existsFile("Payment/Regular/000011/PaymentAttachment/", "test.xlsx") } returns true
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
@@ -104,9 +99,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun `upload - file type invalid`() {
         val paymentId = 15L
-        val payment = mockk<PaymentDetail>()
-        every { payment.id } returns paymentId
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
+        every { paymentPersistence.getProjectIdForPayment(paymentId) } returns -111L
 
         val file = ProjectFile(stream = content, name = "test.exe", size = 20L)
         assertThrows<FileTypeNotSupported> { interactor.upload(paymentId, file) }

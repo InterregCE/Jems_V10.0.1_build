@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
   AdvancePaymentSettlementDTO,
-  AdvancePaymentStatusUpdateDTO,
   AdvancePaymentUpdateDTO,
   OutputProjectSimple,
+  OutputUser,
   ProjectPartnerPaymentSummaryDTO,
   ProjectPartnerSummaryDTO,
   UserDTO
@@ -41,7 +41,7 @@ import {NumberService} from '@common/services/number.service';
   ],
   providers: [FormService]
 })
-export class AdvancePaymentsDetailPageComponent implements OnInit {
+export class AdvancePaymentsDetailPageComponent {
   Alert = Alert;
 
   settlementsExpanded = true;
@@ -52,6 +52,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   successfulAuthorizationMessage = false;
   successfulConfirmationMessage = false;
   error$ = new BehaviorSubject<APIError | null>(null);
+  selectedProjectVersion: string | undefined;
+  displayOldProjectVersionAlert = false;
+  isProjectSelected = false;
 
   advancePaymentForm = this.formBuilder.group({
     id: '',
@@ -117,9 +120,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         tap(selection => this.setSourceForAdvance(selection)),
         untilDestroyed(this)
       ).subscribe();
-  }
 
-  ngOnInit(): void {
     this.data$ = combineLatest([
       this.advancePaymentsDetailPageStore.advancePaymentDetail$,
       this.securityService.currentUserDetails,
@@ -191,6 +192,15 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO, userCanEdit: boolean) {
+    if (paymentDetail.projectId) {
+      this.isProjectSelected = true;
+      this.selectedProjectVersion = paymentDetail.projectVersion;
+      this.advancePaymentsDetailPageStore.getLastApprovedProjectVersion(paymentDetail.projectId)
+        .pipe(
+          tap(data => this.displayOldProjectVersionAlert = this.selectedProjectVersion !== data?.version)
+        ).subscribe();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.disable();
+    }
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue(paymentDetail?.projectCustomIdentifier ?? '');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
@@ -200,21 +210,21 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.setSelectedPartner(paymentDetail);
     this.setFoundOrContribution(paymentDetail);
 
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectAcronym)?.setValue(paymentDetail?.projectAcronym ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerNumber)?.setValue(paymentDetail?.partnerNumber ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerType)?.setValue(paymentDetail.partnerType ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.setValue(paymentDetail.programmeFund?.id ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributionId)?.setValue(paymentDetail.partnerContribution?.id ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributionSpfId)?.setValue(paymentDetail.partnerContributionSpf?.id ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.setValue(paymentDetail.amountPaid ?? 0);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectAcronym)?.setValue(paymentDetail?.projectAcronym ? paymentDetail?.projectAcronym : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerNumber)?.setValue(paymentDetail?.partnerNumber ? paymentDetail?.partnerNumber : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerType)?.setValue(paymentDetail.partnerType ? paymentDetail.partnerType : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.programmeFundId)?.setValue(paymentDetail.programmeFund?.id ? paymentDetail.programmeFund?.id : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributionId)?.setValue(paymentDetail.partnerContribution?.id ? paymentDetail.partnerContribution?.id : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributionSpfId)?.setValue(paymentDetail.partnerContributionSpf?.id ? paymentDetail.partnerContributionSpf?.id : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.setValue(paymentDetail.amountPaid ? paymentDetail.amountPaid : 0);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.setValue(paymentDetail.paymentDate);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValue(paymentDetail?.comment ?? '');
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorized)?.setValue(paymentDetail.paymentAuthorized);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(paymentDetail?.paymentAuthorizedUser);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(paymentDetail?.paymentAuthorizedDate);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.setValue(paymentDetail.paymentConfirmed);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(paymentDetail?.paymentConfirmedUser);
-    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(paymentDetail?.paymentConfirmedDate);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValue(paymentDetail?.comment ? paymentDetail?.comment : '');
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorized)?.setValue(paymentDetail.paymentAuthorized ? paymentDetail.paymentAuthorized : false);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(paymentDetail?.paymentAuthorizedUser ? this.getOutputUserObject(paymentDetail?.paymentAuthorizedUser) : null);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(paymentDetail?.paymentAuthorizedDate ? paymentDetail?.paymentAuthorizedDate : null);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.setValue(paymentDetail.paymentConfirmed ? paymentDetail.paymentConfirmed : false);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(paymentDetail?.paymentConfirmedUser ? this.getOutputUserObject(paymentDetail?.paymentConfirmedUser) : null);
+    this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(paymentDetail?.paymentConfirmedDate ? paymentDetail?.paymentConfirmedDate : null);
     this.settlementsArray.clear();
     paymentDetail.paymentSettlements?.forEach(settlement => {
         this.settlementsArray.push(
@@ -230,7 +240,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     );
 
     this.setValidators();
-    this.disableFieldsIfPaymentIsAuthorized();
+    this.disableFieldsIfPaymentIsSaved();
     this.disableFieldsIfPaymentIsConfirmed();
     this.disableFieldsIfProjectNotSelected(paymentDetail);
     this.disableAuthorizationCheckbox(paymentDetail);
@@ -261,6 +271,10 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   setSelectedProject(identifier: string) {
+    if (!!identifier) {
+      this.advancePaymentsDetailPageStore.searchProjectsByName$.next(identifier);
+    }
+
     this.contractedProjects$.pipe(
       take(1),
       map(projects => projects.find(item => item.customIdentifier === identifier)),
@@ -401,6 +415,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       amountPaid: data.amountPaid,
       paymentDate: data.paymentDate,
       comment: data.comment,
+      paymentAuthorized: data.paymentAuthorized,
+      paymentConfirmed: data.paymentConfirmed,
       paymentSettlements: data.paymentSettlements
     };
   }
@@ -421,23 +437,32 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     }
   }
 
-  setPaymentAuthorised(isChecked: boolean, paymentId: number) {
-    this.advancePaymentsDetailPageStore.updateStatus(
-      paymentId, isChecked ? AdvancePaymentStatusUpdateDTO.StatusEnum.AUTHORIZED : AdvancePaymentStatusUpdateDTO.StatusEnum.DRAFT
-    ).pipe(
-      tap(() => this.showSuccessMessageAfterPaymentAuthorised()),
-      catchError((error) => this.showErrorMessage(error.error)),
-    ).subscribe();
+
+  setPaymentAuthorised(isChecked: boolean) {
+    if (isChecked) {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.disable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.disable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.disable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.disable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(this.getFormattedCurrentLocaleDate());
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
+    } else {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.enable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.enable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(null);
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(null);
+    }
   }
 
-  disableFieldsIfPaymentIsAuthorized() {
+  disableFieldsIfPaymentIsSaved() {
     if (this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorized)?.value) {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.disable();
     } else {
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.enable();
@@ -459,13 +484,37 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     }
   }
 
-  setConfirmPaymentDate(isChecked: boolean, paymentId: number) {
-    this.advancePaymentsDetailPageStore.updateStatus(
-      paymentId, isChecked ? AdvancePaymentStatusUpdateDTO.StatusEnum.CONFIRMED : AdvancePaymentStatusUpdateDTO.StatusEnum.AUTHORIZED
-    ).pipe(
-      tap(() => this.showSuccessMessageAfterPaymentConfirmed()),
-      catchError((error) => this.showErrorMessage(error.error)),
-    ).subscribe();
+  getOutputUserObject(userDetails: UserDTO | OutputUser): OutputUser {
+    return {
+      id: userDetails.id,
+      email: userDetails.email,
+      name: userDetails.name,
+      surname: userDetails.surname
+    } as OutputUser;
+  }
+
+  getFormattedCurrentLocaleDate() {
+    const date = new Date();
+    return date.toISOString().substring(0, 10);
+  }
+
+  setConfirmPaymentDate(isChecked: boolean) {
+    if (isChecked) {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.setValidators([Validators.required]);
+
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(this.getFormattedCurrentLocaleDate());
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
+
+      if (!this.isPaymentDateEmpty()) {
+        this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
+      }
+    } else {
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.clearValidators();
+
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(null);
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(null);
+      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
+    }
   }
 
   isPaymentAuthorisationDisabled(): boolean {
@@ -487,8 +536,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   isPaymentConfirmationDisabled(): boolean {
-    return this.isPaymentDateEmpty()
-      || !this.isPaymentAuthorised()
+    return !this.isPaymentAuthorised()
       || this.settlementsArray.value.length > 0;
   }
 
@@ -506,6 +554,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   projectSelected(project: OutputProjectSimple) {
+    this.isProjectSelected = true;
     this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project.id);
     this.resetFundsAndContributionData();
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
@@ -551,29 +600,8 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     return null;
   }
 
-  private showSuccessMessageAfterPaymentAuthorised(): void {
-    this.successfulAuthorizationMessage = true;
-    setTimeout(() => {
-      this.successfulAuthorizationMessage = false;
-      this.changeDetectorRef.markForCheck();
-    }, 4000);
+  isPaymentDateRequired(): boolean {
+    return this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value && this.isPaymentDateEmpty();
   }
-
-  private showSuccessMessageAfterPaymentConfirmed(): void {
-    this.successfulConfirmationMessage = true;
-    setTimeout(() => {
-      this.successfulConfirmationMessage = false;
-      this.changeDetectorRef.markForCheck();
-    }, 4000);
-  }
-
-  public showErrorMessage(error: APIError): Observable<null> {
-    this.error$.next(error);
-    setTimeout(() => {
-      this.error$.next(null);
-    }, 4000);
-    return of(null);
-  }
-
 }
 

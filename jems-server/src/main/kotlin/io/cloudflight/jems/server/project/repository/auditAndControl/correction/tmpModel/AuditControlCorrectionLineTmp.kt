@@ -11,6 +11,7 @@ data class AuditControlCorrectionLineTmp(
     val correction: AuditControlCorrection,
 
     val partnerId: Long?,
+    val lumpSumPartnerId: Long?,
     val partnerNumber: Int?,
     val partnerAbbreviation: String?,
     val partnerRole: ProjectPartnerRole?,

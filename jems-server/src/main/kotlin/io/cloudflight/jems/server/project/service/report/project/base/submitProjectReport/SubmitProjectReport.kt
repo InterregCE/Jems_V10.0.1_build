@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.closure.ProjectReportProjectClosurePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
@@ -27,6 +28,7 @@ import io.cloudflight.jems.server.project.service.report.project.identification.
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.spfContributionClaim.ProjectReportSpfContributionClaimPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -53,6 +55,8 @@ class SubmitProjectReport(
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
     private val reportSpfClaimPersistence: ProjectReportSpfContributionClaimPersistence,
+    private val projectReportProjectClosurePersistence: ProjectReportProjectClosurePersistence,
+    private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
 
@@ -94,6 +98,9 @@ class SubmitProjectReport(
             saveCurrentInvestments(certificateIds, projectId, reportId)
 
             deleteDataBasedOnContractingDeadlineType(report)
+            deleteClosureDataIfReportNotFinal(report)
+
+            reInitiateExpendituresIfVerificationReOpened(report)
         }
 
         val reportSubmitted = if (report.status.isOpenInitially())
@@ -188,17 +195,24 @@ class SubmitProjectReport(
     }
 
     private fun deleteDataBasedOnContractingDeadlineType(report: ProjectReportModel) =
-        when(report.type!!) {
+        when (report.type!!) {
             ContractingDeadlineType.Finance -> {
                 deleteContentOnlyData(report.id)
             }
+
             ContractingDeadlineType.Content -> {
                 deleteFinanceOnlyData(report.id)
             }
+
             ContractingDeadlineType.Both -> {
                 // intentionally left empty
             }
         }
+
+    private fun deleteClosureDataIfReportNotFinal(report: ProjectReportModel) {
+        if (!report.finalReport!!)
+            projectReportProjectClosurePersistence.deleteProjectReportProjectClosure(report.id)
+    }
 
     private fun ProjectReportModel.hasVerificationStartedBefore() = this.lastVerificationReOpening != null
 
@@ -210,6 +224,11 @@ class SubmitProjectReport(
     private fun deleteFinanceOnlyData(reportId: Long) {
         reportCertificatePersistence.deselectCertificatesOfProjectReport(reportId)
         reportSpfClaimPersistence.resetSpfContributionClaims(reportId)
+    }
+
+    private fun reInitiateExpendituresIfVerificationReOpened(report: ProjectReportModel) {
+        if (report.status == ProjectReportStatus.VerificationReOpenedLast)
+            projectReportExpenditureVerificationPersistence.reInitiateVerificationForProjectReport(projectReportId = report.id)
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Repository
 class ProjectReportCertificatePersistenceProvider(
@@ -44,9 +45,9 @@ class ProjectReportCertificatePersistenceProvider(
 
     @Transactional
     override fun selectCertificate(projectReportId: Long, certificateId: Long) {
-        val partnerReport = partnerReportRepository.getById(certificateId)
+        val partnerReport = partnerReportRepository.getReferenceById(certificateId)
         if (partnerReport.projectReport == null) {
-            partnerReport.projectReport = projectReportRepository.getById(projectReportId)
+            partnerReport.projectReport = projectReportRepository.getReferenceById(projectReportId)
         }
     }
 

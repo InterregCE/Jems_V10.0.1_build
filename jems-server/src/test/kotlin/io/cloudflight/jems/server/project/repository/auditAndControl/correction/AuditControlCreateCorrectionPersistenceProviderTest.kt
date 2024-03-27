@@ -80,7 +80,7 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
             every { id } returns 7L
             every { number } returns 17
         }
-        every { auditControlRepository.getById(7L) } returns auditControl
+        every { auditControlRepository.getReferenceById(7L) } returns auditControl
 
         val slotEnity = slot<AuditControlCorrectionEntity>()
         every { auditControlCorrectionRepository.save(capture(slotEnity)) } returnsArgument 0

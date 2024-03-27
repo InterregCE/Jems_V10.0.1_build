@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
-import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.getParkedAndEligibleAfterControl
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.onlyParkedOnes
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.toColumn
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getAfterControlForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getAfterControlForLumpSums
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.getAfterControlForUnitCosts
@@ -72,18 +71,14 @@ class FinalizeControlPartnerReport(
         val expenditures = reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
-        val currentlyReportedParked = expenditures.onlyParkedOnes()
+        val parkedAndEligibleAfterControl = getParkedAndEligibleAfterControl(expenditures, costCategories)
+
         val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.first()
 
-        val afterControlCostCategories = BudgetCostsCurrentValuesWrapper(
-            currentlyReported = expenditures.calculateCertified(options = costCategories.options),
-            currentlyReportedParked = currentlyReportedParked.calculateCurrent(options = costCategories.options)
-        )
-
-        saveAfterControlCostCategories(afterControlCostCategories, partnerId = partnerId, reportId) // table 2 breakdown cost-category
+        saveAfterControlCostCategories(parkedAndEligibleAfterControl, partnerId = partnerId, reportId) // table 2 breakdown cost-category
         saveAfterControlCoFinancing( // table 1 summary
-            afterControlExpenditureCurrent =  afterControlCostCategories.currentlyReported.sum,
-            afterControlExpenditureParked =  afterControlCostCategories.currentlyReportedParked.sum,
+            afterControlExpenditureCurrent =  parkedAndEligibleAfterControl.currentlyReported.sum,
+            afterControlExpenditureParked =  parkedAndEligibleAfterControl.currentlyReportedParked.sum,
             totalEligibleBudget = costCategories.totalBudgetWithoutSpf(),
             report = report, partnerId = partnerId,
         )
@@ -101,7 +96,7 @@ class FinalizeControlPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectId, it, report.status))
             auditPublisher.publishEvent(
-                partnerReportControlFinalized(context = this, projectId = projectId, report = it, parked = currentlyReportedParked)
+                partnerReportControlFinalized(context = this, projectId = projectId, report = it, parked = expenditures.onlyParkedOnes())
             )
         }.status
     }
@@ -186,4 +181,5 @@ class FinalizeControlPartnerReport(
     private fun saveControlEndDate(partnerId: Long, reportId: Long) {
         controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(partnerId, reportId, LocalDate.now())
     }
+
 }

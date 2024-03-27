@@ -5,9 +5,8 @@ import {APIError} from '@common/models/APIError';
 import {
   AuditControlCorrectionDTO, CorrectionAvailableFtlsDTO, CorrectionAvailableFundDTO,
   CorrectionAvailablePartnerDTO,
-  CorrectionAvailablePartnerReportDTO,
+  CorrectionAvailablePartnerReportDTO, InputTranslation,
   PageCorrectionCostItemDTO,
-  ProgrammeFundDTO,
   ProjectAuditControlCorrectionDTO,
   ProjectCallSettingsDTO,
   ProjectCorrectionIdentificationUpdateDTO,
@@ -62,7 +61,11 @@ export class AuditControlCorrectionDetailIdentityComponent {
   }>;
   form: FormGroup;
   partnerReports: CorrectionAvailablePartnerReportDTO[] = [];
-  funds: ProgrammeFundDTO[] = [];
+  funds: {
+    id: number;
+    abbreviation: InputTranslation[];
+    disabled: boolean;
+  }[] = [];
 
   linkedToCostOptionType: LinkedToCostOptionType = LinkedToCostOptionType.PR;
   ftls: CorrectionAvailableFtlsDTO[] = [];
@@ -155,8 +158,8 @@ export class AuditControlCorrectionDetailIdentityComponent {
     const ftls = partner?.availableFtls.find((it: CorrectionAvailableFtlsDTO) => it.orderNr === correctionIdentification.lumpSumOrderNr);
     this.linkedToCostOptionType = ftls != null ? LinkedToCostOptionType.FTLS : LinkedToCostOptionType.PR;
 
-    this.funds = (report?.availableFunds ?? ftls?.availableFunds)?.map(f => f.fund) ?? [];
-    const fund = this.funds.find((it: ProgrammeFundDTO) => it.id === correctionIdentification.programmeFundId);
+    this.funds = this.mapFundsForSelector(report?.availableFunds ?? ftls?.availableFunds ?? []);
+    const fund = this.funds.find(it => it.id === correctionIdentification.programmeFundId);
 
     if (partner) {
       this.partnerReports = partner.availableReports;
@@ -206,7 +209,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
       } else {
         this.form.controls?.projectReportNumber?.setValue(this.naString);
       }
-      this.funds = report?.availableFunds.map(f => f.fund) ?? [];
+      this.funds = this.mapFundsForSelector(report?.availableFunds ?? []);
       return;
     }
     this.form.controls?.projectReportNumber?.setValue(this.naString);
@@ -222,7 +225,7 @@ export class AuditControlCorrectionDetailIdentityComponent {
     this.form.controls?.costCategory?.setValue('LumpSum');
     if (lumpSumOrderNr) {
       const ftls = this.ftls.find(it => it.orderNr === lumpSumOrderNr);
-      this.funds = ftls?.availableFunds.map(f => f.fund) ?? [];
+      this.funds = this.mapFundsForSelector(ftls?.availableFunds ?? []);
       return;
     }
     this.form.controls?.programmeFundId?.setValue(null);
@@ -257,6 +260,12 @@ export class AuditControlCorrectionDetailIdentityComponent {
     this.formService.setDirty(true);
   }
 
+  private mapFundsForSelector(funds: CorrectionAvailableFundDTO[]): any[] {
+    return funds.map(fund => ({
+      ...fund.fund,
+      disabled: (fund as any).disabled,
+    }));
+  }
 
   private getCostCategories(callSettings: ProjectCallSettingsDTO) {
     return [
@@ -326,4 +335,15 @@ export class AuditControlCorrectionDetailIdentityComponent {
     this.form.controls?.procurementId?.setValue(null);
     this.form.controls?.expenditureId?.setValue(null);
   }
+
+  get fundShown(): FundShown | undefined {
+    const fundId = this.form.get('programmeFundId')?.value;
+    return this.funds.find(x => x.id === fundId);
+  }
+
+}
+
+interface FundShown {
+  abbreviation: InputTranslation[];
+  disabled: boolean;
 }

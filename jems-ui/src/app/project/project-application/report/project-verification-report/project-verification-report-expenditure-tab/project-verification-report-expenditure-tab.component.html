@@ -171,7 +171,13 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
-                                        {{ getContractIdentifier(expenditureItem(item, EXPENDITURE_CONTROL.contract)) | async }}
+                                        <span *ngIf="!expenditureItem(item, EXPENDITURE_CONTROL.contract)">
+                                            {{ getContractIdentifier(expenditureItem(item, EXPENDITURE_CONTROL.contract)) | async }}
+                                        </span>
+                                        <a *ngIf="expenditureItem(item, EXPENDITURE_CONTROL.contract)"
+                                                [routerLink]="getProcurementLinkForItem(data.projectId, item)">
+                                            {{ getContractIdentifier(expenditureItem(item, EXPENDITURE_CONTROL.contract)) | async }}
+                                        </a>
                                     </mat-cell>
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>
@@ -554,7 +560,7 @@
                                     <mat-cell class="justify-start left-separator" *matCellDef="let item;let i=index" [formGroupName]="i">
                                         <ng-container [formGroupName]="VERIFICATION_DATA"  >
                                             <mat-slide-toggle color="primary"
-                                                              [disabled]="expenditureItem(item, EXPENDITURE_CONTROL.parked) || isParkedBeforeVerificationReopening(item, data.projectReport)"
+                                                              [disabled]="expenditureItem(item, EXPENDITURE_CONTROL.parked)"
                                                               (change)="parkedChange(item, $event)"
                                                               [formControlName]="VERIFICATION_CONTROL.parked"
                                                               [matTooltip]="getTooltipForParkedExpenditures(item, data.projectReport)">

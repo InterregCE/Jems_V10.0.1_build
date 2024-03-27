@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -118,7 +127,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               public formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private router: RoutingService,
+              private routingService: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
               public securityService: SecurityService,
@@ -127,6 +136,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               private projectStore: ProjectStore) {
   }
 
+  @ViewChild('expenditureCostsTable', {read: ElementRef}) private expenditureCostsTable: ElementRef;
   @ViewChildren('costOptionsSelect') private costOptionsSelect: QueryList<MatSelect>;
   @ViewChildren('costCategorySelect') private costCategorySelect: QueryList<MatSelect>;
   @ViewChildren('costGDPR') private costGDPR: QueryList<MatSelect>;
@@ -392,7 +402,17 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
     this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(null));
-    setTimeout(() => this.changeDetectorRef.detectChanges());
+
+
+    setTimeout(() => {
+      this.scrollExpendituresTableToBottom();
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
+  scrollExpendituresTableToBottom(): void {
+    this.expenditureCostsTable.nativeElement.scrollTop = this.expenditureCostsTable.nativeElement.offsetHeight;
+    this.expenditureCostsTable.nativeElement.scrollLeft = 0;
   }
 
   updateReportExpenditures(): void {
@@ -682,7 +702,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
     this.isUploadDone = false;
     const serviceId = uuid();
-    this.router.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(
         take(1),
@@ -691,7 +711,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       )
       .subscribe(value => {
         this.attachment(expenditureIndex)?.patchValue(value);
-        this.router.confirmLeaveMap.delete(serviceId);
+        this.routingService.confirmLeaveSet.delete(serviceId);
       });
   }
 

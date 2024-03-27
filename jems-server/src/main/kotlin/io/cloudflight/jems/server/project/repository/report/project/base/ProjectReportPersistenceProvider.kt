@@ -43,7 +43,7 @@ class ProjectReportPersistenceProvider(
 
     companion object {
         private fun filterProjects(projectIds: Set<Long>, specReport: QProjectReportEntity) =
-            if (projectIds.isEmpty()) null else specReport.projectId.`in`(projectIds)
+            specReport.projectId.`in`(projectIds)
         private fun filterStatuses(statuses: Collection<ProjectReportStatus>, specReport: QProjectReportEntity) =
             if (statuses.isEmpty()) null else specReport.status.`in`(statuses)
     }
@@ -101,7 +101,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getReportByIdUnSecured(reportId: Long): ProjectReportModel =
-        projectReportRepository.getById(reportId).toModel()
+        projectReportRepository.getReferenceById(reportId).toModel()
 
     @Transactional
     override fun updateReport(
@@ -119,6 +119,7 @@ class ProjectReportPersistenceProvider(
         report.type = deadline.type
         report.periodNumber = deadline.periodNumber
         report.reportingDate = deadline.reportingDate
+        report.finalReport = deadline.finalReport
 
         return report.toModel()
     }
@@ -261,20 +262,22 @@ class ProjectReportPersistenceProvider(
     }
 
     @Transactional
-    override fun reOpenReportTo(
-        reportId: Long,
-        newStatus: ProjectReportStatus,
-        submissionTime: ZonedDateTime
-    ): ProjectReportSubmissionSummary =
-        projectReportRepository.getById(reportId)
+    override fun reOpenProjectReport(reportId: Long, newStatus: ProjectReportStatus): ProjectReportSubmissionSummary =
+        projectReportRepository.getReferenceById(reportId)
             .apply {
                 status = newStatus
-                if (newStatus.isProjectReportReOpened()) {
-                    lastReSubmission = submissionTime
-                } else if (newStatus == ProjectReportStatus.ReOpenFinalized) {
-                    verificationEndDate = null
-                    lastVerificationReOpening = submissionTime
-                }
+            }.toSubmissionSummary()
+
+    @Transactional
+    override fun reOpenFinalizedVerificationAndResetDate(
+        reportId: Long,
+        lastVerificationReOpening: ZonedDateTime,
+    ): ProjectReportSubmissionSummary =
+        projectReportRepository.getReferenceById(reportId)
+            .apply {
+                this.status = ProjectReportStatus.ReOpenFinalized
+                this.verificationEndDate = null
+                this.lastVerificationReOpening = lastVerificationReOpening
             }.toSubmissionSummary()
 
     private fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {

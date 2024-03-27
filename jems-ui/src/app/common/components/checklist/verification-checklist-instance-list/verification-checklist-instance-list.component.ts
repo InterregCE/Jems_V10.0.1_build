@@ -139,7 +139,7 @@ export class VerificationChecklistInstanceListComponent implements OnInit {
       map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
       tap(data => this.checklistInstances = data)
     );
-    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
+    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType, this.projectId);
     this.instancesTableConfiguration = this.checklistUtils.initializeTableConfiguration(this.actionsCell, this.descriptionCell);
   }
 

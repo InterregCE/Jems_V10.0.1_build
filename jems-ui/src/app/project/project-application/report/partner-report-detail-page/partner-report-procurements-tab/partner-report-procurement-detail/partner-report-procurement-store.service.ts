@@ -243,7 +243,7 @@ export class PartnerReportProcurementStore {
 
   uploadProcurementFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return combineLatest([
       this.partnerId$,
       this.reportId$,
@@ -255,7 +255,7 @@ export class PartnerReportProcurementStore {
       ),
       tap(() => this.filesChanged$.next()),
       tap(() => this.error$.next(null)),
-      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
         return of({} as JemsFileMetadataDTO);
@@ -265,7 +265,7 @@ export class PartnerReportProcurementStore {
 
   uploadProcurementGdprFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return combineLatest([
       this.partnerId$,
       this.reportId$,
@@ -277,7 +277,7 @@ export class PartnerReportProcurementStore {
       ),
       tap(() => this.filesChanged$.next()),
       tap(() => this.gdprError$.next(null)),
-      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
       catchError(error => {
         this.gdprError$.next(error.error);
         return of({} as JemsFileMetadataDTO);

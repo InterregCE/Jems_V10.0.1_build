@@ -2,8 +2,7 @@ package io.cloudflight.jems.server.project.service.report.model.project.workPlan
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanInvestmentStatus
 
 data class ProjectReportWorkPackageInvestmentCreate(
     val investmentId: Long?,
@@ -24,4 +23,5 @@ data class ProjectReportWorkPackageInvestmentCreate(
     val deactivated: Boolean,
     val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
+    val status: ProjectReportWorkPlanInvestmentStatus?
 )

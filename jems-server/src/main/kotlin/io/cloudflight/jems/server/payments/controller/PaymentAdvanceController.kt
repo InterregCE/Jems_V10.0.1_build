@@ -1,17 +1,15 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.payments.PaymentAdvanceApi
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
+import io.cloudflight.jems.api.payments.PaymentAdvanceApi
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
-import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.advance.updateStatus.UpdateAdvancePaymentStatusInteractor
 import io.cloudflight.jems.server.payments.service.toDTO
 import io.cloudflight.jems.server.payments.service.toModel
+import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
@@ -20,7 +18,6 @@ class PaymentAdvanceController(
     private val getAdvancePayments: GetAdvancePaymentsInteractor,
     private val getAdvancePaymentDetail: GetAdvancePaymentDetailInteractor,
     private val updateAdvancePaymentDetail: UpdateAdvancePaymentDetailInteractor,
-    private val authorizeAdvancePayment: UpdateAdvancePaymentStatusInteractor,
     private val deleteAdvancePayment: DeleteAdvancePaymentInteractor
 ): PaymentAdvanceApi {
 
@@ -36,9 +33,6 @@ class PaymentAdvanceController(
     ): AdvancePaymentDetailDTO {
         return updateAdvancePaymentDetail.updateDetail(advancePayment.toModel()).toDTO()
     }
-
-    override fun updateAdvancePaymentStatus(paymentId: Long, status: AdvancePaymentStatusUpdateDTO) =
-        authorizeAdvancePayment.updateStatus(paymentId = paymentId, status = status.toModel())
 
     override fun deleteAdvancePayment(paymentId: Long) {
         return deleteAdvancePayment.delete(paymentId)

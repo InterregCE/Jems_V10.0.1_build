@@ -124,7 +124,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @Test
     fun `get available fund ids`() {
         every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns PROJECT_ID
-        every { projectRepository.getById(PROJECT_ID) } returns dummyProject()
+        every { projectRepository.getReferenceById(PROJECT_ID) } returns dummyProject()
         assertThat(persistence.getAvailableFunds(PARTNER_ID).map { it.id }).containsExactlyInAnyOrder(10, 11)
     }
 

@@ -22,11 +22,39 @@
                                    infoPosition="right">
                 </jems-context-info>
             </ng-container>
+            <ng-container *ngIf="ProjectUtil.isContractedOrAnyStatusAfterContracted(data.currentVersionOfProject.projectStatus.status) && data.currentVersionOfProject.projectStatus.status !== STATUS.CLOSED">
+                <jems-pending-button class="mt-2"
+                                     [disabled] = "!data.canSetToClosed"
+                                     [pending]="actionPending"
+                                     icon="hail"
+                                     (clicked)="setToClosed(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
+                    {{'project.application.set.to.closed' | translate}}
+                </jems-pending-button>
+                <jems-context-info *ngIf="!data.canSetToClosed"
+                                   infoText="{{ 'project.application.set.to.closed.info' | translate }}"
+                                   infoPosition="right">
+                </jems-context-info>
+            </ng-container>
+            <ng-container *ngIf="data.currentVersionOfProject.projectStatus.status === STATUS.CLOSED">
+                <jems-pending-button class="mt-2"
+                                     [disabled] = "!data.canRevertToContracted"
+                                     [pending]="actionPending"
+                                     icon="undo"
+                                     (clicked)="revertToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
+                    {{'project.application.revert.decision' | translate}}
+                </jems-pending-button>
+                <jems-context-info infoText="{{ 'project.application.revert.decision.info' | translate }}"
+                                   infoPosition="right">
+                </jems-context-info>
+            </ng-container>
             <ng-container *ngIf="ProjectUtil.isContractedOrAnyStatusAfterContracted(data.currentVersionOfProject.projectStatus.status)">
                 <jems-alert [show]="true"
                             [type]="Alert.INFO"
                             [closable]="false">
-                    <p>{{'project.application.set.to.contracted.status.message' | translate : {contractDate: (data.currentVersionOfProject.contractedDecision.updated | localeDate) ?? ''} }}</p>
+                    <p *ngIf="data.currentVersionOfProject.projectStatus.status !== STATUS.CLOSED; else closed">{{'project.application.set.to.contracted.status.message' | translate : {contractDate: (data.currentVersionOfProject.contractedDecision.updated | localeDate) ?? ''} }}</p>
+                    <ng-template #closed>
+                        <p>{{'project.application.set.to.closed.status.message' | translate : {closedDate: (data.currentVersionOfProject.contractedDecision.updated | localeDate) ?? ''} }}</p>
+                    </ng-template>
                 </jems-alert>
             </ng-container>
 
@@ -36,13 +64,30 @@
                 <jems-api-error-content [error]="error"></jems-api-error-content>
             </jems-alert>
 
-            <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
+            <ng-container *ngIf="showSetToContractedSuccessMessage$ | async as successMessageArg">
                 <jems-alert
                         [show]="successMessageArg"
                         [type]="Alert.SUCCESS">
                     <p>{{'project.application.set.to.contracted.success.message' | translate : {projectName: successMessageArg} }}</p>
                 </jems-alert>
             </ng-container>
+
+            <ng-container *ngIf="showSetToClosedSuccessMessage$ | async as successMessageArg">
+                <jems-alert
+                        [show]="successMessageArg"
+                        [type]="Alert.SUCCESS">
+                    <p>{{'project.application.set.to.closed.success.message' | translate : {projectName: successMessageArg} }}</p>
+                </jems-alert>
+            </ng-container>
+
+            <ng-container *ngIf="showRevertToContractedSuccessMessage$ | async as successMessageArg">
+                <jems-alert
+                        [show]="successMessageArg"
+                        [type]="Alert.SUCCESS">
+                    <p>{{'project.application.revert.decision.success.message' | translate : {projectName: successMessageArg} }}</p>
+                </jems-alert>
+            </ng-container>
+
         </div>
     </mat-card-content>
     </mat-card>

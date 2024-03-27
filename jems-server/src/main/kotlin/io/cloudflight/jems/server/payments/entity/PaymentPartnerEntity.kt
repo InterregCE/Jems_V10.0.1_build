@@ -29,9 +29,15 @@ class PaymentPartnerEntity (
     val projectPartner: ProjectPartnerEntity,
 
 
+    // partner when regular
     @ManyToOne(optional = true)
     @JoinColumn(name = "partner_certificate_id")
     val partnerCertificate: ProjectPartnerReportEntity?,
+
+    // partner when FTLS
+    val partnerAbbreviation: String,
+    val partnerNameInOriginalLanguage: String,
+    val partnerNameInEnglish: String,
 
     val amountApprovedPerPartner: BigDecimal?
 )

@@ -37,7 +37,7 @@ class ReOpenProjectReport(
             .getCurrentLatestReportOfType(reportToBeReOpen.projectId, reportToBeReOpen.type!!)!!.id
         val status = calculateNewStatus(reportToBeReOpen.status, isLatestReport)
 
-        return reportPersistence.reOpenReportTo(reportId = reportId, status, ZonedDateTime.now()).also {
+        return reportPersistence.reOpenProjectReport(reportId = reportId, status).also {
             eventPublisher.publishEvent(ProjectReportStatusChanged(this, it, reportToBeReOpen.status))
             eventPublisher.publishEvent(projectReportReOpenedAudit(this, it))
         }.status

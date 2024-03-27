@@ -75,7 +75,7 @@ class AssignUserCollaboratorToPartner(
     private fun collaboratorsChangedEvent(projectId: Long, partnerId: Long, collaborators: Set<PartnerCollaborator>) =
         AssignUserCollaboratorToPartnerEvent(
             project = projectPersistence.getProjectSummary(projectId),
-            partner = partnerRepository.getById(partnerId).toModel(),
+            partner = partnerRepository.getReferenceById(partnerId).toModel(),
             collaborators = collaborators,
         )
 

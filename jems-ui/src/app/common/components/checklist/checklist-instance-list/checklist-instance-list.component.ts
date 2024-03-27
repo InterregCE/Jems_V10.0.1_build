@@ -101,7 +101,7 @@ export class ChecklistInstanceListComponent implements OnInit {
     this.formService.init(this.form, this.pageStore.userCanChangeSelection$);
     this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
     this.checklistInstancesSorted$ = this.getChecklistInstancesSorted();
-    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
+    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType, this.relatedId);
     this.selectedChecklists$ = this.pageStore.selectedInstances(this.relatedType, this.relatedId)
       .pipe(
         tap(checklists => this.resetForm(checklists)),
@@ -125,7 +125,7 @@ export class ChecklistInstanceListComponent implements OnInit {
     ]).pipe(
         map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
         tap(data => this.checklistInstances = data)
-    )
+    );
   }
 
   delete(checklist: ChecklistInstanceDTO): void {
@@ -362,6 +362,6 @@ export class ChecklistInstanceListComponent implements OnInit {
                     {relativeTo: this.activatedRoute}
             ))
         )
-        .subscribe()
+        .subscribe();
   }
 }

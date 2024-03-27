@@ -17,10 +17,12 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
+import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -29,6 +31,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
@@ -66,6 +69,7 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.utils.ERDF_FUND
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -80,6 +84,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -152,6 +157,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
 
             projectId = projectId,
             projectIdentifier = "proj-custom-iden",
@@ -184,6 +190,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodDetail = ProjectPeriod(4, 17, 22),
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
 
             projectId = projectId,
             projectIdentifier = "proj-custom-iden",
@@ -352,7 +359,37 @@ internal class CreateProjectReportTest : UnitTest() {
                     previouslyVerified = BigDecimal.ONE,
                 )
             ),
-            spfContributionClaims = emptyList()
+            spfContributionClaims = emptyList(),
+            budgetPerPartner = listOf(
+                ProjectPartnerBudgetPerFund(
+                    ProjectPartnerSummary(
+                        id = 11L,
+                        sortNumber = 6,
+                        abbreviation = "LP abbr",
+                        role = ProjectPartnerRole.LEAD_PARTNER,
+                        country = "country-6",
+                        region = null,
+                        currencyCode = null,
+                        active = true,
+                        institutionName = "BOR"
+                    ),
+                    costType = ProjectPartnerCostType.Management,
+                    budgetPerFund = setOf(
+                        PartnerBudgetPerFund(
+                            fund = ERDF_FUND.copy(id = 410L),
+                            percentage = BigDecimal(80),
+                            percentageOfTotal = BigDecimal(100).setScale(2),
+                            value = BigDecimal.valueOf(1500)
+                        )
+                    ),
+                    publicContribution = BigDecimal(3),
+                    autoPublicContribution = BigDecimal.ZERO,
+                    privateContribution = BigDecimal.ZERO,
+                    totalPartnerContribution = BigDecimal(3),
+                    totalEligibleBudget = BigDecimal(30).setScale(2),
+                    percentageOfTotalEligibleBudget = BigDecimal(100).setScale(2, RoundingMode.HALF_UP)
+                )
+            )
         )
 
         val workPackage = ProjectWorkPackageFull(
@@ -461,6 +498,7 @@ internal class CreateProjectReportTest : UnitTest() {
                 endDate = TOMORROW,
                 deadlineId = null,
                 type = ContractingDeadlineType.Both,
+                finalReport = false,
                 periodNumber = 4,
                 reportingDate = YESTERDAY.minusDays(1),
                 projectId = projectId,
@@ -479,13 +517,13 @@ internal class CreateProjectReportTest : UnitTest() {
                 lastVerificationReOpening = null,
                 riskBasedVerification = false,
                 riskBasedVerificationDescription = null
-                ),
-                reportBudget = ProjectReportBudget(
-                        coFinancing = PreviouslyProjectReportedCoFinancing(
-                                fundsSorted = listOf(
-                                        PreviouslyProjectReportedFund(
-                                                fundId = 410L,
-                                                total = BigDecimal.valueOf(1500),
+            ),
+            reportBudget = ProjectReportBudget(
+                coFinancing = PreviouslyProjectReportedCoFinancing(
+                    fundsSorted = listOf(
+                        PreviouslyProjectReportedFund(
+                            fundId = 410L,
+                            total = BigDecimal.valueOf(1500),
                             previouslyReported = BigDecimal.valueOf(256),
                             previouslyVerified = BigDecimal.valueOf(104),
                             previouslyPaid = BigDecimal.valueOf(512),
@@ -606,7 +644,37 @@ internal class CreateProjectReportTest : UnitTest() {
                         previouslyVerified = BigDecimal.ONE,
                     )
                 ),
-                    spfContributionClaims = emptyList()
+                spfContributionClaims = emptyList(),
+                budgetPerPartner = listOf(
+                    ProjectPartnerBudgetPerFund(
+                        partner = ProjectPartnerSummary(
+                            id = 11L,
+                            sortNumber = 6,
+                            abbreviation = "LP abbr",
+                            role = ProjectPartnerRole.LEAD_PARTNER,
+                            country = "country-6",
+                            region = null,
+                            currencyCode = null,
+                            active = true,
+                            institutionName = "BOR"
+                        ),
+                        costType = ProjectPartnerCostType.Management,
+                        budgetPerFund = setOf(
+                            PartnerBudgetPerFund(
+                                fund = ERDF_FUND.copy(id = 410L),
+                                percentage = BigDecimal(80),
+                                percentageOfTotal = BigDecimal(100).setScale(2),
+                                value = BigDecimal.valueOf(1500)
+                            )
+                        ),
+                        publicContribution = BigDecimal(3),
+                        autoPublicContribution = BigDecimal.ZERO,
+                        privateContribution = BigDecimal.ZERO,
+                        totalPartnerContribution = BigDecimal(3),
+                        totalEligibleBudget = BigDecimal(30).setScale(2),
+                        percentageOfTotalEligibleBudget = BigDecimal(100).setScale(2, RoundingMode.HALF_UP)
+                    )
+                )
             ),
             workPackages = listOf(
                 ProjectReportWorkPackageCreate(
@@ -681,6 +749,7 @@ internal class CreateProjectReportTest : UnitTest() {
                             deactivated = false,
                             previousProgress = emptySet(),
                             progress = emptySet(),
+                            status = null
                         )
                     ),
                     previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
@@ -718,6 +787,7 @@ internal class CreateProjectReportTest : UnitTest() {
                     partnerRole = ProjectPartnerRole.LEAD_PARTNER,
                     country = "country-6",
                     previouslyReported = BigDecimal.valueOf(83L, 1),
+                    partnerTotalEligibleBudget = BigDecimal.valueOf(3000, 2)
                 )
             ),
             results = listOf(
@@ -808,7 +878,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"]
     )
     fun createReportFor(status: ApplicationStatus) {
         val projectId = 54L + status.ordinal
@@ -816,8 +886,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
@@ -878,6 +952,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         val returned = interactor.createReportFor(projectId, data)
         assertThat(returned).isEqualTo(
@@ -912,7 +987,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor spf but no partner {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"]
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"]
     )
     fun `createReportFor spf but no partner`(status: ApplicationStatus) {
         val projectId = 454L + status.ordinal
@@ -920,8 +995,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns emptyList()
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns null
@@ -938,6 +1017,8 @@ internal class CreateProjectReportTest : UnitTest() {
             every { isSpf() } returns true
         }
 
+        every { createProjectReportBudget.retrieveBudgetDataFor(projectId, version = "version", emptyList(), emptyList()) } returns mockk()
+
         val data = ProjectReportUpdate(
             startDate = YESTERDAY,
             endDate = TOMORROW,
@@ -945,6 +1026,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         assertThrows<NoPartnerForSpfProject> { interactor.createReportFor(projectId, data) }
     }
@@ -952,7 +1034,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
     )
     fun `createReportFor - forbidden because other reopened`(status: ApplicationStatus) {
         val projectId = 354L + status.ordinal
@@ -960,8 +1042,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
-            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns listOf(1966, 1985)
+        every {
+            reportPersistence.existsHavingTypeAndStatusIn(
+                projectId, ContractingDeadlineType.Both,
+                setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)
+            )
+        } returns listOf(1966, 1985)
 
         val data = ProjectReportUpdate(
             startDate = YESTERDAY,
@@ -970,6 +1056,7 @@ internal class CreateProjectReportTest : UnitTest() {
             type = ContractingDeadlineType.Both,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
+            finalReport = false,
         )
         val ex = assertThrows<LastReOpenedReportException> { interactor.createReportFor(projectId, data) }
         assertThat(ex.i18nMessage.i18nArguments).containsEntry("blockingReportNumbers", "PR.1966, PR.1985")
@@ -979,7 +1066,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @ParameterizedTest(name = "createReportFor - not contracted {0}")
     @EnumSource(
         value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED"],
         mode = EnumSource.Mode.EXCLUDE,
     )
     fun `createReportFor - not contracted`(status: ApplicationStatus) {
@@ -997,5 +1084,4 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.countForProject(projectId) } returns 100
         assertThrows<MaxAmountOfReportsReachedException> { interactor.createReportFor(projectId, mockk()) }
     }
-
 }

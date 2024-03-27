@@ -36,8 +36,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.toSimpleModel
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
@@ -70,58 +70,64 @@ fun PaymentEntity.toDetailModel(
     orderNr = lumpSum?.id?.orderNr,
     paymentApprovalDate = lumpSum?.paymentEnabledDate,
     totalEligibleAmount = lumpSum?.programmeLumpSum?.cost ?: BigDecimal.ZERO,
-    fundId = fund.id,
-    fundName = fund.type.name,
-    amountApprovedPerFund = amountApprovedPerFund!!,
+    fund = fund.toModel(),
+    fundAmount = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
+    remainingToBePaid = amountApprovedPerFund!!.minus(paymentConfirmedInfo.amountPaidPerFund),
     amountAuthorizedPerFund = paymentConfirmedInfo.amountAuthorizedPerFund,
     dateOfLastPayment = paymentConfirmedInfo.dateOfLastPayment,
     lastApprovedVersionBeforeReadyForPayment = lumpSum?.lastApprovedVersionBeforeReadyForPayment,
 )
 
 fun PaymentToProjectTmp.toRegularPaymentModel() = PaymentToProject(
+    // common
     id = payment.id,
-    paymentType = payment.type,
+    paymentType = PaymentType.REGULAR,
     projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
+    fund = payment.fund.toModel(),
+    fundAmount = payment.amountApprovedPerFund!!,
+    totalEligibleAmount = totalEligible,
+    amountPaidPerFund = amountPaid,
+    remainingToBePaid = remainingToBePaid,
+    amountAuthorizedPerFund = amountAuthorized,
+    dateOfLastPayment = dateOfLastPayment,
+
+    // different
     paymentClaimId = payment.projectReport!!.id,
     paymentClaimNo = payment.projectReport!!.number,
     paymentClaimSubmissionDate = payment.projectReport?.firstSubmission,
-    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = null,
     orderNr = null,
     paymentApprovalDate = payment.projectReport?.verificationEndDate,
-    totalEligibleAmount = totalEligibleForRegular!!,
-    fundId = payment.fund.id,
-    fundName = payment.fund.type.name,
-    amountApprovedPerFund = payment.amountApprovedPerFund!!,
-    amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
-    amountAuthorizedPerFund = amountAuthorized ?: BigDecimal.ZERO,
-    dateOfLastPayment = lastPaymentDate,
     lastApprovedVersionBeforeReadyForPayment = null,
 )
 
 fun PaymentToProjectTmp.toFTLSPaymentModel() = PaymentToProject(
+    // common
     id = payment.id,
-    paymentType = payment.type,
+    paymentType = PaymentType.FTLS,
     projectId = payment.project.id,
     projectCustomIdentifier = payment.projectCustomIdentifier,
     projectAcronym = payment.projectAcronym,
+    paymentToEcId = paymentToEcExtension.paymentToEcId,
+    fund = payment.fund.toModel(),
+    fundAmount = payment.amountApprovedPerFund!!,
+    totalEligibleAmount = totalEligible,
+    amountPaidPerFund = amountPaid,
+    remainingToBePaid = remainingToBePaid,
+    amountAuthorizedPerFund = amountAuthorized,
+    dateOfLastPayment = dateOfLastPayment,
+
+    // different
     paymentClaimId = null,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
-    paymentToEcId = paymentToEcExtension.paymentToEcId,
     lumpSumId = payment.projectLumpSum?.programmeLumpSum?.id,
     orderNr = payment.projectLumpSum?.id?.orderNr,
     paymentApprovalDate = payment.projectLumpSum?.paymentEnabledDate,
-    totalEligibleAmount = payment.projectLumpSum?.programmeLumpSum?.cost!!,
-    fundId = payment.fund.id,
-    fundName = payment.fund.type.name,
-    amountApprovedPerFund = payment.amountApprovedPerFund!!,
-    amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
-    amountAuthorizedPerFund = amountAuthorized ?: BigDecimal.ZERO,
-    dateOfLastPayment = lastPaymentDate,
     lastApprovedVersionBeforeReadyForPayment = payment.projectLumpSum?.lastApprovedVersionBeforeReadyForPayment,
 )
 
@@ -168,28 +174,30 @@ fun PaymentPartnerToCreate.toEntity(
     payment = paymentEntity,
     projectPartner = partnerEntity,
     partnerCertificate = partnerReportEntity,
-    amountApprovedPerPartner = amountApprovedPerPartner
+    partnerAbbreviation = partnerAbbreviationIfFtls ?: "",
+    partnerNameInOriginalLanguage = partnerNameInOriginalLanguageIfFtls ?: "",
+    partnerNameInEnglish = partnerNameInEnglishIfFtls ?: "",
+    amountApprovedPerPartner = amountApprovedPerPartner,
 )
 
 fun PaymentEntity.toDetailModel(
     partnerPayments: List<PartnerPayment>
 ) = PaymentDetail(
     id = id,
-    paymentType = PaymentType.valueOf(type.name),
+    paymentType = type,
     projectId = project.id,
     projectCustomIdentifier = project.customIdentifier,
     projectAcronym = project.acronym,
     spf = project.call.type == CallType.SPF,
-    fundName = fund.type.name,
+    fund = fund.toModel(),
     amountApprovedPerFund = amountApprovedPerFund!!,
     dateOfLastPayment = null,
-    partnerPayments = partnerPayments
+    partnerPayments = partnerPayments,
 )
 
 // Payment Partner
 
 fun PaymentPartnerEntity.toDetailModel(
-    partnerEntity: ProjectPartnerEntity,
     partnerReportId: Long?,
     partnerReportNumber: Int?,
     installments: List<PaymentPartnerInstallment>
@@ -201,10 +209,13 @@ fun PaymentPartnerEntity.toDetailModel(
     partnerReportId = partnerReportId,
     partnerReportNumber = partnerReportNumber,
     programmeFundId = payment.fund.id,
-    partnerId = partnerEntity.id,
-    partnerRole = partnerEntity.role,
-    partnerAbbreviation = partnerEntity.abbreviation,
-    partnerNumber = partnerEntity.sortNumber,
+
+    partnerId = projectPartner.id,
+    partnerRole = projectPartner.role,
+    partnerNumber = projectPartner.sortNumber,
+    partnerAbbreviation = partnerCertificate?.identification?.partnerAbbreviation ?: partnerAbbreviation,
+    nameInOriginalLanguage = partnerCertificate?.identification?.nameInOriginalLanguage ?: partnerNameInOriginalLanguage,
+    nameInEnglish = partnerCertificate?.identification?.nameInEnglish ?: partnerNameInEnglish,
     amountApprovedPerPartner = amountApprovedPerPartner,
     installments = installments
 )
@@ -254,8 +265,9 @@ fun PaymentPartnerInstallmentUpdate.toEntity(
 fun AdvancePaymentUpdate.toEntity(
     project: ProjectFull,
     projectVersion: String,
-    partner: ProjectPartnerSummary,
-    existing: AdvancePaymentEntity?,
+    partner: ProjectPartnerDetail,
+    paymentAuthorizedUser: UserEntity?,
+    paymentConfirmedUser: UserEntity?
 ) = AdvancePaymentEntity(
     id = id ?: 0,
     projectId = project.id!!,
@@ -269,12 +281,14 @@ fun AdvancePaymentUpdate.toEntity(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,
-    isPaymentAuthorizedInfo = existing?.isPaymentAuthorizedInfo,
-    paymentAuthorizedInfoUser = existing?.paymentAuthorizedInfoUser,
-    paymentAuthorizedDate = existing?.paymentAuthorizedDate,
-    isPaymentConfirmed = existing?.isPaymentConfirmed,
-    paymentConfirmedUser = existing?.paymentConfirmedUser,
-    paymentConfirmedDate = existing?.paymentConfirmedDate
+    isPaymentAuthorizedInfo = paymentAuthorized,
+    paymentAuthorizedInfoUser = paymentAuthorizedUser,
+    paymentAuthorizedDate = paymentAuthorizedDate,
+    isPaymentConfirmed = paymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser,
+    paymentConfirmedDate = paymentConfirmedDate,
+    partnerNameInOriginalLanguage = partner.nameInOriginalLanguage,
+    partnerNameInEnglish = partner.nameInEnglish,
 ).also { entity ->
     entity.paymentSettlements = paymentSettlements.map { it.toEntity(entity) }.toMutableSet()
 }
@@ -327,8 +341,11 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         programmeFund = programmeFund?.toModel(),
         partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
         partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName),
-        paymentSettlements = paymentSettlements?.map { it.toModel() } ?: emptyList()
-
+        paymentSettlements = paymentSettlements?.map { it.toModel() } ?: emptyList(),
+        partnerNameInOriginalLanguage = partnerNameInOriginalLanguage ?: "",
+        partnerNameInEnglish = partnerNameInEnglish ?: "",
+        projectId = projectId,
+        linkedProjectVersion = projectVersion
     )
 }
 
@@ -352,6 +369,14 @@ fun AdvancePaymentSettlement.toEntity(advancePayment:AdvancePaymentEntity) = Adv
 fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntity(
     paymentId = payment.id,
     payment = payment,
+
+    totalEligibleWithoutSco = defaultTotalEligibleWithoutSco,
+    correctedTotalEligibleWithoutSco = defaultTotalEligibleWithoutSco,
+    fundAmountUnionContribution = defaultFundAmountUnionContribution,
+    correctedFundAmountUnionContribution = defaultFundAmountUnionContribution,
+    fundAmountPublicContribution = defaultFundAmountPublicContribution,
+    correctedFundAmountPublicContribution = defaultFundAmountPublicContribution,
+
     autoPublicContribution = defaultOfWhichAutoPublic,
     correctedAutoPublicContribution = defaultOfWhichAutoPublic,
     partnerContribution = defaultPartnerContribution,
@@ -359,5 +384,6 @@ fun PaymentToCreate.toEntity(payment: PaymentEntity) = PaymentToEcExtensionEntit
     correctedPrivateContribution = defaultOfWhichPrivate,
     publicContribution = defaultOfWhichPublic,
     correctedPublicContribution = defaultOfWhichPublic,
+    comment = null,
     finalScoBasis = null,
 )

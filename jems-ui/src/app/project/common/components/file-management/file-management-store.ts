@@ -77,10 +77,10 @@ export class FileManagementStore {
               private projectVersionStore: ProjectVersionStore
   ) {
     this.currentVersion$ = this.projectVersionStore.currentVersion$;
-    this.currentProjectStatus$ = this.projectStore.projectStatus$;
+    this.currentProjectStatus$ = this.projectStore.currentVersionOfProjectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
-    this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
+    this.canChangeApplicationFile$ = this.canUpdateApplicationFile();
     this.canChangeModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
@@ -99,7 +99,7 @@ export class FileManagementStore {
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
     const serviceId = uuid();
-    this.routingService.confirmLeaveMap.set(serviceId, true);
+    this.routingService.confirmLeaveSet.add(serviceId);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -107,7 +107,7 @@ export class FileManagementStore {
         switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, (category as any)?.type, projectId, (category as any)?.id)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
-        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+        finalize(() => this.routingService.confirmLeaveSet.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);
@@ -316,6 +316,16 @@ export class FileManagementStore {
     ])
       .pipe(
         map(([canReadApplicationFile, userIsProjectOwner]) => canReadApplicationFile || userIsProjectOwner)
+      );
+  }
+
+  private canUpdateApplicationFile(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate),
+      this.projectStore.userIsEditOrManageCollaborator$
+    ])
+      .pipe(
+        map(([canUpdateApplicationFile, userIsCollaboratorWithEditOrManage]) => canUpdateApplicationFile || userIsCollaboratorWithEditOrManage)
       );
   }
 

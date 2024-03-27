@@ -1,38 +1,38 @@
-import {Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {UserRoleCreateDTO} from '@cat/api';
 import {PaymentsPageComponent} from './payments-page/payments-page.component';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {
-  PaymentsToProjectDetailPageComponent
-} from './payments-to-projects-page/payments-to-project-detail-page/payments-to-project-detail-page.component';
-import {
-  PaymentsToProjectDetailBreadcrumbResolver
-} from './payments-to-projects-page/payments-to-project-detail.resolver';
-import {
-  AdvancePaymentsDetailPageComponent
-} from './advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.component';
+import {PaymentsToProjectDetailPageComponent} from './payments-to-projects-page/payments-to-project-detail-page/payments-to-project-detail-page.component';
+import {PaymentsToProjectDetailBreadcrumbResolver} from './payments-to-projects-page/payments-to-project-detail.resolver';
+import {AdvancePaymentsDetailPageComponent} from './advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.component';
 import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.component';
 import {AdvancePaymentsPageComponent} from './advance-payments-page/advance-payments-page.component';
 import {PaymentsToProjectPageComponent} from './payments-to-projects-page/payments-to-project-page.component';
-import {
-  PaymentToEcDetailPageComponent
-} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
+import {PaymentToEcDetailPageComponent} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {PermissionGuard} from '../security/permission.guard';
-import {
-  PaymentToEcRegularProjectsTabComponent
-} from './payments-to-ec/payments-to-ec-detail-page/ftls-tab/payment-to-ec-regular-projects-tab.component';
-import {
-  PaymentToEcSummaryTabComponent
-} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
+import {PaymentToEcSummaryTabComponent} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
 import {
   PaymentToEcCorrectionTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-correction-tab/payment-to-ec-correction-tab.component';
 import {PaymentsAuditPageComponent} from './payments-audit/payments-audit-page.component';
+import {PaymentToEcFinalizeTabComponent} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component';
+import {AccountsPageComponent} from './accounts-page/accounts-page.component';
+import {AccountsSummaryTabComponent} from './accounts-page/account-detail/accounts-summary-tab/accounts-summary-tab.component';
+import {AccountDetailComponent} from './accounts-page/account-detail/account-detail.component';
+import {AccountsCorrectionTabComponent} from './accounts-page/account-detail/accounts-correction-tab/accounts-correction-tab.component';
+import {AccountsWithdrawnTabComponent} from './accounts-page/account-detail/accounts-withdrawn-tab/accounts-withdrawn-tab.component';
+import {AccountsFinalizeTabComponent} from './accounts-page/account-detail/accounts-finalize-tab/accounts-finalize-tab.component';
 import {
-  PaymentToEcFinalizeTabComponent
-} from "./payments-to-ec/payments-to-ec-detail-page/payment-to-ec-finalize-tab/payment-to-ec-finalize-tab.component";
+  ProjectsFlaggedArt9495TabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/projects-flagged-art-9495-tab/projects-flagged-art-9495-tab.component';
+import {AccountsReconciliationTabComponent} from './accounts-page/account-detail/accounts-reconciliation-tab/accounts-reconciliation-tab.component';
+import {ConfirmLeaveGuard} from '../security/confirm-leave.guard';
+import {NgModule} from '@angular/core';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {
+  PaymentToEcRegularProjectsTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/projects-not-flagged-art-9495-tab/payment-to-ec-regular-projects-tab.component';
 
-export const paymentsRoutes: Routes = [
+const paymentsRoutes: Routes = [
   {
     path: '',
     data: {
@@ -44,6 +44,8 @@ export const paymentsRoutes: Routes = [
         PermissionsEnum.AdvancePaymentsUpdate,
         PermissionsEnum.PaymentsToEcRetrieve,
         PermissionsEnum.PaymentsToEcUpdate,
+        PermissionsEnum.PaymentsAccountRetrieve,
+        PermissionsEnum.PaymentsAccountUpdate,
         PermissionsEnum.PaymentsAuditRetrieve,
         PermissionsEnum.PaymentsAuditUpdate
       ],
@@ -61,8 +63,10 @@ export const paymentsRoutes: Routes = [
             PermissionsEnum.AdvancePaymentsUpdate,
             PermissionsEnum.PaymentsToEcRetrieve,
             PermissionsEnum.PaymentsToEcUpdate,
+            PermissionsEnum.PaymentsAccountRetrieve,
+            PermissionsEnum.PaymentsAccountUpdate,
             PermissionsEnum.PaymentsAuditRetrieve,
-            PermissionsEnum.PaymentsAuditUpdate
+            PermissionsEnum.PaymentsAuditUpdate,
           ],
         },
       },
@@ -188,6 +192,10 @@ export const paymentsRoutes: Routes = [
             component: PaymentToEcRegularProjectsTabComponent,
           },
           {
+            path: 'flaggedArt9495',
+            component: ProjectsFlaggedArt9495TabComponent,
+          },
+          {
             path: 'corrections',
             component: PaymentToEcCorrectionTabComponent,
           },
@@ -195,6 +203,53 @@ export const paymentsRoutes: Routes = [
             path: 'finalize',
             component: PaymentToEcFinalizeTabComponent,
           },
+        ]
+      },
+      {
+        path: 'accounts',
+        canActivate: [PermissionGuard],
+        data: {
+          breadcrumb: 'payments.accounts.breadcrumb',
+          permissionsOnly: [
+            PermissionsEnum.PaymentsAccountRetrieve,
+            PermissionsEnum.PaymentsAccountUpdate,
+          ],
+        },
+        children: [
+          {
+            path: '',
+            component: AccountsPageComponent
+          },
+          {
+            path: ':id',
+            component: AccountDetailComponent,
+            children: [
+              {
+                path: '',
+                redirectTo: 'summary',
+              },
+              {
+                path: 'summary',
+                component: AccountsSummaryTabComponent,
+              },
+              {
+                path: 'corrections',
+                component: AccountsCorrectionTabComponent,
+              },
+              {
+                path: 'withdrawn',
+                component: AccountsWithdrawnTabComponent,
+              },
+              {
+                path: 'reconciliation',
+                component: AccountsReconciliationTabComponent,
+              },
+              {
+                path: 'finalize',
+                component: AccountsFinalizeTabComponent,
+              },
+            ],
+          }
         ]
       },
       {
@@ -212,3 +267,13 @@ export const paymentsRoutes: Routes = [
     ]
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(paymentsRoutes)],
+  exports: [RouterModule]
+})
+export class PaymentsRoutingModule {
+  constructor(private confirmLeaveGuard: ConfirmLeaveGuard) {
+    this.confirmLeaveGuard.applyGuardToLeafRoutes(paymentsRoutes);
+  }
+}

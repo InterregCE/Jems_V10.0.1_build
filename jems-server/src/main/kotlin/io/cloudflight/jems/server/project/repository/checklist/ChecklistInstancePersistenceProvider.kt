@@ -26,7 +26,7 @@ class ChecklistInstancePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun findChecklistInstances(searchRequest: ChecklistInstanceSearchRequest): List<ChecklistInstance> =
-        repository.findAll(ChecklistInstanceRepository.buildSearchPredicate(searchRequest)!!).toList().toModel()
+        repository.findAll(ChecklistInstanceRepository.buildSearchPredicate(searchRequest)).toList().toModel()
 
     @Transactional(readOnly = true)
     override fun getChecklistDetail(id: Long): ChecklistInstanceDetail {
@@ -56,11 +56,11 @@ class ChecklistInstancePersistenceProvider(
 
     @Transactional
     override fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail {
-        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId)
+        val programmeChecklist = programmeChecklistRepository.getReferenceById(createChecklist.programmeChecklistId)
         return repository.save(
             ChecklistInstanceEntity(
                 status = ChecklistInstanceStatus.DRAFT,
-                creator = userRepo.getById(creatorId),
+                creator = userRepo.getReferenceById(creatorId),
                 relatedToId = createChecklist.relatedToId,
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,

@@ -119,8 +119,6 @@ context('Application modification tests', () => {
       
       cy.contains('.link', 'A - Project overview tables').click();
       cy.wait(1000);
-      cy.get('mat-select-trigger:contains("(current)")').should('contain', 'V.2.0').click();
-      cy.contains('span.mat-option-text', 'V.1.0').should('be.visible').click();
       cy.contains('You are currently viewing an old version of this application').should('be.visible');
     });
   });

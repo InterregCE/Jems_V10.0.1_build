@@ -22,7 +22,7 @@ class ProjectVersionPersistenceProvider(
         return projectVersionRepository.save(
             ProjectVersionEntity(
                 id = ProjectVersionId(version, projectId),
-                user = userRepository.getById(userId)
+                user = userRepository.getReferenceById(userId)
             )
         ).toProjectVersionSummary()
     }

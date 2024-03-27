@@ -40,4 +40,7 @@ class ProjectContractingReportingEntity(
     @field:NotNull
     var number: Int,
 
+    @field:NotNull
+    var finalReport: Boolean,
+
 )

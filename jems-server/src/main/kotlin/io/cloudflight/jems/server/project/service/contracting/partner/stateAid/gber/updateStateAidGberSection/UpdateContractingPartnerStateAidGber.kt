@@ -39,14 +39,14 @@ class UpdateContractingPartnerStateAidGber(
         val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
         val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
         val partnerData = this.partnerPersistence.getById(partnerId, lastApprovedVersion)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val addDates = getContractingMonitoringService.getProjectContractingMonitoring(projectId).addDates
         val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
         val fundsSelectedByPartner = gberHelper.getPartnerFunds(partnerId, partnerBudgetPerFund?.budgetPerFund ?: emptySet(), lastApprovedVersion)
 
         return ContractingPartnerStateAidGberSection(
             partnerId = updatedGberEntity.partnerId,
-            dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+            dateOfGrantingAid = addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
             partnerFunds = fundsSelectedByPartner,
             amountGrantingAid = updatedGberEntity.amountGrantingAid ?: BigDecimal.ZERO,
             naceGroupLevel = partnerData.nace,

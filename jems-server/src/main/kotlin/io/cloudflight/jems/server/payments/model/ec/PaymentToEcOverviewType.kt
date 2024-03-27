@@ -5,5 +5,5 @@ enum class PaymentToEcOverviewType {
     FallsUnderArticle94Or95,
     Correction;
 
-    fun isCorrection() = this == Correction
+    fun isCorrectionOrArt94or95() = (this == Correction || this == FallsUnderArticle94Or95)
 }

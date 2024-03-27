@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.upda
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcLinkingUpdate
-import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToPayment.PaymentApplicationToEcLinkPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,13 +17,14 @@ class UpdateLinkedPayment(
     @Transactional
     @ExceptionWrapper(UpdateLinkedPaymentException::class)
     override fun updateLinkedPayment(paymentId: Long, updatePaymentForEc: PaymentToEcLinkingUpdate) {
-        val ecPaymentStatus = ecPaymentLinkPersistence.getPaymentExtension(paymentId).ecPaymentStatus
-        if (ecPaymentStatus.isFinished())
+        val payment = ecPaymentLinkPersistence.getPaymentExtension(paymentId)
+        if (payment.isLinkedToFinishedEcPaymentOrNotLinked())
             throw PaymentApplicationToEcNotInDraftException()
 
         return ecPaymentLinkPersistence.updatePaymentToEcCorrectedAmounts(paymentId, updatePaymentForEc)
     }
 
-    private fun PaymentEcStatus?.isFinished() = this?.isFinished() ?: false
+    private fun PaymentToEcExtension.isLinkedToFinishedEcPaymentOrNotLinked() =
+        ecPaymentStatus == null || ecPaymentStatus.isFinished()
 
 }

@@ -12,6 +12,9 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
+import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -20,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 
 internal class UpdateProjectReportIdentificationTest: UnitTest() {
 
@@ -41,7 +45,22 @@ internal class UpdateProjectReportIdentificationTest: UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf(),
+            spendingProfilePerPartner = ProjectReportSpendingProfile(
+                lines = emptyList(),total = SpendingProfileTotal(
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                )
+            )
+
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(

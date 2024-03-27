@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.payments.service.account.finance.correction.PaymentAccountCorrectionLinkingPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
 import io.cloudflight.jems.server.project.authorization.CanCloseAuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
@@ -23,7 +24,8 @@ class CloseAuditControlCorrection(
     private val correctionPersistence: AuditControlCorrectionPersistence,
     private val correctionFinancePersistence: AuditControlCorrectionFinancePersistence,
     private val correctionMeasurePersistence: AuditControlCorrectionMeasurePersistence,
-    private val correctionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence,
+    private val ecPaymentCorrectionExtensionLinkingPersistence: EcPaymentCorrectionLinkPersistence,
+    private val paymentAccountCorrectionExtensionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ): CloseAuditControlCorrectionInteractor {
 
@@ -38,21 +40,27 @@ class CloseAuditControlCorrection(
         validateAuditControlCorrectionNotClosed(correction)
         validateReportAndFundAreAlreadySelected(correction)
 
-        val correctionMeasure = correctionMeasurePersistence.getProgrammeMeasure(correctionId)
-        if (correctionMeasure.scenario.scenarioAllowsLinkingToEcPayment()) {
-            val correctionFinance = correctionFinancePersistence.getCorrectionFinancialDescription(correctionId)
-            correctionExtensionLinkingPersistence.createCorrectionExtension(
-                correctionFinance,
-                totalEligibleWithoutArt94or95 = correctionFinance.calculateTotalEligibleWithoutArt94or95(),
-                unionContribution = BigDecimal.ZERO
-            )
-        }
+        createCorrectionExtension(correctionId)
 
         return correctionPersistence.closeCorrection(correctionId).also {
             auditPublisher.publishEvent(
                 projectAuditControlCorrectionClosed(this, auditControl, correctionNr = it.orderNr)
             )
         }.status
+    }
+
+    private fun createCorrectionExtension(correctionId: Long) {
+        val correctionMeasure = correctionMeasurePersistence.getProgrammeMeasure(correctionId)
+        val correctionFinance = correctionFinancePersistence.getCorrectionFinancialDescription(correctionId)
+        if (correctionMeasure.scenario.allowsLinkingToEcPayment()) {
+            ecPaymentCorrectionExtensionLinkingPersistence.createCorrectionExtension(
+                correctionFinance,
+                totalEligibleWithoutArt94or95 = correctionFinance.calculateTotalEligibleWithoutArt94or95(),
+                unionContribution = BigDecimal.ZERO
+            )
+        } else if (correctionMeasure.scenario.allowsLinkingToPaymentAccount()) {
+            paymentAccountCorrectionExtensionLinkingPersistence.createCorrectionExtension(correctionFinance)
+        }
     }
 
     private fun validateAuditControlNotClosed(auditControl: AuditControl) {

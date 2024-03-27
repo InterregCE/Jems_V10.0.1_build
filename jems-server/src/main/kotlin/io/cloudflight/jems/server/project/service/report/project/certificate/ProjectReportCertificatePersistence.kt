@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.certifica
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.ZonedDateTime
 
 interface ProjectReportCertificatePersistence {
 

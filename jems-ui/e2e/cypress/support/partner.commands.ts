@@ -106,6 +106,7 @@ export function createPartner(applicationId: number, partnerDetails) {
 export function createFullPartner(applicationId: number, partner) {
   createPartner(applicationId, partner.details).then(partnerId => {
     updatePartnerData(partnerId, partner);
+    cy.wrap(partnerId).as('partnerId');
   });
 }
 

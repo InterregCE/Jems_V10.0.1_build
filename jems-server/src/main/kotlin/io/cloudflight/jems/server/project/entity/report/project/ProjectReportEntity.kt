@@ -87,5 +87,7 @@ class ProjectReportEntity(
     var verificationFollowup: String?,
 
     var riskBasedVerification: Boolean,
-    var riskBasedVerificationDescription: String?
+    var riskBasedVerificationDescription: String?,
+
+    var finalReport: Boolean?,
 )

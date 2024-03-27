@@ -18,13 +18,15 @@ import io.cloudflight.jems.server.call.END
 import io.cloudflight.jems.server.call.START
 import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.callFundRateEntity
- import io.cloudflight.jems.server.call.controller.toDto
+import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.createCallDetailModel
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistEntity
+import io.cloudflight.jems.server.call.entity.CallSelectedChecklistId
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
@@ -46,12 +48,14 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
+import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
@@ -59,6 +63,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCos
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -69,19 +74,23 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 internal class CallPersistenceProviderTest {
@@ -105,6 +114,7 @@ internal class CallPersistenceProviderTest {
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
             )
         )
+
         private fun stateAidEntities(callEntity: CallEntity) = mutableSetOf(
             ProjectCallStateAidEntity(
                 StateAidSetupId(callEntity, stateAid)
@@ -344,6 +354,38 @@ internal class CallPersistenceProviderTest {
                 controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
             )
         }
+
+        private val programmeChecklists = mutableListOf(
+            ProgrammeChecklistEntity(
+                id = 1L,
+                type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+                name = "af_assesment",
+                minScore = BigDecimal(0),
+                maxScore = BigDecimal(10),
+                allowsDecimalScore = true,
+                lastModificationDate = ZonedDateTime.now(),
+            ),
+            ProgrammeChecklistEntity(
+                id = 2L,
+                type = ProgrammeChecklistType.VERIFICATION,
+                name = "verification",
+                minScore = BigDecimal(0),
+                maxScore = BigDecimal(100),
+                allowsDecimalScore = false,
+                lastModificationDate = ZonedDateTime.now(),
+            )
+        )
+
+        private val selectedChecklists = listOf(
+            CallSelectedChecklistEntity(
+                id = CallSelectedChecklistId(
+                    call = mockk { every { id } returns 10L },
+                    programmeChecklist = programmeChecklists[0]
+                )
+            )
+        )
+
+        private val updatedSelectedChecklists = programmeChecklists.map { it.toModel(selected = true) }
     }
 
     @MockK
@@ -381,6 +423,12 @@ internal class CallPersistenceProviderTest {
 
     @MockK
     private lateinit var partnerRepository: ProjectPartnerRepository
+
+    @MockK
+    private lateinit var callSelectedChecklistRepository: CallSelectedChecklistRepository
+
+    @MockK
+    private lateinit var programmeChecklistRepository: ProgrammeChecklistRepository
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -470,7 +518,7 @@ internal class CallPersistenceProviderTest {
             visibilityLocked = true,
             stepSelectionLocked = true
         )
-        every { callRepo.findById(CALL_ID)} returns Optional.of(callEntity)
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(configEntity)
         assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID).applicationFormFieldConfigurations.toDto(CallType.STANDARD))
             .containsExactly(expectedConfig)
@@ -490,28 +538,35 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
-        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
-            pluginKey = PLUGIN_KEY,
-            firstStepPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
-            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
-            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
-            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
-        ))).isEqualTo(expectedStandardCallDetail)
+        assertThat(
+            persistence.updateProjectCallPreSubmissionCheckPlugin(
+                CALL_ID, PreSubmissionPlugins(
+                    pluginKey = PLUGIN_KEY,
+                    firstStepPluginKey = PLUGIN_KEY,
+                    reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+                    reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+                    controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
+                    controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
+                )
+            )
+        ).isEqualTo(expectedStandardCallDetail)
     }
 
 
     @Test
     fun `should throw CallNotFound while setting pre-submission check settings for the call and call does not exist`() {
         every { callRepo.findById(CALL_ID) } returns Optional.empty()
-        assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
-            pluginKey = PLUGIN_KEY,
-            firstStepPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
-            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
-            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
-            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
-        ))
+        assertThrows<CallNotFound> {
+            persistence.updateProjectCallPreSubmissionCheckPlugin(
+                CALL_ID, PreSubmissionPlugins(
+                    pluginKey = PLUGIN_KEY,
+                    firstStepPluginKey = PLUGIN_KEY,
+                    reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+                    reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+                    controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
+                    controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
+                )
+            )
         }
     }
 
@@ -574,7 +629,7 @@ internal class CallPersistenceProviderTest {
 
         val partner = mockk<ProjectPartnerEntity>()
         every { partner.project.call } returns callEntity
-        every { partnerRepository.getById(114L) } returns partner
+        every { partnerRepository.getReferenceById(114L) } returns partner
 
         assertThat(persistence.getCallSimpleByPartnerId(114L)).isEqualTo(
             expectedStandardCallDetail.copy(
@@ -626,10 +681,10 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
-            specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
+        every { userRepo.getReferenceById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getReferenceById(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
+        every { programmeSpecificObjectiveRepo.getReferenceById(AdvancedTechnologies) } returns
+                specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
                 setOf(
@@ -670,7 +725,7 @@ internal class CallPersistenceProviderTest {
     }
 
     @Test
-    fun createSPFCall(){
+    fun createSPFCall() {
         val expectedResultEntity = callEntity(0L, callType = CallType.SPF)
         expectedResultEntity.translatedValues.clear()
         expectedResultEntity.translatedValues.add(
@@ -682,11 +737,11 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns
-            specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
-            specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
+        every { userRepo.getReferenceById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getReferenceById(Digitisation) } returns
+                specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
+        every { programmeSpecificObjectiveRepo.getReferenceById(AdvancedTechnologies) } returns
+                specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
                 setOf(
@@ -1031,5 +1086,34 @@ internal class CallPersistenceProviderTest {
         assertThat(uc1.id.equals(uc2.id)).isTrue()
     }
 
+    @Test
+    fun getCallChecklists() {
+        every { programmeChecklistRepository.findAll(Sort.unsorted()) } returns programmeChecklists
+        every { callSelectedChecklistRepository.findAllByIdCallId(10L) } returns selectedChecklists
+
+        assertThat(persistence.getCallChecklists(10L, Sort.unsorted())).isEqualTo(
+            programmeChecklists.map { it.toModel(selected = it.id == 1L) }
+        )
+    }
+
+    @Test
+    fun updateCallChecklistSelection() {
+        val callId = 10L
+        val call: CallEntity = mockk { every { id } returns callId }
+        val checklistIds = setOf(1L, 2L)
+        every { callRepo.findById(callId) } returns Optional.of(call)
+        every { programmeChecklistRepository.findAllById(checklistIds) } returns programmeChecklists
+        every { callSelectedChecklistRepository.findAllByIdCallId(callId) } returns selectedChecklists
+
+        val deleteSlot = slot<Iterable<CallSelectedChecklistEntity>>()
+        val createSlot = slot<Iterable<CallSelectedChecklistEntity>>()
+        every { callSelectedChecklistRepository.deleteAll(capture(deleteSlot)) } just runs
+        every { callSelectedChecklistRepository.saveAll(capture(createSlot)) } returnsArgument 0
+
+        assertThat(persistence.updateCallChecklistSelection(callId, checklistIds)).isEqualTo(updatedSelectedChecklists)
+
+        assertTrue(deleteSlot.captured.none())
+        assertTrue(createSlot.captured.all { it.id.programmeChecklist.id == 2L })
+    }
 
 }

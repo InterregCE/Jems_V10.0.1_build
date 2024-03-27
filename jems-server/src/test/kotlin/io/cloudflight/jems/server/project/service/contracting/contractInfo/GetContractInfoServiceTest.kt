@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkObject
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -49,6 +50,7 @@ internal class GetContractInfoServiceTest: UnitTest() {
             projectId = 1L,
             startDate = LocalDate.of(2022, 8, 1),
             endDate = LocalDate.of(2023, 8, 1),
+            lastPaymentDates = mockk(),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,

@@ -5,8 +5,6 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentStatusUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -16,20 +14,16 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentStatus
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.advance.updateStatus.UpdateAdvancePaymentStatusInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.just
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -61,7 +55,11 @@ class PaymentAdvanceControllerTest : UnitTest() {
             programmeFund = fundDTO,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
-            amountSettled = BigDecimal.ONE
+            amountSettled = BigDecimal.ONE,
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0",
         )
         private val advancePayment = AdvancePayment(
             id = paymentId,
@@ -74,7 +72,12 @@ class PaymentAdvanceControllerTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             amountSettled = BigDecimal.ONE,
-            paymentSettlements = emptyList()
+            paymentSettlements = emptyList(),
+            partnerNameInOriginalLanguage = "name org lang",
+            partnerNameInEnglish = "name en",
+            linkedProjectVersion = "v1.0",
+            lastApprovedProjectVersion = "v1.0",
+            projectId = projectId
         )
 
         private val advancePaymentSettlement = AdvancePaymentSettlement(
@@ -116,6 +119,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "random comment",
+            paymentAuthorized = true,
+            paymentConfirmed = true,
             paymentSettlements = listOf(advancePaymentSettlement),
         )
 
@@ -158,8 +163,6 @@ class PaymentAdvanceControllerTest : UnitTest() {
     lateinit var getAdvancePaymentDetail: GetAdvancePaymentDetailInteractor
     @MockK
     lateinit var updateAdvancePayment: UpdateAdvancePaymentDetailInteractor
-    @MockK
-    lateinit var authorizeAdvancePayment: UpdateAdvancePaymentStatusInteractor
     @MockK
     lateinit var deleteAdvancePayment: DeleteAdvancePaymentInteractor
 
@@ -238,6 +241,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "random comment",
+            paymentAuthorized = true,
+            paymentConfirmed = true,
             paymentSettlements = listOf(AdvancePaymentSettlementDTO(
                 id = 1L,
                 number = 1,
@@ -253,13 +258,6 @@ class PaymentAdvanceControllerTest : UnitTest() {
         assertThat(
             controller.updateAdvancePayment(updateDto)
         ).isEqualTo(advancePaymentDetailDTO)
-    }
-
-    @Test
-    fun updateStatus() {
-        every { authorizeAdvancePayment.updateStatus(paymentId, status = AdvancePaymentStatus.AUTHORIZED) } just Runs
-
-        assertDoesNotThrow { controller.updateAdvancePaymentStatus(paymentId, AdvancePaymentStatusUpdateDTO(status = AdvancePaymentStatusDTO.AUTHORIZED)) }
     }
 
 }

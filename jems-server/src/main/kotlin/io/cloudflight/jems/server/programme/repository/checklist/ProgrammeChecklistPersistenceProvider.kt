@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.repository.checklist
 
+import io.cloudflight.jems.server.call.repository.CallSelectedChecklistRepository
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProgrammeChecklistPersistenceProvider(
-    private val repository: ProgrammeChecklistRepository
+    private val repository: ProgrammeChecklistRepository,
+    private val callSelectedChecklistRepository: CallSelectedChecklistRepository,
 ) : ProgrammeChecklistPersistence {
 
     @Transactional(readOnly = true)
@@ -69,6 +71,12 @@ class ProgrammeChecklistPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getChecklistsByType(checklistType: ProgrammeChecklistType): List<IdNamePair> {
         return repository.findByType(checklistType).toList()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getChecklistsByTypeAndCall(checklistType: ProgrammeChecklistType, callId: Long): List<IdNamePair> {
+        return callSelectedChecklistRepository.findAllByIdCallIdAndIdProgrammeChecklistType(callId, checklistType)
+            .map { IdNamePair(id = it.id.programmeChecklist.id, name = it.id.programmeChecklist.name!!) }
     }
 
     private fun getProgrammeChecklistOrThrow(id: Long): ProgrammeChecklistEntity =

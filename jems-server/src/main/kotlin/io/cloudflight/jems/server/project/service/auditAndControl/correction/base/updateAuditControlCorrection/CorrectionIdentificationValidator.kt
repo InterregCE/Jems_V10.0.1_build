@@ -143,7 +143,7 @@ class CorrectionIdentificationValidator(
         val availableFtls = availablePartner?.availableFtls?.firstOrNull { it.orderNr == input.lumpSumOrderNr }
         val availableFunds = availableReports?.availableFunds ?: availableFtls?.availableFunds
 
-        availableFunds?.firstOrNull { it.fund.id == input.programmeFundId }
+        availableFunds?.filter { !it.disabled }?.firstOrNull { it.fund.id == input.programmeFundId }
             ?: throw CombinationOfSelectedFundIsInvalidException()
     }
 

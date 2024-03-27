@@ -6,11 +6,16 @@ import io.cloudflight.jems.server.project.authorization.CanCreateProjectReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -76,8 +81,9 @@ class CreateProjectReport(
         val project = projectPersistence.getProject(projectId = projectId, version = version)
         validateProjectIsContracted(project)
 
-        val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
-        data.validateInput(validPeriodNumbers = periods.keys,
+        val periods = (projectPersistence.getProjectPeriods(projectId, version).plus(closurePeriod)).associateBy { it.number }
+        data.validateInput(
+            validPeriodNumbers = periods.keys,
             datesInvalidExceptionResolver = { StartDateIsAfterEndDate() },
             linkToDeadlineWithManualDataExceptionResolver = { LinkToDeadlineProvidedWithManualDataOverride() },
             noLinkAndDataMissingExceptionResolver = { LinkToDeadlineNotProvidedAndDataMissing() },
@@ -88,7 +94,7 @@ class CreateProjectReport(
         validateNoReOpenedReports(projectId, type)
 
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
-        val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version).toSet()
+        val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version)
         val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
         val submittedReports = reportPersistence.getSubmittedProjectReports(projectId)
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
@@ -106,21 +112,22 @@ class CreateProjectReport(
 
         val isSpf = callPersistence.getCallByProjectId(projectId).isSpf()
         val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.type.hasContent() }?.id
+        val budget = createProjectReportBudget.retrieveBudgetDataFor(
+            projectId = projectId,
+            version = version,
+            investments = workPackages.extractInvestments(),
+            submittedReports = submittedReports,
+        )
         val reportToCreate = ProjectReportCreateModel(
             reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner, isSpf = isSpf),
-            reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
-                projectId = projectId,
-                version = version,
-                investments = workPackages.extractInvestments(),
-                submittedReports = submittedReports,
-            ),
+            reportBudget = budget,
             workPackages = workPackages.toCreateEntity(
                 previouslyReportedDeliverables = workPlanPersistence.getDeliverableCumulative(submittedReportIds),
                 previouslyReportedOutputs = workPlanPersistence.getOutputCumulative(submittedReportIds),
                 lastWorkPlan = lastSubmittedReportIdWithWorkPlan?.let { workPlanPersistence.getReportWorkPlanById(projectId, it) } ?: emptyList(),
             ),
             targetGroups = targetGroups,
-            partners = getPreviouslyReportedByPartner(submittedReportIds, partners),
+            partners = getPreviouslyReportedByPartner(submittedReportIds, budget.budgetPerPartner),
             results = projectResults,
             horizontalPrinciples = projectManagement?.projectHorizontalPrinciples ?: emptyPrinciples
         )
@@ -132,17 +139,19 @@ class CreateProjectReport(
 
     private fun getPreviouslyReportedByPartner(
         submittedReportIds: Set<Long>,
-        partners: Collection<ProjectPartnerDetail>
+        partnersBudget:  List<ProjectPartnerBudgetPerFund>,
     ): List<ProjectReportPartnerCreateModel> {
         val previouslyReported = projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
-        return partners.map {
+        return partnersBudget.filter {it.partner != null }.map { partnersBudget ->
+            val partnerSummary = partnersBudget.partner
             ProjectReportPartnerCreateModel(
-                partnerId = it.id,
-                partnerNumber = it.sortNumber!!,
-                partnerAbbreviation = it.abbreviation,
-                partnerRole = it.role,
-                country = it.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
-                previouslyReported = previouslyReported[it.id] ?: BigDecimal.ZERO,
+                partnerId = partnerSummary!!.id!!,
+                partnerNumber = partnerSummary.sortNumber!!,
+                partnerAbbreviation = partnerSummary.abbreviation,
+                partnerRole = partnerSummary.role,
+                country = partnerSummary.country,
+                previouslyReported = previouslyReported[partnerSummary.id] ?: BigDecimal.ZERO,
+                partnerTotalEligibleBudget = partnersBudget.totalEligibleBudget
             )
         }
     }
@@ -199,6 +208,7 @@ class CreateProjectReport(
         lastVerificationReOpening = null,
         riskBasedVerification = false,
         riskBasedVerificationDescription = null,
+        finalReport = finalReport
     )
 
     private fun List<ProjectResult>.toCreateModel(

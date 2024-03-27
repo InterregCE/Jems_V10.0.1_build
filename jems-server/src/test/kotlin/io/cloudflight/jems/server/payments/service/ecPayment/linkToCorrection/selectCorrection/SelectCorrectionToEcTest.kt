@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.selectCorrection
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.model.ec.EcPaymentCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.ecPayment.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.EcPaymentCorrectionLinkPersistence
@@ -26,7 +26,7 @@ class SelectCorrectionToEcTest : UnitTest() {
 
         val paymentDraft = mockk<PaymentApplicationToEcDetail>()
 
-        private val paymentToEcExtensionModel = EcPaymentCorrectionExtension(
+        private val paymentToEcExtensionModel = PaymentToEcCorrectionExtension(
             correctionId = CORRECTION_ID,
             ecPaymentId = null,
             ecPaymentStatus = PaymentEcStatus.Draft,

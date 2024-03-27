@@ -33,7 +33,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentsBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdown.GetReportCertificateInvestmentsBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
@@ -297,6 +297,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             reportLumpSumId = 1L,
             lumpSumId = 1L,
             name = setOf(),
+            fastTrack = false,
             period = 0,
             orderNr = 0,
             totalEligibleBudget = BigDecimal.valueOf(1),
@@ -320,6 +321,7 @@ class ProjectReportFinancialOverviewControllerTest : UnitTest() {
             reportLumpSumId = 1L,
             lumpSumId = 1L,
             name = setOf(),
+            fastTrack = false,
             period = 0,
             orderNr = 0,
             totalEligibleBudget = BigDecimal.valueOf(1),

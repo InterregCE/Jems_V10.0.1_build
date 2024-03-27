@@ -76,6 +76,27 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
     """)
     fun findParkedCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
+            COALESCE(SUM(report.staffCurrentParkedVerification), 0),
+            COALESCE(SUM(report.officeCurrentParkedVerification), 0),
+            COALESCE(SUM(report.travelCurrentParkedVerification), 0),
+            COALESCE(SUM(report.externalCurrentParkedVerification), 0),
+            COALESCE(SUM(report.equipmentCurrentParkedVerification), 0),
+            COALESCE(SUM(report.infrastructureCurrentParkedVerification), 0),
+            COALESCE(SUM(report.otherCurrentParkedVerification), 0),
+            COALESCE(SUM(report.lumpSumCurrentParkedVerification), 0),
+            COALESCE(SUM(report.unitCostCurrentParkedVerification), 0),
+            COALESCE(SUM(report.spfCostCurrentParkedVerification), 0),
+            COALESCE(SUM(report.sumCurrentParkedVerification), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.partnerId=:partnerId AND
+                report.reportEntity.projectReport.id IN :finalizedProjectReportIds
+    """)
+    fun findVerificationParkedCumulativeForProjectReportIds(partnerId: Long, finalizedProjectReportIds: Set<Long>): BudgetCostsCalculationResultFull
+
     @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffTotalEligibleAfterControl), 0),

@@ -90,6 +90,19 @@ table {
 .mat-form-field {
   max-height: 4.75rem !important; // fixes the 1px vertical height shift on disabling/enabling inputs
 }
+
+.marked-as-required::after{
+  content: "*";
+  color: var(--error-color);
+
+  position: absolute;
+  left: 0;
+  top: -0.2em;
+
+  font-size: 1.25em;
+  font-weight: var(--font-weight-strong);
+}
+
 .mat-datepicker-input.placeholder-required::placeholder {
   color: var(--error-color) !important;
 }
@@ -184,4 +197,3 @@ h3#project-title {
 .overflow-hidden {
   overflow: hidden;
 }
-

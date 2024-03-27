@@ -8,9 +8,9 @@ import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProgrammeChecklistDetailDTO} from '@cat/api';
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProgrammePageSidenavService} from "../programme-page/services/programme-page-sidenav.service";
+import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 
 @Component({
   selector: 'jems-programme-checklist-list-page',

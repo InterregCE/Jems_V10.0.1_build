@@ -33,8 +33,8 @@ class ProjectReportVerificationNotificationPersistenceProvider(
     private fun getNewNotificationEntity(userId: Long, reportId: Long, timeUtc: LocalDateTime) =
         ProjectReportVerificationNotificationEntity(
             id = 0,
-            user = userRepository.getById(userId),
-            projectReport = projectReportRepository.getById(reportId),
+            user = userRepository.getReferenceById(userId),
+            projectReport = projectReportRepository.getReferenceById(reportId),
             createdAt = timeUtc
         )
 

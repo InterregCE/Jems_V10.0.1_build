@@ -116,7 +116,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
           ));
           throw error;
         }),
-        finalize(() => this.routingService.confirmLeaveMap.delete(this.serviceId)),
+        finalize(() => this.routingService.confirmLeaveSet.delete(this.serviceId)),
         finalize(() => this.savingDescriptionId$.next(null)),
         tap(() => this.descriptionForm.reset()),
         tap(() => this.refresh.emit()),
@@ -124,7 +124,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   editDescription(file: FileListItem) {
-    this.routingService.confirmLeaveMap.set(this.serviceId, true);
+    this.routingService.confirmLeaveSet.add(this.serviceId);
     this.descriptionForm.patchValue({
       id: file.id,
       fileName: file.name,
@@ -133,7 +133,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   deleteFile(file: FileListItem) {
-    this.routingService.confirmLeaveMap.delete(this.serviceId);
+    this.routingService.confirmLeaveSet.delete(this.serviceId);
     Forms.confirm(
       this.dialog, {
         title: file.name,

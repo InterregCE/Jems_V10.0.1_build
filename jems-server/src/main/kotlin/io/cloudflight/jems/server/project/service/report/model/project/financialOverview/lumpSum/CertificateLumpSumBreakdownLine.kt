@@ -8,6 +8,7 @@ data class CertificateLumpSumBreakdownLine(
     val reportLumpSumId: Long,
     val lumpSumId: Long,
     val name: Set<InputTranslation>,
+    val fastTrack: Boolean,
     val period: Int?,
     val orderNr: Int,
 

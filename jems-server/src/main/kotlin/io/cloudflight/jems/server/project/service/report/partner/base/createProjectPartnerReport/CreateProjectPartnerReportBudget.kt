@@ -44,6 +44,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
@@ -89,13 +90,17 @@ class CreateProjectPartnerReportBudget(
         investments: List<PartnerReportInvestmentSummary>,
     ): PartnerReportBudget {
         val partnerId = partner.id!!
-        val submittedReports = reportPersistence.getSubmittedPartnerReports(partnerId = partnerId)
-        val submittedReportIds = submittedReports.mapTo(HashSet()) { it.reportId }
-        val finalizedReportIds = submittedReports.filter { it.status.isFinalized() }
+        val submittedPartnerReports = reportPersistence.getSubmittedPartnerReports(partnerId = partnerId)
+        val submittedPartnerReportIds = submittedPartnerReports.mapTo(HashSet()) { it.reportId }
+        val finalizedPartnerReportIds = submittedPartnerReports.filter { it.status.isFinalized() }
             .mapTo(HashSet()) { it.reportId }
 
+        val submittedProjectReports = reportProjectPersistence.getSubmittedProjectReports(projectId)
+        val submittedProjectReportIds =  submittedProjectReports.mapTo(HashSet()) { it.id }
+        val finalizedProjectReportIds = submittedProjectReports.filter { it.status.isFinalized() }.mapTo(HashSet()) { it.id }
+
         val contributions = generateContributionsFromPreviousReports(
-            submittedReportIds = submittedReportIds,
+            submittedReportIds = submittedPartnerReportIds,
             partnerContributionsSorted = coFinancing.coFinancing.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
             partnerContributionsSpfSorted = coFinancing.coFinancingSpf.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
         )
@@ -109,40 +114,50 @@ class CreateProjectPartnerReportBudget(
             .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId), version))
             .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId), version))
         val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId), version)
-
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
-
-        val submittedProjectReportIds = reportProjectPersistence.getSubmittedProjectReports(projectId).mapTo(HashSet()) { it.id }
 
         val previouslyReportedSpf = reportProjectSpfClaimPersistence.getPreviouslyReportedSpfContributions(submittedProjectReportIds)
         val readyForPaymentLumpSums = paymentPersistence.getFtlsCumulativeForPartner(partnerId)
 
-        val previouslyReportedCostCategories = reportExpenditureCostCategoryPersistence
-            .getCostCategoriesCumulative(submittedReportIds, finalizedReportIds)
-            .addExtraPaymentReadyFastTrackLumpSums(readyForPaymentLumpSums.sum)
-            .addExtraSpfFromProjectReport(previouslyReportedSpf.sum)
+        val previouslyReportedCostCategories = getPreviouslyReportedCostCategories(
+            partnerId,
+            submittedReportIds = submittedPartnerReportIds,
+            finalizedReportIds = finalizedPartnerReportIds,
+            finalizedProjectReportIds = finalizedProjectReportIds,
+            readyForPaymentLumpSums.sum,
+            previouslyReportedSpf.sum
+        )
+        val partnerReportCoFinancingParkedValues = getPreviouslyReportedCoFinancingValues(
+            partnerId,
+            submittedPartnerReportIds = submittedPartnerReportIds,
+            finalizedPartnerReportIds = finalizedPartnerReportIds,
+            finalizedProjectReportIds = finalizedProjectReportIds
+        )
+        val previouslyReportedLumpSum = getPreviouslyReportedLumpSumsValues(partnerId, submittedPartnerReportIds, finalizedProjectReportIds)
+        val previouslyReportedUnitCost = getPreviouslyReportedUnitCostsValues(partnerId, submittedPartnerReportIds, finalizedProjectReportIds)
+        val previouslyReportedInvestment = getPreviouslyReportedInvestmentValues(partnerId, submittedPartnerReportIds, finalizedProjectReportIds)
 
         return PartnerReportBudget(
             contributions = contributions,
             availableLumpSums = lumpSums
                 .toPartnerReportLumpSums(
                     partnerId = partnerId,
-                    previouslyReported = reportLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
+                    previouslyReported = previouslyReportedLumpSum,
                     previouslyPaid = installmentsPaid.byLumpSum(),
-                    previouslyValidated = reportLumpSumPersistence.getLumpSumCumulativeAfterControl(finalizedReportIds)
+                    previouslyValidated = reportLumpSumPersistence.getLumpSumCumulativeAfterControl(finalizedPartnerReportIds)
                 ),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 staffCosts
                     .plus(travelCosts)
                     .plus(externalAndEquipmentAndInfrastructure)
                     .plus(unitCosts),
-                previouslyReported = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds),
-                previouslyValidated = reportUnitCostPersistence.getValidatedUnitCostCumulative(finalizedReportIds)
+                previouslyReported = previouslyReportedUnitCost,
+                previouslyValidated = reportUnitCostPersistence.getValidatedUnitCostCumulative(finalizedPartnerReportIds)
             ),
             investments = investments.toPartnerReportInvestments(
                 budgetEntries = externalAndEquipmentAndInfrastructure,
-                previouslyReported = reportInvestmentPersistence.getInvestmentsCumulative(submittedReportIds),
-                previouslyValidated = reportInvestmentPersistence.getInvestmentsCumulativeAfterControl(finalizedReportIds)
+                previouslyReported = previouslyReportedInvestment,
+                previouslyValidated = reportInvestmentPersistence.getInvestmentsCumulativeAfterControl(finalizedPartnerReportIds)
             ),
             budgetPerPeriod = (
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
@@ -153,8 +168,7 @@ class CreateProjectPartnerReportBudget(
                 budget = budget,
                 previouslyReportedWithParked = previouslyReportedCostCategories,
              ),
-            previouslyReportedCoFinancing = reportExpenditureCoFinancingPersistence
-                .getCoFinancingCumulative(submittedReportIds, finalizedReportIds)
+            previouslyReportedCoFinancing = partnerReportCoFinancingParkedValues
                 .toCreateModel(
                     coFinancing = coFinancing,
                     partnerTotal = budget.totalCosts,
@@ -548,6 +562,9 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
+    private fun ExpenditureCostCategoryPreviouslyReportedWithParked.addVerificationParkedValues(verificationParked: BudgetCostsCalculationResultFull) =
+        this.copy(previouslyReportedParked = this.previouslyReportedParked.sumParkedValues(verificationParked) )
+
     private fun ExpenditureCostCategoryPreviouslyReportedWithParked.addExtraSpfFromProjectReport(
         previousSpf: BigDecimal,
     ): ExpenditureCostCategoryPreviouslyReportedWithParked {
@@ -611,5 +628,133 @@ class CreateProjectPartnerReportBudget(
             .plus(
                 contributionsSpf.filter { it.legalStatus == legalStatus }.sumOf { it.amount }
             )
+
+    private fun ExpenditureCoFinancingPrevious.addCoFinancingVerificationParkedValues(
+        projectReportParkedValues: ReportCertificateCoFinancingColumn
+    ): ExpenditureCoFinancingPrevious =
+        this.copy(previousParked = this.previousParked.sumParkedValues(projectReportParkedValues))
+
+   private fun ReportExpenditureCoFinancingColumn.sumParkedValues(projectReportParkedValues: ReportCertificateCoFinancingColumn) =
+        ReportExpenditureCoFinancingColumn(
+            funds = funds.mapValues { it.value.plus(projectReportParkedValues.funds[it.key] ?: ZERO) },
+            partnerContribution = partnerContribution.plus(projectReportParkedValues.partnerContribution),
+            publicContribution = publicContribution.plus(projectReportParkedValues.publicContribution),
+            automaticPublicContribution = automaticPublicContribution.plus(projectReportParkedValues.automaticPublicContribution),
+            privateContribution = privateContribution.plus(projectReportParkedValues.privateContribution),
+            sum = sum.plus(projectReportParkedValues.sum)
+        )
+
+    private fun BudgetCostsCalculationResultFull.sumParkedValues(verificationParked: BudgetCostsCalculationResultFull) =
+        BudgetCostsCalculationResultFull(
+            staff = staff.plus(verificationParked.staff),
+            office = office.plus(verificationParked.office),
+            travel = travel.plus(verificationParked.travel),
+            external = external.plus(verificationParked.external),
+            equipment = equipment.plus(verificationParked.equipment),
+            infrastructure = infrastructure.plus(verificationParked.infrastructure),
+            other = other.plus(verificationParked.other),
+            lumpSum = lumpSum.plus(verificationParked.lumpSum),
+            unitCost = unitCost.plus(verificationParked.unitCost),
+            spfCost = spfCost.plus(verificationParked.spfCost),
+            sum = sum.plus(verificationParked.sum)
+        )
+
+
+    private fun Map<Int, ExpenditureLumpSumCurrent>.addLumpSumVerificationParkedValues(
+        verificationParked: Map<Int, BigDecimal>
+    ): Map<Int, ExpenditureLumpSumCurrent> =
+        this.mapValues {
+            ExpenditureLumpSumCurrent(
+                current = it.value.current,
+                currentParked = it.value.currentParked.plus(verificationParked[it.key] ?: ZERO)
+            )
+        }
+
+
+    private fun  Map<Long, ExpenditureUnitCostCurrent>.addUnitCostVerificationParkedValues(verificationParked: Map<Long, BigDecimal>) =
+        this.mapValues {
+            ExpenditureUnitCostCurrent(
+                current = it.value.current,
+                currentParked = it.value.currentParked.plus(verificationParked[it.key] ?: ZERO)
+            )
+        }
+
+    private fun  Map<Long, ExpenditureInvestmentCurrent>.addInvestmentVerificationParkedValues(verificationParked: Map<Long, BigDecimal>) =
+        this.mapValues {
+            ExpenditureInvestmentCurrent(
+                current = it.value.current,
+                currentParked = it.value.currentParked.plus(verificationParked[it.key] ?: ZERO)
+            )
+        }
+
+    private fun getPreviouslyReportedLumpSumsValues(
+        partnerId: Long,
+        submittedReportIds: Set<Long>,
+        finalizedProjectReportIds: Set<Long>
+    ): Map<Int, ExpenditureLumpSumCurrent> {
+        val projectReportParkedLumpSumValues = reportLumpSumPersistence.getCumulativeVerificationParked(partnerId, finalizedProjectReportIds)
+        val previouslyReportedLumpSums = reportLumpSumPersistence.getLumpSumCumulative(submittedReportIds)
+        return previouslyReportedLumpSums.addLumpSumVerificationParkedValues(projectReportParkedLumpSumValues)
+    }
+
+    private fun getPreviouslyReportedUnitCostsValues(
+        partnerId: Long,
+        submittedReportIds: Set<Long>,
+        finalizedProjectReportIds: Set<Long>
+    ): Map<Long, ExpenditureUnitCostCurrent> {
+        val projectReportParkedUnitCostValues =
+            reportUnitCostPersistence.getVerificationParkedUnitCostCumulative(partnerId, finalizedProjectReportIds)
+        val previouslyReportedValues = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds)
+        return previouslyReportedValues.addUnitCostVerificationParkedValues(projectReportParkedUnitCostValues)
+    }
+
+    private fun getPreviouslyReportedInvestmentValues(
+        partnerId: Long,
+        submittedReportIds: Set<Long>,
+        finalizedProjectReportIds: Set<Long>
+    ): Map<Long, ExpenditureInvestmentCurrent> {
+        val projectReportParkedInvestmentValues = reportInvestmentPersistence.getVerificationParkedInvestmentsCumulative(partnerId, finalizedProjectReportIds)
+        val previouslyReportedValues = reportInvestmentPersistence.getInvestmentsCumulative(submittedReportIds)
+        return previouslyReportedValues.addInvestmentVerificationParkedValues(projectReportParkedInvestmentValues)
+    }
+    private fun getPreviouslyReportedCoFinancingValues(
+        partnerId: Long,
+        submittedPartnerReportIds: HashSet<Long>,
+        finalizedPartnerReportIds: HashSet<Long>,
+        finalizedProjectReportIds: HashSet<Long>
+    ): ExpenditureCoFinancingPrevious {
+        val verificationParkedValues =
+            reportExpenditureCoFinancingPersistence.getVerificationParkedCoFinancingCumulative(
+                partnerId,
+                finalizedProjectReportIds
+            )
+        val previouslyReportedValues = reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(
+            submittedPartnerReportIds,
+            finalizedPartnerReportIds
+        )
+        return previouslyReportedValues.addCoFinancingVerificationParkedValues(verificationParkedValues)
+    }
+
+    fun getPreviouslyReportedCostCategories(
+        partnerId: Long,
+        submittedReportIds: Set<Long>,
+        finalizedReportIds: Set<Long>,
+        finalizedProjectReportIds: Set<Long>,
+        paymentReadyFastTrackLumpSums: BigDecimal,
+        previouslyReportedSpfSum: BigDecimal
+    ): ExpenditureCostCategoryPreviouslyReportedWithParked {
+        val projectReportParkedCostCategories =
+            reportExpenditureCostCategoryPersistence.getVerificationCostCategoriesCumulative(
+                partnerId,
+                finalizedProjectReportIds
+            )
+        val previouslyReportedCostCategories =
+            reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(submittedReportIds, finalizedReportIds)
+
+        return previouslyReportedCostCategories
+            .addVerificationParkedValues(projectReportParkedCostCategories)
+            .addExtraPaymentReadyFastTrackLumpSums(paymentReadyFastTrackLumpSums)
+            .addExtraSpfFromProjectReport(previouslyReportedSpfSum)
+    }
 
 }

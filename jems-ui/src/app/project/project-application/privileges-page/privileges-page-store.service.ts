@@ -156,7 +156,8 @@ export class PrivilegesPageStore {
           StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED,
           StatusEnum.INMODIFICATION,
           StatusEnum.MODIFICATIONSUBMITTED,
-          StatusEnum.CONTRACTED
+          StatusEnum.CONTRACTED,
+          StatusEnum.CLOSED,
         ].includes(status.status)),
       );
   }

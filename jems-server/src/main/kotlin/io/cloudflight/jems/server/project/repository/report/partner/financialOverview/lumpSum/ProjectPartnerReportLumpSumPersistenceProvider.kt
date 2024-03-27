@@ -25,6 +25,7 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 name = it.programmeLumpSum.translatedValues.mapTo(HashSet()) {
                     InputTranslation(it.translationId.language, it.name)
                 },
+                fastTrack = it.programmeLumpSum.isFastTrack,
                 period = it.period,
                 totalEligibleBudget = it.total,
                 previouslyReported = it.previouslyReported,
@@ -40,6 +41,11 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
     override fun getLumpSumCumulative(reportIds: Set<Long>) =
         reportLumpSumRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, ExpenditureLumpSumCurrent(current = it.second, currentParked = it.third)) }
+
+
+    @Transactional(readOnly = true)
+    override fun getCumulativeVerificationParked(partnerId: Long, projectReportIds: Set<Long>): Map<Int, BigDecimal> =
+        reportLumpSumRepository.findCumulativeVerificationParkedForProjectReportIds(partnerId, projectReportIds).toMap()
 
     @Transactional
     override fun updateCurrentlyReportedValues(
@@ -69,6 +75,20 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 if (afterControl.containsKey(it.id)) {
                     it.totalEligibleAfterControl = afterControl.get(it.id)!!.current
                     it.currentParked = afterControl.get(it.id)!!.currentParked
+                }
+            }
+    }
+
+    override fun updateAfterVerificationParkedValues(afterVerificationParkedPerCertificate: Map<Long, Map<Long, BigDecimal>>) {
+        reportLumpSumRepository.findAllByReportEntityIdIn(afterVerificationParkedPerCertificate.keys)
+            .groupBy { it.reportEntity.id }
+            .forEach {
+                val afterVerificationParked = afterVerificationParkedPerCertificate[it.key]!!
+                it.value.forEach { lumpSumEntity ->
+                    if (afterVerificationParked.containsKey(lumpSumEntity.programmeLumpSum.id)) {
+                        lumpSumEntity.currentParkedVerification =
+                            afterVerificationParked[lumpSumEntity.programmeLumpSum.id]!!
+                    }
                 }
             }
     }

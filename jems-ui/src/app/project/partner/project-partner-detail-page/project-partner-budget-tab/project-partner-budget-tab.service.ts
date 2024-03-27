@@ -29,9 +29,11 @@ export class ProjectPartnerBudgetTabService {
 
   constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder, private routingService: RoutingService) {
     combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
-      tap(([optionsDirty, budgetsDirty]) =>
-        this.routingService.confirmLeaveMap.set(this.serviceId, optionsDirty || budgetsDirty)
-      ),
+      tap(([optionsDirty, budgetsDirty]) => {
+        if (optionsDirty || budgetsDirty) {
+          this.routingService.confirmLeaveSet.add(this.serviceId);
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }

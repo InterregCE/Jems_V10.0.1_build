@@ -1,6 +1,13 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
-import {AuditControlCorrectionDTO, AvailableCorrectionsForPaymentDTO, PaymentDetailDTO, PaymentsAPIService, ProjectAuditAndControlService,} from '@cat/api';
+import {
+  AuditControlCorrectionDTO,
+  AvailableCorrectionsForPaymentDTO,
+  PaymentDetailDTO,
+  PaymentPartnerDTO,
+  PaymentsAPIService,
+  ProjectAuditAndControlService,
+} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
@@ -33,8 +40,8 @@ export class PaymentsDetailPageStore {
     return merge(initialPaymentDetail$, this.savedPaymentDetail$);
   }
 
-  updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO): Observable<PaymentDetailDTO> {
-    return this.paymentApiService.updatePaymentInstallments(paymentId, paymentDetail);
+  updatePaymentInstallments(paymentId: number, partnerPayments: Array<PaymentPartnerDTO>): Observable<PaymentDetailDTO> {
+    return this.paymentApiService.updatePaymentInstallments(paymentId, partnerPayments);
   }
 
   private availableCorrections(): Observable<AvailableCorrectionsForPaymentDTO[]> {

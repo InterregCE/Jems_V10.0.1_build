@@ -19,20 +19,22 @@ export class PaymentsPageComponent {
       this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsRetrieve),
       this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.AdvancePaymentsRetrieve),
       this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsToEcRetrieve),
-      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsAuditRetrieve)
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsAuditRetrieve),
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsAccountRetrieve)
     ]).pipe(
       take(1),
-      map(([paymentsToProjectRetrieve, advancePaymentsRetrieve, paymentsToEcRetrieve, paymentsAuditRetrieve]) => ({
+      map(([paymentsToProjectRetrieve, advancePaymentsRetrieve, paymentsToEcRetrieve, paymentsAuditRetrieve, accountsRetrieve]) => ({
         paymentsToProjectRetrieve,
         advancePaymentsRetrieve,
         paymentsToEcRetrieve,
-        paymentsAuditRetrieve
+        paymentsAuditRetrieve,
+        accountsRetrieve
       })),
-      tap(data => this.redirectToAccessiblePaymentPage(data.paymentsToProjectRetrieve, data.advancePaymentsRetrieve, data.paymentsToEcRetrieve, data.paymentsAuditRetrieve))
+      tap(data => this.redirectToAccessiblePaymentPage(data.paymentsToProjectRetrieve, data.advancePaymentsRetrieve, data.paymentsToEcRetrieve, data.paymentsAuditRetrieve, data.accountsRetrieve))
     ).subscribe();
   }
 
-  redirectToAccessiblePaymentPage(paymentToProjectRetrieve: boolean, advancePaymentRetrieve: boolean, paymentsToEcRetrieve: boolean, auditRetrieve: boolean) {
+  redirectToAccessiblePaymentPage(paymentToProjectRetrieve: boolean, advancePaymentRetrieve: boolean, paymentsToEcRetrieve: boolean, auditRetrieve: boolean, accountsRetrieve: boolean) {
     if (paymentToProjectRetrieve) {
       this.paymentsPageSidenav.goToPaymentsToProjects();
     } else if (advancePaymentRetrieve) {
@@ -41,7 +43,8 @@ export class PaymentsPageComponent {
       this.paymentsPageSidenav.goToPaymentsToEc();
     } else if (auditRetrieve) {
       this.paymentsPageSidenav.goToAudit();
-
+    } else if (accountsRetrieve) {
+        this.paymentsPageSidenav.goToAccounts();
     }
   }
 }

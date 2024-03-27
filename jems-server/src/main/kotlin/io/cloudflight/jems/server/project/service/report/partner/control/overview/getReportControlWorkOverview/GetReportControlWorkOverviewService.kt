@@ -1,11 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview
 
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.percentageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,22 +27,18 @@ class GetReportControlWorkOverviewService(
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
 
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
-
-        val controlSample = currentExpenditures.onlySamplingOnes().sum()
-
-        val parked = if (isClosed)
-            costCategories.currentlyReportedParked.sum
-        else
-            currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
-
-        val eligibleAfterControl = if (isClosed)
-            costCategories.totalEligibleAfterControl.sum
-        else
-            currentExpenditures.calculateCertified(costCategories.options).sum
-
         val currentReport = costCategories.currentlyReported.sum
+
+        val parkedAndEligibleAfterControl = if (isClosed)
+            costCategories.getParkedAndEligibleAfterControl()
+        else
+            getParkedAndEligibleAfterControl(currentExpenditures, costCategories).toSimple()
+
         val currentReportFlatRates = costCategories.currentlyReported.extractFlatRatesSum(costCategories.options)
         val currentReportWithoutFlatRates = currentReport.minus(currentReportFlatRates)
+        val controlSample = currentExpenditures.onlySamplingOnes().sum()
+        val parked = parkedAndEligibleAfterControl.parked
+        val eligibleAfterControl = parkedAndEligibleAfterControl.eligibleAfterControl
 
         return ControlWorkOverview(
             declaredByPartner = currentReport,
@@ -59,5 +56,15 @@ class GetReportControlWorkOverviewService(
 
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
+
+    private fun ReportExpenditureCostCategory.getParkedAndEligibleAfterControl() = ParkedAndEligibleAfterControl(
+        eligibleAfterControl = totalEligibleAfterControl.sum,
+        parked = currentlyReportedParked.sum,
+    )
+
+    private fun BudgetCostsCurrentValuesWrapper.toSimple() = ParkedAndEligibleAfterControl(
+        eligibleAfterControl = currentlyReported.sum,
+        parked = currentlyReportedParked.sum,
+    )
 
 }

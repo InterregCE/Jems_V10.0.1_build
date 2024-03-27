@@ -216,7 +216,7 @@ class ProjectResultPersistenceTest: UnitTest() {
     fun `updateResultsForProject - test if repository save() is called with correct arguments`() {
         val projectSlot = slot<ProjectEntity>()
         every { projectRepository.findById(project.id) } returns Optional.of(project)
-        every { indicatorRepository.getById(INDICATOR_ID) } returns indicatorResult
+        every { indicatorRepository.getReferenceById(INDICATOR_ID) } returns indicatorResult
         every { projectRepository.save(capture(projectSlot)) } returnsArgument 0
 
         persistence.updateResultsForProject(projectId = project.id, projectResults = listOf(update1_model, result2_model))
@@ -230,7 +230,7 @@ class ProjectResultPersistenceTest: UnitTest() {
     @Test
     fun `updateResultsForProject - not existing indicator`() {
         every { projectRepository.findById(project.id) } returns Optional.of(project)
-        every { indicatorRepository.getById(-1) } throws EntityNotFoundException()
+        every { indicatorRepository.getReferenceById(-1) } throws EntityNotFoundException()
 
         assertThrows<EntityNotFoundException> { persistence.updateResultsForProject(
             projectId = project.id,

@@ -35,7 +35,9 @@ fun ProjectReportModel.toServiceModel(
     verificationLastReOpenDate = lastVerificationReOpening,
 
     paymentIdsInstallmentExists = paymentIdsInstallmentExists,
-    paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded
+    paymentToEcIdsReportIncluded = paymentToEcIdsReportIncluded,
+
+    finalReport = finalReport
 )
 
 fun ProjectReportModel.toServiceSummaryModel(

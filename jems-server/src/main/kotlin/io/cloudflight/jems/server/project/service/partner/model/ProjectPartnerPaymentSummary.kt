@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 
 data class ProjectPartnerPaymentSummary(
     val partnerSummary: ProjectPartnerSummary,
-    val partnerCoFinancing: List<ProgrammeFund>,
+    val partnerCoFinancing: MutableList<ProgrammeFund>,
     val partnerContributions: List<ProjectPartnerContribution> = emptyList(),
     val partnerContributionsSpf: List<ProjectPartnerContributionSpf> = emptyList()
 )

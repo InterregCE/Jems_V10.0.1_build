@@ -22,6 +22,7 @@ class UpdateContractingPartnerStateAidDeMinimis(
     private val versionPersistence: ProjectVersionPersistence,
     private val validator: ContractingValidator,
 ): UpdateContractingPartnerStateAidDeMinimisInteractor {
+
     @CanUpdateProjectContractingPartnerStateAid
     @Transactional
     @ExceptionWrapper(UpdateContractingPartnerStateAidDeMinimisException::class)
@@ -35,11 +36,11 @@ class UpdateContractingPartnerStateAidDeMinimis(
         val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
         val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
         val partnerData = this.partnerPersistence.getById(partnerId, lastApprovedVersion)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(partnerData.projectId)
+        val addDates = getContractingMonitoringService.getProjectContractingMonitoring(partnerData.projectId).addDates
 
         return ContractingPartnerStateAidDeMinimisSection(
             partnerId = partnerId,
-            dateOfGrantingAid = projectContractingMonitoring.addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
+            dateOfGrantingAid = addDates.minByOrNull { addDate -> addDate.number }?.entryIntoForceDate,
             amountGrantingAid = updatedDeMinimis.amountGrantingAid ?: BigDecimal.ZERO,
             selfDeclarationSubmissionDate = updatedDeMinimis.selfDeclarationSubmissionDate,
             baseForGranting = updatedDeMinimis.baseForGranting,

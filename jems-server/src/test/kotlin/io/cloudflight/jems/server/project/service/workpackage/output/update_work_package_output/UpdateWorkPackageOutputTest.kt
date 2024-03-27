@@ -48,7 +48,7 @@ class UpdateWorkPackageOutputTest: UnitTest() {
 
     @ParameterizedTest(name = "update - valid {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED",
     ], mode = EnumSource.Mode.EXCLUDE)
     fun `update - valid`(status: ApplicationStatus) {
         val projectId = status.ordinal.toLong()
@@ -61,7 +61,7 @@ class UpdateWorkPackageOutputTest: UnitTest() {
 
     @ParameterizedTest(name = "update after contracted - valid {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED", "CLOSED",
     ])
     fun `update after contracted - valid`(status: ApplicationStatus) {
         val projectId = status.ordinal.toLong()

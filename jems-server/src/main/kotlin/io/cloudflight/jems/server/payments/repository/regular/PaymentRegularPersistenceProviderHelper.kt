@@ -16,6 +16,13 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestSco
 import io.cloudflight.jems.server.payments.model.regular.PaymentToEcExtensionTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.amountAuthorized
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.amountPaid
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.payment
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.paymentPartnerInstallment
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.paymentToEcExtension
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.remainingToBePaid
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPersistenceProvider.Companion.totalEligible
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.QProjectReportEntity
@@ -31,45 +38,56 @@ import java.time.ZoneId
 fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
     val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
 
-    val specPayment = QPaymentEntity.paymentEntity
-    val specPaymentToEcExtensionEntity = QPaymentToEcExtensionEntity.paymentToEcExtensionEntity
     val dfg = when (orderBy.property) {
-        "type" -> specPayment.type
-        "projectCustomIdentifier" -> specPayment.projectCustomIdentifier
-        "projectAcronym" -> specPayment.projectAcronym
-        "project.contractedDecision.updated" -> specPayment.project.contractedDecision.updated
-        "fund.type" -> specPayment.fund.type
-        "id" -> specPayment.id
-        "projectReport.number" -> specPayment.projectReport?.number
-        "projectReport.verificationEndDate" -> CaseBuilder().`when`(specPayment.type.eq(PaymentType.FTLS))
-            .then(specPayment.projectLumpSum.paymentEnabledDate)
-            .otherwise(specPayment.projectReport.verificationEndDate)
+        "type" -> payment.type
+        "projectCustomIdentifier" -> payment.projectCustomIdentifier
+        "projectAcronym" -> payment.projectAcronym
+        "project.contractedDecision.updated" -> payment.project.contractedDecision.updated
+        "fund.type" -> payment.fund.type
+        "id" -> payment.id
+        "projectReport.number" -> payment.projectReport?.number
+        "projectReport.verificationEndDate" -> CaseBuilder().`when`(payment.type.eq(PaymentType.FTLS))
+            .then(payment.projectLumpSum.paymentEnabledDate)
+            .otherwise(payment.projectReport.verificationEndDate)
+        "totalEligible" -> totalEligible()
+        "fundAmount" -> payment.amountApprovedPerFund
+        "authorized" -> amountAuthorized()
+        "paid" -> amountPaid()
+        "dateOfLastPayment" -> paymentPartnerInstallment.paymentDate.max()
+        "remainingToBePaid" -> remainingToBePaid()
 
-        "ecId" -> specPaymentToEcExtensionEntity.paymentApplicationToEc?.id
-        else -> specPayment.id
+        "ecPaymentId" -> paymentToEcExtension.paymentApplicationToEc?.id
+        else -> payment.id
     }
 
-    return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
+    return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg).nullsLast()
 }
 
 fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
     results.map { it: Tuple ->
         PaymentToProjectTmp(
             payment = it.get(0, PaymentEntity::class.java)!!,
-            amountPaid = it.get(1, BigDecimal::class.java),
-            amountAuthorized = it.get(2, BigDecimal::class.java),
-            lastPaymentDate = it.get(3, LocalDate::class.java),
-            totalEligibleForRegular = it.get(4, BigDecimal::class.java),
-            code = it.get(5, String::class.java),
+            amountPaid = it.get(1, BigDecimal::class.java)!!,
+            amountAuthorized = it.get(2, BigDecimal::class.java)!!,
+            dateOfLastPayment = it.get(3, LocalDate::class.java),
+            totalEligible = it.get(4, BigDecimal::class.java)!!,
+            remainingToBePaid = it.get(5, BigDecimal::class.java)!!,
+            code = it.get(6, String::class.java),
             paymentToEcExtension = PaymentToEcExtensionTmp(
-                paymentToEcId = it.get(6, Long::class.java),
-                partnerContribution = it.get(7, BigDecimal::class.java)!!,
-                publicContribution = it.get(8, BigDecimal::class.java)!!,
-                correctedPublicContribution = it.get(9, BigDecimal::class.java)!!,
-                autoPublicContribution = it.get(10, BigDecimal::class.java)!!,
-                correctedAutoPublicContribution = it.get(11, BigDecimal::class.java)!!,
-                privateContribution = it.get(12, BigDecimal::class.java)!!,
-                correctedPrivateContribution = it.get(13, BigDecimal::class.java)!!,
+                paymentToEcId = it.get(7, Long::class.java),
+
+                correctedTotalEligibleWithoutSco = it.get(8, BigDecimal::class.java)!!,
+                correctedFundAmountUnionContribution = it.get(9, BigDecimal::class.java)!!,
+                correctedFundAmountPublicContribution = it.get(10, BigDecimal::class.java)!!,
+
+                partnerContribution = it.get(11, BigDecimal::class.java)!!,
+                publicContribution = it.get(12, BigDecimal::class.java)!!,
+                correctedPublicContribution = it.get(13, BigDecimal::class.java)!!,
+                autoPublicContribution = it.get(14, BigDecimal::class.java)!!,
+                correctedAutoPublicContribution = it.get(15, BigDecimal::class.java)!!,
+                privateContribution = it.get(16, BigDecimal::class.java)!!,
+                correctedPrivateContribution = it.get(17, BigDecimal::class.java)!!,
+                comment = it.get(18, String::class.java),
             ),
         )
     },

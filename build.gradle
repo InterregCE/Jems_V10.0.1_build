@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    id "cloudflight-gradle-plugin" version "6.5.11"
+    id "cloudflight-gradle-plugin" version "7.4.0"
 }
 
 // add version-postfix if build was triggered by customer
@@ -12,16 +14,16 @@ if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD")
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "9.0.1$customerPostfix"
+version "10.0.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
 }
 
 subprojects {
-    if (isKotlinProject(it)) {
+    if (isKotlinProject(it) && !it.name.endsWith("-ui")) {
 
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        tasks.withType(KotlinCompile).configureEach {
             kotlinOptions {
                 freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
                 freeCompilerArgs += "-Xjvm-default=all"
@@ -29,10 +31,10 @@ subprojects {
         }
 
         dependencies {
-            implementation platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            annotationProcessor platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            testImplementation platform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
-            kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            implementation platform("io.cloudflight.platform.spring:platform-spring-bom:$cloudflightPlatformVersion")
+            annotationProcessor platform("io.cloudflight.platform.spring:platform-spring-bom:$cloudflightPlatformVersion")
+            testImplementation platform("io.cloudflight.platform.spring:platform-spring-test-bom:$cloudflightPlatformVersion")
+            kapt platform("io.cloudflight.platform.spring:platform-spring-bom:$cloudflightPlatformVersion")
 
             constraints {
                 implementation "com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0"
@@ -41,10 +43,13 @@ subprojects {
             }
         }
     }
+
     if (isServerProject(it) && (isCloudflightBuild(it) || System.getProperty("CUSTOMER_VERSION_POSTFIX"))) {
-        bootJar {
-            manifest {
-                attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+        project.afterEvaluate {
+            bootJar {
+                manifest {
+                    attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+                }
             }
         }
     }

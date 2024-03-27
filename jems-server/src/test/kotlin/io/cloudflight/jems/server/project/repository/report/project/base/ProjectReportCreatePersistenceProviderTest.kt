@@ -113,6 +113,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
             type = ContractingDeadlineType.Both,
             deadlineId = 54L,
+            finalReport = false,
             periodNumber = 4,
             reportingDate = YESTERDAY.minusDays(1),
             projectId = projectId,
@@ -131,7 +132,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             totalEligibleAfterVerification = null,
             lastVerificationReOpening = HOUR_AGO,
             riskBasedVerification = false,
-            riskBasedVerificationDescription = "Description"
+            riskBasedVerificationDescription = "Description",
         )
 
         private fun workPackages() = listOf(
@@ -359,6 +360,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyVerified = BigDecimal.ONE,
                 )
             ),
+
             spfContributionClaims = listOf(
                 ProjectReportSpfContributionClaimCreate(
                     fundId = 1L,
@@ -369,7 +371,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReported = BigDecimal.ZERO,
                     currentlyReported = BigDecimal.valueOf(999.92)
                 )
-            )
+            ),
+            budgetPerPartner = emptyList(),
         )
 
         fun projectResult(): List<ProjectReportResultCreate> = listOf(
@@ -396,6 +399,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             every { deadline.type } returns ContractingDeadlineType.Finance
             every { deadline.periodNumber } returns 17
             every { deadline.deadline } returns MONTH_AGO
+            every { deadline.finalReport } returns false
             return deadline
         }
     }
@@ -531,7 +535,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         val slotOutputs = slot<Iterable<ProjectReportWorkPackageOutputEntity>>()
         every { workPlanOutputRepository.saveAll(capture(slotOutputs)) } returnsArgument 0
         val outputIndicator = mockk<OutputIndicatorEntity>()
-        every { outputIndicatorRepository.getById(701L) } returns outputIndicator
+        every { outputIndicatorRepository.getReferenceById(701L) } returns outputIndicator
 
         // target groups
         val targetGroupsSlot = slot<Iterable<ProjectReportIdentificationTargetGroupEntity>>()
@@ -543,7 +547,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
         // co financing
         val fund410 = mockk<ProgrammeFundEntity>()
-        every { programmeFundRepository.getById(410L) } returns fund410
+        every { programmeFundRepository.getReferenceById(410L) } returns fund410
         val slotCoFinancing = slot<Iterable<ProjectReportCoFinancingEntity>>()
         val slotCertificateCoFinancing = slot<ReportProjectCertificateCoFinancingEntity>()
         every { projectReportCoFinancingRepository.saveAll(capture(slotCoFinancing)) } returnsArgument 0
@@ -555,7 +559,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
         // result and horizontal principle
         val resultIndicator = mockk<ResultIndicatorEntity>()
-        every { resultIndicatorRepository.getById(2L) } returns resultIndicator
+        every { resultIndicatorRepository.getReferenceById(2L) } returns resultIndicator
         val slotResult = slot<Iterable<ProjectReportProjectResultEntity>>()
         val slotPrinciple = slot<ProjectReportHorizontalPrincipleEntity>()
         every { projectResultRepository.saveAll(capture(slotResult)) } returnsArgument 0
@@ -563,13 +567,13 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
         // lump sums
         val lumpSumEntity = mockk<ProgrammeLumpSumEntity>()
-        every { programmeLumpSumRepository.getById(1L) } returns lumpSumEntity
+        every { programmeLumpSumRepository.getReferenceById(1L) } returns lumpSumEntity
         val lumpSumSlot = slot<Iterable<ReportProjectCertificateLumpSumEntity>>()
         every { reportProjectCertificateLumpSumRepository.saveAll(capture(lumpSumSlot)) } returnsArgument 0
 
         // unit costs
         val unitCostEntity = mockk<ProgrammeUnitCostEntity>()
-        every { programmeUnitCostRepository.getById(1L) } returns unitCostEntity
+        every { programmeUnitCostRepository.getReferenceById(1L) } returns unitCostEntity
         val unitCostSlot = slot<Iterable<ReportProjectCertificateUnitCostEntity>>()
         every { reportProjectCertificateUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 
@@ -580,7 +584,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         // spfContributions
         val fund01 = mockk<ProgrammeFundEntity>()
         every { fund01.id } returns 1L
-        every { programmeFundRepository.getById(1L) } returns fund01
+        every { programmeFundRepository.getReferenceById(1L) } returns fund01
         val spfContributions = slot<Iterable<ProjectReportSpfContributionClaimEntity>>()
         every {reportSpfContributionClaimRepository.saveAll(capture(spfContributions)) } returnsArgument 0
 
@@ -600,6 +604,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 partnerRole = ProjectPartnerRole.PARTNER,
                 country = "country-8",
                 previouslyReported = BigDecimal.valueOf(421L, 2),
+                partnerTotalEligibleBudget = BigDecimal.ZERO
             )
         )
 
