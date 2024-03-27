@@ -177,14 +177,16 @@
   },
   "authorizedPayments": [
     {
-      "projectCustomIdentifier": "setDuringTest",
-      "fundName": "ERDF",
-      "partnerPayments": [
+      "fundType": "ERDF",
+      "paymentType": "REGULAR",
+      "payments": [
         {
           "id": 0,
           "partnerId": 0,
-          "partnerType": "LEAD_PARTNER",
+          "partnerRole": "LEAD_PARTNER",
           "partnerAbbreviation": "Lead Partner",
+          "nameInEnglish": "Lead Partner in english",
+          "nameInOriginalLanguage": "Lead Partner in original language",
           "installments": [
             {
               "amountPaid": 571.99,
@@ -206,11 +208,7 @@
             }
           ]
         }
-      ],
-      "paymentType": "REGULAR",
-      "projectId": null,
-      "projectAcronym": "TB-1027",
-      "amountApprovedPerFund": 1894.93
+      ]
     }
   ]
 }

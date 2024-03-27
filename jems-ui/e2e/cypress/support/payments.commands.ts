@@ -10,24 +10,20 @@ declare global {
 Cypress.Commands.add('addAuthorizedPayments', (applicationId, testDataAuthorizedPayments) => {
   // map real ids from backend to test data payments
   testDataAuthorizedPayments.forEach(testDataAuthorizedPayment => {
-    testDataAuthorizedPayment.projectCustomIdentifier = String(applicationId).padStart(5, '0');
-    testDataAuthorizedPayment.projectId = applicationId;
-
     findProjectPayments(applicationId).then(projectPayments => {
       const fundPayment = projectPayments.find(payment =>
-          payment.fund.abbreviation.find(abbreviation => abbreviation.language === 'EN')
-              .translation === testDataAuthorizedPayment.fundName);
-      testDataAuthorizedPayment.partnerPayments.forEach(testDataPartnerPayment => {
+          payment.fund.type === testDataAuthorizedPayment.fundType && payment.paymentType === testDataAuthorizedPayment.paymentType);
+      testDataAuthorizedPayment.payments.forEach(testDataPayment => {
         cy.request(`api/payments/${fundPayment.id}`).then(function (response: any) {
-          const partnerPaymentInfo = response.body.partnerPayments.find((partnerPaymentInfo) => partnerPaymentInfo.partnerAbbreviation === testDataPartnerPayment.partnerAbbreviation)
-          testDataPartnerPayment.partnerId = this[testDataPartnerPayment.partnerAbbreviation]
-          testDataPartnerPayment.id = partnerPaymentInfo.id
+          const partnerPaymentInfo = response.body.partnerPayments.find((partnerPaymentInfo) => partnerPaymentInfo.partnerAbbreviation === testDataPayment.partnerAbbreviation)
+            testDataPayment.partnerId = this[partnerPaymentInfo.partnerAbbreviation]
+            testDataPayment.id = partnerPaymentInfo.id
         });
       });
       cy.request({
         method: 'PUT',
         url: `api/payments/${fundPayment.id}/partnerInstallments/`,
-        body: testDataAuthorizedPayment
+        body: testDataAuthorizedPayment.payments
       });
     });
   });
