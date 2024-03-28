@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultTranslEntity
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrincipleUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultUpdate
@@ -67,6 +68,7 @@ class ProjectReportResultPrinciplePersistenceProvider(
         if (results.isEmpty()) emptyMap() else
             projectPersistence
                 .getProjectPeriods(results.first().projectReport.projectId, results.first().projectReport.applicationFormVersion)
+                .plus(closurePeriod)
                 .associateBy { it.number }
 
     private fun List<ProjectReportProjectResultEntity>.updateProjectResults(

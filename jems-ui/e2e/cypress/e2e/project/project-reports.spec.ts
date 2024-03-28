@@ -144,7 +144,7 @@ context('Project report tests', () => {
     });
   });
 
-  it('TB-1023 PR - Work plan progress', function () {
+  it('TB-1023 PR - Work plan progress & Project results', function () {
     cy.fixture('project/reporting/TB-1023.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
         application.details.projectCallId = this.callId;
@@ -212,6 +212,25 @@ context('Project report tests', () => {
 
             cy.get('input[type=file]').eq(0).selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
             cy.contains('fileToUpload.txt').should('be.visible');
+
+            cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/resultsAndPrinciples`, {failOnStatusCode: false});
+
+            cy.contains('mat-expansion-panel', 'Result 1').within(() => {
+              cy.contains('Result 1').click();
+              cy.contains('mat-form-field', 'Delivery period').find('input').should('have.value', 'Period 8, month 22 - 24');
+              cy.contains('mat-form-field', 'Measurement Unit').find('input').should('have.value', 'annual FTEs');
+              cy.contains('mat-form-field', 'Baseline').find('input').should('have.value', '0,00');
+              cy.contains('mat-form-field', 'Target Value').find('input').should('have.value', '13,00');
+              cy.contains('mat-form-field', 'Cumulative value').find('input').should('have.value', '0,00');
+            });
+            cy.contains('mat-expansion-panel', 'Result 2').within(() => {
+              cy.contains('Result 2').click();
+              cy.contains('mat-form-field', 'Delivery period').find('input').should('have.value', 'After project implementation');
+              cy.contains('mat-form-field', 'Measurement Unit').find('input').should('have.value', 'annual FTEs');
+              cy.contains('mat-form-field', 'Baseline').find('input').should('have.value', '1,00');
+              cy.contains('mat-form-field', 'Target Value').find('input').should('have.value', '10,00');
+              cy.contains('mat-form-field', 'Cumulative value').find('input').should('have.value', '0,00');
+            });
           });
         });
       });

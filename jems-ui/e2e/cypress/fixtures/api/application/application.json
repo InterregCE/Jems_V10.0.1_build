@@ -2030,6 +2030,25 @@
             "language": "EN"
           }
         ]
+      },
+      {
+        "programmeResultIndicatorId": 1,
+        "programmeResultIndicatorIdentifier": null,
+        "resultNumber": 1,
+        "targetValue": 10,
+        "baseline": 1,
+        "baselineMaxValue": 0,
+        "periodNumber": 255,
+        "description": [
+          {
+            "translation": "API generated project result description for after project implementation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project result description for after project implementation EN",
+            "language": "EN"
+          }
+        ]
       }
     ],
     "management": {
