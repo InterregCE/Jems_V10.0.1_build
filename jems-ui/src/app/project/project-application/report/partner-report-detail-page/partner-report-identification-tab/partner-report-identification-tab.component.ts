@@ -28,7 +28,6 @@ export class PartnerReportIdentificationTabComponent {
   displayedColumns = ['partnerNumber', 'periodBudget', 'currentReport', 'periodBudgetCumulative', 'totalReportedSoFar', 'differenceFromPlan', 'differenceFromPlanPercentage', 'nextReportForecast'];
   APPLICATION_FORM = APPLICATION_FORM;
   CALL_PATH = CallStore.CALL_DETAIL_PATH;
-  canUserAccessCall$: Observable<boolean>;
 
   dateNameArgs = {
     startDate: 'start date',
@@ -42,6 +41,7 @@ export class PartnerReportIdentificationTabComponent {
     partnerSummary: ProjectPartnerSummaryDTO;
     relatedCall: ProjectCallSettingsDTO;
     canUserAccessCall: boolean;
+    vatRecoveryTranslKey: string;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -92,7 +92,8 @@ export class PartnerReportIdentificationTabComponent {
         identification,
         partnerSummary,
         relatedCall,
-        canUserAccessCall
+        canUserAccessCall,
+        vatRecoveryTranslKey: partnerReport.identification?.vatRecovery ? ('common.label.project.partner.recoverVat.' + partnerReport.identification.vatRecovery.toLowerCase()) : '',
       })),
       tap((data) => this.resetForm(data.identification)),
     );
