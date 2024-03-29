@@ -29,6 +29,57 @@
                     [type]="Alert.INFO">
             <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
         </jems-alert>
+      <mat-expansion-panel jemsNoWidthLimit class="mb-4"
+                           [expanded]="true">
+        <mat-expansion-panel-header>
+          <h4>{{'payments.payment.to.project.detail.bulk.title' | translate}}</h4>
+        </mat-expansion-panel-header>
+
+        <p>{{'payments.payment.to.project.detail.bulk.subtext.one' | translate}}</p>
+        <p>{{'payments.payment.to.project.detail.bulk.subtext.two' | translate}}</p>
+        <p>{{'payments.payment.to.project.detail.bulk.subtext.three' | translate}}</p>
+        <p>{{'payments.payment.to.project.detail.bulk.subtext.four' | translate}}</p>
+        <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
+
+        <button class="mr-2" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                (click)="addInstallmentForAll(data.paymentDetail.partnerPayments);
+                                                   $event.stopPropagation();">
+          + {{'payments.detail.table.header.installment.add.to.all.button' | translate}}
+        </button>
+
+        <button class="mr-2" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                (click)="authorizeAll(data.paymentDetail.partnerPayments);
+                                                     $event.stopPropagation();">
+          <mat-icon>check_box</mat-icon>
+          {{'payments.detail.table.header.installment.authorize.to.all.button' | translate}}
+        </button>
+
+        <span [formGroup]="allPaymentDateForm">
+          <mat-form-field class="date-field-for-filling-all">
+            <input name="allPaymentDatePicker"
+                   formControlName="allPaymentDateField" matInput
+                   [matDatepicker]="allPaymentDatePicker"
+                   aria-label="date">
+            <mat-datepicker-toggle matSuffix [for]="allPaymentDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #allPaymentDatePicker></mat-datepicker>
+          </mat-form-field>
+        </span>
+
+        <button class="mr-1" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                (click)="setDateToAll(data.paymentDetail.partnerPayments);
+                                                       $event.stopPropagation();">
+          <mat-icon>date_range</mat-icon>
+          {{'payments.detail.table.header.installment.fill.payment.date.to.all.button' | translate}}
+        </button>
+
+        <button mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                (click)="confirmAll(data.paymentDetail.partnerPayments);
+                                                       $event.stopPropagation();">
+          <mat-icon>check_box</mat-icon>
+          {{'payments.detail.table.header.installment.confirm.all.button' | translate}}
+        </button>
+      </mat-expansion-panel>
+
         <ng-container *ngIf="partnerPayments">
             <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
                  *ngIf="data.paymentDetail.partnerPayments as partnerPayments">

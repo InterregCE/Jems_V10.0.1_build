@@ -53,6 +53,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   userCanEdit$: Observable<boolean>;
   PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
 
+  allPaymentDateForm = this.formBuilder.group({
+    allPaymentDateField: this.formBuilder.control(null)
+  });
+
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
     projectCustomIdentifier: '',
@@ -128,6 +132,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.partnerPayments.forEach((partnerPayment, index) => this.addPartnerPayment(partnerPayment, index));
 
     this.updateAllPaymentRowToggleStates();
+    this.allPaymentDateForm.reset();
 
     this.userCanEdit$.pipe(
       tap(userCanEdit => this.disableAllFields(userCanEdit)),
@@ -220,7 +225,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         }),
         untilDestroyed(this)
       )
-      .subscribe(updatedPaymentDetail => this.paymentsDetailPageStore.savedPaymentDetail$.next(updatedPaymentDetail));
+      .subscribe(updatedPaymentDetail => {
+        this.paymentsDetailPageStore.savedPaymentDetail$.next(updatedPaymentDetail);
+        this.allPaymentDateForm.reset();
+      });
   }
 
   computeAvailableSum(paymentIndex: number): number {
@@ -330,6 +338,70 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       return false;
     }
     return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].paymentConfirmed || false;
+  }
+
+  addInstallmentForAll(payments: PaymentPartnerDTO[]): void {
+    payments.forEach((payment, index) => {
+      this.addInstallment(null, index);
+      if (!this.toggleStatesOfPaymentRows[index]) {
+        this.togglePaymentRowAtIndex(index);
+      }
+    });
+    this.formService.setDirty(true);
+  }
+
+  authorizeAll(payments: PaymentPartnerDTO[]): void {
+    payments.forEach((payment, index) => {
+      this.installmentsArray(index).controls.forEach((control, installmentIndex) => {
+        if (!this.isPaymentAuthorisationDisabled(index, installmentIndex) &&
+          !this.installmentsArray(index).at(installmentIndex).get('savePaymentInfo')?.value) {
+          this.setSavePaymentDateForAll(index, installmentIndex);
+        }
+      })
+    });
+    this.formService.setDirty(true);
+  }
+
+  confirmAll(payments: PaymentPartnerDTO[]): void {
+    payments.forEach((payment, index) => {
+      this.installmentsArray(index).controls.forEach((control, installmentIndex) => {
+        if (!this.isPaymentConfirmationDisabled(index, installmentIndex) &&
+        !this.installmentsArray(index).at(installmentIndex).get('paymentConfirmed')?.value) {
+          this.setConfirmPaymentDateForAll(index, installmentIndex);
+        }
+      })
+    });
+    this.formService.setDirty(true);
+  }
+
+  setSavePaymentDateForAll( paymentIndex: number, installmentIndex: number) {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfo')?.patchValue(true);
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('amountPaid')?.disable();
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentDate')?.setValue(this.getFormattedCurrentLocaleDate());
+      this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfoUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
+  }
+
+  setConfirmPaymentDateForAll(paymentIndex: number, installmentIndex: number) {
+    this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmed')?.setValue(true);
+    this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.setValidators([Validators.required]);
+    this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(this.getFormattedCurrentLocaleDate());
+    this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
+    if(!this.isPaymentDateEmpty(paymentIndex, installmentIndex)) {
+      this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
+    }
+    this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.updateValueAndValidity();
+  }
+
+  setDateToAll(payments: PaymentPartnerDTO[]): void {
+    payments.forEach((payment, index) => {
+      this.installmentsArray(index).controls.forEach((control, installmentIndex) => {
+        if (!this.installmentsArray(index).at(installmentIndex).get('paymentDate')?.value) {
+          this.installmentsArray(index).at(installmentIndex)
+            .get('paymentDate')?.patchValue(this.allPaymentDateForm.get('allPaymentDateField')?.value);
+        }
+      })
+    });
+    this.formService.setDirty(true);
   }
 
   addInstallmentButtonClicked(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {
