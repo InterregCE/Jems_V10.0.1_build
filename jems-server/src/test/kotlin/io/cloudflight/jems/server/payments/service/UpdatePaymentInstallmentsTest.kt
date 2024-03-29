@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class UpdatePaymentInstallmentsTest : UnitTest() {
@@ -107,6 +108,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectAcronym = "acronym",
             spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PartnerPayment(
                     id = 6L,
@@ -136,6 +138,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectAcronym = "acronym",
             spf = false,
             amountApprovedPerFund = BigDecimal.TEN,
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PartnerPayment(
                     id = 6L,
@@ -245,6 +248,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectAcronym = "acronym",
             spf = false,
             amountApprovedPerFund = mockk(),
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 6L,
@@ -270,6 +274,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             projectAcronym = "acronym",
             spf = false,
             amountApprovedPerFund = mockk(),
+            dateOfLastPayment = LocalDate.of(2024, 3, 26),
             partnerPayments = listOf(
                 PaymentPartnerDTO(
                     id = 6L,

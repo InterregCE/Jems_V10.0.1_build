@@ -38,6 +38,7 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
 
@@ -64,7 +65,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
             if (type == PaymentType.FTLS) ftlsPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID)
             else regularPaymentToProject.copy(paymentToEcId = PAYMENT_TO_EC_ID,
                 totalEligibleAmount = BigDecimal.TEN, fundAmount = BigDecimal.TEN, amountPaidPerFund = BigDecimal.ZERO,
-                lastApprovedVersionBeforeReadyForPayment = "v1.0")
+                lastApprovedVersionBeforeReadyForPayment = "v1.0", dateOfLastPayment = LocalDate.of(2024, 3, 26))
 
         private fun expectedPayment(type: PaymentTypeDTO) = PaymentToEcLinkingDTO(
             payment = PaymentToProjectDTO(
@@ -83,6 +84,7 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
                 paymentApprovalDate = PaymentsControllerTest.currentTime,
                 paymentClaimSubmissionDate = null,
                 totalEligibleAmount = BigDecimal.TEN,
+                dateOfLastPayment = LocalDate.of(2024, 3, 26),
                 lastApprovedVersionBeforeReadyForPayment = "v1.0",
                 remainingToBePaid = if (type == PaymentTypeDTO.FTLS) BigDecimal.valueOf(514L) else BigDecimal.valueOf(515L),
             ),
@@ -184,8 +186,9 @@ class PaymentToEcPaymentLinkingControllerTest : UnitTest() {
     @ParameterizedTest(name = "can fetch available payment for art 94 95 by paymentType {0}")
     @EnumSource(value = PaymentTypeDTO::class)
     fun getPaymentAvailableForArt94Art95(paymentType: PaymentTypeDTO) {
-        every { getPaymentsAvailableForArt94Art95Interactor.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID, paymentType.toModel()) } returns
-                PageImpl(listOf(payment(paymentType.toModel())))
+        val type = if (paymentType == PaymentTypeDTO.FTLS) PaymentType.FTLS else PaymentType.REGULAR
+        every { getPaymentsAvailableForArt94Art95Interactor.getPaymentList(Pageable.unpaged(), PAYMENT_TO_EC_ID, type) } returns
+                PageImpl(listOf(payment(type)))
 
         assertThat(controller.getPaymentsLinkedWithEcForArt94OrArt95(Pageable.unpaged(), PAYMENT_TO_EC_ID,  paymentType))
             .containsExactly(expectedPayment(paymentType))

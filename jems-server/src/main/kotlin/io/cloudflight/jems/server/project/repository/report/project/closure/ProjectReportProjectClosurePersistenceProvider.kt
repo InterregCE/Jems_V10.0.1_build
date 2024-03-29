@@ -23,7 +23,7 @@ class ProjectReportProjectClosurePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectReportProjectClosure(reportId: Long): ProjectReportProjectClosure {
-        val report = projectReportRepository.getById(reportId)
+        val report = projectReportRepository.getReferenceById(reportId)
         return ProjectReportProjectClosure(
             story = projectReportClosureStoryRepository.findAllByTranslationIdSourceEntity(report)
                 .extractField { it.story },
@@ -43,13 +43,13 @@ class ProjectReportProjectClosurePersistenceProvider(
 
     @Transactional
     override fun deleteProjectReportProjectClosure(reportId: Long) {
-        val report = projectReportRepository.getById(reportId)
+        val report = projectReportRepository.getReferenceById(reportId)
         projectReportClosurePrizeRepository.deleteAllByReportId(report.id)
         projectReportClosureStoryRepository.deleteAllByTranslationIdSourceEntity(report)
     }
 
     private fun updateClosureStory(reportId: Long, story: Set<InputTranslation>): Set<InputTranslation> {
-        val report = projectReportRepository.getById(reportId)
+        val report = projectReportRepository.getReferenceById(reportId)
         val storyTranslations = projectReportClosureStoryRepository.findAllByTranslationIdSourceEntity(report)
 
         storyTranslations.updateWith(

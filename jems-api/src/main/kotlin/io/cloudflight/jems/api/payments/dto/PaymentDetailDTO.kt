@@ -2,7 +2,7 @@ package io.cloudflight.jems.api.payments.dto
 
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import java.math.BigDecimal
-import java.time.ZonedDateTime
+import java.time.LocalDate
 
 data class PaymentDetailDTO(
     val id: Long,
@@ -14,7 +14,7 @@ data class PaymentDetailDTO(
     val spf: Boolean,
 
     val amountApprovedPerFund: BigDecimal,
-    val dateOfLastPayment: ZonedDateTime? = null,
+    val dateOfLastPayment: LocalDate?,
 
     val partnerPayments: List<PaymentPartnerDTO>
 )

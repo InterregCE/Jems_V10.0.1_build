@@ -23,7 +23,7 @@ fun PaymentDetail.toDataModel() = PaymentDetailData(
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
     amountApprovedPerFund = amountApprovedPerFund,
-    dateOfLastPayment = dateOfLastPayment,
+    dateOfLastPayment = dateOfLastPayment?.atStartOfDay(ZoneId.systemDefault()),
     partnerPayments = partnerPayments.map { it.toDataModel() }
 )
 

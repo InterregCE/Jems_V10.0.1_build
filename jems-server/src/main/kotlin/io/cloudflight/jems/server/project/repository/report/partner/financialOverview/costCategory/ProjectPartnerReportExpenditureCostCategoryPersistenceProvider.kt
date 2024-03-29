@@ -34,8 +34,8 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
     )
 
     @Transactional(readOnly = true)
-    override fun getVerificationCostCategoriesCumulative(partnerId: Long, finalizedProjectrepotIds: Set<Long>)=
-        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, finalizedProjectrepotIds)
+    override fun getVerificationCostCategoriesCumulative(partnerId: Long, finalizedProjectRepotIds: Set<Long>)=
+        expenditureCostCategoryRepository.findVerificationParkedCumulativeForProjectReportIds(partnerId, finalizedProjectRepotIds)
 
     @Transactional
     override fun updateCurrentlyReportedValues(
