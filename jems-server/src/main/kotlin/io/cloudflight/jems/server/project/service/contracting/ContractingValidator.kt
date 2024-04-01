@@ -46,7 +46,8 @@ open class ContractingValidator(
                 ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                 ApplicationStatus.IN_MODIFICATION,
                 ApplicationStatus.MODIFICATION_SUBMITTED,
-                ApplicationStatus.MODIFICATION_REJECTED
+                ApplicationStatus.MODIFICATION_REJECTED,
+                ApplicationStatus.CLOSED
             )
     }
 
