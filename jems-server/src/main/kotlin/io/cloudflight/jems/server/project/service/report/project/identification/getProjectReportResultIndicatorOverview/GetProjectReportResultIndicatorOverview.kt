@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,6 +14,7 @@ import java.math.BigDecimal
 @Service
 class GetProjectReportResultIndicatorOverview(
     private val workPlanPersistence: ProjectReportWorkPlanPersistence,
+    private val resultPrinciplePersistence: ProjectReportResultPrinciplePersistence
 ) : GetProjectReportResultIndicatorOverviewInteractor {
 
     @CanRetrieveProjectReport
@@ -22,10 +24,11 @@ class GetProjectReportResultIndicatorOverview(
         projectId: Long, reportId: Long
     ): Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>> {
         val workPackageOutputs = workPlanPersistence.getReportWorkPackageOutputsById(projectId, reportId)
+        val resultIndicatorsById = resultPrinciplePersistence.getProjectResultPrinciples(projectId, reportId)
+            .projectResults.associateBy { it.programmeResultIndicatorId }
 
-        val resultMap = workPackageOutputs.groupBy { it.outputIndicator ?: emptyOutputIndicator() }
-            .entries.groupBy { it.key.resultIndicator ?: emptyResultIndicator() }
-            .mapValues { it.value.associateBy({ it.key }, { it.value }) }
+        val resultMap = workPackageOutputs.groupBy { it.outputIndicator?.resultIndicator ?: emptyResultIndicator() }
+            .mapValues { it.value.groupBy { it.outputIndicator ?: emptyOutputIndicator() } }
 
         resultMap.forEach { (resultIndicator, outputIndicatorsMap) ->
             outputIndicatorsMap.forEach { (outputIndicator, outputs) ->
@@ -33,9 +36,9 @@ class GetProjectReportResultIndicatorOverview(
                 outputIndicator.previouslyReported = outputs.sumOf { it.previouslyReported }
                 outputIndicator.currentReport = outputs.sumOf { it.currentReport }
             }
-            resultIndicator.targetValue = outputIndicatorsMap.keys.sumOf { it.targetValue }
-            resultIndicator.previouslyReported = outputIndicatorsMap.keys.sumOf { it.previouslyReported }
-            resultIndicator.currentReport = outputIndicatorsMap.keys.sumOf { it.currentReport }
+            resultIndicator.targetValue = resultIndicatorsById[resultIndicator.id]?.targetValue ?: BigDecimal.ZERO
+            resultIndicator.previouslyReported = resultIndicatorsById[resultIndicator.id]?.cumulativeValue ?: BigDecimal.ZERO
+            resultIndicator.currentReport = resultIndicatorsById[resultIndicator.id]?.achievedInReportingPeriod ?: BigDecimal.ZERO
         }
 
         return resultMap

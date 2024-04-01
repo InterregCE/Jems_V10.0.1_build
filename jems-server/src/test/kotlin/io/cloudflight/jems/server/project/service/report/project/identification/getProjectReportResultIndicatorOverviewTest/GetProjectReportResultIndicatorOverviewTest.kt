@@ -6,12 +6,16 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportResultIndicatorOverview.GetProjectReportResultIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,9 +35,9 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
                 name = setOf(InputTranslation(SystemLanguage.EN, "3")),
                 measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "3")),
                 baseline = BigDecimal.valueOf(10),
-                targetValue = BigDecimal.valueOf(4711),
-                previouslyReported = BigDecimal.valueOf(4812),
-                currentReport = BigDecimal.valueOf(4913)
+                targetValue = BigDecimal.valueOf(10),
+                previouslyReported = BigDecimal.valueOf(0),
+                currentReport = BigDecimal.valueOf(500)
             )
 
             return mapOf(resultIndicator to outputIndicatorOverview(resultIndicator))
@@ -137,10 +141,37 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
         )
+
+        private val resultPrinciples = ProjectReportResultPrinciple(
+            projectResults = listOf(
+                ProjectReportProjectResult(
+                    resultNumber = 1,
+                    deactivated = false,
+                    programmeResultIndicatorId = 3L,
+                    programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                    programmeResultIndicatorIdentifier = "3",
+                    baseline = BigDecimal.ONE,
+                    targetValue = BigDecimal.TEN,
+                    achievedInReportingPeriod = BigDecimal.valueOf(500),
+                    cumulativeValue = BigDecimal.ZERO,
+                    periodDetail = mockk(),
+                    description = mockk(),
+                    measurementUnit = mockk(),
+                    attachment = null
+                )
+            ),
+            equalOpportunitiesDescription = mockk(),
+            horizontalPrinciples = mockk(),
+            sustainableDevelopmentDescription = mockk(),
+            sexualEqualityDescription = mockk()
+        )
     }
 
     @MockK
     private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence
+
+    @MockK
+    private lateinit var resultPrinciplePersistence: ProjectReportResultPrinciplePersistence
 
     @InjectMockKs
     lateinit var interactor: GetProjectReportResultIndicatorOverview
@@ -153,6 +184,7 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
     @Test
     fun getIdentification() {
         every { workPlanPersistence.getReportWorkPackageOutputsById(PROJECT_ID, REPORT_ID) } returns workPackageOutputs
+        every { resultPrinciplePersistence.getProjectResultPrinciples(PROJECT_ID, REPORT_ID) } returns resultPrinciples
 
         assertThat(interactor.getResultIndicatorOverview(PROJECT_ID, REPORT_ID))
             .usingRecursiveComparison()
