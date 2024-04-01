@@ -70,7 +70,7 @@ class ProjectReportSpendingProfileCalculator(
             SpendingProfileLine(
                 partnerRole = partnerDetails.role,
                 partnerNumber = partnerDetails.sortNumber!!,
-                partnerAbbreviation = partnerDetails.nameInEnglish ?: "",
+                partnerAbbreviation = partnerDetails.abbreviation,
                 partnerCountry = partnerCountry,
                 currentReport = currentReport,
                 previouslyReported = previouslyReported,
