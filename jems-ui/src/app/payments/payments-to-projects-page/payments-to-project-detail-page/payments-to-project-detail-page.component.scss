@@ -28,6 +28,18 @@ table {
 
 }
 
+button .mat-icon {
+  font-size: 1.5em;
+}
+.all-dates-block {
+  display: inline-block;
+  .mat-icon {
+    font-size: 1.5em;
+    vertical-align: middle;
+  }
+}
+
+
 // payment columns
 .column-installment-number {
   min-width: 5rem;
