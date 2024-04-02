@@ -206,7 +206,7 @@ export class ProjectPartnerStore {
   private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$,
       this.partnerUpdateEvent$
     ])
       .pipe(
@@ -238,7 +238,7 @@ export class ProjectPartnerStore {
   }
 
   private getPartnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
-    return this.projectVersionStore.lastApprovedOrContractedVersion$
+    return this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$
       .pipe(
         map(lastApprovedVersion => lastApprovedVersion?.version),
         filter(version => !!version),
