@@ -9,27 +9,29 @@
                aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
             </a>
-            <h3 class="mb-4 put-icon-to-header-line">{{'payments.advance.payments.detail.back.button' | translate}}</h3>
+            <h3 class="mb-4 put-icon-to-header-line">{{ 'payments.advance.payments.detail.back.button' | translate }}</h3>
         </div>
 
-        <h3 *ngIf="paymentId">{{'payments.advance.payments.detail.header' | translate : {
-            advancePaymentId: paymentId
-        } }}</h3>
-        <p>{{'payments.advance.payments.detail.subheader' | translate}}</p>
+        <h3 *ngIf="paymentId">{{
+                'payments.advance.payments.detail.header' | translate : {
+                    advancePaymentId: paymentId
+                }
+            }}</h3>
+        <p>{{ 'payments.advance.payments.detail.subheader' | translate }}</p>
 
         <jems-alert [show]="true"
                     [type]="Alert.WARNING">
-            <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
+            <span>{{ 'payments.detail.installment.deletion.not.possible.warning' | translate }}</span>
         </jems-alert>
 
         <jems-alert [show]="successfulAuthorizationMessage"
                     [type]="Alert.SUCCESS">
-            <p>{{'payment.advance.authorise.payment.update.successful' | translate}}</p>
+            <p>{{ 'payment.advance.authorise.payment.update.successful' | translate }}</p>
         </jems-alert>
 
         <jems-alert [show]="successfulConfirmationMessage"
                     [type]="Alert.SUCCESS">
-            <p>{{'payment.advance.confirmation.payment.update.successful' | translate}}</p>
+            <p>{{ 'payment.advance.confirmation.payment.update.successful' | translate }}</p>
         </jems-alert>
 
         <jems-alert [show]="displayOldProjectVersionAlert && !data.paymentDetail.paymentAuthorized"
@@ -72,7 +74,7 @@
                                                   [displayWith]="displayProjectIdentifier"
                                                   (optionSelected)="projectSelected($event.option?.value)">
                                     <mat-option *ngFor="let project of contractedProjects$ | async" [value]="project" class="autocomplete-text-size">
-                                        {{project.customIdentifier}}
+                                        {{ project.customIdentifier }}
                                     </mat-option>
                                 </mat-autocomplete>
                                 <mat-error>
@@ -87,12 +89,14 @@
 
                         <div class="column-project-acronym" #projectAcronym
                              [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value">
-                            {{advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value}}
+                            {{ advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value }}
                         </div>
 
                         <div class="column-partner-name">
                             <mat-form-field class="w-100">
-                                <mat-select class="placeholder-required" #partnerSelect
+                                <mat-select #partnerSelect
+                                            id="partner"
+                                            class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
                                             (selectionChange)="setFundsAndContributionData($event.value)"
                                             [compareWith]="getPartnerToDisplay"
@@ -100,19 +104,20 @@
                                             [placeholder]="'payments.advance.payments.detail.partner.dropdown.placeholder' | translate">
 
                                     <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
-                                        {{partner.partnerSummary.abbreviation}}
+                                        {{ partner.partnerSummary.abbreviation }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
 
                         <div class="column-partner-role">
-                            <span> {{getPartnerRole(advancePayment.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.value?.partnerSummary)}}</span>
+                            <span> {{ getPartnerRole(advancePayment.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.value?.partnerSummary) }}</span>
                         </div>
 
                         <div class="column-advance-source">
                             <mat-form-field class="w-100">
                                 <mat-select #advanceSourceSelect
+                                            id="source"
                                             class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
                                             [compareWith]="getSourceToDisplay"
@@ -122,7 +127,7 @@
                                     <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
                                                   label="{{'payments.advance.payments.detail.funds.label' | translate}}">
                                         <mat-option *ngFor="let fund of fundsAndContributions?.partnerCoFinancing" [value]="{type: 'fund', data: fund}">
-                                            {{fund.abbreviation | translateBySystemLanguage | async}}
+                                            {{ fund.abbreviation | translateBySystemLanguage | async }}
                                         </mat-option>
                                     </mat-optgroup>
 
@@ -130,7 +135,7 @@
                                                   label="{{'payments.advance.payments.detail.contributions.label' | translate}}">
                                         <mat-option *ngFor="let contribution of fundsAndContributions?.partnerContributions"
                                                     [value]="{type: 'contribution', data: contribution}">
-                                            {{contribution.name}}
+                                            {{ contribution.name }}
                                         </mat-option>
                                     </mat-optgroup>
 
@@ -138,7 +143,7 @@
                                                   label="{{'payments.advance.payments.detail.contributions.spf.label' | translate}}">
                                         <mat-option *ngFor="let spfContribution of fundsAndContributions?.partnerContributionsSpf"
                                                     [value]="{type: 'spfContribution', data: spfContribution}">
-                                            {{spfContribution.name}}
+                                            {{ spfContribution.name }}
                                         </mat-option>
                                     </mat-optgroup>
                                 </mat-select>
@@ -148,7 +153,9 @@
                         <div class="column-advance-amount justify-center">
                             <mat-form-field class="w-100">
                                     <span [ngClass]="{'marked-as-required' : !isPaymentValueValid(inputAdvanceAmount.value)}">
-                                        <input #inputAdvanceAmount matInput type="decimal" currencyMask required
+                                        <input #inputAdvanceAmount
+                                               name="paid"
+                                               matInput type="decimal" currencyMask required
                                                [options]="{max: constants.MAX_VALUE, align:'right'}"
                                                [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
                                     </span>
@@ -177,15 +184,16 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox
-                                        [disabled]="isPaymentAuthorisationDisabled()"
-                                        (change)="setPaymentAuthorised($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
+                                <mat-checkbox id="authorize"
+                                              [disabled]="isPaymentAuthorisationDisabled()"
+                                              (change)="setPaymentAuthorised($event.checked)"
+                                              [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
-                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
-                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email">
-                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                    <span>{{ getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value) }}</span>
+                                    <div class="text-overflow-ellipsis"
+                                         [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email">
+                                        <span jemsText>{{ advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -212,16 +220,18 @@
 
                         <div class="column-checkbox justify-start">
                             <div class="display-row">
-                                <mat-checkbox [disabled]="isPaymentConfirmationDisabled()"
+                                <mat-checkbox id="confirm"
+                                              [disabled]="isPaymentConfirmationDisabled()"
                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed"
                                               [checked]="advancePaymentForm.get(constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value === true"
                                               (change)="setConfirmPaymentDate($event.checked)">
 
                                 </mat-checkbox>
                                 <div class="column-checkbox-text-content">
-                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
-                                    <div class="text-overflow-ellipsis" [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email">
-                                        <span jemsText>{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    <span>{{ getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value) }}</span>
+                                    <div class="text-overflow-ellipsis"
+                                         [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email">
+                                        <span jemsText>{{ advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -248,13 +258,15 @@
                                 <div class="column-advance-amount justify-end">{{ 'payments.advance.payments.detail.settlement.amount' | translate }}</div>
                                 <div class="column-date justify-start">{{ 'payments.advance.payments.detail.settlement.date' | translate }}</div>
                                 <div class="column-comment">{{ 'payments.advance.payments.detail.settlement.comment' | translate }}</div>
-                                <div *ngIf="data.userCanEdit" class="column-delete">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}</div>
+                                <div *ngIf="data.userCanEdit"
+                                     class="column-delete">{{ 'payments.advance.payments.detail.settlement.delete.button' | translate }}
+                                </div>
                             </div>
 
                             <div *ngFor="let settlement of settlementsArray.controls; let i=index">
                                 <ng-container formArrayName="paymentSettlements">
                                     <ng-container [formGroupName]="i">
-                                        <div class="column-settlement-number">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr)?.value}}</div>
+                                        <div class="column-settlement-number">{{ settlement.get(constants.FORM_CONTROL_NAMES.settlementNr)?.value }}</div>
                                         <div class="column-advance-amount">
                                             <mat-form-field class="w-100">
                                                 <input name="amountSettled"
@@ -268,7 +280,8 @@
                                         <div class="column-date">
                                             <mat-form-field class="w-100">
                                                     <span [ngClass]="{'marked-as-required' : !inputSettlementDate.value}">
-                                                        <input #inputSettlementDate name="settlementDate"
+                                                        <input #inputSettlementDate
+                                                               name="settlementDate"
                                                                class="placeholder-required empty"
                                                                [formControlName]="constants.FORM_CONTROL_NAMES.settlementDate" matInput
                                                                [matDatepicker]="settlementDatePicker">
@@ -317,7 +330,7 @@
                         <button *ngIf="data.userCanEdit && (settlementsArray.length < 25)" mat-stroked-button
                                 class="mt-2"
                                 (click)="addSettlement()">
-                            {{'payments.advance.payments.detail.settlement.add.button' | translate}}
+                            {{ 'payments.advance.payments.detail.settlement.add.button' | translate }}
                         </button>
                     </div>
                 </ng-container>

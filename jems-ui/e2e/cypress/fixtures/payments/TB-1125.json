@@ -1,0 +1,15 @@
+{
+  "partnerUser": {
+    "email": "randomize",
+    "name": "Partner",
+    "surname": "User",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "users": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ]
+}

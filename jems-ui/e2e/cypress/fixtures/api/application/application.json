@@ -735,7 +735,8 @@
             "fundId": 8,
             "fundType": "MainFund",
             "percentage": 14.66
-          }, {
+          },
+          {
             "percentage": 25.34,
             "fundType": "PartnerContribution"
           }
