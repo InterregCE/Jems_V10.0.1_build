@@ -14,8 +14,6 @@ import partner from '@fixtures/api/application/partner/partner.json';
 import {projectReportPage} from './reports-page.pom';
 import {ProjectReportType} from './ProjectReportType';
 import controllerAssignment from "@fixtures/api/control/assignment.json";
-import {loginByRequest} from "../../support/login.commands";
-import date from 'date-and-time';
 
 context('Project report tests', () => {
 
@@ -621,18 +619,13 @@ context('Project report tests', () => {
 
         cy.loginByRequest(user.applicantUser.email);
         cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const reportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           projectReportPage.verifyAmountsInTables(testData.expectedResults);
         });
       });
     });
   });
-
 
   it('TB-1129 PR - Financial overview - Summary of deducted items by control shows correct figures across multiple project reports', function () {
     cy.fixture('project/reporting/TB-1129.json').then(testData => {
@@ -679,127 +672,126 @@ context('Project report tests', () => {
       });
     });
   });
-
 });
 
 function createProjectReport(forPeriod: number) {
-    cy.contains('Add Project Report').click();
+  cy.contains('Add Project Report').click();
 
-    cy.contains('div', 'Reporting period start date (').next().click();
-    cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+  cy.contains('div', 'Reporting period start date (').next().click();
+  cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
 
-    cy.contains('div', 'Reporting period end date (').next().click();
-    cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+  cy.contains('div', 'Reporting period end date (').next().click();
+  cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
 
-    cy.contains('Link to reporting schedule').click();
-    cy.contains('mat-option span', `${forPeriod}, Period ${forPeriod}`).click();
+  cy.contains('Link to reporting schedule').click();
+  cy.contains('mat-option span', `${forPeriod}, Period ${forPeriod}`).click();
 
-    cy.contains('button', 'Create').should('be.enabled').click();
+  cy.contains('button', 'Create').should('be.enabled').click();
 }
 
 function createProjectReportWithoutReportingSchedule(applicationId: number, reportType: ProjectReportType) {
-    cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-    cy.contains('Add Project Report').click();
+  cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
+  cy.contains('Add Project Report').click();
 
-    cy.contains('jems-project-periods-select', 'Reporting period').click();
-    cy.contains('mat-option span', `Period 1`).click();
-    cy.contains('button', reportType).should('be.enabled').click();
+  cy.contains('jems-project-periods-select', 'Reporting period').click();
+  cy.contains('mat-option span', `Period 1`).click();
+  cy.contains('button', reportType).should('be.enabled').click();
 
-    cy.contains('div', 'Reporting date').next().click();
-    cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+  cy.contains('div', 'Reporting date').next().click();
+  cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
 
-    cy.contains('button', 'Create').should('be.enabled').click();
-    cy.wait(2000);
+  cy.contains('button', 'Create').should('be.enabled').click();
+  cy.wait(2000);
 }
 
 function assertProjectReportData(partnerDetails: any, afVersion: string) {
-    cy.contains('span', 'Name of the organisation in original language').next().should('contain', partnerDetails.nameInOriginalLanguage);
-    cy.contains('span', 'Name of the organisation in english').next().should('contain', partnerDetails.nameInEnglish);
-    cy.contains('span', 'AF Version linked').next().should('contain', afVersion);
+  cy.contains('span', 'Name of the organisation in original language').next().should('contain', partnerDetails.nameInOriginalLanguage);
+  cy.contains('span', 'Name of the organisation in english').next().should('contain', partnerDetails.nameInEnglish);
+  cy.contains('span', 'AF Version linked').next().should('contain', afVersion);
 }
 
 function formatAmount(amount) {
-    return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
+  return new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2}).format(amount);
 }
 
 function performControlWorkAndFinalize(reportId, partnerId) {
-    cy.loginByRequest(user.controllerUser.email);
-    cy.startControlWork(partnerId, reportId);
+  cy.loginByRequest(user.controllerUser.email);
+  cy.startControlWork(partnerId, reportId);
 
-    cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
-    cy.finalizeControl(partnerId, reportId);
+  cy.updateControlReportIdentification(partnerId, reportId, controlReportIdentification);
+  cy.finalizeControl(partnerId, reportId);
 }
 
 function setReadyForPayment(flag, rowIndex) {
-    const ready = flag ? 'Yes' : 'No';
-    cy.get('div.jems-table-config').eq(1).children().eq(rowIndex).contains(ready).click();
-    cy.contains('Save changes').should('be.visible').click();
-    cy.contains('Contract monitoring form saved successfully.').should('be.visible');
-    cy.contains('Contract monitoring form saved successfully.').should('not.exist');
+  const ready = flag ? 'Yes' : 'No';
+  cy.get('div.jems-table-config').eq(1).children().eq(rowIndex).contains(ready).click();
+  cy.contains('Save changes').should('be.visible').click();
+  cy.contains('Contract monitoring form saved successfully.').should('be.visible');
+  cy.contains('Contract monitoring form saved successfully.').should('not.exist');
 }
 
 function createReportingDeadlines(applicationId, testData, deadlines) {
-    cy.loginByRequest(user.programmeUser.email);
-    const yesterday = new Date((new Date()).valueOf() - (1000 * 60 * 60 * 24));
+  cy.loginByRequest(user.programmeUser.email);
+  const yesterday = new Date((new Date()).valueOf() - (1000 * 60 * 60 * 24));
 
-    testData.deadlines[0].date = deadlines.content ?? yesterday;
-    testData.deadlines[1].date = deadlines.finance ?? yesterday;
+  testData.deadlines[0].date = deadlines.content ?? yesterday;
+  testData.deadlines[1].date = deadlines.finance ?? yesterday;
 
-    return cy.createReportingDeadlines(applicationId, testData.deadlines);
+  return cy.createReportingDeadlines(applicationId, testData.deadlines);
 }
 
 function createJsMaUser(testData) {
-    cy.loginByRequest(user.admin.email);
-    testData.jsmaUser.email = faker.internet.email();
+  cy.loginByRequest(user.admin.email);
+  testData.jsmaUser.email = faker.internet.email();
 
-    cy.createRole(testData.jsmaRole).then(roleId => {
-        testData.jsmaUser.userRoleId = roleId;
+  cy.createRole(testData.jsmaRole).then(roleId => {
+    testData.jsmaUser.userRoleId = roleId;
 
-        cy.createUser(testData.jsmaUser).as("jsmaUserId");
-    });
+    cy.createUser(testData.jsmaUser).as("jsmaUserId");
+  });
 }
 
 function setPartnerReportExpenditureVerificationIds(savedExpenditures, expendituresVerification) {
-    for (let i = 0; i < savedExpenditures.length; i++) {
-        expendituresVerification[i].id = savedExpenditures[i].id;
-    }
+  for (let i = 0; i < savedExpenditures.length; i++) {
+    expendituresVerification[i].id = savedExpenditures[i].id;
+  }
 }
 
 function createCertifiedPartnerReport(partnerId: number, partnerReportExpenditures: [], expenditureVerifications: []) {
-    const rawPartnerReportDetails = {
-        partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
-        controlWork: reporting.projectReports[0].partnerReports[0].controlWork
-    };
-    const partnerReportDetails = JSON.parse(JSON.stringify(rawPartnerReportDetails));
-    partnerReportDetails.partnerReport.expenditures.splice(4, 5);
-    partnerReportDetails.partnerReport.expenditures.push(...partnerReportExpenditures);
+  const rawPartnerReportDetails = {
+    partnerReport: reporting.projectReports[0].partnerReports[0].partnerReport,
+    controlWork: reporting.projectReports[0].partnerReports[0].controlWork
+  };
+  const partnerReportDetails = JSON.parse(JSON.stringify(rawPartnerReportDetails));
+  partnerReportDetails.partnerReport.expenditures.splice(4, 5);
+  partnerReportDetails.partnerReport.expenditures.push(...partnerReportExpenditures);
 
-    partnerReportDetails.controlWork.expenditureVerification.splice(4, 5);
-    partnerReportDetails.controlWork.expenditureVerification.push(...expenditureVerifications);
+  partnerReportDetails.controlWork.expenditureVerification.splice(4, 5);
+  partnerReportDetails.controlWork.expenditureVerification.push(...expenditureVerifications);
 
-    cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
+  cy.createCertifiedPartnerReport(partnerId, partnerReportDetails, user.controllerUser.email);
 }
 
 function createVerifiedProjectReport(applicationId: number, verificationExpenditure: any) {
-    const rawProjectReportDetails = {
-        projectReport: reporting.projectReports[0].projectReport,
-        verificationWork: reporting.projectReports[0].verificationWork
-    };
+  const rawProjectReportDetails = {
+    projectReport: reporting.projectReports[0].projectReport,
+    verificationWork: reporting.projectReports[0].verificationWork
+  };
 
-    const projectReportDetails = JSON.parse(JSON.stringify(rawProjectReportDetails));
-    projectReportDetails.verificationWork.expenditures = Array(10).fill(verificationExpenditure);
-    cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email);
+  const projectReportDetails = JSON.parse(JSON.stringify(rawProjectReportDetails));
+  projectReportDetails.verificationWork.expenditures = Array(10).fill(verificationExpenditure);
+  cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email);
 }
 
 function editFTLSPayment(applicationId: number, ftlsNumber: number, isPaid: boolean) {
   cy.visit(`app/payments/paymentsToProjects`, {failOnStatusCode: false});
   cy.contains('mat-expansion-panel-header', 'Filters').click();
-  cy.get('mat-expansion-panel').contains('div','ProjectID').find('input').type(applicationId + '{enter}');
+  cy.get('mat-expansion-panel').contains('div', 'ProjectID').find('input').type(applicationId + '{enter}');
   cy.get('jems-table').find('mat-row').eq(ftlsNumber).click();
-  cy.contains('button', 'Add installment').click();
+  cy.contains('div.full-payment-row', 'Lead Partner').find('button').click();
   cy.get('.installments-table').find('mat-checkbox').eq(0).click();
   if (isPaid) {
-    cy.get('mat-datepicker-toggle').find('button').click();
+    cy.get('div.installments-table mat-datepicker-toggle').find('button').click();
     cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
     cy.get('.installments-table').find('mat-checkbox').eq(1).click();
   }

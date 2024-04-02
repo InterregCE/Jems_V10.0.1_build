@@ -343,11 +343,8 @@ Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reporti
   }).then(response => {
     response.body.forEach((deadline, index) => {
       reportingDeadlines[index].id = deadline.id;
-      if (reportingDeadlines[index].cypressDeadlineReference) {
-        cy.wrap(deadline.id).as(reportingDeadlines[index].cypressDeadlineReference);
-      }
-      cy.wrap(response.body);
     });
+    return response.body
   });
 });
 

@@ -1824,8 +1824,7 @@
         "details": {
           "startDate": "2024-01-01T00:00:00.000Z",
           "endDate": "2024-12-31T00:00:00.000Z",
-          "deadlineId": null,
-          "cypressDeadlineReference": "bothDeadline"
+          "deadlineId": null
         },
         "identification": {
           "targetGroups": [
