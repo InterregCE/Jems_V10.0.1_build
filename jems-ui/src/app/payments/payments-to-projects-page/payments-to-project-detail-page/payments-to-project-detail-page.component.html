@@ -66,6 +66,7 @@
             </span>
             <mat-icon>keyboard_double_arrow_right</mat-icon>
             <button class="mr-3" jemsText mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                    [disabled]="!allPaymentDateForm?.controls?.allPaymentDateField?.value"
                     (click)="setDateToAll(data.paymentDetail.partnerPayments);
                                                            $event.stopPropagation();">
                 {{'payments.detail.table.header.installment.fill.payment.date.to.all.button' | translate}}
