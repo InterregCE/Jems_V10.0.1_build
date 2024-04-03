@@ -119,7 +119,7 @@ internal class GetGberSectionServiceTest : UnitTest() {
         every { partnerPersistence.getPartnerStateAid(PARTNER_ID, LAST_APPROVED_VERSION) } returns getStateAid(hasRisk = false, gberStateAid)
 
         Assertions.assertThat(getContractingPartnerStateAidGberService.getGberSection(PARTNER_ID)).isEqualTo(
-            null
+            expectedGberSection
         )
     }
 

@@ -135,7 +135,7 @@ internal class GetDeMinimisSectionServiceTest : UnitTest() {
         every { programmeDataService.getProgrammeDataOrThrow() } returns getProgrammeData()
 
         Assertions.assertThat(getContractingPartnerStateAidDeMinimisService.getDeMinimisSection(PARTNER_ID)).isEqualTo(
-            null
+            expectedDeMinimisSection
         )
     }
 
