@@ -343,8 +343,11 @@ Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reporti
   }).then(response => {
     response.body.forEach((deadline, index) => {
       reportingDeadlines[index].id = deadline.id;
+      if (reportingDeadlines[index].cypressDeadlineReference) {
+        cy.wrap(deadline.id).as(reportingDeadlines[index].cypressDeadlineReference);
+      }
+      cy.wrap(response.body)
     });
-    return response.body
   });
 });
 
@@ -354,10 +357,10 @@ Cypress.Commands.add('updateReportingDeadlines', (applicationId: number, reporti
 });
 
 Cypress.Commands.add('getReportingDeadlines', (applicationId: number) => {
-    cy.request({
-        method: 'GET',
-        url: `api/project/${applicationId}/contracting/reporting`,
-    }).then((response) => response.body);
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/contracting/reporting`,
+  }).then((response) => response.body);
 });
 
 Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {

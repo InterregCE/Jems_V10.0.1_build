@@ -45,7 +45,18 @@ context('Project report tests', () => {
       cy.contains('li span', 'Project reports').click();
 
       // 2
-      createProjectReport(1);
+      cy.contains('Add Project Report').click();
+
+      cy.contains('div', 'Reporting period start date (').next().click();
+      cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+
+      cy.contains('div', 'Reporting period end date (').next().click();
+      cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
+
+      cy.contains('Link to reporting schedule').click();
+      cy.contains('mat-option span', '1, Period 1').click();
+
+      cy.contains('button', 'Create').should('be.enabled').click();
       assertProjectReportData(originalPartnerDetails, '1.0');
 
       // 3
@@ -67,9 +78,10 @@ context('Project report tests', () => {
       assertProjectReportData(originalPartnerDetails, '1.0');
 
       // 5
-      cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-      createProjectReport(2);
-      assertProjectReportData(updatedPartnerDetails, '2.0');
+      cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[1].id}).then(projectReportId => {
+        cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/`, {failOnStatusCode: false});
+        assertProjectReportData(updatedPartnerDetails, '2.0');
+      });
 
       // 6.
       const rejectedPartnerDetails = {
@@ -85,9 +97,10 @@ context('Project report tests', () => {
       cy.rejectModification(applicationId, rejectionInfo, user.programmeUser.email);
 
       // 7
-      cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-      createProjectReport(3);
-      assertProjectReportData(updatedPartnerDetails, '2.0');
+      cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+        cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}`, {failOnStatusCode: false});
+        assertProjectReportData(updatedPartnerDetails, '2.0');
+      });
     });
   });
 
@@ -419,7 +432,6 @@ context('Project report tests', () => {
 
         const partnerId = this[application.partners[0].details.abbreviation];
         // First - partner and project report
-        // cy.createVerifiedProjectReport(applicationId, projectReportDetails, user.verificationUser.email).then(projectReportId => {
         cy.completeReporting(applicationId, reporting).then(projectReportId => {
           cy.visit(`/app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           projectReportPage.verifyAmountsInTables(testData.projectReport1ExpectedResults);
@@ -488,13 +500,8 @@ context('Project report tests', () => {
         });
 
         cy.loginByRequest(user.applicantUser.email);
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const reportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           cy.contains('Project expenditure - breakdown per investment').scrollIntoView().should('be.visible');
           projectReportPage.verifyAmountsInTables(testData.expectedResults);
         });
@@ -521,22 +528,17 @@ context('Project report tests', () => {
         createCertifiedPartnerReport(partnerId, partnerReportExpenditures, expenditureVerifications);
 
         cy.loginByRequest(user.applicantUser.email);
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const reportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
           projectReportPage.verifyAmountsInTables(testData.expectedResults.firstResults);
 
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/certificate`, {failOnStatusCode: false});
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/certificate`, {failOnStatusCode: false});
           cy.contains('mat-row', 'PP2').find('mat-checkbox').click();
           cy.contains('Confirm').click();
           cy.contains('mat-row', 'PP2').find('mat-checkbox').should('not.be.checked')
 
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/financialOverview`, {failOnStatusCode: false});
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
           projectReportPage.verifyAmountsInTables(testData.expectedResults.secondResults);
         });
@@ -570,28 +572,20 @@ context('Project report tests', () => {
           createCertifiedPartnerReport(thirdPartnerId, partnerReportExpenditures, expenditureVerifications);
         });
 
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const secondReportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${secondReportId}/certificate`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/certificate`, {failOnStatusCode: false});
           cy.get('mat-table').find('mat-checkbox').eq(0).get('input').should('be.enabled');
           cy.get('mat-table').find('mat-checkbox').eq(1).get('input').should('be.enabled');
           cy.get('mat-table').find('mat-checkbox').eq(2).get('input').should('be.disabled');
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${secondReportId}/financialOverview`, {failOnStatusCode: false});
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           cy.contains('Project expenditure - overview per partner/per cost category - Current report').scrollIntoView().should('be.visible');
           projectReportPage.verifyAmountsInTables(testData.expectedResults.thirdResults);
         });
 
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const thirdReportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${thirdReportId}/certificate`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
+          cy.contains('Project expenditure - breakdown per Unit cost (in Euro)').scrollIntoView();
+          cy.contains('Project expenditure - breakdown per Unit cost (in Euro)').should('be.visible');
           cy.contains('Project expenditure - overview per partner/per cost category - Current report').should('not.exist');
         });
       });
@@ -647,47 +641,22 @@ context('Project report tests', () => {
         createCertifiedSecondPartnerReport(partnerId, applicationId, partnerReportExpenditures);
 
         cy.loginByRequest(user.applicantUser.email);
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(2); // Finance type
-        cy.wait(2000);
-        cy.url().then(url => {
-          const firstReportId = Number(url.replace('/identification', '').split('/').pop());
-
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${firstReportId}/financialOverview`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
           cy.contains('Project expenditure - Summary of deducted items by control - Current report').scrollIntoView().should('be.visible');
           projectReportPage.verifyAmountsInTables(testData.expectedResults.firstResults, '#breakdown-per-partner-deduction-table');
         });
 
-        cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
-        cy.wait(2000);
-        createProjectReport(3);
-
-        cy.wait(2000);
-        cy.url().then(url => {
-          const secondReportId = Number(url.replace('/identification', '').split('/').pop());
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${secondReportId}/financialOverview`, {failOnStatusCode: false});
+        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
+          cy.contains('Project expenditure - breakdown per Unit cost (in Euro)').scrollIntoView();
+          cy.contains('Project expenditure - breakdown per Unit cost (in Euro)').should('be.visible');
           cy.contains('Project expenditure - Summary of deducted items by control - Current report').should('not.exist');
         });
       });
     });
   });
 });
-
-function createProjectReport(forPeriod: number) {
-  cy.contains('Add Project Report').click();
-
-  cy.contains('div', 'Reporting period start date (').next().click();
-  cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
-
-  cy.contains('div', 'Reporting period end date (').next().click();
-  cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
-
-  cy.contains('Link to reporting schedule').click();
-  cy.contains('mat-option span', `${forPeriod}, Period ${forPeriod}`).click();
-
-  cy.contains('button', 'Create').should('be.enabled').click();
-}
 
 function createProjectReportWithoutReportingSchedule(applicationId: number, reportType: ProjectReportType) {
   cy.visit(`/app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});

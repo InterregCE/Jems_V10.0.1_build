@@ -308,160 +308,157 @@ context('Payments tests', () => {
   });
 
   it('TB-1125 Advance Payments for contracted projects', function () {
-    cy.fixture('payments/TB-1125.json').then(testData => {
-      cy.fixture('api/application/application.json').then(application => {
+    cy.fixture('api/application/application.json').then(application => {
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+      });
+
+      cy.loginByRequest(user.applicantUser.email);
+      const firstPartner = application.partners[0].details.abbreviation;
+      const secondPartner = application.partners[1].details.abbreviation;
+      cy.createApprovedApplication(application, user.programmeUser.email).then((applicationId: number) => {
+        const projectIdentifier = `${applicationId}`.padStart(5, '0');
+
+        // Group order 1
+        cy.loginByRequest(paymentsUser.email);
+        cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
+
+        // Group order 2
+        cy.contains('button', 'Add advance payment').click();
+        cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
+        cy.contains('Please select a valid project');
+
+        // Group order 3
+        cy.setProjectToContracted(applicationId, user.programmeUser.email);
+
+        // Group order 4
+        cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
+        cy.contains('button', 'Add advance payment').click();
+        cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
+        cy.wait(100);
+        cy.contains('mat-option', projectIdentifier).click();
+        cy.wait(100);
+        cy.get('mat-select[id="partner"]').click();
+        cy.wait(100);
+        cy.contains('mat-option', firstPartner).should('be.visible').click();
+
+        cy.get('mat-select[id="source"]').click();
+        cy.contains('mat-option', "ERDF").should('be.visible');
+        cy.contains('mat-option', "Other fund EN").should('be.visible');
+        cy.contains('mat-option', "Lead contribution 1").should('be.visible');
+        cy.contains('mat-option', "Lead contribution 2").should('be.visible').click();
+
+        cy.get('mat-select[id="partner"]').click();
+        cy.contains('mat-option', secondPartner).should('be.visible').click();
+        cy.get('mat-select[id="source"]').click();
+        cy.contains('mat-option', "Other fund EN").should('be.visible');
+        cy.contains('mat-option', "Neighbourhood CBC").should('be.visible');
+        cy.contains('mat-option', "Partner contribution 1").should('be.visible');
+        cy.contains('mat-option', "Partner contribution 2").should('be.visible').click();
+
+        // Group order 5
+        // Payment A
+        createAdvancePayment(projectIdentifier, firstPartner, 'ERDF', '1.000,00');
+        authorizeAdvancePayment();
+        saveAdvancePayment();
+
         cy.loginByRequest(user.programmeUser.email);
-        cy.createCall(call).then(callId => {
-          application.details.projectCallId = callId;
-          cy.publishCall(callId);
-        });
+        cy.visit(`/app/project/detail/${applicationId}/`, {failOnStatusCode: false});
+        cy.contains('Advance Payments').should('not.exist');
 
+        // Group order 6
+        cy.loginByRequest(paymentsUser.email);
+        cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
+        cy.contains('mat-row', projectIdentifier).find('a').click();
+        confirmAdvancePayment();
+        saveAdvancePayment();
+        settleAdvancePayment('500,00');
+
+        // Payment B
+        createAdvancePayment(projectIdentifier, secondPartner, 'Neighbourhood CBC', '10.000,00');
+        authorizeAdvancePayment();
+        confirmAdvancePayment();
+        saveAdvancePayment();
+        settleAdvancePayment('10000,00');
+
+        // Payment C
+        createAdvancePayment(projectIdentifier, secondPartner, 'Neighbourhood CBC', '100,00');
+        saveAdvancePayment();
+
+        // Assert advance payments
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
+        cy.contains('Advance Payments').should('be.visible');
+        assertAdvancePayment('LP', '1.000,00', '500,00', '500,00');
+        assertAdvancePayment('PP2', '10.000,0', '10.000,00', '0,00');
+
+        // Group order 7
         cy.loginByRequest(user.applicantUser.email);
-        const firstPartner = application.partners[0].details.abbreviation;
-        const secondPartner = application.partners[1].details.abbreviation;
-        cy.createApprovedApplication(application, user.programmeUser.email).then((applicationId: number) => {
-          const projectIdentifier = `${applicationId}`.padStart(5, '0');
+        cy.startModification(applicationId, user.programmeUser.email);
 
-          // Group order 1
-          cy.loginByRequest(paymentsUser.email);
-          cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
+        updateFinancing(this[application.partners[0].details.abbreviation], application.partners[0]);
+        cy.submitProjectApplication(applicationId);
+        cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
 
-          // Group order 2
-          cy.contains('button', 'Add advance payment').click();
-          cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-          cy.contains('Please select a valid project');
+        // Group order 8
+        cy.loginByRequest(paymentsUser.email);
+        cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
+        cy.wait(100);
+        cy.contains('button', 'Add advance payment').click();
+        cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
+        cy.wait(100);
+        cy.contains('mat-option', projectIdentifier).click();
+        cy.wait(100);
+        cy.get('mat-select[id="partner"]').click();
+        cy.contains('mat-option', firstPartner).should('be.visible').click();
 
-          // Group order 3
-          cy.setProjectToContracted(applicationId, user.programmeUser.email);
+        cy.get('mat-select[id="source"]').click();
+        cy.contains('mat-option', "ERDF").should('not.exist');
+        cy.contains('mat-option', "Lead contribution 1").should('not.exist');
+        cy.contains('mat-option', "Lead contribution 2").should('not.exist');
+        cy.contains('mat-option', "Other fund EN").should('be.visible');
 
-          // Group order 4
-          cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
-          cy.contains('button', 'Add advance payment').click();
-          cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-          cy.wait(100);
-          cy.contains('mat-option', projectIdentifier).click();
-          cy.wait(100);
-          cy.get('mat-select[id="partner"]').click();
-          cy.wait(100);
-          cy.contains('mat-option', firstPartner).should('be.visible').click();
+        // Group order 9
+        cy.loginByRequest(paymentsUser.email);
+        cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
+        getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('not.exist');
 
-          cy.get('mat-select[id="source"]').click();
-          cy.contains('mat-option', "ERDF").should('be.visible');
-          cy.contains('mat-option', "Other fund EN").should('be.visible');
-          cy.contains('mat-option', "Lead contribution 1").should('be.visible');
-          cy.contains('mat-option', "Lead contribution 2").should('be.visible').click();
+        // Group order 10
+        getAdvancePayment(projectIdentifier, secondPartner).find('a').click();
+        cy.contains('Confirm payment').scrollIntoView().should('be.visible');
+        cy.get('mat-checkbox[id="confirm"] input').should('be.disabled');
 
-          cy.get('mat-select[id="partner"]').click();
-          cy.contains('mat-option', secondPartner).should('be.visible').click();
-          cy.get('mat-select[id="source"]').click();
-          cy.contains('mat-option', "Other fund EN").should('be.visible');
-          cy.contains('mat-option', "Neighbourhood CBC").should('be.visible');
-          cy.contains('mat-option', "Partner contribution 1").should('be.visible');
-          cy.contains('mat-option', "Partner contribution 2").should('be.visible').click();
+        // Group order 11
+        cy.contains('button', 'delete').should('be.enabled').click();
+        saveAdvancePayment()
 
-          // Group order 5
-          // Payment A
-          createAdvancePayment(projectIdentifier, firstPartner, 'ERDF', '1.000,00');
-          authorizeAdvancePayment();
-          saveAdvancePayment();
+        cy.get('mat-checkbox[id="confirm"]').click();
+        saveAdvancePayment();
+        cy.wait(1000);
 
-          cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/`, {failOnStatusCode: false});
-          cy.contains('Advance Payments').should('not.exist');
+        cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
+        cy.contains('mat-row', '10.000,00').find('button.delete-button').should('not.exist');
 
-          // Group order 6
-          cy.loginByRequest(paymentsUser.email);
-          cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
-          cy.contains('mat-row', projectIdentifier).find('a').click();
-          confirmAdvancePayment();
-          saveAdvancePayment();
-          settleAdvancePayment('500,00');
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
+        cy.contains('mat-row', secondPartner).should('not.exist');
 
-          // Payment B
-          createAdvancePayment(projectIdentifier, secondPartner, 'Neighbourhood CBC', '10.000,00');
-          authorizeAdvancePayment();
-          confirmAdvancePayment();
-          saveAdvancePayment();
-          settleAdvancePayment('10000,00');
+        // Group order 12
+        cy.loginByRequest(paymentsUser.email);
+        cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
+        getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('not.exist');
+        getAdvancePayment(projectIdentifier, secondPartner).find('a').click();
 
-          // Payment C
-          createAdvancePayment(projectIdentifier, secondPartner, 'Neighbourhood CBC', '100,00');
-          saveAdvancePayment();
+        cy.contains('Authorise payment').scrollIntoView().should('be.visible');
+        cy.get('mat-checkbox[id="authorize"]').click();
+        saveAdvancePayment()
 
-          // Assert advance payments
-          cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
-          cy.contains('Advance Payments').should('be.visible');
-          assertAdvancePayment('LP', '1.000,00', '500,00', '500,00');
-          assertAdvancePayment('PP2', '10.000,0', '10.000,00', '0,00');
-
-          // Group order 7
-          cy.loginByRequest(user.applicantUser.email);
-          cy.startModification(applicationId, user.programmeUser.email);
-
-          updateFinancing(this[application.partners[0].details.abbreviation], application.partners[0]);
-          cy.submitProjectApplication(applicationId);
-          cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
-
-          // Group order 8
-          cy.loginByRequest(paymentsUser.email);
-          cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
-          cy.wait(100);
-          cy.contains('button', 'Add advance payment').click();
-          cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-          cy.wait(100);
-          cy.contains('mat-option', projectIdentifier).click();
-          cy.wait(100);
-          cy.get('mat-select[id="partner"]').click();
-          cy.contains('mat-option', firstPartner).should('be.visible').click();
-
-          cy.get('mat-select[id="source"]').click();
-          cy.contains('mat-option', "ERDF").should('not.exist');
-          cy.contains('mat-option', "Lead contribution 1").should('not.exist');
-          cy.contains('mat-option', "Lead contribution 2").should('not.exist');
-          cy.contains('mat-option', "Other fund EN").should('be.visible');
-
-          // Group order 9
-          cy.loginByRequest(paymentsUser.email);
-          cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
-          getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('not.exist');
-
-          // Group order 10
-          getAdvancePayment(projectIdentifier, secondPartner).find('a').click();
-          cy.contains('Confirm payment').scrollIntoView().should('be.visible');
-          cy.get('mat-checkbox[id="confirm"] input').should('be.disabled');
-
-          // Group order 11
-          cy.contains('button', 'delete').should('be.enabled').click();
-          saveAdvancePayment()
-
-          cy.contains('Confirm payment').scrollIntoView().should('be.visible');
-          cy.get('mat-checkbox[id="confirm"]').click();
-          saveAdvancePayment();
-          cy.wait(1000);
-
-          cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
-          cy.contains('mat-row', '10.000,00').find('button.delete-button').should('not.exist');
-
-          cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
-          cy.contains('mat-row', secondPartner).should('not.exist');
-
-          // Group order 12
-          cy.loginByRequest(paymentsUser.email);
-          cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
-          getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('not.exist');
-          getAdvancePayment(projectIdentifier, secondPartner).find('a').click();
-
-          cy.contains('Authorise payment').scrollIntoView().should('be.visible');
-          cy.get('mat-checkbox[id="authorize"]').click();
-          saveAdvancePayment()
-
-          cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
-          cy.contains('Delete').scrollIntoView().should('be.visible');
-          getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('be.visible').click({force: true});
-          cy.contains('button', 'Confirm').click();
-        });
+        cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
+        cy.contains('Delete').scrollIntoView().should('be.visible');
+        getAdvancePayment(projectIdentifier, secondPartner).find('button.delete-button').should('be.visible').click({force: true});
+        cy.contains('button', 'Confirm').click();
       });
     });
   });
