@@ -31,7 +31,7 @@
                         </div>
                         <div class="baseline text-right">
                             <span [innerText]="'project.application.project.report.overview.baseline' | translate"></span>
-                            <div [innerText]="resultOverview.baseline | asMoney"></div>
+                            <div [innerText]="resultOverview.baselines"></div>
                         </div>
                         <div class="targetValue text-right">
                             <span [innerText]="'project.application.project.report.overview.target.value' | translate"></span>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <ng-container *ngFor="let outputOverview of resultOverview.outputOverviews">
+                <ng-container *ngFor="let outputOverview of resultOverview.outputIndicators">
 
                     <mat-table jemsNoWidthLimit class="table-container output mt-2"
                                [dataSource]="getDataSource(outputOverview.outputs)">
@@ -138,6 +138,7 @@
 
                     </mat-table>
                 </ng-container>
+                <div *ngFor="let result of resultOverview.results">{{ result | json }}</div>
             </div>
         </jems-multi-language-container>
     </div>

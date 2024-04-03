@@ -58,8 +58,8 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
             programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "test-en")),
             baseline = BigDecimal.valueOf(1),
             targetValue = BigDecimal.valueOf(2),
-            achievedInReportingPeriod = BigDecimal.valueOf(3),
-            cumulativeValue = BigDecimal.valueOf(4),
+            currentReport = BigDecimal.valueOf(3),
+            previouslyReported = BigDecimal.valueOf(4),
             periodDetail = ProjectPeriod(4, 12, 24),
             description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
             measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
@@ -76,8 +76,8 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
                     programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "test-en")),
                     baseline = BigDecimal.valueOf(1),
                     targetValue = BigDecimal.valueOf(2),
-                    achievedInReportingPeriod = BigDecimal.valueOf(3),
-                    cumulativeValue = BigDecimal.valueOf(4),
+                    currentReport = BigDecimal.valueOf(3),
+                    previouslyReported = BigDecimal.valueOf(4),
                     periodDetail = ProjectPeriodDTO(4, 12, 24, null, null),
                     description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
@@ -211,8 +211,8 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
         assertThat(projectResultActual.resultNumber).isEqualTo(projectResultExpected.resultNumber)
         assertThat(projectResultActual.baseline).isEqualTo(projectResultExpected.baseline)
         assertThat(projectResultActual.targetValue).isEqualTo(projectResultExpected.targetValue)
-        assertThat(projectResultActual.achievedInReportingPeriod).isEqualTo(projectResultExpected.achievedInReportingPeriod)
-        assertThat(projectResultActual.cumulativeValue).isEqualTo(projectResultExpected.cumulativeValue)
+        assertThat(projectResultActual.currentReport).isEqualTo(projectResultExpected.currentReport)
+        assertThat(projectResultActual.previouslyReported).isEqualTo(projectResultExpected.previouslyReported)
 
         val effectActual = result.horizontalPrinciples
         val principlesExpected = expected.horizontalPrinciples

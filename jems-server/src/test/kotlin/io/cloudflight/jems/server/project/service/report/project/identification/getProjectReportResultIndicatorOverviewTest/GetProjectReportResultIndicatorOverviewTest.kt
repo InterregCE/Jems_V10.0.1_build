@@ -3,15 +3,21 @@ package io.cloudflight.jems.server.project.service.report.project.identification
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorsAndResults
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.identification.getProjectReportResultIndicatorOverview.GetProjectReportResultIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,17 +29,22 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
         private const val PROJECT_ID = 1L
         private const val REPORT_ID = 2L
 
+        private val period = mockk<ProjectPeriod>()
+        private val description = mockk<Set<InputTranslation>>()
+        private val measurementUnit = mockk<Set<InputTranslation>>()
+
         private fun resultIndicatorOverview()
-            : Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>> {
+            : Map<ProjectReportResultIndicatorOverview, ProjectReportOutputIndicatorsAndResults> {
             val resultIndicator = ProjectReportResultIndicatorOverview(
                 id = 3L,
                 identifier = "3",
                 name = setOf(InputTranslation(SystemLanguage.EN, "3")),
                 measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "3")),
-                baseline = BigDecimal.valueOf(10),
-                targetValue = BigDecimal.valueOf(4711),
-                previouslyReported = BigDecimal.valueOf(4812),
-                currentReport = BigDecimal.valueOf(4913)
+                baselineIndicator = BigDecimal.valueOf(10),
+                baselines = listOf(BigDecimal.valueOf(12L), BigDecimal.valueOf(13L)),
+                targetValue = BigDecimal.valueOf(17L),
+                previouslyReported = BigDecimal.valueOf(121L),
+                currentReport = BigDecimal.valueOf(555L)
             )
 
             return mapOf(resultIndicator to outputIndicatorOverview(resultIndicator))
@@ -41,7 +52,7 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
 
         private fun outputIndicatorOverview(
             resultIndicator: ProjectReportResultIndicatorOverview
-        ): Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>> {
+        ): ProjectReportOutputIndicatorsAndResults {
             val outputIndicator = ProjectReportOutputIndicatorOverview(
                 id = 4L,
                 identifier = "4",
@@ -53,8 +64,8 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
                 resultIndicator = resultIndicator,
             )
 
-            return mapOf(
-                outputIndicator to listOf(
+            return ProjectReportOutputIndicatorsAndResults(
+                outputIndicators = mapOf(outputIndicator to listOf(
                     ProjectReportOutputLineOverview(
                         number = 5,
                         workPackageNumber = 5,
@@ -86,7 +97,54 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
                             )
                         ),
                     )
-                )
+                )),
+                results = listOf(
+                    ProjectReportProjectResult(
+                        resultNumber = 1,
+                        deactivated = false,
+                        programmeResultIndicatorId = 3L,
+                        programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                        programmeResultIndicatorIdentifier = "3",
+                        baseline = BigDecimal.valueOf(12L),
+                        targetValue = BigDecimal.valueOf(10L),
+                        currentReport = BigDecimal.valueOf(500L),
+                        previouslyReported = BigDecimal.valueOf(100L),
+                        periodDetail = period,
+                        description = description,
+                        measurementUnit = measurementUnit,
+                        attachment = null,
+                    ),
+                    ProjectReportProjectResult(
+                        resultNumber = 2,
+                        deactivated = true,
+                        programmeResultIndicatorId = 3L,
+                        programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                        programmeResultIndicatorIdentifier = "3",
+                        baseline = BigDecimal.valueOf(13L),
+                        targetValue = BigDecimal.valueOf(2L),
+                        currentReport = BigDecimal.valueOf(50L),
+                        previouslyReported = BigDecimal.valueOf(10L),
+                        periodDetail = period,
+                        description = description,
+                        measurementUnit = measurementUnit,
+                        attachment = null,
+                    ),
+                    ProjectReportProjectResult(
+                        resultNumber = 3,
+                        deactivated = false,
+                        programmeResultIndicatorId = 3L,
+                        programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                        programmeResultIndicatorIdentifier = "3",
+                        baseline = BigDecimal.valueOf(12L),
+                        targetValue = BigDecimal.valueOf(5L),
+                        currentReport = BigDecimal.valueOf(5L),
+                        previouslyReported = BigDecimal.valueOf(11L),
+                        periodDetail = period,
+                        description = description,
+                        measurementUnit = measurementUnit,
+                        attachment = null,
+                    ),
+                ),
             )
         }
 
@@ -122,9 +180,9 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "$id")),
             measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "$id")),
             resultIndicator = resultIndicator(resultId),
-            targetValue = BigDecimal.ZERO,
-            previouslyReported = BigDecimal.ZERO,
-            currentReport = BigDecimal.ZERO,
+            targetValue = BigDecimal.valueOf(0L),
+            previouslyReported = BigDecimal.valueOf(0L),
+            currentReport = BigDecimal.valueOf(0L),
         )
 
         private fun resultIndicator(id: Long) = ProjectReportResultIndicatorOverview(
@@ -132,15 +190,73 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
             identifier = "$id",
             name = setOf(InputTranslation(SystemLanguage.EN, "$id")),
             measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "$id")),
-            baseline = BigDecimal.TEN,
+            baselineIndicator = BigDecimal.TEN,
+            baselines = listOf(BigDecimal.valueOf(12L), BigDecimal.valueOf(13L)),
             targetValue = BigDecimal.ZERO,
             previouslyReported = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
+        )
+
+        private val resultPrinciples = ProjectReportResultPrinciple(
+            projectResults = listOf(
+                ProjectReportProjectResult(
+                    resultNumber = 1,
+                    deactivated = false,
+                    programmeResultIndicatorId = 3L,
+                    programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                    programmeResultIndicatorIdentifier = "3",
+                    baseline = BigDecimal.valueOf(12L),
+                    targetValue = BigDecimal.valueOf(10L),
+                    currentReport = BigDecimal.valueOf(500L),
+                    previouslyReported = BigDecimal.valueOf(100L),
+                    periodDetail = period,
+                    description = description,
+                    measurementUnit = measurementUnit,
+                    attachment = null,
+                ),
+                ProjectReportProjectResult(
+                    resultNumber = 2,
+                    deactivated = true,
+                    programmeResultIndicatorId = 3L,
+                    programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                    programmeResultIndicatorIdentifier = "3",
+                    baseline = BigDecimal.valueOf(13L),
+                    targetValue = BigDecimal.valueOf(2L),
+                    currentReport = BigDecimal.valueOf(50L),
+                    previouslyReported = BigDecimal.valueOf(10L),
+                    periodDetail = period,
+                    description = description,
+                    measurementUnit = measurementUnit,
+                    attachment = null,
+                ),
+                ProjectReportProjectResult(
+                    resultNumber = 3,
+                    deactivated = false,
+                    programmeResultIndicatorId = 3L,
+                    programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "3")),
+                    programmeResultIndicatorIdentifier = "3",
+                    baseline = BigDecimal.valueOf(12L),
+                    targetValue = BigDecimal.valueOf(5L),
+                    currentReport = BigDecimal.valueOf(5L),
+                    previouslyReported = BigDecimal.valueOf(11L),
+                    periodDetail = period,
+                    description = description,
+                    measurementUnit = measurementUnit,
+                    attachment = null,
+                ),
+            ),
+            equalOpportunitiesDescription = mockk(),
+            horizontalPrinciples = mockk(),
+            sustainableDevelopmentDescription = mockk(),
+            sexualEqualityDescription = mockk()
         )
     }
 
     @MockK
     private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence
+
+    @MockK
+    private lateinit var resultPrinciplePersistence: ProjectReportResultPrinciplePersistence
 
     @InjectMockKs
     lateinit var interactor: GetProjectReportResultIndicatorOverview
@@ -153,9 +269,9 @@ internal class GetProjectReportResultIndicatorOverviewTest : UnitTest() {
     @Test
     fun getIdentification() {
         every { workPlanPersistence.getReportWorkPackageOutputsById(PROJECT_ID, REPORT_ID) } returns workPackageOutputs
+        every { resultPrinciplePersistence.getProjectResultPrinciples(PROJECT_ID, REPORT_ID) } returns resultPrinciples
 
         assertThat(interactor.getResultIndicatorOverview(PROJECT_ID, REPORT_ID))
-            .usingRecursiveComparison()
-            .isEqualTo(resultIndicatorOverview())
+            .containsExactlyEntriesOf(resultIndicatorOverview())
     }
 }
