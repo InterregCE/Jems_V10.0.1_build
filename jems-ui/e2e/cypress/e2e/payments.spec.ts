@@ -337,11 +337,8 @@ context('Payments tests', () => {
         cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
         cy.contains('button', 'Add advance payment').click();
         cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-        cy.wait(100);
-        cy.contains('mat-option', projectIdentifier).click();
-        cy.wait(100);
-        cy.get('mat-select[id="partner"]').click();
-        cy.wait(100);
+        cy.contains('mat-option', projectIdentifier).should('be.visible').click();
+        cy.get('mat-select[id="partner"]').should('be.visible').click();
         cy.contains('mat-option', firstPartner).should('be.visible').click();
 
         cy.get('mat-select[id="source"]').click();
@@ -408,10 +405,8 @@ context('Payments tests', () => {
         cy.wait(100);
         cy.contains('button', 'Add advance payment').click();
         cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-        cy.wait(100);
-        cy.contains('mat-option', projectIdentifier).click();
-        cy.wait(100);
-        cy.get('mat-select[id="partner"]').click();
+        cy.contains('mat-option', projectIdentifier).should('be.visible').click();
+        cy.get('mat-select[id="partner"]').should('be.visible').click();
         cy.contains('mat-option', firstPartner).should('be.visible').click();
 
         cy.get('mat-select[id="source"]').click();
@@ -436,7 +431,6 @@ context('Payments tests', () => {
 
         cy.get('mat-checkbox[id="confirm"]').click();
         saveAdvancePayment();
-        cy.wait(1000);
 
         cy.visit(`/app/payments/advancePayments/`, {failOnStatusCode: false});
         cy.contains('mat-row', '10.000,00').find('button.delete-button').should('not.exist');
@@ -525,12 +519,9 @@ function createAdvancePayment(projectIdentifier: string, partner: string, fund: 
   cy.visit('/app/payments/advancePayments/', {failOnStatusCode: false});
   cy.contains('button', 'Add advance payment').click();
   cy.get('input[name="projectCustomIdentifier"]').type(projectIdentifier);
-  cy.wait(100);
-  cy.contains('mat-option', projectIdentifier).click();
-  cy.wait(100);
-  cy.get('mat-select[id="partner"]').click();
-  cy.wait(100);
-  cy.contains('mat-option', partner).click();
+  cy.contains('mat-option', projectIdentifier).should('be.visible').click();
+  cy.get('mat-select[id="partner"]').should('be.visible').click();
+  cy.contains('mat-option', partner).should('be.visible').click();
   cy.get('mat-select[id="source"]').click();
   cy.contains('mat-option', fund).click();
   cy.get('input[name="paid"]').type(amount);
@@ -581,6 +572,8 @@ function getAdvancePayment(projectIdentifier: string, partner: string) {
 
 function saveAdvancePayment() {
   cy.intercept('PUT', `/api/advancePayment`).as('submitAdvancePayment');
-  cy.contains('Save changes').should('be.enabled').click();
+  cy.contains('Save changes').should('be.visible').click();
   cy.wait('@submitAdvancePayment');
+  // TODO switch to UI assert (remove intercept) as soon as MP2-4595 is solved
+  // cy.contains('Payment details have been saved successfully!').should('be.visible')
 }
