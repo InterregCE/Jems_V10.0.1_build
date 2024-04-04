@@ -206,7 +206,7 @@ export class ProjectPartnerStore {
   private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$,
       this.partnerUpdateEvent$
     ])
       .pipe(
@@ -219,7 +219,7 @@ export class ProjectPartnerStore {
       .pipe(
         filter(([projectId, version]) => !!projectId),
         switchMap(([projectId, versions]) => {
-            const contractedVersion = this.getLastContractedVersion(versions);
+            const contractedVersion = this.getLastContractedOrClosedVersion(versions);
             this.lastContractedVersion$.next(contractedVersion);
             return contractedVersion ? this.projectPartnerReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
               : of([]);
@@ -232,13 +232,13 @@ export class ProjectPartnerStore {
       );
   }
 
-  private getLastContractedVersion(versions: ProjectVersionDTO[]): string {
-    return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED)
+  private getLastContractedOrClosedVersion(versions: ProjectVersionDTO[]): string {
+    return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED || version.status === StatusEnum.CLOSED)
       .sort((a, b) => a.createdAt > b.createdAt ? -1 : 1))?.version;
   }
 
   private getPartnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
-    return this.projectVersionStore.lastApprovedOrContractedVersion$
+    return this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$
       .pipe(
         map(lastApprovedVersion => lastApprovedVersion?.version),
         filter(version => !!version),

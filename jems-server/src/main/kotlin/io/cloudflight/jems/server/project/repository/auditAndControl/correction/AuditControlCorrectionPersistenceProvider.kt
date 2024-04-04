@@ -238,13 +238,12 @@ class AuditControlCorrectionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment> =
         getSelectableCorrections(projectId, CorrectionImpactAction.PAYMENT_IMPACTS)
-            .groupBy { it.partnerReport!!.partnerId }
-            .map {
-                AvailableCorrectionsForPayment(
-                    partnerId = it.key,
-                    corrections = it.value.map { it.toSimpleModel() }
-                )
-            }
+            .groupBy { it.partnerId() }
+            .filterKeys { it != null }
+            .map { (partnerId, corrections) -> AvailableCorrectionsForPayment(
+                partnerId = partnerId!!,
+                corrections = corrections.toSimpleModel(),
+            ) }
 
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForModification(projectId: Long): List<AuditControlCorrection> =

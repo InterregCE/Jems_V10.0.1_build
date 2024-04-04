@@ -200,7 +200,7 @@ class ProjectReportSpendingProfileCalculatorTest: UnitTest() {
         every { leadPartner.id } returns 10L
         every { leadPartner.sortNumber } returns 1
         every { leadPartner.role } returns ProjectPartnerRole.LEAD_PARTNER
-        every { leadPartner.nameInEnglish } returns "ABC"
+        every { leadPartner.abbreviation } returns "ABC"
         every { leadPartner.addresses } returns listOf(
             ProjectPartnerAddress(
                 type = ProjectPartnerAddressType.Organization,
@@ -212,7 +212,7 @@ class ProjectReportSpendingProfileCalculatorTest: UnitTest() {
         every { partner2.id } returns 11L
         every { partner2.sortNumber } returns 2
         every { partner2.role } returns ProjectPartnerRole.PARTNER
-        every { partner2.nameInEnglish } returns "DEF"
+        every { partner2.abbreviation } returns "DEF"
         every { partner2.addresses } returns listOf(
             ProjectPartnerAddress(
                 type = ProjectPartnerAddressType.Organization,
@@ -256,7 +256,7 @@ class ProjectReportSpendingProfileCalculatorTest: UnitTest() {
         every { leadPartner.id } returns 10L
         every { leadPartner.sortNumber } returns 1
         every { leadPartner.role } returns ProjectPartnerRole.LEAD_PARTNER
-        every { leadPartner.nameInEnglish } returns "ABC"
+        every { leadPartner.abbreviation } returns "ABC"
         every { leadPartner.addresses } returns listOf(
             ProjectPartnerAddress(
                 type = ProjectPartnerAddressType.Organization,
@@ -268,7 +268,7 @@ class ProjectReportSpendingProfileCalculatorTest: UnitTest() {
         every { partner2.id } returns 11L
         every { partner2.sortNumber } returns 2
         every { partner2.role } returns ProjectPartnerRole.PARTNER
-        every { partner2.nameInEnglish } returns "PP2 name in EN"
+        every { partner2.abbreviation } returns "PP2 name in EN"
         every { partner2.addresses } returns emptyList()
 
         every { partnerPersistence.findTop50ByProjectId(PROJECT_ID, any()) } returns listOf(leadPartner, partner2)

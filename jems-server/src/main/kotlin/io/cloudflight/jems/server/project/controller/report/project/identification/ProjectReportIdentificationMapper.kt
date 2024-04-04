@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.report.project.identification.UpdateP
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputIndicatorOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportOutputLineOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportResultIndicatorOverviewDTO
+import io.cloudflight.jems.server.project.controller.report.project.resultPrinciple.toDto
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
@@ -17,11 +18,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileLine
 import io.cloudflight.jems.server.project.service.report.model.project.identification.SpendingProfileTotal
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorsAndResults
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
-import java.math.BigDecimal
 
 private val mapper = Mappers.getMapper(ProjectReportIdentificationMapper::class.java)
 
@@ -82,18 +83,20 @@ fun ProjectReportIdentificationTargetGroup.toDto() = ProjectReportIdentification
 fun UpdateProjectReportIdentificationDTO.toModel() = mapper.map(this)
 fun ProjectReportOutputLineOverview.toDto() = mapper.map(this)
 
-fun Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>>.toResultDto() =
-    map { (resultIndicator, outputIndicators) ->
+fun Map<ProjectReportResultIndicatorOverview, ProjectReportOutputIndicatorsAndResults>.toResultDto() =
+    map { (resultIndicator, outputIndicatorsAndResults) ->
         ProjectReportResultIndicatorOverviewDTO(
             id = resultIndicator.id,
             identifier = resultIndicator.identifier,
             name = resultIndicator.name,
             measurementUnit = resultIndicator.measurementUnit,
-            baseline = resultIndicator.baseline ?: BigDecimal.ZERO,
+            baselineIndicator = resultIndicator.baselineIndicator,
+            baselines = resultIndicator.baselines,
             targetValue = resultIndicator.targetValue,
             previouslyReported = resultIndicator.previouslyReported,
             currentReport = resultIndicator.currentReport,
-            outputOverviews = outputIndicators.toOutputDto()
+            outputIndicators = outputIndicatorsAndResults.outputIndicators.toOutputDto(),
+            results = outputIndicatorsAndResults.results.map { it.toDto() },
         )
     }.sortedBy { it.id ?: Long.MAX_VALUE }
 

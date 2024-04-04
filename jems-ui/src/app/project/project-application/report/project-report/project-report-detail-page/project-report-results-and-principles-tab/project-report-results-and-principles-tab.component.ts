@@ -141,7 +141,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
 
   resetForm(resultsAndPrinciples: ProjectReportResultPrincipleDTO, reportEditable: boolean, reopenedLimited: boolean) {
     const attachments: [JemsFileMetadataDTO] = this.results.value.map((result: any) => result.attachment);
-    this.initialCumulativeValues = resultsAndPrinciples.projectResults.map((result: ProjectReportProjectResultDTO) => result.cumulativeValue);
+    this.initialCumulativeValues = resultsAndPrinciples.projectResults.map((result: ProjectReportProjectResultDTO) => result.previouslyReported);
     this.results.clear();
     resultsAndPrinciples.projectResults.forEach((resultDTO: ProjectReportProjectResultDTO, index) => {
       const result = this.formBuilder.group({
@@ -153,8 +153,8 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
         baseline: this.formBuilder.control({value: resultDTO.baseline, disabled: true}),
         periodDetail: this.formBuilder.control(resultDTO.periodDetail),
         targetValue: this.formBuilder.control({value: resultDTO.targetValue, disabled: true}),
-        achievedInReportingPeriod: this.formBuilder.control({value: resultDTO.achievedInReportingPeriod, disabled: !reportEditable || reopenedLimited}),
-        cumulativeValue: this.formBuilder.control({value: resultDTO.cumulativeValue + resultDTO.achievedInReportingPeriod, disabled: true}),
+        achievedInReportingPeriod: this.formBuilder.control({value: resultDTO.currentReport, disabled: !reportEditable || reopenedLimited}),
+        cumulativeValue: this.formBuilder.control({value: resultDTO.previouslyReported + resultDTO.currentReport, disabled: true}),
         description: this.formBuilder.control(resultDTO.description ?? [], [Validators.maxLength(2000)]),
         measurementUnit: this.formBuilder.control({value: resultDTO.measurementUnit, disabled: true}),
         attachment: this.formBuilder.control(resultDTO.attachment ?? attachments[index]),

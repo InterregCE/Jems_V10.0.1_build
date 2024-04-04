@@ -50,7 +50,7 @@
     background-color: var(--pale-blue-gray);
     color: var(--table-header-text-color);
     font-size: var(--body-strong-font-size);
-    font-weight: var(--body-strong-font-weight);
+    font-weight: normal;
 
     div.result-header-inner {
       align-items: center;
@@ -63,8 +63,8 @@
         padding-right: 1.5rem;
       }
 
-      div > :last-child {
-        font-weight: normal;
+      div > :first-child {
+        font-weight: var(--body-strong-font-weight);
       }
     }
   }

@@ -13,7 +13,6 @@ data class ProjectReportOutputIndicatorOverview(
     var previouslyReported: BigDecimal,
     var currentReport: BigDecimal,
 ) {
-
     override fun equals(other: Any?): Boolean = this === other || other is ProjectReportOutputIndicatorOverview && id === other.id
     override fun hashCode(): Int = id?.hashCode() ?: 0
 }
