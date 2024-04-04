@@ -1,15 +1,61 @@
 {
-  "partnerUser": {
-    "email": "randomize",
-    "name": "Partner",
-    "surname": "User",
-    "userRoleId": 3,
-    "userStatus": "ACTIVE"
+  "cofinancingLP1": {
+    "finances": [
+      {
+        "fundId": 1,
+        "fundType": "MainFund",
+        "percentage": 60
+      },
+      {
+        "fundId": 8,
+        "fundType": "MainFund",
+        "percentage": 14.66
+      },
+      {
+        "percentage": 25.34,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Lead Partner",
+        "status": "Public",
+        "amount": 15573.57,
+        "partner": true
+      }
+    ]
   },
-  "users": [
-    {
-      "userEmail": "randomize",
-      "level": "EDIT"
-    }
-  ]
+  "cofinancingPP2": {
+    "finances": [
+      {
+        "fundId": 1,
+        "fundType": "MainFund",
+        "percentage": 60
+      },
+      {
+        "percentage": 40,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Project Partner",
+        "status": "Private",
+        "amount": 666.66,
+        "partner": true
+      },
+      {
+        "name": "Partner contribution 1",
+        "status": "Public",
+        "amount": 1234.99,
+        "partner": false
+      },
+      {
+        "name": "Partner contribution 2",
+        "status": "AutomaticPublic",
+        "amount": 3798.15,
+        "partner": false
+      }
+    ]
+  }
 }
