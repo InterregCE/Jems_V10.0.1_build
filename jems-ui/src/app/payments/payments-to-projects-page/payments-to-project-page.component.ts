@@ -150,7 +150,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'paymentApprovalDate',
-          sortProperty: 'projectReport.verificationEndDate',
+          sortProperty: 'projectReport.paymentApprovalDate',
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.approval.date.info'
         },
         {
