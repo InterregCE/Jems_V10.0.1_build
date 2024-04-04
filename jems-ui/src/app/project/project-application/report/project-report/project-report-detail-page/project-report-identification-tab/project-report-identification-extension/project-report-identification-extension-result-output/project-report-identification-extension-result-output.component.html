@@ -33,7 +33,9 @@
                         </div>
                         <div class="baseline text-right">
                             <span [innerText]="'project.application.project.report.overview.baseline' | translate"></span>
-                            <div [innerText]="resultOverview.baselines"></div>
+                            <div *ngFor="let baseline of resultOverview.baselines">
+                                {{ baseline | asMoney }}<br/>
+                            </div>
                         </div>
                         <div class="targetValue text-right">
                             <span [innerText]="'project.application.project.report.overview.target.value' | translate"></span>
@@ -70,9 +72,10 @@
                                     </div>
                                 </ng-container>
                                 <ng-template #noOutputIndicator>
-                                <span class="text-overflow-ellipsis"
-                                      [innerText]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"
-                                      [matTooltip]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"></span>
+                                    <span class="text-overflow-ellipsis" [innerText]="'project.application.project.report.overview.programme.output.indicator' | translate"></span>
+                                    <div [innerText]="'common.not.applicable.option' | translate"
+                                         [matTooltip]="'common.not.applicable.option' | translate">
+                                    </div>
                                 </ng-template>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let line">
