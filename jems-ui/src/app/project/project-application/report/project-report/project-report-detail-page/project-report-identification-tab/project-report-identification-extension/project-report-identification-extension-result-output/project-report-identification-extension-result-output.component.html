@@ -21,8 +21,10 @@
                                 </div>
                             </ng-container>
                             <ng-template #noOutputIndicator>
-                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"
-                                  [matTooltip]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
+                                <span [innerText]="'project.application.project.report.overview.programme.result.indicator' | translate"></span>
+                                <div [innerText]="'common.not.applicable.option' | translate"
+                                     [matTooltip]="'common.not.applicable.option' | translate">
+                                </div>
                             </ng-template>
                         </div>
                         <div class="measurementUnit">
@@ -138,7 +140,6 @@
 
                     </mat-table>
                 </ng-container>
-                <div *ngFor="let result of resultOverview.results">{{ result | json }}</div>
             </div>
         </jems-multi-language-container>
     </div>
