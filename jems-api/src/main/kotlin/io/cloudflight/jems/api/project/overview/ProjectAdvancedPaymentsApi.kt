@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.report.payments
+package io.cloudflight.jems.api.project.overview
 
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.swagger.annotations.Api
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable
 interface ProjectAdvancedPaymentsApi {
 
     companion object {
-        const val ENDPOINT_API_PROJECT_ADVANCED_PAYMENT = "/api/project/report/advancePayment"
+        const val ENDPOINT_API_PROJECT_ADVANCED_PAYMENT = "/api/project/overview/advancePayment"
     }
 
     @ApiOperation("Retrieve advance payments for project")

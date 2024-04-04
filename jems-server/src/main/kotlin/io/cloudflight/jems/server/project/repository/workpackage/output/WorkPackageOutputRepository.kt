@@ -58,6 +58,7 @@ interface WorkPackageOutputRepository: PagingAndSortingRepository<WorkPackageOut
                 output.target_value as targetValue,
                 programmeOutput.id as programmeOutputId,
                 programmeResult.id as programmeResultId,
+                output.deactivated as deactivated,
                 outputTransl.language as language
             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS output
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS outputTransl

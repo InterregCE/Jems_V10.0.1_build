@@ -11,4 +11,5 @@ interface OutputRowWithTranslations: TranslationView {
     val targetValue: BigDecimal?
     val programmeOutputId: Long?
     val programmeResultId: Long?
+    val deactivated: Boolean
 }

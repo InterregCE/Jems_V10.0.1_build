@@ -313,6 +313,9 @@ import {NgModule} from '@angular/core';
 import {
   ProjectReportProjectClosureChecklistPageComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-project-closure-tab/project-report-project-closure-checklist-page/project-report-project-closure-checklist-page.component';
+import {
+  ReportIndicatorLivingTableOverviewComponent
+} from '@project/project-application/report/report-indicator-living-table/report-indicator-living-table-overview.component';
 
 export const routes: Routes = [
   {
@@ -449,17 +452,36 @@ export const routes: Routes = [
             ]
           },
           {
-            path: 'advancePayments',
-            data: {
-              breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview'
-            },
+            path: 'reportingOverview',
             children: [
               {
-                path: '',
-                component: ReportAdvancePaymentsOverviewComponent,
-                data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
-              }
+                path: 'advancePayments',
+                data: {
+                  breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview'
+                },
+                children: [
+                  {
+                    path: '',
+                    component: ReportAdvancePaymentsOverviewComponent,
+                    data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
+                  }
+                ]
+              },
+              {
+                path: 'indicatorLivingTable',
+                data: {
+                  breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview'
+                },
+                children: [
+                  {
+                    path: '',
+                    component: ReportIndicatorLivingTableOverviewComponent,
+                    data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
+                  }
+                ]
+              },
             ]
+
           },
           {
             path: 'corrections',

@@ -1,10 +1,10 @@
-package io.cloudflight.jems.server.project.service.result.model
+package io.cloudflight.jems.api.project.dto.report.overview.resultIndicator
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
-data class ProjectResult(
-    val resultNumber: Int = 0, // this is computed automatically in persistence
+data class ProjectResultWithCurrentDTO(
+    val resultNumber: Int,
     val programmeResultIndicatorId: Long? = null,
     val programmeResultIndicatorIdentifier: String? = null,
     val programmeResultName: Set<InputTranslation> = emptySet(),
@@ -16,4 +16,5 @@ data class ProjectResult(
     val periodEndMonth: Int? = null,
     val description: Set<InputTranslation> = emptySet(),
     val deactivated: Boolean,
+    var current: BigDecimal,
 )

@@ -6,8 +6,9 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.controller.overview.ProjectAdvancedPaymentsController
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.payment.getProjectAdvancePayments.GetProjectAdvancePaymentsInteractor
+import io.cloudflight.jems.server.project.service.overview.getProjectAdvancePayments.GetProjectAdvancePaymentsInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

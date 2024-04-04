@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlemen
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.payment.getProjectAdvancePayments.GetProjectAdvancePayments
+import io.cloudflight.jems.server.project.service.overview.getProjectAdvancePayments.GetProjectAdvancePayments
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

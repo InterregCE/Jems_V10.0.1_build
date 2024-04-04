@@ -531,12 +531,13 @@ export class ProjectApplicationFormSidenavService {
     canSeeProjectReporting: boolean,
     canSeeAdvancedPayments: boolean,
     canSeeCorrections: boolean,
+    canSeeOverview: boolean = true
   ): HeadlineRoute[] {
     return [
       {
         headline: {i18nKey: 'project.application.reporting.title'},
         bullets: [
-          ...canSeeAdvancedPayments ? this.getAdvancePaymentsHeadline(projectId) : [],
+          ...canSeeOverview ? this.getOverviewHeadline(projectId, canSeeAdvancedPayments) : [],
           ...canSeeCorrections ? this.getCorrectionsHeadline(projectId) : [],
           ...canSeeProjectReporting ? this.getProjectReportingHeadline(projectId) : [],
           ...this.getPartnerReportingSections(partners)
@@ -553,14 +554,24 @@ export class ProjectApplicationFormSidenavService {
     }];
   }
 
-  private getAdvancePaymentsHeadline(projectId: number): HeadlineRoute[] {
+  private getOverviewHeadline(projectId: number, canSeeAdvancedPayments: boolean): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.reporting.payments.overview.title'},
-      bullets: [{
-        headline: {i18nKey: 'project.application.reporting.advance.payments.title'},
-        route: `/app/project/detail/${projectId}/advancePayments`
-      }]
+      bullets: [
+        {
+          headline: {i18nKey: 'project.application.form.reporting.overview.indicator.living.table.sidenav.title'},
+          route: `/app/project/detail/${projectId}/reportingOverview/indicatorLivingTable`
+        },
+        ...canSeeAdvancedPayments ? this.getAdvancePaymentsHeadline(projectId) : [],
+      ]
     }];
+  }
+
+  private getAdvancePaymentsHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+        headline: {i18nKey: 'project.application.reporting.advance.payments.title'},
+        route: `/app/project/detail/${projectId}/reportingOverview/advancePayments`
+      }];
   }
 
   private getCorrectionsHeadline(projectId: number): HeadlineRoute[] {

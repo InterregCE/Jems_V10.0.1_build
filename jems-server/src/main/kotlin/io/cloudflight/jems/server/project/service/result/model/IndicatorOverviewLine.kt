@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.result.model
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.overview.ProjectReportLivingTableLine
 import java.math.BigDecimal
 
 data class IndicatorOverviewLine(
@@ -43,4 +44,40 @@ data class OutputRow(
     val outputTargetValue: BigDecimal,
     val programmeOutputId: Long?,
     val programmeResultId: Long?,
+    val deactivated: Boolean
 )
+
+data class OutputRowWithCurrent(
+    val workPackageId: Long,
+    val workPackageNumber: Int,
+    val outputTitle: Set<InputTranslation>,
+    val outputNumber: Int,
+    val outputTargetValue: BigDecimal,
+    val indicatorOutputId: Long?,
+    val indicatorResultId: Long?,
+    val deactivated: Boolean,
+    var measurementUnit: Set<InputTranslation>,
+    var current: BigDecimal,
+): ProjectReportLivingTableLine {
+    override fun retrieveOutputIndicatorId(): Long? = indicatorOutputId
+    override fun retrieveResultIndicatorId(): Long? = indicatorResultId
+}
+
+data class ProjectResultWithCurrent(
+    val resultNumber: Int,
+    val programmeResultIndicatorId: Long? = null,
+    val programmeResultIndicatorIdentifier: String? = null,
+    val programmeResultName: Set<InputTranslation> = emptySet(),
+    val programmeResultMeasurementUnit: Set<InputTranslation> = emptySet(),
+    val baseline: BigDecimal,
+    val targetValue: BigDecimal? = null,
+    val periodNumber: Int? = null,
+    val periodStartMonth: Int? = null,
+    val periodEndMonth: Int? = null,
+    val description: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean,
+    var current: BigDecimal,
+): ProjectReportLivingTableLine {
+    override fun retrieveOutputIndicatorId(): Long? = throw UnsupportedOperationException()
+    override fun retrieveResultIndicatorId(): Long? = programmeResultIndicatorId
+}

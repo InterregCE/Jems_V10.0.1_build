@@ -161,7 +161,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
     fun get() {
         val projectId = 7L
         val reportId = 13L
-        every { projectResultRepository.findByProjectReportId(reportId) } returns listOf(projectResultEntity(projectId))
+        every { projectResultRepository.findByProjectReportIdIn(setOf(reportId)) } returns listOf(projectResultEntity(projectId))
         every { projectPersistence.getProjectPeriods(projectId, "2.4.1") } returns listOf(ProjectPeriod(9, 3, 5))
         every { horizontalPrincipleRepository.getByProjectReportId(reportId) } returns horizontalPrincipleEntity()
 
@@ -175,7 +175,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
         val reportId = 14L
         val result = projectResultEntity(projectId)
         val horizontalPrinciples = horizontalPrincipleEntity()
-        every { projectResultRepository.findByProjectReportId(reportId) } returns listOf(result)
+        every { projectResultRepository.findByProjectReportIdIn(setOf(reportId)) } returns listOf(result)
         every { projectPersistence.getProjectPeriods(projectId, "2.4.1") } returns listOf(ProjectPeriod(9, 13, 15))
         every { horizontalPrincipleRepository.getByProjectReportId(reportId) } returns horizontalPrinciples
 
@@ -199,7 +199,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
     @Test
     fun deleteProjectResultPrinciplesIfExist() {
         val result = mockk<ProjectReportProjectResultEntity>()
-        every { projectResultRepository.findByProjectReportId(755L) } returns listOf(result)
+        every { projectResultRepository.findByProjectReportIdIn(setOf(755L)) } returns listOf(result)
         val attachment = mockk<JemsFileMetadataEntity>()
         every { result.attachment } returns attachment
 

@@ -14,6 +14,8 @@ interface ProjectReportWorkPlanPersistence {
 
     fun getReportWorkPackageOutputsById(projectId: Long, reportId: Long): List<ProjectReportOutputLineOverview>
 
+    fun getReportWorkPackageOutputsByIdAndReportIdIn(projectId: Long, reportIds: Set<Long>): List<ProjectReportOutputLineOverview>
+
     fun existsByActivityId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long): Boolean
 
     fun existsByDeliverableId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long): Boolean

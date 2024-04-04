@@ -13,11 +13,11 @@ import io.cloudflight.jems.server.project.entity.report.project.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
-import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanInvestmentStatus
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -68,6 +68,15 @@ class ProjectReportWorkPlanPersistenceProvider(
     override fun getReportWorkPackageOutputsById(projectId: Long, reportId: Long): List<ProjectReportOutputLineOverview> =
         workPlanOutputRepository.findAllByWorkPackageEntityReportEntityOrderByNumber(
             reportEntity = reportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+        ).toOverviewModel()
+
+    @Transactional(readOnly = true)
+    override fun getReportWorkPackageOutputsByIdAndReportIdIn(
+        projectId: Long,
+        reportIds: Set<Long>
+    ): List<ProjectReportOutputLineOverview> =
+        workPlanOutputRepository.findAllByWorkPackageEntityReportEntityIdInOrderByNumber(
+            reportIds
         ).toOverviewModel()
 
     @Transactional(readOnly = true)
