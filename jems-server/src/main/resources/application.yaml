@@ -11,9 +11,9 @@ spring:
   messages:
     basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages, file:${app.translations-folder:resources/translations}/Application-CallSpecific, classpath:/Application-CallSpecific
   datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3307/jemsdb}"
+    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
-    password: "${SPRING_DATASOURCE_PASSWORD:latest-mariadb-password}"
+    password: "${SPRING_DATASOURCE_PASSWORD:Mariadb@2020}"
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
