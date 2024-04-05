@@ -1,4 +1,4 @@
-import {combineLatest, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -12,14 +12,11 @@ import {
   ProjectPartnerBudgetConstants
 } from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
 import {NumberService} from '@common/services/number.service';
-import {RoutingService} from '@common/services/routing.service';
-import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Injectable()
 export class ProjectPartnerBudgetTabService {
 
-  private serviceId = uuid();
   private isBudgetOptionsFormInEditModeSubject = new Subject<boolean>();
   private isBudgetFormInEditModeSubject = new Subject<boolean>();
   private isSPFBudgetFormInEditModeSubject = new Subject<boolean>();
@@ -27,15 +24,7 @@ export class ProjectPartnerBudgetTabService {
   isBudgetFormInEditMode$ = this.isBudgetFormInEditModeSubject.asObservable();
   isSPFBudgetFormInEditMode$ = this.isSPFBudgetFormInEditModeSubject.asObservable();
 
-  constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder, private routingService: RoutingService) {
-    combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
-      tap(([optionsDirty, budgetsDirty]) => {
-        if (optionsDirty || budgetsDirty) {
-          this.routingService.confirmLeaveSet.add(this.serviceId);
-        }
-      }),
-      untilDestroyed(this)
-    ).subscribe();
+  constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder) {
   }
 
   trackBudgetOptionsFormState(formService: FormService): void {
