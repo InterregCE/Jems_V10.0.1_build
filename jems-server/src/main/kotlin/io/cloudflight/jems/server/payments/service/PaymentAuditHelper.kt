@@ -23,11 +23,25 @@ fun PaymentApplicationToEcDetail.toDescription(previousStatus: PaymentEcStatus, 
         "${paymentApplicationToEcSummary.accountingYear.startDate} - ${paymentApplicationToEcSummary.accountingYear.endDate} " +
         "changes status from ${previousStatus.name} to ${newStatus.name}"
 
-fun PaymentAccount.toDescription(previousStatus: PaymentAccountStatus, newStatus: PaymentAccountStatus) =
+fun PaymentAccount.toDescription(previousStatus: PaymentAccountStatus, newStatus: PaymentAccountStatus, linkedCorrectionsIds: List<Long>) =
     "Account ${id} Fund (${fund.id}, ${fund.type}) " +
             "for accounting Year ${computeYearNumber(accountingYear.startDate)}: " +
             "${accountingYear.startDate} - ${accountingYear.endDate} " +
-            "changed  status from ${previousStatus.name} to ${newStatus.name}"
+            "changed  status from ${previousStatus.name} to ${newStatus.name}" +
+            getIncludedCorrectionText(linkedCorrectionsIds)
+
+private fun getIncludedCorrectionText(linkedCorrectionsIds: List<Long>): String {
+    var corrections = arrayOf<String>()
+
+    if (linkedCorrectionsIds.isEmpty())
+        return ""
+    else {
+        linkedCorrectionsIds.forEach {
+            corrections += "Correction ID ${it}"
+        }
+        return " and following items were included: " + corrections.joinToString()
+    }
+}
 
 fun  Map<Long, CorrectionInEcPaymentMetadata>.formCorrectionId(): List<String> =
     this.values.map { "${it.projectId}_AC${it.auditControlNr}.${it.correctionNr}" }

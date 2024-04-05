@@ -41,6 +41,10 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
     override fun getCorrectionExtension(correctionId: Long): PaymentAccountCorrectionExtension =
         correctionExtensionRepository.getReferenceById(correctionId).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getCorrectionExtensionIdsByPaymentAccountId(paymentAccountId: Long) =
+        this.correctionExtensionRepository.getAllCorrectionIdsByPaymentAccountId(paymentAccountId)
+
     @Transactional
     override fun selectCorrectionToPaymentAccount(correctionIds: Set<Long>, paymentAccountId: Long) {
         val paymentAccount = paymentAccountRepository.getReferenceById(paymentAccountId)

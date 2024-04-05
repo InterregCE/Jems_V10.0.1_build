@@ -7,7 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatSort} from '@angular/material/sort';
 import PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
-import {NumberService} from "@common/services/number.service";
+import {NumberService} from '@common/services/number.service';
 
 @Component({
   selector: 'jems-payment-to-ec-select-table',
@@ -107,7 +107,7 @@ export class PaymentToEcSelectTableComponent implements OnChanges {
       totalEligibleWithoutScoArt9495: this.formBuilder.control(link.correctedTotalEligibleWithoutSco),
       unionContribution: this.formBuilder.control(link.correctedFundAmountUnionContribution),
       fundAmount: this.formBuilder.control(this.flaggedArt9495 ? link.correctedFundAmountPublicContribution : link.payment.fundAmount),
-      comment: this.formBuilder.control(link.comment ?? ""),
+      comment: this.formBuilder.control(link.comment ?? ''),
     });
     this.paymentToEcLinking.push(item);
   }

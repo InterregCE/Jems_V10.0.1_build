@@ -10,6 +10,8 @@ interface PaymentAccountCorrectionLinkingPersistence {
 
     fun getCorrectionExtension(correctionId: Long): PaymentAccountCorrectionExtension
 
+    fun getCorrectionExtensionIdsByPaymentAccountId(paymentAccountId: Long): List<Long>
+
     fun selectCorrectionToPaymentAccount(correctionIds: Set<Long>, paymentAccountId: Long)
 
     fun deselectCorrectionFromPaymentAccountAndResetFields(correctionId: Long)

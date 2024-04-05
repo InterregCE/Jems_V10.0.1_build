@@ -18,7 +18,8 @@ class FinalizePaymentAccount(
     private val paymentAccountPersistence: PaymentAccountPersistence,
     private val ecPaymentPersistence: PaymentApplicationToEcPersistence,
     private val correctionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence,
-    private val auditPublisher: ApplicationEventPublisher
+    private val auditPublisher: ApplicationEventPublisher,
+    private val paymentAccountCorrectionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence
 ) : FinalizePaymentAccountInteractor {
 
     @CanUpdatePaymentsAccount
@@ -33,8 +34,11 @@ class FinalizePaymentAccount(
         val selectedPaymentTotals = correctionLinkingPersistence.calculateOverviewForDraftPaymentAccount(paymentAccountId).sumUpProperColumns()
         correctionLinkingPersistence.saveTotalsWhenFinishingPaymentAccount(paymentAccountId, totals = selectedPaymentTotals)
 
+        val linkedCorrectionsIds =
+            paymentAccountCorrectionLinkingPersistence.getCorrectionExtensionIdsByPaymentAccountId(paymentAccountId)
+
         return paymentAccountPersistence.finalizePaymentAccount(paymentAccountId).also {
-            auditPublisher.publishEvent(paymentAccountsFinished(context = this, paymentAccount))
+            auditPublisher.publishEvent(paymentAccountsFinished(context = this, paymentAccount, linkedCorrectionsIds))
         }
     }
 

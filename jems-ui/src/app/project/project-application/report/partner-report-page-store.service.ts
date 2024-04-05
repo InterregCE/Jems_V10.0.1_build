@@ -21,7 +21,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {MatSort} from '@angular/material/sort';
 import {
   ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
