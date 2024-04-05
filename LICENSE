@@ -5,14 +5,14 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 
 1. Back-End
 
-· Kotlin - programming language itself - 1.6.10
-· Spring-Boot (Apache 2.0) - version 2.6.6 (wrapping spring 5.3.18 and spring-security 5.6.2)
+· Kotlin - programming language itself - 1.7.21
+· Spring-Boot (Apache 2.0) - version 2.7.7 (wrapping spring 5.3.18 and spring-security 5.6.2)
 · MariaDB (GPL v.2) - version 10.6.12
 · mariadb-java-client (LGPL 2.1) - version 3.1.2
 · MinIO (Apache 2.0) - version RELEASE.2021-08-05T22-01-19Z
 · org.apache.commons-io (Apache 2.0) - version 2.8.0
-· Flyway (Apache 2.0) - version 8.0.5
-· jackson-module-kotlin (Apache 2.0) - version 2.13.2
+· Flyway (Apache 2.0) - version 8.5.13
+· jackson-module-kotlin (Apache 2.0) - version 2.13.4
 · io.springfox (Apache 2.0) - version 2.9.2/3.0.0
 · io.swagger (Apache 2.0) - version 1.6.2
 · ElasticSearch (Elastic License 2.0 / SSPL) - version 7.17.9
@@ -24,17 +24,16 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 
 · Angular (MIT) - version 12.2.13 includes material icons 1.10.4
 · moment (MIT) - version 2.29.1
-· RxJS (Apache 2.0) version 6.6.3
+· RxJS (Apache 2.0) version 6.6.7
 · OpenSans (Apache 2.0) (The copy font in the project) 1.1.0
 · UUID (MIT) - version 8.3.4
-· NgxMatSelectSearch (MIT) - version 5.0.0
 
-(3.) Productivity
+3. Productivity
 
 It is possible that some Cloudflight proprietary code can be found in the code repository. This code aims for productivity/efficiency of the development process such as deployment or testing, they are not directly part of the Monitoring System application code.
 
-· cloudflight-gradle-plugin 6.5.11 (license below)
-· io.cloudflight.platform 1.8.5 (license below)
+· cloudflight-gradle-plugin 7.4.0 (license below)
+· io.cloudflight.platform 1.1.8 (license below)
 
 Cloudflight license
 
