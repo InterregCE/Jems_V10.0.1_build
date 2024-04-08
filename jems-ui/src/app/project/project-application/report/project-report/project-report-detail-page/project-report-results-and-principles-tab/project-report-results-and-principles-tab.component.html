@@ -41,9 +41,9 @@
 
                         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD" class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.delivery.period' | translate }}</mat-label>
-                            <input *ngIf="result.get('periodDetail').value.number !== 255" matInput disabled [matTooltip]="result.get('periodDetail').value && ProjectUtil.getPeriodKey(result.get('periodDetail').value.startDate) | translate : ProjectUtil.getPeriodArguments(result.get('periodDetail').value)"
+                            <input *ngIf="result.get('periodDetail').value?.number !== 255" matInput disabled [matTooltip]="result.get('periodDetail').value && ProjectUtil.getPeriodKey(result.get('periodDetail').value.startDate) | translate : ProjectUtil.getPeriodArguments(result.get('periodDetail').value)"
                                    [value]="result.get('periodDetail').value && ProjectUtil.getPeriodKey(result.get('periodDetail').value.startDate) | translate : ProjectUtil.getPeriodArguments(result.get('periodDetail').value)">
-                            <input *ngIf="result.get('periodDetail').value.number === 255" matInput disabled value="{{ 'project.results.result.delivery.period.last' | translate }}" matTooltip="{{ 'project.results.result.delivery.period.last' | translate }}">
+                            <input *ngIf="result.get('periodDetail').value?.number === 255" matInput disabled value="{{ 'project.results.result.delivery.period.last' | translate }}" matTooltip="{{ 'project.results.result.delivery.period.last' | translate }}">
                         </mat-form-field>
                     </div>
                     <div class="input-field-row">
