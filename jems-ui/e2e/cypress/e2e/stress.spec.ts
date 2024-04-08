@@ -339,12 +339,14 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
         cy.createProjectWorkPlan(applicationId, application.description.workPlan);
 
         // C.5 - Project results
-        application.description.results[0].description.forEach(description => {
+        const tempResult = application.description.results[0];
+        tempResult.description.forEach(description => {
           description.translation = randomString.substring(0, 1000);
         });
-        application.description.results[0].targetValue = 999999999.99;
-        for (let i = 1; i < numberOfResults; i++) {
-          application.description.results.push(application.description.results[0]);
+        tempResult.targetValue = 999999999.99;
+        application.description.results = [];
+        for (let i = 0; i < numberOfResults; i++) {
+          application.description.results.push(tempResult);
         }
         cy.createProjectResults(applicationId, application.description.results);
 
@@ -410,7 +412,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
         }
         cy.updateLumpSums(applicationId, application.lumpSums);
         // now also update cofinancing for the last partner
-        partner.cofinancing.partnerContributions[0].amount = 149100000 + numberOfLumpSums * 5555.56 * 0.1;
+        partner.cofinancing.partnerContributions[0].amount = 249128777.77;
         cy.updatePartnerCofinancing(this[partner.details.abbreviation], partner.cofinancing);
 
         // E.2.1 - Project proposed unit costs

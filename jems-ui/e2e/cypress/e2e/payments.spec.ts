@@ -27,8 +27,8 @@ context('Payments tests', () => {
       });
 
       // create additional fund for the second partner
-      // cy.loginByRequest(programmeEditorUser.email);
-      // cy.addProgrammeFund(programmeFund);
+      cy.loginByRequest(programmeEditorUser.email);
+      cy.addProgrammeFund(programmeFund);
     });
   });
 
