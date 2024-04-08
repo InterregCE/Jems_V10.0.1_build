@@ -285,6 +285,7 @@ fun paymentApplicationToEcDeleted(
 fun paymentAccountsFinished(
     context: Any,
     updatedPaymentAccount: PaymentAccount,
+    linkedCorrectionsIds: List<Long>
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -292,7 +293,8 @@ fun paymentAccountsFinished(
             .description(
                 updatedPaymentAccount.toDescription(
                     previousStatus = PaymentAccountStatus.DRAFT,
-                    newStatus = PaymentAccountStatus.FINISHED
+                    newStatus = PaymentAccountStatus.FINISHED,
+                    linkedCorrectionsIds = linkedCorrectionsIds
                 )
             )
             .build()
@@ -308,7 +310,8 @@ fun paymentAccountsReOpened(
             .description(
                 updatedPaymentAccount.toDescription(
                     previousStatus = PaymentAccountStatus.FINISHED,
-                    newStatus = PaymentAccountStatus.DRAFT
+                    newStatus = PaymentAccountStatus.DRAFT,
+                    emptyList()
                 )
             )
             .build()

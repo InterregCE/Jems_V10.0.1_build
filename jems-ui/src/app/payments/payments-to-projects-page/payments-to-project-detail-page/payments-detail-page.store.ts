@@ -40,7 +40,7 @@ export class PaymentsDetailPageStore {
     return merge(initialPaymentDetail$, this.savedPaymentDetail$);
   }
 
-  updatePaymentInstallments(paymentId: number, partnerPayments: Array<PaymentPartnerDTO>): Observable<PaymentDetailDTO> {
+  updatePaymentInstallments(paymentId: number, partnerPayments: PaymentPartnerDTO[]): Observable<PaymentDetailDTO> {
     return this.paymentApiService.updatePaymentInstallments(paymentId, partnerPayments);
   }
 

@@ -360,7 +360,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         if (!this.toggleStatesOfPaymentRows[index]) {
           this.togglePaymentRowAtIndex(index);
         }
-      })
+      });
     });
     this.formService.setDirty(true);
   }
@@ -375,7 +375,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         if (!this.toggleStatesOfPaymentRows[index]) {
           this.togglePaymentRowAtIndex(index);
         }
-      })
+      });
     });
     this.formService.setDirty(true);
   }
@@ -408,7 +408,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         if (!this.toggleStatesOfPaymentRows[index]) {
           this.togglePaymentRowAtIndex(index);
         }
-      })
+      });
     });
     this.formService.setDirty(true);
   }
