@@ -229,7 +229,7 @@ context('Partner reports tests', () => {
 
                                 cy.get('input[type="file"]').eq(0)
                                     .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt', {force: true});
-                                
+
                                 cy.contains('button', 'Confirm')
                                     .should('be.visible')
                                     .click();
@@ -1555,6 +1555,59 @@ context('Partner reports tests', () => {
         });
     });
 
+    it('TB-1042 SCOs can be selected in the list of expenditure, Limited fields are editable', function () {
+        cy.loginByRequest(user.programmeUser.email);
+        call.preSubmissionCheckSettings.reportPartnerCheckPluginKey = 'report-partner-check-off';
+        cy.createCall(call).then(callId => {
+          application.details.projectCallId = callId;
+          cy.publishCall(callId);
+        });
+
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+            const originalPartnerDetails = application.partners[0].details;
+            const partnerId = this[originalPartnerDetails.abbreviation];
+
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+            cy.contains('button', 'Add Partner Report').click();
+
+            cy.contains('List of expenditures').click();
+            cy.contains('add expenditure').click();
+            cy.get('mat-row').last().find('.mat-column-costOptions').click();
+            cy.contains('mat-option', 'Implementation Lump sum').should('be.visible');
+            cy.contains('mat-option', 'Unit cost single - Equipment').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Unit cost single - Travel').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Unit cost single - External').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Unit cost single - Infrastructure').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Project Proposed equipment unit cost').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Project Proposed infrastructure unit cost').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Project Proposed multi unit cost').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Project Proposed travel unit cost').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Project Proposed external unit cost').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Unit cost multi - all').scrollIntoView().should('be.visible');
+            cy.contains('mat-option', 'Unit cost multi - partial').scrollIntoView().should('be.visible');
+
+            cy.contains('mat-option', 'Unit cost single - Travel').scrollIntoView().click();
+            validateExpenditures(false, false);
+
+            cy.contains('add expenditure').click();
+            cy.get('mat-row').last().find('.mat-column-costOptions').click();
+            cy.contains('mat-option', 'Project Proposed infrastructure unit cost').scrollIntoView().click();
+            validateExpenditures(true, false);
+
+            cy.contains('add expenditure').click();
+            cy.get('mat-row').last().find('.mat-column-costOptions').click();
+            cy.contains('mat-option', 'Implementation Lump sum').scrollIntoView().click();
+            validateExpenditures(false, false);
+
+            cy.contains('Save changes').click();
+            submitPartnerReport();
+
+            cy.contains('List of expenditures').click();
+            validateExpenditures(false, true);
+        });
+    });
+
     //region TB-744 METHODS
     function verifyIdentification(applicationId, partnerId1, reportId) {
         cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
@@ -2542,7 +2595,7 @@ context('Partner reports tests', () => {
         cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/workplan`, {failOnStatusCode: false});
         cy.contains('mat-panel-title', 'Work package 1')
             .click();
-        
+
         cy.contains('A 1.1').click();
 
         cy.get('.attachment-row').eq(0).find('input[type="file"]')
@@ -2624,6 +2677,43 @@ context('Partner reports tests', () => {
         cy.contains('button', 'Export').clickToDownload(`/api/project/report/partner/byPartnerId/${partnerId}/byReportId/${reportId}/export?*`, 'pdf').then(fileName => {
             expect(fileName).contains(applicationId);
         });
+    }
+
+    //endregion
+
+
+    //region TB-1042 METHODS
+
+    function validateExpenditures(multipleCurrency: boolean, submitted: boolean) {
+        cy.get('mat-row').last().find('.mat-column-internalReferenceNumber').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-invoiceNumber').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-invoiceNumber').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-invoiceDate').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-dateOfPayment').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-pricePerUnit').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-totalValueInvoice').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-vat').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-declaredAmount').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-currencyConversionRate').get('input').should('be.disabled');
+        cy.get('mat-row').last().find('.mat-column-declaredAmountInEur').get('input').should('be.disabled');
+
+        if (submitted) {
+          cy.get('mat-row').last().find('.mat-column-description').get('input').should('be.disabled');
+          cy.get('mat-row').last().find('.mat-column-comment').get('input').should('be.disabled');
+          cy.get('mat-row').last().find('.mat-column-numberOfUnits').get('input').should('be.disabled');
+        } else {
+          cy.get('mat-row').last().find('.mat-column-costCategory').get('mat-select').should('have.class', 'mat-select-disabled');
+          cy.get('mat-row').last().find('.mat-column-investmentId').contains('mat-select','N/A').should('have.class', 'mat-select-disabled');
+          cy.get('mat-row').last().find('.mat-column-contractId').contains('mat-select','N/A').should('have.class', 'mat-select-disabled');
+          cy.get('mat-row').last().find('.mat-column-description').get('input').should('be.enabled');
+          cy.get('mat-row').last().find('.mat-column-comment').get('input').should('be.enabled');
+          cy.get('mat-row').last().find('.mat-column-numberOfUnits').get('input').should('be.enabled');
+          if (multipleCurrency) {
+            cy.get('mat-row').last().find('.mat-column-currencyCode').get('input').should('be.enabled');
+          } else {
+            cy.get('mat-row').last().find('.mat-column-currencyCode').get('input').should('be.disabled');
+          }
+        }
     }
 
     //endregion
