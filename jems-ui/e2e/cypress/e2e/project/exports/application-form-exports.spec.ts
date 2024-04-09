@@ -16,7 +16,8 @@ const a1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 370, y1: 390};
 const version1A1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 247, y1: 267};
 const c4Output11TitleCoordinates = {x0: 420, x1: 480, y0: 681, y1: 705};
 const c4Output12TitleCoordinates = {x0: 420, x1: 480, y0: 955, y1: 980};
-const c5ResultIndicatorTitleCoordinates = {x0: 425, x1: 760, y0: 235, y1: 255};
+const c5ResultIndicator1TitleCoordinates = {x0: 425, x1: 760, y0: 235, y1: 255};
+const c5ResultIndicator2TitleCoordinates = {x0: 425, x1: 760, y0: 500, y1: 520};
 const c6OutputIndicatorTitleCoordinates = {x0: 94, x1: 135, y0: 270, y1: 282};
 const c6ResultIndicatorTitleCoordinates = {x0: 94, x1: 135, y0: 322, y1: 333};
 
@@ -38,7 +39,8 @@ context('Application form exports', () => {
     currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
     currentMask.push({pageIndex: 17, coordinates: c4Output11TitleCoordinates});
     currentMask.push({pageIndex: 17, coordinates: c4Output12TitleCoordinates});
-    currentMask.push({pageIndex: 23, coordinates: c5ResultIndicatorTitleCoordinates});
+    currentMask.push({pageIndex: 23, coordinates: c5ResultIndicator1TitleCoordinates});
+    currentMask.push({pageIndex: 23, coordinates: c5ResultIndicator2TitleCoordinates});
     currentMask.push({pageIndex: 24, coordinates: c6OutputIndicatorTitleCoordinates});
     currentMask.push({pageIndex: 24, coordinates: c6ResultIndicatorTitleCoordinates});
 
@@ -159,7 +161,8 @@ context('Application form exports', () => {
               currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
               currentMask.push({pageIndex: 15, coordinates: {x0: 420, x1: 480, y0: 626, y1: 650}}); // due to 2step project, c4 output 1.1 title slightly below usual
               currentMask.push({pageIndex: 15, coordinates: {x0: 420, x1: 480, y0: 900, y1: 925}}); // c4 output 1.2 title
-              currentMask.push({pageIndex: 20, coordinates: c5ResultIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 20, coordinates: c5ResultIndicator1TitleCoordinates});
+              currentMask.push({pageIndex: 20, coordinates: c5ResultIndicator2TitleCoordinates});
               currentMask.push({pageIndex: 21, coordinates: c6OutputIndicatorTitleCoordinates});
               currentMask.push({pageIndex: 21, coordinates: c6ResultIndicatorTitleCoordinates});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
@@ -177,7 +180,8 @@ context('Application form exports', () => {
               currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
               currentMask.push({pageIndex: 21, coordinates: {x0: 420, x1: 480, y0: 626, y1: 650}}); // due to 2step project, c4 output 1.1 title slightly below usual
               currentMask.push({pageIndex: 21, coordinates: {x0: 420, x1: 480, y0: 900, y1: 925}}); // c4 output 1.2 title
-              currentMask.push({pageIndex: 26, coordinates: c5ResultIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 26, coordinates: c5ResultIndicator1TitleCoordinates});
+              currentMask.push({pageIndex: 26, coordinates: c5ResultIndicator2TitleCoordinates});
               currentMask.push({pageIndex: 27, coordinates: c6OutputIndicatorTitleCoordinates});
               currentMask.push({pageIndex: 27, coordinates: c6ResultIndicatorTitleCoordinates});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {

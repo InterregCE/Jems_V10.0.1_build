@@ -52,7 +52,7 @@ context('Application contracting tests', () => {
   });
 
   it('TB-735 Contracting sections appear at the right moment and remains editable', () => {
-      cy.fixture('project/contracting/TB-735.json').then(testData => {
+    cy.fixture('project/contracting/TB-735.json').then(testData => {
 
       // create contracting role/user
       cy.loginByRequest(user.admin.email);
@@ -200,7 +200,7 @@ context('Application contracting tests', () => {
             application.lumpSums[0] = application.lumpSums[1];
             application.lumpSums[1] = fastTrackLumpSum;
             application.lumpSums.pop();
-            
+
             // also update contracting section properly
             application.contractMonitoring.fastTrackLumpSums = testData.contractingFastTrackLumpSums;
 
