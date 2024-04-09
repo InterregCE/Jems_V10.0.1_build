@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.plugin.services.payments
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
+import io.cloudflight.jems.plugin.contract.models.payments.export.RegularPaymentInstallmentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PartnerPaymentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentDetailData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentPartnerInstallmentData
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import java.math.BigDecimal
 import java.time.ZoneId
 
 fun PaymentDetail.toDataModel() = PaymentDetailData(
@@ -88,3 +90,35 @@ fun OutputUser.toUserSummaryDataModel() = UserSummaryData(
     name = name,
     surname = surname
 )
+
+fun List<PartnerPayment>.toExportModel(projectId: Long) = map { it.installments.withIndex().toListExportModel(it, getRemaining(it), projectId) }
+
+fun Iterable<IndexedValue<PaymentPartnerInstallment>>.toListExportModel(partner: PartnerPayment, remaining: BigDecimal?, projectId: Long) = map {
+    (index, value) -> value.toExportModel(partner, remaining, projectId, index)
+}
+
+fun PaymentPartnerInstallment.toExportModel(partner: PartnerPayment, remaining: BigDecimal?, projectId: Long, index: Int) = RegularPaymentInstallmentData(
+    partnerNumber = partner.partnerNumber,
+    partnerRole = ProjectPartnerRoleData.valueOf(partner.partnerRole.name),
+    partnerAbbreviatedName = partner.partnerAbbreviation,
+    nameInOriginalLanguage = partner.nameInOriginalLanguage,
+    nameInEnglish = partner.nameInEnglish,
+    partnerCountry = partner.partnerCountry,
+    partnerReportNumber = partner.partnerReportNumber,
+    amountApproved = partner.amountApprovedPerPartner,
+    remainingToBeAuthorized = remaining,
+    installmentNumber = index + 1,
+    amountPaid = amountPaid,
+    comment = comment,
+    authorizationDate = savePaymentDate,
+    authorizedBy = savePaymentInfoUser?.email,
+    paymentDate = paymentDate,
+    confirmationDate = paymentConfirmedDate,
+    confirmedBy = paymentConfirmedUser?.email,
+    correctionId = if (correction != null) "${projectId}_AC${correction.auditControlNr}.${correction.orderNr}" else ""
+)
+
+fun getRemaining(paymentPartner: PartnerPayment): BigDecimal? {
+    val installmentsSum = paymentPartner.installments.filter { it.isSavePaymentInfo!! }.sumOf { it.amountPaid!! }
+    return paymentPartner.amountApprovedPerPartner?.minus(installmentsSum)
+}

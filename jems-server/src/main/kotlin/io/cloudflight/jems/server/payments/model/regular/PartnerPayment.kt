@@ -16,6 +16,7 @@ data class PartnerPayment(
     val partnerRole: ProjectPartnerRole,
     val partnerNumber: Int,
     val partnerAbbreviation: String,
+    val partnerCountry: String?,
     val nameInOriginalLanguage: String,
     val nameInEnglish: String,
     val amountApprovedPerPartner: BigDecimal?,
