@@ -173,13 +173,13 @@ fun advancePaymentSettlementCreated(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_CREATED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "${settlement.amountSettled.setScale(2, RoundingMode.HALF_UP)} EUR was settled in settlement no. ${settlement.number} " +
+            "${settlement.amountSettled.setScale(2, RoundingMode.FLOOR)} EUR was settled in settlement no. ${settlement.number} " +
                 "for advance payment no. ${paymentDetail.id} of partner ${getPartnerName(
                         paymentDetail.partnerType,
                         paymentDetail.partnerNumber
                     )
                 } " +
-                "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)}"
+                "for funding source ${getFundingSourceName(paymentDetail)}"
         )
         .build()
 )
@@ -193,9 +193,9 @@ fun advancePaymentSettlementDeleted(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_DELETED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "Settlement no. ${settlement.number} in amount of ${settlement.amountSettled.setScale(2, RoundingMode.HALF_UP)} EUR for " +
+            "Settlement no. ${settlement.number} in amount of ${settlement.amountSettled.setScale(2, RoundingMode.FLOOR)} EUR for " +
                 "advance payment no. ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} was deleted"
+                "for funding source ${getFundingSourceName(paymentDetail)} was deleted"
         )
         .build()
 )

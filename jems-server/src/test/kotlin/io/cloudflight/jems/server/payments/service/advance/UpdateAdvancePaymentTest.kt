@@ -196,11 +196,11 @@ class UpdateAdvancePaymentTest : UnitTest() {
         verify(exactly = 1) { auditPublisher.publishEvent(auditSlot[1]) }
 
         assertThat(auditSlot[0].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
-        assertThat(auditSlot[0].auditCandidate.description)
-            .isEqualTo("Amount 10.00 was authorised for Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are authorised")
+        assertThat(auditSlot[0].auditCandidate.description).isEqualTo("Amount 10.00 was authorised for Advance payment " +
+            "details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are authorised")
         assertThat(auditSlot[1].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
-        assertThat(auditSlot[1].auditCandidate.description)
-            .isEqualTo("Amount 10.00 was confirmed for Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are confirmed")
+        assertThat(auditSlot[1].auditCandidate.description).isEqualTo("Amount 10.00 was confirmed for Advance payment " +
+            "details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are confirmed")
     }
 
     @Test
