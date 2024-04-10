@@ -49,7 +49,7 @@
               ],
               "nextReportForecast": 20000
             },
-            "workPlans": [
+            "workPlan": [
               {
                 "id": null,
                 "number": 1,
@@ -977,7 +977,7 @@
               ],
               "nextReportForecast": 15999.99
             },
-            "workPlans": [
+            "workPlan": [
               {
                 "id": null,
                 "number": 1,
@@ -1867,7 +1867,7 @@
             }
           ]
         },
-        "workPlans": [
+        "workPlan": [
           {
             "id": null,
             "completed": true,

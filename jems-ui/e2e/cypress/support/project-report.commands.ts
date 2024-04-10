@@ -1,4 +1,3 @@
-import {loginByRequest} from "./login.commands";
 import user from "@fixtures/users.json";
 
 declare global {
@@ -13,7 +12,7 @@ declare global {
 
       updateProjectReportIdentification(applicationId: number, reportId: number, projectReportIdentification: any): any;
 
-      updateProjectReportWorkPlans(applicationId: number, reportId: number, projectReportResults: any[]);
+      updateProjectReportWorkPlan(applicationId: number, reportId: number, projectReportWorkPlan: any[]);
 
       updateProjectReportResults(applicationId: number, reportId: number, projectReportResults: any[]);
 
@@ -58,11 +57,11 @@ Cypress.Commands.add('completeReporting', function (applicationId: number, repor
 Cypress.Commands.add('createVerifiedProjectReport', (applicationId: number, projectReportDetails, verificationUserEmail) => {
   cy.createProjectReport(applicationId, projectReportDetails.projectReport.details).then(projectReportId => {
     cy.updateProjectReportIdentification(applicationId, projectReportId, projectReportDetails.projectReport.identification);
-    cy.updateProjectReportWorkPlans(applicationId, projectReportId, projectReportDetails.projectReport.workPlans);
+    cy.updateProjectReportWorkPlan(applicationId, projectReportId, projectReportDetails.projectReport.workPlan);
     cy.updateProjectReportResults(applicationId, projectReportId, projectReportDetails.projectReport.results);
     cy.submitProjectReport(applicationId, projectReportId);
 
-    loginByRequest(verificationUserEmail);
+    cy.loginByRequest(verificationUserEmail, false);
     cy.startProjectReportVerification(applicationId, projectReportId);
     cy.updateProjectReportExpenditureVerificationRisk(applicationId, projectReportId, projectReportDetails.verificationWork.risk);
     cy.updateProjectReportExpenditureVerification(applicationId, projectReportId, projectReportDetails.verificationWork.expenditures);
@@ -70,7 +69,7 @@ Cypress.Commands.add('createVerifiedProjectReport', (applicationId: number, proj
     cy.updateProjectReportVerification(applicationId, projectReportId, projectReportDetails.verificationWork.verification);
     cy.finalizeProjectReportVerification(applicationId, projectReportId);
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
     cy.wrap(projectReportId);
   });
@@ -105,27 +104,27 @@ Cypress.Commands.add('updateProjectReportIdentification', (applicationId: number
   });
 });
 
-Cypress.Commands.add('updateProjectReportWorkPlans', (applicationId: number, projectReportId: number, projectReportWorkPlans: any[]) => {
-  getApplicationWorkPlans(applicationId, projectReportId).then(workPlans => {
-    workPlans.forEach((workPlan, i) => {
-      projectReportWorkPlans[i].id = workPlan.id;
-      workPlan.activities.forEach((activity, k) => {
-        projectReportWorkPlans[i].activities[k].id = activity.id;
+Cypress.Commands.add('updateProjectReportWorkPlan', (applicationId: number, projectReportId: number, projectReportWorkPlan: any[]) => {
+  getApplicationWorkPlan(applicationId, projectReportId).then(workPlan => {
+    workPlan.forEach((workPackage, i) => {
+      projectReportWorkPlan[i].id = workPackage.id;
+      workPackage.activities.forEach((activity, k) => {
+        projectReportWorkPlan[i].activities[k].id = activity.id;
         activity.deliverables.forEach((deliverable, j) => {
-          projectReportWorkPlans[i].activities[k].deliverables[j].id = deliverable.id;
+          projectReportWorkPlan[i].activities[k].deliverables[j].id = deliverable.id;
         });
       });
-      workPlan.outputs.forEach((output, k) => {
-        projectReportWorkPlans[i].outputs[k].id = output.id;
+      workPackage.outputs.forEach((output, k) => {
+        projectReportWorkPlan[i].outputs[k].id = output.id;
       });
-      workPlan.investments.forEach((investment, k) => {
-        projectReportWorkPlans[i].investments[k].id = investment.id;
+      workPackage.investments.forEach((investment, k) => {
+        projectReportWorkPlan[i].investments[k].id = investment.id;
       });
     });
     cy.request({
       method: 'PUT',
       url: `api/project/report/byProjectId/${applicationId}/byReportId/${projectReportId}/workPlan`,
-      body: projectReportWorkPlans
+      body: projectReportWorkPlan
     });
   });
 });
@@ -188,7 +187,7 @@ function getProjectReportExpenditures(applicationId: number, projectReportId: nu
   });
 }
 
-function getApplicationWorkPlans(applicationId: number, projectReportId: number): any {
+function getApplicationWorkPlan(applicationId: number, projectReportId: number): any {
   return cy.request(`api/project/report/byProjectId/${applicationId}/byReportId/${projectReportId}/workPlan`).then(response => {
     return response.body
   });

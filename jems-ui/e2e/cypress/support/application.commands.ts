@@ -1,7 +1,5 @@
 import {faker} from '@faker-js/faker';
 import users from '@fixtures/users.json';
-import {createPartners, updatePartnerData} from './partner.commands';
-import {loginByRequest} from './login.commands';
 
 declare global {
 
@@ -199,35 +197,35 @@ Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision) =
 
 Cypress.Commands.add('startSecondStep', (applicationId: number, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/start-second-step`
   });
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
 
 Cypress.Commands.add('startModification', (applicationId: number, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/start-modification`,
   });
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
 
 Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/approve-modification`,
@@ -235,14 +233,14 @@ Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo
   });
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
 
 Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/reject`,
@@ -250,18 +248,18 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
   });
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
 
 Cypress.Commands.add('setProjectToContracted', (applicationId: number, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   setProjectToContracted(applicationId);
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
@@ -276,14 +274,14 @@ Cypress.Commands.add('assignPartnerCollaborators', (applicationId: number, partn
 
 Cypress.Commands.add('returnToApplicant', (applicationId: number, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/return-to-applicant`
   });
   if (userEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
@@ -368,7 +366,7 @@ Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: strin
 });
 
 function createApplication(applicationDetails) {
-  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
+  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substring(0, 25);
   return cy.request({
     method: 'POST',
     url: 'api/project',
@@ -382,7 +380,7 @@ function updateApplicationSections(applicationId, application) {
   updateIdentification(applicationId, application.identification);
 
   // Partial B
-  createPartners(applicationId, application.partners);
+  cy.createPartners(applicationId, application.partners);
 
   // C
   updateOverallObjective(applicationId, application.description.overallObjective);
@@ -399,7 +397,7 @@ function updateApplicationSections(applicationId, application) {
   // B
   application.partners.forEach(partner => {
     cy.then(function () {
-      updatePartnerData(this[partner.details.abbreviation], partner);
+      cy.updatePartnerData(this[partner.details.abbreviation], partner);
     });
   });
   createAssociatedOrganisations(applicationId, application.associatedOrganisations);
@@ -419,15 +417,15 @@ function updateContractingSections(applicationId, application, contractingUserEm
       updatePartnerBankDetails(applicationId, partnerId, partnerDetail.bankDetails);
       updatePartnerLocationOfDocuments(applicationId, partnerId, partnerDetail.locationOfDocuments);
       if (partnerDetail.minimis) {
-        loginByRequest(contractingUserEmail); // only programme user can edit state aid fields
+        cy.loginByRequest(contractingUserEmail, false); // only programme user can edit state aid fields
         updatePartnerMinimis(partnerId, partnerDetail.minimis);
         cy.get('@currentUser').then((currentUser: any) => {
-          loginByRequest(currentUser.name);
+          cy.loginByRequest(currentUser.name, false);
         });
       }
     });
 
-    loginByRequest(contractingUserEmail);
+    cy.loginByRequest(contractingUserEmail, false);
     application.contractMonitoring.fastTrackLumpSums.forEach(fastTrackLumpSum => {
       fastTrackLumpSum.lumpSumContributions.forEach(lumpSumContribution => {
         lumpSumContribution.partnerId = this[lumpSumContribution.cypressPartnerReference];
@@ -438,7 +436,7 @@ function updateContractingSections(applicationId, application, contractingUserEm
     cy.createReportingDeadlines(applicationId, application.reportingDeadlines);
     setProjectToContracted(applicationId);
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   })
 }
@@ -625,14 +623,14 @@ function setProjectToContracted(applicationId) {
 
 function approveApplication(applicationId: number, assessments, approvingUserEmail?: string) {
   if (approvingUserEmail)
-    loginByRequest(approvingUserEmail);
+    cy.loginByRequest(approvingUserEmail, false);
   enterEligibilityAssessment(applicationId, assessments.eligibilityAssessment);
   enterQualityAssessment(applicationId, assessments.qualityAssessment);
   enterEligibilityDecision(applicationId, assessments.eligibilityDecision);
   enterFundingDecision(applicationId, assessments.fundingDecision);
   if (approvingUserEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 }

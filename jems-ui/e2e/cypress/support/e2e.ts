@@ -2,6 +2,7 @@ import './commands';
 import './login.commands'
 import './call.commands';
 import './application.commands';
+import './partner.commands';
 import './programme.commands';
 import './system.commands';
 import './partner-report.commands';
