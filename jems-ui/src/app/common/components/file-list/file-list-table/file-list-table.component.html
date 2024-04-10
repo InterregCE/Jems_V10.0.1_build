@@ -115,7 +115,7 @@
                     </button>
                 </span>
 
-                <span *ngIf="(file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK) || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
+                <span *ngIf="(file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK) || file.iconIfNotDeletable !== ''"
                       [matTooltip]="((file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
                     <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id || file.name === SENSITIVE_FILE_NAME_MASK"
                             color="accent" mat-icon-button aria-label="delete">

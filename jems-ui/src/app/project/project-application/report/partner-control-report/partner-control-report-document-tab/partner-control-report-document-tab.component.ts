@@ -5,10 +5,9 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   PartnerControlReportFileManagementStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
-import {finalize, map, switchMap, take} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 import {
   JemsFileDTO,
-  ProjectPartnerControlReportDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
 } from '@cat/api';
@@ -72,12 +71,12 @@ export class PartnerControlReportDocumentTabComponent {
           author: file.author,
           sizeString: file.sizeString,
           description: file.description,
-          editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
-          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report, partnerControlReport, file) && canEdit && file.author.id === currentUserId,
-          tooltipIfNotDeletable: '',
-          iconIfNotDeletable: '',
+          editable: PartnerControlReportDocumentTabComponent.isEditable(report, canEdit, file.author.id === currentUserId),
+          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report, canEdit, file.author.id === currentUserId, file.uploaded),
+          iconIfNotDeletable: canEdit ? 'delete' : '',
+          tooltipIfNotDeletable: PartnerControlReportDocumentTabComponent.getTooltip(file, report?.lastControlReopening, currentUserId),
         })),
-        isControlReportEditable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit,
+        isControlReportEditable: ReportUtil.isControlReportExists(report.status) && canEdit,
         categories: {
           name: { i18nKey: this.translationService.instant(
               `project.application.partner.reports.title.number`,
@@ -96,17 +95,42 @@ export class PartnerControlReportDocumentTabComponent {
       .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
-  private static isEditable(report: ProjectPartnerReportDTO): boolean {
-    return ReportUtil.isControlReportExists(report.status);
+  private static isEditable(report: ProjectPartnerReportDTO, canEdit: boolean, isAuthor: boolean): boolean {
+    return canEdit && ReportUtil.isControlReportExists(report.status) && isAuthor;
   }
 
   private static isDeletable(
       report: ProjectPartnerReportDTO,
-      controlReport: ProjectPartnerControlReportDTO,
-      file: JemsFileDTO
+      canEdit: boolean,
+      isAuthor: boolean,
+      uploaded: Date,
   ): boolean {
-    return ReportUtil.isControlReportOpen(report.status) ||
-        (ReportUtil.isControlCertifiedReOpened(report.status) && file.uploaded > controlReport.reportControlEnd);
+    return this.isEditable(report, canEdit, isAuthor) && report.status !== ProjectPartnerReportDTO.StatusEnum.Certified &&
+      (!report.lastControlReopening || uploaded > report.lastControlReopening);
+  }
+
+  private static getIcon(canEdit: Boolean, file: JemsFileDTO, lastControlReopening: Date| null, currentUserId: number): string {
+    const isAuthor = file.author.id === currentUserId;
+    const uploadedAfterLastControlReOpening = !lastControlReopening || file.uploaded > lastControlReopening;
+
+    if (!canEdit) {
+      return '';
+    } else if (!uploadedAfterLastControlReOpening) {
+      return 'auto_delete';
+    }
+    return 'delete';
+  }
+
+  private static getTooltip(file: JemsFileDTO, lastControlReopening: Date | null | undefined, currentUserId: number): string {
+    const isAuthor = file.author.id === currentUserId;
+    const uploadedAfterLastControlReOpening = !lastControlReopening || file.uploaded > lastControlReopening;
+
+    if (!isAuthor) {
+      return 'file.table.user.not.owner';
+    } else if (!uploadedAfterLastControlReOpening) {
+      return 'project.application.partner.report.control.file.uploaded.before.control.reopening';
+    }
+    return '';
   }
 
   uploadFile(target: any): void {
