@@ -1,5 +1,4 @@
 import {faker} from '@faker-js/faker';
-import {loginByRequest} from './login.commands';
 
 declare global {
 
@@ -10,6 +9,8 @@ declare global {
       create2StepCall(call, creatingUserEmail?: string);
 
       publishCall(callId: number, publishingUserEmail?: string);
+
+      updateCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings: any): any;
 
       updateCallChecklists(callId: number, checklistIds: number[]): void;
     }
@@ -31,16 +32,25 @@ Cypress.Commands.add('create2StepCall', (call, creatingUserEmail?: string) => {
 
 Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: string) => {
   if (publishingUserEmail)
-    loginByRequest(publishingUserEmail);
+    cy.loginByRequest(publishingUserEmail, false);
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/publish`
   });
   if (publishingUserEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
+});
+
+Cypress.Commands.add('updateCallPreSubmissionCheckSettings', (callId: number, preSubmissionCheckSettings: any) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/call/byId/${callId}/preSubmissionCheck`,
+    headers: {'Content-Type': 'application/json'},
+    body: preSubmissionCheckSettings
+  });
 });
 
 Cypress.Commands.add('updateCallChecklists', (callId: number, checklistIds: number[]) => {
@@ -54,7 +64,7 @@ Cypress.Commands.add('updateCallChecklists', (callId: number, checklistIds: numb
 function createCall(call, creatingUserEmail?: string) {
   call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.string.uuid()}`;
   if (creatingUserEmail)
-    loginByRequest(creatingUserEmail);
+    cy.loginByRequest(creatingUserEmail, false);
   cy.request({
     method: 'POST',
     url: 'api/call',
@@ -74,9 +84,9 @@ function createCall(call, creatingUserEmail?: string) {
     if (call.checklists)
       cy.updateCallChecklists(callId, call.checklists);
     if (call.preSubmissionCheckSettings)
-      setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
+      cy.updateCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
     if (creatingUserEmail && this.currentUser) {
-      loginByRequest(this.currentUser.name);
+      cy.loginByRequest(this.currentUser.name, false);
     }
     cy.wrap(callId).as('callId');
   });
@@ -106,7 +116,7 @@ function setCallUnitCosts(callId: number, unitCosts: number[]) {
   });
 }
 
-function allowedCostOption(callId: number, allowedCostOption) {
+function allowedCostOption(callId: number, allowedCostOption: any) {
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/allowedCostOption`,
@@ -119,15 +129,6 @@ function setCallApplicationFormConfiguration(callId: number, applicationFormConf
     method: 'POST',
     url: `api/call/${callId}/applicationFormFieldConfigurations`,
     body: applicationFormConfiguration
-  });
-}
-
-function setCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings) {
-  cy.request({
-    method: 'PUT',
-    url: `api/call/byId/${callId}/preSubmissionCheck`,
-    headers: {'Content-Type': 'application/json'},
-    body: preSubmissionCheckSettings
   });
 }
 

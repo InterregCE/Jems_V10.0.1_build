@@ -4,6 +4,8 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
+      downloadNUTS(): void;
+
       createChecklist(checklist);
 
       getProgrammeChecklists();
@@ -16,6 +18,13 @@ declare global {
     }
   }
 }
+
+Cypress.Commands.add('downloadNUTS', () => {
+  cy.request({
+    method: 'POST',
+    url: 'api/nuts/download'
+  });
+});
 
 Cypress.Commands.add('createChecklist', (checklist) => {
   checklist.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;

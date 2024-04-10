@@ -34,12 +34,20 @@ declare global {
   }
 }
 
-Cypress.Commands.add('createPartner', (applicationId: number, partner) => {
-  createPartner(applicationId, partner);
+Cypress.Commands.add('createPartner', (applicationId: number, partnerDetails) => {
+  cy.request({
+    method: 'POST',
+    url: `api/project/partner/toProjectId/${applicationId}`,
+    body: partnerDetails
+  }).then(response => {
+    cy.wrap(response.body.id).as(partnerDetails.abbreviation);
+  });
 });
 
 Cypress.Commands.add('createPartners', (applicationId: number, partners: []) => {
-  createPartners(applicationId, partners);
+  partners.forEach((partner: any) => {
+    cy.createPartner(applicationId, partner.details);
+  });
 });
 
 Cypress.Commands.add('createFullPartner', (applicationId: number, partner) => {
@@ -93,26 +101,10 @@ Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
   });
 });
 
-export function createPartner(applicationId: number, partnerDetails) {
-  return cy.request({
-    method: 'POST',
-    url: `api/project/partner/toProjectId/${applicationId}`,
-    body: partnerDetails
-  }).then(response => {
-    cy.wrap(response.body.id).as(partnerDetails.abbreviation);
-  });
-}
-
 export function createFullPartner(applicationId: number, partner) {
-  createPartner(applicationId, partner.details).then(partnerId => {
+  cy.createPartner(applicationId, partner.details).then(partnerId => {
     updatePartnerData(partnerId, partner);
     cy.wrap(partnerId).as('partnerId');
-  });
-}
-
-export function createPartners(applicationId: number, partners: []) {
-  partners.forEach((partner: any) => {
-    createPartner(applicationId, partner.details);
   });
 }
 

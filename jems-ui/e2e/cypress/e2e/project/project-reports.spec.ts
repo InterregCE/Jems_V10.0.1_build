@@ -156,7 +156,7 @@ context('Project report tests', () => {
           cy.url().then(url => {
             const reportId = Number(url.replace('/identification', '').split('/').pop());
 
-            cy.updateProjectReportWorkPlans(applicationId, reportId, testData.workPlansUpdate);
+            cy.updateProjectReportWorkPlan(applicationId, reportId, testData.workPlanUpdate);
 
             cy.visit(`app/project/detail/${applicationId}/projectReports/${reportId}/submitReport`, {failOnStatusCode: false});
             cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
@@ -675,6 +675,79 @@ context('Project report tests', () => {
       });
     });
   });
+
+  it('TB-1073 Project Report should properly reflect the Application Form and Partner Report data it is based on', function () {
+    cy.fixture('project/reporting/TB-1073.json').then(testData => {
+      const adjustedApplication = JSON.parse(JSON.stringify(application));
+      cy.loginByRequest(user.programmeUser.email);
+      call.preSubmissionCheckSettings.pluginKey = 'jems-pre-condition-check-off';
+      cy.createCall(call).then(callId => {
+        adjustedApplication.details.projectCallId = callId;
+        cy.publishCall(callId);
+      });
+
+      adjustedApplication.description.relevanceAndContext.projectBenefits = [];
+      adjustedApplication.description.workPlan = [];
+      adjustedApplication.partners[0].stateAid.activities = [];
+      adjustedApplication.partners[1].stateAid.activities = [];
+      adjustedApplication.description.results = [];
+      adjustedApplication.description.management.projectHorizontalPrinciples = null;
+      cy.loginByRequest(user.applicantUser.email);
+
+      cy.createContractedApplication(adjustedApplication, user.programmeUser.email).then(applicationId => {
+        cy.createProjectReport(applicationId, {deadlineId: adjustedApplication.reportingDeadlines[2].id}).then(projectReport1Id => {
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport1Id}/identification`, {failOnStatusCode: false});
+          assertSectionsVisibility(false);
+
+          // group order 2
+          call.preSubmissionCheckSettings.pluginKey = 'standard-pre-condition-check-plugin';
+          cy.loginByRequest(user.programmeUser.email);
+          cy.updateCallPreSubmissionCheckSettings(this.callId, call.preSubmissionCheckSettings);
+
+          adjustedApplication.description = application.description;
+          const partner1Id = this[adjustedApplication.partners[0].details.abbreviation]
+          const partner2Id = this[adjustedApplication.partners[1].details.abbreviation]
+          adjustedApplication.partners = application.partners;
+          cy.startModification(applicationId);
+
+          cy.loginByRequest(user.applicantUser.email);
+          cy.createProjectWorkPlan(applicationId, adjustedApplication.description.workPlan);
+          cy.updateProjectRelevanceAndContext(applicationId, adjustedApplication.description.relevanceAndContext);
+          cy.updatePartnerStateAid(partner1Id, adjustedApplication.partners[0].stateAid);
+          cy.updatePartnerStateAid(partner2Id, adjustedApplication.partners[1].stateAid);
+          cy.createProjectResults(applicationId, adjustedApplication.description.results);
+          cy.updateProjectManagement(applicationId, adjustedApplication.description.management);
+          cy.submitProjectApplication(applicationId);
+          cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
+
+          // old report should be the same
+          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport1Id}/identification`, {failOnStatusCode: false});
+          assertSectionsVisibility(false);
+
+          // group order 3
+          cy.createProjectReport(applicationId, {deadlineId: adjustedApplication.reportingDeadlines[2].id}).then(projectReport2Id => {
+            cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport2Id}/identification`, {failOnStatusCode: false});
+            assertSectionsVisibility(true);
+
+            // group oder 4
+            cy.createCertifiedPartnerReport(partner1Id, reporting.projectReports[0].partnerReports[0], user.controllerUser.email);
+            cy.createProjectReport(applicationId, {deadlineId: adjustedApplication.reportingDeadlines[2].id}).then(projectReport3Id => {
+              cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport3Id}/identification`, {failOnStatusCode: false});
+              projectReportPage.verifySpendingProfile(testData.expectedResults);
+              assertSectionsVisibility(true);
+
+              // old reports should stay the same
+              cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport1Id}/identification`, {failOnStatusCode: false});
+              assertSectionsVisibility(false);
+
+              cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReport2Id}/identification`, {failOnStatusCode: false});
+              assertSectionsVisibility(true);
+            });
+          });
+        });
+      });
+    });
+  });
 });
 
 function createProjectReportWithoutReportingSchedule(applicationId: number, reportType: ProjectReportType) {
@@ -891,4 +964,45 @@ function setReportDataAndFinalize(partnerId: number, reportId: number, partnerRe
   cy.updateControlReportIdentification(partnerId, reportId, partnerReportDetails.controlWork.identification);
   cy.updateControlReportExpenditureVerification(partnerId, reportId, partnerReportDetails.controlWork.expenditureVerification);
   cy.finalizeControl(partnerId, reportId);
+}
+
+function assertSectionsVisibility(isVisible) {
+  if (isVisible) {
+    // TODO after MP2-4287 is fixed, replace the two assertions below
+    // cy.contains('Overview of Project outputs and result overview').should('be.visible')
+    cy.contains('Programme Result Indicator').scrollIntoView().should('be.visible');
+    // TODO after MP2-4601 is fixed uncomment the below assertion
+    //cy.contains('Partner spending profile (in Euro)').should('be.visible');
+    cy.contains('Target groups').scrollIntoView().should('be.visible');
+
+    cy.contains('Work plan progress').click();
+    cy.contains('Work package 1').should('be.visible');
+
+    cy.contains('Project results & Horizontal').click();
+    // TODO after MP2-4600 is fixed, replace the two assertions below
+    // cy.contains('Project results').should(visibilityFlag);
+    cy.contains('Result 1').should('be.visible');
+    cy.contains('div.jems-table-config', 'Cooperation criteria').find('.mat-button-toggle-checked')
+      .should('be.visible');
+  } else {
+    cy.contains('Project progress report identification').should('be.visible');
+    // TODO after MP2-4287 is fixed, replace the two assertions below
+    // cy.contains('Overview of Project outputs and result overview').should('not.exist')
+    cy.contains('Programme Result Indicator').should('not.exist');
+    // TODO after MP2-4601 is fixed uncomment the below assertion
+    //cy.contains('Partner spending profile (in Euro)').should('not.exist');
+    cy.contains('Target groups').should('not.exist');
+
+    cy.contains('Work plan progress').click();
+    cy.contains('Work plan progress').should('be.visible');
+    cy.contains('Work package 1').should('not.exist');
+
+    cy.contains('Project results & Horizontal').click();
+    cy.contains('Horizontal principles').should('be.visible');
+    // TODO after MP2-4600 is fixed, replace the two assertions below
+    // cy.contains('Project results').should('not.exist');
+    cy.contains('Result 1').should('not.exist');
+    cy.contains('div.jems-table-config', 'Cooperation criteria').find('.mat-button-toggle-checked')
+      .should('not.exist');
+  }
 }

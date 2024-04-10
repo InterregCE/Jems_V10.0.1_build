@@ -2,7 +2,7 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      loginByRequest(userEmail: string);
+      loginByRequest(userEmail: string, setAsCurrent?: boolean);
 
       logoutByRequest(): void;
 
@@ -11,9 +11,17 @@ declare global {
   }
 }
 
-Cypress.Commands.add('loginByRequest', (userEmail: string) => {
-  loginByRequest(userEmail).then(response => {
-    cy.wrap(response.body).as('currentUser');
+Cypress.Commands.add('loginByRequest', (userEmail: string, setAsCurrent?: boolean) => {
+  cy.request({
+    method: 'POST',
+    url: Cypress.env('authenticationUrl'),
+    body: {
+      email: userEmail,
+      password: Cypress.env('defaultPassword')
+    }
+  }).then(response => {
+    if (setAsCurrent === undefined || setAsCurrent === true)
+      cy.wrap(response.body).as('currentUser');
   });
 });
 
@@ -26,7 +34,7 @@ Cypress.Commands.add('logoutByRequest', () => {
 
 Cypress.Commands.add('createUser', (user, creatingUserEmail?: string) => {
   if (creatingUserEmail)
-    loginByRequest(creatingUserEmail);
+    cy.loginByRequest(creatingUserEmail, false);
   cy.request({
     method: 'POST',
     url: 'api/user',
@@ -43,20 +51,9 @@ Cypress.Commands.add('createUser', (user, creatingUserEmail?: string) => {
   });
   if (creatingUserEmail) {
     cy.get('@currentUser').then((currentUser: any) => {
-      loginByRequest(currentUser.name);
+      cy.loginByRequest(currentUser.name, false);
     });
   }
 });
-
-export function loginByRequest(userEmail: string) {
-  return cy.request({
-    method: 'POST',
-    url: Cypress.env('authenticationUrl'),
-    body: {
-      email: userEmail,
-      password: Cypress.env('defaultPassword')
-    }
-  });
-}
 
 export {}

@@ -1,4 +1,3 @@
-import {loginByRequest} from './login.commands';
 import {faker} from '@faker-js/faker';
 
 declare global {
@@ -6,7 +5,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       createRole(role, userEmail?: string);
-      
+
       updateRole(role);
     }
   }
@@ -14,7 +13,7 @@ declare global {
 
 Cypress.Commands.add('createRole', (role, userEmail?: string) => {
   if (userEmail)
-    loginByRequest(userEmail);
+    cy.loginByRequest(userEmail, false);
   role.name = `${role.name}_${faker.string.alphanumeric(5)}`;
   cy.request({
     method: 'POST',
@@ -24,7 +23,7 @@ Cypress.Commands.add('createRole', (role, userEmail?: string) => {
     if (userEmail) {
       // noinspection CYUnresolvedAlias
       cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
+        cy.loginByRequest(currentUser.name, false);
       });
     }
     return response.body.id;
