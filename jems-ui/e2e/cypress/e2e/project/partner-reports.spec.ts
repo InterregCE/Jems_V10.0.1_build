@@ -9,6 +9,7 @@ import approvalInfo from '../../fixtures/api/application/modification/approval.i
 import partner from '../../fixtures/api/application/partner/partner.json';
 import {partnerReportPage} from './reports-page.pom';
 import controlReportIdentification from '../../fixtures/api/partnerControlReport/controlReportIdentification.json';
+import reporting from "@fixtures/api/reporting/reporting.json";
 
 const costCategories = [
     'Travel and accommodation',
@@ -1606,6 +1607,29 @@ context('Partner reports tests', () => {
             cy.contains('List of expenditures').click();
             validateExpenditures(false, true);
         });
+    });
+
+    it('TB-743 Partner user should have a financial overview of the current report', function(){
+      cy.fixture('project/reporting/TB-743.json').then(testData => {
+        cy.loginByRequest(user.programmeUser.email);
+        call.preSubmissionCheckSettings.reportPartnerCheckPluginKey = 'report-partner-check-off';
+        cy.createCall(call).then(callId => {
+          application.details.projectCallId = callId;
+          cy.publishCall(callId);
+        });
+
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+          const partnerId = this[application.partners[0].details.abbreviation];
+          cy.createCertifiedPartnerReport(partnerId, reporting.projectReports[0].partnerReports[0], user.controllerUser.email);
+          cy.addPartnerReport(partnerId).then(partnerReportId => {
+            cy.updatePartnerReportExpenditures(partnerId, partnerReportId, reporting.projectReports[0].partnerReports[0].partnerReport.expenditures);
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${partnerReportId}/financialOverview`, {failOnStatusCode: false});
+
+            partnerReportPage.verifyAmountsInTables(testData.expectedResults);
+          });
+        });
+      });
     });
 
     //region TB-744 METHODS
