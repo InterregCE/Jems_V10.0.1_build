@@ -168,7 +168,7 @@ export class ProjectStore {
   getProjectBudget(): Observable<number> {
     return combineLatest([
       this.projectId$,
-      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$,
     ]).pipe(
       switchMap(([projectId, version]) =>
         this.projectService.getProjectCoFinancingOverview(projectId, version?.version)

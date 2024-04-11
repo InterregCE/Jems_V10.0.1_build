@@ -1,0 +1,133 @@
+{
+  "partnerReportExpenditures": [
+    {
+      "costCategory": "EquipmentCosts",
+      "internalReferenceNumber": "5",
+      "invoiceNumber": "invoice",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment3",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement2",
+      "invoiceDate": "2022-12-02",
+      "dateOfPayment": "2022-12-09",
+      "description": [],
+      "comment": [],
+      "totalValueInvoice": 555.55,
+      "vat": 55.55,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": "declaredAmount",
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": "declaredAmount"
+    },
+    {
+      "cypressReference": "shouldHaveLumpSum",
+      "costCategory": "Multiple",
+      "description": [
+        {
+          "translation": "API generated expenditure 5 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 5 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 5 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 5 comment EN",
+          "language": "EN"
+        }
+      ],
+      "numberOfUnits": 1,
+      "currencyCode": "EUR"
+    },
+    {
+      "cypressReference": "shouldHaveUnitCost",
+      "unitCostId": 2,
+      "costCategory": "TravelAndAccommodationCosts",
+      "description": [
+        {
+          "translation": "API generated expenditure 6 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 6 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 6 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 6 comment EN",
+          "language": "EN"
+        }
+      ],
+      "numberOfUnits": 1,
+      "currencyCode": "EUR"
+    }
+  ],
+  "expenditureVerifications": [
+    {
+      "id": null,
+      "costCategory": "EquipmentCosts",
+      "partOfSample": true,
+      "deductedAmount": "deductedAmount",
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Deducted control 1"
+    },
+    {
+      "id": null,
+      "costCategory": "Multiple",
+      "partOfSample": false,
+      "deductedAmount": "40",
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Deducted control 2"
+    },
+    {
+      "id": null,
+      "costCategory": "TravelAndAccommodationCosts",
+      "partOfSample": false,
+      "deductedAmount": "0",
+      "typologyOfErrorId": null,
+      "parked": true,
+      "verificationComment": "Parked control 1"
+    }
+  ],
+  "expectedResults": {
+    "firstResults": {
+      "per-partner": {
+        "LP1": {
+          "staffCosts": "74,00 Flat Rate % 20",
+          "officeAndAdministration": "7,40 Flat Rate % 10",
+          "travelAndAccommodation": "199,98",
+          "externalServices": "0,00",
+          "equipment": "170,00",
+          "infraAndWorks": "0,00",
+          "otherCosts": "0,00",
+          "lumpSum": "40,00",
+          "unitCosts": "0,00",
+          "totalBudget": "491,38"
+        },
+        "Total": {
+          "staffCosts": "74,00",
+          "officeAndAdministration": "7,40",
+          "travelAndAccommodation": "199,98",
+          "externalServices": "0,00",
+          "equipment": "170,00",
+          "infraAndWorks": "0,00",
+          "otherCosts": "0,00",
+          "lumpSum": "40,00",
+          "unitCosts": "0,00",
+          "totalBudget": "491,38"
+        }
+      }
+    }
+  }
+}

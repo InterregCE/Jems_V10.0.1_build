@@ -60,7 +60,7 @@ export class ProjectTimeplanPageStore {
 
     return isOnAfForm
       ? this.projectVersionStore.selectedVersionParam$
-      : this.projectVersionStore.lastApprovedOrContractedVersion$
+      : this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$
         .pipe(map(lastApprovedVersion => lastApprovedVersion?.version));
   }
 }

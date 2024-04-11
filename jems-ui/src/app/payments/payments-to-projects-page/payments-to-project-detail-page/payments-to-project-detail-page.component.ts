@@ -357,7 +357,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
           !this.installmentsArray(index).at(installmentIndex).get('savePaymentInfo')?.value) {
           this.setSavePaymentDateForAll(index, installmentIndex);
         }
-      })
+        if (!this.toggleStatesOfPaymentRows[index]) {
+          this.togglePaymentRowAtIndex(index);
+        }
+      });
     });
     this.formService.setDirty(true);
   }
@@ -369,7 +372,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         !this.installmentsArray(index).at(installmentIndex).get('paymentConfirmed')?.value) {
           this.setConfirmPaymentDateForAll(index, installmentIndex);
         }
-      })
+        if (!this.toggleStatesOfPaymentRows[index]) {
+          this.togglePaymentRowAtIndex(index);
+        }
+      });
     });
     this.formService.setDirty(true);
   }
@@ -399,7 +405,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
           this.installmentsArray(index).at(installmentIndex)
             .get('paymentDate')?.patchValue(this.allPaymentDateForm.get('allPaymentDateField')?.value);
         }
-      })
+        if (!this.toggleStatesOfPaymentRows[index]) {
+          this.togglePaymentRowAtIndex(index);
+        }
+      });
     });
     this.formService.setDirty(true);
   }

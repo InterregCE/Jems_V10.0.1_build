@@ -20,7 +20,7 @@ export default defineConfig({
   },
   e2e: {
     baseUrl: 'http://localhost:4200/',
-    specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**/*.spec.ts'],
+    specPattern: ['cypress/e2e/setup.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**/*.spec.ts'],
     async setupNodeEvents(on, config) {
       on('task', {
         async parseXLSX(subject) {

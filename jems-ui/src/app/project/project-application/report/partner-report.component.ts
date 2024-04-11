@@ -74,7 +74,7 @@ export class PartnerReportComponent {
       pageStore.partnerReports$,
       pageStore.partnerSummary$,
       pageStore.userCanEditReport$,
-      versionStore.lastApprovedOrContractedVersion$,
+      versionStore.lastApprovedOrContractedOrClosedVersion$,
       projectReportPageStore.userCanViewReport$,
       pageStore.partnerReportLevel$,
       pageStore.canCreateReport$,

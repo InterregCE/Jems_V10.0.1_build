@@ -25,7 +25,7 @@ fun AuditControlCorrectionEntity.toModel() = AuditControlCorrectionDetail(
     correctionFollowUpType = followUpOfCorrectionType,
     repaymentFrom = repaymentDate,
     lateRepaymentTo = lateRepayment,
-    partnerId = partnerReport?.partnerId ?: lumpSumPartnerId,
+    partnerId = partnerId(),
     partnerReportId = partnerReport?.id,
     lumpSumOrderNr = lumpSum?.id?.orderNr,
     programmeFundId = programmeFund?.id,
@@ -46,6 +46,8 @@ fun AuditControlCorrectionEntity.toSimpleModel() = AuditControlCorrection(
     auditControlId = auditControl.id,
     auditControlNr = auditControl.number,
 )
+
+fun List<AuditControlCorrectionEntity>.toSimpleModel() = map { it.toSimpleModel() }
 
 fun AuditControlCorrectionCreate.toEntity(auditControlEntity: AuditControlEntity) = AuditControlCorrectionEntity(
     auditControl = auditControlEntity,

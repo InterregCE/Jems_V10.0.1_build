@@ -65,7 +65,7 @@ export class ProjectReportComponent {
   ) {
     this.data$ = combineLatest([
       pageStore.projectReports$,
-      versionStore.lastApprovedOrContractedVersion$,
+      versionStore.lastApprovedOrContractedOrClosedVersion$,
       pageStore.userCanEditReport$,
       pageStore.userCanViewVerification$,
       projectStore.projectPeriods$

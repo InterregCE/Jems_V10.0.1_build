@@ -21,8 +21,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import java.math.BigDecimal
 
 fun List<ProjectReportWorkPackageEntity>.toModel(
@@ -161,7 +159,8 @@ fun ResultIndicatorEntity.toModel() = ProjectReportResultIndicatorOverview(
     identifier = identifier,
     name = getName(),
     measurementUnit = getMeasurementUnit(),
-    baseline = baseline,
+    baselineIndicator = baseline ?: BigDecimal.ZERO,
+    baselines = emptyList(),
     targetValue = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,

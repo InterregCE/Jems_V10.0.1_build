@@ -71,7 +71,7 @@ export class ContractMonitoringExtensionStore {
   private getProjectBudget(): Observable<number> {
     return combineLatest([
       this.projectId$,
-      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$,
     ]).pipe(
       switchMap(([projectId, version]) =>
         this.projectContractingMonitoringService.getContractingMonitoringProjectBudget(projectId, version?.version)

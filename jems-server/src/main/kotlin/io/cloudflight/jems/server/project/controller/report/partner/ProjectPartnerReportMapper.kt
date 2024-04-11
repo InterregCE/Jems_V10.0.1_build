@@ -70,6 +70,7 @@ fun ProjectPartnerReport.toDto() = ProjectPartnerReportDTO(
     linkedFormVersion = version,
 
     identification = identification.toDto(),
+    lastControlReopening = lastControlReopening,
     projectReportId = projectReportId,
     projectReportNumber = projectReportNumber,
 )

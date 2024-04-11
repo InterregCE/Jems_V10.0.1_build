@@ -139,7 +139,7 @@ export class PrivilegesPageStore {
   }
 
   private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
-    return this.projectVersionStore.lastApprovedOrContractedVersion$
+    return this.projectVersionStore.lastApprovedOrContractedOrClosedVersion$
       .pipe(
         map(lastApprovedVersion => lastApprovedVersion?.version),
         filter(version => !!version),

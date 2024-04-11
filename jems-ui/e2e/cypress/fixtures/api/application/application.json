@@ -735,7 +735,8 @@
             "fundId": 8,
             "fundType": "MainFund",
             "percentage": 14.66
-          }, {
+          },
+          {
             "percentage": 25.34,
             "fundType": "PartnerContribution"
           }
@@ -2029,6 +2030,25 @@
             "language": "EN"
           }
         ]
+      },
+      {
+        "programmeResultIndicatorId": 1,
+        "programmeResultIndicatorIdentifier": null,
+        "resultNumber": 1,
+        "targetValue": 10,
+        "baseline": 1,
+        "baselineMaxValue": 0,
+        "periodNumber": 255,
+        "description": [
+          {
+            "translation": "API generated project result description for after project implementation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project result description for after project implementation EN",
+            "language": "EN"
+          }
+        ]
       }
     ],
     "management": {
@@ -2683,8 +2703,8 @@
       "linkedSubmittedProjectReportNumbers": [],
       "linkedDraftProjectReportNumbers": []
     }, {
-      "id": null,
       "cypressDeadlineReference": "bothDeadline",
+      "id": null,
       "date": "2024-12-31T00:00:00.000Z",
       "type": "Both",
       "periodNumber": 3,

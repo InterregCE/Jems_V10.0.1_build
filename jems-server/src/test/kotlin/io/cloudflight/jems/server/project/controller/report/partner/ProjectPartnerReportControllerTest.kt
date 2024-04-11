@@ -97,6 +97,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
         private val TODAY = ZonedDateTime.now()
+        private val LAST_MONTH = ZonedDateTime.now().minusMonths(1)
 
         private val reportSummary = ProjectPartnerReportSummary(
             id = 754,
@@ -171,7 +172,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             lastResubmission = null,
             controlEnd = TODAY,
 
-            lastControlReopening = null,
+            lastControlReopening = LAST_MONTH,
             projectReportId = 17L,
             projectReportNumber = 170,
 
@@ -239,6 +240,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                     )
                 )
             ),
+            lastControlReopening = LAST_MONTH,
             projectReportId = 17L,
             projectReportNumber = 170,
         )

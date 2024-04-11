@@ -142,9 +142,9 @@ fun advancePaymentAuthorized(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "Advance payment details for advance payment ${paymentDetail.id} of " +
-                    "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                    "for funding source ${getFundingSourceName(paymentDetail)} are authorised"
+            "Amount ${paymentDetail.amountPaid!!.setScale(2, RoundingMode.HALF_UP)} was authorised for Advance payment details for " +
+                "advance payment ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                "for funding source ${getFundingSourceName(paymentDetail)} are authorised"
         )
         .build()
 )
@@ -157,9 +157,9 @@ fun advancePaymentConfirmed(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "Advance payment details for advance payment ${paymentDetail.id} of " +
-                    "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                    "for funding source ${getFundingSourceName(paymentDetail)} are confirmed"
+            "Amount ${paymentDetail.amountPaid!!.setScale(2, RoundingMode.HALF_UP)} was confirmed for Advance payment details for " +
+                "advance payment ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                "for funding source ${getFundingSourceName(paymentDetail)} are confirmed"
         )
         .build()
 )
@@ -173,19 +173,13 @@ fun advancePaymentSettlementCreated(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_CREATED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "${
-                settlement.amountSettled.setScale(
-                    2,
-                    RoundingMode.HALF_UP
-                )
-            } EUR was settled in settlement no. ${settlement.number} " +
-                    "for advance payment no. ${paymentDetail.id} of partner ${
-                        getPartnerName(
-                            paymentDetail.partnerType,
-                            paymentDetail.partnerNumber
-                        )
-                    } " +
-                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is created"
+            "${settlement.amountSettled.setScale(2, RoundingMode.FLOOR)} EUR was settled in settlement no. ${settlement.number} " +
+                "for advance payment no. ${paymentDetail.id} of partner ${getPartnerName(
+                        paymentDetail.partnerType,
+                        paymentDetail.partnerNumber
+                    )
+                } " +
+                "for funding source ${getFundingSourceName(paymentDetail)}"
         )
         .build()
 )
@@ -199,14 +193,9 @@ fun advancePaymentSettlementDeleted(
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_DELETED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description(
-            "${settlement.amountSettled} EUR was settled in settlement no. ${settlement.number} " +
-                    "for advance payment no. ${paymentDetail.id} of partner ${
-                        getPartnerName(
-                            paymentDetail.partnerType,
-                            paymentDetail.partnerNumber
-                        )
-                    } " +
-                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is deleted"
+            "Settlement no. ${settlement.number} in amount of ${settlement.amountSettled.setScale(2, RoundingMode.FLOOR)} EUR for " +
+                "advance payment no. ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                "for funding source ${getFundingSourceName(paymentDetail)} was deleted"
         )
         .build()
 )
@@ -285,6 +274,7 @@ fun paymentApplicationToEcDeleted(
 fun paymentAccountsFinished(
     context: Any,
     updatedPaymentAccount: PaymentAccount,
+    linkedCorrectionsIds: List<Long>
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -292,7 +282,8 @@ fun paymentAccountsFinished(
             .description(
                 updatedPaymentAccount.toDescription(
                     previousStatus = PaymentAccountStatus.DRAFT,
-                    newStatus = PaymentAccountStatus.FINISHED
+                    newStatus = PaymentAccountStatus.FINISHED,
+                    linkedCorrectionsIds = linkedCorrectionsIds
                 )
             )
             .build()
@@ -308,7 +299,8 @@ fun paymentAccountsReOpened(
             .description(
                 updatedPaymentAccount.toDescription(
                     previousStatus = PaymentAccountStatus.FINISHED,
-                    newStatus = PaymentAccountStatus.DRAFT
+                    newStatus = PaymentAccountStatus.DRAFT,
+                    emptyList()
                 )
             )
             .build()

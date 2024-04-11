@@ -49,8 +49,8 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
                     programmeResultIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "waaaw")),
                     baseline = BigDecimal.valueOf(1),
                     targetValue = BigDecimal.valueOf(2),
-                    achievedInReportingPeriod = BigDecimal.valueOf(3),
-                    cumulativeValue = BigDecimal.valueOf(4),
+                    currentReport = BigDecimal.valueOf(3),
+                    previouslyReported = BigDecimal.valueOf(4),
                     periodDetail = ProjectPeriod(9, 3, 5),
                     description = setOf(InputTranslation(SystemLanguage.CS, "desc-CS")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measurement")),
@@ -67,7 +67,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
         val expectedResultsAndPrinciplesAfterUpdate = ProjectReportResultPrinciple(
             projectResults = listOf(
                 expectedResultsAndPrinciple.projectResults.first().copy(
-                    achievedInReportingPeriod = BigDecimal.valueOf(42L, 1),
+                    currentReport = BigDecimal.valueOf(42L, 1),
                     description = setOf(
                         InputTranslation(SystemLanguage.CS, "desc-CS-new"),
                         InputTranslation(SystemLanguage.MK, "desc-MK-new"),

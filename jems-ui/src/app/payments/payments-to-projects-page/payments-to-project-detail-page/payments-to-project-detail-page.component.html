@@ -30,53 +30,53 @@
             <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
         </jems-alert>
       <mat-expansion-panel jemsNoWidthLimit class="mb-4"
-                           [expanded]="true">
+                           [expanded]="false">
         <mat-expansion-panel-header>
           <h4>{{'payments.payment.to.project.detail.bulk.title' | translate}}</h4>
         </mat-expansion-panel-header>
+        <div jemsFormLayout>
+            <p>{{'payments.payment.to.project.detail.bulk.subtext.one' | translate}}</p>
+            <p>{{'payments.payment.to.project.detail.bulk.subtext.two' | translate}}</p>
+            <p>{{'payments.payment.to.project.detail.bulk.subtext.three' | translate}}</p>
+            <p>{{'payments.payment.to.project.detail.bulk.subtext.four' | translate}}</p>
+        </div>
 
-        <p>{{'payments.payment.to.project.detail.bulk.subtext.one' | translate}}</p>
-        <p>{{'payments.payment.to.project.detail.bulk.subtext.two' | translate}}</p>
-        <p>{{'payments.payment.to.project.detail.bulk.subtext.three' | translate}}</p>
-        <p>{{'payments.payment.to.project.detail.bulk.subtext.four' | translate}}</p>
-        <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
-
-        <button class="mr-2" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+        <button class="action-button mr-3" jemsText mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
                 (click)="addInstallmentForAll(data.paymentDetail.partnerPayments);
                                                    $event.stopPropagation();">
-          + {{'payments.detail.table.header.installment.add.to.all.button' | translate}}
+            <mat-icon>add</mat-icon>&nbsp;{{'payments.detail.table.header.installment.add.to.all.button' | translate}}
         </button>
 
-        <button class="mr-2" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+        <button class="mr-3" jemsText mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
                 (click)="authorizeAll(data.paymentDetail.partnerPayments);
                                                      $event.stopPropagation();">
-          <mat-icon>check_box</mat-icon>
-          {{'payments.detail.table.header.installment.authorize.to.all.button' | translate}}
+          <mat-icon>check_box</mat-icon>&nbsp;{{'payments.detail.table.header.installment.authorize.to.all.button' | translate}}
         </button>
 
-        <span [formGroup]="allPaymentDateForm">
-          <mat-form-field class="date-field-for-filling-all">
-            <input name="allPaymentDatePicker"
-                   formControlName="allPaymentDateField" matInput
-                   [matDatepicker]="allPaymentDatePicker"
-                   aria-label="date">
-            <mat-datepicker-toggle matSuffix [for]="allPaymentDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #allPaymentDatePicker></mat-datepicker>
-          </mat-form-field>
-        </span>
+          <div class="all-dates-block">
+            <span [formGroup]="allPaymentDateForm">
+              <mat-form-field class="date-field-for-filling-all">
+                <input name="allPaymentDatePicker"
+                       formControlName="allPaymentDateField" matInput
+                       [matDatepicker]="allPaymentDatePicker"
+                       aria-label="date">
+                <mat-datepicker-toggle matSuffix [for]="allPaymentDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #allPaymentDatePicker></mat-datepicker>
+              </mat-form-field>
+            </span>
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+            <button class="mr-3" jemsText mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+                    [disabled]="!allPaymentDateForm?.controls?.allPaymentDateField?.value"
+                    (click)="setDateToAll(data.paymentDetail.partnerPayments);
+                                                           $event.stopPropagation();">
+                {{'payments.detail.table.header.installment.fill.payment.date.to.all.button' | translate}}
+            </button>
+          </div>
 
-        <button class="mr-1" mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
-                (click)="setDateToAll(data.paymentDetail.partnerPayments);
-                                                       $event.stopPropagation();">
-          <mat-icon>date_range</mat-icon>
-          {{'payments.detail.table.header.installment.fill.payment.date.to.all.button' | translate}}
-        </button>
-
-        <button mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
+        <button jemsText mat-stroked-button *ngIf="partnerPayments.length > 0 && (userCanEdit$ | async)"
                 (click)="confirmAll(data.paymentDetail.partnerPayments);
                                                        $event.stopPropagation();">
-          <mat-icon>check_box</mat-icon>
-          {{'payments.detail.table.header.installment.confirm.all.button' | translate}}
+          <mat-icon>check_box</mat-icon>&nbsp;{{'payments.detail.table.header.installment.confirm.all.button' | translate}}
         </button>
       </mat-expansion-panel>
 
@@ -136,11 +136,11 @@
                         <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
                         <div class="column-payments-remaining justify-end">{{this.getUnauthorisedAmountForIndex(index) | asMoney}}</div>
                         <div class="column-action-buttons justify-end">
-                            <button mat-stroked-button *ngIf="installmentsArray(index).length === 0 && (userCanEdit$ | async)"
+                            <button jemsText mat-stroked-button *ngIf="installmentsArray(index).length === 0 && (userCanEdit$ | async)"
                                     (click)="addInstallmentButtonClicked(null, index);
                                                  togglePaymentRowAtIndex(index);
                                                  $event.stopPropagation();">
-                                + {{'payments.detail.table.header.installment.add.button' | translate}}
+                                <mat-icon>add</mat-icon>&nbsp;{{'payments.detail.table.header.installment.add.button' | translate}}
                             </button>
                             <button mat-icon-button *ngIf="installmentsArray(index).length" class="button-expand"
                                     [ngClass]="{'expanded' : getPaymentRowToggleStateAtIndex(index)}"
@@ -302,7 +302,7 @@
                              class="footer-with-button justify-start">
                             <button mat-stroked-button class="button-add-installment"
                                     (click)="addInstallmentButtonClicked(null, index);">
-                                + {{'payments.detail.table.header.installment.add.button' | translate}}
+                                <mat-icon>add</mat-icon>&nbsp;{{'payments.detail.table.header.installment.add.button' | translate}}
                             </button>
                         </div>
                     </div>

@@ -15,7 +15,7 @@ export class ProjectVersionStore {
   selectedVersionParam$: Observable<string | undefined>;
   selectedVersion$: Observable<ProjectVersionDTO | undefined>;
   isSelectedVersionCurrent$: Observable<boolean>;
-  lastApprovedOrContractedVersion$: Observable<ProjectVersionDTO | undefined>;
+  lastApprovedOrContractedOrClosedVersion$: Observable<ProjectVersionDTO | undefined>;
 
   private versionsChanged$ = new Subject<void>();
 
@@ -35,7 +35,7 @@ export class ProjectVersionStore {
       .pipe(
         tap(id => this.projectId$.next(id as number))
       ).subscribe();
-    this.lastApprovedOrContractedVersion$ = this.lastApprovedOrContractedVersion();
+    this.lastApprovedOrContractedOrClosedVersion$ = this.lastApprovedOrContractedOrClosedVersion();
   }
 
   changeVersion(versionDTO: ProjectVersionDTO): void {
@@ -81,11 +81,11 @@ export class ProjectVersionStore {
     );
   }
 
-  private lastApprovedOrContractedVersion(): Observable<ProjectVersionDTO | undefined> {
+  private lastApprovedOrContractedOrClosedVersion(): Observable<ProjectVersionDTO | undefined> {
     return this.versions$
       .pipe(
         map(versions => versions.find(version =>
-          version.status === ProjectVersionDTO.StatusEnum.APPROVED || version.status === ProjectVersionDTO.StatusEnum.CONTRACTED
+          version.status === ProjectVersionDTO.StatusEnum.APPROVED || version.status === ProjectVersionDTO.StatusEnum.CONTRACTED || version.status === ProjectVersionDTO.StatusEnum.CLOSED
         ))
       );
   }

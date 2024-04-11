@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.payments.model.account.finance.correction.Paym
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionSearchRequest
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
 import io.cloudflight.jems.server.payments.repository.regular.joinWithOr
+import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionPersistenceProvider.Companion.accountCorrection
@@ -102,3 +103,9 @@ fun Sort.toQueryDslOrderByForCorrection(): OrderSpecifier<*> {
 
     return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, sortingColumn)
 }
+
+fun AuditControlCorrectionEntity.partnerId(): Long? =
+    if (lumpSum != null)
+        lumpSumPartnerId
+    else
+        partnerReport?.partnerId

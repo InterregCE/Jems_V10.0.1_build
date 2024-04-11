@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 
-class FinalizePaymentAccountTest: UnitTest() {
+class FinalizePaymentAccountTest : UnitTest() {
 
     companion object {
         val paymentAccountDraft = paymentAccount.copy(status = PaymentAccountStatus.DRAFT)
@@ -42,18 +42,35 @@ class FinalizePaymentAccountTest: UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    lateinit var paymentAccountCorrectionLinkingPersistence: PaymentAccountCorrectionLinkingPersistence
+
     @InjectMockKs
     lateinit var service: FinalizePaymentAccount
 
     @Test
     fun finalizeAccount() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountDraft
-        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns emptySet()
-        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.FINISHED
+        every {
+            ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(
+                paymentAccountDraft.fund.id,
+                paymentAccountDraft.accountingYear.id
+            )
+        } returns emptySet()
+        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.FINISHED
         val currentOverview = emptyMap<Long?, PaymentAccountAmountSummaryLineTmp>()
         every { correctionLinkingPersistence.calculateOverviewForDraftPaymentAccount(PAYMENT_ACCOUNT_ID) } returns currentOverview
-        every { correctionLinkingPersistence.saveTotalsWhenFinishingPaymentAccount(PAYMENT_ACCOUNT_ID, currentOverview.sumUpProperColumns()) } just runs
-
+        every {
+            correctionLinkingPersistence.saveTotalsWhenFinishingPaymentAccount(
+                PAYMENT_ACCOUNT_ID,
+                currentOverview.sumUpProperColumns()
+            )
+        } just runs
+        every {
+            paymentAccountCorrectionLinkingPersistence.getCorrectionExtensionIdsByPaymentAccountId(
+                PAYMENT_ACCOUNT_ID
+            )
+        } returns listOf(1L, 2L)
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
 
@@ -64,7 +81,8 @@ class FinalizePaymentAccountTest: UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_ACCOUNT_STATUS_CHANGED,
-                description = "Account 13 Fund (11, OTHER) for accounting Year 4: 2024-01-29 - 2024-02-02 changed  status from DRAFT to FINISHED"
+                description = "Account 13 Fund (11, OTHER) for accounting Year 4: 2024-01-29 - 2024-02-02 changed  status from DRAFT to FINISHED" +
+                    " and following items were included: Correction ID 1, Correction ID 2"
             )
         )
     }
@@ -72,9 +90,14 @@ class FinalizePaymentAccountTest: UnitTest() {
     @Test
     fun `finalizeAccount - not in Draft exception`() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountFinished
-        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountFinished.fund.id, paymentAccountFinished.accountingYear.id) } returns
-                emptySet()
-        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.DRAFT
+        every {
+            ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(
+                paymentAccountFinished.fund.id,
+                paymentAccountFinished.accountingYear.id
+            )
+        } returns
+            emptySet()
+        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.DRAFT
 
         assertThrows<PaymentAccountNotInDraftException> { service.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) }
     }
@@ -82,10 +105,19 @@ class FinalizePaymentAccountTest: UnitTest() {
     @Test
     fun `finalizeAccount - ec payments still in draft exception`() {
         every { paymentAccountPersistence.getByPaymentAccountId(PAYMENT_ACCOUNT_ID) } returns paymentAccountDraft
-        every { ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(paymentAccountDraft.fund.id, paymentAccountDraft.accountingYear.id) } returns setOf(1L)
-        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID)} returns PaymentAccountStatus.FINISHED
+        every {
+            ecPaymentPersistence.getDraftIdsByFundAndAccountingYear(
+                paymentAccountDraft.fund.id,
+                paymentAccountDraft.accountingYear.id
+            )
+        } returns setOf(1L)
+        every { paymentAccountPersistence.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) } returns PaymentAccountStatus.FINISHED
 
-        assertThrows<EcPaymentsForAccountingYearStillInDraftException> { service.finalizePaymentAccount(PAYMENT_ACCOUNT_ID) }
+        assertThrows<EcPaymentsForAccountingYearStillInDraftException> {
+            service.finalizePaymentAccount(
+                PAYMENT_ACCOUNT_ID
+            )
+        }
     }
 
 }

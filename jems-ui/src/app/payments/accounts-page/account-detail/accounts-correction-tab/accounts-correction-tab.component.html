@@ -24,7 +24,7 @@
     <ng-container *ngIf="data$ | async as data">
         <jems-alert [show]="success$ | async"
                     [type]="Alert.SUCCESS">
-            <p>{{'payments.to.ec.detail.ftls.update.save.message' | translate}}</p>
+            <p>{{'payments.accounts.corrections.update.save.message' | translate}}</p>
         </jems-alert>
         <jems-alert *ngIf="error$ | async as error"
                     [show]="!!error"

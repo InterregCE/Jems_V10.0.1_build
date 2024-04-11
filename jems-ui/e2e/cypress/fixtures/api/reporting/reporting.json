@@ -49,7 +49,7 @@
               ],
               "nextReportForecast": 20000
             },
-            "workPlans": [
+            "workPlan": [
               {
                 "id": null,
                 "number": 1,
@@ -600,7 +600,8 @@
               },
               {
                 "cypressReference": "shouldHaveUnitCost",
-                "unitCostId": 2,
+                "unitCostProgrammeId": 2,
+                "unitCostId": null,
                 "costCategory": "TravelAndAccommodationCosts",
                 "description": [
                   {
@@ -625,7 +626,8 @@
               },
               {
                 "cypressReference": "shouldHaveUnitCost",
-                "unitCostId": 6,
+                "unitCostProgrammeId": 6,
+                "unitCostId": null,
                 "costCategory": "Multiple",
                 "description": [
                   {
@@ -977,7 +979,7 @@
               ],
               "nextReportForecast": 15999.99
             },
-            "workPlans": [
+            "workPlan": [
               {
                 "id": null,
                 "number": 1,
@@ -1867,7 +1869,7 @@
             }
           ]
         },
-        "workPlans": [
+        "workPlan": [
           {
             "id": null,
             "completed": true,

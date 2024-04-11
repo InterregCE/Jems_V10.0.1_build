@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.expenditure.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
@@ -92,14 +94,24 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
              linkedToInvoice = true,
          )  */
 
-        private fun correctionEntity(correctionId: Long, partnerId: Long = -1L, modificationId: Long = -1L): AuditControlCorrectionEntity = mockk {
+        private fun correctionEntity(
+            correctionId: Long,
+            partnerId: Long? = -1L,
+            modificationId: Long = -1L,
+            ls: ProjectLumpSumEntity? = null,
+            lsPartnerId: Long? = null,
+        ): AuditControlCorrectionEntity = mockk {
             every { id } returns correctionId
             every { orderNr } returns correctionId.toInt()
             every { status } returns AuditControlStatus.Closed
             every { correctionType } returns AuditControlCorrectionType.LinkedToInvoice
             every { auditControl.id } returns 5L
             every { auditControl.number } returns 5
-            every { partnerReport?.partnerId } returns partnerId
+            if (partnerId != null)
+                every { partnerReport?.partnerId } returns partnerId
+            every { lumpSum } returns ls
+            if (lsPartnerId != null)
+                every { lumpSumPartnerId } returns lsPartnerId
             every { projectModificationId } returns modificationId
         }
 
@@ -147,57 +159,6 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
         assertThat(persistence.getProjectIdForCorrection(256L))
             .isEqualTo(45L)
     }
-
-    /*
-    @Test
-    fun getAllCorrectionsByAuditControlId() {
-        every {
-            auditControlCorrectionRepository.findAllByAuditControlEntityId(
-                AUDIT_CONTROL_ID, Pageable.unpaged()
-            )
-        } returns PageImpl(listOf(correctionEntity))
-
-        assertThat(
-            auditControlCorrectionPersistenceProvider.getAllCorrectionsByAuditControlId(
-                AUDIT_CONTROL_ID, Pageable.unpaged()
-            ).content
-        ).isEqualTo(listOf(correction))
-    }
-
-    @Test
-    fun getByCorrectionId() {
-        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
-
-        assertThat(auditControlCorrectionPersistenceProvider.getByCorrectionId(CORRECTION_ID)).isEqualTo(correction)
-    }
-
-    @Test
-    fun getExtendedByCorrectionId() {
-        every { auditControlCorrectionRepository.getReferenceById(CORRECTION_ID) } returns correctionEntity
-
-        assertThat(auditControlCorrectionPersistenceProvider.getExtendedByCorrectionId(CORRECTION_ID)).isEqualTo(
-            extendedCorrection
-        )
-    }
-
-    @Test
-    fun getLastUsedOrderNr() {
-        every { auditControlCorrectionRepository.findFirstByAuditControlEntityIdOrderByOrderNrDesc(AUDIT_CONTROL_ID) } returns correctionEntity
-
-        assertThat(auditControlCorrectionPersistenceProvider.getLastUsedOrderNr(AUDIT_CONTROL_ID)).isEqualTo(10)
-    }
-
-    @Test
-    fun getLastCorrectionIdByAuditControlId() {
-        every {
-            auditControlCorrectionRepository.getFirstByAuditControlEntityIdAndStatusOrderByOrderNrDesc(
-                AUDIT_CONTROL_ID, CorrectionStatus.Ongoing
-            )
-        } returns correctionEntity
-
-        assertThat(auditControlCorrectionPersistenceProvider.getLastCorrectionOngoingId(AUDIT_CONTROL_ID)).isEqualTo(1)
-    }
-*/
 
     @Test
     fun getCorrectionAvailableCostItems() {
@@ -304,8 +265,8 @@ class AuditControlCorrectionPersistenceProviderTest : UnitTest() {
         every { query.from(QAuditControlCorrectionEntity.auditControlCorrectionEntity) } returns query
         every { query.where(capture(wherePredicateSlot)) } returns query
         every { query.fetch() } returns listOf(
-            correctionEntity(101L, 3L),
-            correctionEntity(102L, 4L),
+            correctionEntity(101L, partnerId = 3L, ls = null, lsPartnerId = null),
+            correctionEntity(102L, partnerId = null, ls = mockk(), lsPartnerId = 4L),
         )
 
         assertThat(persistence.getAvailableCorrectionsForPayments(PROJECT_ID)).isEqualTo(

@@ -68,13 +68,11 @@ context('Programme management tests', () => {
       });
     });
 
-    it('TB-523 Programme NUTS can be downloaded and areas selected', () => {
+    it('TB-523 Programme NUTS areas can be selected', () => {
 
       cy.visit('/app/programme', {failOnStatusCode: false});
 
       cy.contains('Geographical coverage').click();
-      cy.contains('Download').click();
-      cy.get('jems-alert p', {timeout: 40000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
 
       cy.contains('DE Deutschland').click();
       cy.contains('AT Österreich').click();

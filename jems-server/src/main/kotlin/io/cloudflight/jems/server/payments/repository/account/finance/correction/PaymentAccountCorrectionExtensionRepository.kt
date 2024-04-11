@@ -12,4 +12,7 @@ interface PaymentAccountCorrectionExtensionRepository: JpaRepository<PaymentAcco
     @Query("SELECT e.paymentAccount.accountingYear FROM #{#entityName} e WHERE e.correctionId = :correctionId")
     fun getAccountingYearByCorrectionId(correctionId: Long): AccountingYearEntity?
 
+    @Query("SELECT e.correctionId FROM #{#entityName} e WHERE e.paymentAccount.id = :paymentAccountId")
+    fun getAllCorrectionIdsByPaymentAccountId(paymentAccountId: Long): List<Long>
+
 }
