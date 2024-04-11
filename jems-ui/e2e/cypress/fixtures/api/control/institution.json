@@ -1,15 +1,25 @@
 {
   "name": "controller institution",
   "description": "Default controller institution",
-  "institutionNuts": [
-    "AT", "AT1", "AT11", "AT111", "AT112", "AT113", "AT12", "AT121", "AT122", "AT123", "AT124", "AT125", "AT126",
-    "AT127", "AT13", "AT130", "AT2", "AT21", "AT211", "AT212", "AT213", "AT22", "AT221", "AT222", "AT223", "AT224",
-    "AT226", "AT225", "AT3", "AT31", "AT311", "AT312", "AT313", "AT314", "AT315", "AT32", "AT321", "AT322", "AT323",
-    "AT33", "AT331", "AT332", "AT333", "AT334", "AT335", "AT34", "AT341", "AT342", "AX", "AX0", "AX00", "AX000"
-  ],
+  "institutionNuts": ["AX","AX0","AX00","AX000","FR","FRK","FRK1","FRK11","FRK12","FRK13","FRK14","FRK2","FRK21","FRK22","FRK23","FRK28",
+    "FRK24","FRK25","FRK26","FRK27","FRC","FRC1","FRC11","FRC12","FRC13","FRC14","FRC2","FRC21","FRC23","FRC22","FRC24","FRH","FRH0","FRH01",
+    "FRH02","FRH03","FRH04","FRB","FRB0","FRB01","FRB02","FRB03","FRB04","FRB06","FRB05","FRM","FRM0","FRM01","FRM02","FRF","FRF1","FRF11",
+    "FRF12","FRF2","FRF21","FRF22","FRF24","FRF23","FRF3","FRF31","FRF32","FRF33","FRF34","FRE","FRE1","FRE11","FRE12","FRE2","FRE21","FRE22",
+    "FRE23","FR1","FR10","FR104","FR105","FR101","FR102","FR106","FR107","FR108","FR103","FRD","FRD1","FRD11","FRD12","FRD13","FRD2","FRD21",
+    "FRD22","FRI","FRI1","FRI11","FRI12","FRI13","FRI14","FRI15","FRI2","FRI21","FRI22","FRI23","FRI3","FRI31","FRI32","FRI33","FRI34","FRJ",
+    "FRJ1","FRJ11","FRJ12","FRJ13","FRJ14","FRJ15","FRJ2","FRJ21","FRJ22","FRJ24","FRJ23","FRJ26","FRJ25","FRJ27","FRJ28","FRG","FRG0",
+    "FRG01","FRG02","FRG03","FRG04","FRG05","FRL","FRL0","FRL01","FRL03","FRL04","FRL02","FRL05","FRL06","FRY","FRY1","FRY10","FRY3","FRY30",
+    "FRY4","FRY40","FRY2","FRY20","FRY5","FRY50","AT","AT1","AT11","AT111","AT112","AT113","AT12","AT121","AT122","AT123","AT124","AT125",
+    "AT126","AT127","AT13","AT130","AT2","AT21","AT211","AT212","AT213","AT22","AT221","AT222","AT223","AT224","AT226","AT225","AT3","AT31",
+    "AT311","AT312","AT313","AT314","AT315","AT32","AT321","AT322","AT323","AT33","AT331","AT332","AT333","AT334","AT335","AT34","AT341",
+    "AT342"],
   "institutionUsers": [
     {
       "userEmail": "controller.user@jems.eu",
+      "accessLevel": "Edit"
+    },
+    {
+      "userEmail": "admin@jems.eu",
       "accessLevel": "Edit"
     }
   ]

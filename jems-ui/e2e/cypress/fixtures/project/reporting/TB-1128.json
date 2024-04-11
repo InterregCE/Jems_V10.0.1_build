@@ -1,92 +1,4 @@
 {
-  "partnerReportExpenditures": [
-    {
-      "costCategory": "StaffCosts",
-      "internalReferenceNumber": "5",
-      "invoiceNumber": "invoice",
-      "investmentId": null,
-      "cypressReferenceInvestment": "investment3",
-      "contractId": null,
-      "cypressReferenceProcurement": "Procurement2",
-      "invoiceDate": "2022-12-02",
-      "dateOfPayment": "2022-12-09",
-      "description": [],
-      "comment": [],
-      "totalValueInvoice": 555.55,
-      "vat": 55.55,
-      "numberOfUnits": 0,
-      "pricePerUnit": 0,
-      "declaredAmount": "100.00",
-      "currencyCode": "EUR",
-      "currencyConversionRate": 1,
-      "declaredAmountInEur": "100.00"
-    },
-    {
-      "cypressReference": "shouldHaveLumpSum",
-      "costCategory": "Multiple",
-      "description": [],
-      "comment": [],
-      "numberOfUnits": 1,
-      "currencyCode": "EUR"
-    },
-    {
-      "cypressReference": "shouldHaveUnitCost",
-      "unitCostId": 2,
-      "costCategory": "TravelAndAccommodationCosts",
-      "description": [],
-      "comment": [],
-      "numberOfUnits": 1,
-      "currencyCode": "EUR"
-    },
-    {
-      "cypressReferenceUnit": "projectProposedMulti",
-      "cypressReference": "shouldHaveUnitCost",
-      "unitCostId": null,
-      "costCategory": "Multiple",
-      "description": [],
-      "comment": [],
-      "numberOfUnits": 13,
-      "currencyCode": "EUR"
-    }
-  ],
-  "expenditureVerifications": [
-    {
-      "id": null,
-      "costCategory": "StaffCosts",
-      "partOfSample": true,
-      "deductedAmount": "50.00",
-      "typologyOfErrorId": 1,
-      "parked": false,
-      "verificationComment": "Deducted item"
-    },
-    {
-      "id": null,
-      "costCategory": "Multiple",
-      "partOfSample": false,
-      "deductedAmount": "0",
-      "typologyOfErrorId": null,
-      "parked": false,
-      "verificationComment": ""
-    },
-    {
-      "id": null,
-      "costCategory": "TravelAndAccommodationCosts",
-      "partOfSample": false,
-      "deductedAmount": "0",
-      "typologyOfErrorId": null,
-      "parked": false,
-      "verificationComment": ""
-    },
-    {
-      "id": null,
-      "costCategory": "Multiple",
-      "partOfSample": true,
-      "deductedAmount": "250.00",
-      "typologyOfErrorId": 1,
-      "parked": false,
-      "verificationComment": ""
-    }
-  ],
   "expectedResults": {
     "lump-sum": {
       "Preparation Lump sum": {
@@ -102,10 +14,10 @@
       "Implementation Lump sum": {
         "totalEligibleBudget": "5.555,56",
         "previouslyReported": "0,00",
-        "currentReport": "2.000,00",
-        "totalReportedSoFar": "2.000,00",
-        "totalReportedSoFarPercentage": "36,00",
-        "remainingBudget": "3.555,56",
+        "currentReport": "1.900,12",
+        "totalReportedSoFar": "1.900,12",
+        "totalReportedSoFarPercentage": "34,20",
+        "remainingBudget": "3.655,44",
         "previouslyVerified": "0,00",
         "previouslyPaid": "N/A"
       },
@@ -122,10 +34,10 @@
       "Total": {
         "totalEligibleBudget": "8.455,71",
         "previouslyReported": "1.999,99",
-        "currentReport": "2.000,00",
-        "totalReportedSoFar": "3.999,99",
-        "totalReportedSoFarPercentage": "47,31",
-        "remainingBudget": "4.455,72",
+        "currentReport": "1.900,12",
+        "totalReportedSoFar": "3.900,11",
+        "totalReportedSoFarPercentage": "46,12",
+        "remainingBudget": "4.555,60",
         "previouslyVerified": "1.999,99",
         "previouslyPaid": "293,19"
       }
@@ -134,19 +46,19 @@
       "Project Proposed equipment unit cost": {
         "totalEligibleBudget": "151,50",
         "previouslyReported": "0,00",
-        "currentReport": "0,00",
-        "totalReportedSoFar": "0,00",
-        "totalReportedSoFarPercentage": "0,00",
-        "remainingBudget": "151,50",
+        "currentReport": "25,25",
+        "totalReportedSoFar": "25,25",
+        "totalReportedSoFarPercentage": "16,67",
+        "remainingBudget": "126,25",
         "previouslyVerified": "0,00"
       },
       "Project Proposed multi unit cost": {
         "totalEligibleBudget": "4.666,62",
         "previouslyReported": "0,00",
-        "currentReport": "8.416,58",
-        "totalReportedSoFar": "8.416,58",
-        "totalReportedSoFarPercentage": "180,36",
-        "remainingBudget": "-3.749,96",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "0,00",
+        "totalReportedSoFarPercentage": "0,00",
+        "remainingBudget": "4.666,62",
         "previouslyVerified": "0,00"
       },
       "Unit cost single - Staff": {
@@ -161,10 +73,10 @@
       "Unit cost single - Travel": {
         "totalEligibleBudget": "1.111,12",
         "previouslyReported": "0,00",
-        "currentReport": "555,56",
-        "totalReportedSoFar": "555,56",
-        "totalReportedSoFarPercentage": "50,00",
-        "remainingBudget": "555,56",
+        "currentReport": "0,00",
+        "totalReportedSoFar": "0,00",
+        "totalReportedSoFarPercentage": "0,00",
+        "remainingBudget": "1.111,12",
         "previouslyVerified": "0,00"
       },
       "Project Proposed infrastructure unit cost": {
@@ -224,10 +136,10 @@
       "Unit cost multi - all": {
         "totalEligibleBudget": "310,44",
         "previouslyReported": "0,00",
-        "currentReport": "0,00",
-        "totalReportedSoFar": "0,00",
-        "totalReportedSoFarPercentage": "0,00",
-        "remainingBudget": "310,44",
+        "currentReport": "310,44",
+        "totalReportedSoFar": "310,44",
+        "totalReportedSoFarPercentage": "100,00",
+        "remainingBudget": "0,00",
         "previouslyVerified": "0,00"
       },
       "Unit cost single - External": {
@@ -242,10 +154,10 @@
       "Total": {
         "totalEligibleBudget": "47.382,69",
         "previouslyReported": "0,00",
-        "currentReport": "8.972,14",
-        "totalReportedSoFar": "8.972,14",
-        "totalReportedSoFarPercentage": "18,94",
-        "remainingBudget": "38.410,55",
+        "currentReport": "335,69",
+        "totalReportedSoFar": "335,69",
+        "totalReportedSoFarPercentage": "0,71",
+        "remainingBudget": "47.047,00",
         "previouslyVerified": "0,00"
       }
     }

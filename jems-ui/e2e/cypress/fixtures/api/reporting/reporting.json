@@ -218,7 +218,8 @@
             "procurements": [
               {
                 "details": {
-                  "contractName": "Procurement1",
+                  "cypressReferenceProcurement": "Procurement1-1",
+                  "contractName": "Procurement1-1",
                   "referenceNumber": "Reference number 1",
                   "contractDate": "2024-07-30T00:00:00.000Z",
                   "contractType": "Contract Type 1",
@@ -288,7 +289,8 @@
               },
               {
                 "details": {
-                  "contractName": "Procurement2",
+                  "cypressReferenceProcurement": "Procurement1-2",
+                  "contractName": "Procurement1-2",
                   "referenceNumber": "Reference number 2",
                   "contractDate": "2024-01-31T00:00:00.000Z",
                   "contractType": "Contract Type 2",
@@ -358,7 +360,8 @@
               },
               {
                 "details": {
-                  "contractName": "Procurement3",
+                  "cypressReferenceProcurement": "Procurement1-3",
+                  "contractName": "Procurement1-3",
                   "referenceNumber": "Reference number 3",
                   "contractDate": "2023-02-21T00:00:00.000Z",
                   "contractType": "Contract Type 3",
@@ -433,7 +436,7 @@
                 "internalReferenceNumber": "1",
                 "invoiceNumber": "i.1",
                 "contractId": null,
-                "cypressReferenceProcurement": "Procurement1",
+                "cypressReferenceProcurement": "Procurement1-1",
                 "invoiceDate": "2022-12-01",
                 "dateOfPayment": "2022-12-02",
                 "description": [
@@ -470,7 +473,7 @@
                 "investmentId": null,
                 "cypressReferenceInvestment": "investment1",
                 "contractId": null,
-                "cypressReferenceProcurement": "Procurement2",
+                "cypressReferenceProcurement": "Procurement1-2",
                 "invoiceDate": "2022-12-02",
                 "dateOfPayment": "2022-12-09",
                 "description": [
@@ -507,7 +510,7 @@
                 "investmentId": null,
                 "cypressReferenceInvestment": "investment2",
                 "contractId": null,
-                "cypressReferenceProcurement": "Procurement2",
+                "cypressReferenceProcurement": "Procurement1-2",
                 "invoiceDate": "2022-12-03",
                 "dateOfPayment": "2022-12-16",
                 "description": [
@@ -544,7 +547,7 @@
                 "investmentId": null,
                 "cypressReferenceInvestment": "investment2",
                 "contractId": null,
-                "cypressReferenceProcurement": "Procurement3",
+                "cypressReferenceProcurement": "Procurement1-3",
                 "invoiceDate": "2022-12-31",
                 "dateOfPayment": "2022-12-23",
                 "description": [
@@ -1148,7 +1151,8 @@
             "procurements": [
               {
                 "details": {
-                  "contractName": "Procurement1",
+                  "cypressReferenceProcurement": "Procurement2-1",
+                  "contractName": "Procurement2-1",
                   "referenceNumber": "Reference number 1",
                   "contractDate": "2024-07-30T00:00:00.000Z",
                   "contractType": "Contract Type 1",
@@ -1218,7 +1222,8 @@
               },
               {
                 "details": {
-                  "contractName": "Procurement2",
+                  "cypressReferenceProcurement": "Procurement2-2",
+                  "contractName": "Procurement2-2",
                   "referenceNumber": "Reference number 2",
                   "contractDate": "2024-01-31T00:00:00.000Z",
                   "contractType": "Contract Type 2",
@@ -1288,7 +1293,8 @@
               },
               {
                 "details": {
-                  "contractName": "Procurement3",
+                  "cypressReferenceProcurement": "Procurement2-3",
+                  "contractName": "Procurement2-3",
                   "referenceNumber": "Reference number 3",
                   "contractDate": "2023-02-21T00:00:00.000Z",
                   "contractType": "Contract Type 3",
@@ -1493,7 +1499,7 @@
               },
               {
                 "cypressReference": "shouldHaveUnitCost",
-                "unitCostId": 1,
+                "unitCostProgrammeId": 1,
                 "costCategory": "StaffCosts",
                 "description": [
                   {
@@ -1518,7 +1524,7 @@
               },
               {
                 "cypressReference": "shouldHaveUnitCost",
-                "unitCostId": 1,
+                "unitCostProgrammeId": 1,
                 "costCategory": "StaffCosts",
                 "description": [
                   {

@@ -104,7 +104,7 @@ Cypress.Commands.add('updatePartnerReportProcurements', (partnerId: number, part
       body: procurement.details
     }).then((response: any) => {
       const procurementId = response.body.id;
-      cy.wrap(procurementId).as(procurement.details.contractName);
+      cy.wrap(procurementId).as(procurement.details.cypressReferenceProcurement);
       cy.request({
         method: 'PUT',
         url: `api/project/report/partner/procurement/beneficialOwner/byPartnerId/${partnerId}/byReportId/${partnerReportId}/byProcurementId/${procurementId}`,
