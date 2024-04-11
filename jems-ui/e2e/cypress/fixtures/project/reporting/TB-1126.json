@@ -1,44 +1,315 @@
 {
-  "partnerReportExpenditures": [{
-    "costCategory": "ExternalCosts",
-    "internalReferenceNumber": "5",
-    "invoiceNumber": "invoice",
-    "investmentId": null,
-    "cypressReferenceInvestment": "investment3",
-    "contractId": null,
-    "cypressReferenceProcurement": "Procurement2",
-    "invoiceDate": "2022-12-02",
-    "dateOfPayment": "2022-12-09",
-    "description": [],
-    "comment": [],
-    "totalValueInvoice": 555.55,
-    "vat": 55.55,
-    "numberOfUnits": 0,
-    "pricePerUnit": 0,
-    "declaredAmount": "declaredAmount",
-    "currencyCode": "EUR",
-    "currencyConversionRate": 1,
-    "declaredAmountInEur": "declaredAmount"
-  }],
-  "expenditureVerifications": [{
-    "id": null,
-    "costCategory": "ExternalCosts",
-    "partOfSample": true,
-    "deductedAmount": "deductedAmount",
-    "typologyOfErrorId": 1,
-    "parked": false,
-    "verificationComment": "Deducted item 5"
-  }],
-  "verificationExpenditure": {
-    "expenditureId": null,
-    "partOfVerificationSample": false,
-    "deductedByJs": 0,
-    "deductedByMa": 0,
-    "typologyOfErrorId": null,
-    "parked": false,
-    "verificationComment": "No change"
-  },
-  "draftPartnerReportExpenditures" : [
+  "expenditures": [
+    {
+      "costCategory": "ExternalCosts",
+      "internalReferenceNumber": "2",
+      "invoiceNumber": "i.2",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment3",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement2",
+      "invoiceDate": "2022-12-02",
+      "dateOfPayment": "2022-12-09",
+      "description": [
+        {
+          "translation": "API generated expenditure 2 description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 2 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 2 comment DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 2 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 555.55,
+      "vat": 55.55,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 187.33,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 187.33
+    },
+    {
+      "costCategory": "EquipmentCosts",
+      "internalReferenceNumber": "3",
+      "invoiceNumber": "i.3",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment3",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement2",
+      "invoiceDate": "2022-12-03",
+      "dateOfPayment": "2022-12-16",
+      "description": [
+        {
+          "translation": "API generated expenditure 3 description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 3 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 3 comment DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 3 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 870.99,
+      "vat": 10.99,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 555.55,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 555.55
+    },
+    {
+      "costCategory": "InfrastructureCosts",
+      "internalReferenceNumber": "4",
+      "invoiceNumber": "i.4",
+      "investmentId": null,
+      "cypressReferenceInvestment": "investment1",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement3",
+      "invoiceDate": "2022-12-31",
+      "dateOfPayment": "2022-12-23",
+      "description": [
+        {
+          "translation": "API generated expenditure 4 description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 4 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 4 comment DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 4 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 50,
+      "vat": 1,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 1234.8,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 1234.8
+    },
+    {
+      "costCategory": "InfrastructureCosts",
+      "internalReferenceNumber": "4",
+      "invoiceNumber": "i.4",
+      "contractId": null,
+      "cypressReferenceProcurement": "Procurement3",
+      "invoiceDate": "2022-12-31",
+      "dateOfPayment": "2022-12-23",
+      "description": [
+        {
+          "translation": "API generated expenditure 4 description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 4 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 4 comment DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated expenditure 4 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 50,
+      "vat": 1,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 1234.8,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 1234.8
+    }
+  ],
+  "controlExpenditureVerification": [
+    {
+      "costCategory": "ExternalCosts",
+      "partOfSample": true,
+      "deductedAmount": 99.99,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Deducted item 1"
+    },
+    {
+      "costCategory": "EquipmentCosts",
+      "partOfSample": true,
+      "deductedAmount": 55.33,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Deducted item 2"
+    },
+    {
+      "costCategory": "InfrastructureCosts",
+      "partOfSample": true,
+      "deductedAmount": 234.33,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Deducted item 3"
+    },
+    {
+      "costCategory": "InfrastructureCosts",
+      "partOfSample": true,
+      "deductedAmount": 0,
+      "typologyOfErrorId": null,
+      "parked": true,
+      "parkedOn": "2024-01-29T10:07:58.825+01:00",
+      "verificationComment": "Parked item 1"
+    }
+  ],
+  "verificationWork": [
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": false,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Investment 1 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 55,
+      "deductedByMa": 0,
+      "typologyOfErrorId": 4,
+      "parked": false,
+      "verificationComment": "Investment 2 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": false,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Investment 2 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0,
+      "deductedByMa": 123.99,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": true,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0.25,
+      "deductedByMa": 5.01,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": false,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": false,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Investment 3 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": false,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Investment 3 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 0,
+      "deductedByMa": 0,
+      "typologyOfErrorId": null,
+      "parked": false,
+      "verificationComment": "Investment 1 item"
+    },
+    {
+      "expenditureId": null,
+      "partOfVerificationSample": true,
+      "deductedByJs": 500,
+      "deductedByMa": 289,
+      "typologyOfErrorId": 1,
+      "parked": false,
+      "verificationComment": "Irrelevant item"
+    }
+  ],
+  "draftPartnerReportExpenditures": [
     {
       "costCategory": "ExternalCosts",
       "internalReferenceNumber": 1,
@@ -84,41 +355,41 @@
   ],
   "expectedResults": {
     "investment": {
-      "I1.1" : {
+      "I1.1": {
         "totalEligibleBudget": "7.736,36",
-        "previouslyReported" : "374,66",
+        "previouslyReported": "1.187,80",
         "currentReport": "0,00",
-        "totalReportedSoFar": "374,66",
-        "totalReportedSoFarPercentage": "4,84",
-        "remainingBudget": "7.361,70",
-        "previouslyVerified": "374,66"
+        "totalReportedSoFar": "1.187,80",
+        "totalReportedSoFarPercentage": "15,35",
+        "remainingBudget": "6.548,56",
+        "previouslyVerified": "1.187,80"
       },
-      "I1.2" : {
+      "I1.2": {
         "totalEligibleBudget": "3.519,40",
-        "previouslyReported" : "1.001,10",
+        "previouslyReported": "1.735,35",
         "currentReport": "0,00",
-        "totalReportedSoFar": "1.001,10",
-        "totalReportedSoFarPercentage": "28,45",
-        "remainingBudget": "2.518,30",
-        "previouslyVerified": "1.001,10"
+        "totalReportedSoFar": "1.735,35",
+        "totalReportedSoFarPercentage": "49,31",
+        "remainingBudget": "1.784,05",
+        "previouslyVerified": "1.680,35"
       },
-      "I1.3" : {
+      "I1.3": {
         "totalEligibleBudget": "20.410,65",
-        "previouslyReported" : "40,00",
+        "previouslyReported": "587,56",
         "currentReport": "0,00",
-        "totalReportedSoFar": "40,00",
-        "totalReportedSoFarPercentage": "0,20",
-        "remainingBudget": "20.370,65",
-        "previouslyVerified": "40,00"
+        "totalReportedSoFar": "587,56",
+        "totalReportedSoFarPercentage": "2,88",
+        "remainingBudget": "19.823,09",
+        "previouslyVerified": "587,56"
       },
-      "Total" : {
+      "Total": {
         "totalEligibleBudget": "31.666,41",
-        "previouslyReported" : "1.415,76",
+        "previouslyReported": "3.510,71",
         "currentReport": "0,00",
-        "totalReportedSoFar": "1.415,76",
-        "totalReportedSoFarPercentage": "4,47",
-        "remainingBudget": "30.250,65",
-        "previouslyVerified": "1.415,76"
+        "totalReportedSoFar": "3.510,71",
+        "totalReportedSoFarPercentage": "11,09",
+        "remainingBudget": "28.155,70",
+        "previouslyVerified": "3.455,71"
       }
     }
   }
