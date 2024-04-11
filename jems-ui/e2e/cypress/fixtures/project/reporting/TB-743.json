@@ -3,71 +3,71 @@
     "co-financing": {
       "ERDF": {
         "totalEligibleBudget": "36.875,05",
-        "previouslyReported": "4.605,58 parked 1.310,53",
-        "currentReport": "3.405,59 re-included 0,00",
-        "totalReportedSoFar": "8.011,17",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "28.863,88",
+        "previouslyReported": "9.805,53 parked 6.510,48",
+        "currentReport": "8.605,54 re-included 0,00",
+        "totalReportedSoFar": "18.411,07",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "18.463,98",
         "previouslyValidated": "3.121,65",
         "previouslyPaid": "0,00"
       },
       "Other fund EN": {
         "totalEligibleBudget": "9.009,80",
-        "previouslyReported": "1.125,29 parked 320,20",
-        "currentReport": "832,10 re-included 0,00",
-        "totalReportedSoFar": "1.957,39",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "7.052,41",
+        "previouslyReported": "2.395,81 parked 1.590,72",
+        "currentReport": "2.102,62 re-included 0,00",
+        "totalReportedSoFar": "4.498,43",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "4.511,37",
         "previouslyValidated": "762,71",
         "previouslyPaid": "0,00"
       },
       "Partner contribution": {
         "totalEligibleBudget": "15.573,57",
-        "previouslyReported": "1.945,11 parked 553,50",
-        "currentReport": "1.438,30 re-included 0,00",
-        "totalReportedSoFar": "3.383,41",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "12.190,16",
+        "previouslyReported": "4.141,22 parked 2.749,61",
+        "currentReport": "3.634,41 re-included 0,00",
+        "totalReportedSoFar": "7.775,63",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "7.797,94",
         "previouslyValidated": "1.318,41",
         "previouslyPaid": "N/A"
       },
       "of which Public contribution": {
         "totalEligibleBudget": "5.698,97",
-        "previouslyReported": "711,77 parked 202,54",
-        "currentReport": "526,32 re-included 0,00",
-        "totalReportedSoFar": "1.238,09",
-        "totalReportedSoFarPercentage": "21,72",
-        "remainingBudget": "4.460,88",
+        "previouslyReported": "1.515,42 parked 1.006,18",
+        "currentReport": "1.329,97 re-included 0,00",
+        "totalReportedSoFar": "2.845,39",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "2.853,58",
         "previouslyValidated": "482,44",
         "previouslyPaid": "N/A"
       },
       "of which Automatic public contribution": {
         "totalEligibleBudget": "6.613,59",
-        "previouslyReported": "826,01 parked 235,04",
-        "currentReport": "610,79 re-included 0,00",
-        "totalReportedSoFar": "1.436,80",
-        "totalReportedSoFarPercentage": "21,72",
-        "remainingBudget": "5.176,79",
+        "previouslyReported": "1.758,63 parked 1.167,66",
+        "currentReport": "1.543,41 re-included 0,00",
+        "totalReportedSoFar": "3.302,04",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "3.311,55",
         "previouslyValidated": "559,87",
         "previouslyPaid": "N/A"
       },
       "of which Private contribution": {
         "totalEligibleBudget": "3.261,01",
-        "previouslyReported": "407,29 parked 115,89",
-        "currentReport": "301,17 re-included 0,00",
-        "totalReportedSoFar": "708,46",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "2.552,55",
+        "previouslyReported": "867,14 parked 575,74",
+        "currentReport": "761,02 re-included 0,00",
+        "totalReportedSoFar": "1.628,16",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "1.632,85",
         "previouslyValidated": "276,06",
         "previouslyPaid": "N/A"
       },
       "Total": {
         "totalEligibleBudget": "61.458,42",
-        "previouslyReported": "7.675,98 parked 2.184,23",
-        "currentReport": "5.675,99 re-included 0,00",
-        "totalReportedSoFar": "13.351,97",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "48.106,45",
+        "previouslyReported": "16.342,56 parked 10.850,81",
+        "currentReport": "14.342,57 re-included 0,00",
+        "totalReportedSoFar": "30.685,13",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "30.773,29",
         "previouslyValidated": "5.202,77",
         "previouslyPaid": "0,00"
       }
@@ -156,21 +156,21 @@
       "Unit Costs": {
         "flatRate": "",
         "totalEligibleBudget": "10.977,03",
-        "previouslyReported": "310,44  parked 0,00",
-        "currentReport": "310,44 re-included 0,00",
-        "totalReportedSoFar": "620,88",
-        "totalReportedSoFarPercentage": "5,66",
-        "remainingBudget": "10.356,15",
+        "previouslyReported": "8.977,02  parked 8.666,58",
+        "currentReport": "8.977,02 re-included 0,00",
+        "totalReportedSoFar": "17.954,04",
+        "totalReportedSoFarPercentage": "163,56",
+        "remainingBudget": "-6.977,01",
         "previouslyValidated": "310,44"
       },
       "Total": {
         "flatRate": "",
         "totalEligibleBudget": "61.458,42",
-        "previouslyReported": "7.675,98 parked 2.184,23",
-        "currentReport": "5.675,99 re-included 0,00",
-        "totalReportedSoFar": "13.351,97",
-        "totalReportedSoFarPercentage": "21,73",
-        "remainingBudget": "48.106,45",
+        "previouslyReported": "16.342,56 parked 10.850,81",
+        "currentReport": "14.342,57 re-included 0,00",
+        "totalReportedSoFar": "30.685,13",
+        "totalReportedSoFarPercentage": "49,93",
+        "remainingBudget": "30.773,29",
         "previouslyValidated": "5.202,77"
       }
     },
@@ -237,11 +237,11 @@
       },
       "Project Proposed multi unit cost": {
         "totalEligibleBudget": "4.666,62",
-        "previouslyReported": "0,00 parked 0,00",
-        "currentReport": "0,00 re-included 0,00",
-        "totalReportedSoFar": "0,00",
-        "totalReportedSoFarPercentage": "0,00",
-        "remainingBudget": "4.666,62",
+        "previouslyReported": "8.666,58 parked 8.666,58",
+        "currentReport": "8.666,58 re-included 0,00",
+        "totalReportedSoFar": "17.333,16",
+        "totalReportedSoFarPercentage": "371,43",
+        "remainingBudget": "-12.666,54",
         "previouslyValidated": "0,00"
       },
       "Unit cost single - External": {
@@ -264,12 +264,12 @@
       },
       "Project Proposed equipment unit cost": {
         "totalEligibleBudget": "151,50",
-        "previouslyReported": "0,00 parked 0,00",
-        "currentReport": "0,00 re-included 0,00",
-        "totalReportedSoFar": "0,00",
-        "totalReportedSoFarPercentage": "0,00",
-        "remainingBudget": "151,50",
-        "previouslyValidated": "0,00"
+        "previouslyReported": "25,25 parked 0,00",
+        "currentReport": "25,25 re-included 0,00",
+        "totalReportedSoFar": "50,50",
+        "totalReportedSoFarPercentage": "33,33",
+        "remainingBudget": "101,00",
+        "previouslyValidated": "25,25"
       },
       "Unit cost single - Infrastructure": {
         "totalEligibleBudget": "20.158,16",
@@ -318,12 +318,12 @@
       },
       "Total": {
         "totalEligibleBudget": "41.720,45",
-        "previouslyReported": "866,00 parked 555,56",
-        "currentReport": "866,00 re-included 0,00",
-        "totalReportedSoFar": "1.732,00",
-        "totalReportedSoFarPercentage": "4,15",
-        "remainingBudget": "39.988,45",
-        "previouslyValidated": "310,44"
+        "previouslyReported": "9.557,83 parked 9.222,14",
+        "currentReport": "9.557,83 re-included 0,00",
+        "totalReportedSoFar": "19.115,66",
+        "totalReportedSoFarPercentage": "45,82",
+        "remainingBudget": "22.604,79",
+        "previouslyValidated": "335,69"
       }
     },
     "investment": {

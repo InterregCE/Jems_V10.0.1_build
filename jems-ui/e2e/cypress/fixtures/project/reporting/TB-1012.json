@@ -155,15 +155,6 @@
       "cypressReference": "shouldHaveLumpSum",
       "costCategoryInFile": "Multiple",
       "costCategory": "Multiple",
-      "internalReferenceNumber": null,
-      "invoiceNumber": null,
-      "reportOfOriginNumber": null,
-      "originalExpenditureNumber": null,
-      "costGDPR": "",
-      "investmentId": null,
-      "contractId": null,
-      "invoiceDate": null,
-      "dateOfPayment": null,
       "description": [
         {
           "translation": "test description DE",
@@ -182,32 +173,18 @@
           "language": "EN"
         }
       ],
-      "totalValueInvoice": null,
-      "vat": null,
       "numberOfUnits": 1,
       "pricePerUnit": 2000,
       "declaredAmount": 2000,
       "currencyCode": "EUR",
-      "currencyConversionRate": 0,
       "declaredAmountInEur": 2000,
-      "attachment": null,
-      "lumpSumId": 543,
-      "unitCostId": null,
-      "gdpr": ""
+      "lumpSumId": null,
+      "unitCostId": null
     },
     {
       "cypressReference": "shouldHaveUnitCost",
       "costCategoryInFile": "Multiple",
       "costCategory": "Multiple",
-      "internalReferenceNumber": null,
-      "invoiceNumber": null,
-      "reportOfOriginNumber": null,
-      "originalExpenditureNumber": null,
-      "costGDPR": "",
-      "investmentId": null,
-      "contractId": null,
-      "invoiceDate": null,
-      "dateOfPayment": null,
       "description": [
         {
           "translation": "test description DE",
@@ -226,18 +203,12 @@
           "language": "EN"
         }
       ],
-      "totalValueInvoice": null,
-      "vat": null,
       "numberOfUnits": 2,
       "pricePerUnit": 155.22,
       "declaredAmount": 310.44,
       "currencyCode": "EUR",
-      "currencyConversionRate": 0,
-      "declaredAmountInEur": 0,
-      "attachment": null,
-      "lumpSumId": null,
-      "unitCostId": 6,
-      "gdpr": ""
+      "unitCostProgrammeId": 6,
+      "unitCostId": null
     }
   ],
   "expectedResults": {

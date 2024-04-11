@@ -273,7 +273,7 @@ function matchProjectProposedUnitCostReferences(partnerReportExpenditures) {
   cy.then(function () {
     partnerReportExpenditures.forEach(expenditure => {
       if (expenditure.cypressReferenceUnit) {
-        expenditure.unitCostId = this[expenditure.cypressReferenceUnit];
+        expenditure.unitCostProgrammeId = this[expenditure.cypressReferenceUnit];
       }
     });
   });

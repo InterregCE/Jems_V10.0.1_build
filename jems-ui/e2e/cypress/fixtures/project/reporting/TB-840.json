@@ -37,5 +37,348 @@
       "userEmail": "randomize",
       "level": "EDIT"
     }
-  ]
+  ],
+  "costItems": {
+    "PP2": [
+      {
+        "description": [
+          {
+            "language": "EN",
+            "translation": "Staff cost description EN"
+          },
+          {
+            "language": "DE",
+            "translation": "Staff cost description DE"
+          }
+        ],
+        "comments": [
+          {
+            "language": "DE",
+            "translation": "Staff cost comments DE"
+          },
+          {
+            "language": "EN",
+            "translation": "Staff cost comments EN"
+          }
+        ],
+        "unitType": [
+          {
+            "language": "EN",
+            "translation": "Staff cost unit type EN"
+          },
+          {
+            "language": "DE",
+            "translation": "Staff cost unit type DE"
+          }
+        ],
+        "numberOfUnits": 1,
+        "pricePerUnit": 1234,
+        "rowSum": 1234,
+        "budgetPeriods": [
+          {
+            "amount": 1234,
+            "number": 1
+          }
+        ]
+      }
+    ],
+    "PP3": [
+      {
+        "unitCostId": 6,
+        "numberOfUnits": 1,
+        "rowSum": 155.22,
+        "budgetPeriods": [
+          {
+            "amount": 155.22,
+            "number": 1
+          }
+        ]
+      }
+    ]
+  },
+  "expenditures": {
+    "LP1": [
+      {
+        "cypressReference": "shouldHaveLumpSum",
+        "costCategory": "Multiple",
+        "description": [
+          {
+            "language": "DE",
+            "translation": "Implementation Lump sum description DE"
+          },
+          {
+            "language": "EN",
+            "translation": "Implementation Lump sum description EN"
+          }
+        ],
+        "comment": [
+          {
+            "language": "DE",
+            "translation": "Implementation Lump sum comment DE"
+          },
+          {
+            "language": "EN",
+            "translation": "Implementation Lump sum comment EN"
+          }
+        ],
+        "lumpSumId": null,
+        "numberOfUnits": 1,
+        "currencyCode": "EUR"
+      }
+    ],
+    "PP2": [
+      {
+        "costCategory": "StaffCosts",
+        "internalReferenceNumber": "1",
+        "invoiceDate": "2024-04-09T00:00:00.000Z",
+        "dateOfPayment": "2024-04-10T00:00:00.000Z",
+        "description": [
+          {
+            "translation": "Staff cost item description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item description EN",
+            "language": "EN"
+          }
+        ],
+        "comment": [
+          {
+            "translation": "Staff cost item comment DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item comment EN",
+            "language": "EN"
+          }
+        ],
+        "totalValueInvoice": 1111,
+        "declaredAmount": 1234,
+        "currencyCode": "EUR"
+      }
+    ],
+    "PP3": [
+      {
+        "cypressReference": "shouldHaveUnitCost",
+        "costCategory": "StaffCosts",
+        "description": [
+          {
+            "translation": "Unit cost single description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Unit cost single description EN",
+            "language": "EN"
+          }
+        ],
+        "comment": [
+          {
+            "translation": "Unit cost single comment DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Unit cost single comment EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 13,
+        "currencyCode": "EUR",
+        "unitCostProgrammeId": 1,
+        "unitCostId": null
+      },
+      {
+        "cypressReference": "shouldHaveUnitCost",
+        "costCategory": "Multiple",
+        "description": [
+          {
+            "translation": "Unit cost multiple description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Unit cost multiple description EN",
+            "language": "EN"
+          }
+        ],
+        "comment": [
+          {
+            "translation": "Unit cost multiple comment DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Unit cost multiple comment EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 1,
+        "currencyCode": "EUR",
+        "unitCostProgrammeId": 6,
+        "unitCostId": null
+      }
+    ]
+  },
+  "lumpSums": [
+    {
+      "programmeLumpSumId": 2,
+      "period": 1,
+      "lumpSumContributions": [
+        {
+          "partnerAbbreviation": "Lead Partner",
+          "amount": 5555.56
+        },
+        {
+          "partnerAbbreviation": "Project Partner",
+          "amount": 0
+        },
+        {
+          "partnerAbbreviation": "Another Partner",
+          "amount": 0
+        }
+      ]
+    }
+  ],
+  "expectedResults": {
+    "LP1": {
+      "cost-category": {
+        "Lump sum": {
+          "flatRate": "",
+          "totalEligibleBudget": "5.555,56",
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "5.555,56 re-included 0,00",
+          "totalReportedSoFar": "5.555,56",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Total": {
+          "flatRate": "",
+          "totalEligibleBudget": "5.555,56",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "5.555,56 re-included 0,00",
+          "totalReportedSoFar": "5.555,56",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        }
+      },
+      "lump-sum": {
+        "Implementation Lump sum": {
+          "totalEligibleBudget": "5.555,56",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "5.555,56 re-included 0,00",
+          "totalReportedSoFar": "5.555,56",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00",
+          "previouslyPaid": "N/A"
+        },
+        "Total": {
+          "totalEligibleBudget": "5.555,56",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "5.555,56 re-included 0,00",
+          "totalReportedSoFar": "5.555,56",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00",
+          "previouslyPaid": "0,00"
+        }
+      }
+    },
+    "PP2": {
+      "cost-category": {
+        "Staff costs": {
+          "flatRate": "",
+          "totalEligibleBudget": "1.234,00",
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "1.234,00 re-included 0,00",
+          "totalReportedSoFar": "1.234,00",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Other costs": {
+          "flatRate": "40",
+          "totalEligibleBudget": "493,60",
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "493,60 re-included 0,00",
+          "totalReportedSoFar": "493,60",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Total": {
+          "flatRate": "",
+          "totalEligibleBudget": "1.727,60",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "1.727,60 re-included 0,00",
+          "totalReportedSoFar": "1.727,60",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        }
+      }
+    },
+    "PP3": {
+      "cost-category": {
+        "Staff costs": {
+          "flatRate": "",
+          "totalEligibleBudget": "722,28",
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "722,28 re-included 0,00",
+          "totalReportedSoFar": "722,28",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Unit Costs": {
+          "flatRate": "",
+          "totalEligibleBudget": "155,22",
+          "previouslyReported": "0,00  parked 0,00",
+          "currentReport": "155,22 re-included 0,00",
+          "totalReportedSoFar": "155,22",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Total": {
+          "flatRate": "",
+          "totalEligibleBudget": "877,50",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "877,50 re-included 0,00",
+          "totalReportedSoFar": "877,50",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        }
+      },
+      "unit-cost": {
+        "Unit cost single - Staff": {
+          "totalEligibleBudget": "722,28",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "722,28 re-included 0,00",
+          "totalReportedSoFar": "722,28",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Unit cost multi - all": {
+          "totalEligibleBudget": "155,22",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "155,22 re-included 0,00",
+          "totalReportedSoFar": "155,22",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        },
+        "Total": {
+          "totalEligibleBudget": "877,50",
+          "previouslyReported": "0,00 parked 0,00",
+          "currentReport": "877,50 re-included 0,00",
+          "totalReportedSoFar": "877,50",
+          "totalReportedSoFarPercentage": "100,00",
+          "remainingBudget": "0,00",
+          "previouslyValidated": "0,00"
+        }
+      }
+    }
+  }
 }

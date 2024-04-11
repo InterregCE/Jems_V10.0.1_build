@@ -9,7 +9,8 @@
       {
         "translation": "API generated expenditure 1 description DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 1 description EN",
         "language": "EN"
       }
@@ -18,7 +19,8 @@
       {
         "translation": "API generated expenditure 1 comment DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 1 comment EN",
         "language": "EN"
       }
@@ -44,7 +46,8 @@
       {
         "translation": "API generated expenditure 2 description DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 2 description EN",
         "language": "EN"
       }
@@ -53,7 +56,8 @@
       {
         "translation": "API generated expenditure 2 comment DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 2 comment EN",
         "language": "EN"
       }
@@ -79,7 +83,8 @@
       {
         "translation": "API generated expenditure 3 description DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 3 description EN",
         "language": "EN"
       }
@@ -88,7 +93,8 @@
       {
         "translation": "API generated expenditure 3 comment DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 3 comment EN",
         "language": "EN"
       }
@@ -114,7 +120,8 @@
       {
         "translation": "API generated expenditure 4 description DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 4 description EN",
         "language": "EN"
       }
@@ -123,7 +130,8 @@
       {
         "translation": "API generated expenditure 4 comment DE",
         "language": "DE"
-      }, {
+      },
+      {
         "translation": "API generated expenditure 4 comment EN",
         "language": "EN"
       }
@@ -138,57 +146,59 @@
     "declaredAmountInEur": 1234.8
   },
   {
+    "cypressReferenceUnit": "projectProposedTravel",
     "cypressReference": "shouldHaveUnitCost",
     "costCategory": "TravelAndAccommodationCosts",
-    "internalReferenceNumber": null,
-    "invoiceNumber": null,
-    "reportOfOriginNumber": null,
-    "originalExpenditureNumber": null,
-    "costGDPR": "",
-    "investmentId": null,
-    "contractId": null,
-    "invoiceDate": null,
-    "dateOfPayment": null,
-    "description": [],
-    "comment": [],
-    "totalValueInvoice": null,
-    "vat": null,
+    "description": [
+      {
+        "translation": "API generated expenditure 5 description DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated expenditure 5 description EN",
+        "language": "EN"
+      }
+    ],
+    "comment": [
+      {
+        "translation": "API generated expenditure 5 comment DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated expenditure 5 comment EN",
+        "language": "EN"
+      }
+    ],
     "numberOfUnits": 1,
     "pricePerUnit": 4321.99,
     "declaredAmount": 4321.99,
     "currencyCode": "EUR",
-    "currencyConversionRate": 1,
-    "declaredAmountInEur": 4321.99,
-    "attachment": null,
-    "lumpSumId": null,
-    "unitCostId": 2,
-    "gdpr": ""
+    "unitCostId": null
   },
   {
     "cypressReference": "shouldHaveLumpSum",
     "costCategory": "Multiple",
-    "internalReferenceNumber": null,
-    "invoiceNumber": null,
-    "reportOfOriginNumber": null,
-    "originalExpenditureNumber": null,
-    "costGDPR": "",
-    "investmentId": null,
-    "contractId": null,
-    "invoiceDate": null,
-    "dateOfPayment": null,
-    "description": [],
-    "comment": [],
-    "totalValueInvoice": null,
-    "vat": null,
+    "description": [
+      {
+        "translation": "API generated expenditure 6 description DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated expenditure 6 description EN",
+        "language": "EN"
+      }
+    ],
+    "comment": [
+      {
+        "translation": "API generated expenditure 6 comment DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated expenditure 6 comment EN",
+        "language": "EN"
+      }
+    ],
     "numberOfUnits": 1,
     "pricePerUnit": 2000,
     "declaredAmount": 2000,
-    "currencyCode": "EUR",
-    "currencyConversionRate": 1,
-    "declaredAmountInEur": 2000,
-    "attachment": null,
-    "lumpSumId": null,
-    "unitCostId": null,
-    "gdpr": ""
+    "currencyCode": "EUR"
   }
 ]
