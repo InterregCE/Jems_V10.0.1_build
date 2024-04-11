@@ -144,7 +144,7 @@ fun advancePaymentAuthorized(
         .description(
             "Amount ${paymentDetail.amountPaid!!.setScale(2, RoundingMode.HALF_UP)} was authorised for Advance payment details for " +
                 "advance payment ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                "for funding source ${getFundingSourceName(paymentDetail)} are authorised"
+                "for funding source ${getFundingSourceName(paymentDetail)}"
         )
         .build()
 )
@@ -159,7 +159,7 @@ fun advancePaymentConfirmed(
         .description(
             "Amount ${paymentDetail.amountPaid!!.setScale(2, RoundingMode.HALF_UP)} was confirmed for Advance payment details for " +
                 "advance payment ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
-                "for funding source ${getFundingSourceName(paymentDetail)} are confirmed"
+                "for funding source ${getFundingSourceName(paymentDetail)}"
         )
         .build()
 )
