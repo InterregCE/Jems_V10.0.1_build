@@ -1,7 +1,9 @@
+import {faker} from '@faker-js/faker';
+
 declare global {
   namespace Cypress {
     interface Chainable {
-      addPartnerReport(partnerId: number);
+      addPartnerReport(partnerId: number): Chainable<number>;
 
       createCertifiedPartnerReport(partnerId: number, partnerReportDetails: any, controllerUserEmail): any;
 
@@ -31,7 +33,7 @@ declare global {
 
       getFastTrackLumpSums(applicationId: number);
 
-      getUnitCostsByPartnerAndReportIds(partnerId: number, reportId: number);
+      getUnitCostsByPartnerAndReportId(partnerId: number, reportId: number);
 
       getLumpSumsByPartnerAndReportIds(partnerId: number, reportId: number);
     }
@@ -95,6 +97,7 @@ Cypress.Commands.add('updatePartnerReportWorkPlan', (partnerId: number, partnerR
 
 Cypress.Commands.add('updatePartnerReportProcurements', (partnerId: number, partnerReportId: number, partnerReportProcurements) => {
   partnerReportProcurements.forEach(procurement => {
+    procurement.details.contractName = procurement.details.contractName + '_' + faker.string.alphanumeric(5);
     cy.request({
       method: 'POST',
       url: `api/project/report/partner/procurement/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
@@ -116,8 +119,17 @@ Cypress.Commands.add('updatePartnerReportProcurements', (partnerId: number, part
   });
 });
 
-Cypress.Commands.add('updatePartnerReportExpenditures', (partnerId: number, reportId: number, partnerReportExpenditures) => {
-  updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+Cypress.Commands.add('updatePartnerReportExpenditures', (partnerId: number, partnerReportId: number, partnerReportExpenditures) => {
+  assignUnitCostIds(partnerId, partnerReportId, partnerReportExpenditures);
+  assignLumpSumIds(partnerId, partnerReportId, partnerReportExpenditures);
+  matchInvestmentIds(partnerId, partnerReportId, partnerReportExpenditures);
+  matchProcurementIds(partnerReportExpenditures);
+
+  cy.request({
+    method: 'PUT',
+    url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
+    body: partnerReportExpenditures
+  }).then(response => response.body);
 });
 
 Cypress.Commands.add('updatePartnerReportContributions', (partnerId: number, partnerReportId: number, partnerReportContributions) => {
@@ -182,7 +194,7 @@ Cypress.Commands.add('getLumpSumsByPartnerAndReportIds', (partnerId: number, rep
   }).then(response => response.body)
 });
 
-Cypress.Commands.add('getUnitCostsByPartnerAndReportIds', (partnerId: number, reportId: number) => {
+Cypress.Commands.add('getUnitCostsByPartnerAndReportId', (partnerId: number, reportId: number) => {
   cy.request({
     method: 'GET',
     url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${reportId}/unitCosts`
@@ -241,26 +253,13 @@ function updatePartnerReportIdentification(partnerId: number, reportId: number, 
   });
 }
 
-function updatePartnerReportExpenditures(partnerId: number, partnerReportId: number, partnerReportExpenditures: any) {
-  assignUnitCostIds(partnerId, partnerReportId, partnerReportExpenditures);
-  assignLumpSumIds(partnerId, partnerReportId, partnerReportExpenditures);
-  matchInvestmentIds(partnerId, partnerReportId, partnerReportExpenditures);
-  matchProcurementIds(partnerReportExpenditures);
-
-  cy.request({
-    method: 'PUT',
-    url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${partnerReportId}`,
-    body: partnerReportExpenditures
-  }).then(response => response.body);
-}
-
 function assignUnitCostIds(partnerId, partnerReportId, partnerReportExpenditures) {
   matchProjectProposedUnitCostReferences(partnerReportExpenditures);
-  cy.getUnitCostsByPartnerAndReportIds(partnerId, partnerReportId).then(projectUnitCosts => {
+  cy.getUnitCostsByPartnerAndReportId(partnerId, partnerReportId).then(projectUnitCosts => {
     partnerReportExpenditures.forEach(expenditure => {
       if (expenditure.cypressReference === 'shouldHaveUnitCost') {
         projectUnitCosts.forEach(unitCost => {
-          if (unitCost.unitCostProgrammeId === expenditure.unitCostId) {
+          if (unitCost.unitCostProgrammeId === expenditure.unitCostProgrammeId) {
             expenditure.unitCostId = unitCost.id;
           }
         });
