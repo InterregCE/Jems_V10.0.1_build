@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.plugin.services.auditAndControl
 
 import io.cloudflight.jems.plugin.contract.models.payments.export.AuditControlCorrectionTypeData
 import io.cloudflight.jems.plugin.contract.models.payments.export.AuditControlStatusData
+import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionBulkObjectData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionDetailData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionImpactData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionLineData
@@ -24,6 +25,7 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.expenditure.Rep
 import io.cloudflight.jems.server.plugin.services.payments.toDataModel
 import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.plugin.services.toPluginPage
+import io.cloudflight.jems.server.project.entity.auditAndControl.temporaryModels.AuditControlCorrectionBulkTmpObject
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
@@ -39,6 +41,8 @@ import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCa
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import org.mapstruct.Mapper
+import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 
@@ -202,5 +206,14 @@ fun AuditControlCorrectionImpact.toDataModel() = AuditControlCorrectionImpactDat
  fun Page<AuditControl>.toModelData() = this.toPluginPage { it.toDataModel() }
 
 fun Page<AuditControlCorrectionLine>.toLineModelData() = this.toPluginPage { it.toModelData() }
+
+private val mapper: AuditAndControlDataProviderMapper = Mappers.getMapper(AuditAndControlDataProviderMapper::class.java)
+
+fun AuditControlCorrectionBulkTmpObject.toDataModel() = mapper.map(this)
+
+@Mapper
+interface AuditAndControlDataProviderMapper {
+    fun map(model: AuditControlCorrectionBulkTmpObject): AuditControlCorrectionBulkObjectData
+}
 
 
