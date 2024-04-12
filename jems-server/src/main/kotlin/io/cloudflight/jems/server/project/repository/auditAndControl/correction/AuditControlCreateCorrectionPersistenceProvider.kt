@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.repository.auditAndControl.AuditContro
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.finance.ProjectCorrectionFinancialDescriptionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.measure.CorrectionProgrammeMeasureRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCreateCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionCreate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import org.springframework.stereotype.Repository

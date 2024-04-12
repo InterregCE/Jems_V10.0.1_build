@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.imp
 import io.cloudflight.jems.server.project.service.auditAndControl.model.*
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,7 +23,7 @@ class UpdateAuditControlCorrectionImpactTest: UnitTest() {
         private const val CORRECTION_ID = 3L
 
         private val toUpdate = AuditControlCorrectionImpact(
-            action = CorrectionImpactAction.RepaymentByProject,
+            action = AuditControlCorrectionImpactAction.RepaymentByProject,
             comment = "impact comment",
         )
     }

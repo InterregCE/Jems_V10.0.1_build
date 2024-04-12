@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionFinanceEntity
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescriptionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinanceUpdate
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -43,7 +43,7 @@ class AuditControlCorrectionFinancePersistenceProviderTest : UnitTest() {
             correctionComment = "comment",
         )
 
-        private val financialDescription = ProjectCorrectionFinancialDescription(
+        private val financialDescription = AuditControlCorrectionFinance(
             correctionId = CORRECTION_ID,
             deduction = true,
             fundAmount = BigDecimal.valueOf(10L),
@@ -59,7 +59,7 @@ class AuditControlCorrectionFinancePersistenceProviderTest : UnitTest() {
             correctionComment = "comment",
         )
 
-        private val financialDescriptionUpdate = ProjectCorrectionFinancialDescriptionUpdate(
+        private val financialDescriptionUpdate = AuditControlCorrectionFinanceUpdate(
             deduction = false,
             fundAmount = BigDecimal.valueOf(50),
             publicContribution = BigDecimal.valueOf(51),
@@ -74,7 +74,7 @@ class AuditControlCorrectionFinancePersistenceProviderTest : UnitTest() {
             correctionComment = "comment, new",
         )
 
-        private val financialDescriptionAfterUpdate = ProjectCorrectionFinancialDescription(
+        private val financialDescriptionAfterUpdate = AuditControlCorrectionFinance(
             correctionId = CORRECTION_ID,
             deduction = false,
             fundAmount = BigDecimal.valueOf(50L),

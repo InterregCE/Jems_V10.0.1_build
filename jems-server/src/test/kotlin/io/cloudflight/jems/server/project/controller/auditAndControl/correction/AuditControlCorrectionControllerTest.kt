@@ -25,11 +25,11 @@ import io.cloudflight.jems.server.project.service.auditAndControl.correction.bas
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.getAuditControlCorrection.GetAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.listAuditControlCorrection.ListAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.updateAuditControlCorrection.UpdateAuditControlCorrectionInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionAvailableProcurements.GetCorrectionAvailableProcurementsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.identification.scope.getCorrectionCostItems.GetCorrectionCostItemsInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.listPreviouslyClosedCorrection.ListPreviouslyClosedCorrectionInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
@@ -37,7 +37,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.every
@@ -73,7 +73,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpact(
-                action = CorrectionImpactAction.RepaymentByNA,
+                action = AuditControlCorrectionImpactAction.RepaymentByNA,
                 comment = "impact comment",
             ),
             costCategory = null,
@@ -121,7 +121,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
             lumpSumOrderNr = null,
             programmeFundId = 9605L,
             impact = AuditControlCorrectionImpact(
-                action = CorrectionImpactAction.RepaymentByNA,
+                action = AuditControlCorrectionImpactAction.RepaymentByNA,
                 comment = "impact comment",
             ),
             costCategory = null,
@@ -181,7 +181,7 @@ class AuditControlCorrectionControllerTest: UnitTest() {
                 autoPublicContribution = BigDecimal.valueOf(4000),
                 privateContribution = BigDecimal.valueOf(5000),
                 total = BigDecimal.valueOf(10000),
-                impactProjectLevel = CorrectionImpactAction.RepaymentByProject,
+                impactProjectLevel = AuditControlCorrectionImpactAction.RepaymentByProject,
                 scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
             )
         )

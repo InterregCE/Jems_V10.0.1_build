@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import java.time.LocalDate
 import javax.persistence.Entity
@@ -74,7 +74,7 @@ class AuditControlCorrectionEntity (
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    var impact: CorrectionImpactAction,
+    var impact: AuditControlCorrectionImpactAction,
 
     @field:NotNull
     @field:Size(max = 2000)

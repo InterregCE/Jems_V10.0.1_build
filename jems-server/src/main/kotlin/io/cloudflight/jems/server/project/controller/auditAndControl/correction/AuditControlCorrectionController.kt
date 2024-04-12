@@ -10,7 +10,7 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectAud
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.ProjectCorrectionIdentificationUpdateDTO
 import io.cloudflight.jems.server.common.toDTO
 import io.cloudflight.jems.server.project.controller.auditAndControl.toDto
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.CloseAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.createAuditControlCorrection.CreateAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.deleteAuditControlCorrection.DeleteAuditControlCorrectionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.getAuditControlCorrection.GetAuditControlCorrectionInteractor

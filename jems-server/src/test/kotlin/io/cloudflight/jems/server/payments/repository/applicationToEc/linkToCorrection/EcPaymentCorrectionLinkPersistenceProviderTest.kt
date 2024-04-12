@@ -29,10 +29,10 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -139,7 +139,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             lumpSum = null,
             lumpSumPartnerId = null,
             programmeFund = null,
-            impact = CorrectionImpactAction.AdjustmentInNextPayment,
+            impact = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
             impactComment = "Impact comment",
             expenditure = null,
             costCategory = null,
@@ -201,7 +201,7 @@ class EcPaymentCorrectionLinkPersistenceProviderTest : UnitTest() {
             correctedTotalEligibleWithoutArt94or95 = BigDecimal.valueOf(55.00)
         )
 
-        private fun financialDescription(isDeduction: Boolean) = ProjectCorrectionFinancialDescription(
+        private fun financialDescription(isDeduction: Boolean) = AuditControlCorrectionFinance(
             correctionId = CORRECTION_ID,
             deduction = isDeduction,
             fundAmount = if (isDeduction) BigDecimal.valueOf(-10L) else BigDecimal.valueOf(10L),

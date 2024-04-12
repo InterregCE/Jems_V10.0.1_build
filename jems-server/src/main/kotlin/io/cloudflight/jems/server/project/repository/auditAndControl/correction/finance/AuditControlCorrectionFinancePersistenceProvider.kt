@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.auditAndControl.correction.finance
 
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescriptionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.AuditControlCorrectionFinancePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinanceUpdate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,14 +12,14 @@ class AuditControlCorrectionFinancePersistenceProvider(
 ): AuditControlCorrectionFinancePersistence {
 
     @Transactional(readOnly = true)
-    override fun getCorrectionFinancialDescription(correctionId: Long): ProjectCorrectionFinancialDescription =
+    override fun getCorrectionFinancialDescription(correctionId: Long): AuditControlCorrectionFinance =
         projectCorrectionFinancialDescriptionRepository.getReferenceById(correctionId).toDescriptionModel()
 
     @Transactional
     override fun updateCorrectionFinancialDescription(
         correctionId: Long,
-        financialDescription: ProjectCorrectionFinancialDescriptionUpdate
-    ): ProjectCorrectionFinancialDescription {
+        financialDescription: AuditControlCorrectionFinanceUpdate
+    ): AuditControlCorrectionFinance {
         return projectCorrectionFinancialDescriptionRepository.getReferenceById(correctionId).apply {
             deduction = financialDescription.deduction
             fundAmount = financialDescription.fundAmount

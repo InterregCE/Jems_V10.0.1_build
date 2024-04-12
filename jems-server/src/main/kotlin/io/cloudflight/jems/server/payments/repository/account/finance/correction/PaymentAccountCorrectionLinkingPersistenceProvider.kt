@@ -22,7 +22,7 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlEn
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -65,7 +65,7 @@ class PaymentAccountCorrectionLinkingPersistenceProvider(
 
     @Transactional
     override fun createCorrectionExtension(
-        financialDescription: ProjectCorrectionFinancialDescription,
+        financialDescription: AuditControlCorrectionFinance,
     ) {
         val correctionEntity = auditControlCorrectionRepository.getReferenceById(financialDescription.correctionId)
         correctionExtensionRepository.save(

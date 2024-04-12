@@ -10,18 +10,22 @@ import io.cloudflight.jems.server.payments.service.ecPayment.linkToCorrection.Ec
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.base.updateAuditControl.UpdateAuditControlTest
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_4
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.AuditControlClosedException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.AuditControlCorrectionClosedException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.CloseAuditControlCorrection
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.closeAuditControlCorrection.PartnerOrReportOrFundNotSelectedException
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.AuditControlCorrectionFinancePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_4
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.AuditControlCorrectionMeasurePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -43,14 +47,14 @@ class CloseAuditControlCorrectionTest : UnitTest() {
         private const val PROJECT_ID = 2L
         private const val CORRECTION_ID = 170L
 
-        private fun programmeMeasureModel(scenario: ProjectCorrectionProgrammeMeasureScenario) = ProjectCorrectionProgrammeMeasure(
+        private fun programmeMeasureModel(scenario: ProjectCorrectionProgrammeMeasureScenario) = AuditControlCorrectionMeasure(
             correctionId = CORRECTION_ID,
             scenario = scenario,
             comment = "comment",
             includedInAccountingYear = null,
         )
 
-        private val financialDescription = ProjectCorrectionFinancialDescription(
+        private val financialDescription = AuditControlCorrectionFinance(
             correctionId =  CORRECTION_ID,
             deduction = true,
             fundAmount = BigDecimal.TEN,

@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
-import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
@@ -25,7 +24,7 @@ import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallm
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsException
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.AvailableCorrectionsForPayment
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.clearMocks
 import io.mockk.every

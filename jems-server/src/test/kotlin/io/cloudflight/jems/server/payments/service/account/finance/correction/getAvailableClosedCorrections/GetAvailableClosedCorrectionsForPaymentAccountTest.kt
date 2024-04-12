@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.payments.service.account.finance.correction.g
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.account.PaymentAccount
 import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinking
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection

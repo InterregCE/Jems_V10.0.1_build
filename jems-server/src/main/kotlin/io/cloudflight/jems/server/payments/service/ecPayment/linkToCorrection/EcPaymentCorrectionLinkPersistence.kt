@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.payments.model.ec.CorrectionInEcPaymentMetadat
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionExtension
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcCorrectionLinkingUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequestScoBasis
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import java.math.BigDecimal
 
 interface EcPaymentCorrectionLinkPersistence {
@@ -25,7 +25,7 @@ interface EcPaymentCorrectionLinkPersistence {
     fun updatePaymentToEcFinalScoBasis(toUpdate: Map<Long, PaymentSearchRequestScoBasis>)
 
     fun createCorrectionExtension(
-        financialDescription: ProjectCorrectionFinancialDescription,
+        financialDescription: AuditControlCorrectionFinance,
         totalEligibleWithoutArt94or95: BigDecimal,
         unionContribution: BigDecimal
     )

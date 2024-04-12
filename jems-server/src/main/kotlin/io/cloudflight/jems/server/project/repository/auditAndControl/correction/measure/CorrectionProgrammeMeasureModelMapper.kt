@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.auditAndControl.correction
 
 import io.cloudflight.jems.server.payments.model.ec.AccountingYear
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionMeasureEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings
@@ -20,7 +20,7 @@ interface CorrectionProgrammeMeasureModelMapper {
         Mapping(source = "entity.correctionId", target = "correctionId"),
         Mapping(source = "entity.comment", target = "comment")
     )
-    fun map(entity: AuditControlCorrectionMeasureEntity, accountingYear: AccountingYear?): ProjectCorrectionProgrammeMeasure
+    fun map(entity: AuditControlCorrectionMeasureEntity, accountingYear: AccountingYear?): AuditControlCorrectionMeasure
 }
 
 

@@ -5,11 +5,11 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -51,7 +51,7 @@ class ListAuditControlCorrectionTest : UnitTest() {
             autoPublicContribution = BigDecimal.valueOf(63L),
             privateContribution = BigDecimal.valueOf(64L),
             total = BigDecimal.valueOf(250L),
-            impactProjectLevel = CorrectionImpactAction.AdjustmentInNextPayment,
+            impactProjectLevel = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
             scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
         )
     }
@@ -95,7 +95,7 @@ class ListAuditControlCorrectionTest : UnitTest() {
                 autoPublicContribution = BigDecimal.valueOf(63L),
                 privateContribution = BigDecimal.valueOf(64L),
                 total = BigDecimal.valueOf(250L),
-                impactProjectLevel = CorrectionImpactAction.AdjustmentInNextPayment,
+                impactProjectLevel = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
                 scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
             )
         )

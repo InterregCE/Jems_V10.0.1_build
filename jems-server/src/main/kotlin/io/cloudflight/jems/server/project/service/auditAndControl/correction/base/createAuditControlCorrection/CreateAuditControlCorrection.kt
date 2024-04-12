@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.correcti
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.projectAuditControlCorrectionCreated
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -40,7 +40,7 @@ class CreateAuditControlCorrection(
             status = AuditControlStatus.Ongoing,
             type = type,
             followUpOfCorrectionType = CorrectionFollowUpType.No,
-            defaultImpact = CorrectionImpactAction.NA,
+            defaultImpact = AuditControlCorrectionImpactAction.NA,
         )
 
         return createCorrectionPersistence.createCorrection(auditControlId = auditControlId, toCreate).also {

@@ -9,12 +9,12 @@ import io.cloudflight.jems.server.project.repository.auditAndControl.correction.
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.AuditControlPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -58,7 +58,7 @@ class AuditControlCorrectionPagingServiceTest: UnitTest() {
         publicContribution = BigDecimal.valueOf(62L),
         autoPublicContribution = BigDecimal.valueOf(63L),
         privateContribution = BigDecimal.valueOf(64L),
-        impactProjectLevel = CorrectionImpactAction.AdjustmentInNextPayment,
+        impactProjectLevel = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
         scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
     )
 
@@ -118,7 +118,7 @@ class AuditControlCorrectionPagingServiceTest: UnitTest() {
                 autoPublicContribution = BigDecimal.valueOf(63L),
                 privateContribution = BigDecimal.valueOf(64L),
                 total = BigDecimal.valueOf(250L),
-                impactProjectLevel = CorrectionImpactAction.AdjustmentInNextPayment,
+                impactProjectLevel = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
                 scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_2,
             )
         )

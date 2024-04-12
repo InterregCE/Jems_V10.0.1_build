@@ -27,7 +27,7 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCo
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionFinanceEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCorrectionMeasureEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

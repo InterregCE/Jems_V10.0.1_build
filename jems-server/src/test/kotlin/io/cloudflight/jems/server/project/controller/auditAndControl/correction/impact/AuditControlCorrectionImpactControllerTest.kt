@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.impact.Cor
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.impact.updateImpact.UpdateAuditControlCorrectionImpactInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -47,7 +47,7 @@ class AuditControlCorrectionImpactControllerTest : UnitTest() {
 
         assertThat(slotImpact.captured).isEqualTo(
             AuditControlCorrectionImpact(
-                action = CorrectionImpactAction.BudgetReduction,
+                action = AuditControlCorrectionImpactAction.BudgetReduction,
                 comment = "new comment",
             )
         )

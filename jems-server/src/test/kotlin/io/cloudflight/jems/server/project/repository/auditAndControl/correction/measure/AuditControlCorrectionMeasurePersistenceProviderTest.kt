@@ -12,9 +12,9 @@ import io.cloudflight.jems.server.payments.repository.applicationToEc.linkToCorr
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionMeasureEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasureUpdate
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -46,7 +46,7 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
             comment = "comment"
         )
 
-        private val programmeMeasureModel = ProjectCorrectionProgrammeMeasure(
+        private val programmeMeasureModel = AuditControlCorrectionMeasure(
             correctionId = CORRECTION_ID,
             scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
             comment = "comment",
@@ -119,7 +119,7 @@ class AuditControlCorrectionMeasurePersistenceProviderTest : UnitTest() {
 
     @Test
     fun updateProgrammeMeasure() {
-        val programmeMeasureUpdate = ProjectCorrectionProgrammeMeasureUpdate(
+        val programmeMeasureUpdate = AuditControlCorrectionMeasureUpdate(
             ProjectCorrectionProgrammeMeasureScenario.SCENARIO_3,
             "newComment"
         )
