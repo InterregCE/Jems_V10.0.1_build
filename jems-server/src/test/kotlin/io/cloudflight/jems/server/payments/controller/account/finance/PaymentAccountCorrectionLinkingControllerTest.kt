@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.payments.service.account.finance.correction.ge
 import io.cloudflight.jems.server.payments.service.account.finance.correction.selectCorrection.SelectCorrectionToPaymentAccount
 import io.cloudflight.jems.server.payments.service.account.finance.correction.updateCorrection.UpdateLinkedCorrectionToPaymentAccount
 import io.cloudflight.jems.server.payments.service.toModel
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection

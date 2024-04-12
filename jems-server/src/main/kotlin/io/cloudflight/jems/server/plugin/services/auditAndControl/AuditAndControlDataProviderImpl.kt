@@ -13,8 +13,8 @@ import io.cloudflight.jems.server.plugin.services.toJpaPage
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlPersistenceProvider
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.listAuditControlCorrection.AuditControlCorrectionPagingService
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.AuditControlCorrectionFinancePersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.AuditControlCorrectionMeasurePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.AuditControlCorrectionFinancePersistence
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.AuditControlCorrectionMeasurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page as PluginPage

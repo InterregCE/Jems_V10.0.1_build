@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.QAuditControlCo
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -83,7 +83,7 @@ class PaymentAccountCorrectionLinkingPersistenceProviderTest : UnitTest() {
             correctedPrivateContribution = BigDecimal.valueOf(31),
         )
 
-        private val financialDescription = ProjectCorrectionFinancialDescription(
+        private val financialDescription = AuditControlCorrectionFinance(
             correctionId = CORRECTION_ID,
             deduction = true,
             fundAmount = BigDecimal.TEN,

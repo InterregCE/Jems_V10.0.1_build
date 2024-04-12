@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountA
 import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLineTmp
 import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionLinkingUpdate
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 
 interface PaymentAccountCorrectionLinkingPersistence {
 
@@ -22,7 +22,7 @@ interface PaymentAccountCorrectionLinkingPersistence {
     ): PaymentAccountCorrectionExtension
 
 
-    fun createCorrectionExtension(financialDescription: ProjectCorrectionFinancialDescription)
+    fun createCorrectionExtension(financialDescription: AuditControlCorrectionFinance)
 
     fun getCorrectionIdsAvailableForPaymentAccounts(fundId: Long): Set<Long>
 

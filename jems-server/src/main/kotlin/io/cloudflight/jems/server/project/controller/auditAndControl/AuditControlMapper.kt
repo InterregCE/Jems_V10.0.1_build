@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditCon
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailablePartner
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -56,5 +56,5 @@ fun List<CorrectionImpactActionDTO>.toModel() = map { mapper.map(it) }
 @Mapper
 interface AuditControlMapper {
     fun map(model: CorrectionAvailablePartner): CorrectionAvailablePartnerDTO
-    fun map(dto: CorrectionImpactActionDTO): CorrectionImpactAction
+    fun map(dto: CorrectionImpactActionDTO): AuditControlCorrectionImpactAction
 }

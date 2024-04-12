@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.repository.auditAndControl.correction.
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -36,7 +36,7 @@ class AuditControlCorrectionImpactPersistenceProviderTest : UnitTest() {
             lumpSum = null,
             lumpSumPartnerId = null,
             programmeFund = null,
-            impact = CorrectionImpactAction.AdjustmentInNextPayment,
+            impact = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
             impactComment = "old comment",
             expenditure = null,
             costCategory = null,
@@ -58,13 +58,13 @@ class AuditControlCorrectionImpactPersistenceProviderTest : UnitTest() {
         every { correctionRepository.getReferenceById(CORRECTION_ID) } returns entity
 
         val toUpdate = AuditControlCorrectionImpact(
-            action = CorrectionImpactAction.BudgetReduction,
+            action = AuditControlCorrectionImpactAction.BudgetReduction,
             comment = "new comment",
         )
 
         assertThat(persistence.updateCorrectionImpact(CORRECTION_ID, toUpdate)).isEqualTo(toUpdate)
 
-        assertThat(entity.impact).isEqualTo(CorrectionImpactAction.BudgetReduction)
+        assertThat(entity.impact).isEqualTo(AuditControlCorrectionImpactAction.BudgetReduction)
         assertThat(entity.impactComment).isEqualTo("new comment")
     }
 

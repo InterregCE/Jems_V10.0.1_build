@@ -24,12 +24,12 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.expenditure.Rep
 import io.cloudflight.jems.server.plugin.services.payments.toDataModel
 import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.plugin.services.toPluginPage
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControl
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionLine
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
@@ -163,7 +163,7 @@ fun ProjectPartnerReportUnitCost.toDataModel() =  ProjectPartnerReportUnitCostDa
 )
 
 
-fun ProjectCorrectionProgrammeMeasure.toDataModel() = ProjectCorrectionProgrammeMeasureData(
+fun AuditControlCorrectionMeasure.toDataModel() = ProjectCorrectionProgrammeMeasureData(
     correctionId = correctionId,
     scenario = scenario.toDataModel(),
     comment = comment,
@@ -171,7 +171,7 @@ fun ProjectCorrectionProgrammeMeasure.toDataModel() = ProjectCorrectionProgramme
 
 )
 
-fun ProjectCorrectionFinancialDescription.toDataModel() = ProjectCorrectionFinancialDescriptionData(
+fun AuditControlCorrectionFinance.toDataModel() = ProjectCorrectionFinancialDescriptionData(
     correctionId = correctionId,
     deduction = deduction,
     fundAmount = fundAmount,

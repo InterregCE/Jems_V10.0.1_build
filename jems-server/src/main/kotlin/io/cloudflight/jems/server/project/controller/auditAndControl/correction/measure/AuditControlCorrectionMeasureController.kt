@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.controller.auditAndControl.correction
 import io.cloudflight.jems.api.project.auditAndControl.corrections.measure.ProjectAuditControlCorrectionProgrammeMeasureApi
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureUpdateDTO
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.get.GetProgrammeMeasureInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.update.UpdateProgrammeMeasureInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.get.GetProgrammeMeasureInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.update.UpdateProgrammeMeasureInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController

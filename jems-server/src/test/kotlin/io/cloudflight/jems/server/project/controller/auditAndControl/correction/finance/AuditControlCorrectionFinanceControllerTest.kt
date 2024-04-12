@@ -4,11 +4,11 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.finance.Co
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.finance.ProjectCorrectionFinancialDescriptionDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.finance.ProjectCorrectionFinancialDescriptionUpdateDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.getProjectCorrectionFinancialDescription.GetProjectCorrectionFinancialDescriptionInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.financialDescription.updateProjectCorrectionFinancialDescription.UpdateProjectCorrectionFinancialDescriptionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.getProjectCorrectionFinancialDescription.GetProjectCorrectionFinancialDescriptionInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.updateProjectCorrectionFinancialDescription.UpdateProjectCorrectionFinancialDescriptionInteractor
 import io.cloudflight.jems.server.project.service.auditAndControl.model.CorrectionType
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescriptionUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinanceUpdate
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,7 +23,7 @@ class AuditControlCorrectionFinanceControllerTest: UnitTest() {
         private const val PROJECT_ID = 2L
         private const val CORRECTION_ID = 1L
 
-        private val financialDescription = ProjectCorrectionFinancialDescription(
+        private val financialDescription = AuditControlCorrectionFinance(
             correctionId =  CORRECTION_ID,
             deduction = true,
             fundAmount = BigDecimal.TEN,
@@ -70,7 +70,7 @@ class AuditControlCorrectionFinanceControllerTest: UnitTest() {
             correctionComment = null
         )
 
-        private val financialDescriptionUpdate = ProjectCorrectionFinancialDescriptionUpdate(
+        private val financialDescriptionUpdate = AuditControlCorrectionFinanceUpdate(
             deduction = true,
             fundAmount = BigDecimal.TEN,
             publicContribution = BigDecimal.ZERO,

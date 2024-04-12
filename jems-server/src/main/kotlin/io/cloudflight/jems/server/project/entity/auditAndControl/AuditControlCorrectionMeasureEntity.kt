@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.auditAndControl
 
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated

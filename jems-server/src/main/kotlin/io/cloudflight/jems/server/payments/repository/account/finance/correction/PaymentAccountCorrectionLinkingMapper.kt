@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.payments.entity.account.PaymentAccountCorrecti
 import io.cloudflight.jems.server.payments.model.account.finance.PaymentAccountAmountSummaryLine
 import io.cloudflight.jems.server.payments.model.account.finance.correction.PaymentAccountCorrectionExtension
 import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlCorrectionEntity
-import io.cloudflight.jems.server.project.service.auditAndControl.model.ProjectCorrectionFinancialDescription
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.finance.AuditControlCorrectionFinance
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
@@ -27,7 +27,7 @@ fun PaymentAccountCorrectionExtensionEntity.toModel() = PaymentAccountCorrection
     auditControlStatus = correction.auditControl.status,
 )
 
-fun ProjectCorrectionFinancialDescription.toEntity(
+fun AuditControlCorrectionFinance.toEntity(
     correctionEntity: AuditControlCorrectionEntity,
 ) = PaymentAccountCorrectionExtensionEntity(
     correctionId = correctionId,

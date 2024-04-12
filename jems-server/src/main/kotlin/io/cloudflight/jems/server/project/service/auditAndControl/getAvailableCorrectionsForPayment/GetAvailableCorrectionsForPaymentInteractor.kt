@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.auditAndControl.getAvailableCorrectionsForPayment
 
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.AvailableCorrectionsForPayment
 
 interface GetAvailableCorrectionsForPaymentInteractor {
 

@@ -37,15 +37,15 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrection
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionUpdate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionCostItem
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AvailableCorrectionsForPayment
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.AvailableCorrectionsForPayment
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -237,7 +237,7 @@ class AuditControlCorrectionPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForPayments(projectId: Long): List<AvailableCorrectionsForPayment> =
-        getSelectableCorrections(projectId, CorrectionImpactAction.PAYMENT_IMPACTS)
+        getSelectableCorrections(projectId, AuditControlCorrectionImpactAction.PAYMENT_IMPACTS)
             .groupBy { it.partnerId() }
             .filterKeys { it != null }
             .map { (partnerId, corrections) -> AvailableCorrectionsForPayment(
@@ -247,14 +247,14 @@ class AuditControlCorrectionPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAvailableCorrectionsForModification(projectId: Long): List<AuditControlCorrection> =
-        getSelectableCorrections(projectId, CorrectionImpactAction.MODIFICATION_IMPACTS)
+        getSelectableCorrections(projectId, AuditControlCorrectionImpactAction.MODIFICATION_IMPACTS)
             .map { it.toSimpleModel() }
 
     @Transactional(readOnly = true)
     override fun getCorrectionsForModificationDecisions(projectId: Long): Map<Long, List<AuditControlCorrection>> {
         val correctionSpec = QAuditControlCorrectionEntity.auditControlCorrectionEntity
         val correctionPredicate = correctionSpec.auditControl.project.id.eq(projectId)
-            .and(correctionSpec.impact.`in`(CorrectionImpactAction.MODIFICATION_IMPACTS))
+            .and(correctionSpec.impact.`in`(AuditControlCorrectionImpactAction.MODIFICATION_IMPACTS))
             .and(correctionSpec.projectModificationId.isNotNull)
 
         return jpaQueryFactory
@@ -286,7 +286,7 @@ class AuditControlCorrectionPersistenceProvider(
     override fun existsByProcurementId(procurementId: Long): Boolean =
         auditControlCorrectionRepository.existsByProcurementId(procurementId)
 
-    private fun getSelectableCorrections(projectId: Long, impacts: Set<CorrectionImpactAction>): List<AuditControlCorrectionEntity> {
+    private fun getSelectableCorrections(projectId: Long, impacts: Set<AuditControlCorrectionImpactAction>): List<AuditControlCorrectionEntity> {
         val correctionSpec = QAuditControlCorrectionEntity.auditControlCorrectionEntity
 
         val whereCondition = listOf(

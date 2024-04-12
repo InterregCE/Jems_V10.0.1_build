@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.payments.model.account.finance.reconciliation.
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.AmountWithdrawnPerPriority
 import io.cloudflight.jems.server.payments.model.account.finance.withdrawn.AmountWithdrawnPerYear
 import io.cloudflight.jems.server.plugin.services.toDataModel
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.ControllingBody
 
 fun PaymentAccountCorrectionLinking.toDataModel() = PaymentAccountCorrectionLinkingData(

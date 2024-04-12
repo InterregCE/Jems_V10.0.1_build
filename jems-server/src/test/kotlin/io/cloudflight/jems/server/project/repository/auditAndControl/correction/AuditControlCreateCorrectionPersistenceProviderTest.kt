@@ -7,14 +7,14 @@ import io.cloudflight.jems.server.project.entity.auditAndControl.AuditControlEnt
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.finance.ProjectCorrectionFinancialDescriptionRepository
 import io.cloudflight.jems.server.project.repository.auditAndControl.correction.measure.CorrectionProgrammeMeasureRepository
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
 import io.cloudflight.jems.server.project.service.auditAndControl.model.AuditControlStatus
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionCreate
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionDetail
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.AuditControlCorrectionType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.CorrectionFollowUpType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpact
-import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.CorrectionImpactAction
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.impact.AuditControlCorrectionImpactAction
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -32,7 +32,7 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
             status = AuditControlStatus.Closed,
             type = AuditControlCorrectionType.LinkedToCostOption,
             followUpOfCorrectionType = CorrectionFollowUpType.CourtProcedure,
-            defaultImpact = CorrectionImpactAction.AdjustmentInNextPayment,
+            defaultImpact = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
         )
 
         private val expectedCorrection = AuditControlCorrectionDetail(
@@ -53,7 +53,7 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
             lumpSumOrderNr = null,
             programmeFundId = null,
             impact = AuditControlCorrectionImpact(
-                action = CorrectionImpactAction.AdjustmentInNextPayment,
+                action = AuditControlCorrectionImpactAction.AdjustmentInNextPayment,
                 comment = "",
             ),
             costCategory = null,
@@ -103,7 +103,7 @@ class AuditControlCreateCorrectionPersistenceProviderTest {
         assertThat(slotEnity.captured.lateRepayment).isNull()
         assertThat(slotEnity.captured.partnerReport).isNull()
         assertThat(slotEnity.captured.programmeFund).isNull()
-        assertThat(slotEnity.captured.impact).isEqualTo(CorrectionImpactAction.AdjustmentInNextPayment)
+        assertThat(slotEnity.captured.impact).isEqualTo(AuditControlCorrectionImpactAction.AdjustmentInNextPayment)
         assertThat(slotEnity.captured.impactComment).isEmpty()
 
         assertThat(slotFinanceEntity.captured.correction).isEqualTo(slotEnity.captured)

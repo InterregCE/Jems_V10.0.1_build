@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.project.service.auditAndControl.model.Correcti
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class AuditControlCorrectionFinance (
+data class AuditControlCorrectionFinance(
     val correctionId: Long,
     val deduction: Boolean,
     val fundAmount: BigDecimal,

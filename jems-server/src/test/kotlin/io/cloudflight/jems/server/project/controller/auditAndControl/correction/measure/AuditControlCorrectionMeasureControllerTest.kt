@@ -4,11 +4,11 @@ import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.Pr
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureScenarioDTO
 import io.cloudflight.jems.api.project.dto.auditAndControl.correction.measure.ProjectCorrectionProgrammeMeasureUpdateDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasure
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureScenario
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.model.ProjectCorrectionProgrammeMeasureUpdate
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.get.GetProgrammeMeasureInteractor
-import io.cloudflight.jems.server.project.service.auditAndControl.correction.programmeMeasure.update.UpdateProgrammeMeasureInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasure
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.ProjectCorrectionProgrammeMeasureScenario
+import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.measure.AuditControlCorrectionMeasureUpdate
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.get.GetProgrammeMeasureInteractor
+import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.update.UpdateProgrammeMeasureInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,7 +22,7 @@ class AuditControlCorrectionMeasureControllerTest : UnitTest() {
     companion object {
         private const val CORRECTION_ID = 176L
 
-        private val programmeMeasureModel = ProjectCorrectionProgrammeMeasure(
+        private val programmeMeasureModel = AuditControlCorrectionMeasure(
             correctionId = CORRECTION_ID,
             scenario = ProjectCorrectionProgrammeMeasureScenario.SCENARIO_5,
             comment = "comment",
@@ -37,7 +37,7 @@ class AuditControlCorrectionMeasureControllerTest : UnitTest() {
         )
 
 
-        private val programmeMeasureUpdateModel = ProjectCorrectionProgrammeMeasureUpdate(
+        private val programmeMeasureUpdateModel = AuditControlCorrectionMeasureUpdate(
             ProjectCorrectionProgrammeMeasureScenario.SCENARIO_3,
             "newComment"
         )
