@@ -491,34 +491,36 @@ context('Project report tests', () => {
 
   it('TB-1126 PR - Financial overview - Breakdown per investment shows correct figures across multiple project reports', function () {
     cy.fixture('project/reporting/TB-1126.json').then(testData => {
-      cy.loginByRequest(user.applicantUser.email);
-
-      // remove other costs flat rate so that any expenditure items can be created
-      application.partners[1].budget.options.otherCostsOnStaffCostsFlatRate = null;
-      application.partners[1].cofinancing.partnerContributions[2].amount = 4969.12;
-      cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
-
-        // don't park a relevant expenditure item
-        reporting.projectReports[0].partnerReports[0].controlWork.expenditureVerification[3].parked = false;
-        reporting.projectReports[0].partnerReports[0].controlWork.expenditureVerification[3].parkedOn = null;
-
-        // change expenditure category to be able to link it to investments
-        reporting.projectReports[0].partnerReports[1].partnerReport.expenditures = testData.expenditures;
-        reporting.projectReports[0].partnerReports[1].controlWork.expenditureVerification = testData.controlExpenditureVerification;
-        reporting.projectReports[0].verificationWork.expenditures = testData.verificationWork;
-        cy.completeReporting(applicationId, reporting);
-
-        const leadPartnerId = this[application.partners[0].details.abbreviation];
-
-        cy.addPartnerReport(leadPartnerId).then(reportId => {
-          cy.updatePartnerReportExpenditures(leadPartnerId, reportId, testData.draftPartnerReportExpenditures);
-        });
-
+      cy.fixture('api/application/application.json').then(application => {
         cy.loginByRequest(user.applicantUser.email);
-        cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
-          cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
-          cy.contains('Project expenditure - breakdown per investment').scrollIntoView().should('be.visible');
-          projectReportPage.verifyAmountsInTables(testData.expectedResults);
+
+        // remove other costs flat rate so that any expenditure items can be created
+        application.partners[1].budget.options.otherCostsOnStaffCostsFlatRate = null;
+        application.partners[1].cofinancing.partnerContributions[2].amount = 4969.12;
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+
+          // don't park a relevant expenditure item
+          reporting.projectReports[0].partnerReports[0].controlWork.expenditureVerification[3].parked = false;
+          reporting.projectReports[0].partnerReports[0].controlWork.expenditureVerification[3].parkedOn = null;
+
+          // change expenditure category to be able to link it to investments
+          reporting.projectReports[0].partnerReports[1].partnerReport.expenditures = testData.expenditures;
+          reporting.projectReports[0].partnerReports[1].controlWork.expenditureVerification = testData.controlExpenditureVerification;
+          reporting.projectReports[0].verificationWork.expenditures = testData.verificationWork;
+          cy.completeReporting(applicationId, reporting);
+
+          const leadPartnerId = this[application.partners[0].details.abbreviation];
+
+          cy.addPartnerReport(leadPartnerId).then(reportId => {
+            cy.updatePartnerReportExpenditures(leadPartnerId, reportId, testData.draftPartnerReportExpenditures);
+          });
+
+          cy.loginByRequest(user.applicantUser.email);
+          cy.createProjectReport(applicationId, {deadlineId: application.reportingDeadlines[2].id}).then(projectReportId => {
+            cy.visit(`app/project/detail/${applicationId}/projectReports/${projectReportId}/financialOverview`, {failOnStatusCode: false});
+            cy.contains('Project expenditure - breakdown per investment').scrollIntoView().should('be.visible');
+            projectReportPage.verifyAmountsInTables(testData.expectedResults);
+          });
         });
       });
     });
