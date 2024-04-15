@@ -390,7 +390,7 @@ context('Payments tests', () => {
 
           // Assert advance payments
           cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
+          cy.visit(`/app/project/detail/${applicationId}/reportingOverview/advancePayments`, {failOnStatusCode: false});
           cy.contains('Advance Payments').should('be.visible');
           assertAdvancePayment('LP', 'Lead contribution 1', '1.000,00', '500,00', '500,00');
           assertAdvancePayment('PP2', 'Neighbourhood CBC', '10.000,00', '10.000,00', '0,00');
@@ -405,7 +405,7 @@ context('Payments tests', () => {
           cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
+          cy.visit(`/app/project/detail/${applicationId}/reportingOverview/advancePayments`, {failOnStatusCode: false});
           assertAdvancePayment('LP', 'Lead contribution 1', '1.000,00', '500,00', '500,00');
           assertAdvancePayment('PP2', 'Neighbourhood CBC', '10.000,00', '10.000,00', '0,00');
 
@@ -472,7 +472,7 @@ context('Payments tests', () => {
           getAdvancePayment(projectIdentifier, secondPartner, 'Neighbourhood CBC').find('button.delete-button').should('not.exist');
 
           cy.loginByRequest(user.programmeUser.email);
-          cy.visit(`/app/project/detail/${applicationId}/advancePayments`, {failOnStatusCode: false});
+          cy.visit(`/app/project/detail/${applicationId}/reportingOverview/advancePayments`, {failOnStatusCode: false});
           cy.contains('mat-row', firstPartner).should('be.visible');
           cy.contains('mat-row', secondPartner).should('not.exist');
 

@@ -1194,6 +1194,7 @@ context('Partner reports tests', () => {
       cy.fixture('api/application/application.json').then(application => {
         cy.loginByRequest(user.applicantUser.email);
 
+        application.details.projectCallId = this.callId;
         application.contractMonitoring.fastTrackLumpSums[0].readyForPayment = false;
         cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
           const partnerId = this[application.partners[0].details.abbreviation];
