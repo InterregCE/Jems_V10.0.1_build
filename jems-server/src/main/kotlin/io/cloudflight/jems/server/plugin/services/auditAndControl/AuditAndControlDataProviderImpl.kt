@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.plugin.services.auditAndControl
 
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page
 import io.cloudflight.jems.plugin.contract.models.common.paging.Pageable
+import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionBulkObjectData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionDetailData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlCorrectionLineData
 import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.AuditControlData
@@ -11,12 +12,14 @@ import io.cloudflight.jems.plugin.contract.models.project.auditAndControl.Projec
 import io.cloudflight.jems.plugin.contract.services.auditAndControl.AuditAndControlDataProvider
 import io.cloudflight.jems.server.plugin.services.toJpaPage
 import io.cloudflight.jems.server.project.repository.auditAndControl.AuditControlPersistenceProvider
+import io.cloudflight.jems.server.project.repository.auditAndControl.correction.AuditControlCorrectionRepository
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.AuditControlCorrectionPersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.base.listAuditControlCorrection.AuditControlCorrectionPagingService
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.finance.AuditControlCorrectionFinancePersistence
 import io.cloudflight.jems.server.project.service.auditAndControl.correction.measure.AuditControlCorrectionMeasurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Stream
 import io.cloudflight.jems.plugin.contract.models.common.paging.Page as PluginPage
 
 
@@ -27,8 +30,12 @@ class AuditAndControlDataProviderImpl(
     private val correctionPersistence: AuditControlCorrectionPersistence,
     private val programmeMeasurePersistence: AuditControlCorrectionMeasurePersistence,
     private val financialDescriptionPersistence: AuditControlCorrectionFinancePersistence,
+    private val correctionRepository: AuditControlCorrectionRepository,
 ): AuditAndControlDataProvider {
 
+    @Transactional(readOnly = true)
+    override fun fetchAllCorrectionsForExport(fundId: Long): Stream<AuditControlCorrectionBulkObjectData> =
+        correctionRepository.findAllCorrectionsForExport(fundId).map { it.toDataModel() }
 
     @Transactional(readOnly = true)
     override fun listForProject(projectId: Long, pageable: Pageable): PluginPage<AuditControlData> {
@@ -59,4 +66,3 @@ class AuditAndControlDataProviderImpl(
 
 
 }
-
