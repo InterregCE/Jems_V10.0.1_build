@@ -33,6 +33,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
             outputTargetValue = BigDecimal.TEN,
             programmeOutputId = OUTPUT_1_ID,
             programmeResultId = RESULT_1_ID,
+            deactivated = false
         )
         private val output_2_O1_R1 = OutputRow(
             workPackageId = 1,
@@ -42,6 +43,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
             outputTargetValue = BigDecimal.TEN,
             programmeOutputId = OUTPUT_1_ID,
             programmeResultId = RESULT_1_ID,
+            deactivated = false
         )
     }
 

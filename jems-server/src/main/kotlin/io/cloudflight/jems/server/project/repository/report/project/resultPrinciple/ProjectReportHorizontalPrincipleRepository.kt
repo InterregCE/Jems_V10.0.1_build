@@ -10,4 +10,5 @@ interface ProjectReportHorizontalPrincipleRepository: JpaRepository<ProjectRepor
 
     @EntityGraph(value = "ProjectReportHorizontalPrincipleEntity.withTranslations")
     fun getByProjectReportId(reportId: Long): ProjectReportHorizontalPrincipleEntity
+
 }

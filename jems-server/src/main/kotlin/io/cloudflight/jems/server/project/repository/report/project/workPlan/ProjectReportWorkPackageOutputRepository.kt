@@ -17,6 +17,11 @@ interface ProjectReportWorkPackageOutputRepository :
         reportEntity: ProjectReportEntity,
     ): MutableList<ProjectReportWorkPackageOutputEntity>
 
+    @EntityGraph(value = "ProjectReportWorkPackageOutputEntity.withTranslations")
+    fun findAllByWorkPackageEntityReportEntityIdInOrderByNumber(
+        reportIds: Set<Long>,
+    ): MutableList<ProjectReportWorkPackageOutputEntity>
+
     @Query("""
         SELECT CASE WHEN COUNT(e) >= 1 THEN TRUE ELSE FALSE END FROM #{#entityName} e
             WHERE e.id = :outputId

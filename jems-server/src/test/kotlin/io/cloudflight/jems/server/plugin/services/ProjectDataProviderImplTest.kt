@@ -702,7 +702,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 outputNumber = 1,
                 outputTargetValue = BigDecimal.TEN,
                 programmeOutputId = 1,
-                programmeResultId = 2
+                programmeResultId = 2,
+                deactivated = false
             ), OutputRow(
                 workPackageId = 1,
                 workPackageNumber = 1,
@@ -710,7 +711,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 outputNumber = 2,
                 outputTargetValue = BigDecimal.ONE,
                 programmeOutputId = 2,
-                programmeResultId = 3
+                programmeResultId = 3,
+                deactivated = false
             )
         )
         val outputIndicatorSet = setOf(

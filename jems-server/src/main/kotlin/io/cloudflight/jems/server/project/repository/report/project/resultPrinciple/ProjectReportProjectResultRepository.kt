@@ -11,7 +11,7 @@ import java.math.BigDecimal
 interface ProjectReportProjectResultRepository : JpaRepository<ProjectReportProjectResultEntity, Long> {
 
     @EntityGraph(value = "ProjectReportProjectResultEntity.withTranslations")
-    fun findByProjectReportId(reportId: Long): List<ProjectReportProjectResultEntity>
+    fun findByProjectReportIdIn(reportIds: Set<Long>): List<ProjectReportProjectResultEntity>
 
     @EntityGraph(value = "ProjectReportProjectResultEntity.withTranslations")
     fun findByProjectReportIdAndResultNumber(reportId: Long, resultNumber: Int): ProjectReportProjectResultEntity

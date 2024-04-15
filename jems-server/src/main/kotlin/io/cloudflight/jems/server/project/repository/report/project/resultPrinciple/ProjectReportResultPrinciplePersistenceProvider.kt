@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultTranslEntity
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.closurePeriod
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrincipleUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultUpdate
@@ -28,11 +29,16 @@ class ProjectReportResultPrinciplePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectResultPrinciples(projectId: Long, reportId: Long): ProjectReportResultPrinciple {
-        val projectResults = projectResultRepository.findByProjectReportId(reportId = reportId)
+        val projectResults = projectResultRepository.findByProjectReportIdIn(setOf(reportId))
         val periods = fetchAvailablePeriodsFor(projectResults)
         val horizontalPrinciples = horizontalPrincipleRepository.getByProjectReportId(reportId)
         return toResultPrincipleModel(projectResults, horizontalPrinciples, periodResolver = { periods[it] })
     }
+
+    @Transactional(readOnly = true)
+    override fun getProjectResultPrinciplesForLivingTable(projectId: Long, submittedReportIds: Set<Long>): List<ProjectReportProjectResult> =
+        projectResultRepository.findByProjectReportIdIn(reportIds = submittedReportIds)
+            .toModel { null }
 
     @Transactional
     override fun updateProjectReportResultPrinciple(
@@ -40,7 +46,7 @@ class ProjectReportResultPrinciplePersistenceProvider(
         reportId: Long,
         newResultsAndPrinciples: ProjectReportResultPrincipleUpdate,
     ): ProjectReportResultPrinciple {
-        val projectResults = projectResultRepository.findByProjectReportId(reportId)
+        val projectResults = projectResultRepository.findByProjectReportIdIn(setOf(reportId))
         projectResults.updateProjectResults(newValues = newResultsAndPrinciples.projectResults)
         val periods = fetchAvailablePeriodsFor(projectResults)
 
@@ -56,7 +62,7 @@ class ProjectReportResultPrinciplePersistenceProvider(
 
     @Transactional
     override fun deleteProjectResultPrinciplesIfExist(reportId: Long) {
-        val projectResults = projectResultRepository.findByProjectReportId(reportId)
+        val projectResults = projectResultRepository.findByProjectReportIdIn(setOf(reportId))
         projectResults.forEach { it.attachment.deleteIfPresent() }
         projectResultRepository.deleteAll(projectResults)
 

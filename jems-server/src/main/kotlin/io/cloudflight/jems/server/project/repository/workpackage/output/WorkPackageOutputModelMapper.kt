@@ -91,6 +91,7 @@ fun List<OutputRowWithTranslations>.toModel() = this
             outputTargetValue = groupedRows.value.first().targetValue ?: BigDecimal.ZERO,
             programmeOutputId = groupedRows.value.first().programmeOutputId,
             programmeResultId = groupedRows.value.first().programmeResultId,
+            deactivated = groupedRows.value.first().deactivated
         )
     }
 

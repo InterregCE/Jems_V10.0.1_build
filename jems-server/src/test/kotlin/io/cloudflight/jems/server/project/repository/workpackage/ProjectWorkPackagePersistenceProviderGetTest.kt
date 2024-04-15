@@ -925,7 +925,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         override val language: SystemLanguage?,
         override val targetValue: BigDecimal,
         override val programmeOutputId: Long?,
-        override val programmeResultId: Long?
+        override val programmeResultId: Long?,
+        override val deactivated: Boolean = false
     ) : OutputRowWithTranslations
 
 }

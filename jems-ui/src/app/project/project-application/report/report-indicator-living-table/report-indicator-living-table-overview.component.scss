@@ -1,0 +1,97 @@
+.inactive-icon {
+  margin-right: .25rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
+}
+
+// CSS Grid for headers and cells
+
+.mat-column-identifier, .result-header-inner .identifier {
+  grid-area: identifier
+}
+
+.mat-column-measurementUnit, .result-header-inner .measurementUnit {
+  grid-area: measurementUnit;
+}
+
+.mat-column-baseline, .result-header-inner .baseline {
+  grid-area: baseline;
+}
+
+.mat-column-targetValue, .result-header-inner .targetValue {
+  grid-area: targetValue;
+}
+
+.mat-column-previouslyReported, .result-header-inner .previouslyReported {
+  grid-area: previouslyReported;
+}
+
+.mat-column-currentReport, .result-header-inner .currentReport {
+  grid-area: currentReport;
+}
+
+.mat-column-totalReportedSoFar, .result-header-inner .totalReportedSoFar {
+  grid-area: totalReportedSoFar;
+}
+
+// Result Indicator Container
+
+.result-indicator-container {
+  padding: 0.75rem;
+  border: 1px solid var(--light-blue-gray);
+  width: unset !important;
+
+  .result-indicator-header {
+    padding: 0.5rem 0.75rem;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    margin-top: -0.75rem;
+    background-color: var(--pale-blue-gray);
+    color: var(--table-header-text-color);
+    font-size: var(--body-strong-font-size);
+    font-weight: normal;
+
+    div.result-header-inner {
+      align-items: center;
+      display: grid;
+      grid-template-columns: 1.5fr 0.75fr 0.5fr repeat(4, 0.75fr);
+      grid-template-areas: 'identifier measurementUnit baseline targetValue previouslyReported currentReport totalReportedSoFar';
+      grid-column-gap: 1em;
+
+      > :last-child {
+        padding-right: 1.5rem;
+      }
+
+      div > :first-child {
+        font-weight: var(--body-strong-font-weight);
+      }
+    }
+  }
+}
+
+// Output Indicator Table
+
+mat-table {
+  mat-header-cell {
+    display: grid;
+
+    :last-child {
+      font-weight: normal;
+    }
+  }
+
+  mat-footer-row::after, mat-header-row::after, mat-row::after {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  &.output {
+    > mat-header-row, > mat-row {
+      display: grid;
+      grid-template-columns: 1.5fr 0.75fr 0.5fr repeat(4, 0.75fr);
+      grid-template-areas: 'identifier measurementUnit baseline targetValue previouslyReported currentReport totalReportedSoFar';
+      grid-column-gap: 1em;
+    }
+  }
+}
