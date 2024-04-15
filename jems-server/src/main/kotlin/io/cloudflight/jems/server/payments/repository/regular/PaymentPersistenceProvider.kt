@@ -6,12 +6,17 @@ import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.plugin.contract.models.payments.export.PaymentEcStatusData
+import io.cloudflight.jems.plugin.contract.models.payments.export.RegularPaymentsExportData
+import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentTypeData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.payments.accountingYears.repository.toModel
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
+import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.QAccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentApplicationToEcEntity
@@ -46,6 +51,8 @@ import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.payments.repository.toRegularPaymentEntity
 import io.cloudflight.jems.server.payments.repository.toRegularPaymentModel
 import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
+import io.cloudflight.jems.server.plugin.services.payments.toDataModel
+import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.programme.entity.QProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.QProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -53,6 +60,9 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.repository.priority.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.QProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.QProjectContractingMonitoringEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.QProjectLumpSumEntity
@@ -76,6 +86,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 
 @Repository
@@ -520,6 +531,54 @@ class PaymentPersistenceProvider(
             .map { it.toTmpModel() }
     }
 
+    @Transactional(readOnly = true)
+    override fun getAllRegularPaymentIds(programmeFundType: ProgrammeFundType?): List<Long> {
+        val query = jpaQueryFactory.select(payment.id).from(payment)
+        return if (programmeFundType != null) {
+            query.where(payment.fund.type.eq(programmeFundType)).fetch()
+        } else {
+            query.fetch()
+        }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getRegularPaymentDataForExport(paymentId: Long): RegularPaymentsExportData {
+        val specFund = QProgrammeFundEntity.programmeFundEntity
+        val specPaymentToEc = QPaymentApplicationToEcEntity.paymentApplicationToEcEntity
+        val specAccountingYear = QAccountingYearEntity.accountingYearEntity
+
+        return jpaQueryFactory.select(
+            payment,
+            project,
+            specPaymentToEc.id,
+            specPaymentToEc.status,
+            specAccountingYear,
+            specFund,
+            totalEligible(),
+            amountAuthorized(),
+            amountPaid(),
+            paymentPartnerInstallment.paymentDate.max(),
+            remainingToBePaid(),
+        )
+            .from(payment)
+            .leftJoin(project).on(project.eq(payment.project))
+            .leftJoin(projectContracting).on(projectContracting.projectId.eq(payment.project.id))
+            .leftJoin(programmeSpecificObjective).on(programmeSpecificObjective.programmeObjectivePolicy.eq(project.priorityPolicy.programmeObjectivePolicy))
+            .leftJoin(programmePriority).on(programmePriority.eq(programmeSpecificObjective.programmePriority))
+            .leftJoin(specFund).on(specFund.eq(payment.fund))
+            .leftJoin(projectLumpSum).on(projectLumpSum.eq(payment.projectLumpSum))
+            .leftJoin(projectReport).on(projectReport.eq(payment.projectReport))
+            .leftJoin(paymentPartner).on(paymentPartner.payment.eq(payment))
+            .leftJoin(paymentPartnerInstallment).on(paymentPartnerInstallment.paymentPartner.eq(paymentPartner))
+            .leftJoin(paymentToEcExtension).on(paymentToEcExtension.payment.eq(payment))
+            .leftJoin(specPaymentToEc).on(specPaymentToEc.eq(paymentToEcExtension.paymentApplicationToEc))
+            .leftJoin(specAccountingYear).on(specAccountingYear.eq(specPaymentToEc.accountingYear))
+            .where(payment.id.eq(paymentId))
+            .fetch()
+            .first()
+            .toExportModel()
+    }
+
     private fun Tuple.toTmpModel(): CorrectionAvailableFtlsTmp {
         val programmeLumpSum = get(1, ProgrammeLumpSumEntity::class.java)!!
         val lumpSumName = programmeLumpSum.translatedValues.map { InputTranslation(it.translationId.language, it.name) }.toSet()
@@ -533,6 +592,44 @@ class PaymentPersistenceProvider(
             ecPaymentId = get(4, Long::class.java),
             ecPaymentStatus = get(5, PaymentEcStatus::class.java),
             ecPaymentAccountingYear = get(6, AccountingYearEntity::class.java)?.toModel(),
+        )
+    }
+
+    private fun Tuple.toExportModel(): RegularPaymentsExportData {
+        val payment = get(0, PaymentEntity::class.java)!!
+        val project = get(1, ProjectEntity::class.java)!!
+        val accountingYear = get(4, AccountingYearEntity::class.java)
+        val fund = get(5, ProgrammeFundEntity::class.java)!!
+        val status = get(3, PaymentEcStatus::class.java)
+
+        return RegularPaymentsExportData(
+            id = payment.id,
+            paymentType = PaymentTypeData.valueOf(payment.type.name),
+            projectCustomIdentifier = payment.projectCustomIdentifier,
+            projectAcronym = payment.projectAcronym,
+            projectStatus = ApplicationStatusData.valueOf(project.currentStatus.status.name),
+            priorityAxis = project.priorityPolicy!!.programmePriority!!.id.toString() + " - " + project.priorityPolicy!!.programmePriority!!.code,
+            specificObjective = project.priorityPolicy!!.toModel().toDataModel(),
+            callId = project.call.id,
+            paymentClaimNo = if (payment.type == PaymentType.FTLS) 0 else payment.projectReport!!.number,
+            paymentClaimSubmissionDate = if (payment.type == PaymentType.FTLS)
+                project.contractedOnDate
+            else
+                payment.projectReport!!.firstSubmission!!.toLocalDate(),
+            paymentApprovalDate = if (payment.type == PaymentType.FTLS)
+                payment.projectLumpSum!!.paymentEnabledDate
+            else
+                payment.projectReport!!.verificationEndDate,
+            includedInPaymentToEcId = get(2, Long::class.java),
+            paymentToEcStatus = if (status == null) null else PaymentEcStatusData.valueOf(status.name),
+            paymentToEcAccountingYear = accountingYear?.toModel()?.toDataModel(),
+            programmeFund = fund.toModel().toDataModel(),
+            totalEligibleAmount = get(6, BigDecimal::class.java)!!,
+            amountApprovedPerFund = payment.amountApprovedPerFund,
+            amountAuthorizedPerFund = get(7, BigDecimal::class.java),
+            amountPaidPerFund = get(8, BigDecimal::class.java),
+            dateOfLastPayment = get(9, LocalDate::class.java),
+            remainingToBePaid = get(10, BigDecimal::class.java),
         )
     }
 

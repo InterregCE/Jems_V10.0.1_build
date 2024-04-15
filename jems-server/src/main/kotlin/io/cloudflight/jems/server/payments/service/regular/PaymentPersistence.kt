@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.payments.service.regular
 
+import io.cloudflight.jems.plugin.contract.models.payments.export.RegularPaymentInstallmentData
+import io.cloudflight.jems.plugin.contract.models.payments.export.RegularPaymentsExportData
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.model.ec.PaymentToEcExtension
@@ -17,6 +19,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentFtlsToCreate
 import io.cloudflight.jems.server.payments.model.regular.toCreate.PaymentRegularToCreate
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.auditAndControl.model.correction.availableData.CorrectionAvailableFtlsTmp
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
@@ -87,4 +90,8 @@ interface PaymentPersistence {
     fun deleteRegularPayments(projectReportId: Long)
 
     fun getAvailableFtlsPayments(partnerIds: Set<Long>): List<CorrectionAvailableFtlsTmp>
+
+    fun getAllRegularPaymentIds(programmeFundType: ProgrammeFundType?): List<Long>
+
+    fun getRegularPaymentDataForExport(paymentId: Long): RegularPaymentsExportData
 }

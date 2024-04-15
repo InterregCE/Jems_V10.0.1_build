@@ -125,6 +125,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     nameInEnglish = "partner EN",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentToUpdateTo),
+                    partnerCountry = null
                 )
             )
         )
@@ -155,6 +156,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
                     nameInEnglish = "partner EN",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentToUpdateTo, installmentNew),
+                    partnerCountry = null
                 )
             )
         )

@@ -182,6 +182,7 @@ class PaymentsControllerTest : UnitTest() {
                     nameInEnglish = "partner nameEn",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(installmentFirst),
+                    partnerCountry = null
                 )
             )
         )
@@ -248,6 +249,7 @@ class PaymentsControllerTest : UnitTest() {
                     nameInEnglish = "partner nameEn",
                     amountApprovedPerPartner = BigDecimal.ONE,
                     installments = listOf(),
+                    partnerCountry = null
                 )
             )
         )

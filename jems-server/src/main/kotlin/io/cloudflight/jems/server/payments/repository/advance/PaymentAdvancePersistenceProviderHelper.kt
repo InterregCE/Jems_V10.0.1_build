@@ -5,14 +5,20 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
+import io.cloudflight.jems.plugin.contract.models.payments.export.AdvancedPaymentExportData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.QAdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.repository.regular.joinWithAnd
+import io.cloudflight.jems.server.plugin.services.payments.toDataModel
+import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -52,6 +58,41 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable): PageImpl<AdvancePaymen
         pageable,
         total
     )
+
+fun Tuple.toExportResult(): AdvancedPaymentExportData {
+        val payment = get(0, AdvancePaymentEntity::class.java)!!
+
+        return AdvancedPaymentExportData(
+            id = payment.id,
+            projectId = payment.projectId,
+            projectCustomIdentifier = payment.projectCustomIdentifier,
+            projectAcronym = payment.projectAcronym!!,
+            projectVersion = payment.projectVersion,
+            partnerId = payment.partnerId,
+            partnerType = ProjectPartnerRoleData.valueOf(payment.partnerRole.name),
+            partnerNumber = payment.partnerSortNumber,
+            partnerAbbreviation = payment.partnerAbbreviation,
+            nameInOriginalLanguage = payment.partnerNameInOriginalLanguage,
+            nameInEnglish = payment.partnerNameInEnglish,
+            programmeFund = get(1, ProgrammeFundEntity::class.java)?.toModel()?.toDataModel(),
+            partnerContribution = idNamePairOrNull(
+                payment.partnerContributionId,
+                payment.partnerContributionName
+            )?.toDataModel(),
+            partnerContributionSpf = idNamePairOrNull(
+                payment.partnerContributionSpfId,
+                payment.partnerContributionSpfName
+            )?.toDataModel(),
+            amountPaid = get(2, BigDecimal::class.java),
+            paymentDate = payment.paymentDate,
+            comment = payment.comment,
+            paymentAuthorizedUser = payment.paymentAuthorizedInfoUser?.email,
+            paymentAuthorizedDate = payment.paymentAuthorizedDate,
+            paymentConfirmedUser = payment.paymentConfirmedUser?.email,
+            paymentConfirmedDate = payment.paymentConfirmedDate,
+            amountSettledSoFar = get(3, BigDecimal::class.java)
+        )
+    }
 
 fun AdvancePaymentSearchRequest.transformToWhereClause(spec :QAdvancePaymentEntity):  BooleanExpression? {
     val expressions = mutableListOf<BooleanExpression>()

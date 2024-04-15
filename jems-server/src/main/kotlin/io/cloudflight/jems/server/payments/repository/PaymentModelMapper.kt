@@ -216,6 +216,7 @@ fun PaymentPartnerEntity.toDetailModel(
     partnerAbbreviation = partnerCertificate?.identification?.partnerAbbreviation ?: partnerAbbreviation,
     nameInOriginalLanguage = partnerCertificate?.identification?.nameInOriginalLanguage ?: partnerNameInOriginalLanguage,
     nameInEnglish = partnerCertificate?.identification?.nameInEnglish ?: partnerNameInEnglish,
+    partnerCountry = partnerCertificate?.identification?.country,
     amountApprovedPerPartner = amountApprovedPerPartner,
     installments = installments
 )

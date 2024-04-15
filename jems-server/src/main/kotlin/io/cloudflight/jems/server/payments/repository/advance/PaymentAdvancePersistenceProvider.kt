@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.repository.advance
 
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.cloudflight.jems.plugin.contract.models.payments.export.AdvancedPaymentExportData
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
@@ -20,6 +21,7 @@ import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.programme.entity.fund.QProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -106,6 +108,18 @@ class PaymentAdvancePersistenceProvider(
     override fun getConfirmedPaymentsForProject(projectId: Long, pageable: Pageable): Page<AdvancePayment> =
         advancePaymentRepository.findAllByProjectIdAndIsPaymentConfirmedTrue(projectId, pageable).toModelList()
 
+    override fun getAdvancedPaymentDataForExport(paymentId: Long): AdvancedPaymentExportData =
+        fetchAdvancePaymentForExport(paymentId)
+
+    override fun getAllAdvancedPaymentIds(programmeFundType: ProgrammeFundType?): List<Long> {
+        val specPayment = QAdvancePaymentEntity.advancePaymentEntity
+        val query = jpaQueryFactory.select(specPayment.id).from(specPayment)
+        if (programmeFundType != null) {
+            query.where(specPayment.programmeFund.type.eq(programmeFundType))
+        }
+        return query.fetch()
+    }
+
 
     private fun fetchAdvancePayments(pageable: Pageable, filters: AdvancePaymentSearchRequest): Page<AdvancePayment> {
         val specPayment = QAdvancePaymentEntity.advancePaymentEntity
@@ -146,6 +160,29 @@ class PaymentAdvancePersistenceProvider(
             .fetchResults()
 
         return results.toPageResult(pageable)
+    }
+
+    private fun fetchAdvancePaymentForExport(paymentId: Long): AdvancedPaymentExportData {
+        val specPayment = QAdvancePaymentEntity.advancePaymentEntity
+        val specSettlement = QAdvancePaymentSettlementEntity.advancePaymentSettlementEntity
+        val specProgrammeFund = QProgrammeFundEntity.programmeFundEntity
+
+        val results = jpaQueryFactory
+            .select(
+                specPayment,
+                specProgrammeFund,
+                specPayment.amountPaid(),
+                specSettlement.amountSettled.sum().`as`("amountSettled"),
+            ).from(specPayment)
+            .leftJoin(specSettlement)
+            .on(specSettlement.advancePayment.id.eq(specPayment.id))
+            .leftJoin(specProgrammeFund)
+            .on(specPayment.programmeFund.id.eq(specProgrammeFund.id))
+            .groupBy(specPayment)
+            .where(specPayment.id.eq(paymentId))
+            .fetchOne()
+
+        return results!!.toExportResult()
     }
 
     private fun setSourceOfContribution(
