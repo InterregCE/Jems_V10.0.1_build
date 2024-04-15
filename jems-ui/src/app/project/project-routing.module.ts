@@ -476,7 +476,7 @@ export const routes: Routes = [
                   {
                     path: '',
                     component: ReportIndicatorLivingTableOverviewComponent,
-                    data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
+                    data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.indicator.living.table'}
                   }
                 ]
               },

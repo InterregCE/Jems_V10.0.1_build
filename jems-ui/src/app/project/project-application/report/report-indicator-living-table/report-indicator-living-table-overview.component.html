@@ -4,6 +4,8 @@
                             subTitleKey="project.breadcrumb.applicationForm.reporting.overview.indicator.living.table"
                             [isVersionedData]="false">
 
+    <h3>{{'project.application.form.reporting.overview.indicator.living.table.title' | translate}}</h3>
+    <p>{{'project.application.form.reporting.overview.indicator.living.table.subtitle' | translate}}</p>
 
     <ng-container *ngIf="pageStore.resultIndicatorOverview$ | async as resultOverviews">
 

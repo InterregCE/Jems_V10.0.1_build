@@ -86,6 +86,7 @@ interface WorkPackageOutputRepository: PagingAndSortingRepository<WorkPackageOut
                 output.target_value as targetValue,
                 programmeOutput.id as programmeOutputId,
                 programmeResult.id as programmeResultId,
+                output.deactivated as deactivated,
                 outputTransl.language as language
             FROM #{#entityName} AS output
                 LEFT JOIN #{#entityName}_transl AS outputTransl
