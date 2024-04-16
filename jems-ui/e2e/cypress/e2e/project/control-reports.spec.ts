@@ -294,7 +294,7 @@ context('Control report tests', () => {
 
         cy.contains('fileToUpload.txt').should('be.visible');
 
-        cy.contains('mat-icon', 'delete').should('not.exist');
+        cy.contains('button', 'delete').should('be.disabled');
         cy.contains('mat-icon', 'edit').should('not.exist');
 
         cy.get('input[type="file"]')
